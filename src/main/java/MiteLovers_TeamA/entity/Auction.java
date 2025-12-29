@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package MiteLovers_TeamA.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
