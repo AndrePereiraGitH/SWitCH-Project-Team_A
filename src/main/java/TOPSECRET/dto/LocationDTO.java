@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import PAI.domain.Location;
+import TOPSECRET.domain.Location;
 
 public class LocationDTO {
     public final String street;

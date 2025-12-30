@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class Location
 {
     private final String _strStreet;
@@ -27,5 +29,18 @@ public class Location
 
     public String getPostalCode() {
         return _strPostalCode;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return Objects.equals(_strStreet, location._strStreet) && Objects.equals(_strPostalCode, location._strPostalCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_strStreet, _strPostalCode);
     }
 }

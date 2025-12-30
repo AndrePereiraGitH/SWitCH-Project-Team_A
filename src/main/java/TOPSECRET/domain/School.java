@@ -1,4 +1,4 @@
-package .domain;
+package TOPSECRET.domain;
 
 
 public class School

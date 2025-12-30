@@ -3,8 +3,8 @@ package TOPSECRET.controller;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import PAI.domain.School;
-import PAI.domain.Location;
+import TOPSECRET.domain.School;
+import TOPSECRET.domain.Location;
 
 class DefineSchoolLocationControllerTest {
 

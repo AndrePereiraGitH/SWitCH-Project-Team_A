@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import PAI.domain.School;
-import PAI.domain.Location;
+import TOPSECRET.domain.School;
+import TOPSECRET.domain.Location;
 
 public class DefineSchoolLocationController {
 
@@ -16,4 +16,5 @@ public class DefineSchoolLocationController {
 
         return location;
     }
+
 }
