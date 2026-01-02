@@ -45,10 +45,6 @@ public class Contact {
     // Method: Get full phone number (extension + number)
     public String getFullPhone() {
 
-        if (_extension == null) {
-            throw new IllegalArgumentException("Extension can´t be null");
-        }
-
         return _extension + " " + _phoneNum;
     }
 

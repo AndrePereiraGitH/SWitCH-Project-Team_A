@@ -17,7 +17,7 @@ public class User {
 
         //trim() - Java method to remove spaces
         //length() - Java method to count the length of the provided argument
-        if (_userName.trim().length() < 5) {
+        if (_userName.replace(" ", "").length() < 5) {
             throw new IllegalArgumentException("Username must contain at least 5 characters.");
         }
 

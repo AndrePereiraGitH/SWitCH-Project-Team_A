@@ -37,6 +37,18 @@ class UserTest {
     }
 
     @Test
+    void testConstructorUsernameWithFiveCharacters() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+
+        // Act & Assert
+        assertDoesNotThrow(() ->
+                new User("abcde", contact, "Admin")
+        );
+    }
+
+    @Test
     void testConstructorWithUsernameTooShortShouldThrowException() throws InstantiationException {
         // Arrange
         Location location = new Location("Main Street", "12345");
