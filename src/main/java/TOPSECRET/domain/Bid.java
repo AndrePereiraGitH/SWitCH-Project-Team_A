@@ -1,13 +1,11 @@
 package TOPSECRET.domain;
 
     public class Bid {
-//    private User bidder;
-    private String bidder;
+    private User bidder;
     private double value;
 
 
-//    public Bid (User bidder, double value) {
-public Bid (String bidder, double value) {
+    public Bid (User bidder, double value) {
 
 
         //Considered that the bidder can't be null
@@ -24,18 +22,18 @@ public Bid (String bidder, double value) {
         this.value = value;
     }
 
-//    public User getBidder(){
-//        return bidder;                      // Not for now
-//    }
-//
-//    public double getValue(){
-//        return value;
-//    }
-//
-//
-//    public String getBidInfo() {
-//        return "Bidder: " + bidder.getUserName() + ", Value: " + value;
-//    }
+    public User getBidder(){
+        return bidder;
+    }
+
+    public double getValue(){
+        return value;
+    }
+
+
+    public String getBidInfo() {
+        return "Bidder: " + bidder.getUserName() + ", Value: " + value;
+    }
 
 
 

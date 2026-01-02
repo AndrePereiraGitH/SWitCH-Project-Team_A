@@ -17,20 +17,18 @@ class BidTest {
 
 
 //        Email email = new Email("JoanaBeauty", "@gmail.com");
-//        Contact contact = new Contact("912345678", "+351", email, address);
+        Contact contact = new Contact("912345678", "+351", email, address);
 
-//        User bidder = new User("Maria123", contact, "Admin");
-        String bidder = "Maria123";
+        User bidder = new User("Maria123", contact, "Admin");
         double value = 100.50;
 
         // Act
         Bid result = new Bid(bidder, value);
 
         // Assert
-//        assertEquals(bidder, result.getBidder());
-        assertEquals("Maria123", bidder);
-//        assertEquals(value, result.getValue(), 0.001);
-        assertEquals(100.50, value, 0.001);
+        assertEquals(bidder, result.getBidder());
+
+        assertEquals(value, result.getValue(), 0.001);
     }
 
 
