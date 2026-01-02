@@ -8,13 +8,8 @@ class UserTest {
 
     @Test
     void testEmptyConstructor() {
-        // Arrange
 
-        // Act
-        User user = new User();
-
-        // Assert
-        assertNotNull(user);
+       new User();
     }
 
     @Test
@@ -52,6 +47,52 @@ class UserTest {
                 () -> new User("test", contact, "Admin")
         );
     }
+
+    // Test getUserName
+    @Test
+    void testShouldReturnUserName() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        User user = new User("ValidName", contact, "Admin");
+
+        // Act
+        String result = user.getUserName();
+
+        // Assert
+        assertEquals("ValidName", result);
+    }
+
+    // Test getContact
+    @Test
+    void testShouldReturnContact() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        User user = new User("ValidName", contact, "Admin");
+
+        // Act
+        Contact result = user.getContact();
+
+        // Assert
+        assertEquals(contact, result);
+    }
+
+    // Test getProfile
+    @Test
+    void testShouldReturnProfile() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        User user = new User("ValidName", contact, "Admin");
+
+        // Act
+        String result = user.getProfile();
+
+        // Assert
+        assertEquals("Admin", result);
+    }
+
 
     // Test getUserName
     @Test

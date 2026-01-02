@@ -8,13 +8,8 @@ class ContactTest {
 
     @Test
     void testEmptyConstructor() {
-        // Arrange not needed
 
-        // Act
-        Contact contact = new Contact();
-
-        // Assert
-        assertNotNull(contact);
+        new Contact();
     }
 
     @Test
@@ -38,6 +33,64 @@ class ContactTest {
                 () -> new Contact("987654321", null, "email@test.com", location)
         );
     }
+
+    // Test getPhoneNum
+    @Test
+    void testShouldReturnPhoneNumber() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+
+        // Act
+        String result = contact.getPhoneNum();
+
+        // Assert
+        assertEquals("987654321", result);
+    }
+
+    // Test getExtension
+    @Test
+    void testShouldReturnExtension() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+
+        // Act
+        String result = contact.getExtension();
+
+        // Assert
+        assertEquals("351", result);
+    }
+
+    // Test getEmail
+    @Test
+    void testGetEmail_ShouldReturnEmail() throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+
+        // Act
+        String result = contact.getEmail();
+
+        // Assert
+        assertEquals("email@test.com", result);
+    }
+
+    // Test getAddress
+    // TODO Change to Address type
+    @Test
+    void testShouldReturnAddress () throws InstantiationException {
+        // Arrange
+        Location location = new Location("Main Street", "12345");
+        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+
+        // Act
+        Location result = contact.getAddress();
+
+        // Assert
+        assertEquals(location, result);
+    }
+
 
     // Test getFullPhoneNumber
     @Test

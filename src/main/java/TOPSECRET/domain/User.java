@@ -12,13 +12,13 @@ public class User {
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits
         if (_userName == null) {
-            throw new IllegalArgumentException("Username não pode ser nulo.");
+            throw new IllegalArgumentException("Username can't be null.");
         }
 
         //trim() - Java method to remove spaces
         //length() - Java method to count the length of the provided argument
         if (_userName.trim().length() < 5) {
-            throw new IllegalArgumentException("Username deve ter pelo menos 5 caracteres.");
+            throw new IllegalArgumentException("Username must contain at least 5 characters.");
         }
 
         this._userName = _userName;
