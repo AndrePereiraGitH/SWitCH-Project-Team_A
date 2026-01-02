@@ -26,5 +26,8 @@ replay_pid*
 # intelij
 .idea/
 
+# Maven
+target/
+
 #macOS
 .DS_Store
