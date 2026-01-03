@@ -2,6 +2,8 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
@@ -17,10 +19,15 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new User("ValidName", contact, "Admin")
+                new User("ValidName", contact, profile)
         );
     }
 
@@ -29,10 +36,15 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new User(null, contact, "Admin")
+                () -> new User(null, contact, profile)
         );
     }
 
@@ -41,10 +53,15 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new User("abcde", contact, "Admin")
+                new User("abcde", contact, profile)
         );
     }
 
@@ -53,10 +70,15 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new User("test", contact, "Admin")
+                () -> new User("test", contact, profile)
         );
     }
 
@@ -66,7 +88,12 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("ValidName", contact, "Admin");
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+        User user = new User("ValidName", contact, profile);
 
         // Act
         String result = user.getUserName();
@@ -81,7 +108,12 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("ValidName", contact, "Admin");
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+        User user = new User("ValidName", contact, profile);
 
         // Act
         Contact result = user.getContact();
@@ -96,13 +128,19 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("ValidName", contact, "Admin");
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+        User user = new User("ValidName", contact, profile);
+
 
         // Act
-        String result = user.getProfile();
+        Profile result = user.getProfile();
 
         // Assert
-        assertEquals("Admin", result);
+        assertEquals(profile, result);
     }
 
 
@@ -112,7 +150,12 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("userNameTest", contact, "Admin");
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+        User user = new User("userNameTest", contact, profile);
 
         // Act
         String result = user.getUserName();
@@ -127,7 +170,12 @@ class UserTest {
         // Arrange
         Location location = new Location("Main Street", "12345");
         Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("userNameTest", contact, "Admin");
+        Profile profile = new Profile(
+                "Test Profile",
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+        User user = new User("userNameTest", contact, profile);
 
         // Act
         String result = user.getUserInfo();
@@ -135,6 +183,6 @@ class UserTest {
         // Assert
         assertTrue(result.contains("User: userNameTest"));
         assertTrue(result.contains("Contact: "));
-        assertTrue(result.contains("Profile: Admin"));
+        assertTrue(result.contains("Profile: " + profile));
     }
 }
