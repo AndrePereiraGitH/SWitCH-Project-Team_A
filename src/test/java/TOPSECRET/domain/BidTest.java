@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,18 +18,20 @@ class BidTest {
 
 
 //        Email email = new Email("JoanaBeauty", "@gmail.com");
-        Contact contact = new Contact("912345678", "+351", email, address);
+//        Contact contact = new Contact("912345678", "+351", email, address);
 
-        User bidder = new User("Maria123", contact, "Admin");
+//        User bidder = new User("Maria123", contact, "Admin");
+        String bidder = "Maria123";
         double value = 100.50;
+        LocalDateTime bidDateTime = LocalDateTime.now();
 
         // Act
-        Bid result = new Bid(bidder, value);
+        Bid result = new Bid(bidder, value, bidDateTime);
 
         // Assert
         assertEquals(bidder, result.getBidder());
-
         assertEquals(value, result.getValue(), 0.001);
+        assertEquals(bidDateTime, result.getBidDateTime());
     }
 
 

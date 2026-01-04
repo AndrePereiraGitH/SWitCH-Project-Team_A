@@ -1,12 +1,16 @@
 package TOPSECRET.domain;
 
-    public class Bid {
-    private User bidder;
+import java.time.LocalDateTime;
+
+public class Bid {
+//    private User bidder;
+    private String bidder;
     private double value;
+    private LocalDateTime bidDateTime;
 
 
-    public Bid (User bidder, double value) {
-
+//    public Bid (User bidder, double value, LocalDateTime bidDateTime) {
+      public Bid (String bidder, double value, LocalDateTime bidDateTime) {
 
         //Considered that the bidder can't be null
         if (bidder == null) {
@@ -20,9 +24,11 @@ package TOPSECRET.domain;
 
         this.bidder = bidder;
         this.value = value;
+        this.bidDateTime = bidDateTime;
     }
 
-    public User getBidder(){
+//    public User getBidder(){
+       public String getBidder() {
         return bidder;
     }
 
@@ -31,13 +37,13 @@ package TOPSECRET.domain;
     }
 
 
-    public String getBidInfo() {
-        return "Bidder: " + bidder.getUserName() + ", Value: " + value;
+//    public String getBidInfo() {
+//        return "Bidder: " + bidder.getUserName() + ", Value: " + value;
+//    }
+
+
+    public LocalDateTime getBidDateTime(){
+        return bidDateTime;
     }
-
-
-
-
-
 
 }
