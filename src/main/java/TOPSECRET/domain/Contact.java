@@ -4,11 +4,11 @@ public class Contact {
 
     private String _phoneNum;
     private String _extension;
-    private String _email; // TODO change to Email type
-    private Location _location; // TODO change to Address type
+    private Email _email;
+    private Address _location;
 
     // Constructor
-    public Contact(String phoneNum, String extension, String email, Location location) {
+    public Contact(String phoneNum, String extension, Email email, Address location) {
 
         if (extension == null) {
             throw new IllegalArgumentException("Extension can´t be null");
@@ -34,11 +34,11 @@ public class Contact {
         return _extension;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return _email;
     }
 
-    public Location getAddress() {
+    public Address getAddress() {
         return _location;
     }
 

@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Country;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -15,10 +16,17 @@ class UserTest {
     }
 
     @Test
-    void testConstructorWithValidArguments() throws InstantiationException {
+    void testConstructorWithValidArguments() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
@@ -32,10 +40,17 @@ class UserTest {
     }
 
     @Test
-    void testConstructorWithUsernameNullShouldThrowException() throws InstantiationException {
+    void testConstructorWithUsernameNullShouldThrowException() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
@@ -49,10 +64,17 @@ class UserTest {
     }
 
     @Test
-    void testConstructorUsernameWithFiveCharacters() throws InstantiationException {
+    void testConstructorUsernameWithFiveCharacters() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
@@ -66,10 +88,17 @@ class UserTest {
     }
 
     @Test
-    void testConstructorWithUsernameTooShortShouldThrowException() throws InstantiationException {
+    void testConstructorWithUsernameTooShortShouldThrowException() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
@@ -84,15 +113,23 @@ class UserTest {
 
     // Test getUserName
     @Test
-    void testShouldReturnUserName() throws InstantiationException {
+    void testShouldReturnUserName() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
                 true
         );
+
         User user = new User("ValidName", contact, profile);
 
         // Act
@@ -104,15 +141,23 @@ class UserTest {
 
     // Test getContact
     @Test
-    void testShouldReturnContact() throws InstantiationException {
+    void testShouldReturnContact() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
                 true
         );
+
         User user = new User("ValidName", contact, profile);
 
         // Act
@@ -124,17 +169,24 @@ class UserTest {
 
     // Test getProfile
     @Test
-    void testShouldReturnProfile() throws InstantiationException {
+    void testShouldReturnProfile() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
                 true
         );
-        User user = new User("ValidName", contact, profile);
 
+        User user = new User("ValidName", contact, profile);
 
         // Act
         Profile result = user.getProfile();
@@ -143,18 +195,25 @@ class UserTest {
         assertEquals(profile, result);
     }
 
-
     // Test getUserName
     @Test
-    void testShouldReturnProvidedUsername() throws InstantiationException {
+    void testShouldReturnProvidedUsername() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
                 true
         );
+
         User user = new User("userNameTest", contact, profile);
 
         // Act
@@ -166,15 +225,23 @@ class UserTest {
 
     // Test getUserInfo
     @Test
-    void testShouldReturnFormattedString() throws InstantiationException {
+    void testShouldReturnFormattedString() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
         Profile profile = new Profile(
                 "Test Profile",
                 LocalDate.of(1997, 8, 15),
                 true
         );
+
         User user = new User("userNameTest", contact, profile);
 
         // Act
