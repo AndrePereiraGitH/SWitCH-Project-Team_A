@@ -8,13 +8,13 @@ import java.util.List;
 public class Item {
          //Temporary! With the classes that are missing as String
 
-    private Condition _condition;
-    private double _weight;
-    private List<String> _pictures;
-    private Dimensions _dimension;
-    private TypeOfBinding _binding;
-    private String _edition;
-    private BibliographicalData _bibliographicalData;
+    private final Condition _condition;
+    private final double _weight;
+    private final List<String> _pictures;
+    private final Dimensions _dimension;
+    private final TypeOfBinding _binding;
+    private final String _edition;
+    private final BibliographicalData _bibliographicalData;
 
     public Item(Condition condition, double weight, List<String> pictures, Dimensions dimension, TypeOfBinding binding, String edition, BibliographicalData bibliographicalData) {
 
@@ -25,7 +25,7 @@ public class Item {
         if (condition == null)
             throw new IllegalArgumentException("Condition cannot be Null");
         if (pictures == null)
-            throw new IllegalArgumentException (" Pictures cannot be Null");    // Can it be null? I dont think so
+            throw new IllegalArgumentException (" Pictures cannot be Null");    // Can it be null? I don't think so
         if (dimension == null)
             throw new IllegalArgumentException (" Dimensions cannot be Null");
         if ( binding == null)

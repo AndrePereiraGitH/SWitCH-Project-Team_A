@@ -28,10 +28,17 @@ class DimensionsTest {
                 Arguments.of(1.0, 0.0, 0.0),
                 Arguments.of(0.0, 1.0, 0.0),
                 Arguments.of(0.0, 0.0, 1.0),
+                Arguments.of(-5.0, 2.0, 1.0),
+                Arguments.of(1.0, -2.0, 5.0),
+                Arguments.of(3.4, 1.0, -6.0),
+                Arguments.of(-5.0, -10.0, -30.0),
+                Arguments.of(-1.0, 0.0, 0.0),
+                Arguments.of(0.0, -1.0, 0.0),
+                Arguments.of(0.0, 0.0, -1.0),
                 Arguments.of(-5.0, 0.0, 0.0),
-                Arguments.of(1.0, -2.0, 0.0),
-                Arguments.of(0.0, 1.0, -6.0),
-                Arguments.of(-5.0, -10.0, -30.0)
+                Arguments.of(0.0, -2.0, 0.0),
+                Arguments.of(0.0, 0.0, -6.0)
+
         );
     }
 
