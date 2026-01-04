@@ -1,11 +1,8 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Country;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BidTest {
@@ -13,15 +10,14 @@ class BidTest {
     @Test
     void constructorShouldCreateBidWhenValid() {
         // Arrange
-//        Address address = new Address("Rua do Mar", "30", "3678-769", Country.FRANCE);
+        Address address = new Address("Rua do Mar", "30", "3678-769", Country.FRANCE);
 
 
 
-//        Email email = new Email("JoanaBeauty", "@gmail.com");
-//        Contact contact = new Contact("912345678", "+351", email, address);
+       Email email = new Email("JoanaBeauty", "@gmail.com");
+       Contact contact = new Contact("912345678", "+351", email, address);
 
-//        User bidder = new User("Maria123", contact, "Admin");
-        String bidder = "Maria123";
+        User bidder = new User("Maria123", contact, "Admin");
         double value = 100.50;
         LocalDateTime bidDateTime = LocalDateTime.now();
 

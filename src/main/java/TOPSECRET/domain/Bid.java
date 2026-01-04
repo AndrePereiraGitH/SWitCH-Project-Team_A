@@ -3,14 +3,12 @@ package TOPSECRET.domain;
 import java.time.LocalDateTime;
 
 public class Bid {
-//    private User bidder;
-    private String bidder;
+    private User bidder;
     private double value;
     private LocalDateTime bidDateTime;
 
 
-//    public Bid (User bidder, double value, LocalDateTime bidDateTime) {
-      public Bid (String bidder, double value, LocalDateTime bidDateTime) {
+    public Bid (User bidder, double value, LocalDateTime bidDateTime) {
 
         //Considered that the bidder can't be null
         if (bidder == null) {
@@ -27,8 +25,7 @@ public class Bid {
         this.bidDateTime = bidDateTime;
     }
 
-//    public User getBidder(){
-       public String getBidder() {
+    public User getBidder(){
         return bidder;
     }
 
@@ -37,9 +34,9 @@ public class Bid {
     }
 
 
-//    public String getBidInfo() {
-//        return "Bidder: " + bidder.getUserName() + ", Value: " + value;
-//    }
+    public String getBidInfo() {
+      return "Bidder: " + bidder.getUserName() + ", Value: " + value;
+    }
 
 
     public LocalDateTime getBidDateTime(){
