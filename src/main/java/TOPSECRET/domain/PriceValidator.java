@@ -6,7 +6,7 @@ public class PriceValidator {
 
     public static double validatePrice(double price){
 
-        BigDecimal checkPrice = new BigDecimal(price);
+        BigDecimal checkPrice = BigDecimal.valueOf(price);
 
         if(checkPrice.scale()>2){
             throw new IllegalArgumentException("Price value is invalid");

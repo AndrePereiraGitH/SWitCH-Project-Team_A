@@ -1,8 +1,9 @@
 package TOPSECRET.domain;
 
-import java.awt.*;
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.TypeOfBinding;
+
 import java.util.List;
-import java.util.concurrent.locks.Condition;
 
 public class Item {
          //Temporary! With the classes that are missing as String
@@ -11,25 +12,24 @@ public class Item {
     private double _weight;
     private List<String> _pictures;
     private Dimensions _dimension;
-    private String _typeOfBinding;
+    private TypeOfBinding _binding;
     private String _edition;
     private BibliographicalData _bibliographicalData;
 
-    public Item(Condition condition, double weight, List<String> pictures, Dimensions dimension, String typeOfBinding, String edition, BibliographicalData bibliographicalData) {
+    public Item(Condition condition, double weight, List<String> pictures, Dimensions dimension, TypeOfBinding binding, String edition, BibliographicalData bibliographicalData) {
 
         if (weight <= 0.0 )
-           throw new IllegalArgumentException("Weight must be superior to 0.");
-
+           throw new IllegalArgumentException("Weight must be greater than 0.");
         if ( Validator.isNullOrBlank(edition))
-            throw new IllegalArgumentException("Edition cannot be null or empty");
+            throw new IllegalArgumentException("Edition is required");
         if (condition == null)
             throw new IllegalArgumentException("Condition cannot be Null");
         if (pictures == null)
-            throw new IllegalArgumentException (" Pictures cannot be Null");    // Can it be null?
+            throw new IllegalArgumentException (" Pictures cannot be Null");    // Can it be null? I dont think so
         if (dimension == null)
             throw new IllegalArgumentException (" Dimensions cannot be Null");
-        if ( typeOfBinding == null)
-            throw new IllegalArgumentException("typeOfBinding cannot be null");
+        if ( binding == null)
+            throw new IllegalArgumentException(" binding cannot be null");
         if ( bibliographicalData == null)
             throw new IllegalArgumentException("BibliographicalData cannot be null");
 
@@ -37,7 +37,7 @@ public class Item {
         this._weight = weight;
         this._pictures = List.copyOf(pictures);   // To protect pictures
         this._dimension = dimension;
-        this._typeOfBinding = typeOfBinding;
+        this._binding = binding;
         this._edition = edition;
         this._bibliographicalData = bibliographicalData;
     }
@@ -50,40 +50,37 @@ public class Item {
 //    private double _weight;
 //    private List<Pictures> _pictures;
 //    private Dimensions _dimension;
-//    private TypeOfBinding _typeOfBinding;
+//    private TypeOfBinding _binding;
 //    private String _edition;
 //    private BibliographicalData _bibliographicalData;
 //
 //
 //    //Construtor Item:
-//    public Item(Condition condition, double _weight, List<Pictures> pictures, Dimensions dimension, TypeOfBinding typeOfBinding, String edition, BibliographicalData bibliographicalData) {
+//    public Item(Condition condition, double _weight, List<Pictures> pictures, Dimensions dimension, TypeOfBinding binding, String edition, BibliographicalData bibliographicalData) {
 //
-//        if (weight <= 0.0 )
-//           throw new IllegalArgumentException("Weight must be superior to 0.");
-//
+//          if (weight <= 0.0 )
+//            throw new IllegalArgumentException("Weight must be greater than 0.");
 //        if ( Validator.isNullOrBlank(edition))
-//            throw new IllegalArgumentException("Edition cannot be null or empty");
-//
-//     if (condition == null)
+//            throw new IllegalArgumentException("Edition is required");
+//        if (condition == null)
 //            throw new IllegalArgumentException("Condition cannot be Null");
 //        if (pictures == null)
-//            throw new IllegalArgumentException (" Pictures cannot be Null");    // Can it be null?
+//            throw new IllegalArgumentException (" Pictures cannot be Null");    // Can it be null? I dont think so
 //        if (dimension == null)
 //            throw new IllegalArgumentException (" Dimensions cannot be Null");
-//        if ( typeOfBinding == null)
-//            throw new IllegalArgumentException("typeOfBinding cannot be null");
+//        if ( binding == null)
+//            throw new IllegalArgumentException(" binding cannot be null");
 //        if ( bibliographicalData == null)
-//            throw new IllegalArgumentException("BibliographicalData cannot be null");
+
 
 //
 //        this._condition = condition;
 //        this.weight = _weight;
-//        this._pictures = pictures;
+//        this._pictures = List.copyOf(pictures);
 //        this._dimension = dimension;
-//        this._typeOfBinding = typeOfBinding;
+//        this._typeOfBinding = binding;
 //        this._edition = edition;
 //        this._bibliographicalData = bibliographicalData;
-//    }
 //
 //
 //    public Condition get_condition() {
@@ -102,8 +99,8 @@ public class Item {
 //        return _dimension;
 //    }
 //
-//    public TypeOfBinding get_typeOfBinding() {
-//        return _typeOfBinding;
+//    public TypeOfBinding get_binding() {
+//        return _binding;
 //    }
 //
 //    public BibliographicalData get_bibliographicalData() {
