@@ -18,17 +18,13 @@ class UserTest {
     @Test
     void testConstructorWithValidArguments() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -42,17 +38,13 @@ class UserTest {
     @Test
     void testConstructorWithUsernameNullShouldThrowException() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -66,17 +58,13 @@ class UserTest {
     @Test
     void testConstructorUsernameWithFiveCharacters() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -90,17 +78,13 @@ class UserTest {
     @Test
     void testConstructorWithUsernameTooShortShouldThrowException() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -111,21 +95,16 @@ class UserTest {
         );
     }
 
-    // Test getUserName
     @Test
     void testShouldReturnUserName() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -139,21 +118,16 @@ class UserTest {
         assertEquals("ValidName", result);
     }
 
-    // Test getContact
     @Test
     void testShouldReturnContact() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -167,21 +141,16 @@ class UserTest {
         assertEquals(contact, result);
     }
 
-    // Test getProfile
     @Test
     void testShouldReturnProfile() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -195,21 +164,16 @@ class UserTest {
         assertEquals(profile, result);
     }
 
-    // Test getUserName
     @Test
     void testShouldReturnProvidedUsername() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
@@ -223,21 +187,16 @@ class UserTest {
         assertEquals("userNameTest", result);
     }
 
-    // Test getUserInfo
     @Test
     void testShouldReturnFormattedString() {
         // Arrange
-        Address address = new Address(
-                "Main Street",
-                "10",
-                "12345",
-                Country.PORTUGAL
-        );
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
+                Country.PORTUGAL,
                 LocalDate.of(1997, 8, 15),
                 true
         );
