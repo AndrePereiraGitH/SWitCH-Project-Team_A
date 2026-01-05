@@ -1,8 +1,4 @@
-package isep.switchdev;
-
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.Transaction;
+package TOPSECRET.domain;
 
 import java.util.ArrayList;
 import java.util.List;
