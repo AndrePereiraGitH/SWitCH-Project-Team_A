@@ -8,7 +8,12 @@ package TOPSECRET.domain.Enum;
         NONFICTION,
         ADVENTURE,
         MYSTERY,
-        POETRY
+        POETRY,
+        TECHNOLOGY,
+        SCIENCE,
+        BUSINESS,
+        SOCIAL_SCIENCES,
+        PHILOSOPHY,
     }
 
     // Work in progress, update with genres as needed
