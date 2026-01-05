@@ -14,7 +14,8 @@ class MagazineTest {
 
     @Test
     void shouldCreateMagazine() {
-        Code issn = new Code(null, null, "1234-5678");
+       // Code issn = new Code(null, null, "1234-5678");
+        Code issn = Code.fromIssn ("1234-5678");
         Item item = validItem();
 
         Magazine magazine = new Magazine(issn, item);
@@ -32,7 +33,8 @@ class MagazineTest {
 
     @Test
     void shouldThrowWhenItemIsNull() {
-        Code issn = new Code(null, null, "1234-5678");
+      //  Code issn = new Code(null, null, "1234-5678");
+        Code issn = Code.fromIssn ("1234-5678");
 
         assertThrows(IllegalArgumentException.class, () -> new Magazine(issn, null));
     }
