@@ -7,12 +7,12 @@ public class Cart {
 
     private List<Item> itemsList;  // Mudamos para Item
     private User buyer;
-    private Transaction transaction;
+    //private Transaction transaction;
 
     public Cart(User buyer) {
         this.itemsList = new ArrayList<>();
         this.buyer = buyer;
-        this.transaction = null;
+       // this.transaction = null;
     }
 
     // Adiciona um Item ao carrinho
@@ -36,7 +36,9 @@ public class Cart {
     }
 
     // Retorna a transação associada ao carrinho
-    public Transaction getTransaction() {
+   /* public Transaction getTransaction() {
         return transaction;
     }
+
+    */
 }

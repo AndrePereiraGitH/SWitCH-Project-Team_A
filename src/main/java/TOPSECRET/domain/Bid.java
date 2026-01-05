@@ -28,9 +28,9 @@ public class Bid {
 //        return bidder;                      // Not for now
 //    }
 //
-//    public double getValue(){
-//        return value;
-//    }
+    public double getValue(){
+        return value;
+    }
 //
 //
 //    public String getBidInfo() {
