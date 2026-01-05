@@ -1,6 +1,9 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Country;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,60 +16,100 @@ class UserTest {
     }
 
     @Test
-    void testConstructorWithValidArguments() throws InstantiationException {
+    void testConstructorWithValidArguments() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new User("ValidName", contact, "Admin")
+                new User("ValidName", contact, profile)
         );
     }
 
     @Test
-    void testConstructorWithUsernameNullShouldThrowException() throws InstantiationException {
+    void testConstructorWithUsernameNullShouldThrowException() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new User(null, contact, "Admin")
+                () -> new User(null, contact, profile)
         );
     }
 
     @Test
-    void testConstructorUsernameWithFiveCharacters() throws InstantiationException {
+    void testConstructorUsernameWithFiveCharacters() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new User("abcde", contact, "Admin")
+                new User("abcde", contact, profile)
         );
     }
 
     @Test
-    void testConstructorWithUsernameTooShortShouldThrowException() throws InstantiationException {
+    void testConstructorWithUsernameTooShortShouldThrowException() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new User("test", contact, "Admin")
+                () -> new User("test", contact, profile)
         );
     }
 
-    // Test getUserName
     @Test
-    void testShouldReturnUserName() throws InstantiationException {
+    void testShouldReturnUserName() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("ValidName", contact, "Admin");
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+
+        User user = new User("ValidName", contact, profile);
 
         // Act
         String result = user.getUserName();
@@ -75,13 +118,21 @@ class UserTest {
         assertEquals("ValidName", result);
     }
 
-    // Test getContact
     @Test
-    void testShouldReturnContact() throws InstantiationException {
+    void testShouldReturnContact() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("ValidName", contact, "Admin");
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+
+        User user = new User("ValidName", contact, profile);
 
         // Act
         Contact result = user.getContact();
@@ -90,29 +141,44 @@ class UserTest {
         assertEquals(contact, result);
     }
 
-    // Test getProfile
     @Test
-    void testShouldReturnProfile() throws InstantiationException {
+    void testShouldReturnProfile() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("ValidName", contact, "Admin");
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+
+        User user = new User("ValidName", contact, profile);
 
         // Act
-        String result = user.getProfile();
+        Profile result = user.getProfile();
 
         // Assert
-        assertEquals("Admin", result);
+        assertEquals(profile, result);
     }
 
-
-    // Test getUserName
     @Test
-    void testShouldReturnProvidedUsername() throws InstantiationException {
+    void testShouldReturnProvidedUsername() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("userNameTest", contact, "Admin");
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+
+        User user = new User("userNameTest", contact, profile);
 
         // Act
         String result = user.getUserName();
@@ -121,13 +187,21 @@ class UserTest {
         assertEquals("userNameTest", result);
     }
 
-    // Test getUserInfo
     @Test
-    void testShouldReturnFormattedString() throws InstantiationException {
+    void testShouldReturnFormattedString() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
-        User user = new User("userNameTest", contact, "Admin");
+        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                Country.PORTUGAL,
+                LocalDate.of(1997, 8, 15),
+                true
+        );
+
+        User user = new User("userNameTest", contact, profile);
 
         // Act
         String result = user.getUserInfo();
@@ -135,6 +209,6 @@ class UserTest {
         // Assert
         assertTrue(result.contains("User: userNameTest"));
         assertTrue(result.contains("Contact: "));
-        assertTrue(result.contains("Profile: Admin"));
+        assertTrue(result.contains("Profile: " + profile));
     }
 }

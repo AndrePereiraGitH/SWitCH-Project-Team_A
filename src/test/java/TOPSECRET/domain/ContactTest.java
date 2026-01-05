@@ -1,45 +1,63 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Country;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ContactTest {
 
-    @Test
-    void testEmptyConstructor() {
+    @Test void testEmptyConstructor() {
 
         new Contact();
     }
 
     @Test
-    void testConstructorWithValidArguments () throws InstantiationException {
+    void testConstructorWithValidArguments() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new Contact("987654321", "351", "email@test.com", location)
+                new Contact("987654321", "351", email, address)
         );
     }
 
     @Test
-    void testConstructorWithNullExtensionShouldThrowException() throws InstantiationException {
+    void testConstructorWithNullExtensionShouldThrowException() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Contact("987654321", null, "email@test.com", location)
+                () -> new Contact("987654321", null, email, address)
         );
     }
 
     // Test getPhoneNum
     @Test
-    void testShouldReturnPhoneNumber() throws InstantiationException {
+    void testShouldReturnPhoneNumber() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Contact contact = new Contact("987654321", "351", email, address);
 
         // Act
         String result = contact.getPhoneNum();
@@ -50,10 +68,16 @@ class ContactTest {
 
     // Test getExtension
     @Test
-    void testShouldReturnExtension() throws InstantiationException {
+    void testShouldReturnExtension() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Contact contact = new Contact("987654321", "351", email, address);
 
         // Act
         String result = contact.getExtension();
@@ -64,40 +88,56 @@ class ContactTest {
 
     // Test getEmail
     @Test
-    void testGetEmail_ShouldReturnEmail() throws InstantiationException {
+    void testGetEmail_ShouldReturnEmail() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Contact contact = new Contact("987654321", "351", email, address);
 
         // Act
-        String result = contact.getEmail();
+        Email result = contact.getEmail();
 
         // Assert
-        assertEquals("email@test.com", result);
+        assertEquals(email, result);
     }
 
     // Test getAddress
-    // TODO Change to Address type
     @Test
-    void testShouldReturnAddress () throws InstantiationException {
+    void testShouldReturnAddress() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Contact contact = new Contact("987654321", "351", email, address);
 
         // Act
-        Location result = contact.getAddress();
+        Address result = contact.getAddress();
 
         // Assert
-        assertEquals(location, result);
+        assertEquals(address, result);
     }
-
 
     // Test getFullPhoneNumber
     @Test
-    void testShouldReturnCorrectFormat() throws InstantiationException {
+    void testShouldReturnCorrectFormat() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Contact contact = new Contact("987654321", "351", email, address);
 
         // Act
         String result = contact.getFullPhone();
@@ -107,18 +147,23 @@ class ContactTest {
     }
 
     @Test
-    void testGetFullContactInfo_ShouldReturnExpectedOutput() throws InstantiationException {
+    void testGetFullContactInfo_ShouldReturnExpectedOutput() {
         // Arrange
-        Location location = new Location("Main Street", "12345");
-        Contact contact = new Contact("987654321", "351", "email@test.com", location);
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                Country.PORTUGAL
+        );
+        Contact contact = new Contact("987654321", "351", email, address);
 
         // Act
         String result = contact.getFullContactInfo();
 
         // Assert
         assertTrue(result.contains("351 987654321"));
-        assertTrue(result.contains("email@test.com"));
-        assertTrue(result.contains("address:"));
+        assertTrue(result.contains(email.toString()));
+        assertTrue(result.contains(address.toString()));
     }
-
 }

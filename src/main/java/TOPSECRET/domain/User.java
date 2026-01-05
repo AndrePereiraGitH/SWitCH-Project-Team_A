@@ -4,10 +4,10 @@ public class User {
 
     private String _userName;
     private Contact _contact;
-    private String _profile; // TODO change to Profile type
+    private Profile _profile; // TODO change to Profile type
 
     //Constructor
-    public User (String _userName, Contact _contact, String _profile){
+    public User (String _userName, Contact _contact, Profile _profile){
 
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits
@@ -39,7 +39,7 @@ public class User {
         return _contact;
     }
 
-    public String getProfile() {
+    public Profile getProfile() {
         return _profile;
     }
 
