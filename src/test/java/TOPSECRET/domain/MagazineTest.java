@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.Genre;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
+import static TOPSECRET.domain.Enum.Country.UNITED_STATES;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MagazineTest {
@@ -40,13 +42,24 @@ class MagazineTest {
     }
 
     private Item validItem() {
+
+        Profile[] authors = {
+                new Profile("Author Name", UNITED_STATES, LocalDate.of(1980, 1, 1), true)
+        };
+
+        Genre[] genres = {
+                Genre.NONFICTION
+        };
+
         BibliographicalData bib = new BibliographicalData(
                 "Title",
-                List.of("Author"),
+//                List.of("Author"),
+                authors,
                 Locale.ENGLISH,
                 "Publisher",
                 LocalDate.of(2020, 1, 1),
-                List.of("Genre"),
+//                List.of("Genre"),
+                genres,
                 100,
                 "Text"
         );
