@@ -32,15 +32,15 @@ class BidTest {
 
         User bidder = new User("Maria123", contact, userProfile);
         double value = 100.50;
-        LocalDateTime bidDateTime = LocalDateTime.now();
+        LocalDateTime timeOfBid = LocalDateTime.now();
 
         // Act
-        Bid result = new Bid(bidder, value, bidDateTime);
+        Bid result = new Bid(bidder, value, timeOfBid);
 
         // Assert
         assertEquals(bidder, result.getBidder());
         assertEquals(value, result.getValue(), 0.001);
-        assertEquals(bidDateTime, result.getBidDateTime());
+        assertEquals(timeOfBid, result.getTimeOfBid());
         assertFalse(bidder.getProfile().isAuthor());
     }
 
@@ -63,15 +63,15 @@ class BidTest {
 
         User bidder = new User("AuthorJohn", contact, authorProfile);
         double value = 250.75;
-        LocalDateTime bidDateTime = LocalDateTime.now();
+        LocalDateTime timeOfBid = LocalDateTime.now();
 
         // Act
-        Bid result = new Bid(bidder, value, bidDateTime);
+        Bid result = new Bid(bidder, value, timeOfBid);
 
         // Assert
         assertEquals(bidder, result.getBidder());
         assertEquals(value, result.getValue(), 0.001);
-        assertEquals(bidDateTime, result.getBidDateTime());
+        assertEquals(timeOfBid, result.getTimeOfBid());
         assertTrue(bidder.getProfile().isAuthor());
     }
 
