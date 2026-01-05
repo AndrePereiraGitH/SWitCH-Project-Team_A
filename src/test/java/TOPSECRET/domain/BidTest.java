@@ -10,7 +10,7 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BidTest {
-    //Test: Constructor&getFullAddress
+    //Not an author profile
     @Test
     void constructorShouldCreateBidWhenValid() {
         // Arrange
@@ -41,7 +41,7 @@ class BidTest {
         assertEquals(bidder, result.getBidder());
         assertEquals(value, result.getValue(), 0.001);
         assertEquals(bidDateTime, result.getBidDateTime());
-        assertTrue(bidder.getProfile().isAuthor());
+        assertFalse(bidder.getProfile().isAuthor());
     }
 
 
