@@ -10,7 +10,7 @@ public class Code {
 
     // Constructor
 
-    private Code(String isbn10, String isbn13, String issn) {
+    public Code(String isbn10, String isbn13, String issn) {
         this.isbn10 = isbn10;
         this.isbn13 = isbn13;
         this.issn = issn;
