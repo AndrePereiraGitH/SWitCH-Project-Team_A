@@ -10,12 +10,12 @@ class BidTest {
     @Test
     void constructorShouldCreateBidWhenValid() {
         // Arrange
-        Address address = new Address("Rua do Mar", "30", "3678-769", Country.FRANCE);
+        Address address = new Address("Main Street", "12345", "3678-769", Country.FRANCE);
 
 
 
-       Email email = new Email("JoanaBeauty", "@gmail.com");
-       Contact contact = new Contact("912345678", "+351", email, address);
+        Email email = new Email("joanabeauty", "gmail.com");
+        Contact contact = new Contact("912345678", "+351", email, address);
 
         User bidder = new User("Maria123", contact, "Admin");
         double value = 100.50;
