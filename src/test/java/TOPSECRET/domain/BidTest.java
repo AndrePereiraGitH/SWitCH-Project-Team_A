@@ -87,6 +87,6 @@ class BidTest {
                 () -> new Bid(null, value, LocalDateTime.now())
         );
 
-        assertEquals("bidder can't be null.", exception.getMessage());
+        assertEquals("Bidder can't be null.", exception.getMessage());
     }
 }

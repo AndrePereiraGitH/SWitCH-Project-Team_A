@@ -37,16 +37,16 @@ public class Bid {
         this._timeOfBid = timeOfBid;
     }
 
-    public User getBidder(){  // Correct
+    public User getBidder(){  // TODO Correct
         return _bidder;
     }
 
-    public double getValue(){  // Correct
+    public double getValue(){  // TODO Correct
         return _value;
     }
 
 
-    public String getBidInfo() { // Correct
+    public String getBidInfo() { // TODO Correct
       return "Bidder: " + getBidder().getUserName() + ", Value: " + getValue() + ", Time: " + getTimeOfBid();
     }
 
