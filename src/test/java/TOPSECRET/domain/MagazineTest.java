@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.Country;
 import TOPSECRET.domain.Enum.Genre;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
@@ -9,57 +10,48 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
-import static TOPSECRET.domain.Enum.Country.UNITED_STATES;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MagazineTest {
-
     @Test
     void shouldCreateMagazine() {
-       // Code issn = new Code(null, null, "1234-5678");
-        Code issn = Code.fromIssn ("1234-5678");
+        Code issn = Code.fromIssn("1234-5678");
         Item item = validItem();
 
         Magazine magazine = new Magazine(issn, item);
 
-        assertSame(issn, magazine.getIssn());
-        assertSame(item, magazine.getItem());
+        assertEquals(issn, magazine.getIssn());
+        assertEquals(item, magazine.getItem());
     }
 
     @Test
     void shouldThrowWhenIssnIsNull() {
         Item item = validItem();
-
         assertThrows(IllegalArgumentException.class, () -> new Magazine(null, item));
     }
 
     @Test
     void shouldThrowWhenItemIsNull() {
-      //  Code issn = new Code(null, null, "1234-5678");
-        Code issn = Code.fromIssn ("1234-5678");
-
+        Code issn = Code.fromIssn("1234-5678");
         assertThrows(IllegalArgumentException.class, () -> new Magazine(issn, null));
     }
 
     private Item validItem() {
+        Profile author = new Profile("Author Name", Country.UNITED_STATES, LocalDate.of(1980, 1, 1), true);
 
-        Profile[] authors = {
-                new Profile("Author Name", UNITED_STATES, LocalDate.of(1980, 1, 1), true)
-        };
+        Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
+        Email email = new Email("Maria1", "gmail.com");
+        Contact contact = new Contact("915945695", "+351", email, address);
 
-        Genre[] genres = {
-                Genre.NONFICTION
-        };
+        Publisher publisher = new Publisher("PublisherName", "VatNumber", address, contact);
 
         BibliographicalData bib = new BibliographicalData(
                 "Title",
-//                List.of("Author"),
-                authors,
+                List.of(author),
                 Locale.ENGLISH,
-                "Publisher",
+                publisher,
                 LocalDate.of(2020, 1, 1),
-//                List.of("Genre"),
-                genres,
+                List.of(Genre.NONFICTION),
                 100,
                 "Text"
         );
@@ -67,7 +59,7 @@ class MagazineTest {
         return new Item(
                 Condition.NEW,
                 0.1,
-                List.of(),
+                List.of(new Picture("path/to/pic.jpg")),
                 new Dimensions(1.0, 1.0, 1.0),
                 TypeOfBinding.HARDBACK,
                 "1st edition",

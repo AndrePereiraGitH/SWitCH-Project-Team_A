@@ -1,5 +1,11 @@
 package TOPSECRET.domain;
-
+/**
+ * Represents a magazine identified by an ISSN and associated with an Item.
+ *
+ * Invariants:
+ * - issn != null
+ * - item != null
+ */
 public class Magazine {
     private Code _issn;
     private Item _item;
