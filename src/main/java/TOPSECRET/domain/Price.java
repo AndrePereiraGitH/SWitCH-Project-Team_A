@@ -19,12 +19,6 @@ public class Price {
     }
 
     public BigDecimal getPrice() {
-        BigDecimal copyPrice = _price;
-        return copyPrice;
+        return _price;
     }
-
-
-
-
-
 }
