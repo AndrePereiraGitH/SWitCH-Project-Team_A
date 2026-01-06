@@ -1,5 +1,12 @@
 package TOPSECRET.domain;
-
+/**
+ * Immutable value object representing physical dimensions.
+ *
+ * Invariants:
+ * - height > 0
+ * - width  > 0
+ * - depth  > 0
+ */
 public class Dimensions {
     private final double _height;
     private final double _width;
