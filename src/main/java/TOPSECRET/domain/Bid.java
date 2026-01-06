@@ -8,6 +8,7 @@ public class Bid {
     private User _bidder;
     private double _value;
     private LocalDateTime _timeOfBid;
+    // Precisa de ter uma referência ao auction, um auction id
 
 
     public Bid (User bidder, double value, LocalDateTime timeOfBid) {
