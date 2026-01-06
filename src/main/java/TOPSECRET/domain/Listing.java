@@ -52,6 +52,10 @@ public class Listing {
             this._seller = seller;
     }
 
+    public double get_price() {
+        return _price;
+    }
+
     public String copyItem() {
         String copyItem = _item;
         return copyItem;
