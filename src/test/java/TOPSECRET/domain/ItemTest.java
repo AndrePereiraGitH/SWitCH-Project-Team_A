@@ -1,32 +1,163 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Genre;
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class ItemTest {
-            //FINAL! WITH THE CLASSES THAT ARE MISSING
-//    @Test
-//    void itemConstructor_happyPath() {
-//        Profile author = new Profile("J. R. R. Tolkien", Country.FRANCE, LocalDate.of(2002,6, 14), false);
-//        Publisher publisher = new Publisher("Allen & Unwin", null, null, null);
-//        BibliographicalData bibliographicalData = new BibliographicalData(new Title("O senhor dos anéis"), List.of(author), new Locale("pt", "PT"), publisher, LocalDate.of(1954, 7, 29), List.of(SWITCH.Genre.FANTASY, SWITCH.Genre.ADVENTURE), 464, "Valid chunks of text"
-//        );
-//
-//        Dimensions dimension = new Dimensions(20.0, 15.0, 5.0);
-//        List<Pictures> pictures = List.of(new Pictures("cover", "xpto"));
-//
-//        Item item = new Item( Condition.NEW, 1.2, pictures, dimension, TypeOfBinding.HARDBACK, "First Edition", bibliographicalData);
-//
-//        // Assertions
-//        assertEquals(Condition.NEW, item.get_condition());
-//        assertEquals(1.2, item.getWeight());
-//        assertEquals(pictures, item.get_pictures());
-//        assertEquals(dimension, item.get_dimension());
-//        assertEquals(TypeOfBinding.HARDBACK, item.get_typeOfBinding());
-//        assertEquals("First Edition", item.get_edition());
-//        assertEquals(bibliographicalData, item.get_bibliographicalData());
-//    }
+
+
+    @Test
+    void shouldCreateItem() {
+        // Act
+        Item item = createValidItem();
+
+        // Assert
+        assertEquals(Condition.LIKE_NEW, item.getCondition());
+        assertEquals(1.2, item.getWeight(), 0.0001);
+        assertEquals(1, item.getPictures().size());
+        assertNotNull(item.getDimension());
+        assertEquals(TypeOfBinding.PAPERBACK, item.getBinding());
+        assertEquals("1st edition", item.getEdition());
+        assertNotNull(item.getBibliographicalData());
+    }
+
+    @Test
+    void shouldThrowWhenWeightIsZeroOrNegative() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), 0.0, valid.getPictures(), valid.getDimension(),
+                valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
+        ));
+
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), -0.1, valid.getPictures(), valid.getDimension(),
+                valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenEditionIsNull() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getBinding(), null, valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenEditionIsBlank() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getBinding(), "   ", valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenConditionIsNull() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                null, valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenPicturesIsNull() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), valid.getWeight(), null, valid.getDimension(),
+                valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenDimensionsIsNull() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), valid.getWeight(), valid.getPictures(), null,
+                valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenBindingIsNull() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                null, valid.getEdition(), valid.getBibliographicalData()
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenBibliographicalDataIsNull() {
+        // Arrange
+        Item valid = createValidItem();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Item(
+                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getBinding(), valid.getEdition(), null
+        ));
+    }
+
+    private Item createValidItem() {
+        Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14), true);
+        Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
+        Email email = new Email("Maria1", "gmail.com");
+        Contact contact = new Contact("915945695", "+351", email, address);
+        Publisher publisher = new Publisher("Some Publisher", "PT123456789", address, contact);
+        BibliographicalData bibliographicalData = new BibliographicalData(
+                "Childhood, Youth, Dependency: The Copenhagen Trilogy",
+                List.of(author),
+                Locale.ENGLISH,
+                publisher,
+                LocalDate.of(2020, 1, 1),
+                List.of(Genre.FICTION),
+                200,
+                "Some text"
+        );
+        Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+        List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
+
+        return new Item(
+                Condition.LIKE_NEW,
+                1.2,
+                pictures,
+                dimensions,
+                TypeOfBinding.PAPERBACK,
+                "1st edition",
+                bibliographicalData
+        );
+    }
 }
