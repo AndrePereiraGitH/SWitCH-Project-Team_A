@@ -1,51 +1,92 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Country;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BidTest {
-    //Test: Constructor&getFullAddress
+    //Not an author profile
     @Test
     void constructorShouldCreateBidWhenValid() {
         // Arrange
-//        Address address = new Address("Rua do Mar", "30", "3678-769", Country.FRANCE);
+        Address address = new Address("Main Street", "12345", "3678-769", Country.FRANCE);
 
 
 
-//        Email email = new Email("JoanaBeauty", "@gmail.com");
-//        Contact contact = new Contact("912345678", "+351", email, address);
+        Email email = new Email("joanabeauty", "gmail.com");
+        Contact contact = new Contact("912345678", "+351", email, address);
 
-//        User bidder = new User("Maria123", contact, "Admin");
-        String bidder = "Maria123";
+
+        Profile userProfile = new Profile(
+                "Maria Silva",           // name
+                Country.PORTUGAL,        // country
+                LocalDate.of(1990, Month.MAY, 15), // birthday
+                false                    // isAuthor
+        );
+
+
+        User bidder = new User("Maria123", contact, userProfile);
         double value = 100.50;
+        LocalDateTime timeOfBid = LocalDateTime.now();
 
         // Act
-        Bid result = new Bid(bidder, value);
+        Bid result = new Bid(bidder, value, timeOfBid);
 
         // Assert
-//        assertEquals(bidder, result.getBidder());
-        assertEquals("Maria123", bidder);
-//        assertEquals(value, result.getValue(), 0.001);
-        assertEquals(100.50, value, 0.001);
+        assertEquals(bidder, result.getBidder());
+        assertEquals(value, result.getValue(), 0.001);
+        assertEquals(timeOfBid, result.getTimeOfBid());
+        assertFalse(bidder.getProfile().isAuthor());
     }
 
 
+    // Author profile
+    @Test
+    void constructorShouldWorkWithAuthorProfile() {
+        // Arrange
+        Address address = new Address("Writer's Avenue", "456", "1000-001", Country.AUSTRALIA);
+        Email email = new Email("author.john", "email.com");
+        Contact contact = new Contact("912345679", "+1", email, address);
 
-//    @Test
-//    void constructorShouldThrowExceptionWhenBidderIsNull() {
-//        // Arrange
-//        double value = 100.50;                                              // Not for now
-//
-//        // Act & Assert
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                () -> new Bid(null, value)
-//        );
-//
-//        assertEquals("bidder can't be null.", exception.getMessage());
-//    }
+        // Criar Profile de autor
+        Profile authorProfile = new Profile(
+                "John Writer",
+                Country.AUSTRALIA,
+                LocalDate.of(1985, Month.JANUARY, 20),
+                true  // isAuthor = true
+        );
+
+        User bidder = new User("AuthorJohn", contact, authorProfile);
+        double value = 250.75;
+        LocalDateTime timeOfBid = LocalDateTime.now();
+
+        // Act
+        Bid result = new Bid(bidder, value, timeOfBid);
+
+        // Assert
+        assertEquals(bidder, result.getBidder());
+        assertEquals(value, result.getValue(), 0.001);
+        assertEquals(timeOfBid, result.getTimeOfBid());
+        assertTrue(bidder.getProfile().isAuthor());
+    }
+
+
+    @Test
+    void constructorShouldThrowExceptionWhenBidderIsNull() {
+        // Arrange
+        double value = 100.50;
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Bid(null, value, LocalDateTime.now())
+        );
+
+        assertEquals("Bidder can't be null.", exception.getMessage());
+    }
 }
