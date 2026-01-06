@@ -23,9 +23,9 @@ public class Publisher {
 
     // Review what methods we will want in each class
 
-//    public String getName() {
-//        return name;
-//    }
+    public String getName() {
+        return name;
+    }
 //
 //    public String getVatNumber() {
 //        return vatNumber;

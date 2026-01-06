@@ -11,22 +11,17 @@ public class BibliographicalData {
 
     // Attributes
     private String title;
-    private Profile[] authors;
-//    private List<String> authors;
+    private List<Profile> authors;
     private Locale language;
-//    private Publisher publisher;              TODO descomentar após classe Publisher ser criada
-    private String publisher;
+    private Publisher publisher;
     private LocalDate publishDate;
-    private Genre[] genre;
-//    private List<String> genre;
+    private List<Genre> genre;
     private int numberOfPages;
     private String chunksOfText;
 
     // Constructor
-//    public BibliographicalData(String title, Profile[] authors, Locale language, Publisher publisher, LocalDate publishDate,
-//                               Genre[] genre, int numberOfPages, String chunksOfText) {
-    public BibliographicalData(String title, Profile[] authors, Locale language, String publisher, LocalDate publishDate,
-                               Genre[] genre, int numberOfPages, String chunksOfText) {
+    public BibliographicalData(String title, List<Profile> authors, Locale language, Publisher publisher, LocalDate publishDate,
+                               List<Genre> genre, int numberOfPages, String chunksOfText) {
         this.title = title;
         this.authors = authors;
         this.language = language;
@@ -38,12 +33,31 @@ public class BibliographicalData {
     }
 
     // Getters
-    public Profile[] getAuthors() {
+    public String getTitle() {
+        return title;
+    }
+
+    public List<Profile> getAuthors() {
         return authors;
     }
 
-    public Genre[] getGenres() {
+    public Locale getLanguage() {
+        return language;
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public List<Genre> getGenres() {
         return genre;
     }
 
+    public int getNumberOfPages() {
+        return numberOfPages;
+    }
+
+    public String getChunksOfText() {
+        return chunksOfText;
+    }
 }
