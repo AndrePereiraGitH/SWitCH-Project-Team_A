@@ -6,7 +6,7 @@ public class Bid {
     private User _bidder;
     private double _value;
     private LocalDateTime _timeOfBid;
-    // Does this class has a need to have a reference to auction, like a type of auction id?
+    // Does this class needs to have a reference to auction, like a type of auction id?
 
 
     public Bid (User bidder, double value) {
@@ -39,7 +39,7 @@ public class Bid {
       return "Bidder: " + getBidder().getUserName() + ", Value: " + getValue() + ", Time: " + getTimeOfBid();
     }
 
-    public LocalDateTime getTimeOfBid(){ // Correct
+    public LocalDateTime getTimeOfBid(){ // TODO Correct
         return _timeOfBid;
     }
 

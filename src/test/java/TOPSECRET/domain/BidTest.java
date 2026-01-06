@@ -10,6 +10,7 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BidTest {
+
     //Not an author profile
     @Test
     void constructorShouldCreateBidWhenValid() {
