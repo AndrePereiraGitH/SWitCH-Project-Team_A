@@ -43,7 +43,7 @@ class MagazineTest {
         Email email = new Email("Maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);
 
-        Publisher publisher = new Publisher("PublisherName", "VatNumber", address, contact);
+        Publisher publisher = new Publisher("PublisherName", "VatNumber", contact);
 
         BibliographicalData bib = new BibliographicalData(
                 "Title",

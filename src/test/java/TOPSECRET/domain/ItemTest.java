@@ -136,7 +136,7 @@ class ItemTest {
         Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
         Email email = new Email("Maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);
-        Publisher publisher = new Publisher("Some Publisher", "PT123456789", address, contact);
+        Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
         BibliographicalData bibliographicalData = new BibliographicalData(
                 "Childhood, Youth, Dependency: The Copenhagen Trilogy",
                 List.of(author),

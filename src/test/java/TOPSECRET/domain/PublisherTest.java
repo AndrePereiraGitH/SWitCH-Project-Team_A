@@ -10,6 +10,7 @@ class PublisherTest {
     // Arrange
     String name = "Asas";
     String vatNumber = "123456";
+
     Address address = new Address("Rua Doutor David Paixão", "55", "333-332",
             Country.PORTUGAL);
     Email email = new Email("cool", "gmail.com");
@@ -19,7 +20,10 @@ class PublisherTest {
     void constructorShouldCreatePublisherWhenDataIsValid() {
 
         //Act
-        Publisher result = new Publisher(name, vatNumber, address, contact);
+        Publisher result = new Publisher(name, vatNumber, contact);
+
+        //Assert
+        assertNotNull(result);
 
     }
 
@@ -30,7 +34,7 @@ class PublisherTest {
         String blankName = "";
 
         //Assert
-        assertThrows(IllegalArgumentException.class, () -> new Publisher(blankName, vatNumber, address, contact));
+        assertThrows(IllegalArgumentException.class, () -> new Publisher(blankName, vatNumber, contact));
     }
 
     @Test
@@ -40,26 +44,8 @@ class PublisherTest {
         String blankVatNumber = "";
 
         //Assert
-        assertThrows(IllegalArgumentException.class, () -> new Publisher(name, blankVatNumber, address, contact));
+        assertThrows(IllegalArgumentException.class, () -> new Publisher(name, blankVatNumber, contact));
     }
 
-    @Test
-    void constructorShouldThrowAnExceptionWhenNameIsNull() {
 
-        // Arrange
-        String nullName = null;
-
-        // Assert
-        assertThrows(IllegalArgumentException.class, () -> new Publisher(nullName, vatNumber, address, contact));
-    }
-
-    @Test
-    void constructorShouldThrowAnExceptionWhenVatNumberIsNull() {
-
-        // Arrange
-        String nullVatNumber = null;
-
-        // Assert
-        assertThrows(IllegalArgumentException.class, () -> new Publisher(name, nullVatNumber, address, contact));
-    }
 }

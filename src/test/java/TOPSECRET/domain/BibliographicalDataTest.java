@@ -22,7 +22,6 @@ class BibliographicalDataTest {
 
         // arrange
         String title = "The Age of AI: And Our Human Future";
-
         List<Profile> authors= new ArrayList<>();
         Profile author2 = new Profile("Henry A Kissinger", UNITED_STATES,LocalDate.of(1923,05,27), true);
         Profile author3 = new Profile("Eric Schmidt III", UNITED_STATES,LocalDate.of(1955,04,27), true);
@@ -36,9 +35,10 @@ class BibliographicalDataTest {
         Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", Country.UNITED_KINGDOM);
         Email email2 = new Email("enquiries", "hachette.co.uk");
         Contact contact2 = new Contact("2031227222", "+44", email2, address2);
-        Publisher publisher = new Publisher("John Murray Press", "GB205505305", address2, contact2);
+        Publisher publisher = new Publisher("John Murray Press", "GB205505305", contact2);
 
         LocalDate publishDate = LocalDate.of(2022, 8, 4);
+
 
         List<Genre> genres = new ArrayList<>();
         genres.add(Genre.NONFICTION);
