@@ -1,30 +1,32 @@
 package TOPSECRET.domain;
 
 public class Publisher {
-    private String name;
-    private String vatNumber;
-    private Contact contact;
+    private String _name;
+    private String _vatNumber;
+    private Address _officialAddress; //discuss the need to have an address here
+    private Contact _contact;
 
     public Publisher(String name, String vatNumber, Address address, Contact contact) {
 
-        // Validates attributes that are String
-        if (Validator.isNullOrBlank(name)) {
+        // Validator internal to the class Publisher itself
+        if (name.isBlank()) {
             throw new IllegalArgumentException("Not a valid name");
         }
-        this.name = name;
+        _name = name;
 
-        if (Validator.isNullOrBlank(vatNumber)) {
+        if (vatNumber.isBlank()) {
             throw new IllegalArgumentException("Not a valid vatNumber");
         }
-        this.vatNumber = vatNumber;
+        _vatNumber = vatNumber;
 
-        this.contact = contact;
+        _contact = contact;
+        _officialAddress = address;
     }
 
     // Review what methods we will want in each class
 
     public String getName() {
-        return name;
+        return _name;
     }
 //
 //    public String getVatNumber() {
