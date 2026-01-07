@@ -3,61 +3,79 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.Genre;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class BibliographicalData {
 
     // Attributes
-    private String title;
-    private List<Profile> authors;
-    private Locale language;
-    private Publisher publisher;
-    private LocalDate publishDate;
-    private List<Genre> genre;
-    private int numberOfPages;
-    private String chunksOfText;
+    private String _title;
+    private List<Profile> _authors;
+    private Locale _language;
+    private Publisher _publisher;
+    private LocalDate _publishDate;
+    private List<Genre> _genre;
+    private int _numberOfPages;
+    private String _chunksOfText;
 
     // Constructor
     public BibliographicalData(String title, List<Profile> authors, Locale language, Publisher publisher, LocalDate publishDate,
                                List<Genre> genre, int numberOfPages, String chunksOfText) {
-        this.title = title;
-        this.authors = authors;
-        this.language = language;
-        this.publisher = publisher;
-        this.publishDate = publishDate;
-        this.genre = genre;
-        this.numberOfPages = numberOfPages;
-        this.chunksOfText = chunksOfText;
+
+        // Validations
+
+        if (authors == null || authors.isEmpty()) {
+            throw new IllegalArgumentException("Authors list cannot be empty");
+        }
+
+        if (genre == null || genre.isEmpty()) {
+            throw new IllegalArgumentException("Genres list cannot be empty");
+        }
+
+        if (numberOfPages <= 0) {
+            throw new IllegalArgumentException("Number of pages must be positive");
+        }
+
+        this._title = title;
+        this._authors = List.copyOf(authors);
+        this._language = language;
+        this._publisher = publisher;
+        this._publishDate = publishDate;
+        this._genre = List.copyOf(genre);
+        this._numberOfPages = numberOfPages;
+        this._chunksOfText = chunksOfText;
     }
 
     // Getters
     public String getTitle() {
-        return title;
+        return _title;
     }
 
     public List<Profile> getAuthors() {
-        return authors;
+        return _authors;
     }
 
     public Locale getLanguage() {
-        return language;
+        return _language;
     }
 
     public Publisher getPublisher() {
-        return publisher;
+        return _publisher;
+    }
+
+    public LocalDate getPublishDate() {
+        return _publishDate;
     }
 
     public List<Genre> getGenres() {
-        return genre;
+        return _genre;
     }
 
     public int getNumberOfPages() {
-        return numberOfPages;
+        return _numberOfPages;
     }
 
     public String getChunksOfText() {
-        return chunksOfText;
+        return _chunksOfText;
     }
 }
