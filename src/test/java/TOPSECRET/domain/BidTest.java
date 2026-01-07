@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.Country;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -31,7 +32,7 @@ class BidTest {
 
 
         User bidder = new User("Maria123", contact, userProfile);
-        double value = 100.50;
+        Price value = new Price(new BigDecimal ("100.50"));
 
 
         // Act
@@ -39,7 +40,7 @@ class BidTest {
 
         // Assert
         assertEquals(bidder, result.getBidder());
-        assertEquals(value, result.getValue(), 0.001);
+        assertEquals(value, result.getValue());
 
                 // Verify timestamp was automatically generated
         assertTrue(result.getTimeOfBid().isBefore(LocalDateTime.now().plusSeconds(1)));
@@ -69,7 +70,7 @@ class BidTest {
         );
 
         User bidder = new User("AuthorJohn", contact, authorProfile);
-        double value = 250.75;
+        Price value = new Price(new BigDecimal ("250.75"));
 
 
         // Act
@@ -77,7 +78,7 @@ class BidTest {
 
         // Assert
         assertEquals(bidder, result.getBidder());
-        assertEquals(value, result.getValue(), 0.001);
+        assertEquals(value, result.getValue());
 
         assertNotNull(result.getTimeOfBid());
 
@@ -88,7 +89,7 @@ class BidTest {
     @Test
     void constructorShouldThrowExceptionWhenBidderIsNull() {
         // Arrange
-        double value = 100.50;
+        Price value = new Price(new BigDecimal ("100.50"));
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
@@ -100,7 +101,7 @@ class BidTest {
     }
 
     @Test
-    void constructorShouldThrowExceptionWhenValueIsZero() {
+    void constructorShouldThrowExceptionWhenValueIsNull() {
         // Arrange
         Address address = new Address("Rua das Flores", "123", "1100-123", Country.PORTUGAL);
 
@@ -114,15 +115,14 @@ class BidTest {
                 false
         );
         User bidder = new User("Joaogamer", contact, userProfile);
-        double invalidValue = 0.0;
+
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Bid(bidder, invalidValue)
+                () -> new Bid(bidder, null)
         );
-
-        assertEquals("Bid value must be positive.", exception.getMessage());
+        assertEquals("Bid value can't be null.", exception.getMessage());
     }
 
 
@@ -143,7 +143,7 @@ class BidTest {
 
 
         User bidder = new User("pedrinhoFortnite", contact, userProfile);
-        double value = 123.45;
+        Price value = new Price(new BigDecimal("123.45"));
 
         // Act
         Bid bid = new Bid(bidder, value);
@@ -177,14 +177,14 @@ class BidTest {
 
 
         User bidder = new User("MarShophie", contact, userProfile);
-        double smallValue = 0.01; // Small positive value
+        Price smallValue = new Price(new BigDecimal("0.01"));
 
 
         // Act
         Bid result = new Bid(bidder, smallValue);
 
         // Assert
-        assertEquals(smallValue, result.getValue(), 0.001);
+        assertEquals(smallValue, result.getValue());
         assertNotNull(result.getTimeOfBid());
     }
 
@@ -206,7 +206,7 @@ class BidTest {
 
 
         User bidder = new User("Jonhnie66", contact, userProfile);
-        double largeValue = 9999999.99; // Big value
+        Price largeValue = new Price(new BigDecimal("9999999.99")); // Big value
 
 
         // Act
@@ -214,7 +214,7 @@ class BidTest {
 
 
         // Assert
-        assertEquals(largeValue, result.getValue(), 0.001);
+        assertEquals(largeValue, result.getValue());
         assertNotNull(result.getTimeOfBid());
     }
 
@@ -235,7 +235,7 @@ class BidTest {
                 false
         );
         User bidder = new User("LucaR", contact, userProfile);
-        double value = 150.0;
+        Price value = new Price(new BigDecimal("150.0"));
 
         // Capture time before creation
         LocalDateTime beforeCreation = LocalDateTime.now().minusSeconds(1);
@@ -268,7 +268,7 @@ class BidTest {
                 false
         );
         User bidder = new User("AnnaM", contact, userProfile);
-        double value = 200.0;
+        Price value = new Price(new BigDecimal("200.0"));
 
         // Act
         Bid firstBid = new Bid(bidder, value);
@@ -279,4 +279,31 @@ class BidTest {
         assertTrue(secondBid.getTimeOfBid().isAfter(firstBid.getTimeOfBid()));
     }
 
+    @Test
+    void shouldThrowExceptionWhenPriceIsInvalid() {
+        // Arrange
+        Address address = new Address("Test Street", "123", "1234-567", Country.PORTUGAL);
+        Email email = new Email("test", "test.com");
+        Contact contact = new Contact("912345678", "+351", email, address);
+
+        Profile userProfile = new Profile(
+                "André Simões",
+                Country.PORTUGAL,
+                LocalDate.of(1990, Month.JANUARY, 1),
+                false
+        );
+        User bidder = new User("noteme", contact, userProfile);
+
+        // Act & Assert - Tests if Price rejects negative value
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Price(new BigDecimal("-10.00"))
+        );
+
+        // Act & Assert - Tests if Price rejects values with more than 2 decimals
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Price(new BigDecimal("10.123"))
+        );
+    }
 }

@@ -4,21 +4,21 @@ import java.time.LocalDateTime;
 
 public class Bid {
     private User _bidder;
-    private double _value;
+    private Price _value; //
     private LocalDateTime _timeOfBid;
     // Does this class needs to have a reference to auction, like a type of auction id?
 
 
-    public Bid (User bidder, double value) {
+    public Bid (User bidder, Price value) {
 
         //Considered that the bidder can't be null
         if (bidder == null) {
             throw new IllegalArgumentException("Bidder can't be null.");
         }
 
-        // Value cannot be negative
-        if (value <= 0) {
-            throw new IllegalArgumentException("Bid value must be positive.");
+        //Considered that the value can't be null
+        if (value == null) {
+            throw new IllegalArgumentException("Bid value can't be null.");
         }
 
         this._bidder = bidder;
@@ -30,17 +30,18 @@ public class Bid {
         return _bidder;
     }
 
-    public double getValue(){  // TODO Correct
+    public Price getValue(){  // TODO Correct
         return _value;
     }
 
-
-    public String getBidInfo() { // TODO Correct
-      return "Bidder: " + getBidder().getUserName() + ", Value: " + getValue() + ", Time: " + getTimeOfBid();
-    }
 
     public LocalDateTime getTimeOfBid(){ // TODO Correct
         return _timeOfBid;
     }
 
+    public String getBidInfo() {
+        return "Bidder: " + getBidder().getUserName() +
+                ", Value: " + getValue().getPrice() +
+                ", Time: " + getTimeOfBid();
+    }
 }
