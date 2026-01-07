@@ -1,17 +1,15 @@
 package TOPSECRET.domain;
 
-import org.apache.commons.lang3.Validate;
-
 import java.time.LocalDateTime;
 
 public class Bid {
     private User _bidder;
     private double _value;
     private LocalDateTime _timeOfBid;
-    // Precisa de ter uma referência ao auction, um auction id ?
+    // Does this class needs to have a reference to auction, like a type of auction id?
 
 
-    public Bid (User bidder, double value, LocalDateTime timeOfBid) {
+    public Bid (User bidder, double value) {
 
         //Considered that the bidder can't be null
         if (bidder == null) {
@@ -23,19 +21,9 @@ public class Bid {
             throw new IllegalArgumentException("Bid value must be positive.");
         }
 
-        // timeOfBid cannot be null
-        if (timeOfBid == null) {
-            throw new IllegalArgumentException("Bid date/time cannot be null.");
-        }
-
-        // Making sure that the date is not in the future
-        if (timeOfBid.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Bid date/time cannot be in the future.");
-        }
-
         this._bidder = bidder;
         this._value = value;
-        this._timeOfBid = timeOfBid;
+        this._timeOfBid = LocalDateTime.now(); // Generated at the moment of the bid
     }
 
     public User getBidder(){  // TODO Correct
@@ -51,7 +39,7 @@ public class Bid {
       return "Bidder: " + getBidder().getUserName() + ", Value: " + getValue() + ", Time: " + getTimeOfBid();
     }
 
-    public LocalDateTime getTimeOfBid(){ // Correct
+    public LocalDateTime getTimeOfBid(){ // TODO Correct
         return _timeOfBid;
     }
 

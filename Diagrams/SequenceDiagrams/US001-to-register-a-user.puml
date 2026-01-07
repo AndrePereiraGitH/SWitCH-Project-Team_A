@@ -1,0 +1,43 @@
+@startuml
+
+hide footbox
+title US001 - To register a user in the system
+
+box "Tests" #LightYellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":RegisterUserController" as RegisterUserController
+participant ":UserRepository" as UserRepository
+
+Administrator -> UI : **1** registerUser(username, contact, profile)
+
+UI -> RegisterUserController : **2** registerUser(username, contact, profile)
+activate RegisterUserController
+
+RegisterUserController -> UserRepository : **3** createNewUser(username, contact, profile)
+activate UserRepository
+
+create "u1: User" as User
+UserRepository -> User : **4** create(username, contact, profile)
+
+UserRepository --> RegisterUserController : **5** u1
+deactivate UserRepository
+
+RegisterUserController -> UserRepository : **6** add(u1)
+activate UserRepository
+
+UserRepository -> UserRepository : **7** validator(u1)
+
+UserRepository --> RegisterUserController : **8** true
+deactivate UserRepository
+
+RegisterUserController --> UI : **9** success
+deactivate RegisterUserController
+
+UI --> Administrator : **10** success
+
+
+
+@enduml
