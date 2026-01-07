@@ -1,0 +1,25 @@
+@startuml
+title US001 - To register a user in the system
+
+class RegisterUserController {
+  +registerUser(username, contact, profile)
+}
+
+class UserRepository {
+  +createNewUser(username, contact, profile)
+  +add(u1)
+  +validator(u1): boolean
+}
+
+class User {
+  +username: String
+  +contact: Contact
+  +profile: Profile
+}
+
+' Interactions
+
+RegisterUserController "1 " -- "1 " UserRepository : requests registration to >
+UserRepository "1 " -- " * " User : manages / stores >
+
+@enduml

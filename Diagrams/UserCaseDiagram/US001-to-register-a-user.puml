@@ -1,0 +1,33 @@
+@startuml
+title Administrator - Use Case Diagram
+left to right direction
+
+actor Administrator
+
+rectangle "System" {
+
+  ' Registration use cases
+  usecase "**US001**\nRegister User" as UC1
+  usecase "**US005**\nRegister Author" as UC5
+  usecase "**US006**\nRegister Publishing\nCompany" as UC6
+  usecase "**US004**\nRegister Appraisal\nEntity" as UC4
+
+  ' Reference data use cases
+  usecase "**US002**\nAdd Publication\nType" as UC2
+  usecase "**US003**\nAdd Publication\nGenre" as UC3
+
+  ' Location use cases
+  usecase "**US007**\nRegister Country" as UC7
+  usecase "**US008**\nRegister City" as UC8
+}
+
+Administrator --> UC1
+Administrator --> UC5
+Administrator --> UC6
+Administrator --> UC4
+Administrator --> UC2
+Administrator --> UC3
+Administrator --> UC7
+Administrator --> UC8
+
+@enduml
