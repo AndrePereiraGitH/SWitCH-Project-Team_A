@@ -1,0 +1,32 @@
+@startuml
+title Buyer - Use Case Diagram
+left to right direction
+
+actor Buyer
+
+rectangle "System" {
+
+  '
+  usecase "**US021**\nTo get the list of items\non direct sale of a given genre" as UC21
+  usecase "**US022**\nTo get the list of items\non auction of a given genre" as UC22
+  usecase "**US023**\nTo get the list of items\non direct sale of a given publication" as UC23
+  usecase "**US024**\nTo get the list of items\non auction of a given publication" as UC24
+  usecase "**US025**\nTo get the list of items\non direct sale of a given author" as UC25
+  usecase "**US026**\nTo get the list of items\non auction of a given author" as UC26
+  usecase "**US027**\nTo get the list of items\non direct sale of a given publisher" as UC27
+  usecase "**US028**\nTo get the list of items\non auction of a given publisher" as UC28
+
+
+
+}
+
+Buyer --> UC21
+Buyer--> UC22
+Buyer--> UC23
+Buyer--> UC24
+Buyer--> UC25
+Buyer--> UC26
+Buyer--> UC27
+Buyer--> UC28
+
+@enduml
