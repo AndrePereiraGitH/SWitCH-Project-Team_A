@@ -1,0 +1,40 @@
+@startuml
+
+hide footbox
+title US021 - To get the list of items on direct sale of a given genre
+
+box "Tests" #LightYellow
+actor Buyer
+participant ":UI" as UI
+end box
+
+participant ":ItemController" as ItemController
+participant ":ItemRepository" as ItemRepository
+
+Buyer -> UI : **1** getListOfItems(typeOfSale, genre)
+
+UI -> ItemController : **2** getListOfItems(typeOfSale, genre)
+activate ItemController
+
+ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, genre)
+activate ItemRepository
+
+ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, genre)
+
+ItemRepository -> ItemRepository : **5** validateParameters(typeOfSale, genre)
+
+create "i1: List<Item>" as Item
+ItemRepository -> Item : **6** createList(typeOfSale, genre)
+
+' ItemRepository --> ItemController : **6** i1
+ItemRepository --> ItemController : **7** List<Item> items
+deactivate ItemRepository
+
+ItemController -> ItemController : **8** copyList(items)
+
+ItemController --> UI : **9** List<copyItems> (copyItems)
+deactivate ItemController
+
+UI --> Buyer : **10** List<copyItems> (copyItems)
+
+@enduml
