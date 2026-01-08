@@ -1,0 +1,46 @@
+@startuml
+title User - Use Case Diagram
+left to right direction
+
+actor User
+
+rectangle "System" {
+
+  ' Create use cases
+  usecase "**US009**\nTo Create my library" as UC9
+  usecase "**US017**\nTo Create a private List of my publications" as UC17
+
+  ' Register use cases
+  usecase "**US010**\nTo Register new publication in the system" as UC10
+
+  ' Set use cases
+  usecase "**US015**\nTo Put for sale a publication in my library as direct sale" as UC15
+  usecase "**US016**\nTo Put for sale a publication in my library an auction" as UC16
+  usecase "**US019**\nTo Publicly share a list of mine" as UC19
+
+  ' Add use cases
+  usecase "**US011**\nTo Add a publication to my Library" as UC11
+  usecase "**US018**\nTo Add one of my publications to a list of mine" as UC18
+
+  ' Get use cases
+  usecase "**US012**\nTo Get list of publications in my library" as UC12
+  usecase "**US013**\nTo Get list of official genres" as UC13
+  usecase "**US014**\nTo Get list of publication types" as UC14
+  usecase "**US020**\nTo Get a list of publicly published lists of given genre" as UC20
+
+}
+
+User --> UC9
+User --> UC17
+User --> UC10
+User --> UC15
+User --> UC16
+User --> UC19
+User --> UC11
+User --> UC18
+User --> UC12
+User --> UC13
+User --> UC14
+User --> UC20
+
+@enduml
