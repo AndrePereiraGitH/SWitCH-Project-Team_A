@@ -1,0 +1,39 @@
+@startuml
+
+hide footbox
+title US002 - Register an Appraisal Entity
+
+box "Tests" #LightYellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":RegisterAppraisalController" as RegisterAppraisalController
+participant ":AppraisalRepository" as AppraisalRepository
+
+Administrator -> UI : **1** registerAppraisalEntity(name, genres, listingTypes)
+
+UI -> RegisterAppraisalController : **2** registerAppraisalEntity(name, genres, listingTypes)
+activate RegisterAppraisalController
+
+RegisterAppraisalController -> AppraisalRepository : **3** createNewAppraisalEntity(name, genres, listingTypes)
+activate AppraisalRepository
+
+create "appraisal1: Appraisal" as Appraisal
+AppraisalRepository -> Appraisal : **4** create(name, genres, listingTypes)
+
+AppraisalRepository --> RegisterAppraisalController : **5** appraisal1
+deactivate AppraisalRepository
+
+RegisterAppraisalController -> AppraisalRepository : **6** add(appraisal1)
+activate AppraisalRepository
+
+AppraisalRepository --> RegisterAppraisalController : **8** true
+deactivate AppraisalRepository
+
+RegisterAppraisalController --> UI : **9** success
+deactivate RegisterAppraisalController
+
+UI --> Administrator : **10** success
+
+@enduml

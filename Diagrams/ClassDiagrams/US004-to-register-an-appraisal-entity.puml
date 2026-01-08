@@ -1,0 +1,86 @@
+@startuml
+
+title Class Diagram - US002 Register Appraisal
+
+/'
+' Enums
+enum Genre {
+  FANTASY
+  SCIENCE
+  HISTORY
+  ROMANCE
+  ...
+}
+
+enum ListingType {
+  AUCTION
+  DIRECT_SALE
+}
+'/
+
+' Domain Classes
+class Appraisal {
+  - id : UUID
+  - name : String
+  - description : String
+  - supportedGenres : Set<Genre>
+  - supportedListingTypes : Set<ListingType>
+  - active : boolean
+
+  + canAppraise(genre : Genre, type : ListingType) : boolean
+}
+
+class AppraisalRecord {
+  - id : UUID
+  - date : LocalDateTime
+  - text : String
+  - images : List<Image>
+}
+/'
+class Publication {
+  - id : UUID
+  - title : String
+  - genre : Genre
+  - listingType : ListingType
+}
+
+class Image {
+  - id : UUID
+  - path : String
+}
+'/
+
+' Application Layer
+class RegisterAppraisalController {
+  + registerAppraisal(name : String,
+                      description : String,
+                      genres : Set<Genre>,
+                      listingTypes : Set<ListingType>) : boolean
+}
+
+class AppraisalRepository {
+  + createNewAppraisal(name : String,
+                       description : String,
+                       genres : Set<Genre>,
+                       listingTypes : Set<ListingType>) : Appraisal
+
+  + add(appraisal : Appraisal) : boolean
+}
+
+/'
+Appraisal "1" -- "*" AppraisalRecord : performs
+AppraisalRecord "1" -- "1" Publication : evaluates
+AppraisalRecord "1" -- "1" Appraisal : appraiser
+
+Publication "1" -- "1" Genre
+Publication "1" -- "1" ListingType
+'/
+
+' Interection
+
+RegisterAppraisalController -- AppraisalRepository
+RegisterAppraisalController -- Appraisal
+
+AppraisalRepository -- Appraisal
+
+@enduml
