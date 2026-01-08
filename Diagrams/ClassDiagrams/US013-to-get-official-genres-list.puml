@@ -1,0 +1,16 @@
+@startuml
+title US013 - To get official genres list
+
+class GenreController {
+  +getGenresList()
+}
+
+class GenreRepository {
+  +findAllGenres()
+}
+
+' Interactions
+
+GenreController "1 " -- "1 " GenreRepository : requests list to >
+
+@enduml
