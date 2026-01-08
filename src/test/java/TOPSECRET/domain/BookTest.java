@@ -69,15 +69,10 @@ class BookTest {
     @Test
     void createBookWithNoCodes()
     {
-        Book book1 = Book.noCodes(sampleItem(), sampleInformation());
-
-        Item item1 = book1.getItem();
-
-        BibliographicalData information1 = book1.getInformation();
+        Book book1 = Book.noCodes(sampleItem());
 
         assertNotNull(book1);
-        assertNotNull(item1);
-        assertNotNull(information1);
+        assertNotNull(book1.getItem());
     }
 
 
@@ -85,11 +80,10 @@ class BookTest {
     void createBookWithISBN10Code()
     {
         Code isbn10 = Code.fromIsbn10("1234567890");
-        Book book2 = Book.withIsbn10(sampleItem(), isbn10, sampleInformation());
+        Book book2 = Book.withIsbn10(sampleItem(), isbn10);
 
         assertNotNull(book2);
         assertNotNull(book2.getIsbn10());
-        assertNotNull(book2.getInformation());
         assertNotNull(book2.getItem());
     }
 
@@ -97,11 +91,10 @@ class BookTest {
     void createBookWithISBN13Code()
     {
         Code isbn13 = Code.fromIsbn13("1234567890000");
-        Book book3 = Book.withIsbn13(sampleItem(), isbn13, sampleInformation());
+        Book book3 = Book.withIsbn13(sampleItem(), isbn13);
 
         assertNotNull(book3);
         assertNotNull(book3.getIsbn13());
-        assertNotNull(book3.getInformation());
         assertNotNull(book3.getItem());
     }
 
@@ -110,12 +103,11 @@ class BookTest {
     {
         Code isbn10 = Code.fromIsbn10("1234567890");
         Code isbn13 = Code.fromIsbn13("1234567890000");
-        Book book4 = Book.withBoth(sampleItem(), isbn10, isbn13, sampleInformation());
+        Book book4 = Book.withBoth(sampleItem(), isbn10, isbn13);
 
         assertNotNull(book4);
         assertNotNull(book4.getIsbn10());
         assertNotNull(book4.getIsbn13());
-        assertNotNull(book4.getInformation());
         assertNotNull(book4.getItem());
     }
 
