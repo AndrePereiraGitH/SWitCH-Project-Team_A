@@ -8,35 +8,30 @@ actor Administrator
 participant ":UI" as UI
 end box
 
-participant ":RegisterUserController" as RegisterUserController
+participant ":UserController" as UserController
 participant ":UserRepository" as UserRepository
 
-Administrator -> UI : **1** registerUser(username, contact, profile)
+Administrator -> UI : **1** addUser(username, contact, profile)
 
-UI -> RegisterUserController : **2** registerUser(username, contact, profile)
-activate RegisterUserController
+UI -> UserController : **2** addUser(username, contact, profile)
+activate UserController
 
-RegisterUserController -> UserRepository : **3** createNewUser(username, contact, profile)
+UserController -> UserRepository : **3** addUser(username, contact, profile)
 activate UserRepository
 
 create "u1: User" as User
 UserRepository -> User : **4** create(username, contact, profile)
 
-UserRepository --> RegisterUserController : **5** u1
+
+UserRepository -> UserRepository : **5** validateToAdd(u1)
+
+UserRepository --> UserController : **6** true
 deactivate UserRepository
 
-RegisterUserController -> UserRepository : **6** add(u1)
-activate UserRepository
+UserController --> UI : **7** success
+deactivate UserController
 
-UserRepository -> UserRepository : **7** validator(u1)
-
-UserRepository --> RegisterUserController : **8** true
-deactivate UserRepository
-
-RegisterUserController --> UI : **9** success
-deactivate RegisterUserController
-
-UI --> Administrator : **10** success
+UI --> Administrator : **8** success
 
 
 

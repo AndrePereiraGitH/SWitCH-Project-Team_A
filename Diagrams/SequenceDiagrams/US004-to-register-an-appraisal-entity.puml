@@ -8,32 +8,30 @@ actor Administrator
 participant ":UI" as UI
 end box
 
-participant ":RegisterAppraisalController" as RegisterAppraisalController
-participant ":AppraisalRepository" as AppraisalRepository
+participant ":AppraisalController" as AppraisalController
+participant ":AppraisalEntityRepository" as AppraisalEntityRepository
 
-Administrator -> UI : **1** registerAppraisalEntity(name, genres, listingTypes)
+Administrator -> UI : **1** addAppraisalEntity(name, contact)
 
-UI -> RegisterAppraisalController : **2** registerAppraisalEntity(name, genres, listingTypes)
-activate RegisterAppraisalController
+UI -> AppraisalController : **2** addAppraisalEntity(name, contact)
+activate AppraisalController
 
-RegisterAppraisalController -> AppraisalRepository : **3** createNewAppraisalEntity(name, genres, listingTypes)
-activate AppraisalRepository
+AppraisalController -> AppraisalEntityRepository : **3** addNewAppraisalEntity(name, contact)
+activate AppraisalEntityRepository
 
-create "appraisal1: Appraisal" as Appraisal
-AppraisalRepository -> Appraisal : **4** create(name, genres, listingTypes)
+create "apEntityXPTO: AppraisalEntity" as AppraisalEntity
+AppraisalEntityRepository -> AppraisalEntity : **4** create(name, contact)
 
-AppraisalRepository --> RegisterAppraisalController : **5** appraisal1
-deactivate AppraisalRepository
 
-RegisterAppraisalController -> AppraisalRepository : **6** add(appraisal1)
-activate AppraisalRepository
+    AppraisalEntityRepository -> AppraisalEntityRepository : **5** validateToAdd(apEntityXPTO)
 
-AppraisalRepository --> RegisterAppraisalController : **8** true
-deactivate AppraisalRepository
 
-RegisterAppraisalController --> UI : **9** success
-deactivate RegisterAppraisalController
+AppraisalEntityRepository --> AppraisalController : **6** true
+deactivate AppraisalEntityRepository
 
-UI --> Administrator : **10** success
+AppraisalController --> UI : **7** success
+deactivate AppraisalController
+
+UI --> Administrator : **8** success
 
 @enduml
