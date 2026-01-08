@@ -1,0 +1,36 @@
+@startuml
+
+hide footbox
+title US003 - To add a publication genre to the genre list
+
+box "Tests" #Lightyellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":GenreController" as GenreController
+participant ":BibliographicalDataRepository" as BibliographicalDataRepository
+
+
+Administrator -> UI : **1** addGenre(GenreType)
+
+UI -> GenreController : **2** addGenre(GenreType)
+activate GenreController
+
+' NEW: ask repo to convert String -> enum
+GenreController -> BibliographicalDataRepository : **3** addGenre(GenreType)
+activate BibliographicalDataRepository
+
+create ":Genre" as Genre
+BibliographicalDataRepository -> Genre : **4** valueOf(GenreType)
+BibliographicalDataRepository -> BibliographicalDataRepository : **5** ValidateToAdd
+
+BibliographicalDataRepository --> GenreController : **6** true
+deactivate BibliographicalDataRepository
+
+GenreController --> UI : **7** success
+deactivate GenreController
+
+UI --> Administrator : **8** success
+
+@enduml

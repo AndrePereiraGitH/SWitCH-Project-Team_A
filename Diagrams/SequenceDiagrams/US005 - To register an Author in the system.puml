@@ -1,0 +1,38 @@
+@startuml
+
+hide footbox
+title US005 - To register an Author in MiteLovers
+
+box "Tests" #LightYellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":AuthorController" as AuthorController
+participant ":AuthorRepository" as AuthorRepository
+
+Administrator -> UI : *1* addAuthor(Profile)
+
+UI -> AuthorController : *2* addAuthor (Profile)
+activate AuthorController
+
+AuthorController -> AuthorRepository : *3* addAuthor(Profile)
+activate AuthorRepository
+
+create "author1: Author"  as Author1
+AuthorRepository -> Author1 : *4* create
+
+
+AuthorRepository -> AuthorRepository : *5* validatorToAdd(author1)
+
+AuthorRepository --> AuthorController : *6* true
+deactivate AuthorRepository
+
+AuthorController --> UI : *7* success
+deactivate AuthorController
+
+UI --> Administrator : *8* success
+
+
+
+@enduml

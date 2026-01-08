@@ -1,0 +1,24 @@
+@startuml
+title US005 - To register an Author in MiteLovers
+
+class AuthorController {
+}
+
+class AuthorRepository {
+  -List<Profile>
+  +validateUniquenessOfProfile (Profile)
+  +add (Profile)
+
+}
+class Author {
+  -Profile author
+}
+
+' Interactions
+
+AuthorController "1 " -- "1 " AuthorRepository : requests to add Author >
+AuthorRepository  --  AuthorRepository :  create/ stores Author >
+AuthorRepository "1" --  "1*" Author : >
+
+
+@enduml

@@ -1,6 +1,6 @@
 @startuml
 
-title Class Diagram - US002 Register Appraisal
+title Class Diagram - US004 Register Appraisal
 
 ' Application Layer
 class AppraisalController {
