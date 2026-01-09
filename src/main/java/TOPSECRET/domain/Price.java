@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Price {
 
@@ -20,5 +21,17 @@ public class Price {
 
     public BigDecimal getPrice() {
         return _price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Price price = (Price) o;
+        return Objects.equals(_price, price._price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(_price);
     }
 }

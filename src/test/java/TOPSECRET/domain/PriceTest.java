@@ -95,4 +95,48 @@ class PriceTest {
         assertThrows(IllegalArgumentException.class, () -> new Price(zero));
     }
 
+    // ============================================================
+    // ======================= Equals and hashCode tests ==========
+    // ============================================================
+
+    @Test
+    void testEqualsSamePrice() {
+
+        // arrange + act
+        Price price = new Price(new BigDecimal("45.50"));
+
+        // assert
+        assertEquals(price, price);
+
+    }
+
+    @Test
+    void testEquals_null_andDifferentClass() {
+
+        // arrange + act
+        Price price = new Price(new BigDecimal("45.50"));
+
+        // assert
+        assertNotEquals(null, price);
+        assertNotEquals("35.50", price);
+    }
+
+    @Test
+    void equals_sameValue_true_andHashCodeSame() {
+        Price price1 = new Price(new BigDecimal("45.50"));
+        Price price2 = new Price(new BigDecimal("45.50"));
+
+        assertEquals(price1, price2);
+        assertEquals(price1.hashCode(), price2.hashCode());
+    }
+
+    @Test
+    void equals_differentValue_false() {
+        Price price1 = new Price(new BigDecimal("45.50"));
+        Price price2 = new Price(new BigDecimal("45.51"));
+
+        assertNotEquals(price1, price2);
+    }
+
+
 }

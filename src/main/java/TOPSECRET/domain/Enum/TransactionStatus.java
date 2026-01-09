@@ -1,4 +1,4 @@
 package TOPSECRET.domain.Enum;
 
-public enum Status {
+public enum TransactionStatus {
 }
