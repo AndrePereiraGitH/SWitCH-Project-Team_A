@@ -5,40 +5,60 @@ import java.util.List;
 
 public class Cart {
 
-    private List<Item> itemsList;  // Mudamos para Item
+    private List<Listing> listingList;
     private User buyer;
-    //private Transaction transaction;
+    private boolean finished;
 
     public Cart(User buyer) {
-        this.itemsList = new ArrayList<>();
+        this.listingList = new ArrayList<>();
         this.buyer = buyer;
-       // this.transaction = null;
+        this.finished = false;
     }
 
-    // Adiciona um Item ao carrinho
-    public void addItem(Item item) {
-        itemsList.add(item);
+    // Add listing to cart
+    public void addListing(Listing listing) {
+        if (finished) {
+            throw new IllegalStateException("Listings cannot be added to a finished cart");
+        }
+        if (listing == null) {
+            throw new IllegalArgumentException("Listing cannot be null");
+        }
+        listingList.add(listing);
     }
 
-    // Remove um Item do carrinho
-    public void removeItem(Item item) {
-        itemsList.remove(item);
+    // Remove listing from cart
+    public boolean removeListing(Listing listing) {
+        if (finished) {
+            throw new IllegalStateException("Listings cannot be removed from a finished cart");
+        }
+        return listingList.remove(listing);
     }
 
-    // Retorna a lista de itens no carrinho
-    public List<Item> getItemsList() {
-        return itemsList;
+    // Get listings list
+    public List<Listing> getListingsList() {
+        return List.copyOf(listingList);
     }
 
-    // Retorna o comprador do carrinho
+    // Check if cart is empty
+    public boolean isEmpty() {
+        return listingList.isEmpty();
+    }
+
+    // Get cart's buyer
     public User getBuyer() {
         return buyer;
     }
 
-    // Retorna a transação associada ao carrinho
-   /* public Transaction getTransaction() {
-        return transaction;
+    // Mark cart as finished
+    public void finish() {
+        if (listingList.isEmpty()) {
+            throw new IllegalStateException("It's not possible to finish an empty cart");
+        }
+        this.finished = true;
     }
 
-    */
+    // Check if cart is finished
+    public boolean isFinished() {
+        return finished;
+    }
 }
