@@ -1,370 +1,562 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.Country;
-import TOPSECRET.domain.Enum.Genre;
-import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//class AuctionTest {
-//    @Test
-//    public void testEmptyConstructor() {
-//        Auction auction = new Auction();
-//        assertNotNull(auction);
-//    }
-//
-//    @Test
-//    public void testListingNullException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.now();
-//        LocalDateTime finalDate = LocalDateTime.of(2025, 12, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        //Auction auction = new Auction(null, initialDate, finalDate, 35.50, 150);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> new Auction(null, initialDate, finalDate, 35.50, 150));
-//
-//
-//    }
-//
-//    @Test
-//    public void testInitialDateBeforeTodayException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 1, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2025, 12, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        //Auction auction = new Auction(null, initialDate, finalDate, 35.50, 150);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> new Auction(listing, initialDate, finalDate, 35.50, 150));
-//
-//
-//    }
-//
-//    @Test
-//    public void testFinalDateBeforeInitialDateException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 10, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2026, 5, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        //Auction auction = new Auction(null, initialDate, finalDate, 35.50, 150);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> new Auction(listing, initialDate, finalDate, 35.50, 150));
-//
-//
-//    }
-//
-//    @Test
-//    public void testInitialPriceLessOrEqualsToZeroException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 2, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2026, 5, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        //Auction auction = new Auction(null, initialDate, finalDate, 35.50, 150);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> new Auction(listing, initialDate, finalDate, 0, 150));
-//
-//
-//    }
-//
-//    @Test
-//    public void testBuyOutPriceLessOrEqualsToInitialPriceException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 2, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2026, 5, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        //Auction auction = new Auction(null, initialDate, finalDate, 35.50, 150);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> new Auction(listing, initialDate, finalDate, 35.50, 35.50));
-//
-//
-//    }
-//
-//    // ==== Accept Bid
-//
-//    @Test
-//    public void testBidBidderNullException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 2, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2026, 5, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        Auction auction = new Auction(listing, initialDate, finalDate, 35.50, 150);
-//
-//        //Bid bid1 = new Bid("Rodolph", 100);
-//
-//       // auction.acceptBid(bid1);
-//
-//        assertThrows(IllegalArgumentException.class, () -> auction.acceptBid(null));
-//
-//
-//    }
-//
-//    @Test
-//    public void testBidValueLesaThanLastBidException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 2, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2026, 5, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        Auction auction = new Auction(listing, initialDate, finalDate, 35.50, 150);
-//
-//        Bid bid1 = new Bid("Rodolph", 100);
-//        auction.getBidHistory().add(bid1);
-//
-//        Bid bid2 = new Bid("John", 90);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> auction.acceptBid(bid2));
-//
-//
-//    }
-//
-//    @Test
-//    public void testBidValueGraterThanInitialPriceException() {
-//
-//        // ---- Instantiate List<Picture>
-//        List<String> pictures = instantiatePictures();
-//
-//        // ---- Instantiate BibliographicalData
-//        BibliographicalData bibliographicalData = instantiateBibliographicalData();
-//
-//        // ---- Instantiate Item
-//        Dimensions dimensions = new Dimensions(12.5, 5,10);
-//        Item bookItem = instantiateItem(bibliographicalData, pictures, dimensions);
-//
-//        // ---- Instantiate User
-//        User seller = instantiateUser();
-//
-//        // ---- Instantiate Listing
-//
-//        Listing listing = instantiateListing();
-//
-//
-//        LocalDateTime initialDate = LocalDateTime.of(2026, 2, 1, 12, 0);
-//        LocalDateTime finalDate = LocalDateTime.of(2026, 5, 31, 23, 0, 0);
-//
-//        // ---- Auction Constructor
-//        Auction auction = new Auction(listing, initialDate, finalDate, 35.50, 150);
-//
-//        Bid bid1 = new Bid("Rodolph", 20);
-//
-//
-//        assertThrows(IllegalArgumentException.class, () -> auction.acceptBid(bid1));
-//
-//
-//    }
-//
-//
-//
-//
-//
-//
-//    // ============================================================
-//    // ======= Auxiliary methods to instantiate Objects ===========
-//    // ============================================================
-//
-//    private static List<String> instantiatePictures() {
-//        //Pictures pic = new Pictures("myurl", "description");
-//        //List<Pictures> pictures = new ArrayList<>();
-//        //pictures.add(pic);
-//
-//        String pic = "new picture";
-//        List<String> pictures = new ArrayList<>();
-//
-//        return pictures;
-//    }
-//
-//    private static Listing instantiateListing() {
-//        // Listing listing = new Listing(bookItem, 10, "short description", "listing title", "auction", seller);
-//
-//        Listing listing = new Listing("item", 12.25, "short description", "This is our first listing", "sale type: auction", "seller");
-//
-//        return listing;
-//    }
-//
-//    private static User instantiateUser() {
-//        Email email = new Email("switcher", "example.com");
-//        Address add = new Address("Rua x", "12B", "4444-111", Country.PORTUGAL);
-//        Contact contact = new Contact("911111111", "351", email, add);
-//        LocalDate birthday = LocalDate.of(1982, 12, 3);
-//        Profile profile = new Profile("Albert Trump", Country.EL_SALVADOR, birthday, false);
-//
-//        User seller = new User("switcher", contact, profile);
-//        return seller;
-//    }
-//
-//    private static BibliographicalData instantiateBibliographicalData() {
-//
-//        Profile[] authors = new Profile[]{new Profile("J. R. R. Tolkien", Country.UNITED_KINGDOM, LocalDate.of(1892, 1, 3), true)};
-//
-//        /*
-//         List<Genre> genres = new ArrayList<>();
-//         genres.add(Genre.FANTASY);
-//         genres.add(Genre.MYSTERY);
-//
-//         */
-//        Genre[] genres = new Genre[]{Genre.FANTASY, Genre.MYSTERY};
-//
-//
-//        String chunkOfText = "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, The Lord of the Rings, in one paperback. Features the definitive edition of the text, fold-out flaps with the original two-colour maps, and a revised and expanded index.";
-//
-//        BibliographicalData bibliographicalData = new BibliographicalData("The Lord Of The Rings", authors, Locale.ENGLISH, "HarperCollins Publishers", LocalDate.of(1991, 11, 1), genres, 700, chunkOfText);
-//
-//        return bibliographicalData;
-//    }
-//
-//    private static Item instantiateItem(BibliographicalData bd, List<String> pictures, Dimensions dimensions) {
-//        Item bookItem = new Item(Condition.LIKE_NEW, 1.2, pictures, dimensions, TypeOfBinding.PAPERBACK, "2nd", bd);
-//        //Item bookItem = new Item("book", Condition.LIKE_NEW, 1.2, pictures, dimensions, TypeOfBinding.HARDBACK, "2");
-//
-//        return bookItem;
-//    }
-//
-//
-//
-//
-//
-//}
+class AuctionTest {
+
+    // ============================================================
+    // ========================= Test Clock =======================
+    // ============================================================
+
+    private static final ZoneId ZONE = ZoneId.of("UTC");
+    private static final Instant FIXED_INSTANT = Instant.parse("2030-01-01T10:00:00Z");
+    private static final Clock FIXED_CLOCK = Clock.fixed(FIXED_INSTANT, ZONE);
+
+    private static LocalDateTime fixedNow() {
+        return LocalDateTime.ofInstant(FIXED_INSTANT, ZONE);
+    }
+
+    // ============================================================
+    // ============================ Helpers =======================
+    // ============================================================
+
+    private static Price price(String value) {
+        return new Price(new BigDecimal(value));
+    }
+
+    private static Auction createValidScheduledAuction() {
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+
+        LocalDateTime initialDate = now.plusMinutes(5); // future => SCHEDULED
+        LocalDateTime finalDate = now.plusDays(2);
+
+        return new Auction(listing, initialDate, finalDate, price("35.50"), price("150.00"), FIXED_CLOCK);
+    }
+
+    private static Auction createValidActiveAuction() {
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+
+        return new Auction(listing, initialDate, finalDate, price("35.50"), price("150.00"), FIXED_CLOCK);
+    }
+
+    // ============================================================
+    // ====================== Basic constructor ===================
+    // ============================================================
+
+    @Test
+    void testEmptyConstructor() {
+        // arrange + act
+        Auction auction = new Auction();
+        // assert
+        assertNotNull(auction);
+    }
+
+    // ============================================================
+    // ====================== Constructor validations =============
+    // ============================================================
+
+    static Stream<Arguments> invalidAuctionConstructorCases_withClock() {
+        Listing listing = instantiateListing();
+
+        LocalDateTime now = fixedNow();
+        LocalDateTime past = now.minusSeconds(1);
+        LocalDateTime future1 = now.plusMinutes(5);
+        LocalDateTime future2 = now.plusDays(2);
+
+        return Stream.of(
+                Arguments.of(
+                        "null listing",
+                        null, future1, future2, price("35.50"), price("150.00"),
+                        "Listing cannot be null."
+                ),
+                Arguments.of(
+                        "null initialDate",
+                        listing, null, future2, price("35.50"), price("150.00"),
+                        "Initial date must not be before the current date."
+                ),
+                Arguments.of(
+                        "initialDate in the past",
+                        listing, past, future2, price("35.50"), price("150.00"),
+                        "Initial date must not be before the current date."
+                ),
+                Arguments.of(
+                        "null finalDate",
+                        listing, future1, null, price("35.50"), price("150.00"),
+                        "Final date must not be before the initial date."
+                ),
+                Arguments.of(
+                        "finalDate == initialDate",
+                        listing, future1, future1, price("35.50"), price("150.00"),
+                        "Final date must not be before the initial date."
+                ),
+                Arguments.of(
+                        "finalDate before initialDate",
+                        listing, future2, future1, price("35.50"), price("150.00"),
+                        "Final date must not be before the initial date."
+                ),
+                Arguments.of(
+                        "buyOutPrice equal to initialPrice",
+                        listing, future1, future2, price("35.50"), price("35.50"),
+                        "Buy out price must be greater than Initial price."
+                ),
+                Arguments.of(
+                        "buyOutPrice below initialPrice",
+                        listing, future1, future2, price("35.50"), price("10.00"),
+                        "Buy out price must be greater than Initial price."
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("invalidAuctionConstructorCases_withClock")
+    void testConstructorInvalidCases_throwAndMessage(
+            String name,
+            Listing listing,
+            LocalDateTime initialDate,
+            LocalDateTime finalDate,
+            Price initialPrice,
+            Price buyOutPrice,
+            String expectedMessage
+    ) {
+        // arrange + act
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Auction(listing, initialDate, finalDate, initialPrice, buyOutPrice, FIXED_CLOCK)
+        );
+
+        // assert
+        assertEquals(expectedMessage, ex.getMessage());
+    }
+
+    @Test
+    void testConstructor_withClock_setsStatusActive_whenInitialDateEqualsNow() {
+
+        // arrange
+        Auction auction = createValidActiveAuction();
+
+        // act + assert
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+    }
+
+
+    @Test
+    void testConstructor_nullClock_throws() {
+        // arrange
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Auction(listing, now.plusMinutes(1), now.plusDays(1), price("35.50"), price("150.00"), null)
+        );
+
+        assertEquals("Clock cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void testValidConstructor_initializesEmptyBidHistory() {
+
+        // arrange
+        Auction auction = createValidScheduledAuction();
+
+        // act + assert
+        assertNotNull(auction.get_bidHistory());
+        assertTrue(auction.get_bidHistory().isEmpty());
+    }
+
+    // ============================================================
+    // ====================== AuctionStatus (Clock) ===============
+    // ============================================================
+
+    static Stream<Arguments> auctionStatusClockCases() {
+        LocalDateTime now = fixedNow();
+
+        return Stream.of(
+                Arguments.of("initialDate after now => SCHEDULED", now.plusSeconds(1), now.plusDays(1), AuctionStatus.SCHEDULED),
+                Arguments.of("initialDate equals now => ACTIVE", now, now.plusDays(1), AuctionStatus.ACTIVE)
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("auctionStatusClockCases")
+    void testAuctionStatus_withClock(
+            String name,
+            LocalDateTime initialDate,
+            LocalDateTime finalDate,
+            AuctionStatus expectedStatus
+    ) {
+        // arrange
+        Listing listing = instantiateListing();
+
+        // act
+        Auction auction = new Auction(listing, initialDate, finalDate, price("35.50"), price("150.00"), FIXED_CLOCK);
+
+        // assert
+        assertEquals(expectedStatus, auction.getAuctionStatus());
+    }
+
+    @Test
+    void testConstructor_withoutClock_valid_createsEmptyBidHistory() {
+
+       // arrange
+        Listing listing = instantiateListing();
+        LocalDateTime now = LocalDateTime.now();
+
+        Auction auction = new Auction(
+                listing,
+                now.plusDays(1),
+                now.plusDays(2),
+                price("35.50"),
+                price("150.00")
+        );
+
+        // act + assert
+        assertNotNull(auction.get_bidHistory());
+        assertTrue(auction.get_bidHistory().isEmpty());
+    }
+
+    @Test
+    void testConstructor_withoutClock_setsStatusScheduled_whenInitialDateInFuture() {
+
+        // arrange
+        Listing listing = instantiateListing();
+        LocalDateTime now = LocalDateTime.now();
+
+        Auction auction = new Auction(
+                listing,
+                now.plusDays(1),
+                now.plusDays(2),
+                price("35.50"),
+                price("150.00")
+        );
+
+        // act + assert
+        assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
+    }
+
+    static Stream<Arguments> invalidAuctionConstructorCases_withoutClock() {
+        Listing listing = instantiateListing();
+        LocalDateTime now = LocalDateTime.now();
+
+        return Stream.of(
+                Arguments.of("null listing",
+                        null, now.plusDays(1), now.plusDays(2), price("35.50"), price("150.00"),
+                        "Listing cannot be null."
+                ),
+                Arguments.of("initialDate null",
+                        listing, null, now.plusDays(2), price("35.50"), price("150.00"),
+                        "Initial date must not be before the current date."
+                ),
+                Arguments.of("initialDate in the past",
+                        listing, now.minusDays(1), now.plusDays(2), price("35.50"), price("150.00"),
+                        "Initial date must not be before the current date."
+                ),
+                Arguments.of("finalDate == initialDate",
+                        listing, now.plusDays(2), now.plusDays(2), price("35.50"), price("150.00"),
+                        "Final date must not be before the initial date."
+                ),
+                Arguments.of("buyout <= initial",
+                        listing, now.plusDays(1), now.plusDays(2), price("35.50"), price("35.50"),
+                        "Buy out price must be greater than Initial price."
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("invalidAuctionConstructorCases_withoutClock")
+    void testConstructor_withoutClock_invalidCases_throwAndMessage(
+            String name,
+            Listing listing,
+            LocalDateTime initialDate,
+            LocalDateTime finalDate,
+            Price initialPrice,
+            Price buyOutPrice,
+            String expectedMessage
+    ) {
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Auction(listing, initialDate, finalDate, initialPrice, buyOutPrice)
+        );
+
+        assertEquals(expectedMessage, ex.getMessage());
+    }
+
+
+    // ============================================================
+    // ======================= acceptBid tests ====================
+    // ============================================================
+
+    static Stream<Arguments> invalidAcceptBidCases() {
+        return Stream.of(
+                Arguments.of(
+                        "null bid",
+                        (Executable) () -> {
+                            Auction auction = createValidScheduledAuction();
+                            auction.acceptBid(null);
+                        },
+                        "Bid cannot be null",
+                        true
+                ),
+                Arguments.of(
+                        "bid equal to initial price must throw (<=)",
+                        (Executable) () -> {
+                            Auction auction = createValidScheduledAuction();
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.50"))); // == initial
+                        },
+                        "Bid value must be greater than initial Price.",
+                        true
+                ),
+                Arguments.of(
+                        "bid below initial price must throw",
+                        (Executable) () -> {
+                            Auction auction = createValidScheduledAuction();
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.20"))); // < initial
+                        },
+                        "Bid value must be greater than initial Price.",
+                        true
+                ),
+                Arguments.of(
+                        "bid equal to last bid must throw (>=)",
+                        (Executable) () -> {
+                            Auction auction = createValidScheduledAuction();
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
+                            auction.acceptBid(new Bid(instantiateUser("Albert"), price("40.00"))); // == last
+                        },
+                        "Bid value must be greater than last bid value:",
+                        false
+                ),
+                Arguments.of(
+                        "bid below last bid must throw",
+                        (Executable) () -> {
+                            Auction auction = createValidScheduledAuction();
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
+                            auction.acceptBid(new Bid(instantiateUser("Albert"), price("39.00"))); // < last
+                        },
+                        "Bid value must be greater than last bid value:",
+                        false
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("invalidAcceptBidCases")
+    void testAcceptBid_invalidCases_throwAndMessage(
+            String name,
+            Executable executable,
+            String expectedMessage,
+            boolean exactMatch
+    ) {
+        // act + assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, executable);
+
+        if (exactMatch) {
+            assertEquals(expectedMessage, ex.getMessage());
+        } else {
+            assertTrue(ex.getMessage().startsWith(expectedMessage));
+        }
+    }
+
+    static Stream<Arguments> validAcceptBidCases() {
+        return Stream.of(
+                Arguments.of("first bid just above initial", List.of("35.51"), 1),
+                Arguments.of("two increasing bids", List.of("35.51", "40.00"), 2)
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("validAcceptBidCases")
+    void testAcceptBid_validCases_returnsTrue_andAddsToHistory(
+            String name,
+            List<String> bidValues,
+            int expectedSize
+    ) {
+        // arrange
+        Auction auction = createValidScheduledAuction();
+
+        //act + assert
+        int i = 0;
+        for (String v : bidValues) {
+            boolean result = auction.acceptBid(new Bid(instantiateUser("Bidder" + (++i)), price(v)));
+            assertTrue(result);
+        }
+
+        assertEquals(expectedSize, auction.get_bidHistory().size());
+    }
+
+    @Test
+    void testAcceptBid_whenThrows_doesNotChangeBidHistory() {
+
+        // arrange
+        Auction auction = createValidScheduledAuction();
+
+        // act + assert
+        assertTrue(auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00"))));
+        int sizeBefore = auction.get_bidHistory().size();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.acceptBid(new Bid(instantiateUser("Albert"), price("39.00"))));
+
+        assertEquals(sizeBefore, auction.get_bidHistory().size());
+    }
+
+    // ============================================================
+    // ===================== equals & hashCode tests ==============
+    // ============================================================
+
+    @Test
+    void testEquals_reflexive() {
+        Auction auction = createValidScheduledAuction();
+        assertEquals(auction, auction);
+    }
+
+    @Test
+    void testEquals_null_andDifferentClass() {
+        // arrange + act
+        Auction auction = createValidScheduledAuction();
+
+        // assert
+        assertNotEquals(null, auction);
+        assertNotEquals("not an auction", auction);
+    }
+
+    @Test
+    void testEquals_sameData_true_andHashCodeSame() {
+
+       // arrange
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initial = now.plusMinutes(5);
+        LocalDateTime fin = now.plusDays(2);
+
+        // act
+        Auction a1 = new Auction(listing, initial, fin, price("35.50"), price("150.00"), FIXED_CLOCK);
+        Auction a2 = new Auction(listing, initial, fin, price("35.50"), price("150.00"), FIXED_CLOCK);
+
+        // assert
+        assertEquals(a1, a2);
+        assertEquals(a1.hashCode(), a2.hashCode());
+    }
+
+    @Test
+    void testEquals_differentFinalDate_false() {
+
+        // arrange
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initial = now.plusMinutes(5);
+
+        // act
+        Auction a1 = new Auction(listing, initial, initial.plusDays(1), price("35.50"), price("150.00"), FIXED_CLOCK);
+        Auction a2 = new Auction(listing, initial, initial.plusDays(2), price("35.50"), price("150.00"), FIXED_CLOCK);
+
+        // assert
+        assertNotEquals(a1, a2);
+    }
+
+    @Test
+    void testEquals_differentBidHistory_false() {
+
+        // arrange
+        Auction a1 = createValidScheduledAuction();
+        Auction a2 = createValidScheduledAuction();
+
+        // act
+        a1.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
+
+        // assert
+        assertNotEquals(a1, a2);
+    }
+
+    // ============================================================
+    // ======= Auxiliary methods to instantiate Objects ===========
+    // ============================================================
+
+    private static List<Picture> instantiatePictures() {
+        Picture pic = new Picture("picture_url");
+        List<Picture> pictures = new ArrayList<>();
+        pictures.add(pic);
+        return pictures;
+    }
+
+    private static Listing instantiateListing() {
+        List<Picture> pictures = instantiatePictures();
+        Item bookItem = instantiateItem(instantiateBibliographicalData(), pictures, new Dimensions(12, 10, 2));
+        Price price = new Price(new BigDecimal("35.00"));
+        return new Listing(
+                bookItem,
+                price,
+                "short description",
+                "This is our first listing",
+                SaleType.AUCTION,
+                instantiateUser("Joseph")
+        );
+    }
+
+    private static User instantiateUser(String name) {
+        Email email = new Email("switcher", "example.com");
+        Address add = new Address("Rua x", "12B", "4444-111", Country.PORTUGAL);
+        Contact contact = new Contact("911111111", "351", email, add);
+        LocalDate birthday = LocalDate.of(1982, 12, 3);
+        Profile profile = new Profile("Albert Trump", Country.EL_SALVADOR, birthday, false);
+        return new User(name, contact, profile);
+    }
+
+    private static BibliographicalData instantiateBibliographicalData() {
+        Profile authorProfile = new Profile("J. R. R. Tolkien", Country.UNITED_KINGDOM, LocalDate.of(1892, 1, 3), true);
+
+        List<Profile> authors = new ArrayList<>();
+        authors.add(authorProfile);
+
+        List<Genre> genres = new ArrayList<>();
+        genres.add(Genre.FANTASY);
+        genres.add(Genre.MYSTERY);
+
+        String chunkOfText =
+                "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, " +
+                        "The Lord of the Rings, in one paperback. Features the definitive edition of the text, " +
+                        "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
+
+        Contact contact = new Contact();
+        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
+
+        return new BibliographicalData(
+                "The Lord Of The Rings",
+                authors,
+                Locale.ENGLISH,
+                publisher,
+                LocalDate.of(1991, 11, 1),
+                genres,
+                700,
+                chunkOfText
+        );
+    }
+
+    private static Item instantiateItem(BibliographicalData bd, List<Picture> pictures, Dimensions dimensions) {
+        return new Item(Condition.LIKE_NEW, 1.2, pictures, dimensions, TypeOfBinding.PAPERBACK, "2nd", bd);
+    }
+}
