@@ -1,0 +1,17 @@
+@startuml
+
+class CityRepository {
+    +createNewCity (name: String,
+    country: String)
+    }
+
+class CityController{
+  + registerCity(name : String,
+  country: String)
+}
+
+' Interactions
+CityController "1" -- "1" CityRepository : request registering city >
+CityRepository  --  CityRepository : manage/store
+
+@enduml

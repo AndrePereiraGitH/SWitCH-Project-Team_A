@@ -1,0 +1,27 @@
+@startuml
+
+title Class Diagram - US007 Register a new country in the System
+
+/'
+enum Country {
+  PORTUGAL
+  BRAZIL
+  FRANCE
+  SPAIN
+  ...
+}
+'/
+
+class CountryRepository {
+    +createNewCountry (name: String)
+    }
+
+class CountryController{
+  + registerCountry(name : String)
+}
+
+' Interactions
+CountryController "1" -- "1" CountryRepository : request registering country >
+CountryRepository  --  CountryRepository : manage/store
+
+@enduml
