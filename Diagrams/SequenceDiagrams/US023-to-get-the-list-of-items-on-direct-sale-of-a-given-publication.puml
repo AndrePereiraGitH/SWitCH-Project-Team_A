@@ -1,0 +1,39 @@
+@startuml
+
+hide footbox
+title US023 - To get the list of items on direct sale of a given publication
+
+box "Tests" #LightYellow
+actor Buyer
+participant ":UI" as UI
+end box
+
+participant ":ItemController" as ItemController
+participant ":ItemRepository" as ItemRepository
+
+Buyer -> UI : **1** getListOfItems(typeOfSale, publication)
+
+UI -> ItemController : **2** getListOfItems(typeOfSale, publication)
+activate ItemController
+
+ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, publication)
+activate ItemRepository
+
+' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
+
+ItemRepository -> ItemRepository : **4** validateParameters(typeOfSale, publication)
+
+create "i1: List<Item>" as Item
+ItemRepository -> Item : **5** createList(typeOfSale, publication)
+
+ItemRepository --> ItemController : **6** List<Item> items
+deactivate ItemRepository
+
+ItemController -> ItemController : **7** copyList(items)
+
+ItemController --> UI : **8** List<copyItems> (copyItems)
+deactivate ItemController
+
+UI --> Buyer : **9** List<copyItems> (copyItems)
+
+@enduml

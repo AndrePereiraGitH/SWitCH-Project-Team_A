@@ -1,0 +1,48 @@
+@startuml
+title US023 - To get the list of items on direct sale of a given publication
+
+class ItemController {
+  +getListOfItems(typeOfSale, publication)
+  #copyList(items)
+}
+
+class ItemRepository {
+  +getListOfItems(typeOfSale, publication)
+  ' -convertStringToEnum(typeOfSale, publication)
+  -validateParameters(typeOfSale, publication)
+}
+
+class Item {
+  - condition: Condition
+  - weight: double
+  - picture: List<Picture>
+  - dimension: Dimensions
+  - binding: TypeOfBinding
+  - edition: String
+  - bibliographicalData: BibliographicalData
+}
+
+enum SaleType {
+    DIRECT_SALE
+    AUCTION
+}
+
+class BibliographicalData {
+    - title: String;
+    - authors: List<Profile>;
+    - language: Locale;
+    - publisher: Publisher;
+    - publishDate: LocalDate;
+    - genre: List<Genre>;
+    - numberOfPages: int;
+    - chunksOfText: String;
+}
+
+' Interactions
+
+ItemController  "1 " -- "1 " ItemRepository : uses >
+ItemRepository "1 " -- " * " Item : retrieves >
+Item "                                *" --> "1" SaleType : can be\nsold by >
+Item "*"--> "1  " BibliographicalData : has >
+
+@enduml
