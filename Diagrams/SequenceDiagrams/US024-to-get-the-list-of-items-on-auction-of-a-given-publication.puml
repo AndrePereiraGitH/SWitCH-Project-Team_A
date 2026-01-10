@@ -34,6 +34,6 @@ ItemController -> ItemController : **7** copyList(items)
 ItemController --> UI : **8** List<copyItems> (copyItems)
 deactivate ItemController
 
-UI --> Buyer : **10** List<copyItems> (copyItems)
+UI --> Buyer : **9** List<copyItems> (copyItems)
 
 @enduml
