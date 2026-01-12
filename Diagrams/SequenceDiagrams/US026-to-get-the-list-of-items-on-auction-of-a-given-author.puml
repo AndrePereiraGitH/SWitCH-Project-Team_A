@@ -1,22 +1,22 @@
 @startuml
 
 hide footbox
-title US026 - To get the list of items on auction of a given author
+title US025 - To get the list of items on auction of a given author
 
 box "Tests" #LightYellow
 actor Buyer
 participant ":UI" as UI
 end box
 
-participant ":ItemController" as ItemController
+participant ":ListTheItemsOnAuctionByAuthorController" as ListTheItemsOnAuctionByAuthorController
 participant ":ItemRepository" as ItemRepository
 
-Buyer -> UI : **1** getListOfItems(typeOfSale, author)
+Buyer -> UI : **1** I want the list of items on auction by author
 
-UI -> ItemController : **2** getListOfItems(typeOfSale, author)
-activate ItemController
+UI -> ListTheItemsOnAuctionByAuthorController : **2** getListOfItems(typeOfSale, author)
+activate ListTheItemsOnAuctionByAuthorController
 
-ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, author)
+ListTheItemsOnAuctionByAuthorController -> ItemRepository : **3** getListOfItems(typeOfSale, author)
 activate ItemRepository
 
 ' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, author)
@@ -26,14 +26,14 @@ ItemRepository -> ItemRepository : **4** validateParameters(typeOfSale, author)
 create "i1: List<Item>" as Item
 ItemRepository -> Item : **5** createList(typeOfSale, author)
 
-ItemRepository --> ItemController : **6** List<Item> items
+ItemRepository --> ListTheItemsOnAuctionByAuthorController : **6** List<Item> items
 deactivate ItemRepository
 
-ItemController -> ItemController : **7** copyList(items)
+ListTheItemsOnAuctionByAuthorController -> ListTheItemsOnAuctionByAuthorController : **7** copyList(items)
 
-ItemController --> UI : **8** List<copyItems> (copyItems)
-deactivate ItemController
+ListTheItemsOnAuctionByAuthorController --> UI : **8** List<copyItems> (copyItems)
+deactivate ListTheItemsOnAuctionByAuthorController
 
-UI --> Buyer : **9** List<copyItems> (copyItems)
+UI --> Buyer : **9** List of items
 
 @enduml

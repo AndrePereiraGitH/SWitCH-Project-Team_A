@@ -8,15 +8,15 @@ actor Buyer
 participant ":UI" as UI
 end box
 
-participant ":ItemController" as ItemController
+participant ":ListTheItemsOnDirectSaleByAuthorController" as ListTheItemsOnDirectSaleByAuthorController
 participant ":ItemRepository" as ItemRepository
 
-Buyer -> UI : **1** getListOfItems(typeOfSale, author)
+Buyer -> UI : **1** I want the list of items on direct sale by author
 
-UI -> ItemController : **2** getListOfItems(typeOfSale, author)
-activate ItemController
+UI -> ListTheItemsOnDirectSaleByAuthorController : **2** getListOfItems(typeOfSale, author)
+activate ListTheItemsOnDirectSaleByAuthorController
 
-ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, author)
+ListTheItemsOnDirectSaleByAuthorController -> ItemRepository : **3** getListOfItems(typeOfSale, author)
 activate ItemRepository
 
 ' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, author)
@@ -26,14 +26,14 @@ ItemRepository -> ItemRepository : **4** validateParameters(typeOfSale, author)
 create "i1: List<Item>" as Item
 ItemRepository -> Item : **5** createList(typeOfSale, author)
 
-ItemRepository --> ItemController : **6** List<Item> items
+ItemRepository --> ListTheItemsOnDirectSaleByAuthorController : **6** List<Item> items
 deactivate ItemRepository
 
-ItemController -> ItemController : **7** copyList(items)
+ListTheItemsOnDirectSaleByAuthorController -> ListTheItemsOnDirectSaleByAuthorController : **7** copyList(items)
 
-ItemController --> UI : **8** List<copyItems> (copyItems)
-deactivate ItemController
+ListTheItemsOnDirectSaleByAuthorController --> UI : **8** List<copyItems> (copyItems)
+deactivate ListTheItemsOnDirectSaleByAuthorController
 
-UI --> Buyer : **9** List<copyItems> (copyItems)
+UI --> Buyer : **9** List of items
 
 @enduml
