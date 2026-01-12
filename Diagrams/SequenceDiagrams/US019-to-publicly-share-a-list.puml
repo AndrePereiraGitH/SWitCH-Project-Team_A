@@ -1,0 +1,29 @@
+@startuml
+
+hide footbox
+
+title US019 - As a User, I want to publicly share a list of mine
+
+box "Tests" #LightYellow
+actor User
+participant ":UI" as UI
+endbox
+
+participant ":ShareListController" as ShareListController
+participant ":ListRepo" as ListRepo
+participant ":List" as List
+
+User -> UI : Click "Share List"
+UI -> ShareListController : requestShareList(listId)
+ShareListController -> ListRepo : getList(listId)
+ListRepo -> List : loadList(listId)
+List --> ListRepo : list
+ListRepo --> ShareListController : list
+
+ShareListController -> List : makePublic()
+List -> ListRepo : save(list)
+ListRepo --> ShareListController : success
+
+ShareListController --> UI : shareConfirmed()
+UI --> User : Show public link
+@enduml

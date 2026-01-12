@@ -1,0 +1,24 @@
+@startuml
+
+title US019 - As a User, I want to publicly share a list of mine
+
+skinparam classAttributeIconSize 0
+
+class ShareListController {
+  +requestShareList(listId) : void
+}
+
+class ListRepository {
+  +getList(listId) : List
+  +save(list : List) : boolean
+}
+
+class List {
+  -isPublic : boolean
+  +makePublic() : void
+}
+
+ShareListController "1"--"1" ListRepository : uses
+ListRepository "*"--"*" List : returns
+
+@enduml
