@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+
+title US020 - As a user, I want to get a list (name and user) of the publicly published lists of a given genre
+
+box "Tests" #LightYellow
+actor User
+participant ":UI" as UI
+endbox
+
+participant ":GetListController" as GetListController
+participant ":ListRepo" as ListRepo
+participant ":List" as List
+
+User -> UI : viewPublicLists (genre)
+UI -> GetListController : getPublicListsByGenre(genre)
+
+GetListController -> ListRepo : findPublicListsByGenre(genre)
+ListRepo -> List : queryPublicListsByGenre(genre)
+
+List --> ListRepo : publicLists (name, ownerUserId)
+ListRepo --> GetListController : publicLists (name, ownerUserId)
+
+GetListController --> UI : returnPublicList(name, ownerUserId)
+UI --> User : Display list (name, user)
+@enduml
