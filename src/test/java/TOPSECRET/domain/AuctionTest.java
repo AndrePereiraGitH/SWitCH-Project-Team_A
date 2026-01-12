@@ -8,11 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -62,6 +58,29 @@ class AuctionTest {
         return new Auction(listing, initialDate, finalDate, price("35.50"), price("150.00"), FIXED_CLOCK);
     }
 
+    private static void setPrivateField(Object target, String fieldName, Object value) {
+        try {
+            var f = target.getClass().getDeclaredField(fieldName);
+            f.setAccessible(true);
+            f.set(target, value);
+        } catch (Exception e) {
+            fail("Failed to set field '" + fieldName + "': " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T getPrivateField(Object target, String fieldName, Class<T> type) {
+        try {
+            var f = target.getClass().getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return (T) f.get(target);
+        } catch (Exception e) {
+            fail("Failed to get field '" + fieldName + "': " + e.getMessage());
+            return null;
+        }
+    }
+
+
     // ============================================================
     // ====================== Basic constructor ===================
     // ============================================================
@@ -80,7 +99,6 @@ class AuctionTest {
 
     static Stream<Arguments> invalidAuctionConstructorCases_withClock() {
         Listing listing = instantiateListing();
-
         LocalDateTime now = fixedNow();
         LocalDateTime past = now.minusSeconds(1);
         LocalDateTime future1 = now.plusMinutes(5);
@@ -151,16 +169,6 @@ class AuctionTest {
         assertEquals(expectedMessage, ex.getMessage());
     }
 
-    @Test
-    void testConstructor_withClock_setsStatusActive_whenInitialDateEqualsNow() {
-
-        // arrange
-        Auction auction = createValidActiveAuction();
-
-        // act + assert
-        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
-    }
-
 
     @Test
     void testConstructor_nullClock_throws() {
@@ -201,6 +209,7 @@ class AuctionTest {
         );
     }
 
+    // ------- Initial Auction Status - Active/Scheduled
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("auctionStatusClockCases")
     void testAuctionStatus_withClock(
@@ -218,6 +227,36 @@ class AuctionTest {
         // assert
         assertEquals(expectedStatus, auction.getAuctionStatus());
     }
+
+    @Test
+    void testConstructor_withClock_setsStatusActive_whenInitialDateEqualsNow() {
+        // arrange
+        Auction auction = createValidActiveAuction();
+
+        // act + assert
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+    }
+
+    @Test
+    void testConstructor_withoutClock_setsStatusScheduled_whenInitialDateInFuture() {
+
+        // arrange
+        Listing listing = instantiateListing();
+        LocalDateTime now = LocalDateTime.now();
+
+        Auction auction = new Auction(
+                listing,
+                now.plusDays(1),
+                now.plusDays(2),
+                price("35.50"),
+                price("150.00")
+        );
+
+        // act + assert
+        assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
+    }
+
+    //-------------------------------------------------------------------
 
     @Test
     void testConstructor_withoutClock_valid_createsEmptyBidHistory() {
@@ -239,24 +278,7 @@ class AuctionTest {
         assertTrue(auction.get_bidHistory().isEmpty());
     }
 
-    @Test
-    void testConstructor_withoutClock_setsStatusScheduled_whenInitialDateInFuture() {
 
-        // arrange
-        Listing listing = instantiateListing();
-        LocalDateTime now = LocalDateTime.now();
-
-        Auction auction = new Auction(
-                listing,
-                now.plusDays(1),
-                now.plusDays(2),
-                price("35.50"),
-                price("150.00")
-        );
-
-        // act + assert
-        assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
-    }
 
     static Stream<Arguments> invalidAuctionConstructorCases_withoutClock() {
         Listing listing = instantiateListing();
@@ -316,7 +338,7 @@ class AuctionTest {
                 Arguments.of(
                         "null bid",
                         (Executable) () -> {
-                            Auction auction = createValidScheduledAuction();
+                            Auction auction = createValidActiveAuction();
                             auction.acceptBid(null);
                         },
                         "Bid cannot be null",
@@ -325,7 +347,7 @@ class AuctionTest {
                 Arguments.of(
                         "bid equal to initial price must throw (<=)",
                         (Executable) () -> {
-                            Auction auction = createValidScheduledAuction();
+                            Auction auction = createValidActiveAuction();
                             auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.50"))); // == initial
                         },
                         "Bid value must be greater than initial Price.",
@@ -334,7 +356,7 @@ class AuctionTest {
                 Arguments.of(
                         "bid below initial price must throw",
                         (Executable) () -> {
-                            Auction auction = createValidScheduledAuction();
+                            Auction auction = createValidActiveAuction();
                             auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.20"))); // < initial
                         },
                         "Bid value must be greater than initial Price.",
@@ -343,7 +365,7 @@ class AuctionTest {
                 Arguments.of(
                         "bid equal to last bid must throw (>=)",
                         (Executable) () -> {
-                            Auction auction = createValidScheduledAuction();
+                            Auction auction = createValidActiveAuction();
                             auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
                             auction.acceptBid(new Bid(instantiateUser("Albert"), price("40.00"))); // == last
                         },
@@ -353,7 +375,7 @@ class AuctionTest {
                 Arguments.of(
                         "bid below last bid must throw",
                         (Executable) () -> {
-                            Auction auction = createValidScheduledAuction();
+                            Auction auction = createValidActiveAuction();
                             auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
                             auction.acceptBid(new Bid(instantiateUser("Albert"), price("39.00"))); // < last
                         },
@@ -396,7 +418,7 @@ class AuctionTest {
             int expectedSize
     ) {
         // arrange
-        Auction auction = createValidScheduledAuction();
+        Auction auction = createValidActiveAuction();
 
         //act + assert
         int i = 0;
@@ -412,7 +434,7 @@ class AuctionTest {
     void testAcceptBid_whenThrows_doesNotChangeBidHistory() {
 
         // arrange
-        Auction auction = createValidScheduledAuction();
+        Auction auction = createValidActiveAuction();
 
         // act + assert
         assertTrue(auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00"))));
@@ -423,6 +445,132 @@ class AuctionTest {
 
         assertEquals(sizeBefore, auction.get_bidHistory().size());
     }
+
+    @Test
+    void testAcceptBid_whenScheduled_throwsException_andDoesNotBid() {
+        // arrange
+        Auction auction = createValidScheduledAuction();
+        Bid bid = new Bid(instantiateUser("Rodolph"), price("40.00"));
+
+        // act + assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> auction.acceptBid(bid));
+        assertEquals("Auction is not active", exception.getMessage());
+
+    }
+
+    @Test
+    void testAcceptBid_whenBidEqualsBuyOutPrice_colsesAsBoughtOut() {
+
+        // arrange
+        Auction auction = createValidActiveAuction();
+        Bid buyOutBid = new Bid(instantiateUser("Rodolph"), price("150.00"));
+
+        boolean result = auction.acceptBid(buyOutBid);
+
+        assertTrue(result);
+
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+        assertEquals(1, auction.get_bidHistory().size());
+
+    }
+
+    // ------ Bid value biggest than buyOutPrice, auction status still Active
+
+    @Test
+    void testAcceptBid_bidGreaterThanBuyOut_doesNotCloseBecauseEqualsIsUsed() {
+
+        // arrange
+        Auction auction = createValidActiveAuction();
+        Bid bid = new Bid(instantiateUser("Rodolph"), price("150.01"));
+
+        // act + assert
+        assertTrue(auction.acceptBid(bid));
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+        assertEquals(1, auction.get_bidHistory().size());
+    }
+
+    @Test
+    void testExpiry_withoutBids_shouldThrow_auctionStatusEndedWithoutBids_bidHistoryIsEmpty() {
+
+        // arrange
+        Auction auction = createValidActiveAuction();
+        Clock afterEnd = Clock.fixed(FIXED_INSTANT.plus(Duration.ofDays(3)), ZONE);
+        setPrivateField(auction, "_clock", afterEnd);
+        Bid bid = new Bid(instantiateUser("Rodolph"), price("40.00"));
+
+        // act + assert
+        assertThrows(IllegalStateException.class, () -> auction.acceptBid(bid));
+        assertEquals(AuctionStatus.ENDED_WITHOUT_BIDS, auction.getAuctionStatus());
+        assertTrue(auction.get_bidHistory().isEmpty());
+
+        // when it closes without bids, winingBid and finalPrice are null
+        LocalDateTime closedAt = getPrivateField(auction, "_closedAt", LocalDateTime.class);
+
+        assertNotNull(closedAt);
+        assertNull(getPrivateField(auction, "_winningBid", Bid.class));
+        assertNull(getPrivateField(auction, "_finalPrice", Price.class));
+    }
+
+    @Test
+    void testExpiry_withBids_setsEndedWithWinner_andKeepsLastBidAsWinner() {
+
+        // arrange
+        Auction auction = createValidActiveAuction();
+
+        Bid bid1 = new Bid(instantiateUser("Rodolph"), price("40.00"));
+        assertTrue(auction.acceptBid(bid1));
+
+        Bid bid2 = new Bid(instantiateUser("ALbert"), price("45.00"));
+        assertTrue(auction.acceptBid(bid2));
+
+        int sizeBefore = auction.get_bidHistory().size();
+
+        Clock afterEnd = Clock.fixed(FIXED_INSTANT.plusSeconds(60L * 60L * 24L * 3), ZONE);
+        setPrivateField(auction, "_clock", afterEnd);
+
+        // act
+        Bid lateBid = new Bid(instantiateUser("ROn Weasley"), price("50.00"));
+        assertThrows(IllegalStateException.class, () -> auction.acceptBid(lateBid));
+
+        // assert
+        assertEquals(AuctionStatus.ENDED_WITH_WINNER, auction.getAuctionStatus());
+        assertEquals(sizeBefore, auction.get_bidHistory().size());
+
+        Bid winningBid = getPrivateField(auction, "_winningBid", Bid.class);
+        Price finalPrice = getPrivateField(auction, "_finalPrice", Price.class);
+        LocalDateTime closedAt = getPrivateField(auction, "_closedAt", LocalDateTime.class);
+
+        assertNotNull(winningBid);
+        assertNotNull(finalPrice);
+        assertNotNull(closedAt);
+
+        assertEquals(auction.get_bidHistory().get(auction.get_bidHistory().size() -1), winningBid);
+        assertEquals(winningBid.getValue(), finalPrice);
+
+    }
+
+    @Test
+    void testRefreshStatus_doesNotChangeTerminalStatus() {
+
+        Auction auction = createValidActiveAuction();
+
+        // force BOUGHT_OUT through real behavior
+        auction.acceptBid(new Bid(instantiateUser("Buyer"), price("150.00")));
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+
+        // advance time a 1 year and call refreshStatus
+        Clock farFuture = Clock.fixed(FIXED_INSTANT.plusSeconds(60L * 60L * 24L * 365L), ZONE); // +1 year
+        setPrivateField(auction, "_clock", farFuture);
+
+        auction.refreshStatus();
+
+        // must remain terminal
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+    }
+
+
+
+
 
     // ============================================================
     // ===================== equals & hashCode tests ==============
@@ -482,8 +630,8 @@ class AuctionTest {
     void testEquals_differentBidHistory_false() {
 
         // arrange
-        Auction a1 = createValidScheduledAuction();
-        Auction a2 = createValidScheduledAuction();
+        Auction a1 = createValidActiveAuction();
+        Auction a2 = createValidActiveAuction();
 
         // act
         a1.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));

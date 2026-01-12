@@ -2,7 +2,6 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.AuctionStatus;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,13 +19,17 @@ public class Auction {
     private AuctionStatus _auctionStatus;
     private Clock _clock;
 
+
+    private Bid _winningBid;
+    private Price _finalPrice;
+    private LocalDateTime _closedAt;
+
     public Auction() {
     }
 
     public Auction(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice) {
         this(listing, initialDate, finalDate, initialPrice, buyOutPrice, Clock.systemDefaultZone());
     }
-
 
     public Auction(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice, Clock clock) {
 
@@ -56,13 +59,22 @@ public class Auction {
         this._bidHistory = new ArrayList<>(); // start empty history
 
         _auctionStatus = initialDate.isAfter(now) ? AuctionStatus.SCHEDULED : AuctionStatus.ACTIVE;
+
         }
 
 
     public boolean acceptBid(Bid bid) {
 
+        boolean added = false;
         if (bid == null)
             throw new IllegalArgumentException("Bid cannot be null");
+
+        refreshStatus();
+        closeIfExpired();
+
+        if (_auctionStatus != AuctionStatus.ACTIVE)
+            throw new IllegalStateException("Auction is not active");
+
 
         if (_bidHistory == null)
             _bidHistory = new ArrayList<>();
@@ -78,7 +90,76 @@ public class Auction {
         if (bid.getValue().getPrice().compareTo(_initialPrice.getPrice()) <= 0)
             throw new IllegalArgumentException("Bid value must be greater than initial Price.");
 
-        return _bidHistory.add(bid);
+        _bidHistory.add(bid);
+        _winningBid = bid;
+        _finalPrice = bid.getValue();
+        added = true;
+
+        if (bid.getValue().getPrice().equals(_buyOutPrice.getPrice())) {
+            _auctionStatus = AuctionStatus.BOUGHT_OUT;
+            _closedAt = LocalDateTime.now(_clock);
+            _finalPrice = _buyOutPrice;
+        }
+
+        return added;
+
+    }
+
+    public void refreshStatus() {
+        if (_clock == null) _clock = Clock.systemDefaultZone();
+
+        if (isTerminalStatus(_auctionStatus)) return;
+
+        LocalDateTime now = LocalDateTime.now(_clock);
+
+        if (now.isBefore(_initialDate)) {
+            _auctionStatus = AuctionStatus.SCHEDULED;
+            return;
+        }
+
+        if (now.isBefore(_finalDate)) {
+            _auctionStatus = AuctionStatus.ACTIVE;
+        }
+    }
+
+    private boolean isTerminalStatus(AuctionStatus auctionStatus) {
+
+        if (auctionStatus == AuctionStatus.CANCELLED
+                || auctionStatus == AuctionStatus.ENDED_WITH_WINNER
+                || auctionStatus == AuctionStatus.ENDED_WITHOUT_BIDS
+                || auctionStatus == AuctionStatus.BOUGHT_OUT) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean closeIfExpired() {
+
+        if (_clock == null)
+            _clock = Clock.systemDefaultZone();
+
+        if (isTerminalStatus(_auctionStatus))
+            return false;
+
+        LocalDateTime now = LocalDateTime.now(_clock);
+
+        if (now.isBefore(_finalDate))
+            return false;
+
+        if (_bidHistory == null || _bidHistory.isEmpty()) {
+            _auctionStatus = AuctionStatus.ENDED_WITHOUT_BIDS;
+            _winningBid = null;
+            _finalPrice = null;
+
+        } else {
+            _winningBid = _bidHistory.get(_bidHistory.size() - 1);
+            _finalPrice = _winningBid.getValue();
+            _auctionStatus = AuctionStatus.ENDED_WITH_WINNER;
+
+        }
+
+        _closedAt = now;
+        return true;
     }
 
     public List<Bid> get_bidHistory() {
