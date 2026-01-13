@@ -21,7 +21,6 @@ box "Domain Model" #LightYellow
     participant "Library" as LibDomain
 end box
 
-activate User
 User -> UI : asks to add publication to library
 activate UI
 UI -> Ctrl : getListOfOtherPublications()
