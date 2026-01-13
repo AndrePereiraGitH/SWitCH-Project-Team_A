@@ -1,19 +1,19 @@
 @startuml
 title US025 - To get the list of items on direct sale of a given author
 
-class ListTheItemsOnDirectSaleByAuthorController {
-  +getListOfItems(typeOfSale, author)
-  #copyList(items)
+class GetListOfItemsOnDirectSaleOfGivenAuthorController {
+  +getListOfItemsOnDirectSale(author)
+  -copyList(l1)
 }
 
-class ItemRepository {
+class ListingRepository {
   +getListOfItems(typeOfSale, author)
-  ' -convertStringToEnum(typeOfSale, author)
   -validateParameters(typeOfSale, author)
 }
 
-class Item {
-  - bibliographicalData: BibliographicalData
+class Listing {
+  - item: Item
+  - saleType: SaleType
 }
 
 enum SaleType {
@@ -21,15 +21,20 @@ enum SaleType {
     AUCTION
 }
 
-class BibliographicalData {
-    - authors: List<Profile>;
+class Item {
+    - bibliographicalData: BibliographicalData
 }
+
+class BibliographicalData {
+    - authors: List<Profile>
+    }
 
 ' Interactions
 
-ListTheItemsOnDirectSaleByAuthorController  "1 " -- "1 " ItemRepository : uses >
-ItemRepository "1 " -- " * " Item : retrieves >
-Item "                                *" --> "1" SaleType : can be\nsold by >
-Item "*"--> "1  " BibliographicalData : has >
+GetListOfItemsOnDirectSaleOfGivenAuthorController  "1 " -- "1 " ListingRepository : uses >
+ListingRepository "1 " -- " * " Listing : retrieves >
+Listing "                                *" --> "1 " SaleType : can be\nsold by >
+Listing "1"--> "1    " Item : lists an >
+Item "*" -- "1 " BibliographicalData: has >
 
 @enduml
