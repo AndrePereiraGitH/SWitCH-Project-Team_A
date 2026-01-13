@@ -1,0 +1,15 @@
+@startuml
+
+hide footbox
+
+title US007 - To register a new country in the system
+
+actor Administrator
+participant ":System" as System
+
+'Human Interactions between Administrator and System
+Administrator -> System : **1** I want to register a new country in the system!
+System --> Administrator : **2** What is the name of the country you wish to register?
+Administrator -> System : **3** The country name is <name>!
+System --> Administrator : **4** <Country> has been registered in the system!
+@enduml

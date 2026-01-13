@@ -1,0 +1,13 @@
+@startuml
+hide footbox
+title US005 - Register Author in MiteLovers
+
+actor Administrator
+participant ":System" as System
+
+Administrator -> System : **1** I want to register an author in MiteLovers
+System -->> Administrator : **2** Please provide name, country, and date of birth
+Administrator -> System : **3** Name: Tove Ditlevsen; Country: Denmark; DOB: 14-12-1917
+System -->> Administrator : **4** Success
+
+@enduml

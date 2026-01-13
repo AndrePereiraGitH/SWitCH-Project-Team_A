@@ -1,0 +1,13 @@
+@startuml
+hide footbox
+title US003 - Register Genre to Official Genre List
+
+actor Administrator
+participant ":System" as System
+
+Administrator -> System : **1** I want to add a new genre to the official list
+System --->> Administrator : **2** Please enter the genre name
+Administrator -> System : **3** Romance
+System --->> Administrator : **4** Success
+
+@enduml

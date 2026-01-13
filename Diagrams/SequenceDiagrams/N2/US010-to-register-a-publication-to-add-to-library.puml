@@ -1,0 +1,47 @@
+@startuml
+hide footbox
+autonumber
+title US010 - To register a new publication in MiteLovers
+
+' As a User, I want to register a new publication
+' in the system, so that I can add the
+' publication to my library.
+
+box "Tests" #LightYellow
+actor User
+participant ":UI" as UI
+end box
+
+
+participant ":RegisterNewPublicationCtrl" as Ctrl
+
+participant ":SystemPublicationRepository" as SystemRepo
+
+
+' Publication is to be treated the same as "Item", supposedly
+
+User -> UI : I want to add a publication to MiteLovers
+activate UI
+UI --> User : What publication?
+User -> UI : publication
+UI -> Ctrl : addPublicationToSystem(publication)
+activate Ctrl
+Ctrl -> SystemRepo : addPublicationToSystem(publication)
+activate SystemRepo
+create "p1:publication" as publication
+SystemRepo -> publication: create(publication)
+
+
+SystemRepo -> SystemRepo : validate(p1)
+SystemRepo -> SystemRepo : add(p1)
+
+SystemRepo --> Ctrl : true
+deactivate SystemRepo
+Ctrl --> UI : Success
+deactivate Ctrl
+UI --> User : The publication was added
+deactivate UI
+
+
+
+@enduml

@@ -2,17 +2,17 @@
 
 title Class Diagram - US007 Register a new country in the System
 
-/'
-enum Country {
-  PORTUGAL
-  BRAZIL
-  FRANCE
-  SPAIN
-  ...
+
+/'class User {
+-username: String
+  -contact: Contact
+  -profile: Profile
+  +User(username: String, contact: Contact, profile: Profile)
 }
 '/
 
 class CountryRepository {
+-List<Country>
     +createNewCountry (name: String)
     }
 
@@ -20,8 +20,13 @@ class CountryController{
   + registerCountry(name : String)
 }
 
+class Country {
+-name: String
+}
+
 ' Interactions
 CountryController "1" -- "1" CountryRepository : request registering country >
-CountryRepository  --  CountryRepository : manage/store
-
+'/CountryRepository  --  CountryRepository : manage/store
+'/User "1"--"1" CountryController : requests registration of new country >
+CountryRepository "1" -- "*" Country : stores >
 @enduml
