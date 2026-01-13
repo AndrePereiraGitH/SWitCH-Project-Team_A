@@ -1,0 +1,30 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Tests" {
+    class UI012{}
+}
+
+package "Controller" {
+    class GetListOfPublicationsInLibraryController {
+        + getListOfPublicationsInLibrary()
+    }
+}
+
+
+package "Domain Model" {
+    class Library {
+        + getListOfPublicationsInLibrary()
+    }
+
+    class Publication {
+        + getDetails(): String
+    }
+}
+
+
+"UI012" --> GetListOfPublicationsInLibraryController : uses
+GetListOfPublicationsInLibraryController --> Library : interacts with
+Library "1" --> "*" Publication : contains
+@enduml

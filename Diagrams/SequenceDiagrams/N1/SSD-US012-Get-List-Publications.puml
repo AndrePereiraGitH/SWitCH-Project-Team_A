@@ -1,0 +1,19 @@
+@startuml
+
+autonumber
+hide footbox
+title SSD: US012 - Get the list of publications in my library.
+
+actor "User" as User
+participant ":System" as System
+
+activate User
+
+    User -> System : request list of publications in library
+    activate System
+
+    System --> User : return list of publications
+    deactivate System
+
+deactivate User
+@enduml

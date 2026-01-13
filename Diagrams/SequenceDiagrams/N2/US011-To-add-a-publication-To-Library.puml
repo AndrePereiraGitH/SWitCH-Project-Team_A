@@ -1,0 +1,52 @@
+@startuml
+autonumber
+hide footbox
+title US011 - Add publication to library
+
+
+box "Tests" #WhiteSmoke
+    actor "User" as User
+    participant ":UI011" as UI
+end box
+
+box "Controller" #LightBlue
+    participant ":AddPublicationToLibraryController" as Ctrl
+end box
+
+box "Persistence" #LightGrey
+    participant ":PublicationRepository" as PubRepo
+end box
+
+box "Domain Model" #LightYellow
+    participant "Library" as LibDomain
+end box
+
+activate User
+User -> UI : asks to add publication to library
+activate UI
+UI -> Ctrl : getListOfOtherPublications()
+activate Ctrl
+
+Ctrl -> LibDomain: getAll()
+activate LibDomain
+LibDomain --> Ctrl: listOfPublicationsInLibrary
+Ctrl -> PubRepo: getListOfDifferentPublications(listOfPublicationsInLibrary)
+activate PubRepo
+PubRepo -> Ctrl : ListOfDifferentPublications
+deactivate PubRepo
+Ctrl --> UI: ListOfDifferentPublications
+UI --> User: List of publications, select one!
+
+User -> UI: selectedPub
+UI -> Ctrl: addPublicationToLib(selectedPub)
+Ctrl -> LibDomain: addPublication(selectedPub)
+LibDomain -> LibDomain: verifyUnique(selectedPub)
+LibDomain -> LibDomain: add(selectedPub)
+LibDomain --> Ctrl: true
+deactivate LibDomain
+Ctrl --> UI: true
+deactivate Ctrl
+UI --> User: Done!
+deactivate UI
+
+@enduml

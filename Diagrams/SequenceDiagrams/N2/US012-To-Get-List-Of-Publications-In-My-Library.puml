@@ -1,0 +1,46 @@
+@startuml
+autonumber
+hide footbox
+title US012 - Get the list of publications in my library
+
+
+box "Tests" #WhiteSmoke
+    actor User
+    participant ":UI012" as UI
+end box
+
+box "Controller" #LightBlue
+    participant ":GetListOfPublicationsInLibraryController" as Ctrl
+end box
+
+box "Domain Model" #LightYellow
+    participant "Library" as LibDomain
+    participant ":Publication" as PubDomain
+end box
+
+User -> UI : asks to see a list of publications in library
+activate UI
+
+UI -> Ctrl: getListOfPublicationsInLibrary()
+activate Ctrl
+
+Ctrl -> LibDomain: getListOfPublicationsInLibrary()
+activate LibDomain
+
+        loop for each publication in the library
+            LibDomain -> PubDomain: getDetails()
+            activate PubDomain
+            PubDomain --> LibDomain: details
+            deactivate PubDomain
+        end
+
+
+LibDomain --> Ctrl: ListOfPublicationsInLibrary
+deactivate LibDomain
+Ctrl --> UI: true
+deactivate Ctrl
+
+UI --> User : shows the list of publications with details
+deactivate UI
+
+@enduml

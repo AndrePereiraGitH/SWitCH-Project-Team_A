@@ -1,0 +1,39 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Tests" {
+    class UI011{}
+}
+
+package "Controller" {
+    class AddPublicationToLibraryController {
+        + getListOfOtherPublications()
+        + addPublicationToLib(selectedPub)
+    }
+}
+
+package "Persistence" {
+    class PublicationRepository {
+        + getListOfDifferentPublications(listOfPublicationsInLibrary)
+    }
+}
+
+package "Domain Model" {
+    class Library {
+        + getAll()
+        + addPublication(selectedPub)
+        + verifyUnique(selectedPub)
+        + add(selectedPub)
+    }
+
+}
+
+
+UI011 --> AddPublicationToLibraryController : uses
+AddPublicationToLibraryController --> PublicationRepository:uses
+AddPublicationToLibraryController -->Library : interacts with
+
+
+
+@enduml
