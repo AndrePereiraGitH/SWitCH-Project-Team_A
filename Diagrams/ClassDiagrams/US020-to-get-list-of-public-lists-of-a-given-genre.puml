@@ -1,26 +1,50 @@
 @startuml
-'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
 
 title US020 - As a user, I want to get a list (name and user) of the publicly published lists of a given genre
 
-skinparam classAttributeIconSize 0
-
-class getListController{
-
- + getPublicListsByGenre(genre)
-
+class PublicListController {
+  -listRepo : ListRepo
+  -genreRepo : GenreRepo
+  +getGenres() : List<Genre>
+  +getPublicListsByGenre(genreId : String) : List<ListSummary>
 }
 
-class listRepository{
+class ListRepo {
+  +findPublicByGenre(genreId) : List<List>
+}
 
- +  findPublicListsByGenre(genre)
+class GenreRepo {
+  +findAll() : List<Genre>
 }
 
 class List {
- +publicLists(name, user)
+  -name : String
+  -isPublic : boolean
+  -genre : Genre
+  -owner : User
 }
 
-getListController "1" -- "1" listRepository: requests list to
-listRepository --> List: searches lists
-List "*" --> "*"listRepository: returns list
+class Genre {
+  -name : String
+}
+
+class User {
+  -username : String
+}
+
+class ListSummary {
+  +listName : String
+  +ownerUsername : String
+}
+
+PublicListController --> ListRepo : uses
+PublicListController --> GenreRepo : uses
+
+List "0..*" --> "1..*" Genre : genre
+List "0..*" --> "1" User : owner
+ListRepo "1" --> "*" List
+
+PublicListController ..> ListSummary : returns
+
 @enduml
