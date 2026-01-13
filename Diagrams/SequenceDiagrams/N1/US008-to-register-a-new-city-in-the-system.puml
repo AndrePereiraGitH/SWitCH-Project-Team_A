@@ -1,0 +1,15 @@
+@startuml
+
+hide footbox
+
+title US008 - To register a new city in the system
+
+actor Administrator
+participant ":System" as System
+
+'Human Interactions between Administrator and System
+Administrator -> System : **1** I want to register a new city in the system!
+System --> Administrator : **2** What is the name of the city you wish to register and from which country is it?
+Administrator -> System : **3** The city name is <name> and it's from <country>!
+System --> Administrator : **4** <City> has been registered in the system!
+@enduml

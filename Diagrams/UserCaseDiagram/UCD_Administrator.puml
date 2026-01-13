@@ -7,18 +7,18 @@ actor Administrator
 rectangle "System" {
 
   ' Registration use cases
-  usecase "**US001**\nRegister User" as UC1
-  usecase "**US005**\nRegister Author" as UC5
-  usecase "**US006**\nRegister Publishing\nCompany" as UC6
-  usecase "**US004**\nRegister Appraisal\nEntity" as UC4
+  usecase "**US001**\nTo register User" as UC1
+  usecase "**US005**\nTo register Author" as UC5
+  usecase "**US006**\nTo register Publishing\nCompany" as UC6
+  usecase "**US004**\nTo register Appraisal\nEntity" as UC4
 
   ' Reference data use cases
-  usecase "**US002**\nAdd Publication\nType" as UC2
-  usecase "**US003**\nAdd Publication\nGenre" as UC3
+  usecase "**US002**\nTo add Publication\nType" as UC2
+  usecase "**US003**\nTo add Publication\nGenre" as UC3
 
   ' Location use cases
-  usecase "**US007**\nRegister Country" as UC7
-  usecase "**US008**\nRegister City" as UC8
+  usecase "**US007**\nTo register Country" as UC7
+  usecase "**US008**\nTo register City" as UC8
 }
 
 Administrator --> UC1

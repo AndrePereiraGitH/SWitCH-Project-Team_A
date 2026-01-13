@@ -1,6 +1,25 @@
 @startuml
 
+/' class User {
+  -username: String
+  -contact: Contact
+  -profile: Profile
+  +User(username: String, contact: Contact, profile: Profile)
+}
+'/
+
+class City {
+-name: String
+-country: Country
+}
+
+class Country {
+-name: String
+}
+
+
 class CityRepository {
+-List<City>
     +createNewCity (name: String,
     country: String)
     }
@@ -12,6 +31,8 @@ class CityController{
 
 ' Interactions
 CityController "1" -- "1" CityRepository : request registering city >
-CityRepository  --  CityRepository : manage/store
-
+'/CityRepository  --  CityRepository : manage/store
+'/User "1" -- "1" CityController : requests registration of new city >
+CityRepository "1" -- "*" City : stores >
+City "*" -- "1" Country : is in a >
 @enduml

@@ -3,11 +3,11 @@ hide footbox
 title US003 - Register Genre to Official Genre List
 
 actor Administrator
-participant ":UI" as UI
+participant ":System" as System
 
-Administrator -> UI : **1** I want to add a new genre to the official list
-UI --->> Administrator : **2** Please enter the genre name
-Administrator -> UI : **3** Romance
-UI --->> Administrator : **4** Success
+Administrator -> System : **1** I want to add a new genre to the official list
+System --->> Administrator : **2** Please enter the genre name
+Administrator -> System : **3** Romance
+System --->> Administrator : **4** Success
 
 @enduml
