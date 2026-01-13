@@ -1,38 +1,47 @@
 @startuml
 
 hide footbox
+
 title US001 - To register a user in the system
 
-box "Tests" #LightYellow
+box #LightYellow
 actor Administrator
 participant ":UI" as UI
 end box
 
-participant ":UserController" as UserController
+participant ":RegisterUserController" as RegisterUserController
 participant ":UserRepository" as UserRepository
 
-Administrator -> UI : **1** addUser(username, contact, profile)
+' Human contact between Administrator and UI
+Administrator -> UI : **1** I want to register a user in the system
+UI -->> Administrator : **2** Provide username, contact and profile information for the User
+Administrator -> UI : **3** For the new user (u1), here's the username, contact and profile information
 
-UI -> UserController : **2** addUser(username, contact, profile)
-activate UserController
+' First contact between UI and the System
+UI -> RegisterUserController : **4** RegisterUser(username, contact, profile)
+activate RegisterUserController
 
-UserController -> UserRepository : **3** addUser(username, contact, profile)
+RegisterUserController -> UserRepository : **5** createAndAddUser(username, contact, profile)
 activate UserRepository
-
+' Creation of u1 instance from User class
 create "u1: User" as User
-UserRepository -> User : **4** create(username, contact, profile)
 
 
-UserRepository -> UserRepository : **5** validateToAdd(u1)
+' Creation, validation and addition
+UserRepository -> User : **6** create(username, contact, profile)
+UserRepository -> UserRepository : **7** validateUser(u1)
+UserRepository -> UserRepository : **8** addUserToUserList(u1)
 
-UserRepository --> UserController : **6** true
+
+' Return from UserRepository to RegisterUserController
+UserRepository --> RegisterUserController : **9** New User (u1) created and added to the list of users
 deactivate UserRepository
 
-UserController --> UI : **7** success
-deactivate UserController
+' Return from RegisterUserController to UI
+RegisterUserController --> UI : **10** Success
+deactivate RegisterUserController
 
-UI --> Administrator : **8** success
-
-
+' Return from UI to Administrator
+UI --> Administrator : **11** Success
 
 @enduml

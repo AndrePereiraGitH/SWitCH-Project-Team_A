@@ -1,20 +1,42 @@
 @startuml
 title US001 - To register a user in the system
 
-class UserController {
-  - username : String
-  +addUser(username, contact, profile)
+class RegisterUserController {
+  +registerUser(username: String, contact: String, profile: String) : boolean
 }
 
 class UserRepository {
-  +addUser(username, contact, profile)
-  +createUser(username, contact, profile)
-  +validateToAdd(u1): boolean
+  -userList: List<User>
+  +createAndAddUser(username: String, contact: String, profile: String) : User
+  +validateUser(u: User) : boolean
+  +addUserToUserList(u: User) : void
 }
 
-' Interactions
+class User {
+  -username: String
+  -contact: Contact
+  -profile: Profile
+  +User(username: String, contact: Contact, profile: Profile)
+}
 
-UserController "1 " -- "1 " UserRepository : requests registration to >
-UserRepository  --  UserRepository : manages/stores
+class Contact {
+  -phoneNum: String;
+  -extension: String;
+  -email: Email;
+  -location: Address;
+}
 
+
+class Profile {
+  -name: String;
+  -country: Country;
+  -birthday: LocalDate;
+}
+
+' Interaction
+
+RegisterUserController "1 " -- "1" UserRepository : request registration to >
+UserRepository "1 " -- " * " User : creates / manages >
+User "1  " -- "1 " Contact : contains >
+User "1" -- "1  " Profile : has >
 @enduml

@@ -1,33 +1,40 @@
 @startuml
-
-title Class Diagram - US004 Register Appraisal
-
-' Application Layer
-class AppraisalController {
-  - nome: String
-
-  + registerAppraisal(name,contact) : boolean
-}
-
-class AppraisalRepository {
-  + addNewAppraisalEntity(name, contact)
-  + createNewAppraisal(name, contact)
-  + validateToAdd(apEntityXPTO)
-}
-
+title Diagrama de Classes - Registo de Entidade Avaliadora
 /'
-Appraisal "1" -- "*" AppraisalRecord : performs
-AppraisalRecord "1" -- "1" Publication : evaluates
-AppraisalRecord "1" -- "1" Appraisal : appraiser
+class Administrator {
+  +provideAppraisalEntityData() : void
+}
 
-Publication "1" -- "1" Genre
-Publication "1" -- "1" ListingType
+class UI {
+  +requestAppraisalEntityData() : void
+  +sendAppraisalEntityData(name: String, contact: String) : void
+  +showSuccess() : void
+}
+
+class RegisterAppraisalController {
+  +registerAppraisalEntity(name: String, contact: String) : boolean
+}
 '/
+class AppraisalEntityRepository {
+  -appraisalEntityList : List<AppraisalEntity>
+  +createAndRegisterAppraisalEntity(name: String, contact: String) : AppraisalEntity
+  +validateAppraisalEntity(ae: AppraisalEntity) : boolean
+  +addToAppraisalEntityList(ae: AppraisalEntity) : void
+}
 
-' Interection
+class AppraisalEntity {
+  -name : String
+  -contact : Contact
+  +AppraisalEntity(name: String, contact: Contact)
+}
 
-AppraisalController "1 " -- "1 " AppraisalRepository : request addition to >
+' Interactions
 
-AppraisalRepository -- AppraisalRepository : manages/stores
+' Administrator "1" --> "1" UI : interacts
+' UI "1" --> "1" RegisterAppraisalController : calls
+
+RegisterAppraisalController "1 " -- "1 " AppraisalEntityRepository : request registration to >
+AppraisalEntityRepository "1 " -- " * " AppraisalEntity : creates / manages >
 
 @enduml
+
