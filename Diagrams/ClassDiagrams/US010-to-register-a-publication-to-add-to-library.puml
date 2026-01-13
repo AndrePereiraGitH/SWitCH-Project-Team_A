@@ -1,0 +1,29 @@
+@startuml
+title US010 - To register a new publication in MiteLovers to add to library
+
+package "Tests" {
+class UI010{}
+}
+
+class RegisterNewPublicationCtrl {
++addPublication(p1)
+}
+
+class SystemPublicationRepository{
+
++validate (p1)
++addPublicationToSystem(p1)
+}
+
+class Publication {
++create(publication)
+}
+
+' interactions
+Tests --> RegisterNewPublicationCtrl : contacts
+RegisterNewPublicationCtrl -> SystemPublicationRepository : uses
+SystemPublicationRepository -> Publication : instantiates through
+
+
+
+@enduml

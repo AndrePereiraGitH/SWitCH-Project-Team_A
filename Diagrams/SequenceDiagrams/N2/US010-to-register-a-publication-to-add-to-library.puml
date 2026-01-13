@@ -24,11 +24,11 @@ User -> UI : I want to add a publication to MiteLovers
 activate UI
 UI --> User : What publication?
 User -> UI : publication
-UI -> Ctrl : addPublicationToSystem(publication)
+UI -> Ctrl : addPublication(publication)
 activate Ctrl
 Ctrl -> SystemRepo : addPublicationToSystem(publication)
 activate SystemRepo
-create "p1:publication" as publication
+create "p1:Publication" as publication
 SystemRepo -> publication: create(publication)
 
 

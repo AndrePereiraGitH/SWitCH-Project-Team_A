@@ -15,7 +15,7 @@ participant ":LibraryRepository" as LibraryRepo
 
 User -> UI : I want to create a library.
 activate UI
-UI -> User : What name?
+UI --> User : What name?
 User -> UI : myFirstLib
 
 UI -> Ctrl : CreateLibrary(myFirstLib)
@@ -23,18 +23,18 @@ activate Ctrl
 Ctrl -> LibraryRepo : CreateLibrary(myFirstLib)
 activate LibraryRepo
 
-create "l1:Library" as Library
+create "lib1:Library" as Library
 LibraryRepo -> Library : create(myFirstLib)
 
-LibraryRepo -> LibraryRepo : validate()
-LibraryRepo -> LibraryRepo : add(l1)
+LibraryRepo -> LibraryRepo : validate(lib1)
+LibraryRepo -> LibraryRepo : add(lib1)
 
 
-LibraryRepo -> Ctrl : true
+LibraryRepo --> Ctrl : true
 deactivate LibraryRepo
-Ctrl -> UI : Success
+Ctrl --> UI : Success
 deactivate Ctrl
-UI -> User : Your library was created
+UI --> User : Your library was created
 deactivate UI
 
 @enduml
