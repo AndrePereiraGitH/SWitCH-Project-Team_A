@@ -21,4 +21,5 @@ class List {
 
 ShareListController --> ListRepository : uses
 ListRepository --> List : returns
+
 @enduml
