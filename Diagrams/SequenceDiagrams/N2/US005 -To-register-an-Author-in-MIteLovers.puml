@@ -2,15 +2,21 @@
 hide footbox
 title US005 - Register Author in MiteLovers
 
-box #LightYellow
+box #WhiteSmoke
 actor Administrator
-participant ":UI" as UI
+participant ":UI005" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":RegisterAuthorController" as C
+end box
+
+box "Persistence" #LightGrey
 participant ":AuthorRepository" as R
+end box
 
 Administrator -> UI : **1** I want to register an author in MiteLovers
+activate UI
 UI -->> Administrator : **2** Please provide name, country, and date of birth
 Administrator -> UI : **3** Name: Tove Ditlevsen; Country: Denmark; DOB: 14-12-1917
 
@@ -21,7 +27,7 @@ C -> R : **5** createAndAdd(name, country, birthday)
 activate R
 
 
-
+box "Domain Model" #LightYellow
   create "profile1:Profile" as P
   R -> P : **6** createProfile(name, country, birthday)
 
@@ -32,10 +38,11 @@ activate R
   R -> R : **9** addToList(author1)
 
   R -->> C : **10** author1
-
+end box
 deactivate R
 C -->> UI : **11** success
 deactivate C
 
 UI -->> Administrator : **12** success
+deactivate UI
 @enduml
