@@ -1,0 +1,43 @@
+@startuml
+hide footbox
+title US002 - Register Publication Type to Type List
+
+box #Lightyellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+
+' Human contact between Administrator and UI
+Administrator -> UI : **1** I want to register a Publication Type in the system
+UI -->> Administrator : **2** Book or Magazine
+Administrator -> UI : **3** For the new Type (t1), here's the type
+
+' First contact between UI and the System
+UI -> RegisterPubTypeController : **4** RegisterPubType(book, magazine)
+activate RegisterPubTypeController
+
+RegisterPubTypeController -> PubTypeRepository : **5** createAndAddPubType(book, magazine)
+activate PubTypeRepository
+' Creation of p1 instance from User class
+create "p1: PubType" as PubType
+
+
+' Creation, validation and addition
+PubTypeRepository -> PubType : **6** create(book, magazine)
+PubTypeRepository -> PubTypeRepository : **7** validatePubType(p1)
+PubTypeRepository -> PubTypeRepository : **8** addPubTypeToPubTypeList(p1)
+
+
+' Return from PubTypeRepository to RegisterPubTypeController
+PubTypeRepository --> RegisterPubTypeController : **9** New Publish Type (p1) created and added to the list of type
+deactivate PubTypeRepository
+
+' Return from RegisterUserController to UI
+RegisterPubTypeController --> UI : **10** Success
+deactivate RegisterPubTypeController
+
+' Return from UI to Administrator
+UI --> Administrator : **11** Success
+
+@enduml
