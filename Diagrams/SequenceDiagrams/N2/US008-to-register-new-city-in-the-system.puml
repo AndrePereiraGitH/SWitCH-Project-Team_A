@@ -4,7 +4,7 @@ footbox off
 
 title Sequence Diagram - US007 Register a new country in the System
 
-box "Tests" #LightYellow
+box #LightYellow
 actor Administrator
 participant ":UI" as UI
 end box
@@ -12,24 +12,28 @@ end box
 participant ":CityController" as CityController
 participant ":CityRepository" as AddressRepository
 
-Administrator -> UI : **1** registerNewCity (name, country)
+Administrator -> UI : **1** I want to register a new city
+UI --> Administrator : **2** What city and from which country?
+Administrator -> UI : **3** The city is <name> and the country is  <country>
 
-UI -> CityController : **2** registerNewCity (name, country)
+UI -> CityController : **4** registerNewCity (name, country)
 activate CityController
 
-CityController -> AddressRepository : **3** addNewCity (name, country)
+CityController -> AddressRepository : **5** createAndAddNewCity (name, country)
 activate AddressRepository
 
 create "newCity1: City" as City
-AddressRepository -> City : **4** createCity(name, country)
+AddressRepository -> City : **6** createCity(name, country)
 
-AddressRepository -> AddressRepository : **5** validateToAdd (newCity1)
-AddressRepository --> CityController : **6** true
+AddressRepository -> AddressRepository : **7** validate (newCity1)
+AddressRepository -> AddressRepository : **8** Add (newCity1)
+
+AddressRepository --> CityController : **9** true
 deactivate AddressRepository
 
-CityController --> UI : **7** sucess
+CityController --> UI : **10** success
 deactivate CityController
 
-UI --> Administrator : **8** sucess
+UI --> Administrator : **10** Done!
 
 @enduml
