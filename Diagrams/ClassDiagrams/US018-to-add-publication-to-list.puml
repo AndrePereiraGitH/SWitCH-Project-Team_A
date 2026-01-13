@@ -1,0 +1,23 @@
+@startuml
+title US018 Add one of my publications to a list of mine
+
+class AddPublicationToListController {
+  + addPublicationToList(list, publication)
+}
+
+class PublicationListRepository {
+  + validateToAdd(list, publication)
+  + addPublication(list, publication)
+}
+
+class PublicationList {
+}
+
+class Publication {
+}
+
+AddPublicationToListController -- PublicationListRepository : requests addition
+PublicationListRepository -- PublicationList : manages / stores
+PublicationList -- Publication
+
+@enduml

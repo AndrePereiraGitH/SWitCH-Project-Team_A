@@ -1,0 +1,48 @@
+@startuml
+hide footbox
+autonumber
+
+title US018 - Add one of my publications to a list of mine
+
+box #LightYellow
+actor "User" as User
+participant ":UI" as UI
+end box
+
+
+participant ":AddPublicationToListController" as Controller
+
+
+
+participant ":PublicationListRepository" as Repository
+
+
+
+User -> UI : I want to add one of my publications to a list of mine
+activate UI
+
+UI -> Controller : addPublicationToList(listId, publicationId)
+activate Controller
+
+Controller -> Repository : getList(listId)
+activate Repository
+Repository --> Controller : list
+deactivate Repository
+
+Controller -> Repository : validateToAdd(list, publication)
+activate Repository
+Repository --> Controller : valid
+deactivate Repository
+
+Controller -> Repository : addPublication(list, publication)
+activate Repository
+Repository --> Controller : success
+deactivate Repository
+
+Controller --> UI : success
+deactivate Controller
+
+UI --> User : publication added
+deactivate UI
+
+@enduml
