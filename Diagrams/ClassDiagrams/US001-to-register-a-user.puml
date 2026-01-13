@@ -8,6 +8,7 @@ class RegisterUserController {
 class UserRepository {
   -userList: List<User>
   +createAndAddUser(username: String, contact: String, profile: String) : User
+' Those methods are part of createAndAddUser
   +validateUser(u: User) : boolean
   +addUserToUserList(u: User) : void
 }
@@ -16,14 +17,13 @@ class User {
   -username: String
   -contact: Contact
   -profile: Profile
-  +User(username: String, contact: Contact, profile: Profile)
 }
 
 class Contact {
-  -phoneNum: String;
-  -extension: String;
-  -email: Email;
-  -location: Address;
+  -phoneNum: String
+  -extension: String
+  -email: Email
+  -location: Address
 }
 
 
@@ -35,7 +35,7 @@ class Profile {
 
 ' Interaction
 
-RegisterUserController "1 " -- "1" UserRepository : request registration to >
+RegisterUserController "1 " -- "1 " UserRepository : request registration to >
 UserRepository "1 " -- " * " User : creates / manages >
 User "1  " -- "1 " Contact : contains >
 User "1" -- "1  " Profile : has >
