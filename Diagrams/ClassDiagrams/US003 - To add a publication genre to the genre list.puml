@@ -1,19 +1,23 @@
 @startuml
-title US003 - To add a publication genre to the genre list
+title US003 - Register Genre to Official Genre List
 
-class GenreController {
+class RegisterGenreController {
+  -_genreRepository: GenreRepository
+  +createAndAddGenre(name: String): Genre
 }
 
-class BibliographicalDataRepository {
-  +StringToEnum(name)
-  +validator(name): boolean
-  +add(name)
-
+class GenreRepository {
+  -_genres: List<Genre>
+  +createAndAddGenre(name: String): Genre
+  -existsByName(name: String): boolean
 }
 
-' Interactions
+class Genre {
+  -_name: String
+  +getName(): String
+}
 
-GenreController "1 " -- "1 " BibliographicalDataRepository : requests to add GenreType >
-BibliographicalDataRepository  --  BibliographicalDataRepository : converts / stores Genre >
+RegisterGenreController --> GenreRepository : uses >
+GenreRepository "1" --> "*" Genre : stores >
 
 @enduml

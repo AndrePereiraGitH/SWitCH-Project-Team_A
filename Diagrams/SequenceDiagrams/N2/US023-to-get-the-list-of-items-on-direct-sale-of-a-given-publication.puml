@@ -3,37 +3,48 @@
 hide footbox
 title US023 - To get the list of items on direct sale of a given publication
 
-box "Tests" #LightYellow
+box #LightYellow
 actor Buyer
 participant ":UI" as UI
 end box
 
-participant ":ItemController" as ItemController
-participant ":ItemRepository" as ItemRepository
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
+participant ":ListingRepository" as ListingRepository
 
-Buyer -> UI : **1** getListOfItems(typeOfSale, publication)
+' Buyer -> UI : **1** getListOfItems(typeOfSale, publication)
+Buyer -> UI : **1** I want to get a list of items on direct sale of a given publication
+Buyer <-- UI : **2** Which publication?
+Buyer -> UI : **3** publication
 
-UI -> ItemController : **2** getListOfItems(typeOfSale, publication)
-activate ItemController
+' UI -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItems(typeOfSale, publication)
+UI -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItemsOnDirectSale(publication)
+activate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
 
-ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, publication)
-activate ItemRepository
+' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : **3** getListOfItems(typeOfSale, publication)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : **5** getListOfItems(typeOfSale, publication)
+activate ListingRepository
 
 ' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
 
-ItemRepository -> ItemRepository : **4** validateParameters(typeOfSale, publication)
+' ListingRepository -> ListingRepository : **4** validateParameters(typeOfSale, publication)
+ListingRepository -> ListingRepository : **6** validateParameters(typeOfSale, publication)
 
-create "i1: List<Item>" as Item
-ItemRepository -> Item : **5** createList(typeOfSale, publication)
+create "l1: List<Listing>" as Listing
+' ListingRepository -> Item : **5** createList(typeOfSale, publication)
+ListingRepository -> Listing : **7** getList(typeOfSale, publication)
 
-ItemRepository --> ItemController : **6** List<Item> items
-deactivate ItemRepository
+' ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items
+ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **8** l1
+deactivate ListingRepository
 
-ItemController -> ItemController : **7** copyList(items)
+' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **7** copyList(items)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **9** cl1: copyList(l1)
 
-ItemController --> UI : **8** List<copyItems> (copyItems)
-deactivate ItemController
+'ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI : **8** List<copyItems> (copyItems)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI : **10** cl1
+deactivate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
 
-UI --> Buyer : **9** List<copyItems> (copyItems)
+'UI --> Buyer : **9** List<copyItems> (copyItems)'
+UI --> Buyer : **11** List of items on direct sale
 
 @enduml

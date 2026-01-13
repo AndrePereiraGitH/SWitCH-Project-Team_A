@@ -1,0 +1,37 @@
+@startuml
+hide footbox
+title US003 - Register Genre to Official Genre List
+
+box #Lightyellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":RegisterGenreController" as RegisterGenreController
+participant ":GenreRepository" as GenreRepository
+
+Administrator -> UI : **1** I want to add a new genre to the official list
+UI -->> Administrator : **2** Please enter the genre name
+Administrator -> UI : **3** Romance
+
+UI -> RegisterGenreController : **4** createAndAddGenre(name="Romance")
+activate RegisterGenreController
+
+RegisterGenreController -> GenreRepository : **5** createAndAddGenre(name)
+activate GenreRepository
+
+GenreRepository -> GenreRepository : **6** existsByName(name)?
+
+  create "Romance:Genre" as Genre
+  GenreRepository -> Genre : **7** createGenre("Romance")
+  GenreRepository -> GenreRepository : **8** addToList(Romance)
+  GenreRepository -->> RegisterGenreController : **9** Romance
+
+
+deactivate GenreRepository
+
+RegisterGenreController -->> UI : **10** success / error
+deactivate RegisterGenreController
+
+UI -->> Administrator : **11** result message
+@enduml
