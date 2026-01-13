@@ -1,0 +1,41 @@
+@startuml
+hide footbox
+title US005 - Register Author in MiteLovers
+
+box #LightYellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":RegisterAuthorController" as C
+participant ":AuthorRepository" as R
+
+Administrator -> UI : **1** I want to register an author in MiteLovers
+UI -->> Administrator : **2** Please provide name, country, and date of birth
+Administrator -> UI : **3** Name: Tove Ditlevsen; Country: Denmark; DOB: 14-12-1917
+
+UI -> C : **4** registerAuthor(name, country, birthday)
+activate C
+
+C -> R : **5** createAndAdd(name, country, birthday)
+activate R
+
+
+
+  create "profile1:Profile" as P
+  R -> P : **6** createProfile(name, country, birthday)
+
+  create "author1:Author" as A
+  R -> A : **7** createAuthor(profile1)
+  R -> R : **8** existsByAuthor(author1)
+
+  R -> R : **9** addToList(author1)
+
+  R -->> C : **10** author1
+
+deactivate R
+C -->> UI : **11** success
+deactivate C
+
+UI -->> Administrator : **12** success
+@enduml
