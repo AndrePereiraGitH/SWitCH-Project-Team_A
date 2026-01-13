@@ -80,6 +80,18 @@ class AuctionTest {
         }
     }
 
+    private static boolean invokeCloseIfExpired(Auction auction) {
+        try {
+            var m = Auction.class.getDeclaredMethod("closeIfExpired");
+            m.setAccessible(true);
+            return (boolean) m.invoke(auction);
+        } catch (Exception e) {
+            fail("Failed to invoke closeIfExpired(): " + e.getMessage());
+            return false;
+        }
+    }
+
+
 
     // ============================================================
     // ====================== Basic constructor ===================
@@ -490,6 +502,50 @@ class AuctionTest {
     }
 
     @Test
+    void testAcceptBid_scheduledButStartTimeReached_requiresRefreshStatus_toAcceptBid() {
+        LocalDateTime now = fixedNow();
+        Listing listing = instantiateListing();
+
+        // starts in 5 minutes => SCHEDULED at creation time
+        Auction auction = new Auction(
+                listing,
+                now.plusMinutes(5),
+                now.plusDays(2),
+                price("35.50"),
+                price("150.00"),
+                FIXED_CLOCK
+        );
+
+        assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
+
+        // move time forward to after initialDate but before finalDate
+        Clock afterStart = Clock.fixed(FIXED_INSTANT.plusSeconds(6 * 60L), ZONE);
+        setPrivateField(auction, "_clock", afterStart);
+
+        // now a bid should be accepted (because refreshStatus should flip to ACTIVE)
+        assertTrue(auction.acceptBid(new Bid(instantiateUser("ROdolph"), price("40.00"))));
+        assertEquals(1, auction.get_bidHistory().size());
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+    }
+
+    @Test
+    void testAcceptBid_afterBoughtOut_throws_andDoesNotAdd() {
+        Auction auction = createValidActiveAuction();
+
+        assertTrue(auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("150.00"))));
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+
+        int sizeBefore = auction.get_bidHistory().size();
+
+        assertThrows(IllegalStateException.class,
+                () -> auction.acceptBid(new Bid(instantiateUser("Albert"), price("160.00"))));
+
+        assertEquals(sizeBefore, auction.get_bidHistory().size());
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+    }
+
+    // ----- Test AcceptsBid Expired Auctions ---------
+    @Test
     void testExpiry_withoutBids_shouldThrow_auctionStatusEndedWithoutBids_bidHistoryIsEmpty() {
 
         // arrange
@@ -549,6 +605,10 @@ class AuctionTest {
 
     }
 
+    // ============================================================
+    // ======================= RefreshStatus tests ====================
+    // ============================================================
+
     @Test
     void testRefreshStatus_doesNotChangeTerminalStatus() {
 
@@ -568,7 +628,68 @@ class AuctionTest {
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
     }
 
+    @Test
+    void testRefreshStatus_terminalBoughtOut_mustNotChangeToActive() {
 
+        // arrange
+        Auction auction = createValidActiveAuction();
+
+        // Make it terminal: BOUGHT_OUT
+        assertTrue(auction.acceptBid(new Bid(instantiateUser("Buyer"), price("150.00"))));
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+
+        // Set clock to a time that is between initialDate and finalDate
+        // If refreshStatus did not return early, it would set status to ACTIVE.
+        Clock withinWindow = Clock.fixed(FIXED_INSTANT.plusSeconds(60L), ZONE); // +1 minute
+        setPrivateField(auction, "_clock", withinWindow);
+
+        auction.refreshStatus();
+
+        // Must remain terminal
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+    }
+
+    // ============================================================
+    // ================== CloseIfExpired tests ====================
+    // ============================================================
+
+    @Test
+    void testCloseIfExpired_whenTerminalStatus_returnsFalse() {
+        Auction auction = createValidActiveAuction();
+
+        assertTrue(auction.acceptBid( new Bid(instantiateUser("Rodolph"), price("150.00"))));
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+
+        boolean result = invokeCloseIfExpired(auction);
+
+        assertFalse(result);
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+    }
+
+    @Test
+    void testCloseIfExpired_whenNotExpired_returnsFalse() {
+
+        Auction auction = createValidActiveAuction();
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+
+        boolean result = invokeCloseIfExpired(auction);
+
+        assertFalse(result);
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+    }
+
+    @Test
+    void testCloseIfExpired_whenExpired_returnsTrue_andClosesAuction() {
+        Auction auction = createValidActiveAuction();
+
+        Clock afterEnd = Clock.fixed(FIXED_INSTANT.plusSeconds(60L * 60L * 24L * 3L), ZONE);
+        setPrivateField(auction, "_clock", afterEnd);
+
+        boolean reault = invokeCloseIfExpired(auction);
+
+        assertTrue(reault);
+        assertEquals(AuctionStatus.ENDED_WITHOUT_BIDS, auction.getAuctionStatus());
+    }
 
 
 
@@ -638,6 +759,27 @@ class AuctionTest {
 
         // assert
         assertNotEquals(a1, a2);
+    }
+
+    @Test
+    void testEquals_withNullAndDifferentClass() {
+        Auction auction = createValidActiveAuction();
+
+        assertNotEquals(null, auction);
+        assertFalse(auction.equals("not an auction"));
+    }
+
+    @Test
+    void testHashCode_differentAuctions_shouldDiffer() {
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+
+        Auction auction1 = new Auction(listing, now.plusMinutes(5), now.plusDays(2), price("35.50"), price("150.00"), FIXED_CLOCK);
+        Auction auction2 = new Auction(listing, now.plusMinutes(5), now.plusDays(3), price("35.50"), price("150.50"), FIXED_CLOCK);
+
+        assertNotEquals(auction1, auction2);
+        assertNotEquals(auction1.hashCode(), auction2.hashCode());
+
     }
 
     // ============================================================
