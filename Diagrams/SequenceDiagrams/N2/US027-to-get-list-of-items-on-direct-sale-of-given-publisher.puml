@@ -1,0 +1,50 @@
+@startuml
+
+hide footbox
+autonumber
+title US027 - To get the list of items on direct sale of a given publisher
+
+box #WhiteSmoke
+actor Buyer
+participant ":UI" as UI027
+end box
+
+box "Controller" #LightBlue
+participant ":ItemController" as Controller
+end box
+
+box "Persistence" #LightGrey
+participant ":ListingRepository" as Repository
+end box
+
+Buyer -> UI027 : I want to get the list of items on direct sale of a given publisher
+activate UI027
+Buyer <-- UI027 : Which publisher?
+Buyer -> UI027 : publisher
+
+UI027 -> Controller : getItemsOnDirectSaleByPublisher(publisher)
+activate Controller
+
+Controller -> Repository : getBySaleType(SaleType.DIRECT_SALE)
+activate Repository
+
+
+
+box "Domain Model" #LightYellow
+create "data: List<Listing>" as Listing
+Repository -> Listing : queryBySaleType(SaleType.DIRECT_SALE)
+Listing --> Repository : data
+end box
+
+Repository --> Controller : data
+deactivate Repository
+
+Controller -> Controller : extract items of given\n publisher into new list\n**res: List<Item>**
+
+Controller --> UI027 : res
+deactivate Controller
+
+UI027 --> Buyer : Display items on direct sale of given publisher
+deactivate UI027
+
+@enduml

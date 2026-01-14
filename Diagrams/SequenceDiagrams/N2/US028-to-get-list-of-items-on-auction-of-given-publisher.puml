@@ -1,0 +1,50 @@
+@startuml
+
+hide footbox
+autonumber
+title US028 - To get the list of items on auction of a given publisher
+
+box #WhiteSmoke
+actor Buyer
+participant ":UI" as UI028
+end box
+
+box "Controller" #LightBlue
+participant ":ItemController" as Controller
+end box
+
+box "Persistence" #LightGrey
+participant ":ListingRepository" as Repository
+end box
+
+Buyer -> UI028 : I want to get the list of items on auction of a given publisher
+activate UI028
+Buyer <-- UI028 : Which publisher?
+Buyer -> UI028 : publisher
+
+UI028 -> Controller : getItemsOnAuctionByPublisher(publisher)
+activate Controller
+
+Controller -> Repository : getBySaleType(SaleType.AUCTION)
+activate Repository
+
+
+
+box "Domain Model" #LightYellow
+create "data: List<Listing>" as Listing
+Repository -> Listing : queryBySaleType(SaleType.AUCTION)
+Listing --> Repository : data
+end box
+
+Repository --> Controller : data
+deactivate Repository
+
+Controller -> Controller : extract items of given\n publisher into new list\n**res: List<Item>**
+
+Controller --> UI028 : res
+deactivate Controller
+
+UI028 --> Buyer : Display items on auction of given publisher
+deactivate UI028
+
+@enduml

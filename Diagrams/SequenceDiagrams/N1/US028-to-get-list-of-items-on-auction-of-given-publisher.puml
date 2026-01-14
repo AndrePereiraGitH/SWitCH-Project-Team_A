@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+title US028 - To get the list of items on auction of a given publisher
+
+actor Buyer
+participant ":System" as System
+
+Buyer -> System : **1** I want to get a list of items on auction of a given publisher
+Buyer <-- System : **2** Which publisher?
+Buyer -> System : **3** publisher
+
+System --> Buyer : **4** List of items on auction of given publisher
+
+@enduml
