@@ -1,0 +1,64 @@
+@startuml
+autonumber
+hide footbox
+title US0016 - Put a publication from my library for sale in an auction
+
+box #whitesmoke
+    actor User
+    participant ":UI" as UI
+end box
+
+box "Controller" #Lightblue
+    participant ":ToPutPublicationInAuctionController" as C
+end box
+
+box "Persistence" #LightGrey
+    participant ":LibraryRepository" as LibRepo
+    participant ":AuctionRepository" as AucRepo
+end box
+
+box "Domain Model" #LightYellow
+    participant "myLibrary:Library" as Lib
+    participant "pub:Publication" as Pub
+end box
+
+
+
+
+User -> UI : I want to sell a publication of my library as an auction"
+UI --> User : Which library?
+User -> UI : myLibrary
+UI --> User : Which publication?
+User -> UI : publication
+UI --> User : Insert initialDate, finalDate, initialPrice, buyOutPrice
+User -> UI : provide data
+
+UI -> C : putPublicationForAuction(myLibraryId, publicationId,\ninitialDate, finalDate, initialPrice, buyOutPrice)
+activate C
+
+C -> LibRepo : getLibrary(myLibrary)
+activate LibRepo
+LibRepo --> C : Lib
+deactivate LibRepo
+
+C -> Lib : getPublication(publication)
+activate Lib
+Lib --> C : Pub
+deactivate Lib
+
+C -> Pub : markAsAuctionSale()
+activate Pub
+Pub --> C : ok
+deactivate Pub
+
+C -> AucRepo : createAuction(Pub, initialDate, finalDate,\ninitialPrice, buyOutPrice)
+activate AucRepo
+create "a1:Auction" as A1
+AucRepo -> A1 : <<create>>
+AucRepo --> C : a1
+deactivate AucRepo
+
+C --> UI : Success(a1)
+deactivate C
+UI --> User : Done
+@enduml

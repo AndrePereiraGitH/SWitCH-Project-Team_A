@@ -1,0 +1,32 @@
+@startuml
+title US017 - To Create a private List of my publications
+
+class CreatePublicationListController {
+  + createPublicationList(name, genre)
+}
+
+class PublicationListRepository {
+  + createAndAdd(name, genre, user)
+  + validateToAdd(list)
+}
+
+class PublicationList {
+}
+
+class User
+class Genre
+
+CreatePublicationListController -- PublicationListRepository : requests creation
+PublicationListRepository -- PublicationList : manages / stores
+PublicationList "0..*  " -- "1 " User : owner
+PublicationList "  0..*" -- "1  " Genre : has
+
+note right of PublicationList
+  A private list belongs to a user,
+  is initially empty and groups
+  publications by genre.
+end note
+
+
+
+@enduml

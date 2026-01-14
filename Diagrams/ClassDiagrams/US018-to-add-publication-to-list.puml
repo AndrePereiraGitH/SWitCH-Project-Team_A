@@ -1,0 +1,24 @@
+@startuml
+title US018 - Add one of my publications to a list of mine
+
+class AddPublicationToListController {
+  + addPublicationToList(listId, publicationId)
+}
+
+class PublicationListRepository {
+  + findById(listId, user)
+  + save(list)
+}
+
+class PublicationList {
+  + validateToAdd(publication)
+  + addPublication(publication)
+}
+
+class Publication
+
+AddPublicationToListController -- PublicationListRepository : request
+AddPublicationToListController -- PublicationList : calls
+PublicationList "1" o-- "*" Publication : contains
+
+@enduml

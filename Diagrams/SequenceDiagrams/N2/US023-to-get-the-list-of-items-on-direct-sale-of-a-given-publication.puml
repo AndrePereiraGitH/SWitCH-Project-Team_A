@@ -1,50 +1,60 @@
 @startuml
 
 hide footbox
+autonumber
 title US023 - To get the list of items on direct sale of a given publication
 
-box #LightYellow
+box #WhiteSmoke
 actor Buyer
-participant ":UI" as UI
+participant ":UI023" as UI023
 end box
 
+box "Controller" #LightBlue
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
+end box
+
+box "Persistence" #LightGrey
 participant ":ListingRepository" as ListingRepository
+end box
 
-' Buyer -> UI : **1** getListOfItems(typeOfSale, publication)
-Buyer -> UI : **1** I want to get a list of items on direct sale of a given publication
-Buyer <-- UI : **2** Which publication?
-Buyer -> UI : **3** publication
+' Buyer -> UI023 : **1** getListOfItems(typeOfSale, publication)
+Buyer -> UI023 : I want to get a list of items on direct sale of a given publication
+activate UI023
+Buyer <-- UI023 : Which publication?
+Buyer -> UI023 : publication
 
-' UI -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItems(typeOfSale, publication)
-UI -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItemsOnDirectSale(publication)
+' UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItems(typeOfSale, publication)
+UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : getListOfItemsOnDirectSale(publication)
 activate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
 
 ' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : **3** getListOfItems(typeOfSale, publication)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : **5** getListOfItems(typeOfSale, publication)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : getListOfItems(typeOfSale, publication)
 activate ListingRepository
 
 ' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
 
 ' ListingRepository -> ListingRepository : **4** validateParameters(typeOfSale, publication)
-ListingRepository -> ListingRepository : **6** validateParameters(typeOfSale, publication)
+ListingRepository -> ListingRepository : validateParameters(typeOfSale, publication)
 
+box "Domain Model" #LightYellow
 create "l1: List<Listing>" as Listing
 ' ListingRepository -> Item : **5** createList(typeOfSale, publication)
-ListingRepository -> Listing : **7** getList(typeOfSale, publication)
+ListingRepository -> Listing : getList(typeOfSale, publication)
+end box
 
 ' ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items
-ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **8** l1
+ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : l1
 deactivate ListingRepository
 
 ' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **7** copyList(items)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **9** cl1: copyList(l1)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : cl1: copyList(l1)
 
-'ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI : **8** List<copyItems> (copyItems)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI : **10** cl1
+'ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI023 : **8** List<copyItems> (copyItems)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI023 : cl1
 deactivate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
 
-'UI --> Buyer : **9** List<copyItems> (copyItems)'
-UI --> Buyer : **11** List of items on direct sale
+'UI023 --> Buyer : **9** List<copyItems> (copyItems)'
+UI023 --> Buyer : List of items on direct sale
+deactivate UI023
 
 @enduml

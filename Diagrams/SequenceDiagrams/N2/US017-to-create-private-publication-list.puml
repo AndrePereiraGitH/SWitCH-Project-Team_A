@@ -1,0 +1,38 @@
+@startuml
+hide footbox
+autonumber
+
+title US017 - To Create a private List of my publications
+
+box #whitesmoke
+actor "User" as User
+participant ":UI - US017" as UI
+end box
+
+box #Lightblue
+participant ":CreatePublicationListController" as Controller
+end box
+
+box #LightGrey
+participant ":PublicationListRepository" as Repository
+end box
+
+User -> UI : I want to create a private list of my publications\with a name and a genre
+activate UI
+
+UI -> Controller : createPublicationList(name, genre)
+activate Controller
+
+Controller -> Repository : createAndAdd(name, genre, user)
+activate Repository
+
+Repository --> Controller : listCreated
+deactivate Repository
+
+Controller --> UI : success
+deactivate Controller
+
+UI --> User : private list created
+deactivate UI
+
+@enduml

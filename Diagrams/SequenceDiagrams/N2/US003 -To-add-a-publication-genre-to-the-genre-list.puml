@@ -4,34 +4,48 @@ title US003 - Register Genre to Official Genre List
 
 box #Lightyellow
 actor Administrator
-participant ":UI" as UI
+participant ":UI003" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":RegisterGenreController" as RegisterGenreController
+end box
+
+box "Persistence" #LightGrey
 participant ":GenreRepository" as GenreRepository
+end box
+
 
 Administrator -> UI : **1** I want to add a new genre to the official list
+
+activate UI
+
 UI -->> Administrator : **2** Please enter the genre name
 Administrator -> UI : **3** Romance
 
-UI -> RegisterGenreController : **4** createAndAddGenre(name="Romance")
+
+UI -> RegisterGenreController : **4** createAndAddGenre(romance)
 activate RegisterGenreController
 
-RegisterGenreController -> GenreRepository : **5** createAndAddGenre(name)
+RegisterGenreController -> GenreRepository : **5** createAndAddGenre(romance)
 activate GenreRepository
 
-GenreRepository -> GenreRepository : **6** existsByName(name)?
-
+box "Domain Model" #LightYellow
   create "Romance:Genre" as Genre
-  GenreRepository -> Genre : **7** createGenre("Romance")
-  GenreRepository -> GenreRepository : **8** addToList(Romance)
-  GenreRepository -->> RegisterGenreController : **9** Romance
+  end box
+  GenreRepository -> Genre : **6** createGenre(romance)
+  GenreRepository -> GenreRepository : **7** exists(romance)
+
+  GenreRepository -> GenreRepository : **8** addToList(romance)
+  GenreRepository -->> RegisterGenreController : **9** romance
 
 
 deactivate GenreRepository
 
-RegisterGenreController -->> UI : **10** success / error
+RegisterGenreController -->> UI : **10** success
 deactivate RegisterGenreController
 
-UI -->> Administrator : **11** result message
+UI -->> Administrator : **11**  success
+deactivate UI
+
 @enduml

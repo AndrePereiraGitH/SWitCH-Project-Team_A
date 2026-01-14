@@ -1,0 +1,159 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+title Mite lovers - AOO Level 2
+skinparam title {
+  FontSize 24
+}
+
+skinparam legend {
+  BackgroundColor LightBlue
+  FontSize 14
+}
+
+legend right
+ Suggestion to discuss
+end legend
+
+/' ------- Listing --------- '/
+
+Listing "1" -- "0..1" Auction : > can be an
+Listing "1   " -- "0..1   " DirectSale : > can be a
+Listing "1..*" -- "       1" Seller : > is created by
+Listing "1" -- "1" Item : > announces
+
+
+
+/' ------- Product --------- '/
+together {
+
+
+Magazine "0..1" -- "1" Item : > is an
+Book "0..1" -- "1" Item : > is an
+/'BibliographicalData "1" - "*" Item'/
+Item --- BibliographicalData : > has
+
+}
+/' ------- Direct Sale -------- '/
+
+Buyer "1  " -- "1..*" DirectSale : > buys through
+Cart "1" -- "1" Transaction : > can result
+DirectSale "*" --> "1" Cart : > added to
+
+/' ------- Auction ------ '/
+together {
+Auction "1" -- "*" Bid : > may have
+Auction "1" -- "1" Transaction : > can result
+Bid "*" -- "1" Bidder : > offered by
+}
+/' ------- Users -------- '/
+together {
+Bidder "1"-- "1" User : > is a
+Seller "1" -- "1" User : > is a
+Buyer "1" - "1" User : > is a
+}
+
+/' ----- Community -------'/
+
+User "1..*" -- "1" Community
+Transaction "1" -- "1" LogisticService
+SupportService "0..1" -- "1" Listing
+LogisticService -- User
+
+/' ========== Concepts ============= '/
+
+object Listing #FFE4E1 {
+    - price
+    - shortDescription
+    - listingTitle
+    - saleType
+}
+object Auction #FFDAB9 {
+    - auctionedItem
+    - buyOutPrice
+    - initialDate
+    - finalDate
+    - initialPrice
+    - bidHistory
+}
+object Item {
+    - condition
+    - weight
+    - pictures
+    - dimensions
+    - typeOfBinding
+    - edition
+    - numberOfPages
+}
+object BibliographicalData {
+    - title
+    - authors
+    - language
+    - publisher
+    - publicationDate
+    - genre
+    - chunksOfText
+}
+
+object Bid #FFDAB9 {
+    - value
+}
+object Cart #F0FFF0 {
+    - items list
+    - buyer
+}
+rectangle DirectSale #F0FFF0 {
+}
+object Transaction {
+    - sellers
+    - buyer
+    - listing
+}
+object Book {
+    - isbn
+}
+object Magazine{
+    - issn
+}
+
+object User #E6E6FA {
+    - name
+    - contacts
+    - address
+}
+rectangle Seller #E6E6FA {
+}
+rectangle Buyer #E6E6FA{
+}
+rectangle Bidder #E6E6FA{
+}
+rectangle SupportService #LightBlue {
+}
+rectangle Community #LightBlue {
+}
+rectangle LogisticService #LightBlue {
+}
+
+/' ========= Notes  ============ '/
+
+note as L
+    Represents a sale ad (direct sale or auction)
+    end note
+
+Listing -> L
+
+note as N
+    Catalog
+    Represents the conceptual idea of Magazine or Book.
+    end note
+
+BibliographicalData -- N
+
+note as S
+    Stock
+    Contains real attributes such as weigth, condition and real photos of the item
+    end note
+
+Item - S
+
+@enduml

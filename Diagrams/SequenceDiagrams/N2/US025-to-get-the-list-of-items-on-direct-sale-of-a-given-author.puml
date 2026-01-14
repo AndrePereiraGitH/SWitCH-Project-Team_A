@@ -1,39 +1,50 @@
 @startuml
 
 hide footbox
+autonumber
 title US025 - To get the list of items on direct sale of a given author
 
-box "Tests" #LightYellow
+box #WhiteSmoke
 actor Buyer
-participant ":UI" as UI
+participant ":UI025" as UI025
 end box
 
-participant ":ListTheItemsOnDirectSaleByAuthorController" as ListTheItemsOnDirectSaleByAuthorController
-participant ":ItemRepository" as ItemRepository
+box "Controller" #LightBlue
+participant ":GetListOfItemsOnDirectSaleOfGivenAuthorController" as GetListOfItemsOnDirectSaleOfGivenAuthorController
+end box
 
-Buyer -> UI : **1** I want the list of items on direct sale by author
+box "Persistence" #LightGrey
+participant ":ListingRepository" as ListingRepository
+end box
 
-UI -> ListTheItemsOnDirectSaleByAuthorController : **2** getListOfItems(typeOfSale, author)
-activate ListTheItemsOnDirectSaleByAuthorController
+Buyer -> UI025 : I want to get the list of items on direct sale of a given author
+activate UI025
+Buyer <-- UI025 : Which author?
+Buyer -> UI025 : author
 
-ListTheItemsOnDirectSaleByAuthorController -> ItemRepository : **3** getListOfItems(typeOfSale, author)
-activate ItemRepository
+UI025 -> GetListOfItemsOnDirectSaleOfGivenAuthorController : getListOfItemsOnDirectSale(author)
+activate GetListOfItemsOnDirectSaleOfGivenAuthorController
 
-' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, author)
+GetListOfItemsOnDirectSaleOfGivenAuthorController -> ListingRepository : getListOfItems(typeOfSale, author)
+activate ListingRepository
 
-ItemRepository -> ItemRepository : **4** validateParameters(typeOfSale, author)
 
-create "i1: List<Item>" as Item
-ItemRepository -> Item : **5** createList(typeOfSale, author)
+ListingRepository -> ListingRepository : validateParameters(typeOfSale, author)
 
-ItemRepository --> ListTheItemsOnDirectSaleByAuthorController : **6** List<Item> items
-deactivate ItemRepository
+box "Domain Model" #LightYellow
+create "l1: List<Listing>" as Listing
+ListingRepository -> Listing : getList(typeOfSale, author)
+end box
 
-ListTheItemsOnDirectSaleByAuthorController -> ListTheItemsOnDirectSaleByAuthorController : **7** copyList(items)
+ListingRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController : l1
+deactivate ListingRepository
 
-ListTheItemsOnDirectSaleByAuthorController --> UI : **8** List<copyItems> (copyItems)
-deactivate ListTheItemsOnDirectSaleByAuthorController
+GetListOfItemsOnDirectSaleOfGivenAuthorController -> GetListOfItemsOnDirectSaleOfGivenAuthorController : cl1: copyList(l1)
 
-UI --> Buyer : **9** List of items
+GetListOfItemsOnDirectSaleOfGivenAuthorController --> UI025 : cl1
+deactivate GetListOfItemsOnDirectSaleOfGivenAuthorController
+
+UI025 --> Buyer : List of items on direct sale
+deactivate UI025
 
 @enduml

@@ -1,47 +1,57 @@
 @startuml
 
 hide footbox
+autonumber
 
 title US001 - To register a user in the system
 
-box #LightYellow
+box #WhiteSmoke
 actor Administrator
-participant ":UI" as UI
+participant ":UI001" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":RegisterUserController" as RegisterUserController
+end box
+
+box "Persistence" #LightGrey
 participant ":UserRepository" as UserRepository
+end box
 
 ' Human contact between Administrator and UI
-Administrator -> UI : **1** I want to register a user in the system
-UI -->> Administrator : **2** Provide username, contact and profile information for the User
-Administrator -> UI : **3** For the new user (u1), here's the username, contact and profile information
+activate UI
+Administrator -> UI : I want to register a user in the system
+UI -->> Administrator :  Provide username, contact and profile information for the user
+Administrator -> UI :  Here's the username, contact and profile information
 
 ' First contact between UI and the System
-UI -> RegisterUserController : **4** RegisterUser(username, contact, profile)
+UI -> RegisterUserController : RegisterUser(username, contact, profile)
 activate RegisterUserController
 
-RegisterUserController -> UserRepository : **5** createAndAddUser(username, contact, profile)
+RegisterUserController -> UserRepository : createAndAddUser(username, contact, profile)
+
 activate UserRepository
 ' Creation of u1 instance from User class
+box "Domain Model"#LightYellow
 create "u1: User" as User
-
+end box
 
 ' Creation, validation and addition
-UserRepository -> User : **6** create(username, contact, profile)
-UserRepository -> UserRepository : **7** validateUser(u1)
-UserRepository -> UserRepository : **8** addUserToUserList(u1)
+UserRepository -> User : create(username, contact, profile)
+UserRepository -> UserRepository : validateUser(userTest)
+UserRepository -> UserRepository : addUserToUserList(userTest)
 
 
 ' Return from UserRepository to RegisterUserController
-UserRepository --> RegisterUserController : **9** New User (u1) created and added to the list of users
+UserRepository --> RegisterUserController : userTest created and added to the list of users
 deactivate UserRepository
 
 ' Return from RegisterUserController to UI
-RegisterUserController --> UI : **10** Success
+RegisterUserController --> UI : Success
 deactivate RegisterUserController
 
 ' Return from UI to Administrator
-UI --> Administrator : **11** Success
+UI --> Administrator : Success
+deactivate UI
 
 @enduml

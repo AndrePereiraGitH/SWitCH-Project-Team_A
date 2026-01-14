@@ -1,19 +1,19 @@
 @startuml
-title US025 - To get the list of items on auction of a given author
+title US026 - To get the list of items on auction of a given author
 
-class ListTheItemsOnAuctionByAuthorController {
-  +getListOfItems(typeOfSale, author)
-  #copyList(items)
+class GetListOfItemsOnAuctionOfGivenAuthorController {
+  +getListOfItemsOnAuction(author)
+  -copyList(l1)
 }
 
-class ItemRepository {
+class ListingRepository {
   +getListOfItems(typeOfSale, author)
-  ' -convertStringToEnum(typeOfSale, author)
   -validateParameters(typeOfSale, author)
 }
 
-class Item {
-  - bibliographicalData: BibliographicalData
+class Listing {
+  - item: Item
+  - saleType: SaleType
 }
 
 enum SaleType {
@@ -21,15 +21,20 @@ enum SaleType {
     AUCTION
 }
 
-class BibliographicalData {
-    - authors: List<Profile>;
+class Item {
+    - bibliographicalData: BibliographicalData
 }
+
+class BibliographicalData {
+    - authors: List<Profile>
+    }
 
 ' Interactions
 
-ListTheItemsOnAuctionByAuthorController  "1 " -- "1 " ItemRepository : uses >
-ItemRepository "1 " -- " * " Item : retrieves >
-Item "                                *" --> "1" SaleType : can be\nsold by >
-Item "*"--> "1  " BibliographicalData : has >
+GetListOfItemsOnAuctionOfGivenAuthorController  "1 " -- "1 " ListingRepository : uses >
+ListingRepository "1 " -- " * " Listing : retrieves >
+Listing "                                *" --> "1 " SaleType : can be\nsold by >
+Listing "1"--> "1    " Item : lists an >
+Item "*" -- "1 " BibliographicalData: has >
 
 @enduml
