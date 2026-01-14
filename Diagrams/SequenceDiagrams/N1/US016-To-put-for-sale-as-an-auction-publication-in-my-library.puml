@@ -1,0 +1,22 @@
+@startuml
+autonumber
+hide footbox
+title US0016 (Level 1) - Put a publication from my library for sale in an auction
+
+actor User
+participant System
+
+User -> System : I want to sell a publication of my library as an auction
+activate User
+activate System
+System --> User : Which library?
+User -> System : myLibrary
+System --> User : Which publication?
+User -> System : publication
+System --> User : Insert initialDate, finalDate, initialPrice, buyOutPrice
+User -> System : provide data
+
+System --> User : Done (Auction created)
+deactivate System
+deactivate User
+@enduml

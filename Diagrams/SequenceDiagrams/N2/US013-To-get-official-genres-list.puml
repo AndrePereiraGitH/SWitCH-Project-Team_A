@@ -1,0 +1,35 @@
+@startuml
+autonumber
+
+hide footbox
+title US0013 - To get official genres list
+
+box  #WhiteSmoke
+actor User
+participant ":UI" as UI
+end box
+
+box "Controller" #LightBlue
+participant ":ListAllGenresGenreController" as AddGenreCtrl
+end box
+
+box "Persistence" #LightGrey
+participant ":GenreRepository" as GenreRepository
+
+User -> UI : I want to get a list of official genres in the system
+activate UI
+UI -> AddGenreCtrl : getGenresList()
+activate AddGenreCtrl
+
+AddGenreCtrl -> GenreRepository : findAllGenres()
+activate GenreRepository
+
+GenreRepository --> AddGenreCtrl : List<Genre>
+deactivate GenreRepository
+
+AddGenreCtrl --> UI : List<Genre>
+deactivate AddGenreCtrl
+
+UI --> User : Official List of Genres
+deactivate UI
+@enduml

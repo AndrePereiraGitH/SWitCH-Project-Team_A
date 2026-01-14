@@ -1,0 +1,76 @@
+@startuml
+hide empty members
+skinparam classAttributeIconSize 0
+title US016 - Put a publication from my library for sale in an auction
+
+package "Domain" {
+
+  class Library {
+    +findPublication(publication) : Publication
+  }
+
+
+    rectangle "publication concepts" #lightgrey {
+  class Publication {
+    -saleType : SaleType
+    +setSaleTypeAsAuction() : void
+  }
+
+  class Listing {
+    -item : Item
+    -price : Price
+    -saleType : SaleType
+    -seller : User
+    +getPrice() : Price
+  }
+  }
+
+  class Auction {
+    -_listing : Listing
+    -_initialDate : LocalDateTime
+    -_finalDate : LocalDateTime
+    -_initialPrice : Price
+    -_buyOutPrice : Price
+
+    +Auction(listing, initialDate, finalDate, initialPrice, buyOutPrice)
+  }
+
+
+
+
+  enum SaleType {
+    DIRECT_SALE
+    AUCTION
+  }
+}
+
+package "Persistence" {
+  class LibraryRepository {
+    +getLibrary(MyLibrary) : Library
+  }
+
+  class AuctionRepository {
+    +save(auction: Auction) : void
+    +createAuction(listing: Listing, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
+  }
+}
+
+package "Controller" {
+  class CtrlUS016 {
+    +putPublicationForAuction(library, publication, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
+  }
+}
+
+' -------------------- Relationships --------------------
+
+Library "1" o-- "*" Publication : contains
+
+Listing --> SaleType
+Publication --> SaleType
+
+CtrlUS016 --> LibraryRepository
+CtrlUS016 --> AuctionRepository
+AuctionRepository --> Auction
+LibraryRepository --> Library
+
+@enduml
