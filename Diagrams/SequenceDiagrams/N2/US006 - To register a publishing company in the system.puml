@@ -1,0 +1,43 @@
+@startuml
+
+hide footbox
+title US006 - To register a publishing company in the system
+
+box "Tests" #LightYellow
+actor Administrator
+participant ":UI" as UI
+end box
+
+participant ":PublisherController" as RegisterPublisherController
+participant ":PublisherRepository" as PublisherRepository
+
+Administrator -> UI : *1* I want to register a Publishing Company
+UI -->> Administrator : **2** Please Provide name, VatNumber, and Contact
+Administrator -> UI : **3** Name: Cambridge; VatNumber 123456; Contact: +4412345678
+
+UI -> RegisterPublisherController : *4* registerPublisher(name, vatNumber, contact)
+activate RegisterPublisherController
+
+RegisterPublisherController -> PublisherRepository : *5* createNewPublisher(name, vatNumber, contact)
+activate PublisherRepository
+
+create "p1: Publisher" as User
+PublisherRepository -> User : *6* create(name, vatNumber, contact)
+
+
+
+PublisherRepository -> PublisherRepository : *7* validate(p1)
+PublisherRepository -> PublisherRepository : **8** addPublisherToPublisherList(p1)
+
+
+PublisherRepository --> RegisterPublisherController : *9* New Publisher (p1) added to the list of Publishers
+deactivate PublisherRepository
+
+RegisterPublisherController --> UI : *10* success
+deactivate RegisterPublisherController
+
+UI --> Administrator : *11* success
+
+
+
+@enduml
