@@ -3,7 +3,7 @@
 autonumber
 hide footbox
 
-title SSD: US017 - Create a private list of my publications
+title SSD: US017 - To create a private list of my publications
 
 actor "User" as User
 participant ":System" as System
@@ -15,9 +15,9 @@ activate System
 
 System --> User : Please provide the list name and select a genre
 
-User -> System : List name and genre information
+User -> System : Here is the list name and the selected genre
 
-System --> User : The private list has been successfully created
+System --> User : The private list was created successfully
 
 deactivate System
 deactivate User

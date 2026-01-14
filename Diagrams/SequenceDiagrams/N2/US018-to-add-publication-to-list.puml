@@ -4,19 +4,22 @@ autonumber
 
 title US018 - Add one of my publications to a list of mine
 
-box #LightYellow
+box #WhiteSmoke
 actor "User" as User
-participant ":UI" as UI
+participant ":UI - US018" as UI
 end box
 
-
+box #LightBlue
 participant ":AddPublicationToListController" as Controller
+end box
 
-
-
+box #LightGrey
 participant ":PublicationListRepository" as Repository
+end box
 
-
+box #LightYellow
+participant ":PublicationList" as List
+end box
 
 User -> UI : I want to add one of my publications to a list of mine
 activate UI
@@ -24,17 +27,22 @@ activate UI
 UI -> Controller : addPublicationToList(listId, publicationId)
 activate Controller
 
-Controller -> Repository : getList(listId)
+Controller -> Repository : findById(listId, user)
 activate Repository
 Repository --> Controller : list
 deactivate Repository
 
-Controller -> Repository : validateToAdd(list, publication)
-activate Repository
-Repository --> Controller : valid
-deactivate Repository
+Controller -> List : validateToAdd(publication)
+activate List
+List --> Controller : true
+deactivate List
 
-Controller -> Repository : addPublication(list, publication)
+Controller -> List : addPublication(publication)
+activate List
+List --> Controller : updated
+deactivate List
+
+Controller -> Repository : save(list)
 activate Repository
 Repository --> Controller : success
 deactivate Repository
