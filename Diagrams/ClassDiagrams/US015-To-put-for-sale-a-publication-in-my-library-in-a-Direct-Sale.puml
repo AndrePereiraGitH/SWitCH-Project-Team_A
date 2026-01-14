@@ -7,11 +7,8 @@ class MyLibrary {
   + findPublication(publication) : Publication
 }
 
-class Publication {
-  title : String
-  forSale : boolean
-  + markAsDirectSale()
-  + isForSale() : boolean
+class ItemRepository {
+  + createPhysicalItem()
 }
 
 class DirectSale {
@@ -23,20 +20,25 @@ class LibraryRepository {
 }
 
 class ListingRepository {
-  + createDirectSale(publication : Publication, price : double) : DirectSale
+  + createAndAddDirectSale(item1, price: double) : DirectSale
 }
 
 class ToPutPublicationInDirectSaleController {
   + putPublicationForDirectSale(libraryId, publicationId, price)
 }
 
+class Publication {
+
+}
+
 ToPutPublicationInDirectSaleController "1" -- "1" MyLibrary
 MyLibrary "1" -- "*" Publication
-Publication "1" -- "0..1" DirectSale
+ListingRepository "1" -- "0..1" DirectSale
+
+ItemRepository "1" -- "0..*" MyLibrary
 
 ToPutPublicationInDirectSaleController "1" -- "1" LibraryRepository
 ToPutPublicationInDirectSaleController "1" -- "1" ListingRepository
-ToPutPublicationInDirectSaleController -- MyLibrary
-ToPutPublicationInDirectSaleController -- Publication
+ToPutPublicationInDirectSaleController "1" -- "1" ItemRepository
 
 @enduml

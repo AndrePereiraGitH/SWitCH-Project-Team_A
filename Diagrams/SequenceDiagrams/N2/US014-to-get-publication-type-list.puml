@@ -3,14 +3,18 @@
 hide footbox
 title US0014 - To get publication types list
 
-box  #LightYellow
+box  #WhiteSmoke
 actor User
 participant ":UI" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":GetPublicationTypeController" as GetPublicationTypeController
-participant ":PublicationTypeRepository" as PublicationTypeRepository
+end box
 
+box "Persistence" #LightYellow
+participant ":PublicationTypeRepository" as PublicationTypeRepository
+end box
 User -> UI : **1** I want to get a list of all publication types
 activate UI
 
@@ -27,7 +31,7 @@ GetPublicationTypeController --> UI : **5** List<PublicationTypes>
 deactivate GetPublicationTypeController
 
 UI --> User : **6** Official List of Publication Types
-
+deactivate
 
 
 @enduml

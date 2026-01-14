@@ -3,52 +3,73 @@ autonumber
 hide footbox
 title US0015 - To put for sale a publication in my library in a Direct Sale
 
-box #LightYellow
+box #WhiteSmoke
 actor User
 participant ":UI" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":ToPutPublicationInDirectSaleController" as C
+end box
+
+box "Persistence" #LightGrey
 participant ":LibraryRepository" as LibRepo
-participant "myLibrary:Library" as Lib
-participant "pub:Publication" as Pub
-'/participant ":Listing" as Lis
+participant ":ItemRepo" as Item
 participant ":ListingRepository" as ListRepo
+end box
+
+box "Domain Model"#LightYellow
+participant "myLibrary:Library" as Lib
 
 User -> UI : I want to sell a publication in Direct Sale
 UI --> User : Which library?
 User -> UI : myLibrary
-UI --> User : Which publication?
-User -> UI : publicationBook
-UI --> User : Which price?
-User -> UI : Price "x"
 
-UI -> C : putPublicationForDirectSale(myLibrary, publicationBook, price)
+
+UI -> C : getMyLibrary()
 activate C
-
 C -> LibRepo : getLibrary(myLibrary)
 activate LibRepo
 LibRepo -> LibRepo : verifyIfMyLibraryExists()
 LibRepo --> C : myLibrary
 deactivate LibRepo
+C --> UI : myLibrary
+deactivate C
 
+
+UI --> User : Which publication?
+User -> UI : publicationBook
+
+UI -> C : findPublication()
+activate C
 C -> Lib : findPublication(publicationBook)
 activate Lib
 Lib -> Lib : verifyIfPublicationExists()
 Lib --> C : publicationBook
 deactivate Lib
+C --> UI : publicationBook
+deactivate C
 
-C -> Pub : markAsDirectSale()
-activate Pub
-Pub --> C : Success
-deactivate Pub
 
-C -> ListRepo : createAndAddDirectSale(publicationBook, price)
+UI --> User : Which price?
+User -> UI : Price "x"
+
+UI -> C : putPublicationInDirectSale(myLibrary, publicationBook, price)
+activate C
+C -> Item : createPhysicalItem()
+activate Item
+create "item1: Item" as item1
+Item -> item1 : create
+Item --> C : Success
+deactivate Item
+
+C -> ListRepo : createAndAddDirectSale(item1, price)
 activate ListRepo
 create "directSale1:DirecSale" as directSale1
-ListRepo -> directSale1 : <<create>>
+ListRepo -> directSale1 : create
 ListRepo --> C : directSale1
 deactivate ListRepo
+end box
 
 C --> UI : Success(directSale1)
 deactivate C
