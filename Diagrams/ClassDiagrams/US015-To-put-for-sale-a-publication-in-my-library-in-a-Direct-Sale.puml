@@ -1,0 +1,42 @@
+@startuml
+title US015 – To put for sale a publication in my library in a Direct Sale
+
+class MyLibrary {
+  name : String
+  publications : List<Publication>
+  + findPublication(publication) : Publication
+}
+
+class Publication {
+  title : String
+  forSale : boolean
+  + markAsDirectSale()
+  + isForSale() : boolean
+}
+
+class DirectSale {
+  price : double
+}
+
+class LibraryRepository {
+  + getLibrary(name) : myLibrary
+}
+
+class ListingRepository {
+  + createDirectSale(publication : Publication, price : double) : DirectSale
+}
+
+class ToPutPublicationInDirectSaleController {
+  + putPublicationForDirectSale(libraryId, publicationId, price)
+}
+
+ToPutPublicationInDirectSaleController "1" -- "1" MyLibrary
+MyLibrary "1" -- "*" Publication
+Publication "1" -- "0..1" DirectSale
+
+ToPutPublicationInDirectSaleController "1" -- "1" LibraryRepository
+ToPutPublicationInDirectSaleController "1" -- "1" ListingRepository
+ToPutPublicationInDirectSaleController -- MyLibrary
+ToPutPublicationInDirectSaleController -- Publication
+
+@enduml

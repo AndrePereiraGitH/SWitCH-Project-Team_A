@@ -1,0 +1,33 @@
+@startuml
+
+hide footbox
+title US0014 - To get publication types list
+
+box  #LightYellow
+actor User
+participant ":UI" as UI
+end box
+
+participant ":GetPublicationTypeController" as GetPublicationTypeController
+participant ":PublicationTypeRepository" as PublicationTypeRepository
+
+User -> UI : **1** I want to get a list of all publication types
+activate UI
+
+UI -> GetPublicationTypeController : **2** getPublicationTypesList()
+activate GetPublicationTypeController
+
+GetPublicationTypeController -> PublicationTypeRepository : **3** findAllPublicationTypes()
+activate PublicationTypeRepository
+
+PublicationTypeRepository --> GetPublicationTypeController : **4** List<PublicationTypes>
+deactivate PublicationTypeRepository
+
+GetPublicationTypeController --> UI : **5** List<PublicationTypes>
+deactivate GetPublicationTypeController
+
+UI --> User : **6** Official List of Publication Types
+
+
+
+@enduml

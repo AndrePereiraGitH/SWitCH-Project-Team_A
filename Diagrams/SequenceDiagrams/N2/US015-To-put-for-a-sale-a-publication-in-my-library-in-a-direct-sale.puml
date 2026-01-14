@@ -1,0 +1,56 @@
+@startuml
+autonumber
+hide footbox
+title US0015 - To put for sale a publication in my library in a Direct Sale
+
+box #LightYellow
+actor User
+participant ":UI" as UI
+end box
+
+participant ":ToPutPublicationInDirectSaleController" as C
+participant ":LibraryRepository" as LibRepo
+participant "myLibrary:Library" as Lib
+participant "pub:Publication" as Pub
+'/participant ":Listing" as Lis
+participant ":ListingRepository" as ListRepo
+
+User -> UI : I want to sell a publication in Direct Sale
+UI --> User : Which library?
+User -> UI : myLibrary
+UI --> User : Which publication?
+User -> UI : publicationBook
+UI --> User : Which price?
+User -> UI : Price "x"
+
+UI -> C : putPublicationForDirectSale(myLibrary, publicationBook, price)
+activate C
+
+C -> LibRepo : getLibrary(myLibrary)
+activate LibRepo
+LibRepo -> LibRepo : verifyIfMyLibraryExists()
+LibRepo --> C : myLibrary
+deactivate LibRepo
+
+C -> Lib : findPublication(publicationBook)
+activate Lib
+Lib -> Lib : verifyIfPublicationExists()
+Lib --> C : publicationBook
+deactivate Lib
+
+C -> Pub : markAsDirectSale()
+activate Pub
+Pub --> C : Success
+deactivate Pub
+
+C -> ListRepo : createAndAddDirectSale(publicationBook, price)
+activate ListRepo
+create "directSale1:DirecSale" as directSale1
+ListRepo -> directSale1 : <<create>>
+ListRepo --> C : directSale1
+deactivate ListRepo
+
+C --> UI : Success(directSale1)
+deactivate C
+UI --> User : Done
+@enduml

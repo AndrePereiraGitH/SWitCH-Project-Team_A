@@ -1,0 +1,19 @@
+@startuml
+
+autonumber
+hide footbox
+title SSD: US014 - To get a publication type list
+
+actor "User" as User
+participant ":System" as System
+
+activate User
+
+    User -> System : I want to request list of publication types
+    activate System
+
+    System --> User : return list of publication types
+    deactivate System
+
+deactivate User
+@enduml

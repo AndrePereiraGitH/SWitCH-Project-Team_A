@@ -1,0 +1,16 @@
+@startuml
+title US014 - To get publication type list
+
+class GetPublicationTypeController {
+  +getPublicationTypesList()
+}
+
+class PublicationTypeRepository {
+  +findAllPublicationTypes()
+}
+
+' Interactions
+
+GetPublicationTypeController "1 " -- "1 " PublicationTypeRepository : requests list to >
+
+@enduml
