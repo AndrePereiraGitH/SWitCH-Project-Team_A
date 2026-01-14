@@ -4,7 +4,7 @@ hide footbox
 title US012 - Get the list of publications in my library
 
 
-box "Tests" #WhiteSmoke
+box  #WhiteSmoke
     actor User
     participant ":UI012" as UI
 end box
@@ -27,15 +27,18 @@ activate Ctrl
 Ctrl -> LibDomain: getListOfPublicationsInLibrary()
 activate LibDomain
 
+
         loop for each publication in the library
-            LibDomain -> PubDomain: getDetails()
+            LibDomain -> PubDomain: getCopyPubDetails()
             activate PubDomain
-            PubDomain --> LibDomain: details
+            PubDomain --> LibDomain: copyPubDetails
             deactivate PubDomain
+            LibDomain -> LibDomain: list.add(copyPubDetails)
         end
 
 
-LibDomain --> Ctrl: ListOfPublicationsInLibrary
+
+LibDomain --> Ctrl: listOfPublicationsInLibrary
 deactivate LibDomain
 Ctrl --> UI: true
 deactivate Ctrl

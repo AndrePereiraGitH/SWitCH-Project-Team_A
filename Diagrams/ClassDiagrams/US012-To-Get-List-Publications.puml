@@ -1,10 +1,8 @@
-@startuml
-skinparam classAttributeIconSize 0
+g@startuml
+
 hide circle
 
-package "Tests" {
-    class UI012{}
-}
+
 
 package "Controller" {
     class GetListOfPublicationsInLibraryController {
@@ -16,10 +14,12 @@ package "Controller" {
 package "Domain Model" {
     class Library {
         + getListOfPublicationsInLibrary()
+        + list.add(copyPubDetails)
     }
 
     class Publication {
-        + getDetails(): String
+        + getCopyPubDetails()
+
     }
 }
 

@@ -1,10 +1,8 @@
 @startuml
-skinparam classAttributeIconSize 0
+
 hide circle
 
-package "Tests" {
-    class UI011{}
-}
+
 
 package "Controller" {
     class AddPublicationToLibraryController {

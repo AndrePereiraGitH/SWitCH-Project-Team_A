@@ -4,7 +4,7 @@ hide footbox
 title US011 - Add publication to library
 
 
-box "Tests" #WhiteSmoke
+box  #WhiteSmoke
     actor "User" as User
     participant ":UI011" as UI
 end box
@@ -29,20 +29,28 @@ activate Ctrl
 Ctrl -> LibDomain: getAll()
 activate LibDomain
 LibDomain --> Ctrl: listOfPublicationsInLibrary
+deactivate LibDomain
+
 Ctrl -> PubRepo: getListOfDifferentPublications(listOfPublicationsInLibrary)
 activate PubRepo
 PubRepo -> Ctrl : ListOfDifferentPublications
 deactivate PubRepo
 Ctrl --> UI: ListOfDifferentPublications
+deactivate Ctrl
+
 UI --> User: List of publications, select one!
 
 User -> UI: selectedPub
 UI -> Ctrl: addPublicationToLib(selectedPub)
+activate Ctrl
+
 Ctrl -> LibDomain: addPublication(selectedPub)
+activate LibDomain
 LibDomain -> LibDomain: verifyUnique(selectedPub)
 LibDomain -> LibDomain: add(selectedPub)
 LibDomain --> Ctrl: true
 deactivate LibDomain
+
 Ctrl --> UI: true
 deactivate Ctrl
 UI --> User: Done!
