@@ -1,9 +1,7 @@
 @startuml
 title US009 - To create a library
 
-package "Tests" {
-class UI009{}
-}
+
 
 class LibraryRepository {
 +create(myFirstLib)
@@ -20,7 +18,7 @@ class CreateLibraryCtrl {
 }
 
 'interactions
-Tests --> CreateLibraryCtrl : contacts
+UI009 --> CreateLibraryCtrl : contacts
 CreateLibraryCtrl -> LibraryRepository : uses
 LibraryRepository -> Library : instantiates through
 

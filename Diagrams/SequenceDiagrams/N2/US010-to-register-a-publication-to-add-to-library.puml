@@ -7,9 +7,9 @@ title US010 - To register a new publication in MiteLovers
 ' in the system, so that I can add the
 ' publication to my library.
 
-box "Tests" #LightYellow
+box #LightYellow
 actor User
-participant ":UI" as UI
+participant ":UI010" as UI
 end box
 
 
@@ -24,9 +24,9 @@ User -> UI : I want to add a publication to MiteLovers
 activate UI
 UI --> User : What publication?
 User -> UI : publication
-UI -> Ctrl : addPublication(publication)
+UI -> Ctrl : createAndAddPublication(publication)
 activate Ctrl
-Ctrl -> SystemRepo : addPublicationToSystem(publication)
+Ctrl -> SystemRepo : createAndAddPublicationToSystem(publication)
 activate SystemRepo
 create "p1:Publication" as publication
 SystemRepo -> publication: create(publication)

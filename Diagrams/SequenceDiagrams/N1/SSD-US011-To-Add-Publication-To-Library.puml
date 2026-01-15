@@ -5,9 +5,9 @@ hide footbox
 title SSD: US011 - Add publication to library
 
 actor "User" as User
-participant ":System" as System
+participant ":MiteLovers" as System
 
-activate User
+
 
     User -> System : I want to add a publication to my library
     activate System
@@ -19,5 +19,5 @@ activate User
     System --> User: done!
     deactivate System
 
-deactivate User
+
 @enduml

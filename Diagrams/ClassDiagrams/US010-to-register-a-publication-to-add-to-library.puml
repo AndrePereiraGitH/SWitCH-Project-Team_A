@@ -1,8 +1,8 @@
 @startuml
 title US010 - To register a new publication in MiteLovers to add to library
 
-package "Tests" {
-class UI010{}
+
+class UI010 {
 }
 
 class RegisterNewPublicationCtrl {
@@ -20,7 +20,7 @@ class Publication {
 }
 
 ' interactions
-Tests --> RegisterNewPublicationCtrl : contacts
+UI010 --> RegisterNewPublicationCtrl : contacts
 RegisterNewPublicationCtrl -> SystemPublicationRepository : uses
 SystemPublicationRepository -> Publication : instantiates through
 

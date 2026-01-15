@@ -1,0 +1,22 @@
+@startuml
+hide footbox
+autonumber
+title US010 - To register a new publication in MiteLovers
+
+' As a User, I want to register a new publication
+' in the system, so that I can add the
+' publication to my library.
+
+box #LightYellow
+actor User
+participant ":MiteLovers" as UI
+end box
+
+'Interactions
+User -> UI : I want to register a publication
+Activate UI
+UI --> User : Please enter the publication that you want to add on MiteLovers
+User -> UI : Here's the publication.
+UI --> User : New publication added on MiteLovers successfully.
+deactivate UI
+@enduml

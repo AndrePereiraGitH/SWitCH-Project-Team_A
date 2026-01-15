@@ -3,9 +3,9 @@ hide footbox
 autonumber
 title US009 - To create a library
 
-box "Tests" #LightYellow
+box #LightYellow
 actor User
-participant ":UI" as UI
+participant ":UI009" as UI
 end box
 
 
@@ -18,9 +18,9 @@ activate UI
 UI --> User : What name?
 User -> UI : myFirstLib
 
-UI -> Ctrl : CreateLibrary(myFirstLib)
+UI -> Ctrl : createAndAddLibrary(myFirstLib)
 activate Ctrl
-Ctrl -> LibraryRepo : CreateLibrary(myFirstLib)
+Ctrl -> LibraryRepo : createAndAddLibrary(myFirstLib)
 activate LibraryRepo
 
 create "lib1:Library" as Library

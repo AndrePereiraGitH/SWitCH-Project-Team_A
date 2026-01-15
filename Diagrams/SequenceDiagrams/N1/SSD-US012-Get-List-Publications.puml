@@ -5,9 +5,9 @@ hide footbox
 title SSD: US012 - Get the list of publications in my library.
 
 actor "User" as User
-participant ":System" as System
+participant ":MiteLovers" as System
 
-activate User
+
 
     User -> System : I want a list of publications from my library
     activate System
@@ -15,5 +15,5 @@ activate User
     System --> User : return list of publications
     deactivate System
 
-deactivate User
+
 @enduml
