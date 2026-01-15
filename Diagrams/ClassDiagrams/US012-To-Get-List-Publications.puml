@@ -14,7 +14,7 @@ package "Controller" {
 package "Domain Model" {
     class Library {
         + getListOfPublicationsInLibrary()
-        + list.add(copyPubDetails)
+        - list.add(copyPubDetails)
     }
 
     class Publication {

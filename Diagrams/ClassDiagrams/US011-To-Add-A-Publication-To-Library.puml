@@ -21,8 +21,8 @@ package "Domain Model" {
     class Library {
         + getAll()
         + addPublication(selectedPub)
-        + verifyUnique(selectedPub)
-        + add(selectedPub)
+        - verifyUnique(selectedPub)
+        - add(selectedPub)
     }
 
 }
