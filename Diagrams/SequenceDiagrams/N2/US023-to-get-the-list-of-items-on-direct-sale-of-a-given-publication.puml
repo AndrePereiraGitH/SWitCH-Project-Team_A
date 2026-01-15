@@ -28,18 +28,18 @@ UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : getListO
 activate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
 
 ' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : **3** getListOfItems(typeOfSale, publication)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : getListOfItems(typeOfSale, publication)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : getListOfItemsOnDirectSale(publication)
 activate ListingRepository
 
 ' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
 
 ' ListingRepository -> ListingRepository : **4** validateParameters(typeOfSale, publication)
-ListingRepository -> ListingRepository : validateParameters(typeOfSale, publication)
+ListingRepository -> ListingRepository : validateParameters(publication)
 
 box "Domain Model" #LightYellow
 create "l1: List<Listing>" as Listing
 ' ListingRepository -> Item : **5** createList(typeOfSale, publication)
-ListingRepository -> Listing : getList(typeOfSale, publication)
+ListingRepository -> Listing : getList(publication)
 end box
 
 ' ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items

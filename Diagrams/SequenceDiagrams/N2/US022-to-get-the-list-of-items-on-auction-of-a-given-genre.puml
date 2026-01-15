@@ -1,40 +1,49 @@
 @startuml
 
 hide footbox
-title US021 - To get the list of items on auction of a given genre
+autonumber
+title US022 - To get the list of items on auction of a given genre
 
-box "Tests" #LightYellow
+box #WhiteSmoke
 actor Buyer
-participant ":UI" as UI
+participant ":UI022" as UI022
 end box
 
-participant ":ItemController" as ItemController
-participant ":ItemRepository" as ItemRepository
+Buyer -> UI022 : I want to get a list of items on auction of a given genre
+activate UI022
+UI022 --> Buyer : Which genre?
+Buyer -> UI022 : genre
 
-Buyer -> UI : **1** getListOfItems(typeOfSale, genre)
+box "Controller" #LightBlue
+participant ":ToGetTheListOfItemsOnAuctionOfAGivenGenreController" as ToGetTheListOfItemsOnAuctionOfAGivenGenreController
+end box
 
-UI -> ItemController : **2** getListOfItems(typeOfSale, genre)
-activate ItemController
+UI022 -> ToGetTheListOfItemsOnAuctionOfAGivenGenreController: getListOfItemsOnAuction(genre)
+activate ToGetTheListOfItemsOnAuctionOfAGivenGenreController
 
-ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, genre)
-activate ItemRepository
+box "Persistence" #LightGrey
+participant ":ListingRepository" as ListingRepository
+end box
 
-ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, genre)
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController-> ListingRepository : getListOfItemsOnAuction(genre)
+activate ListingRepository
 
-ItemRepository -> ItemRepository : **5** validateParameters(typeOfSale, genre)
+ListingRepository -> ListingRepository : validateParameters(genre)
 
-create "i1: List<Item>" as Item
-ItemRepository -> Item : **6** createList(typeOfSale, genre)
+box "Domain Model" #LightYellow
+create "l1: List<Listing>" as Listing
+ListingRepository -> Listing : getList(genre)
+end box
 
-' ItemRepository --> ItemController : **6** i1
-ItemRepository --> ItemController : **7** List<Item> items
-deactivate ItemRepository
+ListingRepository --> ToGetTheListOfItemsOnAuctionOfAGivenGenreController: l1
+deactivate ListingRepository
 
-ItemController -> ItemController : **8** copyList(items)
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController-> ToGetTheListOfItemsOnAuctionOfAGivenGenreController: cl1: copyList(l1)
 
-ItemController --> UI : **9** List<copyItems> (copyItems)
-deactivate ItemController
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController--> UI022 : cl1
+deactivate ToGetTheListOfItemsOnAuctionOfAGivenGenreController
 
-UI --> Buyer : **10** List<copyItems> (copyItems)
+UI022 --> Buyer : List of items on auction
+deactivate UI022
 
 @enduml

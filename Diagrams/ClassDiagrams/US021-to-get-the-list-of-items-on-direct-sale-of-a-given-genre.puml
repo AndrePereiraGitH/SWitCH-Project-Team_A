@@ -1,25 +1,19 @@
 @startuml
 title US021 - To get the list of items on direct sale of a given genre
 
-class ItemController {
-  +getListOfItems(typeOfSale, genre)
-  #copyList(items)
+class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
+  +getListOfItemsOnDirectSale(genre)
+  -copyList()
 }
 
-class ItemRepository {
-  +getListOfItems(typeOfSale, genre)
-  -convertStringToEnum(typeOfSale, genre)
-  -validateParameters(typeOfSale, genre)
+class ListingRepository{
+  +getListOfItemsOnDirectSale(genre)
+  -validateParameters(genre)
 }
 
-class Item {
-  - condition: Condition
-  - weight: double
-  - picture: List<Picture>
-  - dimension: Dimensions
-  - binding: TypeOfBinding
-  - edition: String
-  - bibliographicalData: BibliographicalData
+class Listing {
+  - item: Item
+  - saleType: SaleType
 }
 
 enum SaleType {
@@ -27,20 +21,25 @@ enum SaleType {
     AUCTION
 }
 
-enum Genre {
-    FICTION
-    NON_FICTION
-    SCIENCE
-    BIOGRAPHY
-    HISTORY
-    // others
+class Genre {
+    - genre: String
+}
+
+class Item {
+    - bibliographicalData: BibliographicalData
+}
+
+class BibliographicalData {
+    - genre: Genre
 }
 
 ' Interactions
 
-ItemController  "1 " -- "1 " ItemRepository : uses >
-ItemRepository "1 " -- " * " Item : retrieves >
-Item "                                *" --> "1" SaleType : can be\nsold by >
-Item "*"--> "1..*   " Genre : has >
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  "1 " -- "1 " ListingRepository : uses >
+ListingRepository "1 " -- " * " Listing : retrieves >
+Listing "                                *" --> "1" SaleType : can be\nsold by >
+Listing "1"--> "*" Item : lists an >
+Item "*" -- "1" BibliographicalData: has >
+BibliographicalData "*" -- "1..*" Genre: has >
 
 @enduml

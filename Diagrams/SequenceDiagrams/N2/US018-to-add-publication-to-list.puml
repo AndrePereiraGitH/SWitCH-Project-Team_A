@@ -32,9 +32,10 @@ activate Repository
 Repository --> Controller : list
 deactivate Repository
 
+'create PublicationList" as List
 Controller -> List : validateToAdd(publication)
 activate List
-List --> Controller : true
+'List --> Controller : true
 deactivate List
 
 Controller -> List : addPublication(publication)

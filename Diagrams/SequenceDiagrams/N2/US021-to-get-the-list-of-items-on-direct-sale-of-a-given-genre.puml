@@ -1,40 +1,49 @@
 @startuml
 
 hide footbox
+autonumber
 title US021 - To get the list of items on direct sale of a given genre
 
-box "Tests" #LightYellow
+box #WhiteSmoke
 actor Buyer
-participant ":UI" as UI
+participant ":UI021" as UI021
 end box
 
-participant ":ItemController" as ItemController
-participant ":ItemRepository" as ItemRepository
+Buyer -> UI021 : I want to get a list of items on direct sale of a given genre
+activate UI021
+UI021 --> Buyer : Which genre?
+Buyer -> UI021 : genre
 
-Buyer -> UI : **1** getListOfItems(typeOfSale, genre)
+box "Controller" #LightBlue
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController
+end box
 
-UI -> ItemController : **2** getListOfItems(typeOfSale, genre)
-activate ItemController
+UI021 -> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController: getListOfItemsOnDirectSale(genre)
+activate ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController
 
-ItemController -> ItemRepository : **3** getListOfItems(typeOfSale, genre)
-activate ItemRepository
+box "Persistence" #LightGrey
+participant ":ListingRepository" as ListingRepository
+end box
 
-ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, genre)
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController-> ListingRepository : getListOfItemsOnDirectSale(genre)
+activate ListingRepository
 
-ItemRepository -> ItemRepository : **5** validateParameters(typeOfSale, genre)
+ListingRepository -> ListingRepository : validateParameters(genre)
 
-create "i1: List<Item>" as Item
-ItemRepository -> Item : **6** createList(typeOfSale, genre)
+box "Domain Model" #LightYellow
+create "l1: List<Listing>" as Listing
+ListingRepository -> Listing : getList(genre)
+end box
 
-' ItemRepository --> ItemController : **6** i1
-ItemRepository --> ItemController : **7** List<Item> items
-deactivate ItemRepository
+ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController: l1
+deactivate ListingRepository
 
-ItemController -> ItemController : **8** copyList(items)
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController-> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController: cl1: copyList(l1)
 
-ItemController --> UI : **9** List<copyItems> (copyItems)
-deactivate ItemController
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController--> UI021 : cl1
+deactivate ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController
 
-UI --> Buyer : **10** List<copyItems> (copyItems)
+UI021 --> Buyer : List of items on direct sale
+deactivate UI021
 
 @enduml
