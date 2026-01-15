@@ -4,7 +4,7 @@ title US002 - Register Publication Type to Type List
 
 box #Lightyellow
 actor Administrator
-participant ":UI" as UI
+participant ":UI002" as UI
 end box
 
 
@@ -14,14 +14,20 @@ UI -->> Administrator : **2** What type of Pub
 Administrator -> UI : **3** Book
 
 ' First contact between UI and the System
+box "Controller" #LightBlue
 UI -> RegisterPubTypeController : **4** RegisterPubType(PubType)
 activate RegisterPubTypeController
+end box
 
+box "Persistance" #LightGrey
 RegisterPubTypeController -> PubTypeRepository : **5** createAndAddPubType(PubType)
 activate PubTypeRepository
+end box
+
+box "Domain Model" #LightYellow
 ' Creation of p1 instance from User class
 create "p1: PubType" as PubType
-
+end box
 
 ' Creation, validation and addition
 PubTypeRepository -> PubType : **6** create(PubType)

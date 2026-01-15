@@ -3,13 +3,19 @@
 hide footbox
 title US006 - To register a publishing company in the system
 
-box "Tests" #LightYellow
+box #WhiteSmoke
 actor Administrator
-participant ":UI" as UI
+participant ":UI006" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":PublisherController" as RegisterPublisherController
+
+end box
+
+box "Persistence" #LightGrey
 participant ":PublisherRepository" as PublisherRepository
+end box
 
 Administrator -> UI : *1* I want to register a Publishing Company
 UI -->> Administrator : **2** Please Provide name, VatNumber, and Contact
@@ -19,11 +25,14 @@ UI -> RegisterPublisherController : *4* registerPublisher(name, vatNumber, conta
 activate RegisterPublisherController
 
 RegisterPublisherController -> PublisherRepository : *5* createNewPublisher(name, vatNumber, contact)
+
 activate PublisherRepository
 
+box "Domain Model"#LightYellow
 create "p1: Publisher" as User
-PublisherRepository -> User : *6* create(name, vatNumber, contact)
+end box
 
+PublisherRepository -> User : *6* create(name, vatNumber, contact)
 
 
 PublisherRepository -> PublisherRepository : *7* validate(p1)
