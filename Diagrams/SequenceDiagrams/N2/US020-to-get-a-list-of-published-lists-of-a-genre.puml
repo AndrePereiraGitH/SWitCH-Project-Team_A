@@ -1,28 +1,56 @@
 @startuml
-'https://plantuml.com/sequence-diagram
 
 hide footbox
+autonumber
 
 title US020 - As a user, I want to get a list (name and user) of the publicly published lists of a given genre
 
-box "Tests" #LightYellow
+box #WhiteSmoke
 actor User
-participant ":UI" as UI
-endbox
+participant ":UI020" as UI
+end box
 
-participant ":GetListController" as GetListController
-participant ":ListRepo" as ListRepo
-participant ":List" as List
+box "Controller" #LightBlue
+participant ":PublicListController" as PublicListController
+end box
 
-User -> UI : viewPublicLists (genre)
-UI -> GetListController : getPublicListsByGenre(genre)
+box "Persistence" #LightGrey
+participant ":GenreRepository" as GenreRepository
+participant ":ListRepository" as ListRepository
+end box
 
-GetListController -> ListRepo : findPublicListsByGenre(genre)
-ListRepo -> List : queryPublicListsByGenre(genre)
+' Human contact between User and UI
+activate UI
+User -> UI : I want to see publicly published lists of a certain genre
 
-List --> ListRepo : publicLists (name, ownerUserId)
-ListRepo --> GetListController : publicLists (name, ownerUserId)
+' Get genres from the system
+UI -> PublicListController : getGenres()
+activate PublicListController
 
-GetListController --> UI : returnPublicList(name, ownerUserId)
-UI --> User : Display list (name, user)
+PublicListController -> GenreRepository : findAll()
+activate GenreRepository
+GenreRepository -> GenreRepository : loadAllGenres()
+GenreRepository --> PublicListController : genres
+deactivate GenreRepository
+
+PublicListController --> UI : genres
+UI -->> User : Select genre (genres)
+deactivate PublicListController
+
+' User selects a genre
+User -> UI : Selected! (genreId)
+
+' Fetch public lists for genre
+UI -> PublicListController : getPublicListsByGenre(genreId)
+activate PublicListController
+
+PublicListController -> ListRepository : findPublicByGenre(genreId)
+ListRepository --> PublicListController : lists (name, owner)
+
+PublicListController --> UI : lists
+deactivate PublicListController
+
+UI --> User : Done! (lists)
+deactivate UI
+
 @enduml

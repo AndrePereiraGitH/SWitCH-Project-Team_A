@@ -1,17 +1,16 @@
 @startuml
-
-title US019 - As a User, I want to publicly share a list of mine
-
 skinparam classAttributeIconSize 0
 
+title US019 - Class Diagram (matches updated sequence)
+
 class ShareListController {
-  -listRepo : ListRepository
+  -listRepository : ListRepository
   +shareList(listId : String) : void
 }
 
 class ListRepository {
   +getList(listId : String) : List
-  +save(list : List) : boolean
+  -load(listId : String) : List
 }
 
 class List {
@@ -20,6 +19,6 @@ class List {
 }
 
 ShareListController --> ListRepository : uses
-ListRepository --> List : returns
+ListRepository --> List : returns/persists
 
 @enduml

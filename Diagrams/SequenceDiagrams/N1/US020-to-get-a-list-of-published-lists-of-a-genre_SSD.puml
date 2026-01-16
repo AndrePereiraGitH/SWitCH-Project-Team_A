@@ -12,7 +12,7 @@ participant ":System" as System
 activate User
 activate System
 
-User --> System: show public lists of a certain genre
+User --> System: I want to see public lists of a certain genre
 
 System --> User: select genre (genres)
 

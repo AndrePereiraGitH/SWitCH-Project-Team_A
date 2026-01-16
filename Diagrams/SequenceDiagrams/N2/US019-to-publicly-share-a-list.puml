@@ -1,29 +1,53 @@
 @startuml
 
 hide footbox
+autonumber
 
 title US019 - As a User, I want to publicly share a list of mine
 
-box "Tests" #LightYellow
+box #WhiteSmoke
 actor User
-participant ":UI" as UI
-endbox
+participant ":UI019" as UI
+end box
 
+box "Controller" #LightBlue
 participant ":ShareListController" as ShareListController
-participant ":ListRepo" as ListRepo
-participant ":List" as List
+end box
 
-User -> UI : Click "Share List"
-UI -> ShareListController : requestShareList(listId)
-ShareListController -> ListRepo : getList(listId)
-ListRepo -> List : loadList(listId)
-List --> ListRepo : list
-ListRepo --> ShareListController : list
+box "Persistence" #LightGrey
+participant ":ListRepository" as ListRepository
+end box
 
+box "Domain Model" #LightYellow
+participant "list: List" as List
+end box
+
+' Human contact between User and UI
+activate UI
+User -> UI : I want to publicly share a list of mine
+UI -->> User : Select the list you want to share (lists)
+User -> UI : Selected list (listId)
+
+' First contact between UI and the System
+UI -> ShareListController : shareList(listId)
+activate ShareListController
+ShareListController -> ListRepository : getList(listId)
+
+activate ListRepository
+ListRepository -> ListRepository : load(listId)
+ListRepository --> ShareListController : list
+deactivate ListRepository
+
+' Domain behavior
 ShareListController -> List : makePublic()
-List -> ListRepo : save(list)
-ListRepo --> ShareListController : success
+List --> ShareListController : updated
 
-ShareListController --> UI : shareConfirmed()
-UI --> User : Show public link
+
+' Return back up
+ShareListController --> UI : Success
+deactivate ShareListController
+
+UI --> User : Done! (publicly shared)
+deactivate UI
+
 @enduml

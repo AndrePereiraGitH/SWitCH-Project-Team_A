@@ -1,29 +1,21 @@
 @startuml
-
 skinparam classAttributeIconSize 0
 
-title US020 - As a user, I want to get a list (name and user) of the publicly published lists of a given genre
+title US020 - Class Diagram (matches updated sequence)
 
 class PublicListController {
-  -listRepo : ListRepo
-  -genreRepo : GenreRepo
+  -genreRepository : GenreRepository
+  -listRepository : ListRepository
   +getGenres() : List<Genre>
   +getPublicListsByGenre(genreId : String) : List<ListSummary>
 }
 
-class ListRepo {
-  +findPublicByGenre(genreId) : List<List>
-}
-
-class GenreRepo {
+class GenreRepository {
   +findAll() : List<Genre>
 }
 
-class List {
-  -name : String
-  -isPublic : boolean
-  -genre : Genre
-  -owner : User
+class ListRepository {
+  +findPublicByGenre(genreId : String) : List<ListSummary>
 }
 
 class Genre {
@@ -34,18 +26,27 @@ class User {
   -username : String
 }
 
+class List {
+  -name : String
+  -isPublic : boolean
+  -genre : Genre
+  -owner : User
+}
+
 class ListSummary {
   +listName : String
   +ownerUsername : String
 }
 
-PublicListController --> ListRepo : uses
-PublicListController --> GenreRepo : uses
+PublicListController --> GenreRepository : searches
+PublicListController --> ListRepository : searches
 
-List "0..*" --> "1..*" Genre : genre
+ListRepository --> List : contains
+
+List "0..*" --> "1" Genre : has
 List "0..*" --> "1" User : owner
-ListRepo "1" --> "*" List
 
 PublicListController ..> ListSummary : returns
+
 
 @enduml

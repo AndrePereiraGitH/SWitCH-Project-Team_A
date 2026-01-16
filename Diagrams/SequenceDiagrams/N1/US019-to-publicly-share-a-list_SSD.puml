@@ -12,7 +12,7 @@ participant ":System" as System
 activate User
 activate System
 
-User --> System: Click, publicly share a list
+User --> System: I want to publicly share a list
 
 System --> User: Select list! (lists)
 
