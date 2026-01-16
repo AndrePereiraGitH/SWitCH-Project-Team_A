@@ -17,7 +17,7 @@ class Genre {
   +getName(): String
 }
 
-RegisterGenreController --> GenreRepository : uses >
+RegisterGenreController "1" --> "1" GenreRepository : uses >
 GenreRepository "1" --> "*" Genre : stores >
 
 @enduml

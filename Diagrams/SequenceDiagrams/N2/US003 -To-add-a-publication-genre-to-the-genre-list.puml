@@ -24,16 +24,16 @@ UI -->> Administrator : **2** Please enter the genre name
 Administrator -> UI : **3** Romance
 
 
-UI -> RegisterGenreController : **4** createAndAddGenre(romance)
+UI -> RegisterGenreController : **4** createAndAddGenre(name)
 activate RegisterGenreController
 
-RegisterGenreController -> GenreRepository : **5** createAndAddGenre(romance)
+RegisterGenreController -> GenreRepository : **5** createAndAddGenre(name)
 activate GenreRepository
 
 box "Domain Model" #LightYellow
   create "Romance:Genre" as Genre
   end box
-  GenreRepository -> Genre : **6** createGenre(romance)
+  GenreRepository -> Genre : **6** createGenre(name)
   GenreRepository -> GenreRepository : **7** exists(romance)
 
   GenreRepository -> GenreRepository : **8** addToList(romance)
