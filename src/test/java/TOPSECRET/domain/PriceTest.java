@@ -44,9 +44,7 @@ class PriceTest {
 
         //Arrange
 
-        //Act
-
-        //Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Price(invalidPrice));
 
     }
@@ -62,9 +60,7 @@ class PriceTest {
 
         //Arrange
 
-        //Act
-
-        //Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Price(invalidPrice));
     }
 
@@ -78,9 +74,7 @@ class PriceTest {
     void shouldThrowExceptionWhenPriceIsNegativeAndHasMoreThanTwoDecimals(BigDecimal invalidPrice) {
         //Arrange
 
-        //Act
-
-        //Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Price(invalidPrice));
 
     }
@@ -89,10 +83,19 @@ class PriceTest {
     void shouldThrowExceptionWhenPriceIsZero() {
         //Arrange
         BigDecimal zero = new BigDecimal(0);
-        //Act
 
-        //Assert
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Price(zero));
+    }
+
+    @Test
+    void ensurePriceIsNotEqualToNull() {
+        //Arrange
+        Price price = new Price(BigDecimal.valueOf(10));
+
+        // Act & Assert
+        assertNotEquals(null, price);
     }
 
     // ============================================================
@@ -113,30 +116,66 @@ class PriceTest {
     @Test
     void testEquals_null_andDifferentClass() {
 
-        // arrange + act
+        // Arrange
         Price price = new Price(new BigDecimal("45.50"));
 
-        // assert
+        //Act
+
+        // Assert
         assertNotEquals(null, price);
         assertNotEquals("35.50", price);
     }
 
     @Test
     void equals_sameValue_true_andHashCodeSame() {
+
+        // Arrange
         Price price1 = new Price(new BigDecimal("45.50"));
         Price price2 = new Price(new BigDecimal("45.50"));
 
+        // Act
+
+        // Assert
         assertEquals(price1, price2);
         assertEquals(price1.hashCode(), price2.hashCode());
     }
 
     @Test
     void equals_differentValue_false() {
+        // Arrange
         Price price1 = new Price(new BigDecimal("45.50"));
         Price price2 = new Price(new BigDecimal("45.51"));
 
+        // Act
+
+        // Assert
         assertNotEquals(price1, price2);
     }
+
+    @Test
+    void ensurePriceIsNotEqualToDifferentObject() {
+
+        //Arrange
+        Price price = new Price(BigDecimal.valueOf(10));
+        Object differentObject = new Object();
+
+        // Act & Assert
+        assertNotEquals(price, differentObject);
+    }
+
+    @Test
+    void ensureHashCodeIsCorrect() {
+
+        //Arrange
+        BigDecimal value = BigDecimal.valueOf(10.50);
+        Price price = new Price(value);
+
+        // Act & Assert
+        assertEquals(value.hashCode(), price.hashCode());
+    }
+
+
+
 
 
 }
