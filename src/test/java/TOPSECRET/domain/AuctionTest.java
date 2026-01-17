@@ -797,8 +797,9 @@ class AuctionTest {
         List<Picture> pictures = instantiatePictures();
         Item bookItem = instantiateItem(instantiateBibliographicalData(), pictures, new Dimensions(12, 10, 2));
         Price price = new Price(new BigDecimal("35.00"));
+        final List<Item> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
-                bookItem,
+                items,
                 price,
                 "short description",
                 "This is our first listing",

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -79,8 +80,10 @@ class CartTest {
                 bibliographicalData
         );
 
+        final List<Item> Item = new ArrayList<>(List.of(item));
+
         listing1 = new Listing(
-                item,
+                Item,
                 new Price(new BigDecimal("50.00")),
                 "Short description 1",
                 "Listing Title 1",
@@ -89,7 +92,7 @@ class CartTest {
         );
 
         listing2 = new Listing(
-                item,
+                Item,
                 new Price(new BigDecimal("50.00")),
                 "Short description 2",
                 "Listing Title 2",
