@@ -16,6 +16,7 @@ box "Persistence" #LightGrey
 participant ":LibraryRepository" as LibRepo
 participant ":ItemRepo" as Item
 participant ":ListingRepository" as ListRepo
+participant ":DirectSaleRepository" as DirSaleRepo
 end box
 
 box "Domain Model"#LightYellow
@@ -63,12 +64,17 @@ Item -> item1 : create
 Item --> C : Success
 deactivate Item
 
-C -> ListRepo : createAndAddDirectSale(item1, price)
+C -> ListRepo : createNewDirectSale(item1, price)
 activate ListRepo
-create "directSale1:DirecSale" as directSale1
+create "directSale1:DirectSale" as directSale1
 ListRepo -> directSale1 : create
 ListRepo --> C : directSale1
 deactivate ListRepo
+
+C -> DirSaleRepo : addNewDirectSale(directSale1)
+activate DirSaleRepo
+DirSaleRepo --> C : directSale1 added to Repository
+deactivate DirSaleRepo
 end box
 
 C --> UI : Success(directSale1)

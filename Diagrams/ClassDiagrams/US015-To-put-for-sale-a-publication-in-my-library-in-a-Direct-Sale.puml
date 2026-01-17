@@ -11,10 +11,6 @@ class ItemRepository {
   + createPhysicalItem()
 }
 
-class DirectSale {
-  price : double
-}
-
 class LibraryRepository {
   + getLibrary(name) : myLibrary
 }
@@ -31,14 +27,17 @@ class Publication {
 
 }
 
+class DirectSaleRepository {
+  + addNewDirectSale()
+}
+
 ToPutPublicationInDirectSaleController "1" -- "1" MyLibrary
 MyLibrary "1" -- "*" Publication
-ListingRepository "1" -- "0..1" DirectSale
 
 ItemRepository "1" -- "0..*" MyLibrary
 
 ToPutPublicationInDirectSaleController "1" -- "1" LibraryRepository
 ToPutPublicationInDirectSaleController "1" -- "1" ListingRepository
 ToPutPublicationInDirectSaleController "1" -- "1" ItemRepository
-
+ToPutPublicationInDirectSaleController "1" -- "1" DirectSaleRepository
 @enduml
