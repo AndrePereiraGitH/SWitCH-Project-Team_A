@@ -1,24 +1,49 @@
 @startuml
-title US018 - Add one of my publications to a list of mine
+title US018 - Add Publication to List
 
-class AddPublicationToListController {
-  + addPublicationToList(listId, publicationId)
+package "Controller" {
+  class AddPublicationToListController {
+    +getMyPublicationLists()
+    +getPublicationsForList()
+    +addPublicationToList()
+  }
 }
 
-class PublicationListRepository {
-  + findById(listId, user)
-  + save(list)
+package "Persistence" {
+  class PublicationListRepository {
+    +getMyPublicationLists()
+    +getPublications()
+    +addPublicationToList()
+  }
+
+  class LibraryRepository {
+    +getLibrary()
+  }
 }
 
-class PublicationList {
-  + validateToAdd(publication)
-  + addPublication(publication)
+package "Domain" {
+  class Library {
+    +getPublications()
+  }
+
+  class PublicationList {
+    +addPublication()
+  }
+
+  class Publication
+  class User
 }
 
-class Publication
+AddPublicationToListController --> PublicationListRepository : uses
+AddPublicationToListController --> LibraryRepository : uses
 
-AddPublicationToListController -- PublicationListRepository : request
-AddPublicationToListController -- PublicationList : calls
-PublicationList "1" o-- "*" Publication : contains
+LibraryRepository --> Library : gets
+PublicationListRepository --> PublicationList : updates
+
+Library " 1" o-- "            *" Publication : contains
+PublicationList "1   " o-- " *" Publication : contains
+PublicationList " *" --> "    1" User :  belongs to
+Library "1  " --> "1 " User :  belongs to
+
 
 @enduml

@@ -2,37 +2,49 @@
 hide footbox
 autonumber
 
-title US017 - To Create a private List of my publications
+title US017 - Create Private Publication List
 
 box #whitesmoke
 actor "User" as User
-participant ":UI - US017" as UI
+participant ":UI017" as UI
 end box
 
-box #Lightblue
+box "Controller" #Lightblue
 participant ":CreatePublicationListController" as Controller
 end box
 
-box #LightGrey
+box "Persistence" #LightGrey
 participant ":PublicationListRepository" as Repository
 end box
 
-User -> UI : I want to create a private list of my publications\with a name and a genre
+User -> UI : I want to create a new private list
 activate UI
 
-UI -> Controller : createPublicationList(name, genre)
+UI --> User : Give it a name and a genre
+User -> UI : name, genre
+
+UI -> Controller : createAndAddPublicationList(name, genre)
 activate Controller
 
-Controller -> Repository : createAndAdd(name, genre, user)
+Controller -> Repository : createAndAddPublicationList(name, genre)
 activate Repository
 
-Repository --> Controller : listCreated
+box "Domain" #Lightyellow
+create "pl1:PublicationList" as PublicationList
+end box
+
+Repository -> PublicationList : create(name, genre)
+
+Repository -> Repository : validate(pl1)
+Repository -> Repository : add(pl1)
+
+Repository --> Controller : true
 deactivate Repository
 
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : private list created
+UI --> User : Your publication list was created
 deactivate UI
 
 @enduml

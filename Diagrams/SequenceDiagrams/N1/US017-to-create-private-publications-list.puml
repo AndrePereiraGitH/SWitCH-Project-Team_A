@@ -1,0 +1,25 @@
+@startuml
+
+autonumber
+hide footbox
+
+title SSD: US017 - Create a private Publication List
+
+actor "User" as User
+participant ":System" as System
+
+activate User
+
+User -> System : I want to create a new private list
+activate System
+
+System --> User : Please provide the list name and genre
+
+User -> System : Name and genre provided
+
+System --> User : The private list was created successfully
+
+deactivate System
+deactivate User
+
+@enduml
