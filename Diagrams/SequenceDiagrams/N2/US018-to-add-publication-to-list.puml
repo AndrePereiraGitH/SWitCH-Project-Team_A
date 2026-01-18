@@ -2,56 +2,75 @@
 hide footbox
 autonumber
 
-title US018 - Add one of my publications to a list of mine
+title US018 – Add Publication to List (Design Level)
 
 box #WhiteSmoke
 actor "User" as User
 participant ":UI - US018" as UI
 end box
 
-box #LightBlue
+box "Controller" #LightBlue
 participant ":AddPublicationToListController" as Controller
 end box
 
-box #LightGrey
-participant ":PublicationListRepository" as Repository
+box "Persistence" #LightGrey
+participant ":PublicationListRepository" as ListRepository
+participant ":PublicationRepository" as PubRepository
 end box
 
-box #LightYellow
+box "Domain" #LightYellow
 participant ":PublicationList" as List
 end box
 
-User -> UI : I want to add one of my publications to a list of mine
+User -> UI : I want to add one of my publications to one of my lists
 activate UI
 
-UI -> Controller : addPublicationToList(listId, publicationId)
+UI -> Controller : requestUserLists(user)
 activate Controller
 
-Controller -> Repository : findById(listId, user)
-activate Repository
-Repository --> Controller : list
-deactivate Repository
+Controller -> ListRepository : findListsByUser(user)
+activate ListRepository
+ListRepository --> Controller : userLists
+deactivate ListRepository
 
-'create PublicationList" as List
-Controller -> List : validateToAdd(publication)
+Controller --> UI : userLists
+
+User -> UI : select list
+
+UI -> Controller : requestAvailablePublications(list, user)
+
+Controller -> PubRepository : findPublicationsByUser(user)
+activate PubRepository
+PubRepository --> Controller : userPublications
+deactivate PubRepository
+
+Controller -> List : getAvailablePublications(userPublications)
 activate List
-'List --> Controller : true
+List --> Controller : availablePublications
 deactivate List
+
+Controller --> UI : availablePublications
+
+User -> UI : select publication
+
+UI -> Controller : addPublicationToList(list, publication)
 
 Controller -> List : addPublication(publication)
 activate List
-List --> Controller : updated
+List -> List : verify(publication)
+List --> Controller : ok
 deactivate List
 
-Controller -> Repository : save(list)
-activate Repository
-Repository --> Controller : success
-deactivate Repository
+Controller -> ListRepository : save(list)
+activate ListRepository
+ListRepository --> Controller : success
+deactivate ListRepository
 
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : publication added
+UI --> User : publication added to list
 deactivate UI
 
 @enduml
+

@@ -3,7 +3,7 @@
 autonumber
 hide footbox
 
-title SSD: US017 - To create a private list of my publications
+title SSD: US017 - Create a private Publication List
 
 actor "User" as User
 participant ":System" as System

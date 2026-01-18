@@ -1,0 +1,29 @@
+@startuml
+
+autonumber
+hide footbox
+
+title US018 - Add Publication to a List
+
+actor "User" as User
+participant ":System" as System
+
+activate User
+
+User -> System : I want to add one of my publications to one of my lists
+activate System
+
+System --> User : Please select the list
+
+User -> System : Selected list
+
+System --> User : Available publications to add
+
+User -> System : Selected publication
+
+System --> User : The publication was added to the list
+deactivate System
+
+deactivate User
+
+@enduml

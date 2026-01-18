@@ -1,24 +1,56 @@
 @startuml
-title US018 - Add one of my publications to a list of mine
+title US018 – Add Publication to List
 
-class AddPublicationToListController {
-  + addPublicationToList(listId, publicationId)
+package "UI" {
+  class AddPublicationToListUI
 }
 
-class PublicationListRepository {
-  + findById(listId, user)
-  + save(list)
+package "Controller" {
+    class AddPublicationToListController {
+      +requestUserLists(user)
+      +requestAvailablePublications(list, user)
+      +addPublicationToList(publication, list, user)
+    }
 }
 
-class PublicationList {
-  + validateToAdd(publication)
-  + addPublication(publication)
+package "Domain" {
+  class PublicationList {
+    -name
+    -isPublic
+    -owner
+    -genre
+    +addPublication(publication)
+    +getAvailablePublications(userPublications)
+  }
+
+  class Publication
+  class User
 }
 
-class Publication
+package "Persistence" {
+  class PublicationListRepository {
+     +findListsByUser(user)
+     +save(list)
+  }
 
-AddPublicationToListController -- PublicationListRepository : request
-AddPublicationToListController -- PublicationList : calls
-PublicationList "1" o-- "*" Publication : contains
+  class PublicationRepository {
+    +findPublicationsByUser(user)
+  }
+}
+
+AddPublicationToListUI --> AddPublicationToListController : requests
+AddPublicationToListController --> PublicationList : adds to
+AddPublicationToListController --> PublicationListRepository : acesses/ saves
+AddPublicationToListController --> PublicationRepository : accesses
+
+PublicationList --> Publication : contains
+PublicationList --> User : owner
+
+note right of PublicationList
+  - Only publications of the user
+    can be added
+  - Validation is done inside
+    the domain
+end note
 
 @enduml
