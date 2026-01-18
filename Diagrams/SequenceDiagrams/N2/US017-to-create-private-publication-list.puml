@@ -6,7 +6,7 @@ title US017 - Create Private Publication List
 
 box #whitesmoke
 actor "User" as User
-participant ":UI - US017" as UI
+participant ":UI017" as UI
 end box
 
 box "Controller" #Lightblue

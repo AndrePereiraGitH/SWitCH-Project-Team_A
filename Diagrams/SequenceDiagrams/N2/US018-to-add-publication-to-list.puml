@@ -6,7 +6,7 @@ title US018 - Add Publication to List (N2)
 
 box #whitesmoke
 actor "User" as User
-participant ":UI - US018" as UI
+participant ":UI018" as UI
 end box
 
 box "Controller" #Lightblue
@@ -30,12 +30,12 @@ activate Controller
 
 Controller -> PublicationListRepo : getMyPublicationLists(user)
 activate PublicationListRepo
-PublicationListRepo --> Controller : user lists
+PublicationListRepo --> Controller : userlists
 deactivate PublicationListRepo
 
-Controller --> UI : user lists
+Controller --> UI : userlists
 
-UI --> User : To what list? Choose!
+UI --> User : Which list? Choose!
 
 User -> UI : List
 

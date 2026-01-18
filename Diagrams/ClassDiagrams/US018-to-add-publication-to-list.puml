@@ -1,27 +1,23 @@
 @startuml
-title US018 - Add Publication to List (Class Diagram)
-
-package "UI" {
-  class AddPublicationToListUI
-}
+title US018 - Add Publication to List
 
 package "Controller" {
   class AddPublicationToListController {
-    +getMyPublicationLists(user)
-    +getPublicationsForList(user, list)
-    +addPublicationToList(list, publication)
+    +getMyPublicationLists()
+    +getPublicationsForList()
+    +addPublicationToList()
   }
 }
 
 package "Persistence" {
   class PublicationListRepository {
-    +getMyPublicationLists(user)
-    +getPublications(list)
-    +addPublicationToList(list, publication)
+    +getMyPublicationLists()
+    +getPublications()
+    +addPublicationToList()
   }
 
   class LibraryRepository {
-    +getLibrary(user)
+    +getLibrary()
   }
 }
 
@@ -31,23 +27,23 @@ package "Domain" {
   }
 
   class PublicationList {
-    +addPublication(publication)
+    +addPublication()
   }
 
   class Publication
   class User
 }
 
-AddPublicationToListUI --> AddPublicationToListController : sends requests
+AddPublicationToListController --> PublicationListRepository : uses
+AddPublicationToListController --> LibraryRepository : uses
 
-AddPublicationToListController --> PublicationListRepository : queries / updates
-AddPublicationToListController --> LibraryRepository : queries
+LibraryRepository --> Library : gets
+PublicationListRepository --> PublicationList : updates
 
-LibraryRepository --> Library : returns
-PublicationListRepository --> PublicationList : manages
+Library " 1" o-- "            *" Publication : contains
+PublicationList "1   " o-- " *" Publication : contains
+PublicationList " *" --> "    1" User :  belongs to
+Library "1  " --> "1 " User :  belongs to
 
-Library "1  " o-- "*" Publication : contains
-PublicationList "  1" o-- "*" Publication : contains
-PublicationList "*" --> "    1" User : owner
 
 @enduml

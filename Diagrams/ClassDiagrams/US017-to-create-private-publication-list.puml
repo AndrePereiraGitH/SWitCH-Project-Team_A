@@ -1,21 +1,16 @@
 @startuml
 title US017 - Create Private Publication List
 
-package "UI" {
-  class CreatePublicationListUI
-}
-
 package "Controller" {
   class CreatePublicationListController {
-    +createPublicationList(name, genre)
+    +createPublicationList()
   }
 }
 
 package "Persistence" {
   class PublicationListRepository {
-    +createAndAddPublicationList(name, genre)
-    +validate(list)
-    +add(list)
+    +validate()
+    +add()
   }
 }
 
@@ -28,10 +23,11 @@ package "Domain" {
 
   class User
 
-CreatePublicationListUI --> CreatePublicationListController : sends request
-CreatePublicationListController --> PublicationListRepository : forwards request
+CreatePublicationListController --> PublicationListRepository : uses
+
 PublicationListRepository --> PublicationList : creates
 
-PublicationList "*" --> "1 " User : owner
+PublicationList " * " --> "1 " User : belongs to
+
 
 @enduml
