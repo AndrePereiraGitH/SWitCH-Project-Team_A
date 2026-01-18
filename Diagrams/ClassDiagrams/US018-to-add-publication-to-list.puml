@@ -1,56 +1,53 @@
 @startuml
-title US018 – Add Publication to List
+title US018 - Add Publication to List (Class Diagram)
 
 package "UI" {
   class AddPublicationToListUI
 }
 
 package "Controller" {
-    class AddPublicationToListController {
-      +requestUserLists(user)
-      +requestAvailablePublications(list, user)
-      +addPublicationToList(publication, list, user)
-    }
+  class AddPublicationToListController {
+    +getMyPublicationLists(user)
+    +getPublicationsForList(user, list)
+    +addPublicationToList(list, publication)
+  }
+}
+
+package "Persistence" {
+  class PublicationListRepository {
+    +getMyPublicationLists(user)
+    +getPublications(list)
+    +addPublicationToList(list, publication)
+  }
+
+  class LibraryRepository {
+    +getLibrary(user)
+  }
 }
 
 package "Domain" {
+  class Library {
+    +getPublications()
+  }
+
   class PublicationList {
-    -name
-    -isPublic
-    -owner
-    -genre
     +addPublication(publication)
-    +getAvailablePublications(userPublications)
   }
 
   class Publication
   class User
 }
 
-package "Persistence" {
-  class PublicationListRepository {
-     +findListsByUser(user)
-     +save(list)
-  }
+AddPublicationToListUI --> AddPublicationToListController : sends requests
 
-  class PublicationRepository {
-    +findPublicationsByUser(user)
-  }
-}
+AddPublicationToListController --> PublicationListRepository : queries / updates
+AddPublicationToListController --> LibraryRepository : queries
 
-AddPublicationToListUI --> AddPublicationToListController : requests
-AddPublicationToListController --> PublicationList : adds to
-AddPublicationToListController --> PublicationListRepository : acesses/ saves
-AddPublicationToListController --> PublicationRepository : accesses
+LibraryRepository --> Library : returns
+PublicationListRepository --> PublicationList : manages
 
-PublicationList --> Publication : contains
-PublicationList --> User : owner
-
-note right of PublicationList
-  - Only publications of the user
-    can be added
-  - Validation is done inside
-    the domain
-end note
+Library "1  " o-- "*" Publication : contains
+PublicationList "  1" o-- "*" Publication : contains
+PublicationList "*" --> "    1" User : owner
 
 @enduml

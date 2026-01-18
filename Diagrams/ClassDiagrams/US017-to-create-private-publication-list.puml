@@ -7,39 +7,31 @@ package "UI" {
 
 package "Controller" {
   class CreatePublicationListController {
-    +createPublicationList(name, genre, user)
+    +createPublicationList(name, genre)
+  }
+}
+
+package "Persistence" {
+  class PublicationListRepository {
+    +createAndAddPublicationList(name, genre)
+    +validate(list)
+    +add(list)
   }
 }
 
 package "Domain" {
   class PublicationList {
     -name
-    -isPublic
-    -owner
     -genre
+    -isPrivate
   }
 
-    class User
-    class Genre
-  }
+  class User
 
-package "Persistence" {
-  class PublicationListRepository {
-    +save(list)
-  }
-}
+CreatePublicationListUI --> CreatePublicationListController : sends request
+CreatePublicationListController --> PublicationListRepository : forwards request
+PublicationListRepository --> PublicationList : creates
 
-CreatePublicationListUI --> CreatePublicationListController : calls
-CreatePublicationListController --> PublicationList : creates
-CreatePublicationListController --> PublicationListRepository : persists
-
-PublicationList --> User : owner
-PublicationList --> Genre : genre
-
-note right of PublicationList
-  - Created as private by default
-    - Belongs to one User
-    - Has a name and a genre
-end note
+PublicationList "*" --> "1 " User : owner
 
 @enduml

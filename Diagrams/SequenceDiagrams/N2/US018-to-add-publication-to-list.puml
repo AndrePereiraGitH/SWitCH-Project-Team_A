@@ -2,75 +2,81 @@
 hide footbox
 autonumber
 
-title US018 – Add Publication to List (Design Level)
+title US018 - Add Publication to List (N2)
 
-box #WhiteSmoke
+box #whitesmoke
 actor "User" as User
 participant ":UI - US018" as UI
 end box
 
-box "Controller" #LightBlue
+box "Controller" #Lightblue
 participant ":AddPublicationToListController" as Controller
 end box
 
 box "Persistence" #LightGrey
-participant ":PublicationListRepository" as ListRepository
-participant ":PublicationRepository" as PubRepository
+participant ":PublicationListRepository" as PublicationListRepo
+participant ":LibraryRepository" as LibraryRepo
 end box
 
-box "Domain" #LightYellow
-participant ":PublicationList" as List
+box "Domain" #Lightyellow
+participant ":Library" as Library
 end box
 
-User -> UI : I want to add one of my publications to one of my lists
+User -> UI : I want to add one of my publications to one of my list
 activate UI
 
-UI -> Controller : requestUserLists(user)
+UI -> Controller : getMyPublicationLists(user)
 activate Controller
 
-Controller -> ListRepository : findListsByUser(user)
-activate ListRepository
-ListRepository --> Controller : userLists
-deactivate ListRepository
+Controller -> PublicationListRepo : getMyPublicationLists(user)
+activate PublicationListRepo
+PublicationListRepo --> Controller : user lists
+deactivate PublicationListRepo
 
-Controller --> UI : userLists
+Controller --> UI : user lists
 
-User -> UI : select list
+UI --> User : To what list? Choose!
 
-UI -> Controller : requestAvailablePublications(list, user)
+User -> UI : List
 
-Controller -> PubRepository : findPublicationsByUser(user)
-activate PubRepository
-PubRepository --> Controller : userPublications
-deactivate PubRepository
+UI -> Controller : getPublicationsForList(user, list)
 
-Controller -> List : getAvailablePublications(userPublications)
-activate List
-List --> Controller : availablePublications
-deactivate List
+Controller -> LibraryRepo : getLibrary(user)
+activate LibraryRepo
+LibraryRepo --> Controller : library
+deactivate LibraryRepo
 
-Controller --> UI : availablePublications
+Controller -> Library : getPublications(library)
+activate Library
+Library --> Controller : allpublications
+deactivate Library
+
+Controller -> PublicationListRepo : getPublications (list)
+activate PublicationListRepo
+
+PublicationListRepo --> Controller : publicationsInList
+deactivate PublicationListRepo
+
+Controller -> Controller : p=diff(allPublications, publicationsInList)
+
+Controller --> UI : Available publications
+
+UI --> User : Which publication? Choose!
 
 User -> UI : select publication
 
-UI -> Controller : addPublicationToList(list, publication)
+UI -> Controller : addPublicationToList(list, selectedPublication)
 
-Controller -> List : addPublication(publication)
-activate List
-List -> List : verify(publication)
-List --> Controller : ok
-deactivate List
+Controller -> PublicationListRepo :  addPublicationToList(list, selectedPublication)
+activate PublicationListRepo
 
-Controller -> ListRepository : save(list)
-activate ListRepository
-ListRepository --> Controller : success
-deactivate ListRepository
+PublicationListRepo --> Controller : true
+deactivate PublicationListRepo
 
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : publication added to list
+UI --> User : Publication added to list
 deactivate UI
 
 @enduml
-

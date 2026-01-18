@@ -17,36 +17,34 @@ box "Persistence" #LightGrey
 participant ":PublicationListRepository" as Repository
 end box
 
-box "Domain" #Lightyellow
-participant ":PublicationList" as List
-end box
-
 User -> UI : I want to create a new private list
 activate UI
 
-UI -> Controller : requestListCreation(user)
+UI --> User : Give it a name and a genre
+User -> UI : name, genre
+
+UI -> Controller : createAndAddPublicationList(name, genre)
 activate Controller
 
-Controller --> UI : request list name and genre
-
-User -> UI : provide name and genre
-
-UI -> Controller : createPublicationList(name, genre, user)
-
-Controller -> List : new(name, genre, user)
-activate List
-List --> Controller : publicationList
-deactivate List
-
-Controller -> Repository : save(publicationList)
+Controller -> Repository : createAndAddPublicationList(name, genre)
 activate Repository
-Repository --> Controller : success
+
+box "Domain" #Lightyellow
+create "pl1:PublicationList" as PublicationList
+end box
+
+Repository -> PublicationList : create(name, genre)
+
+Repository -> Repository : validate(pl1)
+Repository -> Repository : add(pl1)
+
+Repository --> Controller : true
 deactivate Repository
 
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : private list created
+UI --> User : Your publication list was created
 deactivate UI
 
 @enduml

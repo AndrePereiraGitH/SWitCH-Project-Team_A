@@ -13,7 +13,7 @@ activate User
 User -> System : I want to add one of my publications to one of my lists
 activate System
 
-System --> User : Please select the list
+System --> User : Please choose the list
 
 User -> System : Selected list
 
