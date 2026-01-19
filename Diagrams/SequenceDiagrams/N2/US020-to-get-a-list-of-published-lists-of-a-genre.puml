@@ -10,24 +10,18 @@ actor User
 participant ":UI020" as UI
 end box
 
-box "Controller" #LightBlue
 participant ":PublicListController" as PublicListController
-end box
-
-box "Persistence" #LightGrey
 participant ":GenreRepository" as GenreRepository
 participant ":ListRepository" as ListRepository
-end box
 
-' Human contact between User and UI
 activate UI
 User -> UI : I want to see publicly published lists of a certain genre
-
-' Get genres from the system
 UI -> PublicListController : getGenres()
+
 activate PublicListController
 
 PublicListController -> GenreRepository : findAll()
+
 activate GenreRepository
 GenreRepository -> GenreRepository : loadAllGenres()
 GenreRepository --> PublicListController : genres
@@ -37,16 +31,14 @@ PublicListController --> UI : genres
 UI -->> User : Select genre (genres)
 deactivate PublicListController
 
-' User selects a genre
 User -> UI : Selected! (genreId)
-
-' Fetch public lists for genre
 UI -> PublicListController : getPublicListsByGenre(genreId)
+
 activate PublicListController
-
-PublicListController -> ListRepository : findPublicByGenre(genreId)
+PublicListController -> ListRepository : findPublicListsByGenre(genreId)
+activate ListRepository
 ListRepository --> PublicListController : lists (name, owner)
-
+deactivate ListRepository
 PublicListController --> UI : lists
 deactivate PublicListController
 

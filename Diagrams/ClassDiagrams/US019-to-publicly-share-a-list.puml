@@ -10,7 +10,6 @@ class ShareListController {
 
 class ListRepository {
   +getList(listId : String) : List
-  -load(listId : String) : List
 }
 
 class List {
