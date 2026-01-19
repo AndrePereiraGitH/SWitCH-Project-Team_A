@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.Genre;
 import org.junit.jupiter.api.Test;
 
@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static TOPSECRET.domain.Enum.Country.DENMARK;
-import static TOPSECRET.domain.Enum.Country.UNITED_STATES;
+import static TOPSECRET.domain.Enum.Countries.DENMARK;
+import static TOPSECRET.domain.Enum.Countries.UNITED_STATES;
 import static TOPSECRET.domain.Enum.Genre.*;
 import static java.util.Locale.ENGLISH;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +32,7 @@ class BibliographicalDataTest {
 
         Locale language = ENGLISH;
 
-        Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", Country.UNITED_KINGDOM);
+        Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", Countries.UNITED_KINGDOM);
         Email email2 = new Email("enquiries", "hachette.co.uk");
         Contact contact2 = new Contact("2031227222", "+44", email2, address2);
         Publisher publisher = new Publisher("John Murray Press", "GB205505305", contact2);

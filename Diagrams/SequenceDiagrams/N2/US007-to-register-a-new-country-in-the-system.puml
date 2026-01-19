@@ -9,11 +9,11 @@ actor Administrator
 participant ":UI" as UI
 end box
 
-box "Controller" #LightBlue
+box #LightBlue
 participant ":CountryController" as CountryController
 end box
 
-box "Persistence" #LightGrey
+box #LightGrey
 participant ":CountryRepository" as AddressRepository
 end box
 
@@ -28,7 +28,7 @@ activate CountryController
 CountryController -> AddressRepository : **5** createAndAddNewCountry (name)
 activate AddressRepository
 
-box "Domain Model" #LightYellow
+box #LightYellow
 create "newCountry1: Country" as Country
 AddressRepository -> Country : **6** createCountry(name)
 end box

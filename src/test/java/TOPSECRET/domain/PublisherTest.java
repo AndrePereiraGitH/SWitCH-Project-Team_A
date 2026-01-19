@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ class PublisherTest {
     String vatNumber = "123456";
 
     Address address = new Address("Rua Doutor David Paixão", "55", "333-332",
-            Country.PORTUGAL);
+            Countries.PORTUGAL);
     Email email = new Email("cool", "gmail.com");
     Contact contact = new Contact("91440055", "+351", email, address);
 
