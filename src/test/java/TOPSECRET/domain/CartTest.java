@@ -87,7 +87,7 @@ class CartTest {
                 "Short description 1",
                 "Listing Title 1",
                 SaleType.DIRECT_SALE,
-                new User("Seller1", null, null)
+                new User("Seller1", null, null, UserRole.NORMAL_USER)
         );
 
         listing2 = new Listing(
@@ -96,7 +96,7 @@ class CartTest {
                 "Short description 2",
                 "Listing Title 2",
                 SaleType.DIRECT_SALE,
-                new User("Seller2", null, null)
+                new User("Seller2", null, null, UserRole.NORMAL_USER)
         );
     }
 

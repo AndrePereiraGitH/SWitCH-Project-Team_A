@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -814,7 +815,8 @@ class AuctionTest {
         Contact contact = new Contact("911111111", "351", email, add);
         LocalDate birthday = LocalDate.of(1982, 12, 3);
         Profile profile = new Profile("Albert Trump", Country.EL_SALVADOR, birthday);
-        return new User(name, contact, profile);
+        UserRole userRole = UserRole.NORMAL_USER;
+        return new User(name, contact, profile, userRole);
     }
 
     private static BibliographicalData instantiateBibliographicalData() {

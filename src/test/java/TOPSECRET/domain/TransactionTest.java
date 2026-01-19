@@ -304,8 +304,9 @@ class TransactionTest {
         Address address = new Address("Rua Dra. Salomé Martingo", "nº 455", "4540-440", Country.PORTUGAL);
         Contact contact = new Contact("916274847", "+351", email, address);
         Profile profile = new Profile(name, Country.PORTUGAL, LocalDate.of(1995, 10, 14));
+        UserRole userRole = UserRole.NORMAL_USER;
 
-        return new User(name, contact, profile);
+        return new User(name, contact, profile, userRole);
     }
 
     private static BibliographicalData createValidBibliographicalData(){

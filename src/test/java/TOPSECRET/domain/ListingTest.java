@@ -36,7 +36,7 @@ class ListingTest {
     Email validEmail = new Email("john.doe", "example.com");
     Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", Country.PORTUGAL);
     Contact validContact = new Contact("123456789","+351",validEmail,validAddress);
-    User validSeller = new User("Seller1",validContact,validProfile);
+    User validSeller = new User("Seller1",validContact,validProfile,UserRole.NORMAL_USER);
 
     // BibliographicalData
     Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14));

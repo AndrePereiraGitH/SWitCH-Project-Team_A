@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ class BidTest {
         );
 
 
-        User bidder = new User("Maria123", contact, userProfile);
+        User bidder = new User("Maria123", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal ("100.50"));
 
 
@@ -65,7 +66,7 @@ class BidTest {
                 LocalDate.of(1985, Month.JANUARY, 20)
         );
 
-        User bidder = new User("AuthorJohn", contact, authorProfile);
+        User bidder = new User("AuthorJohn", contact, authorProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal ("250.75"));
 
 
@@ -107,7 +108,7 @@ class BidTest {
                 Country.PORTUGAL,
                 LocalDate.of(2009, Month.MAY, 15)
         );
-        User bidder = new User("Joaogamer", contact, userProfile);
+        User bidder = new User("Joaogamer", contact, userProfile, UserRole.NORMAL_USER);
 
 
         // Act & Assert
@@ -134,7 +135,7 @@ class BidTest {
         );
 
 
-        User bidder = new User("pedrinhoFortnite", contact, userProfile);
+        User bidder = new User("pedrinhoFortnite", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal("123.45"));
 
         // Act
@@ -167,7 +168,7 @@ class BidTest {
         );
 
 
-        User bidder = new User("MarShophie", contact, userProfile);
+        User bidder = new User("MarShophie", contact, userProfile, UserRole.NORMAL_USER);
         Price smallValue = new Price(new BigDecimal("0.01"));
 
 
@@ -195,7 +196,7 @@ class BidTest {
         );
 
 
-        User bidder = new User("Jonhnie66", contact, userProfile);
+        User bidder = new User("Jonhnie66", contact, userProfile, UserRole.NORMAL_USER);
         Price largeValue = new Price(new BigDecimal("9999999.99")); // Big value
 
 
@@ -223,7 +224,7 @@ class BidTest {
                 Country.ITALY,
                 LocalDate.of(1980, Month.APRIL, 12)
         );
-        User bidder = new User("LucaR", contact, userProfile);
+        User bidder = new User("LucaR", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal("150.0"));
 
         // Capture time before creation
@@ -255,7 +256,7 @@ class BidTest {
                 Country.GERMANY,
                 LocalDate.of(1998, Month.AUGUST, 27)
         );
-        User bidder = new User("AnnaM", contact, userProfile);
+        User bidder = new User("AnnaM", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal("200.0"));
 
         // Act
@@ -279,7 +280,7 @@ class BidTest {
                 Country.PORTUGAL,
                 LocalDate.of(1990, Month.JANUARY, 1)
         );
-        User bidder = new User("noteme", contact, userProfile);
+        User bidder = new User("noteme", contact, userProfile, UserRole.NORMAL_USER);
 
         // Act & Assert - Tests if Price rejects negative value
         assertThrows(

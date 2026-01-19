@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Enum;
 
-public enum UserRoles {
+public enum UserRole {
     ADMIN,
     NORMAL_USER
 }
