@@ -303,15 +303,15 @@ class TransactionTest {
         Email email = new Email("asa", "example.com");
         Address address = new Address("Rua Dra. Salomé Martingo", "nº 455", "4540-440", Country.PORTUGAL);
         Contact contact = new Contact("916274847", "+351", email, address);
-        Profile profile = new Profile(name, Country.PORTUGAL, LocalDate.of(1995, 10, 14), false);
+        Profile profile = new Profile(name, Country.PORTUGAL, LocalDate.of(1995, 10, 14));
 
         return new User(name, contact, profile);
     }
 
     private static BibliographicalData createValidBibliographicalData(){
         List<Profile> authors = List.of(
-                new Profile("J. K. Rowling", Country.SPAIN, LocalDate.of(1995, 10, 14), true),
-                new Profile("Freida", Country.PORTUGAL, LocalDate.of(1956, 10, 10), true));
+                new Profile("J. K. Rowling", Country.SPAIN, LocalDate.of(1995, 10, 14)),
+                new Profile("Freida", Country.PORTUGAL, LocalDate.of(1956, 10, 10)));
 
         return new BibliographicalData(
                 "O Senhor do Anéis: A irmandade do Anel",

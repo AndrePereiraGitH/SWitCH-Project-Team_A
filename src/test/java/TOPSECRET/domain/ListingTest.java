@@ -32,14 +32,14 @@ class ListingTest {
 
     // User
     LocalDate validBirthday = LocalDate.of(2000, 1, 1);
-    Profile validProfile = new Profile("John",Country.PORTUGAL,validBirthday,false);
+    Profile validProfile = new Profile("John",Country.PORTUGAL,validBirthday);
     Email validEmail = new Email("john.doe", "example.com");
     Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", Country.PORTUGAL);
     Contact validContact = new Contact("123456789","+351",validEmail,validAddress);
     User validSeller = new User("Seller1",validContact,validProfile);
 
     // BibliographicalData
-    Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14), true);
+    Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14));
     Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
     Email email = new Email("Maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);

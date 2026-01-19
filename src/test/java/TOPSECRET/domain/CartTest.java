@@ -27,8 +27,7 @@ class CartTest {
         Profile author = new Profile(
                 "Tove Ditlevsen",
                 Country.DENMARK,
-                LocalDate.of(1917, 12, 14),
-                true
+                LocalDate.of(1917, 12, 14)
         );
 
         Address address = new Address(

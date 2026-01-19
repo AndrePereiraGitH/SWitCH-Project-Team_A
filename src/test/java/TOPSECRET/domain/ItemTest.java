@@ -132,7 +132,7 @@ class ItemTest {
     }
 
     private Item createValidItem() {
-        Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14), true);
+        Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14));
         Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
         Email email = new Email("Maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);

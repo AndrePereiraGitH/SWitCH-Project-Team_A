@@ -33,7 +33,7 @@ class BookTest {
         genres.add(Genre.ADVENTURE);
 
         List<Profile> authors= new ArrayList<>();
-        Profile author = new Profile("J.R.R Tolkien", SOUTH_AFRICA,LocalDate.of(1892,01,03), true);
+        Profile author = new Profile("J.R.R Tolkien", SOUTH_AFRICA,LocalDate.of(1892,01,03));
         authors.add(author);
 
         int numOfPages = 1100;

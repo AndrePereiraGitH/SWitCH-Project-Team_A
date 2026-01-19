@@ -23,9 +23,9 @@ class BibliographicalDataTest {
         // arrange
         String title = "The Age of AI: And Our Human Future";
         List<Profile> authors= new ArrayList<>();
-        Profile author2 = new Profile("Henry A Kissinger", UNITED_STATES,LocalDate.of(1923,05,27), true);
-        Profile author3 = new Profile("Eric Schmidt III", UNITED_STATES,LocalDate.of(1955,04,27), true);
-        Profile author4 = new Profile("Daniel Huttenlocher",UNITED_STATES,LocalDate.of(1959,01,01), true );
+        Profile author2 = new Profile("Henry A Kissinger", UNITED_STATES,LocalDate.of(1923,05,27));
+        Profile author3 = new Profile("Eric Schmidt III", UNITED_STATES,LocalDate.of(1955,04,27));
+        Profile author4 = new Profile("Daniel Huttenlocher",UNITED_STATES,LocalDate.of(1959,01,01));
         authors.add(author2);
         authors.add(author3);
         authors.add(author4);

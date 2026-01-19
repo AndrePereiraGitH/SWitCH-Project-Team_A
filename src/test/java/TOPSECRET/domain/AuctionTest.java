@@ -813,12 +813,12 @@ class AuctionTest {
         Address add = new Address("Rua x", "12B", "4444-111", Country.PORTUGAL);
         Contact contact = new Contact("911111111", "351", email, add);
         LocalDate birthday = LocalDate.of(1982, 12, 3);
-        Profile profile = new Profile("Albert Trump", Country.EL_SALVADOR, birthday, false);
+        Profile profile = new Profile("Albert Trump", Country.EL_SALVADOR, birthday);
         return new User(name, contact, profile);
     }
 
     private static BibliographicalData instantiateBibliographicalData() {
-        Profile authorProfile = new Profile("J. R. R. Tolkien", Country.UNITED_KINGDOM, LocalDate.of(1892, 1, 3), true);
+        Profile authorProfile = new Profile("J. R. R. Tolkien", Country.UNITED_KINGDOM, LocalDate.of(1892, 1, 3));
 
         List<Profile> authors = new ArrayList<>();
         authors.add(authorProfile);

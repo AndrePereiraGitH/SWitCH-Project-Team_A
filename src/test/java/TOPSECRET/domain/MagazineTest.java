@@ -37,7 +37,7 @@ class MagazineTest {
     }
 
     private Item validItem() {
-        Profile author = new Profile("Author Name", Country.UNITED_STATES, LocalDate.of(1980, 1, 1), true);
+        Profile author = new Profile("Author Name", Country.UNITED_STATES, LocalDate.of(1980, 1, 1));
 
         Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
         Email email = new Email("Maria1", "gmail.com");
