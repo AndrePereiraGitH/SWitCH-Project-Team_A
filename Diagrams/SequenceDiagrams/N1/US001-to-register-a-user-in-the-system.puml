@@ -1,6 +1,7 @@
 @startuml
 
 hide footbox
+autonumber
 
 title US001 - To register a user in the system
 
@@ -9,12 +10,12 @@ participant ":System" as System
 
 ' Human contact between Administrator and UI
 activate Administrator
-    Administrator -> System : **1** I want to register a user in the system
+    Administrator -> System : I want to register a user in the system
 
     activate System
-    System -->> Administrator : **2** Provide username, contact and profile information for the User
-    Administrator -> System : **3** For the new user (u1), here's the username, contact and profile information
-    System -->> Administrator : **4** User has been registered in the system
+    System -->> Administrator : Provide username, contact and profile information for the User
+    Administrator -> System : For the new user, here's the username, contact and profile information
+    System -->> Administrator : New user has been registered in the system
     deactivate System
 
 deactivate Administrator

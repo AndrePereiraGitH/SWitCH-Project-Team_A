@@ -1,6 +1,7 @@
 @startuml
 
 hide footbox
+autonumber
 
 title US004 - Register an Appraisal Entity
 
@@ -10,12 +11,12 @@ participant ":System" as System
 ' Human communication started by Administrator
 activate Administrator
 
-Administrator -> System : **1** I want to register an Appraisal Entity in the system
+Administrator -> System : I want to register an Appraisal Entity in the system
 
     activate System
-    System -->> Administrator : **2** Provide name and contact for the Appraisal Entity
-    Administrator -> System : **3** For the new Appraisal Entity (apEntityXPTO), here's the name and contact
-    System -->> Administrator : **4** Appraisal Entity has been registered in the system
+    System -->> Administrator : Provide the information for the New Appraisal Entity
+    Administrator -> System : For the new Appraisal Entity (apEntityXPTO), here's the information
+    System -->> Administrator : Appraisal Entity has been registered in the system
     deactivate System
 
 deactivate Administrator

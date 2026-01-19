@@ -5,44 +5,42 @@ autonumber
 
 title US004 - Register an Appraisal Entity
 
-box #WhiteSmoke
-    actor Administrator
-    participant ":UI004" as UI
-end box
 
-box "Controller" #LightBlue
-    participant ":RegisterAppraisalController" as RegisterAppraisalController
-end box
-
-box "Persistence" #LightGrey
-    participant ":AppraisalEntityRepository" as AppraisalEntityRepository
-end box
+actor Administrator
+participant ":UI004" as UI
+participant ":RegisterAppraisalController" as RegisterAppraisalController
+participant ":AppraisalEntityRepository" as AppraisalEntityRepository
+participant ":List<AppraisalEntity>"
 
 activate UI
 ' Human communication started by Administrator
 Administrator -> UI : I want to register an Appraisal Entity in the system
-UI -->> Administrator : Provide name and contact for the Appraisal Entity
-Administrator -> UI : For the new Appraisal Entity (apEntityXPTO), here's the name and contact
+UI -->> Administrator : Provide the information for the New Appraisal Entity
+Administrator -> UI : For the new Appraisal Entity (apEntityXPTO), here's the information
 
 ' First contact between UI and the System
-UI -> RegisterAppraisalController : registerAppraisalEntity(name, contact)
+UI -> RegisterAppraisalController : registerAppraisalEntity(name, contact, genre, publicationType)
 activate RegisterAppraisalController
 
 ' Communication between RegisterAppraisalController and AppraisalEntityRepository
-RegisterAppraisalController -> AppraisalEntityRepository : createAndRegisterAppraisalEntity(name, contact)
+RegisterAppraisalController -> AppraisalEntityRepository : createAndRegisterAppraisalEntity(name, contact, genre, publicationType)
 activate AppraisalEntityRepository
 
 ' Creation of new AppraisalEntity
-box "Domain Model"#LightYellow
-    create "apEntityXPTO: AppraisalEntity" as AppraisalEntity
-end box
+create "apEntityXPTO: AppraisalEntity" as AppraisalEntity
+
 ' Creation, validation and addition made in AppraisalEntityRepository
-AppraisalEntityRepository -> AppraisalEntity : create(name, contact)
+AppraisalEntityRepository -> AppraisalEntity : create(name, contact, genre, publicationType)
 AppraisalEntityRepository -> AppraisalEntityRepository : validateAppraisalEntity(apEntityXPTO)
-AppraisalEntityRepository -> AppraisalEntityRepository : addToAppraisalEntityList(apEntityXPTO)
+
+' Adding new appraisal entity
+AppraisalEntityRepository -> ":List<AppraisalEntity>" : addToAppraisalEntityList(apEntityXPTO)
+activate ":List<AppraisalEntity>"
+":List<AppraisalEntity>" -->> AppraisalEntityRepository : apEntityXPTO added to the AppraisalEntityList
+deactivate
 
 ' Return from AppraisalEntityRepository to RegisterAppraisalController
-AppraisalEntityRepository --> RegisterAppraisalController : New apEntityXPTO created and added to the list
+AppraisalEntityRepository --> RegisterAppraisalController : apEntityXPTO
 deactivate AppraisalEntityRepository
 
 ' Return from RegisterAppraisalConstroller to the UI

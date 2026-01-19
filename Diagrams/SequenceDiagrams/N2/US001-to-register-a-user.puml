@@ -5,18 +5,14 @@ autonumber
 
 title US001 - To register a user in the system
 
-box #WhiteSmoke
 actor Administrator
 participant ":UI001" as UI
-end box
 
-box "Controller" #LightBlue
 participant ":RegisterUserController" as RegisterUserController
-end box
 
-box "Persistence" #LightGrey
 participant ":UserRepository" as UserRepository
-end box
+
+participant ":List<User>"
 
 ' Human contact between Administrator and UI
 activate UI
@@ -32,18 +28,19 @@ RegisterUserController -> UserRepository : createAndAddUser(username, contact, p
 
 activate UserRepository
 ' Creation of u1 instance from User class
-box "Domain Model"#LightYellow
-create "u1: User" as User
-end box
+create "userTest: User" as User
 
 ' Creation, validation and addition
-UserRepository -> User : create(username, contact, profile)
+UserRepository -->> User : create(username, contact, profile)
 UserRepository -> UserRepository : validateUser(userTest)
-UserRepository -> UserRepository : addUserToUserList(userTest)
+UserRepository -> ":List<User>" : addUserToUserList(userTest)
 
+activate ":List<User>"
+":List<User>" -->> UserRepository : userTest added to the Userlist
+deactivate
 
 ' Return from UserRepository to RegisterUserController
-UserRepository --> RegisterUserController : userTest created and added to the list of users
+UserRepository --> RegisterUserController : userTest
 deactivate UserRepository
 
 ' Return from RegisterUserController to UI
