@@ -1,10 +1,12 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static TOPSECRET.domain.Enum.UserRole.NORMAL_USER;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
@@ -25,13 +27,12 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
-        );
+                LocalDate.of(1997, 8, 15)
+                );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new User("ValidName", contact, profile)
+                new User("ValidName", contact, profile, UserRole.NORMAL_USER)
         );
     }
 
@@ -45,13 +46,12 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new User(null, contact, profile)
+                () -> new User(null, contact, profile, UserRole.NORMAL_USER)
         );
     }
 
@@ -65,13 +65,12 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new User("abcde", contact, profile)
+                new User("abcde", contact, profile, UserRole.NORMAL_USER)
         );
     }
 
@@ -85,13 +84,12 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new User("test", contact, profile)
+                () -> new User("test", contact, profile, UserRole.NORMAL_USER)
         );
     }
 
@@ -105,11 +103,10 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
-        User user = new User("ValidName", contact, profile);
+        User user = new User("ValidName", contact, profile, UserRole.NORMAL_USER);
 
         // Act
         String result = user.getUserName();
@@ -128,11 +125,10 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
-        User user = new User("ValidName", contact, profile);
+        User user = new User("ValidName", contact, profile, UserRole.NORMAL_USER);
 
         // Act
         Contact result = user.getContact();
@@ -151,11 +147,10 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
-        User user = new User("ValidName", contact, profile);
+        User user = new User("ValidName", contact, profile, UserRole.NORMAL_USER);
 
         // Act
         Profile result = user.getProfile();
@@ -174,11 +169,10 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
-        User user = new User("userNameTest", contact, profile);
+        User user = new User("userNameTest", contact, profile, UserRole.NORMAL_USER);
 
         // Act
         String result = user.getUserName();
@@ -197,11 +191,10 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Country.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
-        User user = new User("userNameTest", contact, profile);
+        User user = new User("userNameTest", contact, profile, UserRole.NORMAL_USER);
 
         // Act
         String result = user.getUserInfo();

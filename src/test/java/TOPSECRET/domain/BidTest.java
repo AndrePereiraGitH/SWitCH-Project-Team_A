@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -26,12 +27,11 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Maria Silva",           // name
                 Country.PORTUGAL,        // country
-                LocalDate.of(1990, Month.MAY, 15), // birthday
-                false                    // isAuthor
+                LocalDate.of(1990, Month.MAY, 15) // birthday
         );
 
 
-        User bidder = new User("Maria123", contact, userProfile);
+        User bidder = new User("Maria123", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal ("100.50"));
 
 
@@ -47,8 +47,6 @@ class BidTest {
         assertTrue(result.getTimeOfBid().isAfter(LocalDateTime.now().minusSeconds(5)));
 
         assertNotNull(result.getTimeOfBid());
-
-        assertFalse(bidder.getProfile().isAuthor());
     }
 
 
@@ -65,11 +63,10 @@ class BidTest {
         Profile authorProfile = new Profile(
                 "John Writer",
                 Country.AUSTRALIA,
-                LocalDate.of(1985, Month.JANUARY, 20),
-                true  // isAuthor = true
+                LocalDate.of(1985, Month.JANUARY, 20)
         );
 
-        User bidder = new User("AuthorJohn", contact, authorProfile);
+        User bidder = new User("AuthorJohn", contact, authorProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal ("250.75"));
 
 
@@ -81,8 +78,6 @@ class BidTest {
         assertEquals(value, result.getValue());
 
         assertNotNull(result.getTimeOfBid());
-
-        assertTrue(bidder.getProfile().isAuthor());
     }
 
 
@@ -111,10 +106,9 @@ class BidTest {
         Profile userProfile = new Profile(
                 "João Silva Mendes",
                 Country.PORTUGAL,
-                LocalDate.of(2009, Month.MAY, 15),
-                false
+                LocalDate.of(2009, Month.MAY, 15)
         );
-        User bidder = new User("Joaogamer", contact, userProfile);
+        User bidder = new User("Joaogamer", contact, userProfile, UserRole.NORMAL_USER);
 
 
         // Act & Assert
@@ -137,12 +131,11 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Pedro Garcia",
                 Country.PORTUGAL,
-                LocalDate.of(1995, Month.NOVEMBER, 03),
-                false
+                LocalDate.of(1995, Month.NOVEMBER, 03)
         );
 
 
-        User bidder = new User("pedrinhoFortnite", contact, userProfile);
+        User bidder = new User("pedrinhoFortnite", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal("123.45"));
 
         // Act
@@ -171,12 +164,11 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Sophie Martin",
                 Country.PORTUGAL,
-                LocalDate.of(2004, Month.JULY, 18),
-                false
+                LocalDate.of(2004, Month.JULY, 18)
         );
 
 
-        User bidder = new User("MarShophie", contact, userProfile);
+        User bidder = new User("MarShophie", contact, userProfile, UserRole.NORMAL_USER);
         Price smallValue = new Price(new BigDecimal("0.01"));
 
 
@@ -200,12 +192,11 @@ class BidTest {
         Profile userProfile = new Profile(
                 "John Doe",
                 Country.PORTUGAL,
-                LocalDate.of(2018, Month.JANUARY, 30),
-                false
+                LocalDate.of(2018, Month.JANUARY, 30)
         );
 
 
-        User bidder = new User("Jonhnie66", contact, userProfile);
+        User bidder = new User("Jonhnie66", contact, userProfile, UserRole.NORMAL_USER);
         Price largeValue = new Price(new BigDecimal("9999999.99")); // Big value
 
 
@@ -231,10 +222,9 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Luca Rossi",
                 Country.ITALY,
-                LocalDate.of(1980, Month.APRIL, 12),
-                false
+                LocalDate.of(1980, Month.APRIL, 12)
         );
-        User bidder = new User("LucaR", contact, userProfile);
+        User bidder = new User("LucaR", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal("150.0"));
 
         // Capture time before creation
@@ -264,10 +254,9 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Anna Müller",
                 Country.GERMANY,
-                LocalDate.of(1998, Month.AUGUST, 27),
-                false
+                LocalDate.of(1998, Month.AUGUST, 27)
         );
-        User bidder = new User("AnnaM", contact, userProfile);
+        User bidder = new User("AnnaM", contact, userProfile, UserRole.NORMAL_USER);
         Price value = new Price(new BigDecimal("200.0"));
 
         // Act
@@ -289,10 +278,9 @@ class BidTest {
         Profile userProfile = new Profile(
                 "André Simões",
                 Country.PORTUGAL,
-                LocalDate.of(1990, Month.JANUARY, 1),
-                false
+                LocalDate.of(1990, Month.JANUARY, 1)
         );
-        User bidder = new User("noteme", contact, userProfile);
+        User bidder = new User("noteme", contact, userProfile, UserRole.NORMAL_USER);
 
         // Act & Assert - Tests if Price rejects negative value
         assertThrows(
