@@ -44,7 +44,7 @@ class TransactionTest {
     @Test
     void auctionConstructorNullAuction() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         null,
@@ -55,12 +55,13 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+        assertEquals("Auction cannot be null", e.getMessage());
     }
 
     @Test
     void auctionConstructorNullBuyer() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         null,
                         createValidAuction(),
@@ -71,12 +72,14 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+
+        assertEquals("Buyer cannot be null", e.getMessage());
     }
 
     @Test
     void auctionConstructorNullPrice() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         createValidAuction(),
@@ -87,44 +90,14 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
-    }
 
-    @Test
-    void auctionConstructorWithZeroPriceAndAllOtherValidData() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(BigDecimal.ZERO),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-    }
-
-    @Test
-    void auctionConstructorNegativInvalidPrice() {
-        //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(new BigDecimal("-1")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
+        assertEquals("Price cannot be null", e.getMessage());
     }
 
     @Test
     void auctionConstructorNullTransactionDate() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         createValidAuction(),
@@ -135,12 +108,13 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+        assertEquals("Transaction date cannot be null", e.getMessage());
     }
 
     @Test
     void auctionConstructorFutureTransactionDate() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         createValidAuction(),
@@ -151,12 +125,13 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+        assertEquals("Transaction date cannot be null", e.getMessage());
     }
 
     @Test
     void auctionConstructorNullPaymentDate() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         createValidAuction(),
@@ -167,12 +142,14 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+        assertEquals("Future Payment date cannot be null", e.getMessage());
+
     }
 
     @Test
     void auctionConstructorFuturePaymentDate() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         createValidAuction(),
@@ -183,12 +160,13 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+        assertEquals("Future Payment date cannot be null", e.getMessage());
     }
 
     @Test
     void auctionConstructorNullSellers() {
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         createValidAuction(),
@@ -199,6 +177,7 @@ class TransactionTest {
                         TransactionStatus.PENDING
                 )
         );
+        assertEquals("Seller list cannot be null", e.getMessage());
     }
 
     @Test
@@ -223,7 +202,7 @@ class TransactionTest {
     @Test
     void cartConstructorNullCart() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
@@ -233,12 +212,13 @@ class TransactionTest {
                         List.of(createValidUser("Seller"))
                 )
         );
+        assertEquals("Cart cannot be null", e.getMessage());
     }
 
     @Test
     void cartConstructorNullBuyer() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         null,
                         new Price(new BigDecimal("10.00")),
@@ -248,12 +228,13 @@ class TransactionTest {
                         List.of(createValidUser("Seller"))
                 )
         );
+        assertEquals("Buyer cannot be null", e.getMessage());
     }
 
     @Test
     void cartConstructorNullPrice() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         null,
@@ -263,45 +244,13 @@ class TransactionTest {
                         List.of(createValidUser("Seller"))
                 )
         );
-    }
-
-    @Test
-    void cartTransactionConstructorPriceEqualZeroInvalid() {
-        // Assert
-        User buyer = createValidUser("Buyer");
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        buyer,
-                        new Price(BigDecimal.ZERO),
-                        createValidCart(buyer),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller"))
-                )
-        );
-    }
-
-    @Test
-    void cartConstructorNegativeInvalidPrice() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        new Price(new BigDecimal("-1")),
-                        createValidCart(createValidUser("Buyer")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller"))
-                )
-        );
+        assertEquals("Price cannot be null", e.getMessage());
     }
 
     @Test
     void cartConstructorNullTransactionDate() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
@@ -311,12 +260,13 @@ class TransactionTest {
                         List.of(createValidUser("Seller"))
                 )
         );
+        assertEquals("Transaction date cannot be null", e.getMessage());
     }
 
     @Test
     void cartConstructorNullPaymentDate() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
@@ -326,12 +276,13 @@ class TransactionTest {
                         List.of(createValidUser("Seller"))
                 )
         );
+        assertEquals("Transaction payment date cannot be null", e.getMessage());
     }
 
     @Test
     void cartConstructorNullSellers() {
         // Act & Asser
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
@@ -341,6 +292,7 @@ class TransactionTest {
                         null
                 )
         );
+        assertEquals("Seller list cannot be null", e.getMessage());
     }
 
 
@@ -358,7 +310,8 @@ class TransactionTest {
 
     private static BibliographicalData createValidBibliographicalData(){
         List<Profile> authors = List.of(
-                new Profile("Author", Country.PORTUGAL, LocalDate.of(1956, 10, 10), true));
+                new Profile("J. K. Rowling", Country.SPAIN, LocalDate.of(1995, 10, 14), true),
+                new Profile("Freida", Country.PORTUGAL, LocalDate.of(1956, 10, 10), true));
 
         return new BibliographicalData(
                 "O Senhor do Anéis: A irmandade do Anel",

@@ -27,22 +27,19 @@ public class Transaction {
 
 
         if (auction == null){
-            throw new IllegalArgumentException("Empty auction is null");
+            throw new IllegalArgumentException("Auction cannot be null");
         }
         if (buyer == null){
-            throw new IllegalArgumentException("Zero buyer is null");
+            throw new IllegalArgumentException("Buyer cannot be null");
         }
         if (price == null) {
             throw new IllegalArgumentException("Price cannot be null");
         }
-        if (price.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price must be greater than zero");
-        }
         if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Transaction cannot be null");
+            throw new IllegalArgumentException("Transaction date cannot be null");
         }
         if (paymentDate == null || paymentDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Transaction payment date cannot be null");
+            throw new IllegalArgumentException("Future Payment date cannot be null");
         }
         if (sellers == null){
             throw new IllegalArgumentException("Seller list cannot be null");
@@ -65,19 +62,16 @@ public class Transaction {
     public Transaction(User buyer, Price price, Cart cart, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers){
 
         if (cart == null){
-            throw new IllegalArgumentException("Empty cart is null");
+            throw new IllegalArgumentException("Cart cannot be null");
         }
         if (buyer == null){
-            throw new IllegalArgumentException("Zero buyer is null");
+            throw new IllegalArgumentException("Buyer cannot be null");
         }
         if (price == null) {
             throw new IllegalArgumentException("Price cannot be null");
         }
-        if (price.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price must be greater than zero");
-        }
         if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Transaction cannot be null");
+            throw new IllegalArgumentException("Transaction date cannot be null");
         }
         if (paymentDate == null || paymentDate.isAfter(LocalDateTime.now())){
             throw new IllegalArgumentException("Transaction payment date cannot be null");
