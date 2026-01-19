@@ -4,13 +4,17 @@ footbox off
 
 title Sequence Diagram - US007 Register a new country in the System
 
-box #LightYellow
+box #WhiteSmoke
 actor Administrator
 participant ":UI" as UI
 end box
 
+box "Controller" #LightBlue
 participant ":CityController" as CityController
+end box
+box "Persistence" #LightGrey
 participant ":CityRepository" as AddressRepository
+end box
 
 Administrator -> UI : **1** I want to register a new city
 UI --> Administrator : **2** What city and from which country?
@@ -22,8 +26,10 @@ activate CityController
 CityController -> AddressRepository : **5** createAndAddNewCity (name, country)
 activate AddressRepository
 
+box "Domain Model" #LightYellow
 create "newCity1: City" as City
 AddressRepository -> City : **6** createCity(name, country)
+end box
 
 AddressRepository -> AddressRepository : **7** validate (newCity1)
 AddressRepository -> AddressRepository : **8** Add (newCity1)
