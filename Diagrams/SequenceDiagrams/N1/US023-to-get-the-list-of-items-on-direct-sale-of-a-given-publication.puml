@@ -8,7 +8,7 @@ participant ":System" as System
 
 ' Buyer -> System : **1** getListOfItems(typeOfSale, publication)
 Buyer -> System : **1** I want to get a list of items on direct sale of a given publication
-Buyer <-- System : **2** Which publication?
+Buyer <-- System : **2** Which publication? Choose!
 Buyer -> System : **3** publication
 
 System --> Buyer : **4** List of items on direct sale
