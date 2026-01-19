@@ -19,8 +19,8 @@ class AppraisalEntityRepository {
   -appraisalEntityList : List<AppraisalEntity>
   +createAndRegisterAppraisalEntity(name: String, contact: String) : AppraisalEntity
 ' Those methods are part of createAndRegisterAppraisalEntity
-  +validateAppraisalEntity(ae: AppraisalEntity) : boolean
-  +addToAppraisalEntityList(ae: AppraisalEntity) : void
+'  +validateAppraisalEntity(ae: AppraisalEntity) : boolean
+'  +addToAppraisalEntityList(ae: AppraisalEntity) : void
 }
 
 class AppraisalEntity {

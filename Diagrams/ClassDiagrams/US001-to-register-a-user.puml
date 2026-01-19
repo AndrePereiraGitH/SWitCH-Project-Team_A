@@ -9,8 +9,8 @@ class UserRepository {
   -userList: List<User>
   +createAndAddUser(username: String, contact: String, profile: String) : User
 ' Those methods are part of createAndAddUser
-  +validateUser(u: User) : boolean
-  +addUserToUserList(u: User) : void
+'  -validateUser(u: User) : boolean
+'  -addUserToUserList(u: User) : void
 }
 
 class User {
