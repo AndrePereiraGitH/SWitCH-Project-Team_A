@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 
 import java.time.LocalDate;
 
@@ -9,12 +9,12 @@ public class Profile {
     // Attributes
 
     private final String name;
-    private final Country country;
+    private final Countries country;
     private final LocalDate birthday;
 
     // Constructor
 
-    public Profile(String name, Country country, LocalDate birthday) {
+    public Profile(String name, Countries country, LocalDate birthday) {
         if (name == null || name.isBlank() || country == null || birthday == null) {
             throw new IllegalArgumentException("Profile attributes cannot be null or blank");
         }
@@ -27,7 +27,7 @@ public class Profile {
         return name;
     }
 
-    public Country getCountry() {
+    public Countries getCountry() {
         return country;
     }
 

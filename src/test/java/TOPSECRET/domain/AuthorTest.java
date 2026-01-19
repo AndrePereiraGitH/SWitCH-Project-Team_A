@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ class AuthorTest {
 
         Profile profile = new Profile(
                 "John Lewis",
-                Country.BRAZIL,
+                Countries.BRAZIL,
                 LocalDate.of(1984, 12, 3)
         );
 

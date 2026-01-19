@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -13,26 +13,26 @@ class ProfileTest {
     void shouldCreateProfileWithValidData() {
         Profile profile = new Profile(
                 "Test User",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(2000, 5, 10)
         );
 
         assertEquals("Test User", profile.getName());
-        assertEquals(Country.PORTUGAL, profile.getCountry());
+        assertEquals(Countries.PORTUGAL, profile.getCountry());
         assertEquals(LocalDate.of(2000, 5, 10), profile.getBirthday());
     }
 
     @Test
     void shouldFailWhenNameIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile(null, Country.PORTUGAL, LocalDate.now());
+            new Profile(null, Countries.PORTUGAL, LocalDate.now());
         });
     }
 
     @Test
     void shouldFailWhenNameIsBlank() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("   ", Country.FRANCE, LocalDate.now());
+            new Profile("   ", Countries.FRANCE, LocalDate.now());
         });
     }
 
@@ -46,7 +46,7 @@ class ProfileTest {
     @Test
     void shouldFailWhenBirthdayIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("Valid Name", Country.GERMANY, null);
+            new Profile("Valid Name", Countries.GERMANY, null);
         });
     }
 }
