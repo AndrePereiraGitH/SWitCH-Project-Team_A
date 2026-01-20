@@ -5,18 +5,18 @@ title US002 - To add a publication type to type list in the system
 
 class RegisterPubType {
   -_pubTypeRepository: PubTypeRepository
-    +createAndAddPubType(name: String): PubType
+    +createAndAddPubType(mediaFormat: String, typeOfBinding: String, details: String): PubType
 }
 
 class PubTypeRepository {
     -_pubType: List<pubType>
-  +createNewPubType(pubType: String)
-  -validator(t1): boolean
+  +
+  -validator: boolean
 }
 
 class PubType {
   -_pubType: String
-    +getName(): String
+    +getPubType(): String
 
 }
 

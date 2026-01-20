@@ -6,6 +6,7 @@ class UI023{
 }
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
+  +getAllPublications()
   +getListOfItemsOnDirectSale(publication)
   -copyList()
 }
@@ -14,10 +15,13 @@ class PublicationRepository{
     +getAllPublications()
 }
 
-class ListingRepository {
-  +getListOfItems(publication)
-  ' -convertStringToEnum(typeOfSale, publication)
+class DirectSaleRepository {
+  +getListOfItemsOnDirectSale(publication)
   -validateParameters(publication)
+}
+
+class DirectSale {
+  - listing: Listing
 }
 
 class Listing {
@@ -44,19 +48,20 @@ class Publication {
 }
 
 class BibliographicalData {
-    - title: Title
+    - title: String
 }
 
 ' Interactions
 
-UI023 "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses >
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController  "1 " ..> "1" ListingRepository : uses >
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationRepository: uses >
-ListingRepository "1 " ..> " * " Listing : retrieves >
-Listing "                                *" ..> "1" SaleType : can be\nsold by >
-Listing "1" ..> "1    " Item : lists an >
+UI023 "1" .. "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses >
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController  "1 " .. "1" DirectSaleRepository : uses >
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" .. "1" PublicationRepository: uses >
+DirectSaleRepository "1 " -- " * " DirectSale : retrieves >
+DirectSale "1" -- "1" Listing : uses >
+Listing "                                *" -- "1" SaleType : can be\nsold by >
+Listing "1" -- "1..*    " Item : lists an >
 ' Item "*" -- "1" BibliographicalData: has >
-Item "*" ..> "1" Publication: refers to a >
-Publication "*" ..> "1" BibliographicalData: has >
+Item "*" -- "1" Publication: refers to a >
+Publication "*" -- "1" BibliographicalData: has >
 
 @enduml
