@@ -26,12 +26,7 @@ public class PublicationTypeRepositoryTest {
 
         assertNotNull(pubTypeRepo);
     }
-/*
-    @Test
-    void shouldReturnPublicationTypeAlreadyExists()
-    {
-        assertThrows(IllegalArgumentException.class, () -> new PublicationType(mediaFormat, typeOfBinding, details));
-    }
+
 
     @Test
     void shouldReturnAllPublicationTypes()
@@ -62,5 +57,4 @@ public class PublicationTypeRepositoryTest {
         assertTrue(result.isEmpty());
     }
 
- */
 }
