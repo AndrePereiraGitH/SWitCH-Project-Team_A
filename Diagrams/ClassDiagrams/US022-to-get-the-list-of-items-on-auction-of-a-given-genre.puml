@@ -36,7 +36,7 @@ UI022 ..> ToGetTheListOfItemsOnAuctionOfAGivenGenreController : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionMapper : uses
-AuctionMapper "1" ..> "*" AuctionDTO : maps to
+AuctionMapper ..> AuctionDTO : maps to
 AuctionMapper ..> Auction : uses
 AuctionRepository "1" --> "*" Auction : contains
 

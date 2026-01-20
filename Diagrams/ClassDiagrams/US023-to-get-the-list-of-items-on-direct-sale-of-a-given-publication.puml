@@ -8,7 +8,6 @@ class UI023{
 class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
   +getAllPublications()
   +getListOfItemsOnDirectSale(publication)
-  -copyList()
 }
 
 class PublicationRepository{
@@ -17,13 +16,21 @@ class PublicationRepository{
 
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(publication)
-  -validateParameters(publication)
 }
 
 class DirectSale {
   - listing: Listing
+  +getDetails()
 }
 
+class DirectSaleMapper {
+  +toDTO(listOfDirectSale)
+}
+
+class DirectSaleDTO {
+}
+
+/'
 class Listing {
   - item: Item
   - saleType: SaleType
@@ -50,18 +57,24 @@ class Publication {
 class BibliographicalData {
     - title: String
 }
+'/
 
 ' Interactions
 
-UI023 "1" .. "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses >
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController  "1 " .. "1" DirectSaleRepository : uses >
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" .. "1" PublicationRepository: uses >
-DirectSaleRepository "1 " -- " * " DirectSale : retrieves >
-DirectSale "1" -- "1" Listing : uses >
-Listing "                                *" -- "1" SaleType : can be\nsold by >
-Listing "1" -- "1..*    " Item : lists an >
-' Item "*" -- "1" BibliographicalData: has >
-Item "*" -- "1" Publication: refers to a >
-Publication "*" -- "1" BibliographicalData: has >
+UI023 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationRepository: uses
+DirectSaleRepository "1 " --> " * " DirectSale : contains
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleMapper : uses
+DirectSaleMapper ..> DirectSaleDTO : maps to
+DirectSaleMapper ..> DirectSale : uses
+/'
+DirectSale "1" -- "1" Listing : uses
+Listing "                                *" -- "1" SaleType : can be sold by
+Listing "1" -- "1..*    " Item : lists an
+' Item "*" -- "1" BibliographicalData: has
+Item "*" -- "1" Publication: refers to a
+Publication "*" -- "1" BibliographicalData: has
+'/
 
 @enduml
