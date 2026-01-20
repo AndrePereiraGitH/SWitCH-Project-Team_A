@@ -1,7 +1,7 @@
 @startuml
 title US026 - To get the list of items on auction of a given author
 
-class UI025{
+class UI026{
 
 }
 
@@ -41,19 +41,19 @@ class Item {
 
 class BibliographicalData {
     - title: String
+    - authors: List <Profile>
     }
 
 ' Interactions
 
-UI025 "1 " ..> "1 " GetListOfItemsOnAuctionOfGivenAuthorController : uses >
-GetListOfItemsOnAuctionOfGivenAuthorController  " 1" ..> "1    " AuctionRepository : uses >
-GetListOfItemsOnAuctionOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses >
-AuctionRepository "1 " ..> " * " Auction : retrieves >
-Auction "1 " ..> " 1 " Listing : is a type of >
-AuthorRepository "1 " ..> "          *" Author : stores >
-Author "1 " ..> "1 " Profile : has >
-Listing "1 " ..> "          1..*" Item: has >
-Item "1 " ..> "          1" BibliographicalData: has >
-
+UI026 "1 " ..> "1 " GetListOfItemsOnAuctionOfGivenAuthorController : uses
+GetListOfItemsOnAuctionOfGivenAuthorController  " 1" ..> "1    " AuctionRepository : uses
+GetListOfItemsOnAuctionOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses
+AuctionRepository "1 " --> " 1 " Auction : retrieves
+Auction "1 " --> " 1 " Listing : is a type of
+BibliographicalData "1 " --> "          *" Author : has
+Author "1 " --> "1 " Profile : has
+Listing "1 " --> "          1..*" Item: has
+Item "1 " --> "          1" BibliographicalData: has
 
 @enduml
