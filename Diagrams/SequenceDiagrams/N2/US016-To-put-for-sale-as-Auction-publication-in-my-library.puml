@@ -8,57 +8,55 @@ box #whitesmoke
     participant ":UI" as UI
 end box
 
-box "Controller" #Lightblue
-    participant ":ToPutPublicationInAuctionController" as C
-end box
+    participant ":ToPutPublicationInAuctionController" as ctrl
 
-box "Persistence" #LightGrey
-    participant ":LibraryRepository" as LibRepo
     participant ":AuctionRepository" as AucRepo
-end box
 
-box "Domain Model" #LightYellow
-    participant "myLibrary:Library" as Lib
-    participant "pub:Publication" as Pub
-end box
+    participant ":Library" as Lib
 
 
 
 
 User -> UI : I want to sell a publication of my library as an auction"
-UI --> User : Which library?
-User -> UI : myLibrary
-UI --> User : Which publication?
-User -> UI : publication
-UI --> User : Insert initialDate, finalDate, initialPrice, buyOutPrice
-User -> UI : provide data
-
-UI -> C : putPublicationForAuction(myLibraryId, publicationId,\ninitialDate, finalDate, initialPrice, buyOutPrice)
-activate C
-
-C -> LibRepo : getLibrary(myLibrary)
-activate LibRepo
-LibRepo --> C : Lib
-deactivate LibRepo
-
-C -> Lib : getPublication(publication)
+activate UI
+UI -> ctrl : getAllPublicationsInLibrary()
+activate ctrl
+ctrl -> Lib : getAllPublications()
 activate Lib
-Lib --> C : Pub
+create "listOfPublications:List<Publication>" as listPub
+Lib -> listPub
+Lib --> ctrl : listOfPublications
 deactivate Lib
+ctrl --> UI : listOfPublications
+deactivate ctrl
 
-C -> Pub : markAsAuctionSale()
-activate Pub
-Pub --> C : ok
-deactivate Pub
+UI --> User : Please, select a publication from your list: pub1, pub2, pub3
+deactivate UI
+User -> UI : pub1
+activate UI
+UI --> User : Insert initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
+User -> UI : provide data: initialDate, finalDate, initialPrice, buyOutPrice
 
-C -> AucRepo : createAuction(Pub, initialDate, finalDate,\ninitialPrice, buyOutPrice)
+
+
+UI -> ctrl : putPublicationForAuction(pub1, initialDate, finalDate, initialPrice, buyOutPrice)
+activate ctrl
+ctrl -> AucRepo : putPublicationForAuction(pub1, initialDate, finalDate, initialPrice, buyOutPrice)
 activate AucRepo
-create "a1:Auction" as A1
-AucRepo -> A1 : <<create>>
-AucRepo --> C : a1
+
+create "l1:Listing" as l1
+AucRepo -> l1 : createListing()
+
+create "auction1:Auction" as a1
+AucRepo -> a1 : createAuction(l1, initialDate, finalDate, initialPrice, buyOutPrice)
+
+AucRepo -> AucRepo : validateAuction(auction1)
+AucRepo -> AucRepo : addAuction(auction1)
+AucRepo --> ctrl : auction1
 deactivate AucRepo
 
-C --> UI : Success(a1)
-deactivate C
-UI --> User : Done
+ctrl --> UI : success
+deactivate ctrl
+UI --> User : Your publication pub1 is now in an Auction
+deactivate UI
 @enduml
