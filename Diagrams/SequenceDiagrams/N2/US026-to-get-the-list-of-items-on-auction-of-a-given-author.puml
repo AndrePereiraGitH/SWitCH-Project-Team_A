@@ -35,8 +35,8 @@ activate AuctionRepository
 
 AuctionRepository -> AuctionRepository : validateParameters(author)
 
-create "l1: List<Listing>" as Listing
-AuctionRepository -> Listing : getList(author)
+create "l1: List<Auction>" as ListOfAuction
+AuctionRepository -> ListOfAuction : getList(author)
 
 AuctionRepository --> GetListOfItemsOnAuctionOfGivenAuthorController : l1
 deactivate AuctionRepository

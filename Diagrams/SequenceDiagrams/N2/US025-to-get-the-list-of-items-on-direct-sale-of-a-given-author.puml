@@ -35,8 +35,8 @@ activate DirectSaleRepository
 
 DirectSaleRepository -> DirectSaleRepository : validateParameters(author)
 
-create "l1: List<Listing>" as Listing
-DirectSaleRepository -> Listing : getList(author)
+create "l1: List<DirectSale>" as DirectSaleList
+DirectSaleRepository -> DirectSaleList : getList(author)
 
 DirectSaleRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController : l1
 deactivate DirectSaleRepository
