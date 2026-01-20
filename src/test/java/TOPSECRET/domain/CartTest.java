@@ -72,7 +72,6 @@ class CartTest {
         Item item = new Item(
                 Condition.LIKE_NEW,
                 1.2,
-                pictures,
                 dimensions,
                 TypeOfBinding.PAPERBACK,
                 "1st edition",
@@ -86,8 +85,8 @@ class CartTest {
                 new Price(new BigDecimal("50.00")),
                 "Short description 1",
                 "Listing Title 1",
-                SaleType.DIRECT_SALE,
-                new User("Seller1", null, null, UserRole.NORMAL_USER)
+                new User("Seller1", null, null, UserRole.NORMAL_USER),
+                pictures
         );
 
         listing2 = new Listing(
@@ -95,8 +94,8 @@ class CartTest {
                 new Price(new BigDecimal("50.00")),
                 "Short description 2",
                 "Listing Title 2",
-                SaleType.DIRECT_SALE,
-                new User("Seller2", null, null, UserRole.NORMAL_USER)
+                new User("Seller2", null, null, UserRole.NORMAL_USER),
+                pictures
         );
     }
 

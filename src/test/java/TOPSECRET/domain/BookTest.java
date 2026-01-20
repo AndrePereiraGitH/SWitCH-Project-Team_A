@@ -60,7 +60,7 @@ class BookTest {
 
         BibliographicalData information = sampleInformation();
 
-        Item item = new Item (Condition.NEW, weight, pictures, dimensions, TypeOfBinding.HARDBACK, edition, information);
+        Item item = new Item (Condition.NEW, weight, dimensions, TypeOfBinding.HARDBACK, edition, information);
 
         return item;
     }
