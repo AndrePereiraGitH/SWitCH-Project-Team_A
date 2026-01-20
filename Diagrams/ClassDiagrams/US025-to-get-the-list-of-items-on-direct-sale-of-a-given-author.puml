@@ -13,7 +13,7 @@ class getListOfItemsOnDirectSaleOfGivenAuthorController {
 class AuthorRepository{
     +getAllAuthors()
 }
-
+/'
 class Author {
   -authorProfile: Profile
 }
@@ -21,7 +21,7 @@ class Author {
 class Profile {
   -name: String
 }
-
+'/
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(author)
   -validateParameters(author)
@@ -30,7 +30,7 @@ class DirectSaleRepository {
 class DirectSale {
   - listing: Listing
 }
-
+/'
 class Listing {
   - items: List <Item>
 }
@@ -43,17 +43,20 @@ class BibliographicalData {
     - title: String
     - authors: List <Profile>
     }
+  '/
 
 ' Interactions
 
 UI025 "1 " ..> "1 " getListOfItemsOnDirectSaleOfGivenAuthorController : uses
-getListOfItemsOnDirectSaleOfGivenAuthorController  " 1" ..> "1    " DirectSaleRepository : uses
-getListOfItemsOnDirectSaleOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses
-DirectSaleRepository "1 " --> " 1 " DirectSale : retrieves
+getListOfItemsOnDirectSaleOfGivenAuthorController  " 1" ..> "1     " DirectSaleRepository : uses
+getListOfItemsOnDirectSaleOfGivenAuthorController "1  " ..> "1 " AuthorRepository: uses
+DirectSaleRepository "1 " --> " * " DirectSale : retrieves
+/'
 DirectSale "1 " --> " 1 " Listing : is a type of
 BibliographicalData "1 " --> "          *" Author : has
 Author "1 " --> "1 " Profile : has
 Listing "1 " --> "          1..*" Item: has
 Item "1 " --> "          1" BibliographicalData: has
+'/
 
 @enduml
