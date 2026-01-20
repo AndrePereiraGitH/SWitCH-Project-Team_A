@@ -1,0 +1,48 @@
+@startuml
+title US026 - To get the list of items on auction of a given author
+
+class UI026{
+
+}
+
+class GetListOfItemsOnAuctionOfGivenAuthorController {
+  +getListOfItemsOnAuction(author)
+  -copyList()
+}
+
+class AuthorRepository{
+    +getAllAuthors()
+}
+
+class Author {
+  -authorProfile: Profile
+}
+
+class Profile {
+  -name: String
+}
+
+class AuctionRepository {
+  +getListOfItemsOnAuction(author)
+  -validateParameters(author)
+}
+
+class Auction {
+  - listing: Listing
+}
+
+class Listing {
+  - items: List <Item>
+}
+
+' Interactions
+
+UI026 "1 " ..> "1 " GetListOfItemsOnAuctionOfGivenAuthorController : uses >
+GetListOfItemsOnAuctionOfGivenAuthorController  "1" ..> "1   " AuctionRepository : uses >
+GetListOfItemsOnAuctionOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses >
+AuctionRepository "1 " ..> " * " Auction : retrieves >
+Auction "1 " ..> " 1 " Listing : has >
+AuthorRepository "1 " ..> "           *" Author : stores >
+Author "1 " ..> "1 " Profile : has >
+
+@enduml
