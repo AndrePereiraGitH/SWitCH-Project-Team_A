@@ -121,8 +121,8 @@ class ItemTest {
     }
 
     private Item createValidItem() {
-        Profile author = new Profile("Tove Ditlevsen", Countries.DENMARK, LocalDate.of(1917, 12, 14));
-        Address address = new Address("R Maria", "12", "156-5", Countries.PARAGUAY);
+        Profile author = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+        Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
         Email email = new Email("Maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);
         Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);

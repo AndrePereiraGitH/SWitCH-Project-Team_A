@@ -23,7 +23,7 @@ class RegisterUserControllerTest {
     }
 
     private Contact createSampleContact() {
-        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
         Email email = new Email("test.user", "example.com");
         return new Contact("987654321", "351", email, address);
     }
@@ -31,7 +31,7 @@ class RegisterUserControllerTest {
     private Profile createSampleProfile() {
         return new Profile(
                 "Test Profile",
-                Countries.PORTUGAL,
+                new Country("PORTUGAL"),
                 LocalDate.of(1997, 8, 15)
         );
     }

@@ -12,7 +12,7 @@ class AuthorTest {
     @Test
     void shouldCreateAuthorWithValidData() {
         // Arrange
-        Profile profile = new Profile("John Lewis", Countries.BRAZIL, LocalDate.of(1984, 12, 3));
+        Profile profile = new Profile("John Lewis", new Country("BRAZIL"), LocalDate.of(1984, 12, 3));
 
         // Act
         Author author = new Author(profile, "valid bio");
@@ -35,7 +35,7 @@ class AuthorTest {
     @Test
     void shouldThrowExceptionWhenBiographyIsNullOrBlank() {
         // Arrange
-        Profile profile = new Profile("John Lewis", Countries.BRAZIL, LocalDate.of(1984, 12, 3));
+        Profile profile = new Profile("John Lewis", new Country("BRAZIL"), LocalDate.of(1984, 12, 3));
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> new Author(profile, null));
