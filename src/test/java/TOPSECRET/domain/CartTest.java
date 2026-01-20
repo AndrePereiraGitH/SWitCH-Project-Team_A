@@ -68,15 +68,30 @@ class CartTest {
 
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
+        PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,          // ajusta se o teu enum tiver outro nome
+                TypeOfBinding.PAPERBACK,
+                "Paperback"
+        );
+        User seller = new User("seller1", contact, author, UserRole.NORMAL_USER);
+        Code code = Code.fromIsbn13("9781234567890");
+
+        Publication publication = new Publication(
+                bibliographicalData,
+                publicationType,
+                seller,
+                PublicationStatus.FOR_SALE, // ajusta se o teu enum tiver outro nome
+                "1st edition",
+                code
+        );
 
         Item item = new Item(
                 Condition.LIKE_NEW,
                 1.2,
                 dimensions,
-                TypeOfBinding.PAPERBACK,
-                "1st edition",
-                bibliographicalData
+                publication
         );
+
 
         final List<Item> Item = new ArrayList<>(List.of(item));
 

@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.SaleType;
-
 import java.util.ArrayList;
 import java.util.List;
 

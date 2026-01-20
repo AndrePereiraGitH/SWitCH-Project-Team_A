@@ -17,7 +17,7 @@ public class Publication {
     private Code _code;
 
 
-    public Publication(BibliographicalData bibliographicalData, String publicationType, User userName, PublicationStatus publicationStatus,
+    public Publication(BibliographicalData bibliographicalData, PublicationType publicationType, User userName, PublicationStatus publicationStatus,
                        String edition, Code code) {
 
         if (bibliographicalData == null) {

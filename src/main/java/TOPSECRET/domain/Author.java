@@ -1,21 +1,26 @@
 package TOPSECRET.domain;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Author {
 
-    private Profile _authorProfile;
-    private String _biography;
+    private final Profile _authorProfile;
+    private final String _biography;
 
     public Author(Profile profile, String biography) {
         if (profile == null) {
             throw new IllegalArgumentException("Profile cannot be null");
         }
-        if ( biography == null || biography.isBlank() )
+        if (biography == null || biography.isBlank())
             throw new IllegalArgumentException("Biography cannot be null or blank");
 
         this._authorProfile = profile;
         this._biography = biography;
+    }
+
+    public Author(String name, Country countries, LocalDate dateOfBirth, String bio) {
+        this(new Profile(name, countries, dateOfBirth), bio);      //para não repetir validaç~oes
     }
 
     public Profile getProfile() {

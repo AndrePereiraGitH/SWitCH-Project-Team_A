@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -45,7 +43,9 @@ public class Profile {
             return true;
         }
         Profile profile = (Profile) o;
-        return Objects.equals(_name, profile._name) && _country == profile._country && Objects.equals(_birthday, profile._birthday);
+        return Objects.equals(_name, profile._name)
+                && Objects.equals(_country, profile._country)
+                && Objects.equals(_birthday, profile._birthday);
     }
 
     @Override

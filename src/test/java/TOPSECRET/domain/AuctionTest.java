@@ -850,7 +850,38 @@ class AuctionTest {
         );
     }
 
+    private static Publication createValidPublication(BibliographicalData bd) {
+        // PublicationType
+        PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.PAPERBACK,
+                "Paperback"
+        );
+
+        // User (seller/owner of the publication)
+        User user = instantiateUser("maria1");
+
+        // Code
+        Code code = Code.fromIsbn13("9781234567890");
+
+        return new Publication(
+                bd,
+                publicationType,
+                user,
+                PublicationStatus.FOR_SALE,
+                "1st edition",
+                code
+        );
+    }
+
     private static Item instantiateItem(BibliographicalData bd, Dimensions dimensions) {
-        return new Item(Condition.LIKE_NEW, 1.2, dimensions, TypeOfBinding.PAPERBACK, "2nd", bd);
+        Publication publication = createValidPublication(bd);
+
+        return new Item(
+                Condition.LIKE_NEW,
+                1.2,
+                dimensions,
+                publication
+        );
     }
 }

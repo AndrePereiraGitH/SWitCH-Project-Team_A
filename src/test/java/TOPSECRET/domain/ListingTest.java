@@ -2,10 +2,8 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -53,18 +51,27 @@ class ListingTest {
             "Some text"
     );
 
+    //Item
+    // --- minimal objects needed for Publication ---
 
-    // Item
+    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"
+    );
 
-    Item validItem1 = new Item(Condition.LIKE_NEW,1.2,dimensions,TypeOfBinding.PAPERBACK,"1st edition"
-            ,bibliographicalData);
+    User user = new User("maria1", contact, author, UserRole.NORMAL_USER);
+    PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
 
-    Item validItem2 = new Item(Condition.POOR,1.2,dimensions,TypeOfBinding.PAPERBACK,"2nd edition"
-            ,bibliographicalData);
+    Code code1 = Code.fromIsbn13("9781234567890");
+    Code code2 = Code.fromIsbn13("9781234567891");
+    Code code3 = Code.fromIsbn13("9781234567892");
 
-    Item validItem3 = new Item(Condition.POOR,1.2,dimensions,TypeOfBinding.PAPERBACK,"3rd edition"
-            ,bibliographicalData);
+    Item validItem1 = new Item(Condition.LIKE_NEW, 1.2, dimensions,
+            new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1));
 
+    Item validItem2 = new Item(Condition.POOR, 1.2, dimensions,
+            new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2));
+
+    Item validItem3 = new Item(Condition.POOR, 1.2, dimensions,
+            new Publication(bibliographicalData, publicationType, user, publicationStatus, "3rd edition", code3));
 
 
 

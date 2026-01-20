@@ -336,15 +336,37 @@ class TransactionTest {
                 );
     }
 
+    private static PublicationType createValidPublicationType() {
+        return new PublicationType(
+                MediaFormat.BOOK,            // adjust if needed
+                TypeOfBinding.PAPERBACK,
+                "Paperback"
+        );
+    }
+
+    private static Publication createValidPublication(BibliographicalData bd, User seller) {
+        Code code = Code.fromIsbn13("9781234567890");
+
+        return new Publication(
+                bd,
+                createValidPublicationType(),
+                seller,
+                PublicationStatus.FOR_SALE,  // adjust if needed
+                "1st Edition",
+                code
+        );
+    }
 
     private static Item createValidItem(){
+        User seller = createValidUser("Seller");
+        BibliographicalData bd = createValidBibliographicalData();
+        Publication publication = createValidPublication(bd, seller);
+
         return new Item(
                 Condition.LIKE_NEW,
                 250.30,
-                new Dimensions (102, 120, 102),
-                TypeOfBinding.PAPERBACK,
-                "1st Edition",
-                createValidBibliographicalData()
+                new Dimensions(102, 120, 102),
+                publication
         );
     }
 

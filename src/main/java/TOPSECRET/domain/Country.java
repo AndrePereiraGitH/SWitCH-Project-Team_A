@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class Country {
 
     private String _countryName;
@@ -30,6 +32,19 @@ public class Country {
     //Getter for countryName
     public String getCountryName() {
         return _countryName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Country country = (Country) o;
+        return Objects.equals(_countryName, country._countryName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_countryName);
     }
 
 }

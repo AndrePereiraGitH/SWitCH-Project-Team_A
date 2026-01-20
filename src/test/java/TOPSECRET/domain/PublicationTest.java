@@ -1,9 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
-import TOPSECRET.domain.Enum.Genre;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -58,9 +55,10 @@ class PublicationTest {
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
         PublicationStatus pubStatus1 = PublicationStatus.READING;
+        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
 
         //Act
-        Publication publication1 = new Publication(bibliographicalData1, "coolCover", user1,
+        Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,
                 pubStatus1, edition1, code1);
 
         //Assert
