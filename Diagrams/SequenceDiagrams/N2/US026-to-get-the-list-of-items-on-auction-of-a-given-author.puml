@@ -4,31 +4,39 @@ hide footbox
 autonumber
 title US026 - To get the list of items on auction of a given author
 
-box #WhiteSmoke
 actor Buyer
 participant ":UI026" as UI026
-end box
 
 participant ":GetListOfItemsOnAuctionOfGivenAuthorController" as GetListOfItemsOnAuctionOfGivenAuthorController
 
+participant ":AuthorRepository" as AuthorRepository
+
 participant ":ListingRepository" as ListingRepository
 
-Buyer -> UI026 : I want to get the list of items on auction of a given author
+Buyer -> UI026 : I want to get the list of items on le of a given author
 activate UI026
-Buyer <-- UI026 : Which author?
+UI026 -> GetListOfItemsOnAuctionOfGivenAuthorController : getAllAuthors()
+activate GetListOfItemsOnAuctionOfGivenAuthorController
+GetListOfItemsOnAuctionOfGivenAuthorController -> AuthorRepository: getAllAuthors()
+activate AuthorRepository
+AuthorRepository --> GetListOfItemsOnAuctionOfGivenAuthorController: listOfAllAuthors
+deactivate AuthorRepository
+GetListOfItemsOnAuctionOfGivenAuthorController --> UI026 : listOfAllAuthors
+deactivate GetListOfItemsOnAuctionOfGivenAuthorController
+Buyer <-- UI026 : Which author? Choose!
 Buyer -> UI026 : author
 
 UI026 -> GetListOfItemsOnAuctionOfGivenAuthorController : getListOfItemsOnAuction(author)
 activate GetListOfItemsOnAuctionOfGivenAuthorController
 
-GetListOfItemsOnAuctionOfGivenAuthorController -> ListingRepository : getListOfItems(typeOfSale, author)
+GetListOfItemsOnAuctionOfGivenAuthorController -> ListingRepository : getListOfItemsOnAuction(author)
 activate ListingRepository
 
 
-ListingRepository -> ListingRepository : validateParameters(typeOfSale, author)
+ListingRepository -> ListingRepository : validateParameters(author)
 
 create "l1: List<Listing>" as Listing
-ListingRepository -> Listing : getList(typeOfSale, author)
+ListingRepository -> Listing : getList(author)
 
 ListingRepository --> GetListOfItemsOnAuctionOfGivenAuthorController : l1
 deactivate ListingRepository
