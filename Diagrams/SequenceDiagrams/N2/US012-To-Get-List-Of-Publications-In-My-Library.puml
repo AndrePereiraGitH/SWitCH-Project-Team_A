@@ -1,7 +1,7 @@
 @startuml
 autonumber
 hide footbox
-title US012 - Get the list of publications in my library (With DTO)
+title US012 - As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
 
 
 actor User
@@ -19,11 +19,13 @@ participant "pubDTO:PublicationDTO" as DTO
 
 
 participant ":Library" as LibDomain
-participant "listOfPublications:List<Publication>" as ListPubs
+
 participant "listOfPublicationsDTO:List<PublicationDTO>" as ListDTO
 
 participant ":Publication" as PubDomain
 
+
+participant "listOfPublications:List<Publication>" as ListPubs
 
 
 
@@ -35,15 +37,17 @@ activate Ctrl
 
 Ctrl -> LibDomain: getListOfPublicationsInLibrary()
 activate LibDomain
-LibDomain -> ListPubs **:
+
 
 
 LibDomain --> Ctrl: listOfPublications
 deactivate LibDomain
 
+
 Ctrl -> Mapper: toDTO(listOfPublications)
+
 activate Mapper
-Mapper -> ListDTO **:
+Mapper -> ListDTO **: create()
 
 
     loop for each publication in list
