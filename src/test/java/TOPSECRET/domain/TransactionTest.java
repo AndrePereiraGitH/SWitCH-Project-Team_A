@@ -14,7 +14,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionTest {
-/*
+
     @Test
     void TransactionEmptyConstructorTest() {
         // Arrange
@@ -330,7 +330,7 @@ class TransactionTest {
                         )
                 ),
                 LocalDate.of(2020,1,10),
-                List.of(),
+                List.of(Genre.FICTION),
                 200,
                 "Text Description"
                 );
@@ -375,5 +375,5 @@ class TransactionTest {
         return cart;
     }
 
- */
+
 }
