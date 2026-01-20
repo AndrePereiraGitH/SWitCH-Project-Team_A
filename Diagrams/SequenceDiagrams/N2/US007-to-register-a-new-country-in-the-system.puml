@@ -22,24 +22,24 @@ UI --> Administrator : **2** What is the name of the country?
 
 Administrator -> UI : **3** The country is <name>
 
-UI -> CountryController : **4** registerNewCountry (name)
+UI -> CountryController : **4** registerNewCountry (_countryName)
 activate CountryController
 
-CountryController -> AddressRepository : **5** createAndAddNewCountry (name)
+CountryController -> AddressRepository : **5** createAndAddNewCountry (_countryName)
 activate AddressRepository
 
 box #LightYellow
 create "newCountry1: Country" as Country
-AddressRepository -> Country : **6** createCountry(name)
+AddressRepository -> Country : **6** createCountry(_countryName)
 end box
 AddressRepository -> AddressRepository : **7** validate (newCountry1)
 AddressRepository -> AddressRepository : **8** Add (newCountry1)
-AddressRepository --> CountryController : **9** true
+AddressRepository --> CountryController : **9** true (newCountry1)
 deactivate AddressRepository
 
-CountryController --> UI : **10** sucess
+CountryController --> UI : **10** success (newCountry1)
 deactivate CountryController
 
-UI --> Administrator : **11** Done!
+UI --> Administrator : **11** <newCountry1> registered successfully!
 
 @enduml
