@@ -8,44 +8,43 @@ actor Administrator
 participant ":UI006" as UI
 end box
 
-box "Controller" #LightBlue
+
 participant ":PublisherController" as RegisterPublisherController
 
-end box
 
-box "Persistence" #LightGrey
+
 participant ":PublisherRepository" as PublisherRepository
-end box
-
-Administrator -> UI : *1* I want to register a Publishing Company
+ participant ":List<Publisher>"
+Administrator -> UI : 1 I want to register a Publishing Company
 UI -->> Administrator : **2** Please Provide name, VatNumber, and Contact
 Administrator -> UI : **3** Name: Cambridge; VatNumber 123456; Contact: +4412345678
 
-UI -> RegisterPublisherController : *4* registerPublisher(name, vatNumber, contact)
+UI -> RegisterPublisherController : 4 registerPublisher(name, vatNumber, contact)
 activate RegisterPublisherController
 
-RegisterPublisherController -> PublisherRepository : *5* createNewPublisher(name, vatNumber, contact)
+RegisterPublisherController -> PublisherRepository : 5 createAndAddNewPublisher(name, vatNumber, contact)
 
 activate PublisherRepository
 
-box "Domain Model"#LightYellow
-create "p1: Publisher" as User
-end box
-
-PublisherRepository -> User : *6* create(name, vatNumber, contact)
+create "publisherTest: Publisher" as User
 
 
-PublisherRepository -> PublisherRepository : *7* validate(p1)
-PublisherRepository -> PublisherRepository : **8** addPublisherToPublisherList(p1)
+PublisherRepository -> User : 6 create(name, vatNumber, contact)
 
 
-PublisherRepository --> RegisterPublisherController : *9* New Publisher (p1) added to the list of Publishers
+PublisherRepository -> PublisherRepository : 7 validatePublisher(publisherTest)
+PublisherRepository -> ":List<Publisher>" : 8 addPublisherToPublisherList(publisherList)
+ activate ":List<Publisher>"
+ ":List<Publisher>" -->> PublisherRepository : 9 publisherTest added to the PublisherList
+ deactivate
+
+PublisherRepository --> RegisterPublisherController : 10 New Publisher added to the list of Publishers
 deactivate PublisherRepository
 
-RegisterPublisherController --> UI : *10* success
+RegisterPublisherController --> UI : 11 success
 deactivate RegisterPublisherController
 
-UI --> Administrator : *11* success
+UI --> Administrator : 12 success
 
 
 

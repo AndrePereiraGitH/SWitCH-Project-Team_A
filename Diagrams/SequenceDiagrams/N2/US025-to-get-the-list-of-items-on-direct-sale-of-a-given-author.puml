@@ -11,7 +11,7 @@ participant ":GetListOfItemsOnDirectSaleOfGivenAuthorController" as GetListOfIte
 
 participant ":AuthorRepository" as AuthorRepository
 
-participant ":ListingRepository" as ListingRepository
+participant ":DirectSaleRepository" as DirectSaleRepository
 
 Buyer -> UI025 : I want to get the list of items on direct sale of a given author
 activate UI025
@@ -29,17 +29,17 @@ Buyer -> UI025 : author
 UI025 -> GetListOfItemsOnDirectSaleOfGivenAuthorController : getListOfItemsOnDirectSale(author)
 activate GetListOfItemsOnDirectSaleOfGivenAuthorController
 
-GetListOfItemsOnDirectSaleOfGivenAuthorController -> ListingRepository : getListOfItemsOnDirectSale(author)
-activate ListingRepository
+GetListOfItemsOnDirectSaleOfGivenAuthorController -> DirectSaleRepository : getListOfItemsOnDirectSale(author)
+activate DirectSaleRepository
 
 
-ListingRepository -> ListingRepository : validateParameters(author)
+DirectSaleRepository -> DirectSaleRepository : validateParameters(author)
 
-create "l1: List<Listing>" as Listing
-ListingRepository -> Listing : getList(author)
+create "l1: List<DirectSale>" as DirectSaleList
+DirectSaleRepository -> DirectSaleList : getList(author)
 
-ListingRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController : l1
-deactivate ListingRepository
+DirectSaleRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController : l1
+deactivate DirectSaleRepository
 
 GetListOfItemsOnDirectSaleOfGivenAuthorController -> GetListOfItemsOnDirectSaleOfGivenAuthorController : cl1: copyList(l1)
 

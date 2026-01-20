@@ -22,7 +22,7 @@ public class Item {
     private BibliographicalData _bibliographicalData;
 
 
-    public Item(Condition condition, double weight, List<Picture> picture,
+    public Item(Condition condition, double weight,
                 Dimensions dimension, TypeOfBinding binding, String edition,
                 BibliographicalData bibliographicalData) {
 
@@ -32,8 +32,6 @@ public class Item {
             throw new IllegalArgumentException("Edition is required");
         if (condition == null)
             throw new IllegalArgumentException("Condition cannot be null");
-        if (picture == null)
-            throw new IllegalArgumentException("Pictures cannot be null");
         if (dimension == null)
             throw new IllegalArgumentException("Dimensions cannot be null");
         if (binding == null)
@@ -43,7 +41,6 @@ public class Item {
 
         this._condition = condition;
         this._weight = weight;
-        this._picture = List.copyOf(picture);
         this._dimension = dimension;
         this._binding = binding;
         this._edition = edition;
@@ -56,10 +53,6 @@ public class Item {
 
     public double getWeight() {
         return _weight;
-    }
-
-    public List<Picture> getPictures() {
-        return _picture;
     }
 
     public Dimensions getDimension() {

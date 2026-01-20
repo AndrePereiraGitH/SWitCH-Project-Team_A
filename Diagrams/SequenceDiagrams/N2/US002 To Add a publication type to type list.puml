@@ -2,41 +2,35 @@
 hide footbox
 title US002 - Register Publication Type to Type List
 
-box #Lightyellow
 actor Administrator
 participant ":UI002" as UI
-end box
 
 
 ' Human contact between Administrator and UI
 Administrator -> UI : **1** I want to register a Publication Type in the system
-UI -->> Administrator : **2** What type of Pub
-Administrator -> UI : **3** Book
+UI -->> Administrator : **2** Please enter mediaFormat, typeOfBinding, details
+Administrator -> UI : **3** Book, Hard Cover,
 
 ' First contact between UI and the System
-box "Controller" #LightBlue
-UI -> RegisterPubTypeController : **4** RegisterPubType(PubType)
+UI -> RegisterPubTypeController : **4** RegisterPubType(mediaFormat, typeOfBinding, details)
 activate RegisterPubTypeController
-end box
 
-box "Persistance" #LightGrey
-RegisterPubTypeController -> PubTypeRepository : **5** createAndAddPubType(PubType)
+RegisterPubTypeController -> PubTypeRepository : **5** createAndAddPubType(mediaFormat, typeOfBinding, details)
 activate PubTypeRepository
-end box
 
-box "Domain Model" #LightYellow
+participant ":List<PubType>" as LT
+
 ' Creation of p1 instance from User class
-create "p1: PubType" as PubType
-end box
+create "PubType" as PubType
 
 ' Creation, validation and addition
 PubTypeRepository -> PubType : **6** create(PubType)
-PubTypeRepository -> PubTypeRepository : **7** validatePubType(p1)
-PubTypeRepository -> PubTypeRepository : **8** add(p1)
+PubTypeRepository -> PubTypeRepository : **7** validatePubType
+PubTypeRepository -> LT: **8** addToList
 
 
 ' Return from PubTypeRepository to RegisterPubTypeController
-PubTypeRepository --> RegisterPubTypeController : **9**  (p1)
+PubTypeRepository --> RegisterPubTypeController : **9**  PubType
 deactivate PubTypeRepository
 
 ' Return from RegisterUserController to UI

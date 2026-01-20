@@ -796,7 +796,7 @@ class AuctionTest {
 
     private static Listing instantiateListing() {
         List<Picture> pictures = instantiatePictures();
-        Item bookItem = instantiateItem(instantiateBibliographicalData(), pictures, new Dimensions(12, 10, 2));
+        Item bookItem = instantiateItem(instantiateBibliographicalData(), new Dimensions(12, 10, 2));
         Price price = new Price(new BigDecimal("35.00"));
         final List<Item> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
@@ -804,8 +804,8 @@ class AuctionTest {
                 price,
                 "short description",
                 "This is our first listing",
-                SaleType.AUCTION,
-                instantiateUser("Joseph")
+                instantiateUser("Joseph"),
+                instantiatePictures()
         );
     }
 
@@ -849,7 +849,7 @@ class AuctionTest {
         );
     }
 
-    private static Item instantiateItem(BibliographicalData bd, List<Picture> pictures, Dimensions dimensions) {
-        return new Item(Condition.LIKE_NEW, 1.2, pictures, dimensions, TypeOfBinding.PAPERBACK, "2nd", bd);
+    private static Item instantiateItem(BibliographicalData bd, Dimensions dimensions) {
+        return new Item(Condition.LIKE_NEW, 1.2, dimensions, TypeOfBinding.PAPERBACK, "2nd", bd);
     }
 }

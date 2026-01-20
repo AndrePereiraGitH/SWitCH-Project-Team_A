@@ -11,7 +11,7 @@ participant ":GetListOfItemsOnAuctionOfGivenAuthorController" as GetListOfItemsO
 
 participant ":AuthorRepository" as AuthorRepository
 
-participant ":ListingRepository" as ListingRepository
+participant ":AuctionRepository" as AuctionRepository
 
 Buyer -> UI026 : I want to get the list of items on le of a given author
 activate UI026
@@ -29,17 +29,17 @@ Buyer -> UI026 : author
 UI026 -> GetListOfItemsOnAuctionOfGivenAuthorController : getListOfItemsOnAuction(author)
 activate GetListOfItemsOnAuctionOfGivenAuthorController
 
-GetListOfItemsOnAuctionOfGivenAuthorController -> ListingRepository : getListOfItemsOnAuction(author)
-activate ListingRepository
+GetListOfItemsOnAuctionOfGivenAuthorController -> AuctionRepository : getListOfItemsOnAuction(author)
+activate AuctionRepository
 
 
-ListingRepository -> ListingRepository : validateParameters(author)
+AuctionRepository -> AuctionRepository : validateParameters(author)
 
-create "l1: List<Listing>" as Listing
-ListingRepository -> Listing : getList(author)
+create "l1: List<Auction>" as ListOfAuction
+AuctionRepository -> ListOfAuction : getList(author)
 
-ListingRepository --> GetListOfItemsOnAuctionOfGivenAuthorController : l1
-deactivate ListingRepository
+AuctionRepository --> GetListOfItemsOnAuctionOfGivenAuthorController : l1
+deactivate AuctionRepository
 
 GetListOfItemsOnAuctionOfGivenAuthorController -> GetListOfItemsOnAuctionOfGivenAuthorController : cl1: copyList(l1)
 
