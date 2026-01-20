@@ -46,9 +46,7 @@ public class Auction {
             throw new IllegalArgumentException("Initial date must not be before the current date.");
         if (finalDate == null || finalDate.isBefore(initialDate) || finalDate.isEqual(initialDate))
             throw new IllegalArgumentException("Final date must not be before the initial date.");
-       // if (buyOutPrice.getPrice().compareTo(initialPrice.getPrice()) <= 0) {
-         //   throw new IllegalArgumentException("Buy out price must be greater than Initial price.");
-       // }
+
 
         this._listing = listing;
         this._initialDate = initialDate;
@@ -59,6 +57,10 @@ public class Auction {
         this._bidHistory = new ArrayList<>(); // start empty history
 
         _auctionStatus = initialDate.isAfter(now) ? AuctionStatus.SCHEDULED : AuctionStatus.ACTIVE;
+
+        if (buyOutPrice.getPrice().compareTo(_initialPrice.getPrice()) <= 0) {
+            throw new IllegalArgumentException("Buy out price must be greater than Initial price.");
+        }
 
         }
 

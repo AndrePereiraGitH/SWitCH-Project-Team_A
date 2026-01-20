@@ -120,47 +120,47 @@ class AuctionTest {
         return Stream.of(
                 Arguments.of(
                         "null listing",
-                        null, future1, future2, price("35.50"), price("150.00"),
+                        null, future1, future2, price("150.00"),
                         "Listing cannot be null."
                 ),
                 Arguments.of(
                         "null initialDate",
-                        listing, null, future2, price("35.50"), price("150.00"),
+                        listing, null, future2, price("150.00"),
                         "Initial date must not be before the current date."
                 ),
                 Arguments.of(
                         "initialDate in the past",
-                        listing, past, future2, price("35.50"), price("150.00"),
+                        listing, past, future2, price("150.00"),
                         "Initial date must not be before the current date."
                 ),
                 Arguments.of(
                         "null finalDate",
-                        listing, future1, null, price("35.50"), price("150.00"),
+                        listing, future1, null, price("150.00"),
                         "Final date must not be before the initial date."
                 ),
                 Arguments.of(
                         "finalDate == initialDate",
-                        listing, future1, future1, price("35.50"), price("150.00"),
+                        listing, future1, future1, price("150.00"),
                         "Final date must not be before the initial date."
                 ),
                 Arguments.of(
                         "finalDate before initialDate",
-                        listing, future2, future1, price("35.50"), price("150.00"),
+                        listing, future2, future1, price("150.00"),
                         "Final date must not be before the initial date."
                 ),
                 Arguments.of(
                         "buyOutPrice equal to initialPrice",
-                        listing, future1, future2, price("35.50"), price("35.50"),
+                        listing, future1, future2, price("35.00"),
                         "Buy out price must be greater than Initial price."
                 ),
                 Arguments.of(
                         "buyOutPrice below initialPrice",
-                        listing, future1, future2, price("35.50"), price("10.00"),
+                        listing, future1, future2, price("10.00"),
                         "Buy out price must be greater than Initial price."
                 )
         );
     }
-/*
+
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidAuctionConstructorCases_withClock")
     void testConstructorInvalidCases_throwAndMessage(
@@ -168,7 +168,6 @@ class AuctionTest {
             Listing listing,
             LocalDateTime initialDate,
             LocalDateTime finalDate,
-            Price initialPrice,
             Price buyOutPrice,
             String expectedMessage
     ) {
@@ -182,7 +181,6 @@ class AuctionTest {
         assertEquals(expectedMessage, ex.getMessage());
     }
 
- */
 
 
     @Test
