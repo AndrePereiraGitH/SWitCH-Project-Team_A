@@ -4,64 +4,48 @@ hide footbox
 autonumber
 title US024 - To get the list of items on auction of a given publication
 
-' box #WhiteSmoke
+' Participants
 actor Buyer
 participant ":UI024" as UI024
-' end box
-
-' box "Controller" #LightBlue
 participant ":ToGetTheListOfItemsOnAuctionOfAGivenPublicationController" as ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
-' end box
-
-' box "Persistence" #LightGrey
-participant ":ListingRepository" as ListingRepository
-' end box
-
 participant ":PublicationRepository" as PublicationRepository
+participant ":AuctionRepository" as AuctionRepository
 
-' Buyer -> UI024 : **1** getListOfItems(typeOfSale, publication)
+Buyer -> UI024 : I want to get the list of items on auction of a given publication
 activate UI024
-Buyer -> UI024 : I want to get a list of items on auction of a given publication
 UI024 -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: getAllPublications()
+activate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> PublicationRepository: getAllPublications()
 activate PublicationRepository
 PublicationRepository --> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: listOfAllPublications
+
 deactivate PublicationRepository
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController --> UI024 : listOfAllPublications
+deactivate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
 Buyer <-- UI024 : Which publication? Choose!
 Buyer -> UI024 : publication
 
-' UI024 -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : **4** getListOfItems(typeOfSale, publication)
 UI024 -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : getListOfItemsOnAuction(publication)
 activate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
 
-' ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> ListingRepository : **3** getListOfItems(typeOfSale, publication)
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> ListingRepository : getListOfItemsOnAuction(publication)
-activate ListingRepository
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> AuctionRepository : getListOfItemsOnAuction(publication)
+activate AuctionRepository
 
-' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
+AuctionRepository -> AuctionRepository : validateParameters(publication)
 
-' ListingRepository -> ListingRepository : **4** validateParameters(typeOfSale, publication)
-ListingRepository -> ListingRepository : validateParameters(publication)
 
-' box "Domain Model" #LightYellow
-create "l1: List<Listing>" as Listing
-' ListingRepository -> Item : **5** createList(typeOfSale, publication)
-ListingRepository -> Listing : getList(publication)
-' end box
+create "l1: List<Auction>" as AuctionList
+AuctionRepository -> AuctionList : getList(publication)
 
-' ListingRepository --> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : **6** List<Item> items
-ListingRepository --> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : l1
-deactivate ListingRepository
 
-' ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : **7** copyList(items)
+AuctionRepository --> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : l1
+deactivate AuctionRepository
+
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : cl1: copyList(l1)
 
-'ToGetTheListOfItemsOnAuctionOfAGivenPublicationController --> UI024 : **8** List<copyItems> (copyItems)
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController --> UI024 : cl1
 deactivate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
 
-'UI024 --> Buyer : **9** List<copyItems> (copyItems)'
 UI024 --> Buyer : List of items on auction
 deactivate UI024
 

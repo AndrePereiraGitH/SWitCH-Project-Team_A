@@ -1,15 +1,14 @@
 @startuml
 
 hide footbox
-title US025 - To get the list of items on auction of a given author
+title US026 - To get the list of items on auction of a given author
 
 actor Buyer
 participant ":System" as System
 
-Buyer -> System : **1** I want to get a list of items on auction of a given author
-Buyer <-- System : **2** Which author?
+Buyer -> System : **1** I want to get the list of items on auction of a given author
+Buyer <-- System : **2** Which author? Please select!
 Buyer -> System : **3** author
-
 System --> Buyer : **4** List of items on direct sale
 
 @enduml
