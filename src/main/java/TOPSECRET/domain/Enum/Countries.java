@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Enum;
 
-public enum Country {
+public enum Countries {
 
     AFGHANISTAN,
     ALBANIA,

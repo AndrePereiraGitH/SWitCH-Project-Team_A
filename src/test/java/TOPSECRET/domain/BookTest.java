@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static TOPSECRET.domain.Enum.Country.SOUTH_AFRICA;
-import static TOPSECRET.domain.Enum.Country.UNITED_STATES;
+import static TOPSECRET.domain.Enum.Countries.SOUTH_AFRICA;
+import static TOPSECRET.domain.Enum.Countries.UNITED_STATES;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BookTest {
@@ -21,7 +21,7 @@ class BookTest {
         String title = "The Lord of the Rings";
 
         Email publisherEmail = new Email("HarperCollins", "gmail.com");
-        Address publisherAddress = new Address("Broadway","195","10007", Country.UNITED_STATES);
+        Address publisherAddress = new Address("Broadway","195","10007", Countries.UNITED_STATES);
         Contact publisherContact = new Contact("987654321", "+351", publisherEmail, publisherAddress);
         Publisher publisher = new Publisher("HarperCollins Publishers","123456", publisherContact);
 

@@ -9,10 +9,10 @@ actor Administrator
 participant ":UI" as UI
 end box
 
-box "Controller" #LightBlue
+box #LightBlue
 participant ":CityController" as CityController
 end box
-box "Persistence" #LightGrey
+box #LightGrey
 participant ":CityRepository" as AddressRepository
 end box
 
@@ -26,7 +26,7 @@ activate CityController
 CityController -> AddressRepository : **5** createAndAddNewCity (name, country)
 activate AddressRepository
 
-box "Domain Model" #LightYellow
+box #LightYellow
 create "newCity1: City" as City
 AddressRepository -> City : **6** createCity(name, country)
 end box

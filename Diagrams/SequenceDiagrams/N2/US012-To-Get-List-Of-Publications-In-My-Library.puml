@@ -1,22 +1,31 @@
 @startuml
 autonumber
 hide footbox
-title US012 - Get the list of publications in my library
+title US012 - Get the list of publications in my library (With DTO)
 
 
-box  #WhiteSmoke
-    actor User
-    participant ":UI012" as UI
-end box
+actor User
+participant ":UI012" as UI
 
-box "Controller" #LightBlue
-    participant ":GetListOfPublicationsInLibraryController" as Ctrl
-end box
 
-box "Domain Model" #LightYellow
-    participant "Library" as LibDomain
-    participant ":Publication" as PubDomain
-end box
+
+participant ":GetListOfPublicationsInLibraryController" as Ctrl
+
+
+
+participant ":PublicationMapper" as Mapper
+participant "pubDTO:PublicationDTO" as DTO
+
+
+
+participant ":Library" as LibDomain
+participant "listOfPublications:List<Publication>" as ListPubs
+participant "listOfPublicationsDTO:List<PublicationDTO>" as ListDTO
+
+participant ":Publication" as PubDomain
+
+
+
 
 User -> UI : asks to see a list of publications in library
 activate UI
@@ -26,24 +35,37 @@ activate Ctrl
 
 Ctrl -> LibDomain: getListOfPublicationsInLibrary()
 activate LibDomain
+LibDomain -> ListPubs **:
 
 
-        loop for each publication in the library
-            LibDomain -> PubDomain: getCopyPubDetails()
-            activate PubDomain
-            PubDomain --> LibDomain: copyPubDetails
-            deactivate PubDomain
-            LibDomain -> LibDomain: list.add(copyPubDetails)
-        end
-
-
-
-LibDomain --> Ctrl: listOfPublicationsInLibrary
+LibDomain --> Ctrl: listOfPublications
 deactivate LibDomain
-Ctrl --> UI: true
+
+Ctrl -> Mapper: toDTO(listOfPublications)
+activate Mapper
+Mapper -> ListDTO **:
+
+
+    loop for each publication in list
+        Mapper -> PubDomain: getDetails()
+        activate PubDomain
+        PubDomain --> Mapper: details
+        deactivate PubDomain
+
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : pubDTO
+        deactivate DTO
+
+        Mapper -> Mapper: listOfPublicationsDTO.add(pubDTO)
+    end
+
+Mapper --> Ctrl: listOfPublicationsDTO
+deactivate Mapper
+
+Ctrl --> UI: listOfPublicationsDTO
 deactivate Ctrl
 
 UI --> User : shows the list of publications with details
 deactivate UI
-
 @enduml

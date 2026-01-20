@@ -1,35 +1,37 @@
 @startuml
+title US011 - Add publication to library
 
 hide circle
 
 
-
-package "Controller" {
-    class AddPublicationToLibraryController {
-        + getListOfOtherPublications()
-        + addPublicationToLib(selectedPub)
-    }
+class UI011 {
 }
 
-package "Persistence" {
-    class PublicationRepository {
-        + getListOfDifferentPublications(listOfPublicationsInLibrary)
-    }
-}
-
-package "Domain Model" {
-    class Library {
-        + getAll()
-        + addPublication(selectedPub)
-        - verifyUnique(selectedPub)
-        - add(selectedPub)
-    }
-
+class AddPublicationToLibraryController {
+    + getListOfOtherPublications()
+    + addPublicationToLib(selectedPub)
 }
 
 
-UI011 --> AddPublicationToLibraryController : uses
-AddPublicationToLibraryController --> PublicationRepository:uses
+
+class PublicationRepository {
+    + getListOfDifferentPublications(listOfPublicationsInLibrary)
+}
+
+
+
+class Library {
+    + getAll()
+    + addPublication(selectedPub)
+    - verifyUnique(selectedPub)
+    - add(selectedPub)
+}
+
+
+' ---------------- Relationships ----------------
+
+UI011 ..> AddPublicationToLibraryController : uses
+AddPublicationToLibraryController ..> PublicationRepository:uses
 AddPublicationToLibraryController -->Library : interacts with
 
 

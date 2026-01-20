@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
@@ -20,15 +20,15 @@ class UserTest {
     @Test
     void testConstructorWithValidArguments() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
-                );
+        );
 
         // Act & Assert
         assertDoesNotThrow(() ->
@@ -39,13 +39,13 @@ class UserTest {
     @Test
     void testConstructorWithUsernameNullShouldThrowException() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -58,13 +58,13 @@ class UserTest {
     @Test
     void testConstructorUsernameWithFiveCharacters() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -77,13 +77,13 @@ class UserTest {
     @Test
     void testConstructorWithUsernameTooShortShouldThrowException() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -96,13 +96,13 @@ class UserTest {
     @Test
     void testShouldReturnUserName() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -118,13 +118,13 @@ class UserTest {
     @Test
     void testShouldReturnContact() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -140,13 +140,13 @@ class UserTest {
     @Test
     void testShouldReturnProfile() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -162,13 +162,13 @@ class UserTest {
     @Test
     void testShouldReturnProvidedUsername() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -184,13 +184,13 @@ class UserTest {
     @Test
     void testShouldReturnFormattedString() {
         // Arrange
-        Address address = new Address("Main Street", "10", "12345", Country.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile",
-                Country.PORTUGAL,
+                Countries.PORTUGAL,
                 LocalDate.of(1997, 8, 15)
         );
 

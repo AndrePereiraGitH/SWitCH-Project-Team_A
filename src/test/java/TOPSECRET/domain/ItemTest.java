@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.Genre;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
@@ -132,8 +132,8 @@ class ItemTest {
     }
 
     private Item createValidItem() {
-        Profile author = new Profile("Tove Ditlevsen", Country.DENMARK, LocalDate.of(1917, 12, 14));
-        Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
+        Profile author = new Profile("Tove Ditlevsen", Countries.DENMARK, LocalDate.of(1917, 12, 14));
+        Address address = new Address("R Maria", "12", "156-5", Countries.PARAGUAY);
         Email email = new Email("Maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);
         Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
