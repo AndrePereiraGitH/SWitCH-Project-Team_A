@@ -1,30 +1,38 @@
-g@startuml
+@startuml
+title US012 - Get the list of publications in my library (Class Diagram)
 
-hide circle
-
-
-
-package "Controller" {
-    class GetListOfPublicationsInLibraryController {
-        + getListOfPublicationsInLibrary()
-    }
+class UI012 {
 }
 
-
-package "Domain Model" {
-    class Library {
-        + getListOfPublicationsInLibrary()
-        - list.add(copyPubDetails)
-    }
-
-    class Publication {
-        + getCopyPubDetails()
-
-    }
+class GetListOfPublicationsInLibraryController {
+    +getListOfPublicationsInLibrary(): List<PublicationDTO>
 }
 
+class Library {
+    -publications: List<Publication>
+    +getListOfPublicationsInLibrary(): List<Publication>
+}
 
-"UI012" --> GetListOfPublicationsInLibraryController : uses
-GetListOfPublicationsInLibraryController --> Library : interacts with
-Library "1" --> "*" Publication : contains
+class Publication {
+}
+
+class PublicationDTO {
+}
+
+class PublicationMapper {
+    +toDTO(publications: List<Publication>): List<PublicationDTO>
+}
+
+' ---------------- Relationships ----------------
+
+UI012 ..> GetListOfPublicationsInLibraryController : uses
+
+GetListOfPublicationsInLibraryController --> Library : uses
+GetListOfPublicationsInLibraryController --> PublicationMapper : uses
+
+Library "1" <-- "*" Publication : contains
+
+PublicationMapper ..> Publication : maps from
+PublicationMapper ..> PublicationDTO : maps to
+
 @enduml
