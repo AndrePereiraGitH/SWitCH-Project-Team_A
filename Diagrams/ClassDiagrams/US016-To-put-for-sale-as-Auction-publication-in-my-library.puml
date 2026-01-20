@@ -1,16 +1,16 @@
 @startuml
 hide empty members
+hide circle
 skinparam classAttributeIconSize 0
 title US016 - Put a publication from my library for sale in an auction
 
-package "Domain" {
 
   class Library {
-    +findPublication(publication) : Publication
+    -myLibrary: List<Publications>
+    +getAllPublications() : List<Publication>
   }
 
 
-    rectangle "publication concepts" #lightgrey {
   class Publication {
     -saleType : SaleType
     +setSaleTypeAsAuction() : void
@@ -19,11 +19,9 @@ package "Domain" {
   class Listing {
     -item : Item
     -price : Price
-    -saleType : SaleType
     -seller : User
-    +getPrice() : Price
   }
-  }
+
 
   class Auction {
     -_listing : Listing
@@ -35,42 +33,23 @@ package "Domain" {
     +Auction(listing, initialDate, finalDate, initialPrice, buyOutPrice)
   }
 
-
-
-
-  enum SaleType {
-    DIRECT_SALE
-    AUCTION
-  }
-}
-
-package "Persistence" {
-  class LibraryRepository {
-    +getLibrary(MyLibrary) : Library
-  }
-
   class AuctionRepository {
-    +save(auction: Auction) : void
-    +createAuction(listing: Listing, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
+    +createAuction(Listing listing,LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice) : Auction
   }
-}
 
-package "Controller" {
-  class CtrlUS016 {
-    +putPublicationForAuction(library, publication, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
+  class ToPutPublicationInAuctionController {
+    +getAllPublicationsInLibrary()
+    +putPublicationForAuction(publication, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
   }
-}
 
 ' -------------------- Relationships --------------------
 
+ToPutPublicationInAuctionController --> Library
+
 Library "1" o-- "*" Publication : contains
 
-Listing --> SaleType
-Publication --> SaleType
-
-CtrlUS016 --> LibraryRepository
-CtrlUS016 --> AuctionRepository
+ToPutPublicationInAuctionController ..> AuctionRepository
 AuctionRepository --> Auction
-LibraryRepository --> Library
+AuctionRepository --> Listing : uses ListingRepo to create a Listing that will be auctioned
 
 @enduml

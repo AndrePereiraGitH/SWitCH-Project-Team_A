@@ -301,9 +301,9 @@ class TransactionTest {
 
     private static User createValidUser(String name){
         Email email = new Email("asa", "example.com");
-        Address address = new Address("Rua Dra. Salomé Martingo", "nº 455", "4540-440", Countries.PORTUGAL);
+        Address address = new Address("Rua Dra. Salomé Martingo", "nº 455", "4540-440", new Country("France"));
         Contact contact = new Contact("916274847", "+351", email, address);
-        Profile profile = new Profile(name, Countries.PORTUGAL, LocalDate.of(1995, 10, 14));
+        Profile profile = new Profile(name, new Country("Portugal"), LocalDate.of(1995, 10, 14));
         UserRole userRole = UserRole.NORMAL_USER;
 
         return new User(name, contact, profile, userRole);
@@ -311,8 +311,9 @@ class TransactionTest {
 
     private static BibliographicalData createValidBibliographicalData(){
         List<Profile> authors = List.of(
-                new Profile("J. K. Rowling", Countries.SPAIN, LocalDate.of(1995, 10, 14)),
-                new Profile("Freida", Countries.PORTUGAL, LocalDate.of(1956, 10, 10)));
+                new Profile("J. K. Rowling", new Country("Portugal"), LocalDate.of(1995, 10, 14)),
+                new Profile("Freida", new Country("Spain"), LocalDate.of(1956, 10, 10))
+        );
 
         return new BibliographicalData(
                 "O Senhor do Anéis: A irmandade do Anel",
@@ -325,21 +326,21 @@ class TransactionTest {
                                 "918475648",
                                 "+351",
                                 new Email("asa", "example.com"),
-                                new Address("Rua Antónia Pinto", "123", "5503-231", Countries.PORTUGAL)
+                                new Address("Rua Antónia Pinto", "123", "5503-231", new Country("Portugal"))
                         )
                 ),
                 LocalDate.of(2020,1,10),
-                List.of(Genre.FICTION),
+                List.of(),
                 200,
-                "DrescriptionText"
-        );
+                "Text Description"
+                );
     }
+
 
     private static Item createValidItem(){
         return new Item(
                 Condition.LIKE_NEW,
                 250.30,
-                List.of(new Picture("Pic1")),
                 new Dimensions (102, 120, 102),
                 TypeOfBinding.PAPERBACK,
                 "1st Edition",
@@ -353,8 +354,8 @@ class TransactionTest {
                 new Price (new BigDecimal("19.00")),
                 "ShortDescription",
                 "Invalid Title",
-                SaleType.AUCTION,
-                createValidUser("Seller")
+                createValidUser("Seller"),
+                List.of(new Picture("Pic1"))
         );
     }
 

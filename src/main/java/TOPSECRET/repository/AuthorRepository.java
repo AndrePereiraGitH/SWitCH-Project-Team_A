@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.Country;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class AuthorRepository {
         this._authors = new ArrayList<>();
     }
 
-    public Author addAuthor(String name, Countries country, LocalDate dateOfBirth) {
+    public Author addAuthor(String name, Country country, LocalDate dateOfBirth) {
         // Creates Author
         Author author = new Author(new Profile(name, country, dateOfBirth), "valid bio");
 

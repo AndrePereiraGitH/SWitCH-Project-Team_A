@@ -11,10 +11,10 @@ public class Listing {
     private final Price _price;
     private final String _shortDescription;
     private final String _listingTitle;
-    private final SaleType _saleType;
     private final User _seller;
+    private List<Picture> _pictures;
 
-    public Listing(List<Item> items, Price price, String shortDescription, String listingTitle, SaleType saleType, User seller) {
+    public Listing(List<Item> items, Price price, String shortDescription, String listingTitle, User seller, List<Picture> pictures) {
 
         if (listingTitle == null || listingTitle.length() < 5) {
             throw new IllegalArgumentException("Listing title must be at least 5 characters.");
@@ -35,13 +35,11 @@ public class Listing {
             throw new IllegalArgumentException("Price cannot be null");
         }
 
-        if (saleType == null) {
-            throw new IllegalArgumentException("Sale type cannot be null");
-        }
-
         if (seller == null) {
             throw new IllegalArgumentException("Seller cannot be null");
         }
+        if (pictures == null)
+            throw new IllegalArgumentException("Pictures cannot be null");
 
 
 
@@ -49,8 +47,8 @@ public class Listing {
         _price = price;
         _shortDescription = shortDescription;
         _listingTitle = listingTitle;
-        _saleType = saleType;
         _seller = seller;
+        _pictures = List.copyOf(pictures);
     }
 
 

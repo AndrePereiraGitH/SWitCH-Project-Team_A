@@ -7,9 +7,9 @@ public class Address {
     private String street;
     private String number;
     private String zipCode;
-    private Countries country;
+    private Country country;
 
-    public Address(String street, String number, String zipCode, Countries country) {
+    public Address(String street, String number, String zipCode, Country country) {
 
         if (street == null || street.isBlank() || number == null || number.isBlank() || zipCode == null || zipCode.isBlank() || country == null) {
             throw new IllegalArgumentException("Street, number, zip Code and country are all required fields.");
@@ -33,7 +33,7 @@ public class Address {
         return zipCode;
     }
 
-    public Countries getCountry() {
+    public Country getCountry() {
         return country;
     }
 
@@ -49,13 +49,13 @@ public class Address {
         this.zipCode = zipCode;
     }
 
-    public void setCountry(Countries country) {
+    public void setCountry(Country country) {
         this.country = country;
     }
 
     @Override
     public String toString() {
-        return street + ", no. " + number + ", " + zipCode + ", " + country.name();
+        return street + ", no. " + number + ", " + zipCode + ", " + country.toString();
     }
 }
 
