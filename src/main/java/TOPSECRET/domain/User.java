@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.UserRole;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,11 +10,12 @@ public class User {
     private String _userName;
     private Contact _contact;
     private Profile _profile;
+    private UserRole _userRole;
     private Library _library;
     private List<CollectionOfPublications> _collectionOfPublications;
 
     //Constructor
-    public User(String _userName, Contact _contact, Profile _profile) {
+    public User(String _userName, Contact _contact, Profile _profile, UserRole userRole) {
 
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits
@@ -29,6 +32,7 @@ public class User {
         this._userName = _userName;
         this._contact = _contact;
         this._profile = _profile;
+        _userRole=userRole;
     }
 
     // Empty Constructor
@@ -77,17 +81,17 @@ public class User {
 
     //    LIBRARY MANAGEMENT
     //    Adds a publication to the user's library
-    public boolean addPublicationToLibrary(Publication publication) {
+//    public boolean addPublicationToLibrary(Publication publication) {
+//
+//        if (publication == null) return false;
+//
+//        return _library.addPublication(publication);
+//    }
 
-        if (publication == null) return false;
-
-        return _library.addPublication(publication);
-    }
-
-    // Checks if a publication exists in the user's library
-    public boolean hasPublicationInLibrary(Publication publication) {
-        return _library.containsPublication(publication);
-    }
+//    // Checks if a publication exists in the user's library
+//    public boolean hasPublicationInLibrary(Publication publication) {
+//        return _library.containsPublication(publication);
+//    }
 
     // Returns user's library
     public Library getLibrary() {

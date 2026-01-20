@@ -32,10 +32,10 @@ public class CollectionOfPublicationsRepository {
             return false;
         }
 
-        // Checks if the publication belongs to the user's library
-        if (!user.hasPublicationInLibrary(publication)) {
-            return false;
-        }
+//        // Checks if the publication belongs to the user's library
+//        if (!user.hasPublicationInLibrary(publication)) {
+//            return false;
+//        }
 
         // Delegates duplicate validation to the domain object
         return collectionOfPublications.addPublication(publication);

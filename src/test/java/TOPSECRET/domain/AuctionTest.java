@@ -819,7 +819,7 @@ class AuctionTest {
         LocalDate birthday = LocalDate.of(1982, 12, 3);
         Profile profile = new Profile("Albert Trump", new Country("EL_SALVADOR"), birthday);
         UserRole userRole = UserRole.NORMAL_USER;
-        return new User(name, contact, profile, userRole);
+        return new User(name, contact, profile,userRole);
     }
 
     private static BibliographicalData instantiateBibliographicalData() {

@@ -71,8 +71,8 @@ public class CollectionOfPublications {
         return _publications.remove(publication);
     }
 
-    public boolean isPrivate() {
-        return _isPrivate;
-    }
+//    public boolean isPrivate() {
+//        return _isPrivate;
+//    }
 }
 
