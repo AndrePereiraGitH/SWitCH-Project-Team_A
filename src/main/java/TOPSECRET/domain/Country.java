@@ -25,4 +25,10 @@ public class Country {
     //Empty Constructor - for testing purposes
     public Country() {
     }
+
+    //Getter for countryName
+    public String getCountryName() {
+        return _countryName;
+    }
+
 }
