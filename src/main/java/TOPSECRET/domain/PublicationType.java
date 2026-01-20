@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.TypeOfBinding;
+<<<<<<< Updated upstream
 import TOPSECRET.domain.Enum.MediaFormat;
 
 public class PublicationType {
@@ -32,4 +33,13 @@ public class PublicationType {
     public TypeOfBinding getTypeOfBinding() { return _typeOfBinding; }
     public String getDetails() { return _details; }
 
+=======
+
+public class PublicationType {
+
+    private String _mediaFormate;
+    private TypeOfBinding _typeOfBiding;
+    private String _details;
+
+>>>>>>> Stashed changes
 }

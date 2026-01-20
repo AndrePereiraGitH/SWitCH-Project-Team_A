@@ -25,7 +25,7 @@ class Genre {
   -genreType : String
 }
 
-class Publicationtype {
+class PublicationType {
   -mediaFormat : MediaFormat
   -typeOfBiding : TypeOfBinding
   -details : String
@@ -40,16 +40,13 @@ class Contact {
 
 ' Interactions
 
-' Administrator "1" --> "1" UI : interacts
-' UI "1" --> "1" RegisterAppraisalController : calls
-
 RegisterAppraisalController "1 " -- "1 " AppraisalEntityRepository : request registration to >
 AppraisalEntityRepository "    1" .------- "      *   " AppraisalEntity : creates / manages >
 AppraisalEntityRepository "1    " --- " 1  " "List<AppraisalEntity>" : has >
 
 "List<AppraisalEntity>" "1 " -- " *  " AppraisalEntity : contains >
 "List<AppraisalEntity>" "1 " ---- " 1    " "List<Genre>" : contains >
-"List<AppraisalEntity>" "1 " ---- " 1    " Publicationtype : has >
+"List<AppraisalEntity>" "1 " ---- " 1    " PublicationType : has >
 
 "List<Genre>" "1" -- "1" Genre : has >
 
