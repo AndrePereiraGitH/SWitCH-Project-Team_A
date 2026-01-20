@@ -62,3 +62,5 @@ public class CollectionOfPublications {
         return _isPrivate;
     }
 }
+
+ */
