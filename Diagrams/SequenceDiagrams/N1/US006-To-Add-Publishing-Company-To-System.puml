@@ -10,7 +10,7 @@ activate Administrator
 
     activate System
     System -->> Administrator : **2** Provide name, VAT number and contact for the Publisher
-    Administrator -> System : **3** For the new user (u1), here's the name, VAT number and contact information
+    Administrator -> System : **3** For the new Publisher, here's the name, VAT number and contact information
     System -->> Administrator : **4** Publisher has been registered in the system
     deactivate System
 

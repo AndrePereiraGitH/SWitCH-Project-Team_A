@@ -6,6 +6,7 @@ class UI024 {
 }
 
 class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
+  +getAllPublications()
   +getListOfItemsOnAuction(publication)
   -copyList()
 }
@@ -14,10 +15,13 @@ class PublicationRepository{
     +getAllPublications()
 }
 
-class ListingRepository {
-  +getListOfItems(publication)
-  ' -convertStringToEnum(typeOfSale, publication)
+class AuctionRepository {
+  +getListOfItemsOnAuction(publication)
   -validateParameters(publication)
+}
+
+class Auction {
+ - listing: Listing
 }
 
 class Listing {
@@ -44,19 +48,20 @@ class Publication {
 }
 
 class BibliographicalData {
-    - title: Title
+    - title: String
 }
 
 ' Interactions
 
-UI024 "1" ..> "1" ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses >
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " ..> "1 " ListingRepository : uses >
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " ..> "1 " PublicationRepository : uses >
-ListingRepository "1 " ..> " * " Listing : retrieves >
-Listing "                                *" ..> "1" SaleType : can be\nsold by >
-Listing "1" ..> "1  " Item : lists an >
+UI024 "1" .. "1" ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses >
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " .. "1 " AuctionRepository : uses >
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " .. "1 " PublicationRepository : uses >
+AuctionRepository "1 " -- " * " Auction : retrieves >
+Auction "0..1" -- "1" Listing : has
+Listing "                                *" -- "1" SaleType : can be\nsold by >
+Listing "1" -- "1..*  " Item : lists an >
 ' Item "*" -- "1" BibliographicalData: has >
-Item "*" ..> "1" Publication: refers to a >
-Publication "*" ..> "1" BibliographicalData: has >
+Item "*" -- "1" Publication: refers to a >
+Publication "*" -- "1" BibliographicalData: has >
 
 @enduml

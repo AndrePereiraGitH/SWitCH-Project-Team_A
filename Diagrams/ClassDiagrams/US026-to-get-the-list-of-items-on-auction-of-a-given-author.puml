@@ -1,24 +1,38 @@
 @startuml
 title US026 - To get the list of items on auction of a given author
 
-class GetListOfItemsOnAuctionOfGivenAuthorController {
-  +getListOfItemsOnAuction(author)
-  -copyList(l1)
+class UI025{
+
 }
 
-class ListingRepository {
-  +getListOfItems(typeOfSale, author)
-  -validateParameters(typeOfSale, author)
+class GetListOfItemsOnAuctionOfGivenAuthorController {
+  +getListOfItemsOnAuction(author)
+  -copyList()
+}
+
+class AuthorRepository{
+    +getAllAuthors()
+}
+
+class Author {
+  -authorProfile: Profile
+}
+
+class Profile {
+  -name: String
+}
+
+class AuctionRepository {
+  +getListOfItemsOnAuction(author)
+  -validateParameters(author)
+}
+
+class Auction {
+  - listing: Listing
 }
 
 class Listing {
-  - item: Item
-  - saleType: SaleType
-}
-
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
+  - items: List <Item>
 }
 
 class Item {
@@ -26,15 +40,20 @@ class Item {
 }
 
 class BibliographicalData {
-    - author: List<Profile>
+    - title: String
     }
 
 ' Interactions
 
-GetListOfItemsOnAuctionOfGivenAuthorController  "1 " -- "1 " ListingRepository : uses >
-ListingRepository "1 " -- " * " Listing : retrieves >
-Listing "                                *" --> "1 " SaleType : can be\nsold by >
-Listing "1"--> "1    " Item : lists an >
-Item "*" -- "1 " BibliographicalData: has >
+UI025 "1 " ..> "1 " GetListOfItemsOnAuctionOfGivenAuthorController : uses >
+GetListOfItemsOnAuctionOfGivenAuthorController  " 1" ..> "1    " AuctionRepository : uses >
+GetListOfItemsOnAuctionOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses >
+AuctionRepository "1 " ..> " * " Auction : retrieves >
+Auction "1 " ..> " 1 " Listing : is a type of >
+AuthorRepository "1 " ..> "          *" Author : stores >
+Author "1 " ..> "1 " Profile : has >
+Listing "1 " ..> "          1..*" Item: has >
+Item "1 " ..> "          1" BibliographicalData: has >
+
 
 @enduml
