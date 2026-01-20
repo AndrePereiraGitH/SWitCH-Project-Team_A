@@ -339,7 +339,6 @@ class TransactionTest {
         return new Item(
                 Condition.LIKE_NEW,
                 250.30,
-                List.of(new Picture("Pic1")),
                 new Dimensions (102, 120, 102),
                 TypeOfBinding.PAPERBACK,
                 "1st Edition",
@@ -353,8 +352,8 @@ class TransactionTest {
                 new Price (new BigDecimal("19.00")),
                 "ShortDescription",
                 "Invalid Title",
-                SaleType.AUCTION,
-                createValidUser("Seller")
+                createValidUser("Seller"),
+                List.of(new Picture("Pic1"))
         );
     }
 
