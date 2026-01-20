@@ -1,26 +1,25 @@
 @startuml
 title US009 - To create a library
 
-
+hide circle
 
 class LibraryRepository {
-+create(myFirstLib)
-+validate(lib1)
-+add(lib1)
++createAndAddLibrary(myCoolLib)
+-validate(myCoolLib)
 }
 
 class Library {
-+create(myFirstLib)
++getLibrary(myCoolLib)
 }
 
 class CreateLibraryCtrl {
-+CreateLibrary(myFirstLib)
++createAndAddLibrary(myCoolLib)
 }
 
 'interactions
-UI009 --> CreateLibraryCtrl : contacts
-CreateLibraryCtrl -> LibraryRepository : uses
-LibraryRepository -> Library : instantiates through
+UI009 "1" ..> "1" CreateLibraryCtrl : contacts
+CreateLibraryCtrl "1" ..> "1" LibraryRepository : uses
+LibraryRepository "1" -> "*" Library : owns
 
 
 

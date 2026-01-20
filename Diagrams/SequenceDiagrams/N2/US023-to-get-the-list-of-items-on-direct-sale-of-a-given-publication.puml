@@ -8,53 +8,72 @@ actor Buyer
 
 ' Participants
 participant ":UI023" as UI023
-participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
+participant ":DirectSaleMapper" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
+participant "listOfDirectSale:\nList<DirectSale>" as ListDS
+participant ":DirectSale" as DSDomain
+participant "directSaleDTO:\nDirectSaleDTO" as DTO
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO>" as ListDTO
 
-Buyer -> UI023 : I want to get a list of items on direct sale of a given publication
+
+' Interactions
+Buyer -> UI023 : I want to get the list of items\n on direct sale of a given publication
 activate UI023
-UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : getAllPublications()
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> PublicationRepository: getAllPublications()
+UI023 -> Ctrl : getAllPublications()
+activate Ctrl
+Ctrl -> PublicationRepository: getAllPublications()
 activate PublicationRepository
-PublicationRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController: listOfAllPublications
+PublicationRepository --> Ctrl: listOfAllPublications
 deactivate PublicationRepository
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI023 : listOfAllPublications
+Ctrl --> UI023 : listOfAllPublications
+deactivate Ctrl
 Buyer <-- UI023 : Which publication? Choose!
+deactivate UI023
 Buyer -> UI023 : publication
+activate UI023
 
-' UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItems(typeOfSale, publication)
-UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : getListOfItemsOnDirectSale(publication)
-activate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
+UI023 -> Ctrl : getListOfItemsOnDirectSale(publication)
+activate Ctrl
 
-' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> DirectSaleRepository : **3** getListOfItems(typeOfSale, publication)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> DirectSaleRepository : getListOfItemsOnDirectSale(publication)
+Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(publication)
 activate DirectSaleRepository
 
-' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
+loop for each direct sale
+    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleGenre(genre)
+end
 
-' DirectSaleRepository -> DirectSaleRepository : **4** validateParameters(typeOfSale, publication)
-DirectSaleRepository -> DirectSaleRepository : validateParameters(publication)
+DirectSaleRepository -> ListDS ** :
+DirectSaleRepository --> Ctrl : listOfDirectSale
 
-' box "Domain" #LightYellow
-create "l1: List<DirectSale>" as DirectSale
-' DirectSaleRepository -> Item : **5** createList(typeOfSale, publication)
-DirectSaleRepository -> DirectSale : getList(publication)
-' end box
-
-' DirectSaleRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items
-DirectSaleRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : l1
 deactivate DirectSaleRepository
 
-' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **7** copyList(items)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : cl1: copyList(l1)
+Ctrl -> Mapper : toDTO(listOfDirectSale)
+activate Mapper
+Mapper -> ListDTO ** :
 
-'ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI023 : **8** List<copyItems> (copyItems)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI023 : cl1
-deactivate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
+    loop for each direct sale
+        Mapper -> DSDomain : getDetails()
+        activate DSDomain
+        DSDomain --> Mapper : details
+        deactivate DSDomain
 
-'UI023 --> Buyer : **9** List<copyItems> (copyItems)'
-UI023 --> Buyer : List of items on direct sale
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : directSaleDTO
+        deactivate DTO
+
+        Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
+    end
+
+Mapper --> Ctrl : listOfDirectSalesDTO
+deactivate Mapper
+
+Ctrl --> UI023 : listOfDirectSalesDTO
+deactivate Ctrl
+
+UI023 --> Buyer : Shows the list of items on direct sale
 deactivate UI023
 
 @enduml

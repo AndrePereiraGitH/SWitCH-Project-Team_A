@@ -1,16 +1,16 @@
 @startuml
 hide footbox
 autonumber
-title US010 - To register a new publication in MiteLovers
+title US010 - To register a new pub1 in MiteLovers
 
 ' As a User, I want to register a new publication
 ' in the system, so that I can add the
 ' publication to my library.
 
-box #LightYellow
+
 actor User
 participant ":UI010" as UI
-end box
+
 
 
 participant ":RegisterNewPublicationCtrl" as Ctrl
@@ -23,13 +23,15 @@ participant ":SystemPublicationRepository" as SystemRepo
 User -> UI : I want to add a publication to MiteLovers
 activate UI
 UI --> User : What publication?
-User -> UI : publication
+deactivate UI
+User -> UI : pub1
+activate UI
 UI -> Ctrl : createAndAddPublication(publication)
 activate Ctrl
 Ctrl -> SystemRepo : createAndAddPublicationToSystem(publication)
 activate SystemRepo
-create "p1:Publication" as publication
-SystemRepo -> publication: create(publication)
+create "p1:Publication" as pub1
+SystemRepo -> pub1: create(publication)
 
 
 SystemRepo -> SystemRepo : validate(p1)
@@ -39,7 +41,7 @@ SystemRepo --> Ctrl : true
 deactivate SystemRepo
 Ctrl --> UI : Success
 deactivate Ctrl
-UI --> User : The publication was added
+UI --> User : pub1 was added
 deactivate UI
 
 

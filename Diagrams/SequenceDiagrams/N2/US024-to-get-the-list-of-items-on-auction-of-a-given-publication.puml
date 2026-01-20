@@ -7,46 +7,71 @@ title US024 - To get the list of items on auction of a given publication
 ' Participants
 actor Buyer
 participant ":UI024" as UI024
-participant ":ToGetTheListOfItemsOnAuctionOfAGivenPublicationController" as ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
+participant ":ToGetTheListOfItemsOnAuction\nOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
+participant ":AuctionMapper" as Mapper
 participant ":AuctionRepository" as AuctionRepository
+participant "listOfAuction:\nList<Auction>" as ListAuc
+participant ":Auction" as AucDomain
+participant "auctionDTO:\nAuctionDTO" as DTO
+participant "listOfAuctionDTO:\nList<AuctionDTO>" as ListDTO
 
-Buyer -> UI024 : I want to get the list of items on auction of a given publication
+'Interactions
+Buyer -> UI024 : I want to get the list of items\n on auction of a given publication
 activate UI024
-UI024 -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: getAllPublications()
-activate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> PublicationRepository: getAllPublications()
+UI024 -> Ctrl: getAllPublications()
+activate Ctrl
+Ctrl -> PublicationRepository: getAllPublications()
 activate PublicationRepository
-PublicationRepository --> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: listOfAllPublications
+PublicationRepository --> Ctrl: listOfAllPublications
 
 deactivate PublicationRepository
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController --> UI024 : listOfAllPublications
-deactivate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
+Ctrl --> UI024 : listOfAllPublications
+deactivate Ctrl
 Buyer <-- UI024 : Which publication? Choose!
+deactivate UI024
 Buyer -> UI024 : publication
+activate UI024
+UI024 -> Ctrl : getListOfItemsOnAuction(publication)
+activate Ctrl
 
-UI024 -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : getListOfItemsOnAuction(publication)
-activate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
-
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> AuctionRepository : getListOfItemsOnAuction(publication)
+Ctrl -> AuctionRepository : getListOfItemsOnAuction(publication)
 activate AuctionRepository
 
-AuctionRepository -> AuctionRepository : validateParameters(publication)
+loop for each auction
+    AuctionRepository -> AuctionRepository : checkAuctionGenre(genre)
+end
 
+AuctionRepository -> ListAuc ** :
+AuctionRepository --> Ctrl : listOfAuction
 
-create "l1: List<Auction>" as AuctionList
-AuctionRepository -> AuctionList : getList(publication)
-
-
-AuctionRepository --> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : l1
 deactivate AuctionRepository
 
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController -> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController : cl1: copyList(l1)
+Ctrl -> Mapper : toDTO(listOfAuction)
+activate Mapper
+Mapper -> ListDTO ** :
 
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController --> UI024 : cl1
-deactivate ToGetTheListOfItemsOnAuctionOfAGivenPublicationController
+    loop for each auction
+        Mapper -> AucDomain : getDetails()
+        activate AucDomain
+        AucDomain --> Mapper : details
+        deactivate AucDomain
 
-UI024 --> Buyer : List of items on auction
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : auctionDTO
+        deactivate DTO
+
+        Mapper -> Mapper : listOfAuctionsDTO.add(auctionDTO)
+    end
+
+Mapper --> Ctrl : listOfAuctionsDTO
+deactivate Mapper
+
+Ctrl --> UI024 : listOfAuctionsDTO
+deactivate Ctrl
+
+UI024 --> Buyer : Shows the list of items on auction
 deactivate UI024
 
 @enduml

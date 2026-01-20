@@ -7,9 +7,13 @@ title US024 - To get the list of items on auction of a given publication
 actor Buyer
 participant ":System" as System
 
-Buyer -> System : I want to get a list of items on auction of a given publication
+Buyer -> System : I want to get the list of items on auction of a given publication
+activate System
 Buyer <-- System : Which publication? Choose!
+deactivate System
 Buyer -> System : publication
-System --> Buyer : List of items on auction
+activate System
+System --> Buyer : Shows the list of items on auction
+deactivate System
 
 @enduml

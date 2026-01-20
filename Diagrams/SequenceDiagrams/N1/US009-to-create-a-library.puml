@@ -3,16 +3,18 @@ hide footbox
 autonumber
 title US009 - To create a library
 
-box #LightYellow
+
 actor User
 participant ":MiteLovers" as UI
-end box
+
 
 ' Interactions
 User -> UI : I want to create a library
 activate UI
 UI --> User : What's the library's name?
+deactivate UI
 User -> UI : myFirstLib
+activate UI
 UI --> User : Okay, your library was created!
 deactivate UI
 
