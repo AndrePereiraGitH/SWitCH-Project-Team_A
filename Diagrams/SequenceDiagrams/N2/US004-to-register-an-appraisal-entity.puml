@@ -16,21 +16,25 @@ activate UI
 ' Human communication started by Administrator
 Administrator -> UI : I want to register an Appraisal Entity in the system
 UI -->> Administrator : Provide the information for the New Appraisal Entity
+deactivate UI
+
+
 Administrator -> UI : For the new Appraisal Entity (apEntityXPTO), here's the information
 
+activate UI
 ' First contact between UI and the System
 UI -> RegisterAppraisalController : registerAppraisalEntity(name, contact, genre, publicationType)
 activate RegisterAppraisalController
 
 ' Communication between RegisterAppraisalController and AppraisalEntityRepository
-RegisterAppraisalController -> AppraisalEntityRepository : createAndRegisterAppraisalEntity(name, contact, genre, publicationType)
+RegisterAppraisalController -> AppraisalEntityRepository : createAndAddAppraisalEntity(name, contact, genre, publicationType)
 activate AppraisalEntityRepository
 
 ' Creation of new AppraisalEntity
 create "apEntityXPTO: AppraisalEntity" as AppraisalEntity
 
 ' Creation, validation and addition made in AppraisalEntityRepository
-AppraisalEntityRepository -> AppraisalEntity : create(name, contact, genre, publicationType)
+AppraisalEntityRepository -> AppraisalEntity : createAppraisalEntity(name, contact, genre, publicationType)
 AppraisalEntityRepository -> AppraisalEntityRepository : validateAppraisalEntity(apEntityXPTO)
 
 ' Adding new appraisal entity
@@ -49,5 +53,5 @@ deactivate RegisterAppraisalController
 
 ' Return from UI to Administrator
 UI --> Administrator :  Success
-
+deactivate UI
 @enduml

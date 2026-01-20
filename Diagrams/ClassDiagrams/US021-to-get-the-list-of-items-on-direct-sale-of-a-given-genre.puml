@@ -1,16 +1,33 @@
 @startuml
 title US021 - To get the list of items on direct sale of a given genre
 
+class UI021 {
+
+}
+
 class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
+  +getAllGenres()
   +getListOfItemsOnDirectSale(genre)
-  -copyList()
 }
 
-class ListingRepository{
-  +getListOfItemsOnDirectSale(genre)
-  -validateParameters(genre)
+class GenreRepository {
+  +getAllGenres()
 }
 
+class DirectSaleMapper {
+   +toDTO(listOfDirectSales)
+}
+
+class DirectSaleRepository {
+  +getListOfItemsOnDirectSale(genre)
+}
+
+class DirectSale {
+  - listing: Listing
+  +getDetails()
+}
+
+/'
 class Listing {
   - item: Item
   - saleType: SaleType
@@ -21,25 +38,42 @@ enum SaleType {
     AUCTION
 }
 
-class Genre {
-    - genre: String
+class Item {
+    - publication: Publication
 }
 
-class Item {
+class Publication {
     - bibliographicalData: BibliographicalData
+    - code: Code
 }
 
 class BibliographicalData {
+    - title: String
     - genre: Genre
 }
 
+class Genre {
+    - genreType: String
+}
+'/
+
 ' Interactions
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  "1 " -- "1 " ListingRepository : uses >
-ListingRepository "1 " -- " * " Listing : retrieves >
-Listing "                                *" --> "1" SaleType : can be\nsold by >
-Listing "1"--> "*" Item : lists an >
-Item "*" -- "1" BibliographicalData: has >
-BibliographicalData "*" -- "1..*" Genre: has >
+UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreRepository : uses
+DirectSaleRepository "1 " --> " * " DirectSale : contains
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper : uses
+DirectSaleMapper ..> DirectSaleDTO : maps to
+DirectSaleMapper ..> DirectSale : uses
+/'
+DirectSale "1" --> "1" Listing : has
+Listing "                                *" --> "1" SaleType : can be\nsold by
+Listing "1"--> "1..*" Item : lists an
+Item "*" --> "1" Publication: has
+Publication "*" --> "1" BibliographicalData: has
+BibliographicalData "*" --> "1..*" Genre: has
+Genre "1" ..> "1" GenreRepository: uses
+'/
 
 @enduml

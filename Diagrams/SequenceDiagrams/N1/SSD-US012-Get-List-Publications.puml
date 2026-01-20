@@ -10,10 +10,10 @@ participant ":MiteLovers" as System
 
 
     User -> System : I want a list of publications from my library
-    activate System
+
 
     System --> User : return list of publications
-    deactivate System
+
 
 
 @enduml

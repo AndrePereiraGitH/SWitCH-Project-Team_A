@@ -9,7 +9,6 @@ class GetListOfPublicationsInLibraryController {
 }
 
 class Library {
-    -publications: List<Publication>
     +getListOfPublicationsInLibrary(): List<Publication>
 }
 

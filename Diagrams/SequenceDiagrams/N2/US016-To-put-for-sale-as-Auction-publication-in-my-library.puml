@@ -32,11 +32,12 @@ deactivate ctrl
 
 UI --> User : Please, select a publication from your list: pub1, pub2, pub3
 deactivate UI
-User -> UI : pub1
+User -> UI : Selected publication: pub1
 activate UI
-UI --> User : Insert initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
+UI --> User : Please, insert initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
+deactivate UI
 User -> UI : provide data: initialDate, finalDate, initialPrice, buyOutPrice
-
+activate UI
 
 
 UI -> ctrl : putPublicationForAuction(pub1, initialDate, finalDate, initialPrice, buyOutPrice)

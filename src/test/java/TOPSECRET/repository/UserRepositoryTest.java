@@ -21,13 +21,13 @@ class UserRepositoryTest {
 
     @Test
     void testCreateAndAddUser_Success() {
-        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile1",
-                Countries.PORTUGAL,
+                new Country("PORTUGAL"),
                 LocalDate.of(1997, 8, 15)
         );
 
@@ -40,13 +40,13 @@ class UserRepositoryTest {
 
     @Test
     void testCreateAndAddUser_UserAlreadyExists() {
-        Address address = new Address("Main Street", "10", "12345", Countries.PORTUGAL);
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
         Email email = new Email("test.user", "example.com");
         Contact contact = new Contact("987654321", "351", email, address);
 
         Profile profile = new Profile(
                 "Test Profile2",
-                Countries.PORTUGAL,
+                new Country("PORTUGAL"),
                 LocalDate.of(1997, 8, 15)
         );
 

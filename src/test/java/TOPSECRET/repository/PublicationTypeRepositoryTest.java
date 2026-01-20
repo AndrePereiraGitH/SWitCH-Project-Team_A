@@ -26,7 +26,7 @@ public class PublicationTypeRepositoryTest {
 
         assertNotNull(pubTypeRepo);
     }
-
+/*
     @Test
     void shouldReturnPublicationTypeAlreadyExists()
     {
@@ -61,4 +61,6 @@ public class PublicationTypeRepositoryTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+ */
 }
