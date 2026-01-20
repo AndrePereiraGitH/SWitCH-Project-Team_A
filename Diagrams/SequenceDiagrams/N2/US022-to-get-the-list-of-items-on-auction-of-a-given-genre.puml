@@ -1,49 +1,81 @@
 @startuml
-
-hide footbox
 autonumber
-title US022 - To get the list of items on auction of a given genre
+hide footbox
+title US022 - Get the list of items on auction of a given genre
 
-box #WhiteSmoke
 actor Buyer
-participant ":UI022" as UI022
-end box
 
-Buyer -> UI022 : I want to get a list of items on auction of a given genre
-activate UI022
-UI022 --> Buyer : Which genre?
-Buyer -> UI022 : genre
+' Participants
+participant ":UI022" as UI
+participant ":ToGetTheListOfItemsOnAuction\nOfAGivenGenreController" as Ctrl
+participant ":GenreRepository" as GenreRepo
+participant ":AuctionMapper" as Mapper
+participant ":AuctionRepository" as AuctionRepo
+participant "listOfAuctions:\nList<Auction>" as ListAuc
+participant ":Auction" as AuctionDomain
+participant "auctionDTO:\nAuctionDTO" as DTO
+participant "listOfAuctionsDTO:\nList<AuctionDTO>" as ListDTO
 
-box "Controller" #LightBlue
-participant ":ToGetTheListOfItemsOnAuctionOfAGivenGenreController" as ToGetTheListOfItemsOnAuctionOfAGivenGenreController
-end box
+' Interactions
+Buyer -> UI : I want to get the list of items\n on auction of a given genre
+activate UI
 
-UI022 -> ToGetTheListOfItemsOnAuctionOfAGivenGenreController: getListOfItemsOnAuction(genre)
-activate ToGetTheListOfItemsOnAuctionOfAGivenGenreController
+UI -> Ctrl : getAllGenres()
+activate Ctrl
 
-box "Persistence" #LightGrey
-participant ":ListingRepository" as ListingRepository
-end box
+Ctrl -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo --> Ctrl : listOfAllGenres
+deactivate GenreRepo
 
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController-> ListingRepository : getListOfItemsOnAuction(genre)
-activate ListingRepository
+Ctrl --> UI : listOfAllGenres
+deactivate Ctrl
 
-ListingRepository -> ListingRepository : validateParameters(genre)
+UI --> Buyer : Which genre? Choose!
+deactivate UI
 
-box "Domain Model" #LightYellow
-create "l1: List<Listing>" as Listing
-ListingRepository -> Listing : getList(genre)
-end box
+Buyer -> UI : genre
+activate UI
 
-ListingRepository --> ToGetTheListOfItemsOnAuctionOfAGivenGenreController: l1
-deactivate ListingRepository
+UI -> Ctrl : getListOfItemsOnAuction(genre)
+activate Ctrl
 
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController-> ToGetTheListOfItemsOnAuctionOfAGivenGenreController: cl1: copyList(l1)
+Ctrl -> AuctionRepo : getListOfItemsOnAuction(genre)
+activate AuctionRepo
 
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController--> UI022 : cl1
-deactivate ToGetTheListOfItemsOnAuctionOfAGivenGenreController
+loop for each auction
+    AuctionRepo -> AuctionRepo : checkAuctionGenre(genre)
+end
 
-UI022 --> Buyer : List of items on auction
-deactivate UI022
+AuctionRepo -> ListAuc ** :
+AuctionRepo --> Ctrl : listOfAuctions
+deactivate AuctionRepo
+
+Ctrl -> Mapper : toDTO(listOfAuctions)
+activate Mapper
+Mapper -> ListDTO ** :
+
+    loop for each auction
+        Mapper -> AuctionDomain : getDetails()
+        activate AuctionDomain
+        AuctionDomain --> Mapper : details
+        deactivate AuctionDomain
+
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : auctionDTO
+        deactivate DTO
+
+        Mapper -> Mapper : listOfAuctionsDTO.add(auctionDTO)
+    end
+
+Mapper --> Ctrl : listOfAuctionsDTO
+deactivate Mapper
+
+Ctrl --> UI : listOfAuctionsDTO
+deactivate Ctrl
+
+UI --> Buyer : Shows the list of items on auction
+deactivate UI
 
 @enduml

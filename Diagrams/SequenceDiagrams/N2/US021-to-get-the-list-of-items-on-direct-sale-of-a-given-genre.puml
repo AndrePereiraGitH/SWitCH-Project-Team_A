@@ -1,49 +1,82 @@
 @startuml
-
-hide footbox
 autonumber
-title US021 - To get the list of items on direct sale of a given genre
+hide footbox
+title US021 - Get the list of items on direct sale of a given genre
 
-box #WhiteSmoke
 actor Buyer
-participant ":UI021" as UI021
-end box
 
-Buyer -> UI021 : I want to get a list of items on direct sale of a given genre
-activate UI021
-UI021 --> Buyer : Which genre?
-Buyer -> UI021 : genre
+' Participants
+participant ":UI021" as UI
+participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenGenreController" as Ctrl
+participant ":GenreRepository" as GenreRepo
+participant ":DirectSaleMapper" as Mapper
+participant ":DirectSaleRepository" as DirectSaleRepo
+participant "listOfDirectSales:\nList<DirectSale>" as ListDS
+participant ":DirectSale" as DirectSaleDomain
+participant "directSaleDTO:\nDirectSaleDTO" as DTO
+participant "listOfDirectSalesDTO:\nList<DirectSaleDTO>" as ListDTO
 
-box "Controller" #LightBlue
-participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController
-end box
 
-UI021 -> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController: getListOfItemsOnDirectSale(genre)
-activate ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController
+' Interactions
+Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
+activate UI
 
-box "Persistence" #LightGrey
-participant ":ListingRepository" as ListingRepository
-end box
+UI -> Ctrl : getAllGenres()
+activate Ctrl
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController-> ListingRepository : getListOfItemsOnDirectSale(genre)
-activate ListingRepository
+Ctrl -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo --> Ctrl : listOfAllGenres
+deactivate GenreRepo
 
-ListingRepository -> ListingRepository : validateParameters(genre)
+Ctrl --> UI : listOfAllGenres
+deactivate Ctrl
 
-box "Domain Model" #LightYellow
-create "l1: List<Listing>" as Listing
-ListingRepository -> Listing : getList(genre)
-end box
+UI --> Buyer : Which genre? Choose!
+deactivate UI
 
-ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController: l1
-deactivate ListingRepository
+Buyer -> UI : genre
+activate UI
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController-> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController: cl1: copyList(l1)
+UI -> Ctrl : getListOfItemsOnDirectSale(genre)
+activate Ctrl
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController--> UI021 : cl1
-deactivate ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController
+Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSale(genre)
+activate DirectSaleRepo
 
-UI021 --> Buyer : List of items on direct sale
-deactivate UI021
+loop for each direct sale
+    DirectSaleRepo -> DirectSaleRepo : checkDirectSaleGenre(genre)
+end
+
+DirectSaleRepo -> ListDS ** :
+DirectSaleRepo --> Ctrl : listOfDirectSales
+deactivate DirectSaleRepo
+
+Ctrl -> Mapper : toDTO(listOfDirectSales)
+activate Mapper
+Mapper -> ListDTO ** :
+
+    loop for each direct sale
+        Mapper -> DirectSaleDomain : getDetails()
+        activate DirectSaleDomain
+        DirectSaleDomain --> Mapper : details
+        deactivate DirectSaleDomain
+
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : directSaleDTO
+        deactivate DTO
+
+        Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
+    end
+
+Mapper --> Ctrl : listOfDirectSalesDTO
+deactivate Mapper
+
+Ctrl --> UI : listOfDirectSalesDTO
+deactivate Ctrl
+
+UI --> Buyer : Shows the list of items\n on direct sale
+deactivate UI
 
 @enduml

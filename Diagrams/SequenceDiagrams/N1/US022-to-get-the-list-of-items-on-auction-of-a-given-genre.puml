@@ -7,9 +7,13 @@ title US022 - To get the list of items on auction of a given genre
 actor Buyer
 participant ":System" as System
 
-Buyer -> System : I want to get a list of items on auction of a given genre
-Buyer <-- System : Which genre?
+Buyer -> System : I want to get the list of items on auction of a given genre
+activate System
+Buyer <-- System : Which genre? Choose!
+deactivate System
 Buyer -> System : genre
-System --> Buyer : List of items on auction
+activate System
+System --> Buyer : Shows the list of items on auction
+deactivate System
 
 @enduml
