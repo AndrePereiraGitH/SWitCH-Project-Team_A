@@ -1,4 +1,3 @@
-/*
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Genre;
@@ -11,14 +10,14 @@ public class CollectionOfPublications {
     // Attributes
     private String _collectionName;
     private Genre _collectionGenre;
-    private Library _privateLibrary;
+//    private Library _privateLibrary;
     private List<Publication> _collectionOfPublications;
     private boolean _isPrivate;
 
     // Constructor
     public CollectionOfPublications(String collectionName,
                                     Genre collectionGenre,
-                                    Library privateLibrary,
+ //                                   Library privateLibrary,
                                     List<Publication> collectionOfPublications) {
 
         if (collectionName == null || collectionName.isBlank()) {
@@ -27,16 +26,16 @@ public class CollectionOfPublications {
         if (collectionGenre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }
-        if (privateLibrary == null) {
-            throw new IllegalArgumentException("Library cannot be null");
-        }
+ //       if (privateLibrary == null) {
+ //           throw new IllegalArgumentException("Library cannot be null");
+ //      }
         if (collectionOfPublications == null) {
             throw new IllegalArgumentException("Publications list cannot be null");
         }
 
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
-        this._privateLibrary = privateLibrary;
+ //       this._privateLibrary = privateLibrary;
         this._collectionOfPublications = collectionOfPublications;
         this._isPrivate = true;
     }
@@ -50,10 +49,10 @@ public class CollectionOfPublications {
         return _collectionGenre;
     }
 
-    public Library getPrivateLibrary() {
+ /*   public Library getPrivateLibrary() {
         return _privateLibrary;
     }
-
+*/
     public List<Publication> getCollectionOfPublications() {
         return _collectionOfPublications;
     }

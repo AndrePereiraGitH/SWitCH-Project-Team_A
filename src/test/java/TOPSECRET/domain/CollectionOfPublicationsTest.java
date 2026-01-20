@@ -15,7 +15,7 @@ class CollectionOfPublicationsTest {
         Genre genre = new Genre("Fantasy");
         Library library = new Library ();
         List<Publication> publication = new ArrayList<>();
-        CollectionOfPublications
+        CollectionOfPublications collection = new CollectionOfPublications("")
 
 
     }
