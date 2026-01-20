@@ -13,26 +13,26 @@ class ProfileTest {
     void shouldCreateProfileWithValidData() {
         Profile profile = new Profile(
                 "Test User",
-                Countries.PORTUGAL,
+                new Country("Portugal"),
                 LocalDate.of(2000, 5, 10)
         );
 
         assertEquals("Test User", profile.getName());
-        assertEquals(Countries.PORTUGAL, profile.getCountry());
+        assertEquals(new Country("Germany"), profile.getCountry());
         assertEquals(LocalDate.of(2000, 5, 10), profile.getBirthday());
     }
 
     @Test
     void shouldFailWhenNameIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile(null, Countries.PORTUGAL, LocalDate.now());
+            new Profile(null, new Country("Spain"), LocalDate.now());
         });
     }
 
     @Test
     void shouldFailWhenNameIsBlank() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("   ", Countries.FRANCE, LocalDate.now());
+            new Profile("   ", new Country("France"), LocalDate.now());
         });
     }
 
@@ -46,7 +46,7 @@ class ProfileTest {
     @Test
     void shouldFailWhenBirthdayIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("Valid Name", Countries.GERMANY, null);
+            new Profile("Valid Name", new Country("Germany"), null);
         });
     }
 }
