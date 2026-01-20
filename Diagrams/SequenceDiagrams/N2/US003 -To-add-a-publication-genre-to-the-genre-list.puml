@@ -2,26 +2,21 @@
 hide footbox
 title US003 - Register Genre to Official Genre List
 
-box #Lightyellow
+
 actor Administrator
 participant ":UI003" as UI
-end box
 
-box "Controller" #LightBlue
 participant ":RegisterGenreController" as RegisterGenreController
-end box
 
-box "Persistence" #LightGrey
 participant ":GenreRepository" as GenreRepository
-end box
-
+participant ":List<Genre>" as LG
 
 Administrator -> UI : **1** I want to add a new genre to the official list
 
 activate UI
 
 UI -->> Administrator : **2** Please enter the genre name
-Administrator -> UI : **3** Romance
+Administrator -> UI : **3** name("Romance")
 
 
 UI -> RegisterGenreController : **4** createAndAddGenre(name)
@@ -30,14 +25,14 @@ activate RegisterGenreController
 RegisterGenreController -> GenreRepository : **5** createAndAddGenre(name)
 activate GenreRepository
 
-box "Domain Model" #LightYellow
   create "Romance:Genre" as Genre
-  end box
-  GenreRepository -> Genre : **6** createGenre(name)
+
+  GenreRepository -> Genre : **6** create(name)
   GenreRepository -> GenreRepository : **7** exists(romance)
 
-  GenreRepository -> GenreRepository : **8** addToList(romance)
-  GenreRepository -->> RegisterGenreController : **9** romance
+  GenreRepository -> LG : **8** addToList(romance)
+  LG -->> GenreRepository : **9** sucess
+  GenreRepository  -->> RegisterGenreController : **9** romance
 
 
 deactivate GenreRepository

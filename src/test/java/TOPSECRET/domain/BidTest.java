@@ -27,7 +27,7 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Maria Silva",           // name
                 Countries.PORTUGAL,        // country
-                LocalDate.of(1990, Month.MAY, 15)// birthday
+                LocalDate.of(1990, Month.MAY, 15) // birthday
         );
 
 
