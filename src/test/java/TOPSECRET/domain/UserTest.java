@@ -27,8 +27,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
@@ -47,8 +46,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
@@ -67,8 +65,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
@@ -87,8 +84,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         // Act & Assert
@@ -107,8 +103,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         User user = new User("ValidName", contact, profile, UserRole.NORMAL_USER);
@@ -130,8 +125,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         User user = new User("ValidName", contact, profile, UserRole.NORMAL_USER);
@@ -153,8 +147,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         User user = new User("ValidName", contact, profile, UserRole.NORMAL_USER);
@@ -176,8 +169,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         User user = new User("userNameTest", contact, profile, UserRole.NORMAL_USER);
@@ -199,8 +191,7 @@ class UserTest {
         Profile profile = new Profile(
                 "Test Profile",
                 Countries.PORTUGAL,
-                LocalDate.of(1997, 8, 15),
-                true
+                LocalDate.of(1997, 8, 15)
         );
 
         User user = new User("userNameTest", contact, profile, UserRole.NORMAL_USER);

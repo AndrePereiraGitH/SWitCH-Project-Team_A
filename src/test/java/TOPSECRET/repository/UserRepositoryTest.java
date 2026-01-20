@@ -1,7 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.User;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ public class UserRepositoryTest {
                     new Contact(),
                     new Profile(
                             "Test User",
-                            Country.PORTUGAL,
+                            Countries.PORTUGAL,
                             LocalDate.of(2000, 5, 10)),
                     NORMAL_USER
             );
@@ -49,7 +49,7 @@ public class UserRepositoryTest {
                     new Contact(),
                     new Profile(
                             "Test User",
-                            Country.PORTUGAL,
+                            Countries.PORTUGAL,
                             LocalDate.of(2000, 5, 10)
                     ),
                     NORMAL_USER
