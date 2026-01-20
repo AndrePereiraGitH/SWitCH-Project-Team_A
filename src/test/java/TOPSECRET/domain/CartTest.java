@@ -26,7 +26,7 @@ class CartTest {
 
         Profile author = new Profile(
                 "Tove Ditlevsen",
-                Countries.DENMARK,
+                new Country("DENMARK"),
                 LocalDate.of(1917, 12, 14)
         );
 
@@ -34,7 +34,7 @@ class CartTest {
                 "R Maria",
                 "12",
                 "156-5",
-                Countries.PARAGUAY
+                new Country("PARAGUAY")
         );
 
         Email email = new Email(

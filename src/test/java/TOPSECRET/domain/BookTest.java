@@ -21,7 +21,8 @@ class BookTest {
         String title = "The Lord of the Rings";
 
         Email publisherEmail = new Email("HarperCollins", "gmail.com");
-        Address publisherAddress = new Address("Broadway","195","10007", Countries.UNITED_STATES);
+        Country country = new Country("UNITED_STATES");
+        Address publisherAddress = new Address("Broadway","195","10007", country);
         Contact publisherContact = new Contact("987654321", "+351", publisherEmail, publisherAddress);
         Publisher publisher = new Publisher("HarperCollins Publishers","123456", publisherContact);
 
@@ -33,7 +34,8 @@ class BookTest {
         genres.add(Genre.ADVENTURE);
 
         List<Profile> authors= new ArrayList<>();
-        Profile author = new Profile("J.R.R Tolkien", SOUTH_AFRICA,LocalDate.of(1892,01,03));
+        Country country1 = new Country("SOUTH_AFRICA");
+        Profile author = new Profile("J.R.R Tolkien", country1,LocalDate.of(1892,01,03));
         authors.add(author);
 
         int numOfPages = 1100;
