@@ -6,46 +6,43 @@ class UI025{
 }
 
 class GetListOfItemsOnDirectSaleOfGivenAuthorController {
-  +getAllAuthors()
   +getListOfItemsOnDirectSale(author)
   -copyList()
 }
 
 class AuthorRepository{
-  +getAllAuthors()
+    +getAllAuthors()
 }
 
-class ListingRepository {
+class Author {
+  -authorProfile: Profile
+}
+
+class Profile {
+  -name: String
+}
+
+class DirectSaleRepository {
   +getListOfItemsOnDirectSale(author)
   -validateParameters(author)
 }
 
+class DirectSale {
+  - listing: Listing
+}
+
 class Listing {
-  - item: Item
-  - saleType: SaleType
-}
-
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
-}
-
-class Item {
-    - author: Author
-}
-
-class Author {
-    - profile: Profile
+  - items: List <Item>
 }
 
 ' Interactions
 
-UI025 "1" ..> "1" GetListOfItemsOnDirectSaleOfGivenAuthorController : uses >
-GetListOfItemsOnDirectSaleOfGivenAuthorController "1" ..> "1" AuthorRepository : uses >
-GetListOfItemsOnDirectSaleOfGivenAuthorController "1" ..> "1" ListingRepository : uses >
-ListingRepository "         1" ..> "                *" Listing : retrieves >
-Listing "                       *" ..> "1" SaleType : can be\nsold by >
-Listing "1" ..> "1   " Item : lists an >
-Item "             *" ..> "1 " Author : refers to >
+UI025 "1 " ..> "1 " GetListOfItemsOnDirectSaleOfGivenAuthorController : uses >
+GetListOfItemsOnDirectSaleOfGivenAuthorController  " 1" ..> "1    " DirectSaleRepository : uses >
+GetListOfItemsOnDirectSaleOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses >
+DirectSaleRepository "1 " ..> " * " DirectSale : retrieves >
+DirectSale "1 " ..> " 1 " Listing : has >
+AuthorRepository "1 " ..> "          *" Author : stores >
+Author "1 " ..> "1 " Profile : has >
 
 @enduml
