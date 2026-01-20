@@ -2,11 +2,12 @@
 title US006 - To register a publishing company in the system
 
 class RegisterPublisher {
-  +registerPublisher(name, vatNumber, contact)
+  +registerPublisher(name:String, vatNumber:String, contact:Contact)
 }
 
 class PublisherRepository {
-  +createNewPublisher(name, vatNumber, contact)
+- List<Publisher> publishers
+  +createAndAddPublisher(name:String, vatNumber:String, contact:Contact)
   +add(p1)
   +validator(p1): boolean
 }
@@ -20,7 +21,7 @@ class Publisher {
 
 ' Interactions
 
-RegisterPublisher "1 " -- "1 " PublisherRepository : requests registration to >
-PublisherRepository "1 " -- " * " Publisher : manages / stores >
+RegisterPublisher "1 " -.- "1 " PublisherRepository : requests registration to >
+PublisherRepository "1 " -- " * " Publisher : creates / stores >
 
 @enduml
