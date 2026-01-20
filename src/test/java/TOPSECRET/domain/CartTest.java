@@ -26,16 +26,15 @@ class CartTest {
 
         Profile author = new Profile(
                 "Tove Ditlevsen",
-                Country.DENMARK,
-                LocalDate.of(1917, 12, 14),
-                true
+                Countries.DENMARK,
+                LocalDate.of(1917, 12, 14)
         );
 
         Address address = new Address(
                 "R Maria",
                 "12",
                 "156-5",
-                Country.PARAGUAY
+                Countries.PARAGUAY
         );
 
         Email email = new Email(
@@ -88,7 +87,7 @@ class CartTest {
                 "Short description 1",
                 "Listing Title 1",
                 SaleType.DIRECT_SALE,
-                new User("Seller1", null, null)
+                new User("Seller1", null, null, UserRole.NORMAL_USER)
         );
 
         listing2 = new Listing(
@@ -97,7 +96,7 @@ class CartTest {
                 "Short description 2",
                 "Listing Title 2",
                 SaleType.DIRECT_SALE,
-                new User("Seller2", null, null)
+                new User("Seller2", null, null, UserRole.NORMAL_USER)
         );
     }
 

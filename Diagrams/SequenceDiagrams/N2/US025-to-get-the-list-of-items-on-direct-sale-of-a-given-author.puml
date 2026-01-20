@@ -4,37 +4,39 @@ hide footbox
 autonumber
 title US025 - To get the list of items on direct sale of a given author
 
-box #WhiteSmoke
 actor Buyer
 participant ":UI025" as UI025
-end box
 
-box "Controller" #LightBlue
 participant ":GetListOfItemsOnDirectSaleOfGivenAuthorController" as GetListOfItemsOnDirectSaleOfGivenAuthorController
-end box
 
-box "Persistence" #LightGrey
+participant ":AuthorRepository" as AuthorRepository
+
 participant ":ListingRepository" as ListingRepository
-end box
 
 Buyer -> UI025 : I want to get the list of items on direct sale of a given author
 activate UI025
-Buyer <-- UI025 : Which author?
+UI025 -> GetListOfItemsOnDirectSaleOfGivenAuthorController : getAllAuthors()
+activate GetListOfItemsOnDirectSaleOfGivenAuthorController
+GetListOfItemsOnDirectSaleOfGivenAuthorController -> AuthorRepository: getAllAuthors()
+activate AuthorRepository
+AuthorRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController: listOfAllAuthors
+deactivate AuthorRepository
+GetListOfItemsOnDirectSaleOfGivenAuthorController --> UI025 : listOfAllAuthors
+deactivate GetListOfItemsOnDirectSaleOfGivenAuthorController
+Buyer <-- UI025 : Which author? Choose!
 Buyer -> UI025 : author
 
 UI025 -> GetListOfItemsOnDirectSaleOfGivenAuthorController : getListOfItemsOnDirectSale(author)
 activate GetListOfItemsOnDirectSaleOfGivenAuthorController
 
-GetListOfItemsOnDirectSaleOfGivenAuthorController -> ListingRepository : getListOfItems(typeOfSale, author)
+GetListOfItemsOnDirectSaleOfGivenAuthorController -> ListingRepository : getListOfItemsOnDirectSale(author)
 activate ListingRepository
 
 
-ListingRepository -> ListingRepository : validateParameters(typeOfSale, author)
+ListingRepository -> ListingRepository : validateParameters(author)
 
-box "Domain Model" #LightYellow
 create "l1: List<Listing>" as Listing
-ListingRepository -> Listing : getList(typeOfSale, author)
-end box
+ListingRepository -> Listing : getList(author)
 
 ListingRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController : l1
 deactivate ListingRepository

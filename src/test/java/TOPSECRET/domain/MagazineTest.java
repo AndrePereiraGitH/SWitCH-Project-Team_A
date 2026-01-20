@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.Genre;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
@@ -37,9 +37,9 @@ class MagazineTest {
     }
 
     private Item validItem() {
-        Profile author = new Profile("Author Name", Country.UNITED_STATES, LocalDate.of(1980, 1, 1), true);
+        Profile author = new Profile("Author Name", Countries.UNITED_STATES, LocalDate.of(1980, 1, 1));
 
-        Address address = new Address("R Maria", "12", "156-5", Country.PARAGUAY);
+        Address address = new Address("R Maria", "12", "156-5", Countries.PARAGUAY);
         Email email = new Email("Maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);
 

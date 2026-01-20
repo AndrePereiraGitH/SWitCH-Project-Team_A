@@ -4,23 +4,30 @@ hide footbox
 autonumber
 title US023 - To get the list of items on direct sale of a given publication
 
-box #WhiteSmoke
+' box #WhiteSmoke
 actor Buyer
 participant ":UI023" as UI023
-end box
+' end box
 
-box "Controller" #LightBlue
+' box "Controller" #LightBlue
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
-end box
+' end box
 
-box "Persistence" #LightGrey
+' box "Persistence" #LightGrey
 participant ":ListingRepository" as ListingRepository
-end box
+' end box
 
-' Buyer -> UI023 : **1** getListOfItems(typeOfSale, publication)
+participant ":PublicationRepository" as PublicationRepository
+
 Buyer -> UI023 : I want to get a list of items on direct sale of a given publication
 activate UI023
-Buyer <-- UI023 : Which publication?
+UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : getAllPublications()
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> PublicationRepository: getAllPublications()
+activate PublicationRepository
+PublicationRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController: listOfAllPublications
+deactivate PublicationRepository
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController --> UI023 : listOfAllPublications
+Buyer <-- UI023 : Which publication? Choose!
 Buyer -> UI023 : publication
 
 ' UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **4** getListOfItems(typeOfSale, publication)
@@ -36,11 +43,11 @@ activate ListingRepository
 ' ListingRepository -> ListingRepository : **4** validateParameters(typeOfSale, publication)
 ListingRepository -> ListingRepository : validateParameters(publication)
 
-box "Domain Model" #LightYellow
+' box "Domain" #LightYellow
 create "l1: List<Listing>" as Listing
 ' ListingRepository -> Item : **5** createList(typeOfSale, publication)
 ListingRepository -> Listing : getList(publication)
-end box
+' end box
 
 ' ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items
 ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : l1

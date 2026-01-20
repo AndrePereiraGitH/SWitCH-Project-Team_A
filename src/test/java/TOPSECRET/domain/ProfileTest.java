@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -13,42 +13,40 @@ class ProfileTest {
     void shouldCreateProfileWithValidData() {
         Profile profile = new Profile(
                 "Test User",
-                Country.PORTUGAL,
-                LocalDate.of(2000, 5, 10),
-                true
+                Countries.PORTUGAL,
+                LocalDate.of(2000, 5, 10)
         );
 
         assertEquals("Test User", profile.getName());
-        assertEquals(Country.PORTUGAL, profile.getCountry());
+        assertEquals(Countries.PORTUGAL, profile.getCountry());
         assertEquals(LocalDate.of(2000, 5, 10), profile.getBirthday());
-        assertTrue(profile.isAuthor());
     }
 
     @Test
     void shouldFailWhenNameIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile(null, Country.PORTUGAL, LocalDate.now(), false);
+            new Profile(null, Countries.PORTUGAL, LocalDate.now());
         });
     }
 
     @Test
     void shouldFailWhenNameIsBlank() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("   ", Country.FRANCE, LocalDate.now(), false);
+            new Profile("   ", Countries.FRANCE, LocalDate.now());
         });
     }
 
     @Test
     void shouldFailWhenCountryIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("Valid Name", null, LocalDate.now(), false);
+            new Profile("Valid Name", null, LocalDate.now());
         });
     }
 
     @Test
     void shouldFailWhenBirthdayIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("Valid Name", Country.GERMANY, null, false);
+            new Profile("Valid Name", Countries.GERMANY, null);
         });
     }
 }

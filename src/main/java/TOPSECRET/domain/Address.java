@@ -1,15 +1,15 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Country;
+import TOPSECRET.domain.Enum.Countries;
 
 public class Address {
 
     private String street;
     private String number;
     private String zipCode;
-    private Country country;
+    private Countries country;
 
-    public Address(String street, String number, String zipCode, Country country) {
+    public Address(String street, String number, String zipCode, Countries country) {
 
         if (street == null || street.isBlank() || number == null || number.isBlank() || zipCode == null || zipCode.isBlank() || country == null) {
             throw new IllegalArgumentException("Street, number, zip Code and country are all required fields.");
@@ -33,7 +33,7 @@ public class Address {
         return zipCode;
     }
 
-    public Country getCountry() {
+    public Countries getCountry() {
         return country;
     }
 
@@ -49,7 +49,7 @@ public class Address {
         this.zipCode = zipCode;
     }
 
-    public void setCountry(Country country) {
+    public void setCountry(Countries country) {
         this.country = country;
     }
 

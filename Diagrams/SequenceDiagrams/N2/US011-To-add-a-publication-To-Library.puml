@@ -4,22 +4,22 @@ hide footbox
 title US011 - Add publication to library
 
 
-box  #WhiteSmoke
-    actor "User" as User
-    participant ":UI011" as UI
-end box
 
-box "Controller" #LightBlue
-    participant ":AddPublicationToLibraryController" as Ctrl
-end box
+actor "User" as User
+participant ":UI011" as UI
 
-box "Persistence" #LightGrey
-    participant ":PublicationRepository" as PubRepo
-end box
 
-box "Domain Model" #LightYellow
-    participant "Library" as LibDomain
-end box
+
+participant ":AddPublicationToLibraryController" as Ctrl
+
+
+
+participant ":PublicationRepository" as PubRepo
+
+
+
+participant "Library" as LibDomain
+
 
 User -> UI : asks to add publication to library
 activate UI

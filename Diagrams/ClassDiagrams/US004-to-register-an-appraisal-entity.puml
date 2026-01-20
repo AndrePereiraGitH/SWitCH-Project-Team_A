@@ -1,31 +1,34 @@
 @startuml
 title Diagrama de Classes - Registo de Entidade Avaliadora
-/'
-class Administrator {
-  +provideAppraisalEntityData() : void
-}
 
-class UI {
-  +requestAppraisalEntityData() : void
-  +sendAppraisalEntityData(name: String, contact: String) : void
-  +showSuccess() : void
-}
-
-class RegisterAppraisalController {
-  +registerAppraisalEntity(name: String, contact: String) : boolean
-}
-'/
 class AppraisalEntityRepository {
-  -appraisalEntityList : List<AppraisalEntity>
-  +createAndRegisterAppraisalEntity(name: String, contact: String) : AppraisalEntity
+  +createAndRegisterAppraisalEntity(name: String, contact: String)
 ' Those methods are part of createAndRegisterAppraisalEntity
 '  +validateAppraisalEntity(ae: AppraisalEntity) : boolean
 '  +addToAppraisalEntityList(ae: AppraisalEntity) : void
 }
 
+class "List<AppraisalEntity>" {
+  +addAppraisalEntityToAppraisalList (apEntity: AppraisalEntity)
+}
+
+
 class AppraisalEntity {
   -name : String
   -contact : Contact
+}
+
+class "List<Genre>" {
+}
+
+class Genre {
+  -genreType : String
+}
+
+class Publicationtype {
+  -mediaFormat : MediaFormat
+  -typeOfBiding : TypeOfBinding
+  -details : String
 }
 
 class Contact {
@@ -41,7 +44,15 @@ class Contact {
 ' UI "1" --> "1" RegisterAppraisalController : calls
 
 RegisterAppraisalController "1 " -- "1 " AppraisalEntityRepository : request registration to >
-AppraisalEntityRepository "1 " -- " * " AppraisalEntity : creates / manages >
+AppraisalEntityRepository "    1" .------- "      *   " AppraisalEntity : creates / manages >
+AppraisalEntityRepository "1    " --- " 1  " "List<AppraisalEntity>" : has >
+
+"List<AppraisalEntity>" "1 " -- " *  " AppraisalEntity : contains >
+"List<AppraisalEntity>" "1 " ---- " 1    " "List<Genre>" : contains >
+"List<AppraisalEntity>" "1 " ---- " 1    " Publicationtype : has >
+
+"List<Genre>" "1" -- "1" Genre : has >
+
 AppraisalEntity "1 " -- "1 " Contact : contains >
 
 @enduml

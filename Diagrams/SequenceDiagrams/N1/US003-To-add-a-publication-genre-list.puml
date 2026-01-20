@@ -7,7 +7,7 @@ participant ":System" as System
 
 Administrator -> System : **1** I want to add a new genre to the official list
 System --->> Administrator : **2** Please enter the genre name
-Administrator -> System : **3** Romance
+Administrator -> System : **3** name ("Romance")
 System --->> Administrator : **4** Success
 
 @enduml

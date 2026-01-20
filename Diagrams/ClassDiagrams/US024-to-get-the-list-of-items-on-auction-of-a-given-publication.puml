@@ -1,15 +1,23 @@
 @startuml
 title US024 - To get the list of items on auction of a given publication
 
+class UI024 {
+
+}
+
 class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
   +getListOfItemsOnAuction(publication)
-  -copyList(l1)
+  -copyList()
+}
+
+class PublicationRepository{
+    +getAllPublications()
 }
 
 class ListingRepository {
-  +getListOfItems(typeOfSale, publication)
+  +getListOfItems(publication)
   ' -convertStringToEnum(typeOfSale, publication)
-  -validateParameters(typeOfSale, publication)
+  -validateParameters(publication)
 }
 
 class Listing {
@@ -22,8 +30,17 @@ enum SaleType {
     AUCTION
 }
 
+' class Item {
+'    - bibliographicalData: BibliographicalData
+'}
+
 class Item {
+    - publication: publication
+}
+
+class Publication {
     - bibliographicalData: BibliographicalData
+    - code: Code
 }
 
 class BibliographicalData {
@@ -32,10 +49,14 @@ class BibliographicalData {
 
 ' Interactions
 
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " -- "1 " ListingRepository : uses >
-ListingRepository "1 " -- " * " Listing : retrieves >
-Listing "                                *" --> "1" SaleType : can be\nsold by >
-Listing "1"--> "1  " Item : lists an >
-Item "*" -- "1" BibliographicalData: has >
+UI024 "1" ..> "1" ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses >
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " ..> "1 " ListingRepository : uses >
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController  "1 " ..> "1 " PublicationRepository : uses >
+ListingRepository "1 " ..> " * " Listing : retrieves >
+Listing "                                *" ..> "1" SaleType : can be\nsold by >
+Listing "1" ..> "1  " Item : lists an >
+' Item "*" -- "1" BibliographicalData: has >
+Item "*" ..> "1" Publication: refers to a >
+Publication "*" ..> "1" BibliographicalData: has >
 
 @enduml
