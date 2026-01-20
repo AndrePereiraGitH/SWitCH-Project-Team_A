@@ -18,9 +18,9 @@ class Genre {
 }
 
 
-RegisterGenreController "1" --> "1" GenreRepository : uses >
-GenreRepository "1" -.-> "*" Genre : stores >
-GenreRepository "1" -.-> "*" Genre : creates >
+RegisterGenreController "1" -.-> "1" GenreRepository : uses
+GenreRepository "1" --> "*" Genre : stores
+GenreRepository "1" -.-> "*" Genre : creates
 
 
 @enduml
