@@ -1,0 +1,22 @@
+@startuml
+
+autonumber
+hide footbox
+title SSD: US015 - To put for a sale a publication in my library in a Direct Sale
+
+actor "User" as User
+participant ":System" as System
+
+activate User
+
+   User -> System : Request "I want to sell a publication in my Library in a Direct Sale
+   activate System
+   System --> User : Choose a publication!
+   User -> System : Publication Selected
+   System --> User : Insert Price?
+   User -> System : Price
+   System --> User : Direct Sale successfully created!
+   deactivate System
+
+deactivate User
+@enduml
