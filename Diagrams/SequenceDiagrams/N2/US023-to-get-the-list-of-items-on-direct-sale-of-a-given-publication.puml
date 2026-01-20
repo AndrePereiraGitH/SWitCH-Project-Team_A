@@ -4,20 +4,13 @@ hide footbox
 autonumber
 title US023 - To get the list of items on direct sale of a given publication
 
-' box #WhiteSmoke
 actor Buyer
+
+' Participants
 participant ":UI023" as UI023
-' end box
-
-' box "Controller" #LightBlue
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
-' end box
-
-' box "Persistence" #LightGrey
-participant ":ListingRepository" as ListingRepository
-' end box
-
 participant ":PublicationRepository" as PublicationRepository
+participant ":DirectSaleRepository" as DirectSaleRepository
 
 Buyer -> UI023 : I want to get a list of items on direct sale of a given publication
 activate UI023
@@ -34,24 +27,24 @@ Buyer -> UI023 : publication
 UI023 -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : getListOfItemsOnDirectSale(publication)
 activate ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController
 
-' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : **3** getListOfItems(typeOfSale, publication)
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ListingRepository : getListOfItemsOnDirectSale(publication)
-activate ListingRepository
+' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> DirectSaleRepository : **3** getListOfItems(typeOfSale, publication)
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> DirectSaleRepository : getListOfItemsOnDirectSale(publication)
+activate DirectSaleRepository
 
 ' ItemRepository -> ItemRepository : **4** convertStringToEnum(typeOfSale, publication)
 
-' ListingRepository -> ListingRepository : **4** validateParameters(typeOfSale, publication)
-ListingRepository -> ListingRepository : validateParameters(publication)
+' DirectSaleRepository -> DirectSaleRepository : **4** validateParameters(typeOfSale, publication)
+DirectSaleRepository -> DirectSaleRepository : validateParameters(publication)
 
 ' box "Domain" #LightYellow
-create "l1: List<Listing>" as Listing
-' ListingRepository -> Item : **5** createList(typeOfSale, publication)
-ListingRepository -> Listing : getList(publication)
+create "l1: List<DirectSale>" as DirectSale
+' DirectSaleRepository -> Item : **5** createList(typeOfSale, publication)
+DirectSaleRepository -> DirectSale : getList(publication)
 ' end box
 
-' ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items
-ListingRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : l1
-deactivate ListingRepository
+' DirectSaleRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **6** List<Item> items
+DirectSaleRepository --> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : l1
+deactivate DirectSaleRepository
 
 ' ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : **7** copyList(items)
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController -> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : cl1: copyList(l1)
