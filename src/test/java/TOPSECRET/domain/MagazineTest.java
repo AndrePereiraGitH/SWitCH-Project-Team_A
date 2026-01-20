@@ -59,7 +59,6 @@ class MagazineTest {
         return new Item(
                 Condition.NEW,
                 0.1,
-                List.of(new Picture("path/to/pic.jpg")),
                 new Dimensions(1.0, 1.0, 1.0),
                 TypeOfBinding.HARDBACK,
                 "1st edition",

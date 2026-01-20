@@ -23,7 +23,6 @@ class ItemTest {
         // Assert
         assertEquals(Condition.LIKE_NEW, item.getCondition());
         assertEquals(1.2, item.getWeight(), 0.0001);
-        assertEquals(1, item.getPictures().size());
         assertNotNull(item.getDimension());
         assertEquals(TypeOfBinding.PAPERBACK, item.getBinding());
         assertEquals("1st edition", item.getEdition());
@@ -37,12 +36,12 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), 0.0, valid.getPictures(), valid.getDimension(),
+                valid.getCondition(), 0.0, valid.getDimension(),
                 valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
         ));
 
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), -0.1, valid.getPictures(), valid.getDimension(),
+                valid.getCondition(), -0.1, valid.getDimension(),
                 valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
         ));
     }
@@ -54,7 +53,7 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getCondition(), valid.getWeight(), valid.getDimension(),
                 valid.getBinding(), null, valid.getBibliographicalData()
         ));
     }
@@ -66,7 +65,7 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getCondition(), valid.getWeight(), valid.getDimension(),
                 valid.getBinding(), "   ", valid.getBibliographicalData()
         ));
     }
@@ -78,22 +77,12 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                null, valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                null, valid.getWeight(), valid.getDimension(),
                 valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
         ));
     }
 
-    @Test
-    void shouldThrowWhenPicturesIsNull() {
-        // Arrange
-        Item valid = createValidItem();
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), valid.getWeight(), null, valid.getDimension(),
-                valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
-        ));
-    }
 
     @Test
     void shouldThrowWhenDimensionsIsNull() {
@@ -102,7 +91,7 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), valid.getWeight(), valid.getPictures(), null,
+                valid.getCondition(), valid.getWeight(), null,
                 valid.getBinding(), valid.getEdition(), valid.getBibliographicalData()
         ));
     }
@@ -114,7 +103,7 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getCondition(), valid.getWeight(), valid.getDimension(),
                 null, valid.getEdition(), valid.getBibliographicalData()
         ));
     }
@@ -126,7 +115,7 @@ class ItemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Item(
-                valid.getCondition(), valid.getWeight(), valid.getPictures(), valid.getDimension(),
+                valid.getCondition(), valid.getWeight(), valid.getDimension(),
                 valid.getBinding(), valid.getEdition(), null
         ));
     }
@@ -148,12 +137,11 @@ class ItemTest {
                 "Some text"
         );
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
-        List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
+
 
         return new Item(
                 Condition.LIKE_NEW,
                 1.2,
-                pictures,
                 dimensions,
                 TypeOfBinding.PAPERBACK,
                 "1st edition",
