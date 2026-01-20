@@ -26,8 +26,6 @@ public class PublicationTypeRepository {
         return pubType;
     }
 
-    public List<PublicationType> getAllPublicationTypes() { //method para ler, seguro para usar em testes
-        return List.copyOf(_publicationTypes);
-    }
+    public List<PublicationType> getAllPublicationTypes() { return List.copyOf(_publicationTypes); }
 
 }
