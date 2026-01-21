@@ -1,37 +1,58 @@
 @startuml
-
+autonumber
 hide footbox
 title US0014 - To get publication types list
 
-box  #WhiteSmoke
 actor User
-participant ":UI" as UI
-end box
+participant ":UI014" as UI
+participant ":ToGetPublicationTypeController" as C
+participant ":PublicationTypeRepository" as PTR
+participant ":PublicationTypeMapper" as PTM
+participant ":PublicationType" as PT
+participant "publicationTypeDTO:\npublicationTypeDTO" as DTO
 
-box "Controller" #LightBlue
-participant ":GetPublicationTypeController" as GetPublicationTypeController
-end box
 
-box "Persistence" #LightYellow
-participant ":PublicationTypeRepository" as PublicationTypeRepository
-end box
-User -> UI : **1** I want to get a list of all publication types
+User -> UI : I want to get a list of all publication types
 activate UI
 
-UI -> GetPublicationTypeController : **2** getPublicationTypesList()
-activate GetPublicationTypeController
+UI -> C : getListOfPublicationType()
+activate C
 
-GetPublicationTypeController -> PublicationTypeRepository : **3** findAllPublicationTypes()
-activate PublicationTypeRepository
+C -> PTR : getListOfPublicationType()
+activate PTR
+create "listOfPublicationType:\nList<PublicationType>" as LOPT
+PTR -> LOPT
 
-PublicationTypeRepository --> GetPublicationTypeController : **4** List<PublicationTypes>
-deactivate PublicationTypeRepository
+PTR --> C : listOfPublicationType
+deactivate PTR
 
-GetPublicationTypeController --> UI : **5** List<PublicationTypes>
-deactivate GetPublicationTypeController
+C -> PTM : toDTO(listOfPublicationType)
+activate PTM
+create "listOfPublicationTypeDTO:\nList<PublicationTypeDTO>" as lopt1
+PTM -> lopt1
 
-UI --> User : **6** Official List of Publication Types
-deactivate
+    loop for each PublicationType
+        PTM -> PT : getDetails()
+        activate PT
+        PT --> PTM : details
+        deactivate PT
+
+        PTM -> DTO ** : create(details)
+        activate DTO
+        DTO --> PTM : publicationTypeDTO
+        deactivate DTO
+
+        PTM -> PTM : listOfPublicationTypeDTO.add(publicationTypeDTO)
+    end
+
+PTM --> C :listOfPublicationTypesDTO
+deactivate PTM
+
+C --> UI : listOfPublicationTypesDTO
+deactivate C
+
+UI --> User : Official List of Publication Types
+deactivate UI
 
 
 @enduml

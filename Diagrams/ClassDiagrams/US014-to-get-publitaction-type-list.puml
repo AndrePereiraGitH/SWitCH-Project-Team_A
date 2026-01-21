@@ -1,16 +1,42 @@
 @startuml
-title US014 - To get publication type list
+title US022 - To get the list of items on auction of a given genre
 
-class GetPublicationTypeController {
-  +getPublicationTypesList()
+class UI022 {
+
+}
+
+class ToGetPublicationTypeController{
+  +getListOfPublicationType()
 }
 
 class PublicationTypeRepository {
-  +findAllPublicationTypes()
+  +getListOfPublicationType()
 }
 
-' Interactions
+class PublicationType {
+    -mediaFormat: MediaFormat
+    -typeOfBinding: TypeOfBinding
+    -details: String
+    +getDetails()
+}
 
-GetPublicationTypeController "1 " -- "1 " PublicationTypeRepository : requests list to >
+class PublicationTypeMapper {
+  +toDTO(listOfPublicationType)
+}
+
+class PublicationTypeDTO {
+}
+
+' --- Interactions ---
+
+UI022 ..> ToGetPublicationTypeController : uses
+ToGetPublicationTypeController ..> PublicationTypeRepository : uses
+ToGetPublicationTypeController ..> PublicationTypeMapper : uses
+PublicationTypeMapper ..> PublicationTypeDTO : maps to
+PublicationTypeMapper ..> PublicationType : uses
+PublicationTypeRepository "1" --> "*" PublicationType : contains
+
+
+
 
 @enduml

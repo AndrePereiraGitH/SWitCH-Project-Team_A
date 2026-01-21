@@ -4,18 +4,18 @@ hide footbox
 autonumber
 title US028 - To get the list of items on auction of a given publisher
 
-box #WhiteSmoke
+
 actor Buyer
-participant ":UI" as UI028
-end box
+participant ":UI028" as UI028
 
-box "Controller" #LightBlue
-participant ":ItemController" as Controller
-end box
 
-box "Persistence" #LightGrey
+
+participant ":ToGetListOfItemsOnAuctionOf\nGivenPublisherController" as Controller
+
+
+
 participant ":ListingRepository" as Repository
-end box
+
 
 Buyer -> UI028 : I want to get the list of items on auction of a given publisher
 activate UI028
@@ -25,16 +25,16 @@ Buyer -> UI028 : publisher
 UI028 -> Controller : getItemsOnAuctionByPublisher(publisher)
 activate Controller
 
-Controller -> Repository : getBySaleType(SaleType.AUCTION)
+Controller -> Repository : getListingsOnAuction()
 activate Repository
 
 
 
-box "Domain Model" #LightYellow
+
 create "data: List<Listing>" as Listing
-Repository -> Listing : queryBySaleType(SaleType.AUCTION)
-Listing --> Repository : data
-end box
+Repository -> Listing
+
+
 
 Repository --> Controller : data
 deactivate Repository

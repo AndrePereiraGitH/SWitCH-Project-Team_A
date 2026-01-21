@@ -1,43 +1,64 @@
 @startuml
-title US015 – To put for sale a publication in my library in a Direct Sale
+title US015 - Put a publication for sale in Direct Sale (Class Diagram)
 
-class MyLibrary {
-  name : String
-  publications : List<Publication>
-  + findPublication(publication) : Publication
+class UI015 {}
+
+UI015 "1" -.-> "1" ToPutPublicationInDirectSaleController :  uses
+
+class ToPutPublicationInDirectSaleController {
+    + getListPublications()
+    + createAndAddItem(publication :Publication)
+    + creatAndAddDirectSale(listing :Listing)
+
+}
+
+class Library {
+    - Publication : List<Publications>
+    + getListPublications()
+}
+
+class Item {
+    - condition : Condition
+    - weight : double
+    - dimensions : Dimensions
+    - pictures : List<Picture>
+    - publication : publication
+}
+
+class Listing {
+    - items : List<Item>
+    - price : Price
+    - shortDescription : String
+    - listingTitle : String
+    - saleType : SaleType
+    - seller : User
+}
+
+class DirectSale {
+    - listing : Listing
 }
 
 class ItemRepository {
-  + createPhysicalItem()
-}
-
-class LibraryRepository {
-  + getLibrary(name) : myLibrary
-}
-
-class ListingRepository {
-  + createAndAddDirectSale(item1, price: double) : DirectSale
-}
-
-class ToPutPublicationInDirectSaleController {
-  + putPublicationForDirectSale(libraryId, publicationId, price)
-}
-
-class Publication {
-
+    - items : List<Item>
+    - validateItem()
+    + createAndAddItem(publication :Publication) : Item
 }
 
 class DirectSaleRepository {
-  + addNewDirectSale()
+    - directSales : List<DirectSale>
+    - validateDirectSale()
+    + createListing(item, price, shortDescription, listingType, saleType, seller)
+    + createAndAddDirectSale(listing :Listing) : DirectSale
 }
 
-ToPutPublicationInDirectSaleController "1" -- "1" MyLibrary
-MyLibrary "1" -- "*" Publication
+Listing "1" --> "*" Item : has
+DirectSale "1" --> "1" Listing : has
 
-ItemRepository "1" -- "0..*" MyLibrary
+ItemRepository "1" --> "*" Item : contains
+DirectSaleRepository "1" --> "*" DirectSale : contains
 
-ToPutPublicationInDirectSaleController "1" -- "1" LibraryRepository
-ToPutPublicationInDirectSaleController "1" -- "1" ListingRepository
-ToPutPublicationInDirectSaleController "1" -- "1" ItemRepository
-ToPutPublicationInDirectSaleController "1" -- "1" DirectSaleRepository
+ToPutPublicationInDirectSaleController "1" -.-> "1" Library : uses
+ToPutPublicationInDirectSaleController "1" -.-> "1" ItemRepository : uses
+ToPutPublicationInDirectSaleController "1" -.-> "1" DirectSaleRepository : uses
+
 @enduml

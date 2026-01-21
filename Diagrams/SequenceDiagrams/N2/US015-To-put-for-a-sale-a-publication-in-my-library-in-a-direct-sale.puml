@@ -1,83 +1,76 @@
 @startuml
 autonumber
 hide footbox
-title US0015 - To put for sale a publication in my library in a Direct Sale
+title US015 - To put for sale a publication in my library in a direct sale
 
-box #WhiteSmoke
+
 actor User
-participant ":UI" as UI
-end box
+participant ":UI015" as UI
 
-box "Controller" #LightBlue
 participant ":ToPutPublicationInDirectSaleController" as C
-end box
+participant ":ItemRepository" as I
+participant ":DirectSaleRepository" as S
+participant ":Library" as Lib
 
-box "Persistence" #LightGrey
-participant ":LibraryRepository" as LibRepo
-participant ":ItemRepo" as Item
-participant ":ListingRepository" as ListRepo
-participant ":DirectSaleRepository" as DirSaleRepo
-end box
-
-box "Domain Model"#LightYellow
-participant "myLibrary:Library" as Lib
-
-User -> UI : I want to sell a publication in Direct Sale
-UI --> User : Which library?
-User -> UI : myLibrary
-
-
-UI -> C : getMyLibrary()
+User -> UI : I want to sell a publication in my library in Direct Sale
+activate UI
+UI -> C : getListPublications()
 activate C
-C -> LibRepo : getLibrary(myLibrary)
-activate LibRepo
-LibRepo -> LibRepo : verifyIfMyLibraryExists()
-LibRepo --> C : myLibrary
-deactivate LibRepo
-C --> UI : myLibrary
-deactivate C
+C -> Lib : getListPublications()
 
-
-UI --> User : Which publication?
-User -> UI : publicationBook
-
-UI -> C : findPublication()
-activate C
-C -> Lib : findPublication(publicationBook)
 activate Lib
-Lib -> Lib : verifyIfPublicationExists()
-Lib --> C : publicationBook
+
+create "listOfPublications: List<Publication>" as LP
+Lib -> LP
+Lib --> C : listOfPublications
 deactivate Lib
-C --> UI : publicationBook
+C --> UI : Success
 deactivate C
 
+UI --> User : Choose publication from the List
+deactivate UI
+User -> UI : Selected publication and insert information for Item
+activate UI
 
-UI --> User : Which price?
-User -> UI : Price "x"
-
-UI -> C : putPublicationInDirectSale(myLibrary, publicationBook, price)
+UI -> C : createAndAddItem(publication, condition,\n dimensions, weight)
 activate C
-C -> Item : createPhysicalItem()
-activate Item
-create "item1: Item" as item1
-Item -> item1 : create
-Item --> C : Success
-deactivate Item
+C -> I : createAndAddItem(publication, condition,\n dimensions, weight)
+activate I
 
-C -> ListRepo : createNewDirectSale(item1, price)
-activate ListRepo
-create "directSale1:DirectSale" as directSale1
-ListRepo -> directSale1 : create
-ListRepo --> C : directSale1
-deactivate ListRepo
-
-C -> DirSaleRepo : addNewDirectSale(directSale1)
-activate DirSaleRepo
-DirSaleRepo --> C : directSale1 added to Repository
-deactivate DirSaleRepo
-end box
-
-C --> UI : Success(directSale1)
+create "item1:Item" as item1
+I -> item1 : create(publication, condition,\n dimensions, weight)
+I -> I : validateItemExists(item1)
+I -> I : addToList(item1)
+I --> C : item1
+deactivate I
+C --> UI: Success
 deactivate C
-UI --> User : Done
+
+
+UI --> User : Insert Information for Direct Sale
+deactivate UI
+User -> UI : Information about Direct Sale
+activate UI
+
+UI -> C : createDirectSale(item1, price, shortDescription,\n listingTitle, saleType, seller, pictures)
+activate C
+
+C -> S : createDirectSale(item1, price, shortDescription,\n listingTitle, saleType, seller, pictures)
+activate S
+create "listing1:Listing" as listing1
+S -> listing1 : create(item1, price, shortDescription,\n listingTitle, saleType, seller, pictures)
+
+
+
+create "directSale1:DirectSale" as directSale1
+S -> directSale1 : create(listing1, LocalDateTime)
+S -> S : validateDirectSaleExists(directSale1)
+S -> S : addToList(directSale1)
+S --> C : true
+deactivate S
+
+C --> UI : success
+deactivate C
+UI --> User : Direct Sale successfully created
+deactivate UI
 @enduml

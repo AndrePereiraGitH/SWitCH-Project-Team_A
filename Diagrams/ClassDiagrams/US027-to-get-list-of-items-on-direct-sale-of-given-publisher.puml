@@ -1,12 +1,12 @@
 @startuml
 title US027 - To get the list of items on direct sale of a given publisher
 
-class ItemController {
+class ToGetListOfItemsOnDirectSaleOf\nGivenPublisherController {
   +getItemsOnDirectSaleByPublisher(publisher)
 }
 
 class ListingRepository {
-  +getBySaleType(typeOfSale)
+  +getListingsOnDirectSale()
 }
 
 class Listing {
@@ -29,7 +29,7 @@ class BibliographicalData {
 
 ' Interactions
 
-ItemController  "1 " -- "1 " ListingRepository : uses >
+ToGetListOfItemsOnDirectSaleOf\nGivenPublisherController  "1 " -- "1 " ListingRepository : uses >
 ListingRepository "1 " -- " * " Listing : retrieves >
 Listing "                                *" --> "1 " SaleType : can be\nsold by >
 Listing "1"--> "1    " Item : lists an >

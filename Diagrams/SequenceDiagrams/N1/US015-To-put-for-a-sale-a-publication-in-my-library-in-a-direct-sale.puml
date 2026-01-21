@@ -13,7 +13,7 @@ activate User
    activate System
    System --> User : Choose a publication!
    User -> System : Publication Selected
-   System --> User : Insert Price?
+   System --> User : Insert Price
    User -> System : Price
    System --> User : Direct Sale successfully created!
    deactivate System
