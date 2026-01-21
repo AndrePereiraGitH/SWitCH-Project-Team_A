@@ -46,7 +46,7 @@ class ListingTest {
             Locale.ENGLISH,
             publisher,
             LocalDate.of(2020, 1, 1),
-            List.of(Genre.FICTION),
+            List.of(new Genre ("Fiction")),
             200,
             "Some text"
     );

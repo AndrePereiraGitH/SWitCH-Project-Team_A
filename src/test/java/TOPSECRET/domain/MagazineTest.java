@@ -51,7 +51,7 @@ class MagazineTest {
                 Locale.ENGLISH,
                 publisher,
                 LocalDate.of(2020, 1, 1),
-                List.of(Genre.NONFICTION),
+                List.of(new Genre ("Nonfiction")),
                 100,
                 "Text"
         );

@@ -31,7 +31,7 @@ class PublicationRepositoryTest {
             Locale.ENGLISH,
             publisher1,
             LocalDate.of(2020, 1, 1),
-            List.of(Genre.FICTION),
+            List.of(new Genre ("Fiction")),
             200,
             "Some text");
 

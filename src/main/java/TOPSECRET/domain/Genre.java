@@ -1,4 +1,3 @@
-/*
 package TOPSECRET.domain;
 
 public class Genre {
@@ -20,5 +19,4 @@ public class Genre {
     }
 }
 
- */
 

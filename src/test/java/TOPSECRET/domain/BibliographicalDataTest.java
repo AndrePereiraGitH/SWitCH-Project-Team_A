@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
-import TOPSECRET.domain.Enum.Genre;
+import TOPSECRET.domain.Enum.Genres;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -40,7 +39,7 @@ class BibliographicalDataTest {
 
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.FANTASY);
+        genres.add(new Genre ("Fantasy"));
 
         int numberOfPages = 272;
 
@@ -71,7 +70,7 @@ class BibliographicalDataTest {
 
         assertEquals(LocalDate.of(2022, 8, 4), bibliographicalData.getPublishDate());
 
-        assertEquals(List.of(Genre.FANTASY), bibliographicalData.getGenres());
+        assertEquals("Fantasy", bibliographicalData.getGenres().get(0).getGenreType());
 
         assertEquals(272, bibliographicalData.getNumberOfPages());
 

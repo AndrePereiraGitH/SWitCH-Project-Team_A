@@ -330,7 +330,7 @@ class TransactionTest {
                         )
                 ),
                 LocalDate.of(2020,1,10),
-                List.of(Genre.FICTION),
+                List.of(new Genre ("Fiction")),
                 200,
                 "Text Description"
                 );

@@ -1,13 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.AppraisalEntity;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Enum.Genre;
-import TOPSECRET.domain.PublicationType;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class AppraisalEntityRepository {
 
 //  //    private List<AppraisalEntity> _appraisalEntityList;

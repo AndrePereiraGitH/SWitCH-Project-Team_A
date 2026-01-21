@@ -1,12 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.Genre;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
-
 class AppraisalEntityRepositoryTest {
 //
 //    private AppraisalEntityRepository testAppraisalEntityList;

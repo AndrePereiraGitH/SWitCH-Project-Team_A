@@ -827,8 +827,8 @@ class AuctionTest {
         authors.add(authorProfile);
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.FANTASY);
-        genres.add(Genre.MYSTERY);
+        genres.add(new Genre ("Fantasy"));
+        genres.add(new Genre ("Mister"));
 
         String chunkOfText =
                 "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, " +
@@ -844,7 +844,7 @@ class AuctionTest {
                 Locale.ENGLISH,
                 publisher,
                 LocalDate.of(1991, 11, 1),
-                genres,
+                List.of(new Genre ("Fantasy")),
                 700,
                 chunkOfText
         );

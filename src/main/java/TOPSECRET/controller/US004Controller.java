@@ -1,12 +1,5 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.AppraisalEntity;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Enum.Genre;
-import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.AppraisalEntityRepository;
-import java.util.List;
-
 // The controller acts as the entry point to the system.
 // It receives data from the user interface and delegates the creation and registration of AppraisalEntity objects to the repository.
 // It does not contain business rules or persistence logic.

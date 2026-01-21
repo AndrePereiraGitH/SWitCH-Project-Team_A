@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Genre;
+import TOPSECRET.domain.Enum.Genres;
 
 import java.time.LocalDate;
 import java.util.List;

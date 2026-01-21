@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Genre;
+import TOPSECRET.domain.Enum.Genres;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,11 @@ import java.util.List;
 public class CollectionOfPublications {
 
     private String _name;
-    private Genre _genre;
+    private Genres _genre;
     private List<Publication> _publications;
 
     // Constructor
-    public CollectionOfPublications(String name, Genre genre) {
+    public CollectionOfPublications(String name, Genres genre) {
 
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("PrivateList name cannot be null or empty.");
@@ -36,7 +36,7 @@ public class CollectionOfPublications {
         return _name;
     }
 
-    public Genre getGenre() {
+    public Genres getGenre() {
         return _genre;
     }
 

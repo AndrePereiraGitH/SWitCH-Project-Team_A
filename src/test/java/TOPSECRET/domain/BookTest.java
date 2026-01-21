@@ -29,9 +29,9 @@ class BookTest {
         LocalDate publishDate = LocalDate.of(1954,07,29);
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.FICTION);
-        genres.add(Genre.FANTASY);
-        genres.add(Genre.ADVENTURE);
+        genres.add(new Genre ("Fiction"));
+        genres.add(new Genre ("Fantasy"));
+        genres.add(new Genre ("Adventure"));
 
         List<Profile> authors= new ArrayList<>();
         Country country1 = new Country("SOUTH_AFRICA");
