@@ -67,7 +67,7 @@ class PublicationRepositoryTest {
     // Happy path
 
     @Test
-    void createAndAdd() {
+    void ensureANewPublicationIsCreatedAndAdded() {
         //Arrange
         List<Publication> emptyList = new ArrayList<>();
         PublicationRepository pr1 = new PublicationRepository(emptyList);
@@ -101,7 +101,7 @@ class PublicationRepositoryTest {
     }
 
     @Test
-    void isExistent() {
+    void ifPublicationIsExistentShouldReturnTrue() {
         //Arrange
         List<Publication> list = new ArrayList<>();
         list.add(publication1);
@@ -116,7 +116,7 @@ class PublicationRepositoryTest {
 
 
     @Test
-    void isNotExistent(){
+    void ifPublicationIsNotExistentShouldReturnFalse(){
 
         //Arrange
         List<Publication> list = new ArrayList<>();
