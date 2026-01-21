@@ -50,6 +50,17 @@ public class Publication {
         return _edition;
     }
 
+    public PublicationType getPublicationType() {
+        return _publicationType;
+    }
+
+    public BibliographicalData getBibliographicalData() {
+        return _bibliographicalData;
+    }
+
+    public Code getCode() {
+        return _code;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -63,7 +74,5 @@ public class Publication {
         return Objects.hash(_bibliographicalData, _publicationType, _userName, _publicationStatus, _edition, _code);
     }
 
-    public BibliographicalData getBibliographicalData() {
-        return _bibliographicalData;
-    }
+
 }

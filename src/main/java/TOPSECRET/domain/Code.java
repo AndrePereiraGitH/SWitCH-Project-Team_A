@@ -48,4 +48,19 @@ public class Code {
     public String getIssn() {
         return issn;
     }
+
+    @Override
+    public String toString() {
+        if (this.isbn10 != null) {
+            return this.isbn10;
+        }
+        if (this.isbn13 != null) {
+            return this.isbn13;
+        }
+        if (this.issn != null) {
+            return this.issn;
+        }
+        return "No Code";
+    }
+
 }

@@ -110,114 +110,132 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         assertTrue(result.contains(pub2));
     }
 
-/*
-    @Test
-    void getListOfItemsOnDirectSaleReturnsMappedDTOs() {
-        // arrange
-        Publication targetPublication = validItem1.getPublication();
-
-        // Creates 2 DS with items with the same publication
-        Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-
-        Listing listing2 = new Listing(List.of(new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication)), validPrice, validDescription, validTitle, validSeller, validPictures);
-
-        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
-        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
-
-        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds1, ds2));
-        PublicationRepository pubRepo = new PublicationRepository(List.of());
-
-        DirectSaleMapper mapper = new DirectSaleMapper() {
-            @Override
-            public DirectSaleDTO toDTO(DirectSale ds) {
-                return new DirectSaleDTO(
-                        ds.getListing().getTitle(),
-                        ds.getListing().getPrice().getValue()
-                );
-            }
-
-            @Override
-            public List<DirectSaleDTO> toDTO(List<DirectSale> list) {
-                return list.stream().map(this::toDTO).toList();
-            }
-        };
-
-        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
-
-        // act
-        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(targetPublication);
-
-        // assert
-        assertEquals(2, result.size());
-        assertEquals(validTitle, result.get(0).title());
-        assertEquals(validPrice.getValue(), result.get(0).price());
-    }
-
-    @Test
-    void getListOfItemsOnDirectSaleReturnsEmptyListWhenNoMatches() {
-        // arrange
-        Publication unrelatedPublication = new Publication(bibliographicalData, publicationType, user, publicationStatus, "Unrelated", Code.fromIsbn13("9999999999999"));
-
-        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of());
-        PublicationRepository pubRepo = new PublicationRepository(List.of());
-
-        DirectSaleMapper mapper = new DirectSaleMapper() {
-            @Override
-            public DirectSaleDTO toDTO(DirectSale ds) {
-                return new DirectSaleDTO("dummy", BigDecimal.ZERO);
-            }
-
-            @Override
-            public List<DirectSaleDTO> toDTO(List<DirectSale> list) {
-                return list.stream().map(this::toDTO).toList();
-            }
-        };
-
-        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
-
-        // act
-        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(unrelatedPublication);
-
-        // assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getListOfItemsOnDirectSaleMapsAllFieldsCorrectly() {
-        // arrange
-        Publication targetPublication = validItem1.getPublication();
-
-        Listing listing = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-
-        DirectSale ds = new DirectSale(listing, LocalDateTime.now());
-
-        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds));
-        PublicationRepository pubRepo = new PublicationRepository(List.of());
-
-        DirectSaleMapper mapper = new DirectSaleMapper() {
-            @Override
-            public DirectSaleDTO toDTO(DirectSale ds) {
-                return new DirectSaleDTO(
-                        ds.getListing().getTitle(),
-                        ds.getListing().getPrice().getValue()
-                );
-            }
-
-            @Override
-            public List<DirectSaleDTO> toDTO(List<DirectSale> list) {
-                return list.stream().map(this::toDTO).toList();
-            }
-        };
-
-        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
-
-        // act
-        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(targetPublication);
-
-        // assert
-        DirectSaleDTO dto = result.get(0);
-        assertEquals(validTitle, dto.title());
-        assertEquals(validPrice.getValue(), dto.price());
-    }
- */
+//    @Test
+//    void getAllPublicationsReturnsCopyNotInternalList() {
+//        // arrange
+//        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
+//
+//        PublicationRepository publicationRepo = new PublicationRepository(List.of(pub));
+//
+//        DirectSaleRepository directSaleRepo = new DirectSaleRepository(List.of());
+//
+//        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(publicationRepo, directSaleRepo);
+//
+//        // act
+//        List<Publication> result = controller.getAllPublications();
+//        result.clear();                                                 // tries to change list
+//
+//        // assert
+//        assertEquals(1, controller.getAllPublications().size());
+////    }
+/////*
+//    @Test
+//    void getListOfItemsOnDirectSaleReturnsMappedDTOs() {
+//        // arrange
+//        Publication targetPublication = validItem1.getPublication();
+//
+//        // Creates 2 DS with items with the same publication
+//        Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
+//
+//        Listing listing2 = new Listing(List.of(new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication)), validPrice, validDescription, validTitle, validSeller, validPictures);
+//
+//        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
+//        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
+//
+//        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds1, ds2));
+//        PublicationRepository pubRepo = new PublicationRepository(List.of());
+//
+//        DirectSaleMapper mapper = new DirectSaleMapper() {
+//            @Override
+//            public DirectSaleDTO toDTO(DirectSale ds) {
+//                return new DirectSaleDTO(
+//                        ds.getListing().getTitle(),
+//                        ds.getListing().getPrice().getValue()
+//                );
+//            }
+//
+//            @Override
+//            public List<DirectSaleDTO> toDTO(List<DirectSale> list) {
+//                return list.stream().map(this::toDTO).toList();
+//            }
+//        };
+//
+//        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
+//
+//        // act
+//        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(targetPublication);
+//
+//        // assert
+//        assertEquals(2, result.size());
+//        assertEquals(validTitle, result.get(0).title());
+//        assertEquals(validPrice.getValue(), result.get(0).price());
+//    }
+//
+//    @Test
+//    void getListOfItemsOnDirectSaleReturnsEmptyListWhenNoMatches() {
+//        // arrange
+//        Publication unrelatedPublication = new Publication(bibliographicalData, publicationType, user, publicationStatus, "Unrelated", Code.fromIsbn13("9999999999999"));
+//
+//        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of());
+//        PublicationRepository pubRepo = new PublicationRepository(List.of());
+//
+//        DirectSaleMapper mapper = new DirectSaleMapper() {
+//            @Override
+//            public DirectSaleDTO toDTO(DirectSale ds) {
+//                return new DirectSaleDTO("dummy", BigDecimal.ZERO);
+//            }
+//
+//            @Override
+//            public List<DirectSaleDTO> toDTO(List<DirectSale> list) {
+//                return list.stream().map(this::toDTO).toList();
+//            }
+//        };
+//
+//        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
+//
+//        // act
+//        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(unrelatedPublication);
+//
+//        // assert
+//        assertTrue(result.isEmpty());
+//    }
+//
+//    @Test
+//    void getListOfItemsOnDirectSaleMapsAllFieldsCorrectly() {
+//        // arrange
+//        Publication targetPublication = validItem1.getPublication();
+//
+//        Listing listing = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
+//
+//        DirectSale ds = new DirectSale(listing, LocalDateTime.now());
+//
+//        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds));
+//        PublicationRepository pubRepo = new PublicationRepository(List.of());
+//
+//        DirectSaleMapper mapper = new DirectSaleMapper() {
+//            @Override
+//            public DirectSaleDTO toDTO(DirectSale ds) {
+//                return new DirectSaleDTO(
+//                        ds.getListing().getTitle(),
+//                        ds.getListing().getPrice().getValue()
+//                );
+//            }
+//
+//            @Override
+//            public List<DirectSaleDTO> toDTO(List<DirectSale> list) {
+//                return list.stream().map(this::toDTO).toList();
+//            }
+//        };
+//
+//        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
+//
+//        // act
+//        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(targetPublication);
+//
+//        // assert
+//        DirectSaleDTO dto = result.get(0);
+//        assertEquals(validTitle, dto.title());
+//        assertEquals(validPrice.getValue(), dto.price());
+//    }
+// */
 }

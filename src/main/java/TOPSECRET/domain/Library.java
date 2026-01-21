@@ -7,6 +7,10 @@ public class Library {
 
     private final List<Publication> publications = new ArrayList<>();
 
+    User username;
+
+
+
     //Get publications in the Library
     public List<Publication> getAll(){
         return List.copyOf(publications); //read-only, so there are no external changes
