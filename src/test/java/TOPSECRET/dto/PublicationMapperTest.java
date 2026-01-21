@@ -73,8 +73,8 @@ class PublicationMapperTest {
     void toDTOShouldMapAllFieldsCorrectly() {
         // Arrange
         String expectedTitle = bibliographicalData1.getTitle();
-        String expectedIsbn = code1.toString(); // Usa o toString do objeto Code original
-        String expectedType = publicationType.getMediaFormat().toString(); // "BOOK"
+        String expectedIsbn = code1.toString();
+        String expectedType = publicationType.getMediaFormat().toString();
 
         List<String> expectedAuthors = List.of(profileAuthor1.getName());
 
