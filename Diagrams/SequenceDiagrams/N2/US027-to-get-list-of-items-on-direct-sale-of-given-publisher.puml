@@ -4,18 +4,18 @@ hide footbox
 autonumber
 title US027 - To get the list of items on direct sale of a given publisher
 
-box #WhiteSmoke
+
 actor Buyer
-participant ":UI" as UI027
-end box
+participant ":UI027" as UI027
 
-box "Controller" #LightBlue
-participant ":ItemController" as Controller
-end box
 
-box "Persistence" #LightGrey
+
+participant ":ToGetListOfItemsOnDirectSaleOf\nGivenPublisherController" as Controller
+
+
+
 participant ":ListingRepository" as Repository
-end box
+
 
 Buyer -> UI027 : I want to get the list of items on direct sale of a given publisher
 activate UI027
@@ -25,16 +25,15 @@ Buyer -> UI027 : publisher
 UI027 -> Controller : getItemsOnDirectSaleByPublisher(publisher)
 activate Controller
 
-Controller -> Repository : getBySaleType(SaleType.DIRECT_SALE)
+Controller -> Repository : getListingsOnDirectSale()
 activate Repository
 
 
 
-box "Domain Model" #LightYellow
+
 create "data: List<Listing>" as Listing
-Repository -> Listing : queryBySaleType(SaleType.DIRECT_SALE)
-Listing --> Repository : data
-end box
+Repository -> Listing
+
 
 Repository --> Controller : data
 deactivate Repository
