@@ -15,7 +15,7 @@ public class User {
     private List<CollectionOfPublications> _collectionOfPublications;
 
     //Constructor
-    public User(String _userName, Contact _contact, Profile _profile, UserRole userRole) {
+    public User(String _userName, Contact _contact, Profile _profile, UserRole _userRole) {
 
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits
@@ -32,7 +32,7 @@ public class User {
         this._userName = _userName;
         this._contact = _contact;
         this._profile = _profile;
-        _userRole=userRole;
+        this._userRole=_userRole;
     }
 
     // Empty Constructor

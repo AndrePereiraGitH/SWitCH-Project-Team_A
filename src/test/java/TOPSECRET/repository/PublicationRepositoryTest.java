@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class PublicationRepositoryTest {
 
-    //Arrange
+    // BibliographicalData
     Country country1 = new Country("Denmark");
     Country country2 = new Country("Germany");
 
@@ -36,9 +37,7 @@ class PublicationRepositoryTest {
             200,
             "Some text");
 
-    String edition1 = "2nd Edition";
-    Code code1 = Code.fromIsbn10("1234567890");
-
+    // User
     Country country4 = new Country("Uganda");
     Profile profile2 = new Profile(
             "Test Profile",
@@ -46,9 +45,20 @@ class PublicationRepositoryTest {
             LocalDate.of(1997, 8, 15)
     );
 
+
     UserRole userRole1 = UserRole.ADMIN;
     User user1 = new User("coolGuy", contact1, profile2, userRole1);
+
+    //PublicationStatus
     PublicationStatus pubStatus1 = PublicationStatus.READING;
+
+    //Edition
+    String edition1 = "2nd Edition";
+
+    //Code
+    Code code1 = Code.fromIsbn10("1234567890");
+
+    //PublicationType
     PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
 
 
@@ -60,7 +70,7 @@ class PublicationRepositoryTest {
     // Happy path
 
     @Test
-    void createAndAdd() {
+    void ensureANewPublicationIsCreatedAndAdded() {
         //Arrange
         List<Publication> emptyList = new ArrayList<>();
         PublicationRepository pr1 = new PublicationRepository(emptyList);
@@ -70,12 +80,73 @@ class PublicationRepositoryTest {
                 pubStatus1, edition1, code1);
 
         // Assert
-
         assertTrue(realResult);
 
     }
 
     @Test
-    void isExistent() {
+    void ensureThatADuplicatePublicationIsNotAdded(){
+        //Arrange
+        List<Publication> list = new ArrayList<>();
+        list.add(publication1);
+        PublicationRepository pr1 = new PublicationRepository(list);
+
+        //Act
+        boolean realResult=pr1.createAndAdd(bibliographicalData1, publicationType, user1,
+                pubStatus1, edition1, code1);
+
+        // Assert
+        assertFalse(realResult);
+
+
+
+
     }
+
+    @Test
+    void ifPublicationIsExistentShouldReturnTrue() {
+        //Arrange
+        List<Publication> list = new ArrayList<>();
+        list.add(publication1);
+        PublicationRepository pr1 = new PublicationRepository(list);
+
+        //Act
+        boolean realResult = pr1.isExistent(publication1);
+
+        // Assert
+        assertTrue(realResult);
+    }
+
+
+    @Test
+    void ifPublicationIsNotExistentShouldReturnFalse(){
+
+        //Arrange
+        List<Publication> list = new ArrayList<>();
+        PublicationRepository pr1 = new PublicationRepository(list);
+
+        //Act
+        boolean realResult = pr1.isExistent(publication1);
+
+        //Assert
+        assertFalse(realResult);
+
+    }
+
+
+    @Test
+    void ensureConstructorCopiesListNotOriginalReferences(){
+        // Arrange
+        List<Publication> list = new ArrayList<>();
+        PublicationRepository pr1 = new PublicationRepository(list);
+        list.add(publication1);
+
+        //Act
+        boolean realResult=pr1.isExistent(publication1);
+
+        //Assert
+        assertFalse(realResult);
+
+    }
+
 }
