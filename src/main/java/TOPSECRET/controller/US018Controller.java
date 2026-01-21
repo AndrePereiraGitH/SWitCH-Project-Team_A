@@ -1,28 +1,25 @@
 package TOPSECRET.controller;
 
-// The controller acts as the entry point to the system.
-// It receives data from the user interface and delegates the creation and registration of AppraisalEntity objects to the repository.
-// It does not contain business rules or persistence logic.
-
 import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.Publication;
 import TOPSECRET.domain.User;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 
+// Controller for US018 - Add publication to private collection.
+// Acts as the entry point between UI and repository.
 public class US018Controller {
-
-//    private CollectionOfPublicationsRepository _collectionOfPublicationsRepository;
 //
-//    //   METHOD: Requests the addition of a publication to a user's private list.
-//    //   This method delegates the operation to the repository and return the result of the operation.
-//    //   Returns true if the publication was successfully added.
-//    //   Returns false if any validation fails.
-//    public boolean addPublicationToMyList (User user, CollectionOfPublications collectionOfPublications, Publication publication) {
+//    private CollectionOfPublicationsRepository _repository;
 //
-//        return _collectionOfPublicationsRepository.addPublicationToPrivateList(
-//                user,
-//                collectionOfPublications,
-//                publication
-//        );
+//    // Constructor
+//    public US018Controller() {
+//        this._repository = new CollectionOfPublicationsRepository();
 //    }
-
+//
+//    // Adds a publication to a user's private collection
+//    public boolean addPublicationToPrivateList (User user, CollectionOfPublications collection, Publication publication) {
+//
+//        return _repository.addPublicationToCollection(user, collection, publication);
+//    }
 }
+

@@ -1,4 +1,4 @@
-/*
+
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenreTest {
-/*
+
     @Test
     void shouldCreateWithValidGenre() {
         Genre genre = new Genre("Romance");
@@ -32,5 +32,4 @@ class GenreTest {
 
 }
 
- */
 

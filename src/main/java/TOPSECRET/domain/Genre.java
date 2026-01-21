@@ -17,6 +17,26 @@ public class Genre {
     public String getGenreType() {
         return _genreType;
     }
+
+    // US0018
+    // Necessary methods to compare the objects
+    // Allows Genre objects to be compared by value instead of reference.
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) return true;
+        if (!(obj instanceof Genre)) return false;
+
+        Genre other = (Genre) obj;
+
+        return _genreType.equalsIgnoreCase(other._genreType);
+    }
+
+    // Ensures consistency with equals().
+    @Override
+    public int hashCode() {
+        return _genreType.toLowerCase().hashCode();
+    }
 }
 
 

@@ -3,7 +3,7 @@
 hide footbox
 autonumber
 
-title US004 - Register an Appraisal Entity
+title US004 - To Register an Appraisal Entity
 
 actor Administrator
 participant ":System" as System

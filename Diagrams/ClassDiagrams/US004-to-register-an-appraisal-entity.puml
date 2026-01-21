@@ -1,5 +1,5 @@
 @startuml
-title Diagrama de Classes - Registo de Entidade Avaliadora
+title US004 - To Register A Appraisal Entity
 
 class AppraisalEntityRepository {
   +createAndRegisterAppraisalEntity(name: String, contact: String)

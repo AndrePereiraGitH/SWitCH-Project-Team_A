@@ -1,118 +1,218 @@
-/*
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Enum.MediaFormat;
+import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class CollectionOfPublicationsTest {
 
-    // Creates a dummy publication for testing
-    private Publication createValidPublication() {
-        return new Book(); // Adjust if Book constructor exists
+
+    // Creates a valid Genre
+    private Genre createValidGenre() {
+        return new Genre("Fiction");
     }
 
-    // =========================
-    // PARAMETER PROVIDERS
-    // =========================
+    // Creates a valid Library
+    private Library createValidLibrary() {
+        return new Library();
+    }
 
-    // Provides invalid list names
-    static Stream<String> invalidNamesProvider() {
-        return Stream.of(
-                null,
-                "",
-                " ",
-                "   ",
-                "\t",
-                "\n"
+    // Creates a valid Publication
+    private Publication createValidPublication() {
+
+        // BIBLIOGRAPHICAL DATA
+        Country country = new Country("PORTUGAL");
+
+        Profile author = new Profile(
+                "Author Name",
+                country,
+                LocalDate.of(1980, 1, 1)
+        );
+
+        Publisher publisher = new Publisher(
+                "Test Publisher",
+                "PT123456789",
+                new Contact("912345678", "351", null, null)
+        );
+
+        BibliographicalData bibliographicalData = new BibliographicalData(
+                "Test Title",
+                List.of(author),
+                Locale.ENGLISH,
+                publisher,
+                LocalDate.of(2020, 1, 1),
+                List.of(new Genre("Fiction")),
+                200,
+                "Sample text"
+        );
+
+        // PUBLICATION TYPE
+        PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard publication"
+        );
+
+        // USER
+        User user = new User(
+                "validUser",
+                new Contact("911111111", "351", null, null),
+                author,
+                UserRole.ADMIN   // adjust enum value if needed
+        );
+
+        // CODE
+        Code code = Code.fromIsbn13("9783161484100");
+
+        // OTHER ATTRIBUTES
+        PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
+        String edition = "First Edition";
+
+        // CREATE PUBLICATION
+        return new Publication(
+                bibliographicalData,
+                publicationType,
+                user,
+                publicationStatus,
+                edition,
+                code
         );
     }
 
-    // =========================
-    // CONSTRUCTOR VALIDATION
-    // =========================
-
-    // Tests invalid names using parameterized test
-    @ParameterizedTest
-    @MethodSource("invalidNamesProvider")
-    void shouldThrowExceptionWhenListNameIsInvalid(String invalidName) {
-
-        // -------- Act & Assert --------
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications(invalidName, Genre.FICTION);
-        });
+    // Creates a base valid collection
+    private CollectionOfPublications createBaseCollection() {
+        return new CollectionOfPublications(
+                "Favorites",
+                createValidGenre(),
+                createValidLibrary(),
+                true
+        );
     }
 
-    // Tests null genre
+    // SUCCESS TESTS
+    // Verifies that two collections with the same data are equal
     @Test
-    void shouldThrowExceptionWhenGenreIsNull() {
+    void shouldCreateEqualCollectionsSuccessfully() {
 
-        // -------- Act & Assert --------
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("My List", null);
-        });
+        // ARRANGE AND ACT
+        CollectionOfPublications expected = createBaseCollection();
+        CollectionOfPublications result   = createBaseCollection();
+
+        // ASSERT
+        assertEquals(expected, result);   // Collections must be equal after creation
     }
 
-    // Tests valid construction
-    @Test
-    void shouldCreatePrivateListWhenDataIsValid() {
-
-        // -------- Arrange --------
-        String expectedName = "My List";
-        Genre expectedGenre = Genre.FICTION;
-
-        // -------- Act --------
-        CollectionOfPublications list = new CollectionOfPublications(expectedName, expectedGenre);
-
-        // -------- Assert --------
-        assertNotNull(list);
-        assertEquals(expectedName, list.getName());
-        assertEquals(expectedGenre, list.getGenre());
-        assertTrue(list.getPublications().isEmpty());
-    }
-
-    // =========================
-    // ADD PUBLICATION
-    // =========================
-
-    // Tests adding a publication successfully
+    // Verifies that a publication can be added to the collection
     @Test
     void shouldAddPublicationSuccessfully() {
 
-        // -------- Arrange --------
-        CollectionOfPublications list = new CollectionOfPublications("My List", Genre.FICTION);
+        // ARRANGE
+        CollectionOfPublications expected = createBaseCollection();
+        CollectionOfPublications result   = createBaseCollection();
         Publication publication = createValidPublication();
 
-        // -------- Act --------
-        boolean result = list.addPublication(publication);
+        // ACT
+        expected.addPublication(publication);
+        result.addPublication(publication);
 
-        // -------- Assert --------
-        assertTrue(result);
-        assertTrue(list.containsPublication(publication));
+        // ASSERT
+        assertEquals(expected, result);   // Both collections must contain the same publication
     }
 
-    // Tests duplicate publication is not allowed
+
+    // Verifies that duplicate publications are not added
     @Test
-    void shouldCreatePrivateCollectionWithValid () {
-        Genre genre = new Genre("Fantasy");
-        Library library = new Library ();
-        List<Publication> publication = new ArrayList<>();
-        CollectionOfPublications collection = new CollectionOfPublications("")
+    void shouldNotAddDuplicatePublication() {
 
-        // -------- Act --------
-        boolean result = list.addPublication(publication);
+        // ARRANGE
+        CollectionOfPublications expected = createBaseCollection();
+        CollectionOfPublications result   = createBaseCollection();
+        Publication publication = createValidPublication();
 
-        // -------- Assert --------
-        assertFalse(result);
+        // ACT
+        expected.addPublication(publication);
+        result.addPublication(publication);
+        result.addPublication(publication);   // Attempt duplicate add
+
+        // ASSERT
+        assertEquals(expected, result);   // Collection should contain only one publication
     }
 
+    // ERROR TESTS
+    // Verifies exception when collection name is null
+    @Test
+    void shouldThrowExceptionWhenCollectionNameIsNull() {
+
+        // ARRANGE AND ACT
+        Genre genre = createValidGenre();
+        Library library = createValidLibrary();
+
+        // ASSERT
+        assertThrows(IllegalArgumentException.class, () -> {   // Name cannot be null
+            new CollectionOfPublications(null, genre, library, true);
+        });
+    }
+
+    // Verifies exception when collection name is blank
+    @Test
+    void shouldThrowExceptionWhenCollectionNameIsBlank() {
+
+        // ARRANGE AND ACT
+        Genre genre = createValidGenre();
+        Library library = createValidLibrary();
+
+        // ASSERT
+        assertThrows(IllegalArgumentException.class, () -> {   // Name cannot be blank
+            new CollectionOfPublications("   ", genre, library, true);
+        });
+    }
+
+    // Verifies exception when genre is null
+    @Test
+    void shouldThrowExceptionWhenGenreIsNull() {
+
+        // ARRANGE AND ACT
+        Library library = createValidLibrary();
+
+        // ASSERT
+        assertThrows(IllegalArgumentException.class, () -> {   // Genre cannot be null
+            new CollectionOfPublications("Favorites", null, library, true);
+        });
+    }
+
+    // Verifies exception when library is null
+    @Test
+    void shouldThrowExceptionWhenLibraryIsNull() {
+
+        // ARRANGE AND ACT
+        Genre genre = createValidGenre();
+
+        // ASSERT
+        assertThrows(IllegalArgumentException.class, () -> {   // Library cannot be null
+            new CollectionOfPublications("Favorites", genre, null, true);
+        });
+    }
+
+    // Verifies that adding null publication does not change the collection
+    @Test
+    void shouldNotAddNullPublication() {
+
+        // ARRANGE
+        CollectionOfPublications expected = createBaseCollection();
+        CollectionOfPublications result   = createBaseCollection();
+
+        // ACT
+        result.addPublication(null);   // Attempt to add null
+
+        // ASSERT
+        assertEquals(expected, result);   // Collection must remain unchanged
+    }
 }
-
- */
-

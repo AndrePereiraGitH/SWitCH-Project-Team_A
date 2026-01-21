@@ -10,39 +10,51 @@ import java.util.List;
 // A PrivateList groups publications according to a specific purpose or genre.
 public class CollectionOfPublications {
 
-    private String _name;
-    private Genres _genre;
-    private List<Publication> _publications;
+    private String _collectionName;
+    private Genre _collectionGenre;
+    private Library _privateLibrary;
+    private List<Publication> _collectionOfPublications;
+    private boolean _isPrivate;
 
     // Constructor
-    public CollectionOfPublications(String name, Genres genre) {
+    public CollectionOfPublications(String collectionName, Genre collectionGenre, Library privateLibrary, boolean isPrivate) {
 
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("PrivateList name cannot be null or empty.");
+        if (collectionName == null || collectionName.isBlank()) {
+            throw new IllegalArgumentException("Collection name cannot be null or empty.");
         }
 
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre cannot be null.");
+        if (collectionGenre == null) {
+            throw new IllegalArgumentException("Collection genre cannot be null.");
         }
 
-        this._name = name;
-        this._genre = genre;
-        this._publications = new ArrayList<>();
+        if (privateLibrary == null) {
+            throw new IllegalArgumentException("Library cannot be null.");
+        }
+
+        this._collectionName = collectionName;
+        this._collectionGenre = collectionGenre;
+        this._privateLibrary = privateLibrary;
+        this._isPrivate = isPrivate;
+        this._collectionOfPublications = new ArrayList<>();
     }
 
 
     // GETTERS
-    public String getName() {
-        return _name;
+    public String getCollectionName() {
+        return _collectionName;
     }
 
-    public Genres getGenre() {
-        return _genre;
+    public Genre getCollectionGenre() {
+        return _collectionGenre;
+    }
+
+    public Library getPrivateLibrary() {
+        return _privateLibrary;
     }
 
     // Returns a copy of the publications list
     public List<Publication> getPublications() {
-        return new ArrayList<>(_publications);
+        return new ArrayList<>(_collectionOfPublications);
     }
 
 
@@ -53,26 +65,49 @@ public class CollectionOfPublications {
 
         if (publication == null) return false;
 
-        if (_publications.contains(publication)) {
+        if (_collectionOfPublications.contains(publication)) {
             return false;
         }
 
-        _publications.add(publication);
+        _collectionOfPublications.add(publication);
         return true;
     }
 
     // Validade if a publication exists in the private list.
     public boolean containsPublication (Publication publication) {
-        return _publications.contains(publication);
+        return _collectionOfPublications.contains(publication);
     }
 
-    // Removes a publication from the private list.
-    public boolean removePublication(Publication publication) {
-        return _publications.remove(publication);
+    // It allows two CollectionOfPublications objects to be compared by their content,
+    // instead of by memory reference.
+    // This is necessary to support unit tests that use assertEquals(expected, result).
+    // Without overriding equals(), Java would only compare object references,
+    // and two objects with the same data would be considered different.
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) return true;
+        if (!(obj instanceof CollectionOfPublications)) return false;
+
+        CollectionOfPublications other = (CollectionOfPublications) obj;
+
+        return _collectionName.equalsIgnoreCase(other._collectionName)
+                && _collectionGenre.equals(other._collectionGenre)
+                && _privateLibrary.equals(other._privateLibrary)
+                && _isPrivate == other._isPrivate
+                && _collectionOfPublications.equals(other._collectionOfPublications);
     }
 
-//    public boolean isPrivate() {
-//        return _isPrivate;
-//    }
+    // This method generates a hash code consistent with equals().
+    // If two objects are considered equal by equals(), they must return the same hash code.
+    @Override
+    public int hashCode() {
+        return (_collectionName.toLowerCase()
+                + _collectionGenre.hashCode()
+                + _privateLibrary.hashCode()
+                + _isPrivate
+                + _collectionOfPublications.hashCode()).hashCode();
+    }
+
 }
 

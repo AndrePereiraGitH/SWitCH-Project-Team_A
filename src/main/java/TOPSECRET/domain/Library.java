@@ -18,4 +18,35 @@ public class Library {
             publications.add(publication);
         }
     }
+
+    // US0018
+
+    // Returns a defensive copy of publications
+    public List<Publication> getPublications() {
+        return new ArrayList<>(publications);
+    }
+
+    public boolean containsPublication(Publication publication) {
+        return publications.contains(publication);
+    }
+
+    // Necessary methods to compare the objects
+    // Allows Library objects to be compared by content instead of reference.
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) return true;
+        if (!(obj instanceof Library)) return false;
+
+        Library other = (Library) obj;
+
+        return this.getPublications().equals(other.getPublications());
+    }
+
+    // Ensures consistency with equals().
+    @Override
+    public int hashCode() {
+        return getPublications().hashCode();
+    }
+
 }

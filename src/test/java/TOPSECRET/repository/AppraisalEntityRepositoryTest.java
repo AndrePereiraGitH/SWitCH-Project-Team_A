@@ -67,9 +67,7 @@ class AppraisalEntityRepositoryTest {
 
         // ACT AND ASSERT
         assertThrows(IllegalArgumentException.class, () -> {   // Duplicate creation must throw exception
-            repository.createAndAddToAppraisalEntityList(
-                    name, contact, publicationType, genre
-            );
+            repository.createAndAddToAppraisalEntityList(name, contact, publicationType, genre);
         });
     }
 }

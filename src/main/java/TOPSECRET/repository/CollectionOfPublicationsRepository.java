@@ -4,6 +4,9 @@ import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Publication;
 import TOPSECRET.domain.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // This repository is responsible for managing PrivateList operations.
 // Even though PrivateLists are conceptually associated with a user's Library,
 // they represent a distinct domain concept with their own business rules.
@@ -13,32 +16,34 @@ import TOPSECRET.domain.User;
 
 public class CollectionOfPublicationsRepository {
 
-    // private List<CollectionOfPublications> _collectionOfPublications;
+//    private List<CollectionOfPublications> _collectionOfPublicationsList;
+//
+//    public CollectionOfPublicationsRepository() {
+//        this._collectionOfPublicationsList = new ArrayList<>();
+//    }
 
-    //  METHOD: Adds a publication to a user's private list.
-    //  Validations:
-    //   - The list must belong to the user.
-    //   - The publication must belong to the user's library.
-    //   - The publication must not already exist in the list.
-    //  Returns true if the publication was added successfully, or false if any validation fails.
-    public boolean addPublicationToPrivateList(User user, CollectionOfPublications collectionOfPublications, Publication publication) {
+    // METHOD: Adds a publication to a user's collection.
+    // Returns true if the publication was added successfully,
+    // or false if any validation fails.
+    public boolean addPublicationToCollection(User user, CollectionOfPublications collection, Publication publication) {
 
-        if (user == null || collectionOfPublications == null || publication == null) {
+        if (user == null || collection == null || publication == null) {
             return false;
         }
 
-        // Checks if the user owns the list
-        if (!user.ownsPrivateList(collectionOfPublications)) {
+        // Checks if the user owns the collection
+        if (!user.ownsCollection(collection)) {
             return false;
         }
 
-//        // Checks if the publication belongs to the user's library
-//        if (!user.hasPublicationInLibrary(publication)) {
-//            return false;
-//        }
+        // Checks if the publication belongs to the user's library
+        if (!user.hasPublicationInLibrary(publication)) {
+            return false;
+        }
 
         // Delegates duplicate validation to the domain object
-        return collectionOfPublications.addPublication(publication);
+        return collection.addPublication(publication);
     }
 }
+
 

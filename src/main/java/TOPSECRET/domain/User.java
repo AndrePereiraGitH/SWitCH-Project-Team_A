@@ -15,24 +15,30 @@ public class User {
     private List<CollectionOfPublications> _collectionOfPublications;
 
     //Constructor
-    public User(String _userName, Contact _contact, Profile _profile, UserRole _userRole) {
+    public User(String userName, Contact contact, Profile profile, UserRole userRole) {
 
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits
-        if (_userName == null) {
+        if (userName == null) {
             throw new IllegalArgumentException("Username can't be null.");
         }
 
         //trim() - Java method to remove spaces
         //length() - Java method to count the length of the provided argument
-        if (_userName.replace(" ", "").length() < 5) {
+        if (userName.replace(" ", "").length() < 5) {
             throw new IllegalArgumentException("Username must contain at least 5 characters.");
         }
 
-        this._userName = _userName;
-        this._contact = _contact;
-        this._profile = _profile;
-        this._userRole=_userRole;
+        if (userRole == null) {
+            throw new IllegalArgumentException("UserRole can't be null.");
+        }
+
+        this._userName = userName;
+        this._contact = contact;
+        this._profile = profile;
+        this._userRole = userRole;
+        this._library = new Library();
+        this._collectionOfPublications = new ArrayList<>();
     }
 
     // Empty Constructor
@@ -79,23 +85,32 @@ public class User {
         return new ArrayList<>(_collectionOfPublications);
     }
 
-    //    LIBRARY MANAGEMENT
-    //    Adds a publication to the user's library
-//    public boolean addPublicationToLibrary(Publication publication) {
-//
-//        if (publication == null) return false;
-//
-//        return _library.addPublication(publication);
-//    }
 
-//    // Checks if a publication exists in the user's library
-//    public boolean hasPublicationInLibrary(Publication publication) {
-//        return _library.containsPublication(publication);
-//    }
-
-    // Returns user's library
+    // US018
+    // Returns the user's library
     public Library getLibrary() {
         return _library;
+    }
+
+    // Adds a collection to the user
+    public boolean addCollection(CollectionOfPublications collection) {
+
+        if (collection == null) return false;
+
+        if (_collectionOfPublications.contains(collection)) return false;
+
+        _collectionOfPublications.add(collection);
+        return true;
+    }
+
+    // Checks if the user owns a given collection
+    public boolean ownsCollection(CollectionOfPublications collection) {
+        return _collectionOfPublications.contains(collection);
+    }
+
+    // Checks if a publication exists in the user's library
+    public boolean hasPublicationInLibrary(Publication publication) {
+        return _library.containsPublication(publication);
     }
 
 }
