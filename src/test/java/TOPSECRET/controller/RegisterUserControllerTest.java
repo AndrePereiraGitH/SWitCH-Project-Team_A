@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,6 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,15 +67,19 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testValidateUser_NullUser() {
-        try {
-            var method = UserRepository.class.getDeclaredMethod("validateUser", User.class);
-            method.setAccessible(true);
+    void testCreateAndAddUser_NullUsername() {
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
 
-            boolean result = (boolean) method.invoke(userRepository, (Object) null);
-            assertFalse(result, "Null user should not be valid");
-        } catch (Exception e) {
-            fail("Reflection error: " + e.getMessage());
-        }
+        Profile profile = new Profile(
+                "Test Profile",
+                new Country("PORTUGAL"),
+                LocalDate.of(1997, 8, 15)
+        );
+
+        assertThrows(IllegalArgumentException.class, () ->
+                userRepository.createAndAddUser(null, contact, profile, UserRole.ADMIN)
+        );
     }
 }
