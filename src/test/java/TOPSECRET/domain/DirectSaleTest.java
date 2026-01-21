@@ -220,8 +220,4 @@ class DirectSaleTest {
                 List.of(new Picture("pic"))
         );
     }
-
-
-
-
 }
