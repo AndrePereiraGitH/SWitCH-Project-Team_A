@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.Genre;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -63,14 +64,18 @@ public class ItemRepositoryTest {
     }
 
     private static BibliographicalData instantiateBibliographicalData() {
+
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
 
-        List<Profile> authors = new ArrayList<>();
-        authors.add(authorProfile);
+        Author author = new Author(authorProfile, "I'm an author");
+
+        List<Author> authors = new ArrayList<>();
+        authors.add(author);
+
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.FANTASY);
-        genres.add(Genre.MYSTERY);
+        genres.add(new Genre("FANTASY"));
+        genres.add(new Genre("MYSTERY"));
 
         String chunkOfText =
                 "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, " +
