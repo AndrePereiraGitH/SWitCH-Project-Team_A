@@ -34,14 +34,18 @@ public class DirectSaleRepository {
         return false;
     }
 
+    public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {
+        List<DirectSale> dsList = new ArrayList<>();
 
+        for (DirectSale ds : _directSaleList) {
+            for (Item item : ds.getListing().getItems()) {          // one listing can have one or more items
+                if (item.getPublication().equals(publication)) {
+                    dsList.add(ds);
+                    break;                                          //avoids adding twice the same DirectSale
+                }
+            }
+        }
 
-
-
-
-
-
-
-
-
+        return dsList;
+    }
 }
