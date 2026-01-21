@@ -5,13 +5,13 @@ import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.Genre;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemRepositoryTest {
 
@@ -27,7 +27,7 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    void shouldAddNewItemToListOfItems() {
+    void should_add_new_item_to_listOfItems() throws InstanceAlreadyExistsException {
         // arrange
         ItemRepository repo = new ItemRepository();
         Dimensions dimensions = new Dimensions(10.3, 15.0, 4);
@@ -40,6 +40,37 @@ public class ItemRepositoryTest {
         assertEquals(1, repo.get_Items().size());
 
     }
+
+    @Test
+    void should_throw_if_item_already_exists() throws InstanceAlreadyExistsException {
+
+        //arrange
+        ItemRepository repo = new ItemRepository();
+        Dimensions dimensions = new Dimensions(10.3, 15.0, 4);
+        Publication publication = createValidPublication();
+        repo.createAndAddItem(Condition.LIKE_NEW, 1.230, dimensions, publication);
+
+        assertNotNull(repo.get_Items());
+
+        assertThrows(InstanceAlreadyExistsException.class, () -> repo.createAndAddItem(Condition.LIKE_NEW, 1.230, dimensions, publication));
+
+    }
+
+    @Test
+    void createAndAddItem_should_return_the_created_item_and_it_should_be_in_repo() throws InstanceAlreadyExistsException {
+        // arrange
+        ItemRepository repo = new ItemRepository();
+        Dimensions dimensions = new Dimensions(10.3, 15.0, 4);
+        Publication publication = createValidPublication();
+
+        // act
+        Item created = repo.createAndAddItem(Condition.LIKE_NEW, 1.230, dimensions, publication);
+
+        // assert
+        assertNotNull(created);
+        assertTrue(repo.get_Items().contains(created));
+    }
+
 
     // =======================================≃
     // ========= Auxiliary Methods ============
@@ -96,6 +127,5 @@ public class ItemRepositoryTest {
                 chunkOfText
         );
     }
-
 
 }
