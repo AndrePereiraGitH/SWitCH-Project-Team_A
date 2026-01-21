@@ -56,6 +56,62 @@ class DirectSaleTest {
         assertEquals("BuyDate cannot be null", e.getMessage());
     }
 
+
+    @Test
+    void ensureDifferentObjectsReturnFalse(){
+        //Arrange
+        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
+        DirectSale dsale2 = new DirectSale(createListing(), LocalDateTime.of(2026,1,21,10,0));
+
+        //Act
+        boolean expectedResult = dsale1.equals(dsale2);
+
+        //Assert
+        assertFalse(expectedResult);
+
+    }
+
+    @Test
+    void ensureSameObjectsReturnTrue(){
+        //Arrange
+        Listing sameListing = createListing();
+        DirectSale dsale1 = new DirectSale(sameListing,LocalDateTime.of(2026,1,21,10,0));
+        DirectSale dsale2 = new DirectSale(sameListing, LocalDateTime.of(2026,1,21,10,0));
+
+        //Act
+        boolean expectedResult = dsale1.equals(dsale2);
+
+        //Assert
+        assertTrue(expectedResult);
+
+    }
+
+    @Test
+    void sameObjectHasToHaveTheSameHashcode(){
+        //Arrange
+        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
+
+
+        //Act & Assert
+        assertEquals(dsale1.hashCode(), dsale1.hashCode());
+
+
+    }
+
+    @Test
+    void difObjectHasToHaveTheDifHashcode(){
+        //Arrange
+        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
+        DirectSale dsale2 = new DirectSale(createListing(),LocalDateTime.now());
+
+
+        //Act & Assert
+        assertNotEquals(dsale1.hashCode(), dsale2.hashCode());
+
+
+    }
+
+
     //===============================================
     // Private Methods to Help Instantiate
 
@@ -164,5 +220,8 @@ class DirectSaleTest {
                 List.of(new Picture("pic"))
         );
     }
+
+
+
 
 }

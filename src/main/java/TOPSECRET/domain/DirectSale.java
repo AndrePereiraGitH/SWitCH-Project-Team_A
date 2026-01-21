@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class DirectSale {
 
@@ -24,5 +25,18 @@ public class DirectSale {
         this._listing = listing;
         this._directSaleDate = directSaleDate;
 
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DirectSale that = (DirectSale) o;
+        return Objects.equals(_listing, that._listing) && Objects.equals(_directSaleDate, that._directSaleDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_listing, _directSaleDate);
     }
 }
