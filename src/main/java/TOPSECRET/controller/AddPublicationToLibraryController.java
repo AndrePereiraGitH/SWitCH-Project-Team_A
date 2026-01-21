@@ -1,15 +1,15 @@
-/*package TOPSECRET.controller;
+package TOPSECRET.controller;
 
 
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.Publication;
-//import TOPSECRET.repository.PublicationRepository;
+import TOPSECRET.repository.PublicationRepository;
 
 import java.util.List;
 
 
 public class AddPublicationToLibraryController {
-/*
+
     private final Library library;
     private final PublicationRepository publicationRepository;
 
@@ -19,19 +19,17 @@ public class AddPublicationToLibraryController {
     }
 
     //Call by the UI and response
-    public List<Publication> getListOfPublications(){
+    public List<Publication> getListOfOtherPublications(){
         //Get publications in user library
-        List<Publication> publicationsInLibrary = library.getAll();
+        List<Publication> listOfPublicationsInLibrary = library.getAll();
 
         //Get publications not in library
         List<Publication> listOfDifferentPublications =
-                publicationRepository.getListOfDifferentPublications(publicationsInLibrary);
+                publicationRepository.getListOfDifferentPublications(listOfPublicationsInLibrary);
 
         //Return to the UI
         return listOfDifferentPublications;
     }
-
-
 }
 
- */
+

@@ -35,6 +35,13 @@ public class Publication {
             throw new IllegalArgumentException("PublicationStatus must not be left blank");
         }
 
+        this._bibliographicalData = bibliographicalData;
+        this._publicationType = publicationType;
+        this._userName = userName;
+        this._publicationStatus = publicationStatus;
+        this._edition = edition;
+        this._code = code;
+
         //We are allowing for Edition and Code to potentially be left blank
 
     }
