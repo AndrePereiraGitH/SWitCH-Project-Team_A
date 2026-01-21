@@ -27,11 +27,11 @@ public class Auction {
     public Auction() {
     }
 
-    public Auction(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice) {
-        this(listing, initialDate, finalDate, initialPrice, buyOutPrice, Clock.systemDefaultZone());
+    public Auction(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) {
+        this(listing, initialDate, finalDate, buyOutPrice, Clock.systemDefaultZone());
     }
 
-    public Auction(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice, Clock clock) {
+    public Auction(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice, Clock clock) {
 
         if (clock == null)
             throw new IllegalArgumentException("Clock cannot be null");
@@ -46,19 +46,21 @@ public class Auction {
             throw new IllegalArgumentException("Initial date must not be before the current date.");
         if (finalDate == null || finalDate.isBefore(initialDate) || finalDate.isEqual(initialDate))
             throw new IllegalArgumentException("Final date must not be before the initial date.");
-        if (buyOutPrice.getPrice().compareTo(initialPrice.getPrice()) <= 0) {
-            throw new IllegalArgumentException("Buy out price must be greater than Initial price.");
-        }
+
 
         this._listing = listing;
         this._initialDate = initialDate;
         this._finalDate = finalDate;
         this._initialPrice = listing.getPrice();
         this._buyOutPrice = buyOutPrice;
-        this._initialPrice = initialPrice;
+        this._initialPrice = listing.getPrice();
         this._bidHistory = new ArrayList<>(); // start empty history
 
         _auctionStatus = initialDate.isAfter(now) ? AuctionStatus.SCHEDULED : AuctionStatus.ACTIVE;
+
+        if (buyOutPrice.getPrice().compareTo(_initialPrice.getPrice()) <= 0) {
+            throw new IllegalArgumentException("Buy out price must be greater than Initial price.");
+        }
 
         }
 

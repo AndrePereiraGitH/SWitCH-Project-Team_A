@@ -5,6 +5,7 @@ title US005 - Register Author in MiteLovers
 actor Administrator
 participant ":UI005" as UI
 
+autoNumber
 
 
 participant ":RegisterAuthorController" as C
@@ -13,37 +14,46 @@ participant ":RegisterAuthorController" as C
 
 participant ":AuthorRepository" as R
 
-Administrator -> UI : **1** I want to register an author in MiteLovers
+Administrator -> UI :  I want to register an author in MiteLovers
 activate UI
-UI -->> Administrator : **2** Please provide name, country, and date of birth
-Administrator -> UI : **3** Name: Tove Ditlevsen; Country: Denmark; DOB: 14-12-1917
 
-UI -> C : **4** registerAuthor(name, country, birthday)
+UI -->> Administrator :  Please provide profile information and biography
+deactivate
+
+Administrator -> UI :  Here's the profile information and biography
+activate UI
+UI -> C : registerAuthor(name, \n country, birthday, biography)
 activate C
 
-C -> R : **5** createAndAdd(name, country, birthday)
+C -> R :  createAndAdd(name, \n country, birthday, biography)
 activate R
 
 
 
-  create "profile1:Profile" as P
-  R -> P : **6** create(name, country, birthday)
+ create participant "author1:Author" as A
+ R -> A ++ : create(name, country, birthday, biography)
 
-  create "author1:Author" as A
-  R -> A : **7** create(profile1)
-  R -> R : **8** existsByAuthor(author1)
+ create "profile1:Profile" as P
+ A -> P : create(name, country, birthday)
 
-participant ":List<Author>" as LA
+ R -> R : existsByAuthor(author1)
+ deactivate A
 
-  R -> LA : **9** addToList(author1)
-  LA -->> R : **10** success
 
-  R -->> C : **10** author1
+
+  R -> R : addToList(author1)
+
+  R -->> C :  author1
 
 deactivate R
-C -->> UI : **11** success
+C -->> UI :  success
 deactivate C
 
-UI -->> Administrator : **12** success
+UI -->> Administrator :  success
 deactivate UI
+
+
+participant "country: Country"
+participant "birthday: LocalDate"
+
 @enduml

@@ -20,7 +20,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
 
         // Act & Assert
@@ -37,7 +37,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
 
         // Act & Assert
@@ -55,7 +55,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -75,7 +75,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -95,7 +95,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -115,7 +115,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -135,7 +135,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -154,7 +154,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                Countries.PORTUGAL
+                new Country("PORTUGAL")
         );
         Contact contact = new Contact("987654321", "351", email, address);
 

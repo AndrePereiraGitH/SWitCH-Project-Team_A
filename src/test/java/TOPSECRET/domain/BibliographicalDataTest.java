@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
-import TOPSECRET.domain.Enum.Genre;
+import TOPSECRET.domain.Enum.Genres;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -9,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static TOPSECRET.domain.Enum.Countries.DENMARK;
-import static TOPSECRET.domain.Enum.Countries.UNITED_STATES;
-import static TOPSECRET.domain.Enum.Genre.*;
 import static java.util.Locale.ENGLISH;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,17 +18,23 @@ class BibliographicalDataTest {
 
         // arrange
         String title = "The Age of AI: And Our Human Future";
-        List<Profile> authors= new ArrayList<>();
-        Profile author2 = new Profile("Henry A Kissinger", UNITED_STATES,LocalDate.of(1923,05,27));
-        Profile author3 = new Profile("Eric Schmidt III", UNITED_STATES,LocalDate.of(1955,04,27));
-        Profile author4 = new Profile("Daniel Huttenlocher",UNITED_STATES,LocalDate.of(1959,01,01));
+        //List<Profile> authors= new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
+        Country country = new Country("UNITED_STATES");
+        Profile profile2 = new Profile("Henry A Kissinger", country,LocalDate.of(1923,05,27));
+        Profile profile3 = new Profile("Eric Schmidt III", country,LocalDate.of(1955,04,27));
+        Profile profile4 = new Profile("Daniel Huttenlocher", country,LocalDate.of(1959,01,01));
+        Author author2 = new Author(profile2, "valid bio2");
+        Author author3 = new Author(profile3, "valid bio3");
+        Author author4 = new Author(profile4, "valid bio4");
         authors.add(author2);
         authors.add(author3);
         authors.add(author4);
 
         Locale language = ENGLISH;
 
-        Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", Countries.UNITED_KINGDOM);
+        Country country1 = new Country("UNITED_KINGDOM");
+        Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", country1);
         Email email2 = new Email("enquiries", "hachette.co.uk");
         Contact contact2 = new Contact("2031227222", "+44", email2, address2);
         Publisher publisher = new Publisher("John Murray Press", "GB205505305", contact2);
@@ -41,11 +43,7 @@ class BibliographicalDataTest {
 
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.NONFICTION);
-        genres.add(Genre.TECHNOLOGY);
-        genres.add(Genre.SCIENCE);
-        genres.add(Genre.SOCIAL_SCIENCES);
-        genres.add(Genre.PHILOSOPHY);
+        genres.add(new Genre ("Fantasy"));
 
         int numberOfPages = 272;
 
@@ -66,9 +64,12 @@ class BibliographicalDataTest {
         assertEquals("The Age of AI: And Our Human Future", bibliographicalData.getTitle());
 
         assertEquals(3, bibliographicalData.getAuthors().size());
-        assertEquals("Henry A Kissinger", bibliographicalData.getAuthors().get(0).getName());
-        assertEquals("Eric Schmidt III", bibliographicalData.getAuthors().get(1).getName());
-        assertEquals("Daniel Huttenlocher", bibliographicalData.getAuthors().get(2).getName());
+//        assertEquals("Henry A Kissinger", bibliographicalData.getAuthors().get(0).getName());
+//        assertEquals("Eric Schmidt III", bibliographicalData.getAuthors().get(1).getName());
+//        assertEquals("Daniel Huttenlocher", bibliographicalData.getAuthors().get(2).getName());
+        assertEquals("Henry A Kissinger", bibliographicalData.getAuthors().get(0).getProfile().getName());
+        assertEquals("Eric Schmidt III", bibliographicalData.getAuthors().get(1).getProfile().getName());
+        assertEquals("Daniel Huttenlocher", bibliographicalData.getAuthors().get(2).getProfile().getName());
 
         assertEquals(Locale.ENGLISH, bibliographicalData.getLanguage());
 
@@ -76,7 +77,7 @@ class BibliographicalDataTest {
 
         assertEquals(LocalDate.of(2022, 8, 4), bibliographicalData.getPublishDate());
 
-        assertEquals(List.of(Genre.NONFICTION, Genre.TECHNOLOGY, Genre.SCIENCE, Genre.SOCIAL_SCIENCES, Genre.PHILOSOPHY), bibliographicalData.getGenres());
+        assertEquals("Fantasy", bibliographicalData.getGenres().get(0).getGenreType());
 
         assertEquals(272, bibliographicalData.getNumberOfPages());
 

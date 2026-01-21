@@ -5,48 +5,75 @@ autonumber
 title US026 - To get the list of items on auction of a given author
 
 actor Buyer
+
+' Participants
 participant ":UI026" as UI026
-
-participant ":GetListOfItemsOnAuctionOfGivenAuthorController" as GetListOfItemsOnAuctionOfGivenAuthorController
-
+participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
 participant ":AuthorRepository" as AuthorRepository
-
 participant ":AuctionRepository" as AuctionRepository
+participant ":AuctionMapper" as Mapper
+participant "listOfAuction:\nList<Auction>" as ListDS
+participant ":Auction" as DSDomain
+participant "AuctionDTO:\nAuctionDTO" as DTO
+participant "listOfAuctionDTO:\nList<AuctionDTO>" as ListDTO
 
-Buyer -> UI026 : I want to get the list of items on le of a given author
+
+' Interactions
+Buyer -> UI026 : I want to get the list of items on\n auction of a given author
 activate UI026
-UI026 -> GetListOfItemsOnAuctionOfGivenAuthorController : getAllAuthors()
-activate GetListOfItemsOnAuctionOfGivenAuthorController
-GetListOfItemsOnAuctionOfGivenAuthorController -> AuthorRepository: getAllAuthors()
+UI026 -> Ctrl : getAllAuthors()
+activate Ctrl
+Ctrl -> AuthorRepository: getAllAuthors()
 activate AuthorRepository
-AuthorRepository --> GetListOfItemsOnAuctionOfGivenAuthorController: listOfAllAuthors
+AuthorRepository --> Ctrl: listOfAllAuthors
 deactivate AuthorRepository
-GetListOfItemsOnAuctionOfGivenAuthorController --> UI026 : listOfAllAuthors
-deactivate GetListOfItemsOnAuctionOfGivenAuthorController
+Ctrl --> UI026 : listOfAllAuthors
+deactivate Ctrl
 Buyer <-- UI026 : Which author? Choose!
+deactivate UI026
 Buyer -> UI026 : author
+activate UI026
 
-UI026 -> GetListOfItemsOnAuctionOfGivenAuthorController : getListOfItemsOnAuction(author)
-activate GetListOfItemsOnAuctionOfGivenAuthorController
+UI026 -> Ctrl : getListOfItemsOnAuction(author)
+activate Ctrl
 
-GetListOfItemsOnAuctionOfGivenAuthorController -> AuctionRepository : getListOfItemsOnAuction(author)
+Ctrl -> AuctionRepository : getListOfItemsOnAuction(author)
 activate AuctionRepository
 
+loop for each auction
+    AuctionRepository -> AuctionRepository : checkAuctionAuthor(author)
+end
 
-AuctionRepository -> AuctionRepository : validateParameters(author)
+AuctionRepository -> ListDS ** :
+AuctionRepository --> Ctrl : listOfAuction
 
-create "l1: List<Auction>" as ListOfAuction
-AuctionRepository -> ListOfAuction : getList(author)
-
-AuctionRepository --> GetListOfItemsOnAuctionOfGivenAuthorController : l1
 deactivate AuctionRepository
 
-GetListOfItemsOnAuctionOfGivenAuthorController -> GetListOfItemsOnAuctionOfGivenAuthorController : cl1: copyList(l1)
+Ctrl -> Mapper : toDTO(listOfAuction)
+activate Mapper
+Mapper -> ListDTO ** :
 
-GetListOfItemsOnAuctionOfGivenAuthorController --> UI026 : cl1
-deactivate GetListOfItemsOnAuctionOfGivenAuthorController
+    loop for each auction
+        Mapper -> DSDomain : getDetails()
+        activate DSDomain
+        DSDomain --> Mapper : details
+        deactivate DSDomain
 
-UI026 --> Buyer : List of items on auction
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : AuctionDTO
+        deactivate DTO
+
+        Mapper -> Mapper : listOfAuctionsDTO.add(AuctionDTO)
+    end
+
+Mapper --> Ctrl : listOfAuctionsDTO
+deactivate Mapper
+
+Ctrl --> UI026 : listOfAuctionsDTO
+deactivate Ctrl
+
+UI026 --> Buyer : Shows the list of items on auction
 deactivate UI026
 
 @enduml

@@ -1,45 +1,48 @@
 @startuml
 title US022 - To get the list of items on auction of a given genre
 
+class UI022 {
+
+}
+
 class ToGetTheListOfItemsOnAuctionOfAGivenGenreController {
+  +getAllGenres()
   +getListOfItemsOnAuction(genre)
-  -copyList()
 }
 
-class ListingRepository{
+class AuctionRepository {
   +getListOfItemsOnAuction(genre)
-  -validateParameters(genre)
 }
 
-class Listing {
-  - item: Item
-  - saleType: SaleType
+class Auction {
+  - listing: Listing
+    +getDetails()
 }
 
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
+class GenreRepository {
+  +getAllGenres()
 }
 
-class Genre {
-    - genre: String
+class AuctionMapper {
+  +toDTO(listOfAuctions)
 }
 
-class Item {
-    - bibliographicalData: BibliographicalData
+class AuctionDTO {
 }
 
-class BibliographicalData {
-    - genre: Genre
-}
+' --- Interactions ---
 
-' Interactions
+UI022 ..> ToGetTheListOfItemsOnAuctionOfAGivenGenreController : uses
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionRepository : uses
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreRepository : uses
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionMapper : uses
+AuctionMapper ..> AuctionDTO : maps to
+AuctionMapper ..> Auction : uses
+AuctionRepository "1" --> "*" Auction : contains
 
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController  "1 " -- "1 " ListingRepository : uses >
-ListingRepository "1 " -- " * " Listing : retrieves >
-Listing "                                *" --> "1" SaleType : can be\nsold by >
-Listing "1"--> "*" Item : lists an >
-Item "*" -- "1" BibliographicalData: has >
-BibliographicalData "*" -- "1..*" Genre: has >
+
+
 
 @enduml
+
+

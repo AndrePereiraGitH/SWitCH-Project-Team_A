@@ -2,10 +2,8 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,15 +28,16 @@ class ListingTest {
 
     // User
     LocalDate validBirthday = LocalDate.of(2000, 1, 1);
-    Profile validProfile = new Profile("John",Countries.PORTUGAL,validBirthday);
+    Profile validProfile = new Profile("John",new Country("PORTUGAL"),validBirthday);
     Email validEmail = new Email("john.doe", "example.com");
-    Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", Countries.PORTUGAL);
+    Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
     Contact validContact = new Contact("123456789","+351",validEmail,validAddress);
     User validSeller = new User("Seller1",validContact,validProfile,UserRole.NORMAL_USER);
 
     // BibliographicalData
-    Profile author = new Profile("Tove Ditlevsen", Countries.DENMARK, LocalDate.of(1917, 12, 14));
-    Address address = new Address("R Maria", "12", "156-5", Countries.PARAGUAY);
+    Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+    Author author = new Author(profile, "valio bio");
+    Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
     Email email = new Email("Maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
     Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
@@ -48,23 +47,32 @@ class ListingTest {
             Locale.ENGLISH,
             publisher,
             LocalDate.of(2020, 1, 1),
-            List.of(Genre.FICTION),
+            List.of(new Genre ("Fiction")),
             200,
             "Some text"
     );
 
+    //Item
+    // --- minimal objects needed for Publication ---
 
-    // Item
+    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"
+    );
 
-    Item validItem1 = new Item(Condition.LIKE_NEW,1.2,dimensions,TypeOfBinding.PAPERBACK,"1st edition"
-            ,bibliographicalData);
+    User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
+    PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
 
-    Item validItem2 = new Item(Condition.POOR,1.2,dimensions,TypeOfBinding.PAPERBACK,"2nd edition"
-            ,bibliographicalData);
+    Code code1 = Code.fromIsbn13("9781234567890");
+    Code code2 = Code.fromIsbn13("9781234567891");
+    Code code3 = Code.fromIsbn13("9781234567892");
 
-    Item validItem3 = new Item(Condition.POOR,1.2,dimensions,TypeOfBinding.PAPERBACK,"3rd edition"
-            ,bibliographicalData);
+    Item validItem1 = new Item(Condition.LIKE_NEW, 1.2, dimensions,
+            new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1));
 
+    Item validItem2 = new Item(Condition.POOR, 1.2, dimensions,
+            new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2));
+
+    Item validItem3 = new Item(Condition.POOR, 1.2, dimensions,
+            new Publication(bibliographicalData, publicationType, user, publicationStatus, "3rd edition", code3));
 
 
 

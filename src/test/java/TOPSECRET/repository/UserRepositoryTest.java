@@ -1,73 +1,85 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Enum.Countries;
-import TOPSECRET.domain.Profile;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.UserRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.LocalDate;
 
-import static TOPSECRET.domain.Enum.UserRole.NORMAL_USER;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
-        @Test
-        void shouldRegisterNewUserSuccessfully() {
-            UserRepository repository = new UserRepository();
-            User user = new User(
-                    "validUser",
-                    new Contact(),
-                    new Profile(
-                            "Test User",
-                            Countries.PORTUGAL,
-                            LocalDate.of(2000, 5, 10)),
-                    NORMAL_USER
-            );
+    private UserRepository userRepository;
 
-            repository.register(user);
-
-            assertTrue(repository.exists("validUser"));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserIsNull() {
-            UserRepository repository = new UserRepository();
-
-            assertThrows(IllegalArgumentException.class, () -> {
-                repository.register(null);
-            });
-        }
-
-        @Test
-        void shouldNotAllowDuplicateUsers() {
-            UserRepository repository = new UserRepository();
-            User user = new User(
-                    "duplicateUser",
-                    new Contact(),
-                    new Profile(
-                            "Test User",
-                            Countries.PORTUGAL,
-                            LocalDate.of(2000, 5, 10)
-                    ),
-                    NORMAL_USER
-            );
-
-            repository.register(user);
-
-            assertThrows(IllegalArgumentException.class, () -> {
-                repository.register(user);
-            });
-        }
+    @BeforeEach
+    void setUp() {
+        userRepository = new UserRepository();
+    }
 
     @Test
-    void shouldReturnFalseWhenUserDoesNotExist() {
-        UserRepository repository = new UserRepository();
+    void testCreateAndAddUser_Success() {
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
 
-        boolean exists = repository.exists("nonExistingUser");
+        Profile profile = new Profile(
+                "Test Profile1",
+                new Country("PORTUGAL"),
+                LocalDate.of(1997, 8, 15)
+        );
 
-        assertFalse(exists);
+        String userName = "Test User1";
+
+        userRepository.createAndAddUser(userName, contact, profile, UserRole.ADMIN);
+
+        assertTrue(userRepository.exists(userName), "User should exist after being added");
     }
+
+    @Test
+    void testCreateAndAddUser_UserAlreadyExists() {
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile2",
+                new Country("PORTUGAL"),
+                LocalDate.of(1997, 8, 15)
+        );
+
+        String userName = "Test User2";
+
+        userRepository.createAndAddUser(userName, contact, profile, UserRole.ADMIN);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> userRepository.createAndAddUser(userName, contact, profile, UserRole.NORMAL_USER)
+        );
+
+        assertEquals("User validation failed or user already exists", exception.getMessage());
     }
+
+    @Test
+    void testExists_UserDoesNotExist() {
+        assertFalse(userRepository.exists("nonexistentUser"), "User should not exist initially");
+    }
+
+    @Test
+    void testCreateAndAddUser_NullUsername() {
+        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
+        Email email = new Email("test.user", "example.com");
+        Contact contact = new Contact("987654321", "351", email, address);
+
+        Profile profile = new Profile(
+                "Test Profile",
+                new Country("PORTUGAL"),
+                LocalDate.of(1997, 8, 15)
+        );
+
+        assertThrows(IllegalArgumentException.class, () ->
+                userRepository.createAndAddUser(null, contact, profile, UserRole.ADMIN)
+        );
+    }
+}

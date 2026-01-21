@@ -7,16 +7,18 @@ title US010 - To register a new publication in MiteLovers
 ' in the system, so that I can add the
 ' publication to my library.
 
-box #LightYellow
+
 actor User
 participant ":MiteLovers" as UI
-end box
+
 
 'Interactions
 User -> UI : I want to register a publication
 Activate UI
 UI --> User : Please enter the publication that you want to add on MiteLovers
-User -> UI : Here's the publication.
+deactivate UI
+User -> UI : It's called <pub1>, with the publication type and bibliographical data
+activate UI
 UI --> User : New publication added on MiteLovers successfully.
 deactivate UI
 @enduml

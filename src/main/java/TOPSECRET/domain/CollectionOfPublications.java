@@ -1,66 +1,78 @@
-/*
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.Enum.Genres;
 
+import java.util.ArrayList;
 import java.util.List;
 
+
+// Represents a user's private list of publications.
+// A PrivateList groups publications according to a specific purpose or genre.
 public class CollectionOfPublications {
 
-    // Attributes
-    private String _collectionName;
-    private Genre _collectionGenre;
-    private Library _privateLibrary;
-    private List<Publication> _collectionOfPublications;
-    private boolean _isPrivate;
+    private String _name;
+    private Genres _genre;
+    private List<Publication> _publications;
 
     // Constructor
-    public CollectionOfPublications(String collectionName,
-                                    Genre collectionGenre,
-                                    Library privateLibrary,
-                                    List<Publication> collectionOfPublications) {
+    public CollectionOfPublications(String name, Genres genre) {
 
-        if (collectionName == null || collectionName.isBlank()) {
-            throw new IllegalArgumentException("Collection name cannot be null or blank");
-        }
-        if (collectionGenre == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
-        if (privateLibrary == null) {
-            throw new IllegalArgumentException("Library cannot be null");
-        }
-        if (collectionOfPublications == null) {
-            throw new IllegalArgumentException("Publications list cannot be null");
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("PrivateList name cannot be null or empty.");
         }
 
-        this._collectionName = collectionName;
-        this._collectionGenre = collectionGenre;
-        this._privateLibrary = privateLibrary;
-        this._collectionOfPublications = collectionOfPublications;
-        this._isPrivate = true;
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre cannot be null.");
+        }
+
+        this._name = name;
+        this._genre = genre;
+        this._publications = new ArrayList<>();
     }
 
-    // Getters
-    public String getCollectionName() {
-        return _collectionName;
+
+    // GETTERS
+    public String getName() {
+        return _name;
     }
 
-    public Genre getCollectionGenre() {
-        return _collectionGenre;
+    public Genres getGenre() {
+        return _genre;
     }
 
-    public Library getPrivateLibrary() {
-        return _privateLibrary;
+    // Returns a copy of the publications list
+    public List<Publication> getPublications() {
+        return new ArrayList<>(_publications);
     }
 
-    public List<Publication> getCollectionOfPublications() {
-        return _collectionOfPublications;
+
+    //  Adds a publication to the private list.
+    //  Returns true if the publication was added successfully.
+    //  Returns false if the publication already exists in the list.
+    public boolean addPublication (Publication publication) {
+
+        if (publication == null) return false;
+
+        if (_publications.contains(publication)) {
+            return false;
+        }
+
+        _publications.add(publication);
+        return true;
     }
 
-    public boolean isPrivate() {
-        return _isPrivate;
+    // Validade if a publication exists in the private list.
+    public boolean containsPublication (Publication publication) {
+        return _publications.contains(publication);
     }
+
+    // Removes a publication from the private list.
+    public boolean removePublication(Publication publication) {
+        return _publications.remove(publication);
+    }
+
+//    public boolean isPrivate() {
+//        return _isPrivate;
+//    }
 }
 
- */

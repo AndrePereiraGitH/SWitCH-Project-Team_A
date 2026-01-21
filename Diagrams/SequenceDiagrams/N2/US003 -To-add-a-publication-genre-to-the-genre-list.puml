@@ -16,7 +16,7 @@ Administrator -> UI : **1** I want to add a new genre to the official list
 activate UI
 
 UI -->> Administrator : **2** Please enter the genre name
-Administrator -> UI : **3** name("Romance")
+Administrator -> UI : **3** name("romance")
 
 
 UI -> RegisterGenreController : **4** createAndAddGenre(name)
@@ -31,7 +31,6 @@ activate GenreRepository
   GenreRepository -> GenreRepository : **7** exists(romance)
 
   GenreRepository -> LG : **8** addToList(romance)
-  LG -->> GenreRepository : **9** sucess
   GenreRepository  -->> RegisterGenreController : **9** romance
 
 

@@ -5,11 +5,19 @@ autonumber
 title US021 - To get the list of items on direct sale of a given genre
 
 actor Buyer
+
+' Participants
 participant ":System" as System
 
-Buyer -> System : I want to get a list of items on direct sale of a given genre
-Buyer <-- System : Which genre?
+' Interactions
+
+Buyer -> System : I want to get the list of items on direct sale of a given genre
+activate System
+Buyer <-- System : Which genre? Choose!
+deactivate System
 Buyer -> System : genre
-System --> Buyer : List of items on direct sale
+activate System
+System --> Buyer : Shows the list of items on direct sale
+deactivate System
 
 @enduml

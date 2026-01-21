@@ -5,48 +5,75 @@ autonumber
 title US025 - To get the list of items on direct sale of a given author
 
 actor Buyer
+
+' Participants
 participant ":UI025" as UI025
-
-participant ":GetListOfItemsOnDirectSaleOfGivenAuthorController" as GetListOfItemsOnDirectSaleOfGivenAuthorController
-
+participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenAuthorController" as Ctrl
 participant ":AuthorRepository" as AuthorRepository
-
 participant ":DirectSaleRepository" as DirectSaleRepository
+participant ":DirectSaleMapper" as Mapper
+participant "listOfDirectSale:\nList<DirectSale>" as ListDS
+participant ":DirectSale" as DSDomain
+participant "directSaleDTO:\nDirectSaleDTO" as DTO
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO>" as ListDTO
 
-Buyer -> UI025 : I want to get the list of items on direct sale of a given author
+
+' Interactions
+Buyer -> UI025 : I want to get the list of items on\n direct sale of a given author
 activate UI025
-UI025 -> GetListOfItemsOnDirectSaleOfGivenAuthorController : getAllAuthors()
-activate GetListOfItemsOnDirectSaleOfGivenAuthorController
-GetListOfItemsOnDirectSaleOfGivenAuthorController -> AuthorRepository: getAllAuthors()
+UI025 -> Ctrl : getAllAuthors()
+activate Ctrl
+Ctrl -> AuthorRepository: getAllAuthors()
 activate AuthorRepository
-AuthorRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController: listOfAllAuthors
+AuthorRepository --> Ctrl: listOfAllAuthors
 deactivate AuthorRepository
-GetListOfItemsOnDirectSaleOfGivenAuthorController --> UI025 : listOfAllAuthors
-deactivate GetListOfItemsOnDirectSaleOfGivenAuthorController
+Ctrl --> UI025 : listOfAllAuthors
+deactivate Ctrl
 Buyer <-- UI025 : Which author? Choose!
+deactivate UI025
 Buyer -> UI025 : author
+activate UI025
 
-UI025 -> GetListOfItemsOnDirectSaleOfGivenAuthorController : getListOfItemsOnDirectSale(author)
-activate GetListOfItemsOnDirectSaleOfGivenAuthorController
+UI025 -> Ctrl : getListOfItemsOnDirectSale(author)
+activate Ctrl
 
-GetListOfItemsOnDirectSaleOfGivenAuthorController -> DirectSaleRepository : getListOfItemsOnDirectSale(author)
+Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(author)
 activate DirectSaleRepository
 
+loop for each direct sale
+    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleAuthor(author)
+end
 
-DirectSaleRepository -> DirectSaleRepository : validateParameters(author)
+DirectSaleRepository -> ListDS ** :
+DirectSaleRepository --> Ctrl : listOfDirectSale
 
-create "l1: List<DirectSale>" as DirectSaleList
-DirectSaleRepository -> DirectSaleList : getList(author)
-
-DirectSaleRepository --> GetListOfItemsOnDirectSaleOfGivenAuthorController : l1
 deactivate DirectSaleRepository
 
-GetListOfItemsOnDirectSaleOfGivenAuthorController -> GetListOfItemsOnDirectSaleOfGivenAuthorController : cl1: copyList(l1)
+Ctrl -> Mapper : toDTO(listOfDirectSale)
+activate Mapper
+Mapper -> ListDTO ** :
 
-GetListOfItemsOnDirectSaleOfGivenAuthorController --> UI025 : cl1
-deactivate GetListOfItemsOnDirectSaleOfGivenAuthorController
+    loop for each direct sale
+        Mapper -> DSDomain : getDetails()
+        activate DSDomain
+        DSDomain --> Mapper : details
+        deactivate DSDomain
 
-UI025 --> Buyer : List of items on direct sale
+        Mapper -> DTO ** : create(details)
+        activate DTO
+        DTO --> Mapper : directSaleDTO
+        deactivate DTO
+
+        Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
+    end
+
+Mapper --> Ctrl : listOfDirectSalesDTO
+deactivate Mapper
+
+Ctrl --> UI025 : listOfDirectSalesDTO
+deactivate Ctrl
+
+UI025 --> Buyer : Shows the list of items on direct sale
 deactivate UI025
 
 @enduml

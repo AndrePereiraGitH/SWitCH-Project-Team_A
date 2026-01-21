@@ -21,48 +21,66 @@ class BookTest {
         String title = "The Lord of the Rings";
 
         Email publisherEmail = new Email("HarperCollins", "gmail.com");
-        Address publisherAddress = new Address("Broadway","195","10007", Countries.UNITED_STATES);
+        Country country = new Country("UNITED_STATES");
+        Address publisherAddress = new Address("Broadway","195","10007", country);
         Contact publisherContact = new Contact("987654321", "+351", publisherEmail, publisherAddress);
         Publisher publisher = new Publisher("HarperCollins Publishers","123456", publisherContact);
 
         LocalDate publishDate = LocalDate.of(1954,07,29);
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.FICTION);
-        genres.add(Genre.FANTASY);
-        genres.add(Genre.ADVENTURE);
+        genres.add(new Genre ("Fiction"));
+        genres.add(new Genre ("Fantasy"));
+        genres.add(new Genre ("Adventure"));
 
-        List<Profile> authors= new ArrayList<>();
-        Profile author = new Profile("J.R.R Tolkien", SOUTH_AFRICA,LocalDate.of(1892,01,03));
+        Country country1 = new Country("SOUTH_AFRICA");
+        Profile authorProfile = new Profile("J.R.R Tolkien", country1,LocalDate.of(1892,01,03));
+        List<Author> authors = new ArrayList<>();
+        Author author = new Author (authorProfile, "valid bio");
         authors.add(author);
 
         int numOfPages = 1100;
 
+//        BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
         BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
 
         return information;
     }
 
-    private Item sampleItem()
-    {
-        //Item creation
-
+    private Item sampleItem() {
+        // Item basics
         double weight = 0.7;
 
-        List<Picture> pictures = new ArrayList<>();
-        Picture picture1 = new Picture("picture1");
-        Picture picture2 = new Picture("picture2");
-        Picture picture3 = new Picture("picture3");
+        Dimensions dimensions = new Dimensions(12.2, 8.7, 0.2);
 
-        Dimensions dimensions = new Dimensions(12.2,8.7,0.2);
-
+        // Publication basics
         String edition = "Sample Edition";
-
         BibliographicalData information = sampleInformation();
 
-        Item item = new Item (Condition.NEW, weight, dimensions, TypeOfBinding.HARDBACK, edition, information);
+        PublicationType publicationType =
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
 
-        return item;
+        // --- minimal User created here ---
+
+        Email email = new Email("user01", "example.com");
+        Address address = new Address("Rua X", "1", "1000-000", new Country("PORTUGAL"));
+        Contact contact = new Contact("911111111", "+351", email, address);
+
+        Profile profile = new Profile("Sample User", new Country("PORTUGAL"), LocalDate.of(1990, 1, 1));
+        User user = new User("user01", contact, profile, UserRole.NORMAL_USER);
+
+        Code code = Code.fromIsbn13("9781234567890");
+
+        Publication publication = new Publication(
+                information,
+                publicationType,
+                user,
+                PublicationStatus.FOR_SALE,
+                edition,
+                code
+        );
+
+        return new Item(Condition.NEW, weight, dimensions, publication);
     }
 
 

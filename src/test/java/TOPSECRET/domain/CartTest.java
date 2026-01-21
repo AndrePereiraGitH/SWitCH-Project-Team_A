@@ -24,17 +24,19 @@ class CartTest {
         buyer = new User();
         cart = new Cart(buyer);
 
-        Profile author = new Profile(
+        Profile profile = new Profile(
                 "Tove Ditlevsen",
-                Countries.DENMARK,
+                new Country("DENMARK"),
                 LocalDate.of(1917, 12, 14)
         );
+
+        Author author = new Author(profile, "valid bio");
 
         Address address = new Address(
                 "R Maria",
                 "12",
                 "156-5",
-                Countries.PARAGUAY
+                new Country("PARAGUAY")
         );
 
         Email email = new Email(
@@ -61,22 +63,37 @@ class CartTest {
                 Locale.ENGLISH,
                 publisher,
                 LocalDate.of(2020, 1, 1),
-                List.of(Genre.FICTION),
+                List.of(new Genre ("Fiction")),
                 200,
                 "Some text"
         );
 
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
+        PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,          // ajusta se o teu enum tiver outro nome
+                TypeOfBinding.PAPERBACK,
+                "Paperback"
+        );
+        User seller = new User("seller1", contact, profile, UserRole.NORMAL_USER);
+        Code code = Code.fromIsbn13("9781234567890");
+
+        Publication publication = new Publication(
+                bibliographicalData,
+                publicationType,
+                seller,
+                PublicationStatus.FOR_SALE, // ajusta se o teu enum tiver outro nome
+                "1st edition",
+                code
+        );
 
         Item item = new Item(
                 Condition.LIKE_NEW,
                 1.2,
                 dimensions,
-                TypeOfBinding.PAPERBACK,
-                "1st edition",
-                bibliographicalData
+                publication
         );
+
 
         final List<Item> Item = new ArrayList<>(List.of(item));
 

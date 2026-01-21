@@ -5,55 +5,77 @@ class UI025{
 
 }
 
-class GetListOfItemsOnDirectSaleOfGivenAuthorController {
+class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
+  +getAllAuthors()
   +getListOfItemsOnDirectSale(author)
-  -copyList()
 }
 
 class AuthorRepository{
     +getAllAuthors()
 }
 
-class Author {
-  -authorProfile: Profile
-}
-
-class Profile {
-  -name: String
-}
-
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(author)
-  -validateParameters(author)
+  -checkDirectSaleAuthor(author)
 }
 
 class DirectSale {
   - listing: Listing
+  +getDetails()
 }
 
-class Listing {
-  - items: List <Item>
+class DirectSaleMapper {
+  +toDTO(listOfDirectSale)
 }
+
+class DirectSaleDTO {
+}
+
+/'
+class Listing {
+  - item: Item
+  - saleType: SaleType
+}
+
+enum SaleType {
+    DIRECT_SALE
+    AUCTION
+}
+
+'class Item {
+'    - bibliographicalData: BibliographicalData
+'}
 
 class Item {
+    - publication: publication
+}
+
+class Publication {
     - bibliographicalData: BibliographicalData
+    - code: Code
 }
 
 class BibliographicalData {
     - title: String
-    }
+}
+'/
 
 ' Interactions
 
-UI025 "1 " ..> "1 " GetListOfItemsOnDirectSaleOfGivenAuthorController : uses >
-GetListOfItemsOnDirectSaleOfGivenAuthorController  " 1" ..> "1    " DirectSaleRepository : uses >
-GetListOfItemsOnDirectSaleOfGivenAuthorController "1    " ..> "1 " AuthorRepository: uses >
-DirectSaleRepository "1 " ..> " 1 " DirectSale : retrieves >
-DirectSale "1 " ..> " 1 " Listing : is a type of >
-AuthorRepository "1 " ..> "          *" Author : stores >
-Author "1 " ..> "1 " Profile : has >
-Listing "1 " ..> "          1..*" Item: has >
-Item "1 " ..> "          1" BibliographicalData: has >
-
+UI025 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> AuthorRepository: uses
+DirectSaleRepository "1 " --> " * " DirectSale : contains
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleMapper : uses
+DirectSaleMapper ..> DirectSaleDTO : maps to
+DirectSaleMapper ..> DirectSale : uses
+/'
+DirectSale "1" -- "1" Listing : uses
+Listing "                                *" -- "1" SaleType : can be sold by
+Listing "1" -- "1..*    " Item : lists an
+' Item "*" -- "1" BibliographicalData: has
+Item "*" -- "1" Publication: refers to a
+Publication "*" -- "1" BibliographicalData: has
+'/
 
 @enduml

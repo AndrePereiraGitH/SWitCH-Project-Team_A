@@ -18,7 +18,7 @@ class ProfileTest {
         );
 
         assertEquals("Test User", profile.getName());
-        assertEquals(new Country("Germany"), profile.getCountry());
+        assertEquals("Portugal", profile.getCountry().getCountryName());
         assertEquals(LocalDate.of(2000, 5, 10), profile.getBirthday());
     }
 

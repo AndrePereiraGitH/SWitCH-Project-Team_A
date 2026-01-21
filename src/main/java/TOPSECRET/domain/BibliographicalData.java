@@ -1,8 +1,9 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Genre;
+import TOPSECRET.domain.Enum.Genres;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -10,7 +11,8 @@ public class BibliographicalData {
 
     // Attributes
     private String _title;
-    private List<Profile> _authors;
+    //private List<Profile> _authors;
+    private List<Author> _authors;
     private Locale _language;
     private Publisher _publisher;
     private LocalDate _publishDate;
@@ -19,9 +21,10 @@ public class BibliographicalData {
     private String _chunksOfText;
 
     // Constructor
-    public BibliographicalData(String title, List<Profile> authors, Locale language, Publisher publisher, LocalDate publishDate,
+    //public BibliographicalData(String title, List<Profile> authors, Locale language, Publisher publisher, LocalDate publishDate,
+    //                           List<Genre> genre, int numberOfPages, String chunksOfText) {
+    public BibliographicalData(String title, List<Author> authors, Locale language, Publisher publisher, LocalDate publishDate,
                                List<Genre> genre, int numberOfPages, String chunksOfText) {
-
         // Validations
 
         if (authors == null || authors.isEmpty()) {
@@ -37,7 +40,8 @@ public class BibliographicalData {
         }
 
         this._title = title;
-        this._authors = List.copyOf(authors);
+        //this._authors = List.copyOf(authors);
+        this._authors = authors;
         this._language = language;
         this._publisher = publisher;
         this._publishDate = publishDate;
@@ -51,7 +55,8 @@ public class BibliographicalData {
         return _title;
     }
 
-    public List<Profile> getAuthors() {
+    //public List<Profile> getAuthors() {
+    public List<Author> getAuthors() {
         return _authors;
     }
 

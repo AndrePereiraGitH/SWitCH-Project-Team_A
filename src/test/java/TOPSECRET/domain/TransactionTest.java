@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -310,10 +311,11 @@ class TransactionTest {
     }
 
     private static BibliographicalData createValidBibliographicalData(){
-        List<Profile> authors = List.of(
-                new Profile("J. K. Rowling", new Country("Portugal"), LocalDate.of(1995, 10, 14)),
-                new Profile("Freida", new Country("Spain"), LocalDate.of(1956, 10, 10))
+        List<Author> authors = List.of(
+                new Author(new Profile("J. K. Rowling", new Country("Portugal"), LocalDate.of(1995, 10, 14)), "valid bio1"),
+                new Author(new Profile("Freida", new Country("Spain"), LocalDate.of(1956, 10, 10)), "valid bio2")
         );
+
 
         return new BibliographicalData(
                 "O Senhor do Anéis: A irmandade do Anel",
@@ -330,21 +332,43 @@ class TransactionTest {
                         )
                 ),
                 LocalDate.of(2020,1,10),
-                List.of(),
+                List.of(new Genre ("Fiction")),
                 200,
                 "Text Description"
                 );
     }
 
+    private static PublicationType createValidPublicationType() {
+        return new PublicationType(
+                MediaFormat.BOOK,            // adjust if needed
+                TypeOfBinding.PAPERBACK,
+                "Paperback"
+        );
+    }
+
+    private static Publication createValidPublication(BibliographicalData bd, User seller) {
+        Code code = Code.fromIsbn13("9781234567890");
+
+        return new Publication(
+                bd,
+                createValidPublicationType(),
+                seller,
+                PublicationStatus.FOR_SALE,  // adjust if needed
+                "1st Edition",
+                code
+        );
+    }
 
     private static Item createValidItem(){
+        User seller = createValidUser("Seller");
+        BibliographicalData bd = createValidBibliographicalData();
+        Publication publication = createValidPublication(bd, seller);
+
         return new Item(
                 Condition.LIKE_NEW,
                 250.30,
-                new Dimensions (102, 120, 102),
-                TypeOfBinding.PAPERBACK,
-                "1st Edition",
-                createValidBibliographicalData()
+                new Dimensions(102, 120, 102),
+                publication
         );
     }
 
@@ -365,7 +389,6 @@ class TransactionTest {
                 createValidListing(),
                 now,
                 now.plusDays(1),
-                new Price(new BigDecimal("10.00")),
                 new Price(new BigDecimal("19.99"))
         );
     }
@@ -375,4 +398,6 @@ class TransactionTest {
         cart.addListing(createValidListing());
         return cart;
     }
+
+
 }

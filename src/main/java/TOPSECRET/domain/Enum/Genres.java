@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Enum;
 
-    public enum Genre {
+    public enum Genres {
         FICTION,
         BIBLIOGRAPHICAL,
         ROMANCE,
@@ -14,6 +14,7 @@ package TOPSECRET.domain.Enum;
         BUSINESS,
         SOCIAL_SCIENCES,
         PHILOSOPHY,
+        DRAMA,
     }
 
     // Work in progress, update with genres as needed
