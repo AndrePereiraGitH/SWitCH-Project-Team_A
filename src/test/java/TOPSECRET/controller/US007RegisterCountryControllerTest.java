@@ -5,15 +5,15 @@ import TOPSECRET.repository.CountryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class CountryControllerTest {
+class US007RegisterCountryControllerTest {
 
-    private CountryController controller;
+    private US007RegisterCountryController controller;
     private CountryRepository repository;
 
     @BeforeEach
     void preparation(){
         repository = new CountryRepository();
-        controller = new CountryController(repository);
+        controller = new US007RegisterCountryController(repository);
     }
 
     @Test

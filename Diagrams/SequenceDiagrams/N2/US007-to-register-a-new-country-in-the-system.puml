@@ -4,42 +4,46 @@ footbox off
 
 title Sequence Diagram - US007 Register a new country in the System
 
-box #WhiteSmoke
+
 actor Administrator
 participant ":UI" as UI
-end box
 
-box #LightBlue
+
+
 participant ":CountryController" as CountryController
-end box
 
-box #LightGrey
+
+
 participant ":CountryRepository" as AddressRepository
-end box
+
 
 Administrator -> UI : **1** I want to register a new country
+activate UI
 UI --> Administrator : **2** What is the name of the country?
+deactivate UI
 
-Administrator -> UI : **3** The country is <name>
+Administrator -> UI : **3** The country is <countryName>
+activate UI
 
-UI -> CountryController : **4** registerNewCountry (_countryName)
+UI -> CountryController : **4** registerNewCountry (countryName)
 activate CountryController
 
-CountryController -> AddressRepository : **5** createAndAddNewCountry (_countryName)
+CountryController -> AddressRepository : **5** createAndAddNewCountry (countryName)
 activate AddressRepository
 
-box #LightYellow
+
 create "newCountry1: Country" as Country
-AddressRepository -> Country : **6** createCountry(_countryName)
-end box
+AddressRepository -> Country : **6** createCountry(countryName)
+
 AddressRepository -> AddressRepository : **7** validate (newCountry1)
 AddressRepository -> AddressRepository : **8** Add (newCountry1)
-AddressRepository --> CountryController : **9** true (newCountry1)
+AddressRepository --> CountryController : **9** (newCountry1)
 deactivate AddressRepository
 
-CountryController --> UI : **10** success (newCountry1)
+CountryController --> UI : **10** success!
 deactivate CountryController
 
 UI --> Administrator : **11** <newCountry1> registered successfully!
+deactivate UI
 
 @enduml

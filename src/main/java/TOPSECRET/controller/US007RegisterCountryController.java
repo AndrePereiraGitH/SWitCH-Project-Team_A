@@ -3,17 +3,17 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Country;
 import TOPSECRET.repository.CountryRepository;
 
-public class CountryController {
+public class US007RegisterCountryController {
 
     private final CountryRepository _countryRepository;
 
-    public CountryController(CountryRepository countryRepository) {
+    public US007RegisterCountryController(CountryRepository countryRepository) {
         this._countryRepository = countryRepository;
     }
 
     //Being called by the UI - "registerNewCountry (countryName)"
 
-    public void registerNewCountry (String _countryName) {
-        _countryRepository.createAndAddNewCountry(_countryName);
+    public Country registerNewCountry (String _countryName) {
+        return _countryRepository.createAndAddNewCountry(_countryName);
     }
 }

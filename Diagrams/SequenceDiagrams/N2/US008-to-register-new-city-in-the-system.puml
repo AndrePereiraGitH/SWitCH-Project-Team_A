@@ -2,44 +2,64 @@
 
 footbox off
 
-title Sequence Diagram - US007 Register a new country in the System
+title Sequence Diagram - US008 Register a new city in the System
 
-box #WhiteSmoke
+
 actor Administrator
 participant ":UI" as UI
-end box
 
-box #LightBlue
-participant ":CityController" as CityController
-end box
-box #LightGrey
+
+participant ":US008 RegisterCityController" as CityController
+participant ":CountryRepository" as CountryRepository
 participant ":CityRepository" as AddressRepository
-end box
 
 Administrator -> UI : **1** I want to register a new city
-UI --> Administrator : **2** What city and from which country?
-Administrator -> UI : **3** The city is <name> and the country is  <country>
+activate UI
+UI --> Administrator : **2** From which country is the city?
+deactivate UI
+Administrator -> UI : **3** The city is from the country <_countryName>
+activate UI
 
-UI -> CityController : **4** registerNewCity (name, country)
+
+UI -> CityController : **4** getCountryName
 activate CityController
+CityController -> CountryRepository : **5** getCountryName
+activate CountryRepository
+CountryRepository -> CountryRepository : **6** validate (_countryName)
 
-CityController -> AddressRepository : **5** createAndAddNewCity (name, country)
-activate AddressRepository
 
-box #LightYellow
-create "newCity1: City" as City
-AddressRepository -> City : **6** createCity(name, country)
-end box
+CountryRepository --> CityController : **7** <_countryName> exists
+deactivate CountryRepository
 
-AddressRepository -> AddressRepository : **7** validate (newCity1)
-AddressRepository -> AddressRepository : **8** Add (newCity1)
-
-AddressRepository --> CityController : **9** true
-deactivate AddressRepository
-
-CityController --> UI : **10** success
+CityController --> UI : **8** <_countryName> exists
 deactivate CityController
 
-UI --> Administrator : **10** Done!
+UI --> Administrator : **9** What is the name of the city?
+deactivate UI
 
+Administrator -> UI : **10** The city's name is <_cityName>
+activate UI
+UI -> CityController : **11** registerNewCity (_cityName, _countryName)
+
+activate CityController
+
+CityController -> AddressRepository : **12** createAndAddNewCity (_cityName, _countryName)
+activate AddressRepository
+
+
+create "newCity1: City" as City
+AddressRepository -> City : **13** createCity(_cityName, _countryName)
+
+
+AddressRepository -> AddressRepository : **14** validate (newCity1)
+AddressRepository -> AddressRepository : **15** Add (newCity1)
+
+AddressRepository --> CityController : **16** true (newCity1)
+deactivate AddressRepository
+
+CityController --> UI : **17** success (newCity1)
+deactivate CityController
+
+UI --> Administrator : **18** <newCity1> has been registered successfully!
+deactivate UI
 @enduml
