@@ -10,35 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemRepository {
-private List<Item> _items = new ArrayList<>();
 
-public ItemRepository() {
-    _items = new ArrayList<>();
-}
+    private List<Item> _items = new ArrayList<>();
 
-public Item createAndAddItem(Condition condition, double weight, Dimensions dimensions, Publication publication) throws InstanceAlreadyExistsException {
-    Item item = new Item(condition, weight, dimensions, publication);
-
-    // verify if item already exists
-    if(verifyIfExists(item)) {
-        throw new InstanceAlreadyExistsException("Item already exists!");
+    public ItemRepository() {
+        _items = new ArrayList<>();
     }
 
-    // add item to items list
-    _items.add(item);
+    public Item createAndAddItem(Condition condition, double weight, Dimensions dimensions, Publication publication) throws InstanceAlreadyExistsException {
+        Item item = new Item(condition, weight, dimensions, publication);
 
-    return item;
-}
+        // verify if item already exists
+        if(verifyIfExists(item)) {
+            throw new InstanceAlreadyExistsException("Item already exists!");
+        }
 
-private boolean verifyIfExists(Item item) {
-    if (item == null) {
-        throw new IllegalArgumentException("Item is null");
+        // add item to items list
+        _items.add(item);
+
+        return item;
     }
 
-    return _items.contains(item);
-}
-public List<Item> get_Items() {
-    return _items;
-}
+    private boolean verifyIfExists(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item is null");
+        }
+
+        return _items.contains(item);
+    }
+
+    public List<Item> get_Items() {
+        return _items;
+    }
 
 }
