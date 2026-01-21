@@ -39,4 +39,8 @@ public class DirectSale {
     public int hashCode() {
         return Objects.hash(_listing, _directSaleDate);
     }
+
+    public Listing getListing() {
+        return _listing;
+    }
 }

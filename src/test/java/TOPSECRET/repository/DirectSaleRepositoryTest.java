@@ -165,4 +165,102 @@ class DirectSaleRepositoryTest {
         assertFalse(expectedResult);
 
     }
+
+    // START - Tests for method getListOfItemsOnDirectSale -------------------------------------------------------------
+
+    // Test1 - Return all DS that contains publication
+    @Test
+    void getListOfItemsOnDirectSaleReturnsAllMatchingSales() {
+        // Arrange
+        // Publicação alvo: a do validItem1
+        Publication targetPublication = validItem1.getPublication();
+
+        // Criar duas DirectSale diferentes com items que contêm a mesma publicação
+        Listing listing1 = new Listing(
+                List.of(validItem1),
+                validPrice,
+                validDescription,
+                validTitle,
+                validSeller,
+                validPictures
+        );
+
+        Listing listing2 = new Listing(
+                List.of(new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication)),
+                validPrice,
+                validDescription,
+                validTitle,
+                validSeller,
+                validPictures
+        );
+
+        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
+        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
+
+        DirectSaleRepository repo = new DirectSaleRepository(List.of(ds1, ds2));
+
+        // Act
+        List<DirectSale> result = repo.getListOfItemsOnDirectSale(targetPublication);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(ds1));
+        assertTrue(result.contains(ds2));
+    }
+
+    // Test2 - Return empty list when publication does not have any DS
+    @Test
+    void getListOfItemsOnDirectSaleReturnsEmptyWhenNoMatch() {
+        // Arrange
+        // Criar publicação que não aparece em nenhum item
+        Publication unrelatedPublication = new Publication(
+                bibliographicalData,
+                publicationType,
+                user,
+                publicationStatus,
+                "Unrelated edition",
+                Code.fromIsbn13("9999999999999")
+        );
+
+        DirectSaleRepository repo = new DirectSaleRepository(List.of(validDirectSale));
+
+        // Act
+        List<DirectSale> result = repo.getListOfItemsOnDirectSale(unrelatedPublication);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // Test3 - One DS with more than 1 publication (the same one), only returns 1
+    @Test
+    void getListOfItemsOnDirectSaleDoesNotDuplicateDirectSale() {
+        // Arrange
+        Publication targetPublication = validItem1.getPublication();
+
+        // Criar dois items com a mesma publicação
+        Item itemA = new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication);
+        Item itemB = new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication);
+
+        Listing listing = new Listing(
+                List.of(itemA, itemB),
+                validPrice,
+                validDescription,
+                validTitle,
+                validSeller,
+                validPictures
+        );
+
+        DirectSale ds = new DirectSale(listing, LocalDateTime.now());
+
+        DirectSaleRepository repo = new DirectSaleRepository(List.of(ds));
+
+        // Act
+        List<DirectSale> result = repo.getListOfItemsOnDirectSale(targetPublication);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(ds, result.get(0));
+    }
+    // END - Tests for method getListOfItemsOnDirectSale ---------------------------------------------------------------
+
 }

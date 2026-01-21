@@ -64,5 +64,4 @@ public class PublicationRepository {
             allPublicationsInSystem.add(p);
         }
     }
-
 }
