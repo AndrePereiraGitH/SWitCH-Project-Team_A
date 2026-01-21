@@ -62,4 +62,8 @@ public class Publication {
     public int hashCode() {
         return Objects.hash(_bibliographicalData, _publicationType, _userName, _publicationStatus, _edition, _code);
     }
+
+    public BibliographicalData getBibliographicalData() {
+        return _bibliographicalData;
+    }
 }

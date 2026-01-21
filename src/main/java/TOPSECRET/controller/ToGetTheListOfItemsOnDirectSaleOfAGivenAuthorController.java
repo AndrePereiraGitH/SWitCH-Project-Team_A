@@ -1,9 +1,12 @@
 /*package TOPSECRET.controller;
 
+import TOPSECRET.domain.*;
 import TOPSECRET.dto.DirectSaleDTO;
-import TOPSECRET.dto.DirectSaleMapper;
 import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.DirectSaleRepository;
+import TOPSECRET.dto.DirectSaleMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
@@ -22,12 +25,26 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         this.mapper = mapper;
     }
 
-    public List<String> getAllAuthors() {
+    public List<Author> getAllAuthors() {
         return authorRepository.getAllAuthors();
     }
 
-    public List<DirectSaleDTO> getListOfItemsOnDirectSale(String author) {
-        var list = directSaleRepository.getListOfItemsOnDirectSale(author);
-        return mapper.toDTO(list);
+    public List<DirectSaleDTO> getListOfItemsOnDirectSale(Author author) {
+        List<DirectSale> filteredDirectSales = new ArrayList<>();
+
+        for (DirectSale ds : directSaleRepository.getAllDirectSales()) {
+            Listing listing = ds.getListing();
+
+            for (Item item : listing.getItems()) {
+                BibliographicalData bd = item.getPublication().getBibliographicalData();
+                if (bd.getAuthors().contains(author)) {
+                    filteredDirectSales.add(ds);
+                    break;
+                }
+            }
+        }
+
+        return mapper.toDTO(filteredDirectSales);
     }
-}*/
+}
+*/

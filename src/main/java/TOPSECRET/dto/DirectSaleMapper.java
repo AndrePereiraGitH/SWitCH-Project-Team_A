@@ -1,18 +1,26 @@
 /*package TOPSECRET.dto;
 
+import TOPSECRET.domain.DirectSale;
+import TOPSECRET.domain.Item;
+import TOPSECRET.dto.DirectSaleDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DirectSaleMapper {
 
-    public List<DirectSaleDTO> toDTO(List<DirectSale> listOfDirectSale) {
-        List<DirectSaleDTO> dtoList = new ArrayList<>();
+    public DirectSaleDTO toDTO(DirectSale ds) {
 
-        for (DirectSale ds : listOfDirectSale) {
-            String details = ds.getDetails();
-            DirectSaleDTO dto = new DirectSaleDTO(details);
-            dtoList.add(dto);
+        Item firstItem = ds.getListing().getItems().get(0);
+        String title = firstItem.getPublication().getBibliographicalData().getTitle();
+        return new DirectSaleDTO(title);
+    }
+
+    public List<DirectSaleDTO> toDTO(List<DirectSale> directSales) {
+        List<DirectSaleDTO> dtos = new ArrayList<>();
+        for (DirectSale ds : directSales) {
+            dtos.add(toDTO(ds));
         }
-        return dtoList;
+        return dtos;
     }
 }*/
