@@ -5,17 +5,17 @@ import java.util.List;
 
 public class DirectSaleDTO {
 
-    private final String _publicationTitle;
-    private final List<String> _authors;
-    private final BigDecimal _price;
-    private final String _listingTitle;
-    private final String _seller;
+    public final String publicationTitle;
+    public final List<String> authors;
+    public final BigDecimal price;
+    public final String listingTitle;
+    public final String seller;
 
     public DirectSaleDTO(String publicationTitle, List<String> authors, BigDecimal price, String listingTitle, String _seller) {
-        this._publicationTitle = publicationTitle;
-        this._authors = authors;
-        this._price = price;
-        this._listingTitle = listingTitle;
-        this._seller = _seller;
+        this.publicationTitle = publicationTitle;
+        this.authors = authors;
+        this.price = price;
+        this.listingTitle = listingTitle;
+        this.seller = _seller;
     }
 }
