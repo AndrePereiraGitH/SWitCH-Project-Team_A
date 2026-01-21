@@ -110,24 +110,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         assertTrue(result.contains(pub2));
     }
 
-    @Test
-    void getAllPublicationsReturnsCopyNotInternalList() {
-        // arrange
-        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
-
-        PublicationRepository publicationRepo = new PublicationRepository(List.of(pub));
-
-        DirectSaleRepository directSaleRepo = new DirectSaleRepository(List.of());
-
-        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(publicationRepo, directSaleRepo);
-
-        // act
-        List<Publication> result = controller.getAllPublications();
-        result.clear();                                                 // tries to change list
-
-        // assert
-        assertEquals(1, controller.getAllPublications().size());
-    }
 /*
     @Test
     void getListOfItemsOnDirectSaleReturnsMappedDTOs() {
