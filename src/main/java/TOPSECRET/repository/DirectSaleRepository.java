@@ -54,7 +54,7 @@ public class DirectSaleRepository {
 
         for (DirectSale ds : _directSaleList) {
             for (Item item : ds.getListing().getItems()) {
-                if (item.getPublication().equals(author)) {
+                if (item.getPublication().getBibliographicalData().getAuthors().contains(author)) {
                     dsList.add(ds);
                     break;
                 }
