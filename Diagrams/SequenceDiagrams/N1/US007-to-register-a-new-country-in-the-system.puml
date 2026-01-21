@@ -10,6 +10,6 @@ participant ":System" as System
 'Human Interactions between Administrator and System
 Administrator -> System : **1** I want to register a new country in the system!
 System --> Administrator : **2** What is the name of the country you wish to register?
-Administrator -> System : **3** The country name is <_countryName>!
-System --> Administrator : **4** <_countryName> has been registered in the system!
+Administrator -> System : **3** The country name is <countryName>!
+System --> Administrator : **4** <countryName> registered successfully!
 @enduml

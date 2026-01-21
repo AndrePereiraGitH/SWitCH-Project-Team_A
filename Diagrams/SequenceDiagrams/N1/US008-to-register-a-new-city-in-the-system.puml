@@ -9,7 +9,9 @@ participant ":System" as System
 
 'Human Interactions between Administrator and System
 Administrator -> System : **1** I want to register a new city in the system!
-System --> Administrator : **2** What is the name of the city you wish to register and from which country is it?
-Administrator -> System : **3** The city name is <name> and it's from <country>!
-System --> Administrator : **4** <City> has been registered in the system!
+System --> Administrator : **2** From which country is the city?
+Administrator -> System : **3** The city is from the country <countryName>
+System --> Administrator : **4** What is the name of the city?
+Administrator -> System : **5** The city's name is <cityName>!
+System --> Administrator : **6** <cityName> has been registered successfully!
 @enduml

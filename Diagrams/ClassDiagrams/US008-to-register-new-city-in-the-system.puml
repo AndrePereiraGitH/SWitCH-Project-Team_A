@@ -9,30 +9,42 @@
 '/
 
 class City {
--name: String
+-cityName: String
 -country: Country
 }
 
-class Country {
--name: String
+class "List<Country>" {
+    +getCountryName (countryName : Country)
 }
 
+class Country {
+-country: Country
+}
 
 class CityRepository {
--List<City>
-    +createNewCity (name: String,
-    country: String)
+    +createAndAddNewCity (cityName: String,
+    country: Country)
     }
 
-class CityController{
-  + registerCity(name : String,
-  country: String)
+class US008RegisterNewCityController{
+    +getCountryName (countryName)
+  + registerNewCity(cityName : String,
+  countryName: String)
+}
+class CountryRepository{
+    +getCountryName (countryName)
+}
+class "List<City>"{
+    +addNewCityToCitiesList (cityName : City)
 }
 
 ' Interactions
-CityController "1" -- "1" CityRepository : request registering city >
-'/CityRepository  --  CityRepository : manage/store
-'/User "1" -- "1" CityController : requests registration of new city >
-CityRepository "1" -- "*" City : stores >
-City "*" -- "1" Country : is in a >
+US008RegisterNewCityController "1" --> "1" CityRepository : request registering city
+US008RegisterNewCityController "1" .--> "1" CountryRepository : asks verification
+CityRepository "1" --> "1" "List<City>" : contains
+"List<City>" "1" --> "*" City : stores
+CityRepository "1" .--> "*" City : creates/manages
+"List<Country>" "1" --> "*" Country : contains
+CountryRepository "1" --> "1" "List<Country>" : has a
+City "*" --> "1" Country : is in a
 @enduml

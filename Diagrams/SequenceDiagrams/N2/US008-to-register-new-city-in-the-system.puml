@@ -17,7 +17,7 @@ Administrator -> UI : **1** I want to register a new city
 activate UI
 UI --> Administrator : **2** From which country is the city?
 deactivate UI
-Administrator -> UI : **3** The city is from the country <_countryName>
+Administrator -> UI : **3** The city is from the country <countryName>
 activate UI
 
 
@@ -25,30 +25,30 @@ UI -> CityController : **4** getCountryName
 activate CityController
 CityController -> CountryRepository : **5** getCountryName
 activate CountryRepository
-CountryRepository -> CountryRepository : **6** validate (_countryName)
+CountryRepository -> CountryRepository : **6** validate (countryName)
 
 
-CountryRepository --> CityController : **7** <_countryName> exists
+CountryRepository --> CityController : **7** <countryName> exists
 deactivate CountryRepository
 
-CityController --> UI : **8** <_countryName> exists
+CityController --> UI : **8** <countryName> exists
 deactivate CityController
 
 UI --> Administrator : **9** What is the name of the city?
 deactivate UI
 
-Administrator -> UI : **10** The city's name is <_cityName>
+Administrator -> UI : **10** The city's name is <cityName>
 activate UI
-UI -> CityController : **11** registerNewCity (_cityName, _countryName)
+UI -> CityController : **11** registerNewCity (cityName, countryName)
 
 activate CityController
 
-CityController -> AddressRepository : **12** createAndAddNewCity (_cityName, _countryName)
+CityController -> AddressRepository : **12** createAndAddNewCity (cityName, countryName)
 activate AddressRepository
 
 
 create "newCity1: City" as City
-AddressRepository -> City : **13** createCity(_cityName, _countryName)
+AddressRepository -> City : **13** createCity(cityName, countryName)
 
 
 AddressRepository -> AddressRepository : **14** validate (newCity1)
