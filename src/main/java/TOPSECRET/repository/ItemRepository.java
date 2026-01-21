@@ -5,6 +5,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.Publication;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,30 +16,29 @@ public ItemRepository() {
     _items = new ArrayList<>();
 }
 
-public void createAndAddItem(Condition condition, double weight, Dimensions dimensions, Publication publication) {
+public Item createAndAddItem(Condition condition, double weight, Dimensions dimensions, Publication publication) throws InstanceAlreadyExistsException {
     Item item = new Item(condition, weight, dimensions, publication);
 
-    // ensure that item exists
-    if (item == null) {
-        throw new IllegalArgumentException("Item cannot be null");
+    // verify if item already exists
+    if(verifyIfExists(item)) {
+        throw new InstanceAlreadyExistsException("Item already exists!");
     }
+
     // add item to items list
     _items.add(item);
+
+    return item;
 }
 
+private boolean verifyIfExists(Item item) {
+    if (item == null) {
+        throw new IllegalArgumentException("Item is null");
+    }
+
+    return _items.contains(item);
+}
 public List<Item> get_Items() {
     return _items;
 }
-/*
-public boolean verifyIfItemExists(Item item) {
-
-    if (item == null) {
-        throw new IllegalArgumentException("You tried to find a null Item");
-    }
-
-
-}
-
- */
 
 }
