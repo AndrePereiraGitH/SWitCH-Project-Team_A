@@ -1,4 +1,4 @@
-/*package TOPSECRET.controller;
+package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.DirectSaleDTO;
@@ -32,7 +32,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
     public List<DirectSaleDTO> getListOfItemsOnDirectSale(Author author) {
         List<DirectSale> filteredDirectSales = new ArrayList<>();
 
-        for (DirectSale ds : directSaleRepository.getAllDirectSales()) {
+        for (DirectSale ds : directSaleRepository.getListOfItemsOnDirectSale(author)) {
             Listing listing = ds.getListing();
 
             for (Item item : listing.getItems()) {
@@ -47,4 +47,3 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         return mapper.toDTO(filteredDirectSales);
     }
 }
-*/

@@ -55,9 +55,16 @@ public class Listing {
         return copyItems;
     }
 
-
     public Price getPrice() {
         return _price;
+    }
+
+    public String getListingTitle() {
+        return _listingTitle;
+    }
+
+    public User getSeller() {
+        return _seller;
     }
 
 

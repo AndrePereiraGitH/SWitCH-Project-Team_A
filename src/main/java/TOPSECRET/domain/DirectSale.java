@@ -27,6 +27,10 @@ public class DirectSale {
 
     }
 
+    public Listing getListing() {
+        return _listing;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -38,9 +42,5 @@ public class DirectSale {
     @Override
     public int hashCode() {
         return Objects.hash(_listing, _directSaleDate);
-    }
-
-    public Listing getListing() {
-        return _listing;
     }
 }
