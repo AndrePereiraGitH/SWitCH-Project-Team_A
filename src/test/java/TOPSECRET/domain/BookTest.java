@@ -33,13 +33,15 @@ class BookTest {
         genres.add(new Genre ("Fantasy"));
         genres.add(new Genre ("Adventure"));
 
-        List<Profile> authors= new ArrayList<>();
         Country country1 = new Country("SOUTH_AFRICA");
-        Profile author = new Profile("J.R.R Tolkien", country1,LocalDate.of(1892,01,03));
+        Profile authorProfile = new Profile("J.R.R Tolkien", country1,LocalDate.of(1892,01,03));
+        List<Author> authors = new ArrayList<>();
+        Author author = new Author (authorProfile, "valid bio");
         authors.add(author);
 
         int numOfPages = 1100;
 
+//        BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
         BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
 
         return information;

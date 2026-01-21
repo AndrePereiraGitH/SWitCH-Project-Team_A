@@ -24,11 +24,13 @@ class CartTest {
         buyer = new User();
         cart = new Cart(buyer);
 
-        Profile author = new Profile(
+        Profile profile = new Profile(
                 "Tove Ditlevsen",
                 new Country("DENMARK"),
                 LocalDate.of(1917, 12, 14)
         );
+
+        Author author = new Author(profile, "valid bio");
 
         Address address = new Address(
                 "R Maria",
@@ -73,7 +75,7 @@ class CartTest {
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
-        User seller = new User("seller1", contact, author, UserRole.NORMAL_USER);
+        User seller = new User("seller1", contact, profile, UserRole.NORMAL_USER);
         Code code = Code.fromIsbn13("9781234567890");
 
         Publication publication = new Publication(

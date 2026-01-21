@@ -822,9 +822,11 @@ class AuctionTest {
 
     private static BibliographicalData instantiateBibliographicalData() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
+        Author author = new Author(authorProfile, "valid bio");
 
-        List<Profile> authors = new ArrayList<>();
-        authors.add(authorProfile);
+        List<Author> authors = new ArrayList<>();
+        authors.add(author);
+
 
         List<Genre> genres = new ArrayList<>();
         genres.add(new Genre ("Fantasy"));

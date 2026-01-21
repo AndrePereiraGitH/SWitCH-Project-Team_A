@@ -89,7 +89,8 @@ class ItemTest {
     }
 
     private Publication createValidPublication() {
-        Profile author = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+        Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+        Author author = new Author(profile, "valid bio" );
         Address address = new Address("R Maria", "12", "156-5", new Country("PORTUGAL"));
         Email email = new Email("maria1", "gmail.com");
         Contact contact = new Contact("915945695", "+351", email, address);
@@ -107,7 +108,7 @@ class ItemTest {
                 "Some text"
         );
 
-        User user = new User("maria1", contact, author, UserRole.NORMAL_USER
+        User user = new User("maria1", contact, profile, UserRole.NORMAL_USER
         );
 
         Code code = Code.fromIsbn13("9781234567890");

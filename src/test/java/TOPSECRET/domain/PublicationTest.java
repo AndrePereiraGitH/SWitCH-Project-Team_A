@@ -20,7 +20,8 @@ class PublicationTest {
         Country country2 = new Country("Germany");
 
 
-        Profile author1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
+        Profile profile1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
+        Author author1 = new Author(profile1, "valio bio");
         Address address1 = new Address("R Maria", "12", "156-5", country2);
         Email email1 = new Email("Maria1", "gmail.com");
         Contact contact1 = new Contact("915945695", "+351", email1, address1);

@@ -35,7 +35,8 @@ class ListingTest {
     User validSeller = new User("Seller1",validContact,validProfile,UserRole.NORMAL_USER);
 
     // BibliographicalData
-    Profile author = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+    Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+    Author author = new Author(profile, "valio bio");
     Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
     Email email = new Email("Maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
@@ -57,7 +58,7 @@ class ListingTest {
     PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"
     );
 
-    User user = new User("maria1", contact, author, UserRole.NORMAL_USER);
+    User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
     PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
 
     Code code1 = Code.fromIsbn13("9781234567890");

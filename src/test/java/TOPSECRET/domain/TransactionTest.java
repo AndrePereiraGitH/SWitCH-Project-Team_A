@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -310,10 +311,11 @@ class TransactionTest {
     }
 
     private static BibliographicalData createValidBibliographicalData(){
-        List<Profile> authors = List.of(
-                new Profile("J. K. Rowling", new Country("Portugal"), LocalDate.of(1995, 10, 14)),
-                new Profile("Freida", new Country("Spain"), LocalDate.of(1956, 10, 10))
+        List<Author> authors = List.of(
+                new Author(new Profile("J. K. Rowling", new Country("Portugal"), LocalDate.of(1995, 10, 14)), "valid bio1"),
+                new Author(new Profile("Freida", new Country("Spain"), LocalDate.of(1956, 10, 10)), "valid bio2")
         );
+
 
         return new BibliographicalData(
                 "O Senhor do Anéis: A irmandade do Anel",

@@ -18,11 +18,15 @@ class BibliographicalDataTest {
 
         // arrange
         String title = "The Age of AI: And Our Human Future";
-        List<Profile> authors= new ArrayList<>();
+        //List<Profile> authors= new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
         Country country = new Country("UNITED_STATES");
-        Profile author2 = new Profile("Henry A Kissinger", country,LocalDate.of(1923,05,27));
-        Profile author3 = new Profile("Eric Schmidt III", country,LocalDate.of(1955,04,27));
-        Profile author4 = new Profile("Daniel Huttenlocher", country,LocalDate.of(1959,01,01));
+        Profile profile2 = new Profile("Henry A Kissinger", country,LocalDate.of(1923,05,27));
+        Profile profile3 = new Profile("Eric Schmidt III", country,LocalDate.of(1955,04,27));
+        Profile profile4 = new Profile("Daniel Huttenlocher", country,LocalDate.of(1959,01,01));
+        Author author2 = new Author(profile2, "valid bio2");
+        Author author3 = new Author(profile3, "valid bio3");
+        Author author4 = new Author(profile4, "valid bio4");
         authors.add(author2);
         authors.add(author3);
         authors.add(author4);
@@ -60,9 +64,12 @@ class BibliographicalDataTest {
         assertEquals("The Age of AI: And Our Human Future", bibliographicalData.getTitle());
 
         assertEquals(3, bibliographicalData.getAuthors().size());
-        assertEquals("Henry A Kissinger", bibliographicalData.getAuthors().get(0).getName());
-        assertEquals("Eric Schmidt III", bibliographicalData.getAuthors().get(1).getName());
-        assertEquals("Daniel Huttenlocher", bibliographicalData.getAuthors().get(2).getName());
+//        assertEquals("Henry A Kissinger", bibliographicalData.getAuthors().get(0).getName());
+//        assertEquals("Eric Schmidt III", bibliographicalData.getAuthors().get(1).getName());
+//        assertEquals("Daniel Huttenlocher", bibliographicalData.getAuthors().get(2).getName());
+        assertEquals("Henry A Kissinger", bibliographicalData.getAuthors().get(0).getProfile().getName());
+        assertEquals("Eric Schmidt III", bibliographicalData.getAuthors().get(1).getProfile().getName());
+        assertEquals("Daniel Huttenlocher", bibliographicalData.getAuthors().get(2).getProfile().getName());
 
         assertEquals(Locale.ENGLISH, bibliographicalData.getLanguage());
 

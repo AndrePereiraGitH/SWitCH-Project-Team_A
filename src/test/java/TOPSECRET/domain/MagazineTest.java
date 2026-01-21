@@ -35,7 +35,8 @@ class MagazineTest {
     private Item validItem() {
         // Author / Profile
         Country authorCountry = new Country("UNITED_STATES");
-        Profile author = new Profile("Author Name", authorCountry, LocalDate.of(1980, 1, 1));
+        Profile profile = new Profile("Author Name", authorCountry, LocalDate.of(1980, 1, 1));
+        Author author = new Author(profile, "valio bio");
 
         // Publisher dependencies
         Country addressCountry = new Country("PARAGUAY");
@@ -59,7 +60,7 @@ class MagazineTest {
         PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
 
         // User
-        User user = new User("user01", contact, author, UserRole.NORMAL_USER);
+        User user = new User("user01", contact, profile, UserRole.NORMAL_USER);
 
         // Code for the publication
         Code code = Code.fromIsbn13("9781234567890");
