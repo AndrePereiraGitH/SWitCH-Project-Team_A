@@ -77,6 +77,6 @@ class RegisterUserControllerTest {
                 () -> registerUserController.registerUser(userName, contact, profile, UserRole.NORMAL_USER)
         );
 
-        assertEquals("User validation failed or user already exists", exception.getMessage());
+        assertEquals("User already exists", exception.getMessage());
     }
 }

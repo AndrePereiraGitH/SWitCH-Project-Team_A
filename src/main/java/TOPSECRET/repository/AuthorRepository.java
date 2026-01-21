@@ -41,4 +41,8 @@ public class AuthorRepository {
         }
         return false;
     }
+
+    public List<String> getAllAuthors() {
+        return List.of("Author A", "Author B");
+    }
 }

@@ -11,33 +11,41 @@ public class UserRepository {
 
     private final List<User> users = new ArrayList<>();
 
+    private boolean validateUser(User user) {
+        if (user == null) {
+            return false;
+        }
+
+        for (User u : users) {
+            if (u.getUserName().equals(user.getUserName())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public void createAndAddUser(String _userName, Contact _contact, Profile _profile, UserRole _userRole) {
         User newUser = new User(_userName, _contact, _profile, _userRole);
 
         if (!validateUser(newUser)) {
-            throw new IllegalArgumentException("User validation failed or user already exists");
+            throw new IllegalArgumentException("User already exists");
         }
 
         addUserToUserList(newUser);
     }
 
-    private boolean validateUser(User user) {
-        if (user == null) {
-            return false;
-        }
-        return !exists(user.getUserName());
+    private void addUserToUserList(User user) {
+        users.add(user);
     }
 
     public boolean exists(String userName) {
-        for (User u : users) {
-            if (u.getUserName().equals(userName)) {
+
+        for (User user : users) {
+            if (user.getUserName().equals(userName)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private void addUserToUserList(User user) {
-        users.add(user);
     }
 }
