@@ -5,6 +5,8 @@ import TOPSECRET.domain.Country;
 import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -33,4 +35,15 @@ public class AuthorRepositoryTest {
                 AuthorRepository.getInstance().createAndAddAuthor("repeatedName", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio")
         );
     }
-}
+
+
+    @Test
+    void getAllAuthors_shouldReturnUnmodifiableList() {
+            AuthorRepository repo = AuthorRepository.getInstance();
+
+            List<Author> result = repo.getAllAuthors();
+
+            assertThrows(UnsupportedOperationException.class, () -> result.clear());
+        }
+
+    }

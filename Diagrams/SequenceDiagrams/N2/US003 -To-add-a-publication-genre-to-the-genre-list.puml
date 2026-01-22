@@ -19,15 +19,15 @@ UI -->> Administrator : **2** Please enter the genre name
 Administrator -> UI : **3** name("romance")
 
 
-UI -> RegisterGenreController : **4** registerGenre(name)
+UI -> RegisterGenreController : **4** registerGenre(genreType)
 activate RegisterGenreController
 
-RegisterGenreController -> GenreRepository : **5** createAndAddGenre(name)
+RegisterGenreController -> GenreRepository : **5** createAndAddGenre(genreType)
 activate GenreRepository
 
   create "Romance:Genre" as Genre
 
-  GenreRepository -> Genre : **6** create(name)
+  GenreRepository -> Genre : **6** create(genreType)
   GenreRepository -> GenreRepository : **7** exists(romance)
 
   GenreRepository -> LG : **8** addToList(romance)
