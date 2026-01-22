@@ -3,17 +3,17 @@ title US003 - Register Genre to Official Genre List
 
 class ToRegisterGenreController {
   -_genreRepository: GenreRepository
-  +registerGenre(name: String): Genre
+  +registerGenre(genreType: String): Genre
 }
 
 class GenreRepository {
   -_genres: List<Genre>
-  +createAndAddGenre(name: String): Genre
-  -exists(name: String): boolean
+  +createAndAddGenre(genreType: String): Genre
+  -exists(genreType: String): boolean
 }
 
 class Genre {
-  -_name: String
+  -_genreType: String
   +getName(): String
 }
 

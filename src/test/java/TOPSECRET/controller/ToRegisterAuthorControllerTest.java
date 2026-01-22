@@ -4,11 +4,21 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Country;
 import TOPSECRET.repository.AuthorRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ToRegisterAuthorControllerTest {
+
+    private AuthorRepository authorRepository;
+
+    @BeforeEach
+    void setUp() {
+        authorRepository = AuthorRepository.getInstance();
+        authorRepository.clear();
+    }
+
     @Test
     void shouldAddAuthor() {
         ToRegisterAuthorController controller = new ToRegisterAuthorController(AuthorRepository.getInstance());

@@ -1,9 +1,9 @@
-/*package TOPSECRET.controller;
+package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
-import TOPSECRET.dto.DirectSaleDTO;
-import TOPSECRET.dto.DirectSaleMapper;
+import TOPSECRET.dto.DirectSaleDTO_US023;
+import TOPSECRET.dto.DirectSaleMapper_US023;
 import TOPSECRET.repository.DirectSaleRepository;
 import TOPSECRET.repository.PublicationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,7 +120,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         PublicationRepository publicationRepo = new PublicationRepository(List.of(pub1, pub2));
         DirectSaleRepository directSaleRepo = new DirectSaleRepository(List.of());
-        DirectSaleMapper directSaleMapper = new DirectSaleMapper();
+        DirectSaleMapper_US023 directSaleMapper = new DirectSaleMapper_US023();
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(publicationRepo, directSaleRepo, directSaleMapper);
@@ -141,7 +141,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         PublicationRepository publicationRepo = new PublicationRepository(List.of(pub));
         DirectSaleRepository directSaleRepo = new DirectSaleRepository(List.of());
-        DirectSaleMapper mapper = new DirectSaleMapper();
+        DirectSaleMapper_US023 mapper = new DirectSaleMapper_US023();
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(publicationRepo, directSaleRepo, mapper);
@@ -169,17 +169,17 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds1, ds2));
         PublicationRepository pubRepo = new PublicationRepository(List.of());
-        DirectSaleMapper mapper = new DirectSaleMapper();
+        DirectSaleMapper_US023 mapper = new DirectSaleMapper_US023();
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
 
         // act
-        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(targetPublication);
+        List<DirectSaleDTO_US023> result = controller.getListOfItemsOnDirectSale(targetPublication);
 
         // assert
         assertEquals(2, result.size());
-        DirectSaleDTO dto = result.get(0);
+        DirectSaleDTO_US023 dto = result.get(0);
         assertAll(
                 () -> assertEquals(validItem1.getPublication().getBibliographicalData().getTitle(), dto.publicationTitle),
                 () -> assertEquals(validPrice.getPrice(), dto.price),
@@ -199,13 +199,13 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         DirectSaleRepository dsRepo = new DirectSaleRepository(List.of());
         PublicationRepository pubRepo = new PublicationRepository(List.of());
-        DirectSaleMapper mapper = new DirectSaleMapper();
+        DirectSaleMapper_US023 mapper = new DirectSaleMapper_US023();
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
 
         // act
-        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(unrelatedPublication);
+        List<DirectSaleDTO_US023> result = controller.getListOfItemsOnDirectSale(unrelatedPublication);
 
         // assert
         assertTrue(result.isEmpty());
@@ -229,17 +229,17 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds));
         PublicationRepository pubRepo = new PublicationRepository(List.of());
-        DirectSaleMapper mapper = new DirectSaleMapper();
+        DirectSaleMapper_US023 mapper = new DirectSaleMapper_US023();
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
 
         // act
-        List<DirectSaleDTO> result = controller.getListOfItemsOnDirectSale(targetPublication);
+        List<DirectSaleDTO_US023> result = controller.getListOfItemsOnDirectSale(targetPublication);
 
         // assert
         assertEquals(1, result.size());
-        DirectSaleDTO dto = result.get(0);
+        DirectSaleDTO_US023 dto = result.get(0);
 
         assertAll(
                 () -> assertEquals(validItem1.getPublication().getBibliographicalData().getTitle(), dto.publicationTitle),
@@ -250,4 +250,3 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         );
     }
 }
- */
