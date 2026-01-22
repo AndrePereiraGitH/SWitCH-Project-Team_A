@@ -10,16 +10,18 @@ actor Buyer
 participant ":UI025" as UI025
 participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenAuthorController" as Ctrl
 participant ":AuthorRepository" as AuthorRepository
+participant ":AuthorMapper_US025" as AuthorMapper
+participant ":authorDTO:AuthorDTO_US025" as AuthorDTO
+participant ":DirectSaleMapper_US025" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
-participant ":DirectSaleMapper" as Mapper
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-participant ":DirectSale" as DSDomain
-participant "directSaleDTO:\nDirectSaleDTO" as DTO
-participant "listOfDirectSaleDTO:\nList<DirectSaleDTO>" as ListDTO
+'participant ":DirectSale" as DSDomain
+participant "directSaleDTO:\nDirectSaleDTO_US025" as DTO
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US025>" as ListDTO
 
 
 ' Interactions
-Buyer -> UI025 : I want to get the list of items on\n direct sale of a given author
+Buyer -> UI025 : I want to get the list of items\n on direct sale of a given author
 activate UI025
 UI025 -> Ctrl : getAllAuthors()
 activate Ctrl
@@ -27,6 +29,14 @@ Ctrl -> AuthorRepository: getAllAuthors()
 activate AuthorRepository
 AuthorRepository --> Ctrl: listOfAllAuthors
 deactivate AuthorRepository
+
+Ctrl -> AuthorMapper: toDTO(listOfAllAuthors)
+activate AuthorMapper
+'AuthorMapper -> PubDTO
+AuthorMapper -> AuthorDTO **
+AuthorMapper --> Ctrl: listOfAllAuthorsDTO
+deactivate AuthorMapper
+
 Ctrl --> UI025 : listOfAllAuthors
 deactivate Ctrl
 Buyer <-- UI025 : Which author? Choose!
@@ -41,7 +51,7 @@ Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(author)
 activate DirectSaleRepository
 
 loop for each direct sale
-    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleAuthor(author)
+    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleAuthor(author))
 end
 
 DirectSaleRepository -> ListDS ** :
@@ -54,15 +64,8 @@ activate Mapper
 Mapper -> ListDTO ** :
 
     loop for each direct sale
-        Mapper -> DSDomain : getDetails()
-        activate DSDomain
-        DSDomain --> Mapper : details
-        deactivate DSDomain
 
-        Mapper -> DTO ** : create(details)
-        activate DTO
-        DTO --> Mapper : directSaleDTO
-        deactivate DTO
+        Mapper -> DTO **
 
         Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
     end

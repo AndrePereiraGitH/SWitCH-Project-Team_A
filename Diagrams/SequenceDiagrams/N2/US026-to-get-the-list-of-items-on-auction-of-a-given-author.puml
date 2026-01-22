@@ -8,18 +8,20 @@ actor Buyer
 
 ' Participants
 participant ":UI026" as UI026
-participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
+participant ":ToGetTheListOfItemsOnAuctionOfAGivenAuthorController" as Ctrl
 participant ":AuthorRepository" as AuthorRepository
+participant ":AuthorMapper_US026" as AuthorMapper
+participant ":authorDTO:AuthorDTO_US026" as AuthorDTO
+participant ":AuctionMapper_US026" as Mapper
 participant ":AuctionRepository" as AuctionRepository
-participant ":AuctionMapper" as Mapper
-participant "listOfAuction:\nList<Auction>" as ListDS
-participant ":Auction" as DSDomain
-participant "AuctionDTO:\nAuctionDTO" as DTO
-participant "listOfAuctionDTO:\nList<AuctionDTO>" as ListDTO
+participant "listOfAuction:\nList<Auction>" as ListAuc
+'participant ":Auction" as DSDomain
+participant "auctionDTO:\nAuctionDTO_US025" as DTO
+participant "listOfAuctionDTO:\nList<AuctionDTO_US025>" as ListDTO
 
 
 ' Interactions
-Buyer -> UI026 : I want to get the list of items on\n auction of a given author
+Buyer -> UI026 : I want to get the list of items\n on auction of a given author
 activate UI026
 UI026 -> Ctrl : getAllAuthors()
 activate Ctrl
@@ -27,6 +29,14 @@ Ctrl -> AuthorRepository: getAllAuthors()
 activate AuthorRepository
 AuthorRepository --> Ctrl: listOfAllAuthors
 deactivate AuthorRepository
+
+Ctrl -> AuthorMapper: toDTO(listOfAllAuthors)
+activate AuthorMapper
+'AuthorMapper -> PubDTO
+AuthorMapper -> AuthorDTO **
+AuthorMapper --> Ctrl: listOfAllAuthorsDTO
+deactivate AuthorMapper
+
 Ctrl --> UI026 : listOfAllAuthors
 deactivate Ctrl
 Buyer <-- UI026 : Which author? Choose!
@@ -40,11 +50,11 @@ activate Ctrl
 Ctrl -> AuctionRepository : getListOfItemsOnAuction(author)
 activate AuctionRepository
 
-loop for each auction
-    AuctionRepository -> AuctionRepository : checkAuctionAuthor(author)
+loop for each direct sale
+    AuctionRepository -> AuctionRepository : checkAuctionAuthor(author))
 end
 
-AuctionRepository -> ListDS ** :
+AuctionRepository -> ListAuc ** :
 AuctionRepository --> Ctrl : listOfAuction
 
 deactivate AuctionRepository
@@ -54,17 +64,10 @@ activate Mapper
 Mapper -> ListDTO ** :
 
     loop for each auction
-        Mapper -> DSDomain : getDetails()
-        activate DSDomain
-        DSDomain --> Mapper : details
-        deactivate DSDomain
 
-        Mapper -> DTO ** : create(details)
-        activate DTO
-        DTO --> Mapper : AuctionDTO
-        deactivate DTO
+        Mapper -> DTO **
 
-        Mapper -> Mapper : listOfAuctionsDTO.add(AuctionDTO)
+        Mapper -> Mapper : listOfAuctionsDTO.add(auctionDTO)
     end
 
 Mapper --> Ctrl : listOfAuctionsDTO
