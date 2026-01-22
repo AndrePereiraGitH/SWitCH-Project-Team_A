@@ -25,7 +25,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     private ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController controller;
     private AuthorRepository authorRepository;
     private DirectSaleRepository directSaleRepository;
-
     private Author author1;
     private Author author2;
 
@@ -100,7 +99,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
 
         User seller = new User(
-                "seller1",
+                "Seller Name",
                 new Contact(),
                 sellerProfile,
                 UserRole.NORMAL_USER

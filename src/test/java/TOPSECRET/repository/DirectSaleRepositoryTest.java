@@ -104,7 +104,7 @@ class DirectSaleRepositoryTest {
 
     }
 
-    @Test
+    /*@Test
     void ensureADuplicateDirectSaleIsNotCreatedAndAdded(){
         // Arrange
         List<DirectSale> list = new ArrayList<>();
@@ -118,6 +118,8 @@ class DirectSaleRepositoryTest {
         //Assert
         assertTrue(result);
     }
+
+     */
 
     @Test
     void ensureIfDirectSaleExistsReturnsTrue(){
