@@ -11,23 +11,18 @@ public class AuthorMapper_US025 {
         if (author == null) return null;
 
         AuthorDTO_US025 dto = new AuthorDTO_US025();
-        dto.name = author.getProfile().getName();
-        dto.country = author.getProfile().getCountry();
-        dto.dateOfBirth = author.getProfile().getBirthday();
-        dto.biography = author.getBiography();
+        dto.setName(author.getProfile().getName());
+        dto.setCountry(author.getProfile().getCountry());
+        dto.setDateOfBirth(author.getProfile().getBirthday());
+        dto.setBiography(author.getBiography());
 
         return dto;
     }
 
-    public AuthorDTO_US025 toDTO(List<Author> authors) {
-        if (authors == null || authors.isEmpty()) return null;
-
-        AuthorDTO_US025 dto = new AuthorDTO_US025();
-
-        dto.authors = authors.stream()
+    public List<AuthorDTO_US025> toDTO(List<Author> authors) {
+        if (authors == null || authors.isEmpty()) return List.of();
+        return authors.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
-
-        return dto;
     }
 }
