@@ -1,99 +1,89 @@
 @startuml
-autonumber
 hide footbox
-title US021 - Get the list of items on direct sale of a given genre
+autonumber
+title US021 - To get the list of items on direct sale of a given genre
 
 actor Buyer
 
 ' Participants
 participant ":UI021" as UI
-participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenGenreController" as Ctrl
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
-participant ":GenreMapper_US021" as GenreMapper_US021
+participant "listOfAllGenres:\n List<Genre>" as ListGenre
+participant ":GenreMapper_US021" as GenreMapper
 participant "genreDTO:\nGenreDTO_US021" as GenreDTO
-participant ":DirectSaleMapper_US021" as Mapper
+participant ":Genre" as Genre
+participant "listOfAllGenresDTO:\nList<GenreDTO_US021>" as ListGenreDTO
+participant ":DirectSaleMapper_US021" as DSMapper
 participant ":DirectSaleRepository" as DirectSaleRepo
-participant "listOfDirectSales:\nList<DirectSale>" as ListDS
-'participant ":DirectSale" as DirectSaleDomain
-participant "directSaleDTO:\nDirectSaleDTO_US021" as DTO
-participant "listOfDirectSalesDTO:\nList<DirectSaleDTO_US021>" as ListDTO
+participant "listOfDirectSale:\nList<DirectSale>" as ListDS
+participant "directSaleDTO:\nDirectSaleDTO_US021" as DSDTO
+participant ":DirectSale" as DS
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US021>" as ListDSDTO
 
 
 ' Interactions
+
+' Section 1 - Get all genres
 Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
 activate UI
-
 UI -> Ctrl : getAllGenres()
 activate Ctrl
-
-Ctrl -> GenreRepo : getAllGenres()
+Ctrl -> GenreRepo: getAllGenres()
 activate GenreRepo
-GenreRepo --> Ctrl : listOfAllGenres
+GenreRepo -> ListGenre **
+GenreRepo --> Ctrl: listOfAllGenres
 deactivate GenreRepo
-
-Ctrl -> GenreMapper_US021: toDTO(listOfAllGenre)
-activate GenreMapper_US021
-/'
-GenreMapper_US021 -> GenreDTO ** : create()
-activate GenreDTO
-GenreDTO --> GenreMapper_US021: GenreDTO
-deactivate GenreDTO
-GenreMapper_US021 -> GenreMapper_US021 : listOfAllGenreDTO.add(GenreDTO)
-'/
-GenreMapper_US021 -> GenreDTO **
-
-GenreMapper_US021 --> Ctrl: listOfAllGenreDTO
-deactivate GenreMapper_US021
-
-Ctrl --> UI : listOfAllGenres
+Ctrl -> GenreMapper: toDTO(listOfAllGenres)
+activate GenreMapper
+GenreMapper -> ListGenreDTO ** : create()
+loop for each genre
+    GenreMapper -> Genre: getDetails(genre)
+    activate Genre
+    Genre --> GenreMapper: genreDetails
+    deactivate Genre
+        GenreMapper -> GenreDTO ** : createDTO(genreDetails)
+    GenreDTO --> GenreMapper: genreDTO
+    GenreMapper --> ListGenreDTO: add(genreDTO)
+end
+GenreMapper --> Ctrl: listOfAllGenresDTO
+deactivate GenreMapper
+Ctrl --> UI : listOfAllGenresDTO
 deactivate Ctrl
-
-UI --> Buyer : Which genre? Choose!
+Buyer <-- UI : Which genre? Choose!
 deactivate UI
 
+' Section 2 - Get list of direct sales with the genre chosen
 Buyer -> UI : genre
 activate UI
-
 UI -> Ctrl : getListOfItemsOnDirectSale(genre)
 activate Ctrl
-
 Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSale(genre)
 activate DirectSaleRepo
-
+DirectSaleRepo -> ListDS ** : create()
 loop for each direct sale
-    DirectSaleRepo -> DirectSaleRepo : checkDirectSaleGenre(genre)
+    DirectSaleRepo -> DirectSaleRepo : isDirectSaleFromGenre(genre)
+    DirectSaleRepo -> ListDS: add(directSale)
 end
-
-DirectSaleRepo -> ListDS ** :
-DirectSaleRepo --> Ctrl : listOfDirectSales
+DirectSaleRepo --> Ctrl : listOfDirectSale
 deactivate DirectSaleRepo
-
-Ctrl -> Mapper : toDTO(listOfDirectSales)
-activate Mapper
-Mapper -> ListDTO ** :
-
-    loop for each direct sale
-        'Mapper -> DirectSaleDomain : getDetails()
-        'activate DirectSaleDomain
-        'DirectSaleDomain --> Mapper : details
-        'deactivate DirectSaleDomain
-
-        'Mapper -> DTO ** : create(details)
-        Mapper -> DTO **
-        'activate DTO
-        'DTO --> Mapper : directSaleDTO
-        'deactivate DTO
-
-        Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
-    end
-
-Mapper --> Ctrl : listOfDirectSalesDTO
-deactivate Mapper
-
-Ctrl --> UI : listOfDirectSalesDTO
+Ctrl -> DSMapper : toDTO(listOfDirectSale)
+activate DSMapper
+DSMapper -> ListDSDTO ** : create()
+loop for each direct sale
+    DSMapper -> DS: getDetails(directSale)
+    activate DS
+    DS --> DSMapper: directSaleDetails
+    deactivate DS
+    DSMapper -> DSDTO **: createDTO(directSaleDetails)
+    DSDTO --> DSMapper: directSaleDTO
+    DSMapper -> ListDSDTO : add(directSaleDTO)
+end
+DSMapper --> Ctrl : listOfDirectSaleDTO
+deactivate DSMapper
+Ctrl --> UI : listOfDirectSaleDTO
 deactivate Ctrl
-
-UI --> Buyer : Shows the list of items\n on direct sale
+UI --> Buyer : Shows the list of items on direct sale
 deactivate UI
 
 @enduml

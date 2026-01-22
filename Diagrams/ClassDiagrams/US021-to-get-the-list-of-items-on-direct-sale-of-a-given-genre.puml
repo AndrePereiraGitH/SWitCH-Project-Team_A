@@ -17,6 +17,11 @@ class GenreRepository {
 class GenreDTO_US021 {
 }
 
+class Genre {
+    -genreType: String
+    +getDetails()
+}
+
 
 class GenreMapper_US021 {
    +toDTO(listOfAllGenres: List<Genre)
@@ -28,43 +33,14 @@ class DirectSaleMapper_US021 {
 
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(genre: Genre)
+  -isDirectSaleFromGenre(genre)
 }
 
-/'
 class DirectSale {
   - listing: Listing
+  - directSaleDate: LocalDateTime
   +getDetails()
 }
-
-class Listing {
-  - item: Item
-  - saleType: SaleType
-}
-
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
-}
-
-class Item {
-    - publication: Publication
-}
-
-class Publication {
-    - bibliographicalData: BibliographicalData
-    - code: Code
-}
-
-class BibliographicalData {
-    - title: String
-    - genre: Genre
-}
-
-class Genre {
-    - genreType: String
-}
-'/
-
 ' Interactions
 
 UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
@@ -72,18 +48,9 @@ ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleRepository 
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreMapper_US021 : uses
 GenreMapper_US021 ..> GenreDTO_US021 : maps to
-'DirectSaleRepository "1 " --> " * " DirectSale : contains
+GenreMapper_US021 ..> Genre : communicates\n with
+DirectSaleMapper_US021 ..>  DirectSale : communicates\n with
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper_US021 : uses
 DirectSaleMapper_US021 ..> DirectSaleDTO_US021 : maps to
-'DirectSaleMapper_US021 ..> DirectSale : uses
-/'
-DirectSale "1" --> "1" Listing : has
-Listing "                                *" --> "1" SaleType : can be\nsold by
-Listing "1"--> "1..*" Item : lists an
-Item "*" --> "1" Publication: has
-Publication "*" --> "1" BibliographicalData: has
-BibliographicalData "*" --> "1..*" Genre: has
-Genre "1" ..> "1" GenreRepository: uses
-'/
 
 @enduml
