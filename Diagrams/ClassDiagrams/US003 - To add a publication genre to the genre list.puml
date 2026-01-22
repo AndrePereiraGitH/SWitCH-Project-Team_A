@@ -9,7 +9,7 @@ class ToRegisterGenreController {
 class GenreRepository {
   -_genres: List<Genre>
   +createAndAddGenre(genreType: String): Genre
-  -exists(genreType: String): boolean
+  -exists(genre: Genre): boolean
 }
 
 class Genre {
@@ -20,7 +20,7 @@ class Genre {
 
 ToRegisterGenreController "1" -.-> "1" GenreRepository : uses
 GenreRepository "1" --> "*" Genre : stores
-GenreRepository "1" --> "*" Genre : creates
+GenreRepository "1" -.-> "*" Genre : creates
 
 
 @enduml
