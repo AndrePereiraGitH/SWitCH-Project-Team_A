@@ -3,6 +3,8 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.MediaFormat;
 
+import java.util.Objects;
+
 public class PublicationType {
 
     private MediaFormat _mediaFormat;
@@ -26,6 +28,22 @@ public class PublicationType {
         this._mediaFormat = mediaFormat;
         this._typeOfBinding = typeOfBinding;
         this._details = details;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PublicationType that = (PublicationType) o;
+        return _mediaFormat == that._mediaFormat && _typeOfBinding == that._typeOfBinding && _details.equals(that._details);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(_mediaFormat, _typeOfBinding, _details);
     }
 
     public MediaFormat getMediaFormat() { return _mediaFormat; }

@@ -6,14 +6,13 @@ import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 public class PublicationTypeRepositoryTest {
 
     MediaFormat mediaFormat = MediaFormat.BOOK;
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
-    String details = "Hardback book with gold engravings";
+    String details = "Book with gold engravings";
 
 
     @Test
@@ -46,6 +45,7 @@ public class PublicationTypeRepositoryTest {
         assertTrue(result.contains(pt2));
     }
 
+
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist()
     {
@@ -55,6 +55,23 @@ public class PublicationTypeRepositoryTest {
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+
+    @Test
+    void shouldReturnExceptionWhenAddingDuplicatePublicationType()
+    {
+        PublicationTypeRepository repo = new PublicationTypeRepository();
+
+        PublicationType pt1 = new PublicationType(mediaFormat, typeOfBinding, details);
+        PublicationType pt2 = new PublicationType(mediaFormat, typeOfBinding, details);
+
+        repo.addAndValidatePublicationType(pt1);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.addAndValidatePublicationType(pt2));
+
+        assertEquals("Publication type already exists", ex.getMessage());
+        assertEquals(1, repo.getAllPublicationTypes().size());
     }
 
 }

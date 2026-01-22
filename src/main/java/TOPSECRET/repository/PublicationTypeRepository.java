@@ -1,7 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 
 import java.util.ArrayList;
@@ -15,8 +13,14 @@ public class PublicationTypeRepository {
 
     public PublicationType addAndValidatePublicationType(PublicationType pubType)
     {
-        if (pubType == null) {
+        if (pubType == null)
+        {
             throw new IllegalArgumentException("Publication type can't be null");
+        }
+
+        if (_publicationTypes.contains(pubType))
+        {
+            throw new IllegalArgumentException("Publication type already exists");
         }
 
         _publicationTypes.add(pubType);
