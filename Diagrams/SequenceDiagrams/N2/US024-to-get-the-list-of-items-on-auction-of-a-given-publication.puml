@@ -9,6 +9,8 @@ actor Buyer
 participant ":UI024" as UI024
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
+participant ":PublicationMapper" as PubMapper
+participant "publicationDTO:PublicationDTO" as PubDTO
 participant ":AuctionMapper" as Mapper
 participant ":AuctionRepository" as AuctionRepository
 participant "listOfAuction:\nList<Auction>" as ListAuc
@@ -24,8 +26,20 @@ activate Ctrl
 Ctrl -> PublicationRepository: getAllPublications()
 activate PublicationRepository
 PublicationRepository --> Ctrl: listOfAllPublications
-
 deactivate PublicationRepository
+
+Ctrl -> PubMapper: toDTO(listOfAllPublications)
+activate PubMapper
+'PubMapper -> PubDTO
+PubMapper -> PubDTO ** : create()
+activate PubDTO
+PubDTO --> PubMapper: PublicationDTO
+deactivate PubDTO
+PubMapper -> PubMapper : listOfAllPublicationsDTO.add(PublicationDTO)
+PubMapper --> Ctrl: listOfAllPublicationsDTO
+deactivate PubMapper
+
+
 Ctrl --> UI024 : listOfAllPublications
 deactivate Ctrl
 Buyer <-- UI024 : Which publication? Choose!
@@ -39,7 +53,7 @@ Ctrl -> AuctionRepository : getListOfItemsOnAuction(publication)
 activate AuctionRepository
 
 loop for each auction
-    AuctionRepository -> AuctionRepository : checkAuctionGenre(genre)
+    AuctionRepository -> AuctionRepository : checkAuctionPublication(publication)
 end
 
 AuctionRepository -> ListAuc ** :
