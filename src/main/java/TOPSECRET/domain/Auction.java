@@ -62,8 +62,7 @@ public class Auction {
             throw new IllegalArgumentException("Buy out price must be greater than Initial price.");
         }
 
-        }
-
+    }
 
     public boolean acceptBid(Bid bid) {
 
@@ -179,14 +178,11 @@ public class Auction {
         return Objects.equals(_listing, auction._listing)
                 && Objects.equals(_initialDate, auction._initialDate)
                 && Objects.equals(_finalDate, auction._finalDate)
-                && Objects.equals(_initialPrice, auction._initialPrice)
-                && Objects.equals(_buyOutPrice, auction._buyOutPrice)
-                && Objects.equals(_bidHistory, auction._bidHistory)
-                && _auctionStatus == auction._auctionStatus;
+                && Objects.equals(_buyOutPrice, auction._buyOutPrice);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_listing, _initialDate, _finalDate, _initialPrice, _buyOutPrice, _bidHistory, _auctionStatus);
+        return Objects.hash(_listing, _initialDate, _finalDate, _buyOutPrice);
     }
 }
