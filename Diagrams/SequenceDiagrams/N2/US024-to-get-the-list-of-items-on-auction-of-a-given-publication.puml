@@ -4,77 +4,87 @@ hide footbox
 autonumber
 title US024 - To get the list of items on auction of a given publication
 
-' Participants
 actor Buyer
-participant ":UI024" as UI024
-participant ":ToGetTheListOfItemsOnAuction\nOfAGivenPublicationController" as Ctrl
-participant ":PublicationRepository" as PublicationRepository
+
+' Participants
+participant ":UI024" as UI
+participant ":ToGetTheListOfItemsOn\nAuctionOfAGivenPublicationController" as Ctrl
+participant ":PublicationRepository" as PubRepo
+participant "listOfAllPublications:\n List<Publication>" as ListPub
 participant ":PublicationMapper_US024" as PubMapper
 participant "publicationDTO:\nPublicationDTO_US024" as PubDTO
-participant ":AuctionMapper_US024" as Mapper
-participant ":AuctionRepository" as AuctionRepository
+participant ":Publication" as Pub
+participant "listOfAllPublicationsDTO:\nList<PublicationDTO>" as ListPubDTO
+participant ":AuctionMapper_US024" as AucMapper
+participant ":AuctionRepository" as AuctionRepo
 participant "listOfAuction:\nList<Auction>" as ListAuc
-'participant ":Auction" as AucDomain
-participant "auctionDTO:\nAuctionDTO_US024" as DTO
-participant "listOfAuctionDTO:\nList<AuctionDTO_US024>" as ListDTO
+participant "AuctionDTO:\nAuctionDTO_US024" as AucDTO
+participant ":Auction" as Auc
+participant "listOfAuctionDTO:\nList<AuctionDTO_US024>" as ListAucDTO
 
-'Interactions
-Buyer -> UI024 : I want to get the list of items\n on auction of a given publication
-activate UI024
-UI024 -> Ctrl: getAllPublications()
+
+' Interactions
+
+' Section 1 - Get all publications
+Buyer -> UI : I want to get the list of items\n on auction of a given publication
+activate UI
+UI -> Ctrl : getAllPublications()
 activate Ctrl
-Ctrl -> PublicationRepository: getAllPublications()
-activate PublicationRepository
-PublicationRepository --> Ctrl: listOfAllPublications
-deactivate PublicationRepository
-
+Ctrl -> PubRepo: getAllPublications()
+activate PubRepo
+PubRepo -> ListPub **
+PubRepo --> Ctrl: listOfAllPublications
+deactivate PubRepo
 Ctrl -> PubMapper: toDTO(listOfAllPublications)
 activate PubMapper
-'PubMapper -> PubDTO
-PubMapper -> PubDTO **
+PubMapper -> ListPubDTO ** : create()
+loop for each publication
+    PubMapper -> Pub: getDetails(publication)
+    activate Pub
+    Pub --> PubMapper: publicationDetails
+    deactivate Pub
+        PubMapper -> PubDTO ** : createDTO(publicationDetails)
+    PubDTO --> PubMapper: publicationDTO
+    PubMapper --> ListPubDTO: add(publicationDTO)
+end    
 PubMapper --> Ctrl: listOfAllPublicationsDTO
 deactivate PubMapper
-
-
-Ctrl --> UI024 : listOfAllPublications
+Ctrl --> UI : listOfAllPublicationsDTO
 deactivate Ctrl
-Buyer <-- UI024 : Which publication? Choose!
-deactivate UI024
-Buyer -> UI024 : publication
-activate UI024
-UI024 -> Ctrl : getListOfItemsOnAuction(publication)
+Buyer <-- UI : Which publication? Choose!
+deactivate UI
+
+' Section 2 - Get list of auctions with the publication chosen
+Buyer -> UI : publication
+activate UI
+UI -> Ctrl : getListOfItemsOnAuction(publication)
 activate Ctrl
-
-Ctrl -> AuctionRepository : getListOfItemsOnAuction(publication)
-activate AuctionRepository
-
+Ctrl -> AuctionRepo : getListOfItemsOnAuction(publication)
+activate AuctionRepo
+AuctionRepo -> ListAuc ** : create()
 loop for each auction
-    AuctionRepository -> AuctionRepository : checkAuctionPublication(publication)
+    AuctionRepo -> AuctionRepo : isAuctionFromPublication(publication)
+    AuctionRepo -> ListAuc: add(auction)
 end
-
-AuctionRepository -> ListAuc ** :
-AuctionRepository --> Ctrl : listOfAuction
-
-deactivate AuctionRepository
-
-Ctrl -> Mapper : toDTO(listOfAuction)
-activate Mapper
-Mapper -> ListDTO ** :
-
-    loop for each auction
-
-        Mapper -> DTO **
-
-        Mapper -> Mapper : listOfAuctionsDTO.add(auctionDTO)
-    end
-
-Mapper --> Ctrl : listOfAuctionsDTO
-deactivate Mapper
-
-Ctrl --> UI024 : listOfAuctionsDTO
+AuctionRepo --> Ctrl : listOfAuction
+deactivate AuctionRepo
+Ctrl -> AucMapper : toDTO(listOfAuction)
+activate AucMapper
+AucMapper -> ListAucDTO ** : create()
+loop for each auction
+    AucMapper -> Auc: getDetails(auction)
+    activate Auc
+    Auc --> AucMapper: auctionDetails
+    deactivate Auc
+    AucMapper -> AucDTO **: createDTO(auctionDetails)
+    AucDTO --> AucMapper: auctionDTO
+    AucMapper -> ListAucDTO : add(auctionDTO)
+end
+AucMapper --> Ctrl : listOfAuctionDTO
+deactivate AucMapper
+Ctrl --> UI : listOfAuctionDTO
 deactivate Ctrl
-
-UI024 --> Buyer : Shows the list of items on auction
-deactivate UI024
+UI --> Buyer : Shows the list of items on auction
+deactivate UI
 
 @enduml

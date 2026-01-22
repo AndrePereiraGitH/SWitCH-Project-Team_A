@@ -17,20 +17,31 @@ class PublicationRepository{
 class PublicationDTO_US024 {
 }
 
+class Publication {
+    - bibliographicalData: BibliographicalData;
+    - publicationType: PublicationType;
+    - userName: User;
+    - publicationStatus: PublicationStatus;
+    - edition: String;
+    - code: Code;
+    +getDetails()
+}
+
 class PublicationMapper_US024 {
   +toDTO(listOfPublications)
 }
 
 class AuctionRepository {
   +getListOfItemsOnAuction(publication)
+  -isAuctionFromPublication(publication)
 }
 
-/'
 class Auction {
  - listing: Listing
-   +getDetails()
+ - initialDate: LocalDateTime
+ - finalDate: LocalDateTime
+ +getDetails()
 }
-'/
 
 class AuctionMapper_US024 {
   +toDTO(listOfAuction)
@@ -39,53 +50,16 @@ class AuctionMapper_US024 {
 class AuctionDTO_US024 {
 }
 
-/'
-class Listing {
-  - item: Item
-  - saleType: SaleType
-}
-
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
-}
-
-' class Item {
-'    - bibliographicalData: BibliographicalData
-'}
-
-class Item {
-    - publication: publication
-}
-
-class Publication {
-    - bibliographicalData: BibliographicalData
-    - code: Code
-}
-
-class BibliographicalData {
-    - title: String
-}
-'/
-
 ' Interactions
 
 UI024 ..> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationRepository : uses
+PublicationMapper_US024 ..> Publication: communicates with
 PublicationMapper_US024 ..> PublicationDTO_US024 : maps to
-'AuctionRepository "1" --> "*" Auction : contains
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionMapper_US024 : uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationMapper_US024 : uses
 AuctionMapper_US024 ..> AuctionDTO_US024 : maps to
-'AuctionMapper_US024 ..> Auction : uses
-/'
-Auction "0..1" -- "1" Listing : has
-Listing "                                *" -- "1" SaleType : can be\nsold by >
-Listing "1" -- "1..*  " Item : lists an >
-' Item "*" -- "1" BibliographicalData: has >
-Item "*" -- "1" Publication: refers to a >
-Publication "*" -- "1" BibliographicalData: has >
-'/
+AuctionMapper_US024 ..> Auction : uses
 
 @enduml
