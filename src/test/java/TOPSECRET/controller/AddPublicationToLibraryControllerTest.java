@@ -160,9 +160,39 @@ class AddPublicationToLibraryControllerTest {
                 "The list from the library is unmodifiable!");
     }
 
-//    @Test //This test should check if a publication is added to the library
-//    void addPublicationToLibraryShouldAddANewPublicationToLibrary(){
-//
-//        Library library = new Library()
-//    }
+    @Test //This test should check if a publication is added to the library
+    void addPublicationToLibraryShouldAddANewPublicationToLibrary(){
+
+        boolean result = controller.addPublicationToLib(publication2);
+
+        assertTrue(result, "The publication has been added successfully");
+        assertTrue(library.containsPublication(publication2), "The library now contains the added publication");
+    }
+
+    @Test //This test should check that we didn't add a duplicate
+    void addPublicationToLibraryShouldNotAddDuplicates(){
+
+        boolean result = controller.addPublicationToLib(publication1);
+
+        assertFalse(result, "The publication should not be added twice");
+        assertEquals(1, library.getAllPublications().size(), "Library only contains 1 of each publication");
+    }
+
+    @Test //This test will check if its possible to add multiple publications
+    void addPublicationsShouldBeAbleToAddMultiplePublications(){
+
+        boolean result2 = controller.addPublicationToLib(publication2);
+        boolean result3 = controller.addPublicationToLib(publication3);
+
+        assertTrue(result2, "Publication 2 should have been added to the Library");
+        assertTrue(result3, "Publication 3 should have been added to the Library");
+
+        assertEquals(3, library.getAllPublications().size(), "Library should contain 3 publications");
+    }
+
+    @Test //This test will check if an exception is thrown in case of a null publication
+    void addPublicationsShouldThrowExceptionInCaseOfNullPublication() {
+
+        assertThrows(IllegalArgumentException.class, () -> controller.addPublicationToLib(null), "Null Publications cannot be added");
+    }
 }

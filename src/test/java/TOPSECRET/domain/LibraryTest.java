@@ -81,12 +81,12 @@ class LibraryTest {
         );
 
         //Users (using the empty constructor)
-        User user5 = new User();
+        User user7 = new User();
         User user2 = new User();
         User user3 = new User();
 
         //Creating some sample publications, using empty users from the empty constructor in User class
-        publication1 = new Publication(data1, publicationType, user5, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
+        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
         publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
         publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
     }
