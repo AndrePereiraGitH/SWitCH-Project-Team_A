@@ -6,7 +6,7 @@ title US003 - Register Genre to Official Genre List
 actor Administrator
 participant ":UI003" as UI
 
-participant "ToGetListOfGenreController" as RegisterGenreController
+participant "ToRegisterGenreController" as RegisterGenreController
 
 participant ":GenreRepository" as GenreRepository
 participant ":List<Genre>" as LG
