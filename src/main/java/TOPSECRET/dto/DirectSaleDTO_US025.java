@@ -17,4 +17,25 @@ public class DirectSaleDTO_US025 {
         this.listingTitle = listingTitle;
         this.seller = seller;
     }
+
+    public String getTitle() {
+
+        return publicationTitle;
+    }
+
+    public List<String> getAuthors() {
+        return authors;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public String getListingTitle() {
+        return listingTitle;
+    }
+
+    public String getSeller() {
+        return seller;
+    }
 }
