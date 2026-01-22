@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.User;
 
+import javax.management.InstanceNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,10 +17,14 @@ public class LibraryRepository {
         this.libraries = libraries;
     }
 
-    public Library getLibraryOfUser(String _username){
+        public Library getLibraryOfUser(String _username) throws InstanceNotFoundException {
 
-        //Create Library if the user doesn't have one yet
-        return libraries.computeIfAbsent(_username, name -> new Library());
+            Library library = libraries.get(_username);
+
+            if (library == null) {
+                throw new InstanceNotFoundException("This user does not have a library");
+            }
+
+            return library;
+        }
     }
-
-}

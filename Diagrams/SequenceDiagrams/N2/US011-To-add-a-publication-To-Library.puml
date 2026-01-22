@@ -39,8 +39,10 @@ Ctrl --> UI: ListOfDifferentPublications
 deactivate Ctrl
 
 UI --> User: List of publications, select one!
+deactivate UI
 
 User -> UI: selectedPub
+activate UI
 UI -> Ctrl: addPublicationToLib(selectedPub)
 activate Ctrl
 

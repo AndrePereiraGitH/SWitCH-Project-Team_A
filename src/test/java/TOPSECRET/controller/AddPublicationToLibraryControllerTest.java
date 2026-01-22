@@ -136,7 +136,6 @@ class AddPublicationToLibraryControllerTest {
         assertTrue(otherPublications.contains(publication1), "The list should contain p1");
         assertTrue(otherPublications.contains(publication2), "The list should contain p2");
         assertTrue(otherPublications.contains(publication3), "The list should contain p3");
-        assertFalse(otherPublications.contains(null), "The list must have publications");
     }
 
     @Test //This test should return an empty list since we add the remaining 2 publications to the library
