@@ -10,7 +10,7 @@ class RegisterNewPublicationCtrl {
 +createAndAddPublication(pub1)
 }
 
-class SystemPublicationRepository{
+class PublicationRepository{
 
 -validate (pub1)
 +createAndAddPublicationToSystem(pub1)
@@ -22,8 +22,8 @@ class Publication {
 
 ' interactions
 UI010 "1" ..> "1" RegisterNewPublicationCtrl : contacts
-RegisterNewPublicationCtrl "1" ..> "1" SystemPublicationRepository : uses
-SystemPublicationRepository "1" -> "*" Publication : owns
+RegisterNewPublicationCtrl "1" ..> "1" PublicationRepository : uses
+PublicationRepository "1" -> "*" Publication : owns
 
 'missing cardinalities
 

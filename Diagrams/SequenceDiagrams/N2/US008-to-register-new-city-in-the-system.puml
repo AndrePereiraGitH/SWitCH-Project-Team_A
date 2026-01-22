@@ -9,7 +9,7 @@ actor Administrator
 participant ":UI" as UI
 
 
-participant ":US008 RegisterCityController" as CityController
+participant ":US008_toRegisterACityCtrl" as CityController
 participant ":CountryRepository" as CountryRepository
 participant ":CityRepository" as AddressRepository
 
