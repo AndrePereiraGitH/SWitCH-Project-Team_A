@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectSaleMapper {
+public class DirectSaleMapper_US025 {
 
-    public List<DirectSaleDTO> toDTO(DirectSale ds) {
+    public List<DirectSaleDTO_US025> toDTO(DirectSale ds) {
 
-        List<DirectSaleDTO> dtos = new ArrayList<>();
+        List<DirectSaleDTO_US025> dtos = new ArrayList<>();
 
         for (Item item : ds.getListing().getItems()) {
 
@@ -29,18 +29,18 @@ public class DirectSaleMapper {
 
             String seller = ds.getListing().getSeller().getProfile().getName();
 
-            dtos.add(new DirectSaleDTO(publicationTitle, authors, price, listingTitle, seller));
+            dtos.add(new DirectSaleDTO_US025(publicationTitle, authors, price, listingTitle, seller));
         }
 
         return dtos;
     }
 
-    public List<DirectSaleDTO> toDTO(List<DirectSale> directSales) {
+    public List<DirectSaleDTO_US025> toDTO(List<DirectSale> directSales) {
 
-        List<DirectSaleDTO> result = new ArrayList<>();
+        List<DirectSaleDTO_US025> result = new ArrayList<>();
 
         for (DirectSale ds : directSales) {
-            List<DirectSaleDTO> itemDTOs = toDTO(ds);
+            List<DirectSaleDTO_US025> itemDTOs = toDTO(ds);
             result.addAll(itemDTOs);
         }
 
