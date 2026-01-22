@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class US004ControllerTest {
+class US004ToRegisterAppraisalEntityControllerTest {
 
     // Helper to create a valid Contact
     private Contact createValidContact() {
@@ -32,7 +32,7 @@ class US004ControllerTest {
     void shouldRegisterAppraisalEntitySuccessfully() {
 
         // ARRANGE
-        US004Controller controller = new US004Controller();
+        US004ToRegisterAppraisalEntityController controller = new US004ToRegisterAppraisalEntityController();
 
         String name = "Entity One";
         Contact contact = createValidContact();
@@ -56,7 +56,7 @@ class US004ControllerTest {
     void shouldThrowExceptionWhenRegisteringDuplicateAppraisalEntity() {
 
         // ARRANGE
-        US004Controller controller = new US004Controller();
+        US004ToRegisterAppraisalEntityController controller = new US004ToRegisterAppraisalEntityController();
 
         String name = "Entity One";
         Contact contact = createValidContact();

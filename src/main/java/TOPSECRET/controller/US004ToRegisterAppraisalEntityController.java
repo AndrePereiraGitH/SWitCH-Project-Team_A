@@ -10,12 +10,12 @@ import TOPSECRET.repository.AppraisalEntityRepository;
 // It receives data from the user interface and delegates the creation and registration of AppraisalEntity objects to the repository.
 // It does not contain business rules or persistence logic.
 
-public class US004Controller {
+public class US004ToRegisterAppraisalEntityController {
 
     private AppraisalEntityRepository _appraisalEntityRepository;
 
     //  Constructor not needed
-      public US004Controller () {
+      public US004ToRegisterAppraisalEntityController() {
           this._appraisalEntityRepository = new AppraisalEntityRepository();
       }
 

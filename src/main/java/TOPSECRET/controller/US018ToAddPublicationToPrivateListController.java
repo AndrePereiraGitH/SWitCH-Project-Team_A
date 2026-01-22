@@ -1,13 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications;
-import TOPSECRET.domain.Publication;
-import TOPSECRET.domain.User;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
-
 // Controller for US018 - Add publication to private collection.
 // Acts as the entry point between UI and repository.
-public class US018Controller {
+public class US018ToAddPublicationToPrivateListController {
 //
 //    private CollectionOfPublicationsRepository _repository;
 //
