@@ -7,76 +7,84 @@ title US023 - To get the list of items on direct sale of a given publication
 actor Buyer
 
 ' Participants
-participant ":UI023" as UI023
-participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as Ctrl
-participant ":PublicationRepository" as PublicationRepository
+participant ":UI023" as UI
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
+participant ":PublicationRepository" as PubRepo
+participant "listOfAllPublications:\n List<Publication>" as ListPub
 participant ":PublicationMapper_US023" as PubMapper
 participant "publicationDTO:\nPublicationDTO_US023" as PubDTO
-participant ":DirectSaleMapper_US023" as Mapper
-participant ":DirectSaleRepository" as DirectSaleRepository
+participant ":Publication" as Pub
+participant "listOfAllPublicationsDTO:\nList<PublicationDTO>" as ListPubDTO
+participant ":DirectSaleMapper_US023" as DSMapper
+participant ":DirectSaleRepository" as DirectSaleRepo
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-'participant ":DirectSale" as DSDomain
-participant "directSaleDTO:\nDirectSaleDTO_US023" as DTO
-participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US023>" as ListDTO
+participant "directSaleDTO:\nDirectSaleDTO_US023" as DSDTO
+participant ":DirectSale" as DS
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US023>" as ListDSDTO
 
 
 ' Interactions
-Buyer -> UI023 : I want to get the list of items\n on direct sale of a given publication
-activate UI023
-UI023 -> Ctrl : getAllPublications()
-activate Ctrl
-Ctrl -> PublicationRepository: getAllPublications()
-activate PublicationRepository
-PublicationRepository --> Ctrl: listOfAllPublications
-deactivate PublicationRepository
 
+' Section 1 - Get all publications
+Buyer -> UI : I want to get the list of items\n on direct sale of a given publication
+activate UI
+UI -> Ctrl : getAllPublications()
+activate Ctrl
+Ctrl -> PubRepo: getAllPublications()
+activate PubRepo
+PubRepo -> ListPub **
+PubRepo --> Ctrl: listOfAllPublications
+deactivate PubRepo
 Ctrl -> PubMapper: toDTO(listOfAllPublications)
 activate PubMapper
-'PubMapper -> PubDTO
-PubMapper -> PubDTO **
+PubMapper -> ListPubDTO ** : create()
+loop for each publication
+    PubMapper -> Pub: getDetails(publication)
+    activate Pub
+    Pub --> PubMapper: publicationDetails
+    deactivate Pub
+        PubMapper -> PubDTO ** : createDTO(publicationDetails)
+    PubDTO --> PubMapper: publicationDTO
+    PubMapper --> ListPubDTO: add(publicationDTO)
+end    
 PubMapper --> Ctrl: listOfAllPublicationsDTO
 deactivate PubMapper
-
-Ctrl --> UI023 : listOfAllPublications
+Ctrl --> UI : listOfAllPublicationsDTO
 deactivate Ctrl
-Buyer <-- UI023 : Which publication? Choose!
-deactivate UI023
-Buyer -> UI023 : publication
-activate UI023
+Buyer <-- UI : Which publication? Choose!
+deactivate UI
 
-UI023 -> Ctrl : getListOfItemsOnDirectSale(publication)
+' Section 2 - Get list of direct sales with the publication chosen
+Buyer -> UI : publication
+activate UI
+UI -> Ctrl : getListOfItemsOnDirectSale(publication)
 activate Ctrl
-
-Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(publication)
-activate DirectSaleRepository
-
+Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSale(publication)
+activate DirectSaleRepo
+DirectSaleRepo -> ListDS ** : create()
 loop for each direct sale
-    DirectSaleRepository -> DirectSaleRepository : checkDirectSalePublication(publication))
+    DirectSaleRepo -> DirectSaleRepo : isDirectSaleFromPublication(publication)
+    DirectSaleRepo -> ListDS: add(directSale)
 end
-
-DirectSaleRepository -> ListDS ** :
-DirectSaleRepository --> Ctrl : listOfDirectSale
-
-deactivate DirectSaleRepository
-
-Ctrl -> Mapper : toDTO(listOfDirectSale)
-activate Mapper
-Mapper -> ListDTO ** :
-
-    loop for each direct sale
-
-        Mapper -> DTO **
-
-        Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
-    end
-
-Mapper --> Ctrl : listOfDirectSalesDTO
-deactivate Mapper
-
-Ctrl --> UI023 : listOfDirectSalesDTO
+DirectSaleRepo --> Ctrl : listOfDirectSale
+deactivate DirectSaleRepo
+Ctrl -> DSMapper : toDTO(listOfDirectSale)
+activate DSMapper
+DSMapper -> ListDSDTO ** : create()
+loop for each direct sale
+    DSMapper -> DS: getDetails(directSale)
+    activate DS
+    DS --> DSMapper: directSaleDetails
+    deactivate DS
+    DSMapper -> DSDTO **: createDTO(directSaleDetails)
+    DSDTO --> DSMapper: directSaleDTO
+    DSMapper -> ListDSDTO : add(directSaleDTO)
+end
+DSMapper --> Ctrl : listOfDirectSaleDTO
+deactivate DSMapper
+Ctrl --> UI : listOfDirectSaleDTO
 deactivate Ctrl
-
-UI023 --> Buyer : Shows the list of items on direct sale
-deactivate UI023
+UI --> Buyer : Shows the list of items on direct sale
+deactivate UI
 
 @enduml

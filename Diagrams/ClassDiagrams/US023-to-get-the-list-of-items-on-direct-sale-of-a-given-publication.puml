@@ -2,7 +2,6 @@
 title US023 - To get the list of items on direct sale of a given publication
 
 class UI023{
-
 }
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
@@ -21,16 +20,27 @@ class PublicationMapper_US023 {
   +toDTO(listOfPublication)
 }
 
-class DirectSaleRepository {
-  +getListOfItemsOnDirectSale(publication)
+class Publication {
+    - bibliographicalData: BibliographicalData;
+    - publicationType: PublicationType;
+    - userName: User;
+    - publicationStatus: PublicationStatus;
+    - edition: String;
+    - code: Code;
+    +getDetails()
 }
 
-/'
+class DirectSaleRepository {
+  +getListOfItemsOnDirectSale(publication)
+  -isDirectSaleFromPublication(publication)
+}
+
+
 class DirectSale {
   - listing: Listing
+  - directSaleDate: LocalDateTime
   +getDetails()
 }
-'/
 
 class DirectSaleMapper_US023 {
   +toDTO(listOfDirectSale)
@@ -39,53 +49,19 @@ class DirectSaleMapper_US023 {
 class DirectSaleDTO_US023 {
 }
 
-/'
-class Listing {
-  - item: Item
-  - saleType: SaleType
-}
-
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
-}
-
-'class Item {
-'    - bibliographicalData: BibliographicalData
-'}
-
-class Item {
-    - publication: publication
-}
-
-class Publication {
-    - bibliographicalData: BibliographicalData
-    - code: Code
-}
-
-class BibliographicalData {
-    - title: String
-}
-'/
-
 ' Interactions
 
 UI023 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
+
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationRepository: uses
-PublicationMapper_US023 ..> PublicationDTO_US023 : maps to
-'DirectSaleRepository "1 " --> " * " DirectSale : contains
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleMapper_US023 : uses
-DirectSaleMapper_US023 ..> DirectSaleDTO_US023 : maps to
-'DirectSaleMapper_US023 ..> DirectSale : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationMapper_US023 : uses
-/'
-DirectSale "1" -- "1" Listing : uses
-Listing "                                *" -- "1" SaleType : can be sold by
-Listing "1" -- "1..*    " Item : lists an
-' Item "*" -- "1" BibliographicalData: has
-Item "*" -- "1" Publication: refers to a
-Publication "*" -- "1" BibliographicalData: has
-'/
+
+PublicationMapper_US023 ..> PublicationDTO_US023 : maps to
+PublicationMapper_US023 ..> Publication : communicates with
+
+DirectSaleMapper_US023 ..> DirectSaleDTO_US023 : maps to
+DirectSaleMapper_US023 ..> DirectSale : communicates\n with
 
 @enduml
