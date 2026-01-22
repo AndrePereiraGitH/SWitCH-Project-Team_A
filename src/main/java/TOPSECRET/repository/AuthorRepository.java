@@ -54,4 +54,12 @@ public class AuthorRepository {
     public List<Author> getAllAuthors() {
         return List.copyOf(this._authors);
     }
+
+    /**
+     * Clears repository state.
+     * Intended for testing purposes only.
+     */
+    public void clear() {
+        _authors.clear();
+    }
 }

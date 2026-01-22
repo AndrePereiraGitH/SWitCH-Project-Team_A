@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Country;
 import TOPSECRET.domain.Profile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class AuthorRepositoryTest {
+
+    private AuthorRepository authorRepository;
+
+    @BeforeEach
+    void setUp() {
+        authorRepository = AuthorRepository.getInstance();
+        authorRepository.clear();
+    }
 
     @Test
     void shouldCreateAuthor() {
