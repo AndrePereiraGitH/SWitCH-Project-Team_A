@@ -9,6 +9,8 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ class LibraryTest {
     //should test adding publications to the library
     //should test getting all publications present in the library
     //should test checking if a specific publication in is the library
+
+    private User user1;
 
     private Library library;
 
@@ -31,7 +35,7 @@ class LibraryTest {
         Country country = new Country("Portugal");
         Profile profile = new Profile("profile1", country, LocalDate.of(1990, 1, 1));
         Contact contact = new Contact();
-        User user1 = new User("user1", contact, profile, UserRole.NORMAL_USER);
+        user1 = new User("user1", contact, profile, UserRole.NORMAL_USER);
 
         library = new Library(new ArrayList<>(), "Test Library", user1);
 
@@ -92,6 +96,61 @@ class LibraryTest {
     }
 
     //Now that we have the preparation setup, we begin the Tests
+
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void constructor_shouldThrowExceptionWhenInvalidName(String libraryName) {
+        // Arrange
+        Profile profile = new Profile("name", new Country("Portugal"), LocalDate.now());
+        User user = new User("valid name", new Contact(), profile, UserRole.NORMAL_USER);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Library(libraryName, user));
+    }
+
+    @Test
+    void constructor_shouldThrowExceptionWhenInvalidUser() {
+        // Arrange
+        String libraryName = "Some valid name";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Library(libraryName, null));
+    }
+
+    @Test
+    void constructor_initializesInstanceWhenValidParameters() {
+        // Arrange
+        String libraryName = "Library name";
+        Profile profile = new Profile("name", new Country("Portugal"), LocalDate.now());
+        User user = new User("valid name", new Contact(), profile, UserRole.NORMAL_USER);
+
+        // Act
+        Library result = new Library(libraryName, user);
+
+        // Assert
+        assertEquals(libraryName, result.getLibraryName());
+        assertEquals(user, result.getUser());
+        assertEquals(0, result.getAllPublications().size());
+    }
+
+    @Test
+    void getLibraryName_shouldReturnLibraryName() {
+        // Act
+        String result = library.getLibraryName();
+
+        // Assert
+        assertEquals("Test Library", result);
+    }
+
+    @Test
+    void getUser_shouldReturnUser() {
+        // Act
+        User result = library.getUser();
+
+        // Assert
+        assertEquals(user1, result);
+    }
 
     @Test //This test sees if the publication1 gets added to the library using the method in Library
     void addPublicationToTheLibrary_shouldAddPublication(){

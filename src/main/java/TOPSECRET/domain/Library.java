@@ -7,25 +7,37 @@ public class Library {
 
     private final List<Publication> myPublications;
     private String libraryName;
-    private User username;
+    private User user;
 
     //Constructor
-    public Library(List<Publication> myPublications, String libraryName, User username){
+    public Library(String libraryName, User user) {
+        this(List.of(), libraryName, user);
+    }
+
+    public Library(List<Publication> myPublications, String libraryName, User user){
 
         if (libraryName == null || libraryName.isBlank()){
             throw new IllegalArgumentException("Library Name cannot be null or blank");
         }
-        if (username == null){
+        if (user == null){
             throw new IllegalArgumentException("User cannot be Null");
         }
         this.libraryName = libraryName;
-        this.username = username;
+        this.user = user;
         this.myPublications = new ArrayList<>();
     }
 
     //Get publications in the Library
     public List<Publication> getAllPublications(){
         return List.copyOf(myPublications); //read-only, so there are no external changes
+    }
+
+    public String getLibraryName(){
+        return libraryName;
+    }
+
+    public User getUser(){
+        return user;
     }
 
     //Add publication
