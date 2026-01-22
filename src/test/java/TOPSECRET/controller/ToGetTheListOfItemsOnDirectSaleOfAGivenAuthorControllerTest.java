@@ -158,9 +158,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
     }
 
-    // ============================================
     // getAllAuthors
-    // ============================================
     @Test
     void shouldReturnAllAuthors() {
         List<Author> authors = controller.getAllAuthors();
@@ -170,22 +168,20 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         assertTrue(authors.contains(author2));
     }
 
-    // ============================================
     // getAllAuthorNames
-    // ============================================
     @Test
     void shouldReturnAuthorNamesDTO() {
         AuthorDTO_US025 dto = controller.getAllAuthorNames();
 
         assertNotNull(dto);
-        assertEquals(2, dto.name.size());
-        assertTrue(dto.name.contains("Author One"));
-        assertTrue(dto.name.contains("Author Two"));
+        assertEquals(2, dto.getAuthors().size());
+        List<AuthorDTO_US025> authors = dto.getAuthors();
+        assertTrue(authors.stream().anyMatch(a -> "Author One".equals(a.getName())));
+        assertTrue(authors.stream().anyMatch(a -> "Author Two".equals(a.getName())));
+
     }
 
-    // ============================================
     // getListOfItemsOnDirectSale
-    // ============================================
     @Test
     void shouldReturnDirectSaleItemsForAuthor() {
         List<DirectSaleDTO_US025> result =
@@ -202,9 +198,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         assertTrue(dto.authors.contains("Author One"));
     }
 
-    // ============================================
     // Author without direct sales
-    // ============================================
     @Test
     void shouldReturnEmptyListForAuthorWithoutSales() {
         List<DirectSaleDTO_US025> result =
