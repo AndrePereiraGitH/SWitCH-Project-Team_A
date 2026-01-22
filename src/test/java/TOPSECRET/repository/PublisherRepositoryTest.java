@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class PublisherRepoTest {
 
     @Test
-    void  addPublisher_with_valid_attributes_should_succeed() {
+    void   addPublisher_with_valid_attributes_should_succeed() {
         // Arrange
         PublisherRepository repo = new PublisherRepository();
         Country country = new Country("Portugal");

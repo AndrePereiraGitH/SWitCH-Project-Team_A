@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class  US006ToRegisterNewPublisherControllerTest {
+class   US006ToRegisterNewPublisherControllerTest {
 //The controller can be created
     @Test
     void newControllerNewPublisher_with_success() {
