@@ -14,23 +14,29 @@ class PublicationRepository{
     +getAllPublications()
 }
 
-class PublicationDTO {
+class PublicationDTO_US023 {
+}
+
+class PublicationMapper_US023 {
+  +toDTO(listOfPublication)
 }
 
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(publication)
 }
 
+/'
 class DirectSale {
   - listing: Listing
   +getDetails()
 }
+'/
 
-class DirectSaleMapper {
+class DirectSaleMapper_US023 {
   +toDTO(listOfDirectSale)
 }
 
-class DirectSaleDTO {
+class DirectSaleDTO_US023 {
 }
 
 /'
@@ -67,11 +73,12 @@ class BibliographicalData {
 UI023 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationRepository: uses
-PublicationRepository ..> PublicationDTO : maps to
-DirectSaleRepository "1 " --> " * " DirectSale : contains
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleMapper : uses
-DirectSaleMapper ..> DirectSaleDTO : maps to
-DirectSaleMapper ..> DirectSale : uses
+PublicationMapper_US023 ..> PublicationDTO_US023 : maps to
+'DirectSaleRepository "1 " --> " * " DirectSale : contains
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleMapper_US023 : uses
+DirectSaleMapper_US023 ..> DirectSaleDTO_US023 : maps to
+'DirectSaleMapper_US023 ..> DirectSale : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationMapper_US023 : uses
 /'
 DirectSale "1" -- "1" Listing : uses
 Listing "                                *" -- "1" SaleType : can be sold by

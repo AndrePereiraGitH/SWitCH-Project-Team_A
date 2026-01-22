@@ -14,7 +14,7 @@ participant "genreDTO:GenreDTO" as GenreDTO
 participant ":DirectSaleMapper" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepo
 participant "listOfDirectSales:\nList<DirectSale>" as ListDS
-participant ":DirectSale" as DirectSaleDomain
+'participant ":DirectSale" as DirectSaleDomain
 participant "directSaleDTO:\nDirectSaleDTO" as DTO
 participant "listOfDirectSalesDTO:\nList<DirectSaleDTO>" as ListDTO
 
@@ -33,11 +33,15 @@ deactivate GenreRepo
 
 Ctrl -> GenreMapper: toDTO(listOfAllGenre)
 activate GenreMapper
+/'
 GenreMapper -> GenreDTO ** : create()
 activate GenreDTO
 GenreDTO --> GenreMapper: GenreDTO
 deactivate GenreDTO
 GenreMapper -> GenreMapper : listOfAllGenreDTO.add(GenreDTO)
+'/
+GenreMapper -> GenreDTO **
+
 GenreMapper --> Ctrl: listOfAllGenreDTO
 deactivate GenreMapper
 
@@ -69,15 +73,16 @@ activate Mapper
 Mapper -> ListDTO ** :
 
     loop for each direct sale
-        Mapper -> DirectSaleDomain : getDetails()
-        activate DirectSaleDomain
-        DirectSaleDomain --> Mapper : details
-        deactivate DirectSaleDomain
+        'Mapper -> DirectSaleDomain : getDetails()
+        'activate DirectSaleDomain
+        'DirectSaleDomain --> Mapper : details
+        'deactivate DirectSaleDomain
 
-        Mapper -> DTO ** : create(details)
-        activate DTO
-        DTO --> Mapper : directSaleDTO
-        deactivate DTO
+        'Mapper -> DTO ** : create(details)
+        Mapper -> DTO **
+        'activate DTO
+        'DTO --> Mapper : directSaleDTO
+        'deactivate DTO
 
         Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
     end

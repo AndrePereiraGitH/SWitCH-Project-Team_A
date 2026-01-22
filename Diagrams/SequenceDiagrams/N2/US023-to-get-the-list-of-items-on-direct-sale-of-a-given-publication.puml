@@ -15,7 +15,7 @@ participant "publicationDTO:PublicationDTO" as PubDTO
 participant ":DirectSaleMapper" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-participant ":DirectSale" as DSDomain
+'participant ":DirectSale" as DSDomain
 participant "directSaleDTO:\nDirectSaleDTO" as DTO
 participant "listOfDirectSaleDTO:\nList<DirectSaleDTO>" as ListDTO
 
@@ -33,11 +33,7 @@ deactivate PublicationRepository
 Ctrl -> PubMapper: toDTO(listOfAllPublications)
 activate PubMapper
 'PubMapper -> PubDTO
-PubMapper -> PubDTO ** : create()
-activate PubDTO
-PubDTO --> PubMapper: PublicationDTO
-deactivate PubDTO
-PubMapper -> PubMapper : listOfAllPublicationsDTO.add(PublicationDTO)
+PubMapper -> PubDTO **
 PubMapper --> Ctrl: listOfAllPublicationsDTO
 deactivate PubMapper
 
@@ -68,15 +64,8 @@ activate Mapper
 Mapper -> ListDTO ** :
 
     loop for each direct sale
-        Mapper -> DSDomain : getDetails()
-        activate DSDomain
-        DSDomain --> Mapper : details
-        deactivate DSDomain
 
-        Mapper -> DTO ** : create(details)
-        activate DTO
-        DTO --> Mapper : directSaleDTO
-        deactivate DTO
+        Mapper -> DTO **
 
         Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
     end
