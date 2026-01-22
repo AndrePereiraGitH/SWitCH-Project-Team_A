@@ -14,20 +14,29 @@ class AuthorRepository{
     +getAllAuthors()
 }
 
+class AuthorDTO_US026 {
+}
+
+class AuthorMapper_US026 {
+  +toDTO(listOfAuthor)
+}
+
 class AuctionRepository {
   +getListOfItemsOnAuction(author)
 }
 
+/'
 class Auction {
   - listing: Listing
   +getDetails()
 }
+'/
 
-class AuctionMapper {
+class AuctionMapper_US026 {
   +toDTO(listOfAuction)
 }
 
-class AuctionDTO {
+class AuctionDTO_US026 {
 }
 
 /'
@@ -46,10 +55,10 @@ enum SaleType {
 '}
 
 class Item {
-    - publication: publication
+    - author: author
 }
 
-class Publication {
+class author {
     - bibliographicalData: BibliographicalData
     - code: Code
 }
@@ -64,17 +73,19 @@ class BibliographicalData {
 UI026 ..> ToGetTheListOfItemsOnAuctionOfAGivenAuthorController : uses
 ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorRepository: uses
-AuctionRepository "1 " --> " * " Auction : contains
-ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionMapper : uses
-AuctionMapper ..> AuctionDTO : maps to
-AuctionMapper ..> Auction : uses
+AuthorMapper_US026 ..> AuthorDTO_US026 : maps to
+'AuctionRepository "1 " --> " * " Auction : contains
+ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionMapper_US026 : uses
+AuctionMapper_US026 ..> AuctionDTO_US026 : maps to
+'AuctionMapper_UI025 ..> Auction : uses
+ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorMapper_US026 : uses
 /'
 Auction "1" -- "1" Listing : uses
 Listing "                                *" -- "1" SaleType : can be sold by
 Listing "1" -- "1..*    " Item : lists an
 ' Item "*" -- "1" BibliographicalData: has
-Item "*" -- "1" Publication: refers to a
-Publication "*" -- "1" BibliographicalData: has
+Item "*" -- "1" author: refers to a
+author "*" -- "1" BibliographicalData: has
 '/
 
 @enduml

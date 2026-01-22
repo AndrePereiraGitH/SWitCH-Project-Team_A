@@ -8,16 +8,16 @@ actor Buyer
 
 ' Participants
 participant ":UI026" as UI026
-participant ":ToGetTheListOfItemsOnAuctionOfAGivenAuthorController" as Ctrl
+participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
 participant ":AuthorRepository" as AuthorRepository
 participant ":AuthorMapper_US026" as AuthorMapper
-participant ":authorDTO:AuthorDTO_US026" as AuthorDTO
+participant ":authorDTO:\nAuthorDTO_US026" as AuthorDTO
 participant ":AuctionMapper_US026" as Mapper
 participant ":AuctionRepository" as AuctionRepository
 participant "listOfAuction:\nList<Auction>" as ListAuc
 'participant ":Auction" as DSDomain
-participant "auctionDTO:\nAuctionDTO_US025" as DTO
-participant "listOfAuctionDTO:\nList<AuctionDTO_US025>" as ListDTO
+participant "auctionDTO:\nAuctionDTO_US026" as DTO
+participant "listOfAuctionDTO:\nList<AuctionDTO_US026>" as ListDTO
 
 
 ' Interactions
