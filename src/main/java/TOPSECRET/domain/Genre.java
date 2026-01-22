@@ -32,6 +32,7 @@ public class Genre {
         return _genreType.equalsIgnoreCase(other._genreType);
     }
 
+    // US0018
     // Ensures consistency with equals().
     @Override
     public int hashCode() {

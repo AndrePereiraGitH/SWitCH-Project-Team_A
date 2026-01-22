@@ -92,6 +92,7 @@ public class User {
         return _library;
     }
 
+    // US0018
     // Adds a collection to the user
     public boolean addCollection(CollectionOfPublications collection) {
 
@@ -103,11 +104,13 @@ public class User {
         return true;
     }
 
+    // US0018
     // Checks if the user owns a given collection
     public boolean ownsCollection(CollectionOfPublications collection) {
         return _collectionOfPublications.contains(collection);
     }
 
+    // US0018
     // Checks if a publication exists in the user's library
     public boolean hasPublicationInLibrary(Publication publication) {
         return _library.containsPublication(publication);
