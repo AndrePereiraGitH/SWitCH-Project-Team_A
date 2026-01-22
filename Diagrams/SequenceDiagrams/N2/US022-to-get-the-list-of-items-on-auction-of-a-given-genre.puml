@@ -9,14 +9,14 @@ actor Buyer
 participant ":UI022" as UI
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
-participant ":GenreMapper" as GenreMapper
-participant "genreDTO:GenreDTO" as GenreDTO
-participant ":AuctionMapper" as Mapper
+participant ":GenreMapper_US022" as GenreMapper_US022
+participant "genreDTO:\nGenreDTO_US022" as GenreDTO
+participant ":AuctionMapper_US022" as Mapper
 participant ":AuctionRepository" as AuctionRepo
 participant "listOfAuctions:\nList<Auction>" as ListAuc
 'participant ":Auction" as AuctionDomain
-participant "auctionDTO:\nAuctionDTO" as DTO
-participant "listOfAuctionsDTO:\nList<AuctionDTO>" as ListDTO
+participant "auctionDTO:\nAuctionDTO_US022" as DTO
+participant "listOfAuctionsDTO:\nList<AuctionDTO_US022>" as ListDTO
 
 ' Interactions
 Buyer -> UI : I want to get the list of items\n on auction of a given genre
@@ -30,11 +30,11 @@ activate GenreRepo
 GenreRepo --> Ctrl : listOfAllGenres
 deactivate GenreRepo
 
-Ctrl -> GenreMapper: toDTO(listOfAllGenre)
-activate GenreMapper
-GenreMapper -> GenreDTO **
-GenreMapper --> Ctrl: listOfAllGenreDTO
-deactivate GenreMapper
+Ctrl -> GenreMapper_US022: toDTO(listOfAllGenre)
+activate GenreMapper_US022
+GenreMapper_US022 -> GenreDTO **
+GenreMapper_US022 --> Ctrl: listOfAllGenreDTO
+deactivate GenreMapper_US022
 
 Ctrl --> UI : listOfAllGenres
 deactivate Ctrl

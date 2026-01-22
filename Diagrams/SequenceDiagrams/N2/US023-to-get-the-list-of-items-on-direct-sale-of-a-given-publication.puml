@@ -10,14 +10,14 @@ actor Buyer
 participant ":UI023" as UI023
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
-participant ":PublicationMapper" as PubMapper
-participant "publicationDTO:PublicationDTO" as PubDTO
-participant ":DirectSaleMapper" as Mapper
+participant ":PublicationMapper_US023" as PubMapper
+participant "publicationDTO:\nPublicationDTO_US023" as PubDTO
+participant ":DirectSaleMapper_US023" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
 'participant ":DirectSale" as DSDomain
-participant "directSaleDTO:\nDirectSaleDTO" as DTO
-participant "listOfDirectSaleDTO:\nList<DirectSaleDTO>" as ListDTO
+participant "directSaleDTO:\nDirectSaleDTO_US023" as DTO
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US023>" as ListDTO
 
 
 ' Interactions

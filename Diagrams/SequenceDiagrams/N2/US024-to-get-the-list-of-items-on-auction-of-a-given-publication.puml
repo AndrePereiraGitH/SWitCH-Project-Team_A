@@ -9,14 +9,14 @@ actor Buyer
 participant ":UI024" as UI024
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
-participant ":PublicationMapper" as PubMapper
-participant "publicationDTO:PublicationDTO" as PubDTO
-participant ":AuctionMapper" as Mapper
+participant ":PublicationMapper_US024" as PubMapper
+participant "publicationDTO:\nPublicationDTO_US024" as PubDTO
+participant ":AuctionMapper_US024" as Mapper
 participant ":AuctionRepository" as AuctionRepository
 participant "listOfAuction:\nList<Auction>" as ListAuc
 'participant ":Auction" as AucDomain
-participant "auctionDTO:\nAuctionDTO" as DTO
-participant "listOfAuctionDTO:\nList<AuctionDTO>" as ListDTO
+participant "auctionDTO:\nAuctionDTO_US024" as DTO
+participant "listOfAuctionDTO:\nList<AuctionDTO_US024>" as ListDTO
 
 'Interactions
 Buyer -> UI024 : I want to get the list of items\n on auction of a given publication

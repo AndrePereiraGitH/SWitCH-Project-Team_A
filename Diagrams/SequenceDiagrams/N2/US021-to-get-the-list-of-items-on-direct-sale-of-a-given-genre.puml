@@ -9,14 +9,14 @@ actor Buyer
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
-participant ":GenreMapper" as GenreMapper
-participant "genreDTO:GenreDTO" as GenreDTO
-participant ":DirectSaleMapper" as Mapper
+participant ":GenreMapper_US021" as GenreMapper_US021
+participant "genreDTO:\nGenreDTO_US021" as GenreDTO
+participant ":DirectSaleMapper_US021" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepo
 participant "listOfDirectSales:\nList<DirectSale>" as ListDS
 'participant ":DirectSale" as DirectSaleDomain
-participant "directSaleDTO:\nDirectSaleDTO" as DTO
-participant "listOfDirectSalesDTO:\nList<DirectSaleDTO>" as ListDTO
+participant "directSaleDTO:\nDirectSaleDTO_US021" as DTO
+participant "listOfDirectSalesDTO:\nList<DirectSaleDTO_US021>" as ListDTO
 
 
 ' Interactions
@@ -31,19 +31,19 @@ activate GenreRepo
 GenreRepo --> Ctrl : listOfAllGenres
 deactivate GenreRepo
 
-Ctrl -> GenreMapper: toDTO(listOfAllGenre)
-activate GenreMapper
+Ctrl -> GenreMapper_US021: toDTO(listOfAllGenre)
+activate GenreMapper_US021
 /'
-GenreMapper -> GenreDTO ** : create()
+GenreMapper_US021 -> GenreDTO ** : create()
 activate GenreDTO
-GenreDTO --> GenreMapper: GenreDTO
+GenreDTO --> GenreMapper_US021: GenreDTO
 deactivate GenreDTO
-GenreMapper -> GenreMapper : listOfAllGenreDTO.add(GenreDTO)
+GenreMapper_US021 -> GenreMapper_US021 : listOfAllGenreDTO.add(GenreDTO)
 '/
-GenreMapper -> GenreDTO **
+GenreMapper_US021 -> GenreDTO **
 
-GenreMapper --> Ctrl: listOfAllGenreDTO
-deactivate GenreMapper
+GenreMapper_US021 --> Ctrl: listOfAllGenreDTO
+deactivate GenreMapper_US021
 
 Ctrl --> UI : listOfAllGenres
 deactivate Ctrl
