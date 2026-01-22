@@ -2,7 +2,10 @@ package TOPSECRET.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
-
+/**
+ * Represents an Author, defined by a Profile (name, country, date of birth) and a biography.
+ * NOTE: The constructor validates inputs to prevent invalid authors from being created.
+ */
 public class Author {
 
     private final Profile _authorProfile;

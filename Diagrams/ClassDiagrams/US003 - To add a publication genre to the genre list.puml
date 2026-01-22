@@ -1,24 +1,24 @@
 @startuml
 title US003 - Register Genre to Official Genre List
 
-class RegisterGenreController {
+class ToRegisterGenreController {
   -_genreRepository: GenreRepository
-  +createAndAddGenre(name: String): Genre
+  +registerGenre(genreType: String): Genre
 }
 
 class GenreRepository {
   -_genres: List<Genre>
-  +createAndAddGenre(name: String): Genre
-  -existsByName(name: String): boolean
+  +createAndAddGenre(genreType: String): Genre
+  -exists(genre: Genre): boolean
 }
 
 class Genre {
-  -_name: String
+  -_genreType: String
   +getName(): String
 }
 
 
-RegisterGenreController "1" -.-> "1" GenreRepository : uses
+ToRegisterGenreController "1" -.-> "1" GenreRepository : uses
 GenreRepository "1" --> "*" Genre : stores
 GenreRepository "1" -.-> "*" Genre : creates
 

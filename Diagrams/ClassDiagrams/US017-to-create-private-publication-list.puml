@@ -1,33 +1,75 @@
 @startuml
-title US017 - Create Private Publication List
+title US017 - Create Private Collection Of Publications with a name and a set a genre
 
-package "Controller" {
-  class CreatePublicationListController {
-    +createPublicationList()
-  }
+
+' ======================
+' DOMAIN
+' ======================
+
+class User {
+  -id
+  -username
 }
 
-package "Persistence" {
-  class PublicationListRepository {
-    +validate()
-    +add()
-  }
+class Genre {
+  -id
+  -name
 }
 
-package "Domain" {
-  class PublicationList {
-    -name
-    -genre
-    -isPrivate
-  }
+class CollectionOfPublications {
+  -name : String
+  -isPrivate : boolean
+}
 
-  class User
+class Publication {
+  -id
+  -title
+}
 
-CreatePublicationListController --> PublicationListRepository : uses
+User "1" --> "*" CollectionOfPublications : owns
+CollectionOfPublications "1" --> "1" Genre : has
+CollectionOfPublications "1" --> "*" Publication : contains
 
-PublicationListRepository --> PublicationList : creates
+' ======================
+' APPLICATION
+' ======================
 
-PublicationList " * " --> "1 " User : belongs to
+class CreateCollectionOfPublicationsController {
+  +getAllGenres() : List<GenreDTO>
+  +createAndAddCollectionOfPublications(name : String, genre : Genre)
+}
 
+class GenreMapper {
+  +toDTO(genres : List<Genre>) : List<GenreDTO>
+}
+
+class GenreDTO {
+ - id
+ - name
+}
+
+' ======================
+' PERSISTENCE
+' ======================
+
+class GenreRepository {
+  +getAllGenres() : List<Genre>
+}
+
+class CollectionOfPublicationsRepository {
+  +create(name : String, genre : Genre) : CollectionOfPublications
+  +add(collection : CollectionOfPublications)
+}
+
+' ======================
+' DEPENDENCIES
+' ======================
+
+CreateCollectionOfPublicationsController ..> GenreRepository : uses
+CreateCollectionOfPublicationsController ..> GenreMapper : uses
+CreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
+
+GenreMapper ..> Genre : maps
+GenreMapper ..> GenreDTO : creates
 
 @enduml

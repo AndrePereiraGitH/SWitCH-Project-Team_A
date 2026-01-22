@@ -14,21 +14,29 @@ class AuthorRepository{
     +getAllAuthors()
 }
 
-class DirectSaleRepository {
-  +getListOfItemsOnDirectSale(author)
-  -checkDirectSaleAuthor(author)
+class AuthorDTO_US025 {
 }
 
+class AuthorMapper_US025 {
+  +toDTO(listOfAuthor)
+}
+
+class DirectSaleRepository {
+  +getListOfItemsOnDirectSale(author)
+}
+
+/'
 class DirectSale {
   - listing: Listing
   +getDetails()
 }
+'/
 
-class DirectSaleMapper {
+class DirectSaleMapper_US025 {
   +toDTO(listOfDirectSale)
 }
 
-class DirectSaleDTO {
+class DirectSaleDTO_US025 {
 }
 
 /'
@@ -47,10 +55,10 @@ enum SaleType {
 '}
 
 class Item {
-    - publication: publication
+    - author: author
 }
 
-class Publication {
+class author {
     - bibliographicalData: BibliographicalData
     - code: Code
 }
@@ -65,17 +73,19 @@ class BibliographicalData {
 UI025 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> AuthorRepository: uses
-DirectSaleRepository "1 " --> " * " DirectSale : contains
-ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleMapper : uses
-DirectSaleMapper ..> DirectSaleDTO : maps to
-DirectSaleMapper ..> DirectSale : uses
+AuthorMapper_US025 ..> AuthorDTO_US025 : maps to
+'DirectSaleRepository "1 " --> " * " DirectSale : contains
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleMapper_US025 : uses
+DirectSaleMapper_US025 ..> DirectSaleDTO_US025 : maps to
+'DirectSaleMapper_US025 ..> DirectSale : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> AuthorMapper_US025 : uses
 /'
 DirectSale "1" -- "1" Listing : uses
 Listing "                                *" -- "1" SaleType : can be sold by
 Listing "1" -- "1..*    " Item : lists an
 ' Item "*" -- "1" BibliographicalData: has
-Item "*" -- "1" Publication: refers to a
-Publication "*" -- "1" BibliographicalData: has
+Item "*" -- "1" author: refers to a
+author "*" -- "1" BibliographicalData: has
 '/
 
 @enduml

@@ -55,7 +55,7 @@ public class PublicationRepository {
                 listOfDifferentPublications.add(publication);
             }
         }
-        return listOfDifferentPublications;
+        return List.copyOf(listOfDifferentPublications);
 
     }
     //Method for testing purposes only (AddPublicationToLibraryControllerTest)

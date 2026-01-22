@@ -32,14 +32,12 @@ class US014_ToGetPublicationTypeListControllerTest {
     void PublicationTypeListControllerOneElementConstructorTest() {
         // Arrange
         PublicationTypeRepository repository = new PublicationTypeRepository();
-        PublicationType type = new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.HARDBACK,
-                "details book"
-        );
+
+        PublicationType type;
 
         repository.getAllPublicationTypes();
-        repository.addAndValidatePublicationType(type);
+        type = repository.createPublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details book");
+        repository.addToList(type);
 
         US014_ToGetPublicationTypeListController controller =
                 new US014_ToGetPublicationTypeListController(repository);
@@ -56,20 +54,17 @@ class US014_ToGetPublicationTypeListControllerTest {
     void PublicationTypeListControllerTwoElementConstructorTest() {
         // Arrange
         PublicationTypeRepository repository = new PublicationTypeRepository();
-        PublicationType type1 = new PublicationType(
-                MediaFormat.MAGAZINE,
-                TypeOfBinding.PAPERBACK,
-                "details book"
-        );
-        PublicationType type2 = new PublicationType(
-                MediaFormat.MAGAZINE,
-                TypeOfBinding.HARDBACK,
-                "details book"
-        );
+
+        PublicationType type1;
+        PublicationType type2;
+
+        type1 = repository.createPublicationType(MediaFormat.BOOK,  TypeOfBinding.HARDBACK, "details book");
+        type2 = repository.createPublicationType(MediaFormat.BOOK,  TypeOfBinding.PAPERBACK, "details book2");
+
+        repository.addToList(type1);
+        repository.addToList(type2);
 
         repository.getAllPublicationTypes();
-        repository.addAndValidatePublicationType(type1);
-        repository.addAndValidatePublicationType(type2);
 
         US014_ToGetPublicationTypeListController controller =
                 new US014_ToGetPublicationTypeListController(repository);

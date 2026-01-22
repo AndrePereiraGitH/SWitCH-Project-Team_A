@@ -2,8 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Publication;
-import TOPSECRET.dto.DirectSaleDTO;
-import TOPSECRET.dto.DirectSaleMapper;
+import TOPSECRET.dto.DirectSaleDTO_US023;
+import TOPSECRET.dto.DirectSaleMapper_US023;
 import TOPSECRET.repository.DirectSaleRepository;
 import TOPSECRET.repository.PublicationRepository;
 
@@ -14,30 +14,30 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
     // attributes
     private final PublicationRepository _publicationRepo;
     private final DirectSaleRepository _directSaleRepo;
-    private final DirectSaleMapper _directSaleMapper;
+    private final DirectSaleMapper_US023 _DirectSaleMapper_US023;
 
     // constructor
-    public ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(PublicationRepository publicationRepo, DirectSaleRepository dsRepo, DirectSaleMapper dsMapper) {
+    public ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(PublicationRepository publicationRepo, DirectSaleRepository dsRepo, DirectSaleMapper_US023 dsMapper) {
         this._publicationRepo = publicationRepo;
         this._directSaleRepo = dsRepo;
-        this._directSaleMapper = dsMapper;
+        this._DirectSaleMapper_US023 = dsMapper;
     }
 
     // methods
 
-    // "UI" requests all publications to the PublicationRepository (step 2)
+    // Requests all publications to the PublicationRepository (step 2)
     public List<Publication> getAllPublications() {
         return _publicationRepo.getAllPublications();
     }
 
 
-    // "UI" provides a publication, controller retrieves DS (step 8)
-    public List<DirectSaleDTO> getListOfItemsOnDirectSale(Publication publication) {
+    // Provides a publication, user chooses a publication and retrieves a list of items on DS (step 11)
+    public List<DirectSaleDTO_US023> getListOfItemsOnDirectSale(Publication publication) {
 
-        // Ask DS repo for domain objects (step 9)
+        // Asks DS repo for domain objects
         List<DirectSale> listOfDirectSale = _directSaleRepo.getListOfItemsOnDirectSale(publication);
 
-        // Convert domain → DTO (step 13)
-        return _directSaleMapper.toDTO(listOfDirectSale);
+        // Converts domain objects to DTO, using DSMapper
+        return _DirectSaleMapper_US023.toDTO(listOfDirectSale);
     }
 }

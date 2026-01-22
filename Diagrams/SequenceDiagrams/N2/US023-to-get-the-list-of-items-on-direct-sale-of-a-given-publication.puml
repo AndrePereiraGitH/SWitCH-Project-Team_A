@@ -10,12 +10,14 @@ actor Buyer
 participant ":UI023" as UI023
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
-participant ":DirectSaleMapper" as Mapper
+participant ":PublicationMapper_US023" as PubMapper
+participant "publicationDTO:\nPublicationDTO_US023" as PubDTO
+participant ":DirectSaleMapper_US023" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-participant ":DirectSale" as DSDomain
-participant "directSaleDTO:\nDirectSaleDTO" as DTO
-participant "listOfDirectSaleDTO:\nList<DirectSaleDTO>" as ListDTO
+'participant ":DirectSale" as DSDomain
+participant "directSaleDTO:\nDirectSaleDTO_US023" as DTO
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US023>" as ListDTO
 
 
 ' Interactions
@@ -27,6 +29,14 @@ Ctrl -> PublicationRepository: getAllPublications()
 activate PublicationRepository
 PublicationRepository --> Ctrl: listOfAllPublications
 deactivate PublicationRepository
+
+Ctrl -> PubMapper: toDTO(listOfAllPublications)
+activate PubMapper
+'PubMapper -> PubDTO
+PubMapper -> PubDTO **
+PubMapper --> Ctrl: listOfAllPublicationsDTO
+deactivate PubMapper
+
 Ctrl --> UI023 : listOfAllPublications
 deactivate Ctrl
 Buyer <-- UI023 : Which publication? Choose!
@@ -41,7 +51,7 @@ Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(publication)
 activate DirectSaleRepository
 
 loop for each direct sale
-    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleGenre(genre)
+    DirectSaleRepository -> DirectSaleRepository : checkDirectSalePublication(publication))
 end
 
 DirectSaleRepository -> ListDS ** :
@@ -54,15 +64,8 @@ activate Mapper
 Mapper -> ListDTO ** :
 
     loop for each direct sale
-        Mapper -> DSDomain : getDetails()
-        activate DSDomain
-        DSDomain --> Mapper : details
-        deactivate DSDomain
 
-        Mapper -> DTO ** : create(details)
-        activate DTO
-        DTO --> Mapper : directSaleDTO
-        deactivate DTO
+        Mapper -> DTO **
 
         Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
     end

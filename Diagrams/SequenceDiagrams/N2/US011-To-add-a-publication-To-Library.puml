@@ -26,7 +26,7 @@ activate UI
 UI -> Ctrl : getListOfOtherPublications()
 activate Ctrl
 
-Ctrl -> LibDomain: getAll()
+Ctrl -> LibDomain: getAllPublications()
 activate LibDomain
 LibDomain --> Ctrl: listOfPublicationsInLibrary
 deactivate LibDomain
@@ -39,8 +39,10 @@ Ctrl --> UI: ListOfDifferentPublications
 deactivate Ctrl
 
 UI --> User: List of publications, select one!
+deactivate UI
 
 User -> UI: selectedPub
+activate UI
 UI -> Ctrl: addPublicationToLib(selectedPub)
 activate Ctrl
 

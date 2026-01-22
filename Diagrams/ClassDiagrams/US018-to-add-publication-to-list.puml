@@ -1,49 +1,63 @@
 @startuml
-title US018 - Add Publication to List
+title US018 - Add Publication to Collection Of Publications
 
-package "Controller" {
-  class AddPublicationToListController {
-    +getMyPublicationLists()
-    +getPublicationsForList()
-    +addPublicationToList()
-  }
+' ======================
+' Domain
+' ======================
+
+class User {
+  -id
+  -username
 }
 
-package "Persistence" {
-  class PublicationListRepository {
-    +getMyPublicationLists()
-    +getPublications()
-    +addPublicationToList()
-  }
-
-  class LibraryRepository {
-    +getLibrary()
-  }
+class Publication {
+  -id
+  -title
 }
 
-package "Domain" {
-  class Library {
-    +getPublications()
-  }
-
-  class PublicationList {
-    +addPublication()
-  }
-
-  class Publication
-  class User
+class CollectionOfPublications {
+  -name : String
+  -isPrivate : boolean
+  +getPublications() : List<Publication>
+  +addPublication(publication : Publication)
 }
 
-AddPublicationToListController --> PublicationListRepository : uses
-AddPublicationToListController --> LibraryRepository : uses
+class Library {
+  +getPublications() : List<Publication>
+}
 
-LibraryRepository --> Library : gets
-PublicationListRepository --> PublicationList : updates
+User "1" --> "*" CollectionOfPublications : owns
+CollectionOfPublications "1" --> "*" Publication : contains
+User "1" --> "1" Library : owns
 
-Library " 1" o-- "            *" Publication : contains
-PublicationList "1   " o-- " *" Publication : contains
-PublicationList " *" --> "    1" User :  belongs to
-Library "1  " --> "1 " User :  belongs to
+' ======================
+' Application
+' ======================
 
+class AddCollectionOfPublicationsController {
+  +getUserCollections(user : User) : List<CollectionOfPublications>
+  +addPublicationToCollection(collection : CollectionOfPublications, publication : Publication)
+}
+
+' ======================
+' Persistence
+' ======================
+
+class CollectionOfPublicationsRepository {
+  +getUserCollections(user : User) : List<CollectionOfPublications>
+  +addPublicationToCollection(collection : CollectionOfPublications, publication : Publication)
+}
+
+class LibraryRepository {
+  +getLibrary(user : User) : Library
+}
+
+' ======================
+' Dependencies (from SSD)
+' ======================
+
+AddCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
+AddCollectionOfPublicationsController ..> LibraryRepository : uses
+CollectionOfPublicationsRepository ..> CollectionOfPublications : uses
 
 @enduml

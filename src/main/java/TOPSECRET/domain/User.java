@@ -37,7 +37,7 @@ public class User {
         this._contact = contact;
         this._profile = profile;
         this._userRole = userRole;
-        this._library = new Library();
+        this._library = new Library(new ArrayList<>(),userName + "'s Library",this);
         this._collectionOfPublications = new ArrayList<>();
     }
 

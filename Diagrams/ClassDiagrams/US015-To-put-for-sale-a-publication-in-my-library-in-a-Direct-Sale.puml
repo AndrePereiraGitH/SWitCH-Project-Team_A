@@ -1,64 +1,78 @@
 @startuml
-title US015 - Put a publication for sale in Direct Sale (Class Diagram)
+title US015 - Put a publication for sale in Direct Sale
 
 class UI015 {}
 
-UI015 "1" -.-> "1" ToPutPublicationInDirectSaleController :  uses
-
 class ToPutPublicationInDirectSaleController {
-    + getListPublications()
-    + createAndAddItem(publication :Publication)
-    + creatAndAddDirectSale(listing :Listing)
-
+    + getListPublications() : List<LibraryPublicationDTO>
+    + createAndAddItem(publication, condition, dimensions, weight) : Item
+    + createDirectSale(item : Item, price, shortDescription, listingTitle, seller, pictures) : DirectSale
+}
+class Library {
+    - publications : List<Publication>
+    + getListPublications() : List<Publication>
 }
 
-class Library {
-    - Publication : List<Publications>
-    + getListPublications()
+class Publication {
+    - bibliographicalData : BibliographicalData
+    - publicationType : PublicationType
+    - editio : String
+    - code : Code
+}
+
+class LibraryPublicationDTO
+
+class LibraryPublicationMapper {
+    + toDTO(publications : List<Publication>) : List<LibraryPublicationDTO>
 }
 
 class Item {
+    - publication : Publication
     - condition : Condition
-    - weight : double
-    - dimensions : Dimensions
-    - pictures : List<Picture>
-    - publication : publication
+    - weight : weight
+    - dimensions : dimensions
+
 }
 
 class Listing {
-    - items : List<Item>
+    - item : List<Item>
     - price : Price
     - shortDescription : String
     - listingTitle : String
-    - saleType : SaleType
     - seller : User
+    - List<pictures>: Pictures
 }
-
 class DirectSale {
     - listing : Listing
 }
 
 class ItemRepository {
     - items : List<Item>
-    - validateItem()
-    + createAndAddItem(publication :Publication) : Item
 }
 
 class DirectSaleRepository {
     - directSales : List<DirectSale>
-    - validateDirectSale()
-    + createListing(item, price, shortDescription, listingType, saleType, seller)
-    + createAndAddDirectSale(listing :Listing) : DirectSale
 }
 
-Listing "1" --> "*" Item : has
-DirectSale "1" --> "1" Listing : has
+' --- UI flow ---
+UI015 -.> ToPutPublicationInDirectSaleController : uses
 
-ItemRepository "1" --> "*" Item : contains
-DirectSaleRepository "1" --> "*" DirectSale : contains
+' --- Use relationships ---
+ToPutPublicationInDirectSaleController -.> Library : uses
+ToPutPublicationInDirectSaleController -.> LibraryPublicationMapper : uses
+ToPutPublicationInDirectSaleController -.> ItemRepository : uses
+ToPutPublicationInDirectSaleController -.> DirectSaleRepository : uses
 
-ToPutPublicationInDirectSaleController "1" -.-> "1" Library : uses
-ToPutPublicationInDirectSaleController "1" -.-> "1" ItemRepository : uses
-ToPutPublicationInDirectSaleController "1" -.-> "1" DirectSaleRepository : uses
+' --- Core domain relationships ---
+Library "1" --> "*" Publication : owns
+Publication "1" -> "0..1" Item : may create
+Listing "1   " --> "1..*" Item : sells
+DirectSale "0..1" --> "1" Listing : has
+
+ItemRepository "1" --> "*" Item : stores
+DirectSaleRepository "1" --> "*" DirectSale : stores
+
+LibraryPublicationMapper -.> Publication : request for
+LibraryPublicationMapper -.> LibraryPublicationDTO : maps to
 
 @enduml

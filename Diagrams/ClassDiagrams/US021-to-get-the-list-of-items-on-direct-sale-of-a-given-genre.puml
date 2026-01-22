@@ -7,27 +7,35 @@ class UI021 {
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
   +getAllGenres()
-  +getListOfItemsOnDirectSale(genre)
+  +getListOfItemsOnDirectSale(genre: Genre)
 }
 
 class GenreRepository {
   +getAllGenres()
 }
 
-class DirectSaleMapper {
-   +toDTO(listOfDirectSales)
+class GenreDTO_US021 {
+}
+
+
+class GenreMapper_US021 {
+   +toDTO(listOfAllGenres: List<Genre)
+}
+
+class DirectSaleMapper_US021 {
+   +toDTO(listOfDirectSales: List<DirectSale)
 }
 
 class DirectSaleRepository {
-  +getListOfItemsOnDirectSale(genre)
+  +getListOfItemsOnDirectSale(genre: Genre)
 }
 
+/'
 class DirectSale {
   - listing: Listing
   +getDetails()
 }
 
-/'
 class Listing {
   - item: Item
   - saleType: SaleType
@@ -62,10 +70,12 @@ class Genre {
 UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreRepository : uses
-DirectSaleRepository "1 " --> " * " DirectSale : contains
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper : uses
-DirectSaleMapper ..> DirectSaleDTO : maps to
-DirectSaleMapper ..> DirectSale : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreMapper_US021 : uses
+GenreMapper_US021 ..> GenreDTO_US021 : maps to
+'DirectSaleRepository "1 " --> " * " DirectSale : contains
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper_US021 : uses
+DirectSaleMapper_US021 ..> DirectSaleDTO_US021 : maps to
+'DirectSaleMapper_US021 ..> DirectSale : uses
 /'
 DirectSale "1" --> "1" Listing : has
 Listing "                                *" --> "1" SaleType : can be\nsold by

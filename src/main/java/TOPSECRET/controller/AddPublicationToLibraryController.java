@@ -21,14 +21,19 @@ public class AddPublicationToLibraryController {
     //Call by the UI and response
     public List<Publication> getListOfOtherPublications(){
         //Get publications in user library
-        List<Publication> listOfPublicationsInLibrary = library.getAll();
+        List<Publication> listOfPublicationsInLibrary = library.getAllPublications();
 
         //Get publications not in library
-        List<Publication> listOfDifferentPublications =
-                publicationRepository.getListOfDifferentPublications(listOfPublicationsInLibrary);
+        List<Publication> listOfDifferentPublications = publicationRepository.getListOfDifferentPublications(listOfPublicationsInLibrary);
 
         //Return to the UI
         return listOfDifferentPublications;
+    }
+
+    //Method for adding a publication to the Library
+    public boolean addPublicationToLib(Publication publication){
+        if (publication == null) throw new IllegalArgumentException("Publication cannot be null");
+        return library.addPublication(publication); //The value is "true" if the publication is added
     }
 }
 

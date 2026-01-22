@@ -14,20 +14,29 @@ class PublicationRepository{
     +getAllPublications()
 }
 
+class PublicationDTO_US024 {
+}
+
+class PublicationMapper_US024 {
+  +toDTO(listOfPublications)
+}
+
 class AuctionRepository {
   +getListOfItemsOnAuction(publication)
 }
 
+/'
 class Auction {
  - listing: Listing
    +getDetails()
 }
+'/
 
-class AuctionMapper {
+class AuctionMapper_US024 {
   +toDTO(listOfAuction)
 }
 
-class AuctionDTO {
+class AuctionDTO_US024 {
 }
 
 /'
@@ -64,10 +73,12 @@ class BibliographicalData {
 UI024 ..> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationRepository : uses
-AuctionRepository "1" --> "*" Auction : contains
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionMapper : uses
-AuctionMapper ..> AuctionDTO : maps to
-AuctionMapper ..> Auction : uses
+PublicationMapper_US024 ..> PublicationDTO_US024 : maps to
+'AuctionRepository "1" --> "*" Auction : contains
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionMapper_US024 : uses
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationMapper_US024 : uses
+AuctionMapper_US024 ..> AuctionDTO_US024 : maps to
+'AuctionMapper_US024 ..> Auction : uses
 /'
 Auction "0..1" -- "1" Listing : has
 Listing "                                *" -- "1" SaleType : can be\nsold by >

@@ -17,7 +17,7 @@ User -> UI : I want to register a publication
 Activate UI
 UI --> User : Please enter the publication that you want to add on MiteLovers
 deactivate UI
-User -> UI : It's called <pub1>, with the publication type and bibliographical data
+User -> UI : It's called pub1, with these details
 activate UI
 UI --> User : New publication added on MiteLovers successfully.
 deactivate UI

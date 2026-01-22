@@ -14,31 +14,45 @@ class AuctionRepository {
   +getListOfItemsOnAuction(genre)
 }
 
+/'
 class Auction {
   - listing: Listing
     +getDetails()
 }
+'/
 
 class GenreRepository {
   +getAllGenres()
 }
 
-class AuctionMapper {
+class GenreDTO_US022 {
+}
+
+class GenreMapper_US022 {
+   +toDTO(listOfAllGenres: List<Genre)
+}
+
+class AuctionMapper_US022 {
   +toDTO(listOfAuctions)
 }
 
-class AuctionDTO {
+
+class AuctionDTO_US022 {
 }
+
 
 ' --- Interactions ---
 
 UI022 ..> ToGetTheListOfItemsOnAuctionOfAGivenGenreController : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreRepository : uses
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionMapper : uses
-AuctionMapper ..> AuctionDTO : maps to
-AuctionMapper ..> Auction : uses
-AuctionRepository "1" --> "*" Auction : contains
+'GenreRepository ..> GenreDTO_US022 : maps to
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionMapper_US022 : uses
+AuctionMapper_US022 ..> AuctionDTO_US022 : maps to
+'AuctionMapper_US022 ..> Auction : uses
+'AuctionRepository "1" --> "*" Auction : contains
+ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreMapper_US022 : uses
+GenreMapper_US022 ..> GenreDTO_US022 : maps to
 
 
 

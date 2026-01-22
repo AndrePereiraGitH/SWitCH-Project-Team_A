@@ -8,6 +8,7 @@ import TOPSECRET.dto.PublicationMapper;
 import TOPSECRET.repository.LibraryRepository;
 
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 
@@ -21,7 +22,7 @@ public class GetListOfPublicationsInLibraryController {
     }
 
 
-    public Library getUserLibrary(String userName){
+    public Library getUserLibrary(String userName) throws InstanceNotFoundException {
         if(userName==null){
             throw new IllegalArgumentException("Username can not be null");
         }
@@ -35,9 +36,9 @@ public class GetListOfPublicationsInLibraryController {
         return userLibrary;
     }
 
-    public List<PublicationDTO> getListOfPublicationsInLibrary(String username){
+    public List<PublicationDTO> getListOfPublicationsInLibrary(String username) throws InstanceNotFoundException {
 
-        List<Publication> publications = getUserLibrary(username).getAll();
+        List<Publication> publications = getUserLibrary(username).getAllPublications();
 
         return PublicationMapper.getListOfPublicationsDTO(publications);
     }
