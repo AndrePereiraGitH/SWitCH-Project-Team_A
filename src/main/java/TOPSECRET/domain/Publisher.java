@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class Publisher {
     private String _name;
     private String _vatNumber;
@@ -27,11 +29,25 @@ public class Publisher {
         return _name;
     }
 
-//    public String get_vatNumber() {
-//        return _vatNumber;
-//    }
+     public String getVatNumber() {
+         return _vatNumber;
+     }
 //
 //    public Contact get_contact() {
 //        return _contact;
 //    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Publisher that = (Publisher) o;
+        return Objects.equals(this.getVatNumber(), that.getVatNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getVatNumber());
+    }
 }

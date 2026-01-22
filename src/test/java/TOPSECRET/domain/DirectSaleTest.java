@@ -111,6 +111,19 @@ class DirectSaleTest {
 
     }
 
+    @Test
+    void getListing_shouldReturnListing() {
+        // Arrange
+        Listing listing = createListing();
+        DirectSale directSale = new DirectSale(listing, LocalDateTime.now());
+
+        // Act
+        Listing result = directSale.getListing();
+
+        // Assert
+        assertSame(listing, result);
+    }
+
 
     //===============================================
     // Private Methods to Help Instantiate
