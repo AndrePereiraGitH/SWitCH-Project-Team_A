@@ -9,6 +9,8 @@ actor Buyer
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
+participant ":GenreMapper" as GenreMapper
+participant "genreDTO:GenreDTO" as GenreDTO
 participant ":DirectSaleMapper" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepo
 participant "listOfDirectSales:\nList<DirectSale>" as ListDS
@@ -28,6 +30,16 @@ Ctrl -> GenreRepo : getAllGenres()
 activate GenreRepo
 GenreRepo --> Ctrl : listOfAllGenres
 deactivate GenreRepo
+
+Ctrl -> GenreMapper: toDTO(listOfAllGenre)
+activate GenreMapper
+GenreMapper -> GenreDTO ** : create()
+activate GenreDTO
+GenreDTO --> GenreMapper: GenreDTO
+deactivate GenreDTO
+GenreMapper -> GenreMapper : listOfAllGenreDTO.add(GenreDTO)
+GenreMapper --> Ctrl: listOfAllGenreDTO
+deactivate GenreMapper
 
 Ctrl --> UI : listOfAllGenres
 deactivate Ctrl

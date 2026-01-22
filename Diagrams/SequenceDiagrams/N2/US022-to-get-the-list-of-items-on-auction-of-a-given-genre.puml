@@ -9,6 +9,8 @@ actor Buyer
 participant ":UI022" as UI
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
+participant ":GenreMapper" as GenreMapper
+participant "genreDTO:GenreDTO" as GenreDTO
 participant ":AuctionMapper" as Mapper
 participant ":AuctionRepository" as AuctionRepo
 participant "listOfAuctions:\nList<Auction>" as ListAuc
@@ -27,6 +29,16 @@ Ctrl -> GenreRepo : getAllGenres()
 activate GenreRepo
 GenreRepo --> Ctrl : listOfAllGenres
 deactivate GenreRepo
+
+Ctrl -> GenreMapper: toDTO(listOfAllGenre)
+activate GenreMapper
+GenreMapper -> GenreDTO ** : create()
+activate GenreDTO
+GenreDTO --> GenreMapper: GenreDTO
+deactivate GenreDTO
+GenreMapper -> GenreMapper : listOfAllGenreDTO.add(GenreDTO)
+GenreMapper --> Ctrl: listOfAllGenreDTO
+deactivate GenreMapper
 
 Ctrl --> UI : listOfAllGenres
 deactivate Ctrl

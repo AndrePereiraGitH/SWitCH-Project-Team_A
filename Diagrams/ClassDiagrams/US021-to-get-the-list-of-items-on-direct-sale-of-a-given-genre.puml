@@ -14,6 +14,9 @@ class GenreRepository {
   +getAllGenres()
 }
 
+class GenreDTO {
+}
+
 class DirectSaleMapper {
    +toDTO(listOfDirectSales)
 }
@@ -62,6 +65,7 @@ class Genre {
 UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreRepository : uses
+GenreRepository ..> GenreDTO : maps to
 DirectSaleRepository "1 " --> " * " DirectSale : contains
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper : uses
 DirectSaleMapper ..> DirectSaleDTO : maps to

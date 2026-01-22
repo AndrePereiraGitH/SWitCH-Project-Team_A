@@ -14,6 +14,9 @@ class PublicationRepository{
     +getAllPublications()
 }
 
+class PublicationDTO {
+}
+
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(publication)
 }
@@ -64,6 +67,7 @@ class BibliographicalData {
 UI023 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationRepository: uses
+PublicationRepository ..> PublicationDTO : maps to
 DirectSaleRepository "1 " --> " * " DirectSale : contains
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleMapper : uses
 DirectSaleMapper ..> DirectSaleDTO : maps to

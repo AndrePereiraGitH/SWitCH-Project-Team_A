@@ -10,6 +10,8 @@ actor Buyer
 participant ":UI023" as UI023
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
+participant ":PublicationMapper" as PubMapper
+participant "publicationDTO:PublicationDTO" as PubDTO
 participant ":DirectSaleMapper" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
@@ -27,6 +29,18 @@ Ctrl -> PublicationRepository: getAllPublications()
 activate PublicationRepository
 PublicationRepository --> Ctrl: listOfAllPublications
 deactivate PublicationRepository
+
+Ctrl -> PubMapper: toDTO(listOfAllPublications)
+activate PubMapper
+'PubMapper -> PubDTO
+PubMapper -> PubDTO ** : create()
+activate PubDTO
+PubDTO --> PubMapper: PublicationDTO
+deactivate PubDTO
+PubMapper -> PubMapper : listOfAllPublicationsDTO.add(PublicationDTO)
+PubMapper --> Ctrl: listOfAllPublicationsDTO
+deactivate PubMapper
+
 Ctrl --> UI023 : listOfAllPublications
 deactivate Ctrl
 Buyer <-- UI023 : Which publication? Choose!
@@ -41,7 +55,7 @@ Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(publication)
 activate DirectSaleRepository
 
 loop for each direct sale
-    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleGenre(genre)
+    DirectSaleRepository -> DirectSaleRepository : checkDirectSalePublication(publication))
 end
 
 DirectSaleRepository -> ListDS ** :
