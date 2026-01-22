@@ -1,33 +1,63 @@
 @startuml
-title US017 - Create Private Publication List
+title US017 - Create Private Collection Of Publications
 
-package "Controller" {
-  class CreatePublicationListController {
-    +createPublicationList()
-  }
+' ======================
+' DOMAIN
+' ======================
+
+class User {
+  -id
+  -username
 }
 
-package "Persistence" {
-  class PublicationListRepository {
-    +validate()
-    +add()
-  }
+class CollectionOfPublications {
+  -name : String
+  -isPrivate : boolean
 }
 
-package "Domain" {
-  class PublicationList {
-    -name
-    -genre
-    -isPrivate
-  }
+class Genre {
+  -id
+  -name
+}
 
-  class User
+class Publication {
+  -id
+  -title
+}
 
-CreatePublicationListController --> PublicationListRepository : uses
+User "1" --> "*" CollectionOfPublications : owns
+CollectionOfPublications "1" --> "1" Genre : has
+CollectionOfPublications "1" --> "*" Publication : contains
 
-PublicationListRepository --> PublicationList : creates
+' ======================
+' APPLICATION
+' ======================
 
-PublicationList " * " --> "1 " User : belongs to
+class CreateCollectionOfPublicationsController {
+  +requestGenres() : List<Genre>
+  +createAndAddCollectionOfPublications(name : String, genre : Genre)
+}
 
+' ======================
+' PERSISTENCE
+' ======================
+
+class GenreRepository {
+  +getAllGenres() : List<Genre>
+}
+
+class CollectionOfPublicationsRepository {
+  +create(name : String, genre : Genre) : CollectionOfPublications
+  +add(collection : CollectionOfPublications)
+}
+
+' ======================
+' DEPENDENCIES (FROM SEQUENCE)
+' ======================
+
+CreateCollectionOfPublicationsController ..> GenreRepository : uses
+CreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
+
+CollectionOfPublicationsRepository ..> CollectionOfPublications : create
 
 @enduml

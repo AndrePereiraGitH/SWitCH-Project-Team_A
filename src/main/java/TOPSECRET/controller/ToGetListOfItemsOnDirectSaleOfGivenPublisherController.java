@@ -27,7 +27,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
             return result;
         }
 
-        List<DirectSale> directSales = _directSaleRepository.getAll();
+        List<DirectSale> directSales = _directSaleRepository.getListOfItemsOnDirectSale(publisher);
         for (DirectSale directSale : directSales) {
             for (Item item : directSale.getListing().getItems()) {
                 Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();

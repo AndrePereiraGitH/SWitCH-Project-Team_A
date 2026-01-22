@@ -14,6 +14,9 @@ class PublicationRepository{
     +getAllPublications()
 }
 
+class PublicationDTO {
+}
+
 class AuctionRepository {
   +getListOfItemsOnAuction(publication)
 }
@@ -64,6 +67,7 @@ class BibliographicalData {
 UI024 ..> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationRepository : uses
+PublicationRepository ..> PublicationDTO : maps to
 AuctionRepository "1" --> "*" Auction : contains
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionMapper : uses
 AuctionMapper ..> AuctionDTO : maps to

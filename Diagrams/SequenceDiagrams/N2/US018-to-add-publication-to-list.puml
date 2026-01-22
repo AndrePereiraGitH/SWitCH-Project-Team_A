@@ -2,81 +2,85 @@
 hide footbox
 autonumber
 
-title US018 - Add Publication to List (N2)
+title US018 - Add Publication to Collection Of Publication
 
-box #whitesmoke
 actor "User" as User
 participant ":UI018" as UI
-end box
-
-box "Controller" #Lightblue
-participant ":AddPublicationToListController" as Controller
-end box
-
-box "Persistence" #LightGrey
-participant ":PublicationListRepository" as PublicationListRepo
+participant ":AddCollectionOfPublicationsController" as Controller
+participant ":CollectionOfPublicationsRepository" as CollectionRepo
 participant ":LibraryRepository" as LibraryRepo
-end box
-
-box "Domain" #Lightyellow
 participant ":Library" as Library
-end box
+participant "cp : CollectionOfPublications" as cp
 
-User -> UI : I want to add one of my publications to one of my list
+User -> UI : I want to add one of my publications to one of my collections
 activate UI
 
-UI -> Controller : getMyPublicationLists(user)
+UI -> Controller : getUserCollections(user)
 activate Controller
 
-Controller -> PublicationListRepo : getMyPublicationLists(user)
-activate PublicationListRepo
-PublicationListRepo --> Controller : userlists
-deactivate PublicationListRepo
+Controller -> CollectionRepo : getUserCollections(user)
+activate CollectionRepo
 
-Controller --> UI : userlists
+create "userCollections : List<CollectionOfPublications>" as UserCollections
+CollectionRepo -> UserCollections : create
 
-UI --> User : Which list? Choose!
+loop for each cp : CollectionOfPublications
+    CollectionRepo -> cp : isFromUser(user)
+    activate cp
 
-User -> UI : List
+     cp --> CollectionRepo : boolean
+        deactivate cp
 
-UI -> Controller : getPublicationsForList(user, list)
+    alt [true]
+        CollectionRepo -> CollectionRepo : userCollection.add(cp)
+    end
+end
+
+CollectionRepo --> Controller : userCollections
+deactivate CollectionRepo
+
+Controller --> UI : userCollections
+
+UI --> User : Which collection? Select one!
+
+User -> UI : Selected collection
+
+UI -> Controller : getPublicationsForCollection(user, collection)
 
 Controller -> LibraryRepo : getLibrary(user)
 activate LibraryRepo
 LibraryRepo --> Controller : library
 deactivate LibraryRepo
 
-Controller -> Library : getPublications(library)
+Controller -> Library : getPublications
 activate Library
-Library --> Controller : allpublications
+Library --> Controller : allPublications
 deactivate Library
 
-Controller -> PublicationListRepo : getPublications (list)
-activate PublicationListRepo
+Controller -> cp : getPublications(collection)
+activate cp
+cp --> Controller : publicationsInCollection
+deactivate cp
 
-PublicationListRepo --> Controller : publicationsInList
-deactivate PublicationListRepo
-
-Controller -> Controller : p=diff(allPublications, publicationsInList)
+Controller -> Controller : p = diff(allPublications, publicationsInCollection)
 
 Controller --> UI : Available publications
 
-UI --> User : Which publication? Choose!
+UI --> User : Which publication? Select one!
 
-User -> UI : select publication
+User -> UI : selected publication
 
-UI -> Controller : addPublicationToList(list, selectedPublication)
+UI -> Controller : addPublicationToCollection(collection, selectedPublication)
 
-Controller -> PublicationListRepo :  addPublicationToList(list, selectedPublication)
-activate PublicationListRepo
-
-PublicationListRepo --> Controller : true
-deactivate PublicationListRepo
+Controller -> CollectionRepo : addPublicationToCollection(collection, selectedPublication)
+activate CollectionRepo
+CollectionRepo --> Controller : true
+deactivate CollectionRepo
 
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : Publication added to list
+UI --> User : Publication added to collection
 deactivate UI
 
 @enduml

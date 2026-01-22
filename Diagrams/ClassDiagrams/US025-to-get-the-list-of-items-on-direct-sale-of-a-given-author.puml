@@ -16,7 +16,6 @@ class AuthorRepository{
 
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(author)
-  -checkDirectSaleAuthor(author)
 }
 
 class DirectSale {

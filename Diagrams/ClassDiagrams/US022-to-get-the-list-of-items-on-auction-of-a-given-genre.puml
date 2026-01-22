@@ -23,6 +23,9 @@ class GenreRepository {
   +getAllGenres()
 }
 
+class GenreDTO {
+}
+
 class AuctionMapper {
   +toDTO(listOfAuctions)
 }
@@ -35,6 +38,7 @@ class AuctionDTO {
 UI022 ..> ToGetTheListOfItemsOnAuctionOfAGivenGenreController : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreRepository : uses
+GenreRepository ..> GenreDTO : maps to
 ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionMapper : uses
 AuctionMapper ..> AuctionDTO : maps to
 AuctionMapper ..> Auction : uses

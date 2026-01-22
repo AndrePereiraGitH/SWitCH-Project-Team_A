@@ -36,7 +36,7 @@ activate R
  create "profile1:Profile" as P
  A -> P : create(name, country, birthday)
 
- R -> R : existsByAuthor(author1)
+ R -> R : exists(author1)
  deactivate A
 
 
