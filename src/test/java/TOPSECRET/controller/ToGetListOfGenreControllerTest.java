@@ -30,7 +30,6 @@ class ToGetListOfGenreControllerTest {
         List<Genre> result = controller.getGenresList();
 
         // Assert
-        // Verify that the list contains the expected genre
         boolean found = false;
 
         for (Genre genre : result) {
@@ -40,7 +39,6 @@ class ToGetListOfGenreControllerTest {
             }
         }
 
-        assertTrue(found);
-        assertEquals("Romance", result.get(0).getGenreType());
+        assertTrue(found);        assertEquals("Romance", result.get(0).getGenreType());
     }
 }
