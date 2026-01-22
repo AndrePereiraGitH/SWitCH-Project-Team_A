@@ -31,12 +31,12 @@ public class PublicationType {
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(Object obj)
     {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
-        PublicationType that = (PublicationType) o;
+        PublicationType that = (PublicationType) obj;
         return _mediaFormat == that._mediaFormat && _typeOfBinding == that._typeOfBinding && _details.equals(that._details);
     }
 

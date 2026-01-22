@@ -18,10 +18,12 @@ public class PublicationTypeRepositoryTest {
     @Test
     void createPublicationTypeRepositoryTest()
     {
-        PublicationType pubType = new PublicationType(mediaFormat, typeOfBinding, details);
+        PublicationType pubType;
+
         PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
 
-        pubTypeRepo.addAndValidatePublicationType(pubType);
+        pubType = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pubTypeRepo.addToList(pubType);
 
         assertNotNull(pubTypeRepo);
     }
@@ -30,15 +32,20 @@ public class PublicationTypeRepositoryTest {
     @Test
     void shouldReturnAllPublicationTypes()
     {
-        PublicationTypeRepository repo = new PublicationTypeRepository();
+        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
 
-        PublicationType pt1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Book test");
-        PublicationType pt2 = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Magazine test");
+        PublicationType pt1;
+        PublicationType pt2;
 
-        repo.addAndValidatePublicationType(pt1);
-        repo.addAndValidatePublicationType(pt2);
+        pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pubTypeRepo.addToList(pt1);
 
-        List<PublicationType> result = repo.getAllPublicationTypes();
+        pt2 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, "different book");
+        pubTypeRepo.addToList(pt2);
+
+
+
+        List<PublicationType> result = pubTypeRepo.getAllPublicationTypes();
 
         assertEquals(2, result.size());
         assertTrue(result.contains(pt1));
@@ -61,17 +68,39 @@ public class PublicationTypeRepositoryTest {
     @Test
     void shouldReturnExceptionWhenAddingDuplicatePublicationType()
     {
-        PublicationTypeRepository repo = new PublicationTypeRepository();
+        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
 
-        PublicationType pt1 = new PublicationType(mediaFormat, typeOfBinding, details);
-        PublicationType pt2 = new PublicationType(mediaFormat, typeOfBinding, details);
+        PublicationType pt1;
+        PublicationType pt2;
 
-        repo.addAndValidatePublicationType(pt1);
+        pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pubTypeRepo.addToList(pt1);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.addAndValidatePublicationType(pt2));
+        pt2 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
 
-        assertEquals("Publication type already exists", ex.getMessage());
-        assertEquals(1, repo.getAllPublicationTypes().size());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> pubTypeRepo.addToList(pt2));
+
+        assertEquals("PublicationType already exists or is null", ex.getMessage());
+        assertEquals(1, pubTypeRepo.getAllPublicationTypes().size());
     }
 
+    @Test
+    void shouldThrowWhenAddingNullPubType() {
+        PublicationTypeRepository repo = new PublicationTypeRepository();
+
+        assertThrows(IllegalArgumentException.class, () -> repo.addToList(null));
+    }
+
+    @Test
+    void shouldReturnTheAddedPublicationTypeWhenAddingToList() {
+
+        PublicationTypeRepository repo = new PublicationTypeRepository();
+
+        PublicationType pubType = repo.createPublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Test");
+
+        PublicationType returned = repo.addToList(pubType);
+
+        assertNotNull(returned);
+        assertSame(pubType, returned);
+    }
 }

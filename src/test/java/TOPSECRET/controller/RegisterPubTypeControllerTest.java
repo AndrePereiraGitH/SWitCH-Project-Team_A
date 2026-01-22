@@ -4,21 +4,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import TOPSECRET.controller.US002_PublicationTypeController;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.repository.PublicationTypeRepository;
 
-class PublicationTypeControllerTest {
+class RegisterPubTypeControllerTest {
 
     @Test
     void createAndAddPublicationTypesToRepository()
     {
         PublicationTypeRepository repo = new PublicationTypeRepository();
-        US002_PublicationTypeController controller = new US002_PublicationTypeController(repo);
+        US002_RegisterPubTypeController controller = new US002_RegisterPubTypeController(repo);
 
-        PublicationType pt1 = controller.createAndAddPublicationTypes( MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Book with gold engravings");
+        PublicationType pt1 = controller.RegisterPubType( MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Book with gold engravings");
 
         assertEquals(1, repo.getAllPublicationTypes().size());
 
@@ -37,9 +36,9 @@ class PublicationTypeControllerTest {
     void shouldThrowExceptionAndNotAddToRepository()
     {
         PublicationTypeRepository repo = new PublicationTypeRepository();
-        US002_PublicationTypeController controller = new US002_PublicationTypeController(repo);
+        US002_RegisterPubTypeController controller = new US002_RegisterPubTypeController(repo);
 
-        assertThrows(IllegalArgumentException.class, () -> controller.createAndAddPublicationTypes(null, TypeOfBinding.HARDBACK, "test"));
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(null, TypeOfBinding.HARDBACK, "test"));
 
         assertEquals(0, repo.getAllPublicationTypes().size());
     }

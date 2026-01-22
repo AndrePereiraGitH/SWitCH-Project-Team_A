@@ -2,42 +2,45 @@
 hide footbox
 title US002 - Register Publication Type to Type List
 
+autonumber
+
 actor Administrator
 participant ":UI002" as UI
+participant ":US002_RegisterPubTypeController" as US002_RegisterPubTypeController
 
 
 ' Human contact between Administrator and UI
-Administrator -> UI : **1** I want to register a Publication Type in the system
-UI -->> Administrator : **2** Please enter mediaFormat, typeOfBinding, details
-Administrator -> UI : **3** Book, Hard Cover,
+Administrator -> UI : I want to register a Publication Type in the system
+UI -->> Administrator : Please enter mediaFormat, typeOfBinding, details
+Administrator -> UI : Book, Hard Cover, Book with gold engravings
 
 ' First contact between UI and the System
-UI -> RegisterPubTypeController : **4** RegisterPubType(mediaFormat, typeOfBinding, details)
-activate RegisterPubTypeController
+UI -> US002_RegisterPubTypeController : RegisterPubType(mediaFormat, typeOfBinding, details)
+activate US002_RegisterPubTypeController
 
-RegisterPubTypeController -> PubTypeRepository : **5** createAndAddPubType(mediaFormat, typeOfBinding, details)
-activate PubTypeRepository
+US002_RegisterPubTypeController -> PublicationTypeRepository : createAndAddPubType(mediaFormat, typeOfBinding, details)
+activate PublicationTypeRepository
 
-participant ":List<PubType>" as LT
+participant ":List<PublicationType>" as LT
 
 ' Creation of p1 instance from User class
-create "PubType" as PubType
+participant ":PublicationType" as PublicationType
 
 ' Creation, validation and addition
-PubTypeRepository -> PubType : **6** create(PubType)
-PubTypeRepository -> PubTypeRepository : **7** validatePubType
-PubTypeRepository -> LT: **8** addToList
+PublicationTypeRepository -> PublicationType : PublicationType(mediaFormat, typeOfBinding, details)
+PublicationTypeRepository -> PublicationTypeRepository : ValidatePublicationType (pubType)
+PublicationTypeRepository -> LT: addToList
 
 
 ' Return from PubTypeRepository to RegisterPubTypeController
-PubTypeRepository --> RegisterPubTypeController : **9**  PubType
-deactivate PubTypeRepository
+PublicationTypeRepository --> US002_RegisterPubTypeController :  PubType
+deactivate PublicationTypeRepository
 
 ' Return from RegisterUserController to UI
-RegisterPubTypeController --> UI : **10** Success
-deactivate RegisterPubTypeController
+US002_RegisterPubTypeController --> UI : Success
+deactivate US002_RegisterPubTypeController
 
 ' Return from UI to Administrator
-UI --> Administrator : **11** Success
+UI --> Administrator : Success
 
 @enduml

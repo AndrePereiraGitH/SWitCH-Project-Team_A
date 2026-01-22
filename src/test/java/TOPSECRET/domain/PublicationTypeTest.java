@@ -32,4 +32,15 @@ class PublicationTypeTest {
         assertThrows(IllegalArgumentException.class, () -> new PublicationType(MediaFormat.BOOK, null, "Book with gold engravings"));
     }
 
+    // Test to see if identical objects have the same hash code
+    @Test
+    void equalObjectsMustHaveSameHashCode()
+    {
+        PublicationType a = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
+        PublicationType b = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
+
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+
 }
