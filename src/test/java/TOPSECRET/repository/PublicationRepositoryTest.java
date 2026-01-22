@@ -63,12 +63,12 @@ class PublicationRepositoryTest {
             country4,
             LocalDate.of(1997, 8, 15)
     );
-
-
     UserRole userRole1 = UserRole.ADMIN;
     User user1 = new User("coolGuy", contact1, profile2, userRole1);
     User user2 = new User("coolGuy2", contact1, profile2, userRole1);
     User user3 = new User("coolGuy3", contact1, profile2, userRole1);
+
+    User userTest = new User ("userTest", contact1, profile2, userRole1);
 
     //PublicationStatus
     PublicationStatus pubStatus1 = PublicationStatus.READING;
@@ -97,8 +97,6 @@ class PublicationRepositoryTest {
             pubStatus2, edition2, code2);
     Publication publication3 = new Publication(bibliographicalData3, publicationType, user3,
             pubStatus3, edition3, code3);
-
-
 
     // Happy path
 
@@ -295,7 +293,7 @@ class PublicationRepositoryTest {
 
         PublicationRepository publicationRepository = new PublicationRepository(List.of(publication1));
 
-        Library library = new Library();
+        Library library = new Library(new ArrayList<>(), userTest.getUserName() + "'s Library", userTest);
         library.addPublication(publication1);
 
         List<Publication> resultingList = publicationRepository.getListOfDifferentPublications(library.getAllPublications());
@@ -308,7 +306,7 @@ class PublicationRepositoryTest {
 
         PublicationRepository publicationRepository = new PublicationRepository(List.of(publication1, publication2, publication3));
 
-        Library library = new Library();
+        Library library = new Library(new ArrayList<>(), userTest.getUserName() + "'s Library", userTest);
 
         List<Publication> resultingList = publicationRepository.getListOfDifferentPublications(library.getAllPublications());
 
@@ -323,7 +321,7 @@ class PublicationRepositoryTest {
 
         PublicationRepository publicationRepository = new PublicationRepository(List.of(publication1, publication2, publication3));
 
-        Library library = new Library();
+        Library library = new Library(new ArrayList<>(), userTest.getUserName() + "'s Library", userTest);
         library.addPublication(publication2);
 
         List<Publication> resultingList = publicationRepository.getListOfDifferentPublications(library.getAllPublications());
@@ -339,7 +337,7 @@ class PublicationRepositoryTest {
 
         PublicationRepository publicationRepository = new PublicationRepository(List.of(publication1, publication2, publication3));
 
-        Library library = new Library();
+        Library library = new Library(new ArrayList<>(), userTest.getUserName() + "'s Library", userTest);
         library.addPublication(publication2);
 
         List<Publication> resultingList = publicationRepository.getListOfDifferentPublications(library.getAllPublications());

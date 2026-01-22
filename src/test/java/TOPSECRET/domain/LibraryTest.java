@@ -6,10 +6,12 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,8 +28,13 @@ class LibraryTest {
 
     @BeforeEach
     void preparation(){
+        Country country = new Country("Portugal");
+        Profile profile = new Profile("profile1", country, LocalDate.of(1990, 1, 1));
+        Contact contact = new Contact();
+        User user1 = new User("user1", contact, profile, UserRole.NORMAL_USER);
 
-        library = new Library(); //Create a new library
+        library = new Library(new ArrayList<>(), "Test Library", user1);
+
 
         //PublicationType
         PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "HardCover");
@@ -74,12 +81,12 @@ class LibraryTest {
         );
 
         //Users (using the empty constructor)
-        User user1 = new User();
+        User user5 = new User();
         User user2 = new User();
         User user3 = new User();
 
         //Creating some sample publications, using empty users from the empty constructor in User class
-        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
+        publication1 = new Publication(data1, publicationType, user5, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
         publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
         publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
     }

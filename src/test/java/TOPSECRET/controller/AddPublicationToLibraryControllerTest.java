@@ -2,24 +2,17 @@ package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import TOPSECRET.domain.Author;
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Country;
-import TOPSECRET.domain.BibliographicalData;
+import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Library;
-import TOPSECRET.domain.Publication;
-import TOPSECRET.domain.PublicationType;
-import TOPSECRET.domain.Publisher;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.Code;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.repository.PublicationRepository;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Locale;
@@ -38,6 +31,7 @@ class AddPublicationToLibraryControllerTest {
     private Publication publication2;
     private Publication publication3;
 
+    private User user4;
     private PublicationType type;
     private Country country1, country2, country3;
     private Author author1, author2, author3;
@@ -48,9 +42,7 @@ class AddPublicationToLibraryControllerTest {
 
     @BeforeEach
     void preparation() {
-        library = new Library();
         publicationRepository = new PublicationRepository();
-        controller = new AddPublicationToLibraryController(library, publicationRepository);
 
         //Creating a valid PublicationType
         PublicationType type = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Details1");
@@ -94,10 +86,14 @@ class AddPublicationToLibraryControllerTest {
                 LocalDate.of(2022, 3, 3), List.of(genre3), 200, "Some text 3"
         );
 
+        //Creating Profiles
+        Profile profile1 = new Profile("profile1", country1, LocalDate.of(1997, 8, 15));
+
         //Creating Users
         User user1 = new User();
         User user2 = new User();
         User user3 = new User();
+        user4 = new User("user4", contact1, profile1, UserRole.NORMAL_USER);
 
         //Creating some sample publications, using empty users from the empty constructor in User class
         publication1 = new Publication(data1, type, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
@@ -108,6 +104,12 @@ class AddPublicationToLibraryControllerTest {
         publicationRepository.addPublication(publication1);
         publicationRepository.addPublication(publication2);
         publicationRepository.addPublication(publication3);
+
+        //Library
+        library = new Library(new ArrayList<>(), "UserTest's Library", user1);
+
+        //Controller
+        controller = new AddPublicationToLibraryController(library, publicationRepository);
 
         //Add publication to library
         library.addPublication(publication1);
@@ -127,8 +129,8 @@ class AddPublicationToLibraryControllerTest {
     @Test //This test should return all publications since we create a new library but without any publication
     void getListOfOtherPublications_shouldReturnAllPublications_emptyLibrary(){
         //Make sure the library is clear
-        Library clearedLibrary = new Library();
-        AddPublicationToLibraryController controller2 = new AddPublicationToLibraryController(clearedLibrary, publicationRepository);
+        library = new Library(new ArrayList<>(), "User4's Library", user4);
+        AddPublicationToLibraryController controller2 = new AddPublicationToLibraryController(library, publicationRepository);
 
         List<Publication> otherPublications = controller2.getListOfOtherPublications();
 
@@ -157,4 +159,10 @@ class AddPublicationToLibraryControllerTest {
         assertThrows(UnsupportedOperationException.class, () -> originalListReadOnly.add(publication2),
                 "The list from the library is unmodifiable!");
     }
+
+//    @Test //This test should check if a publication is added to the library
+//    void addPublicationToLibraryShouldAddANewPublicationToLibrary(){
+//
+//        Library library = new Library()
+//    }
 }
