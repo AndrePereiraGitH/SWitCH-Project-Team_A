@@ -167,17 +167,14 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         assertTrue(authors.contains(author2));
     }
 
-    // getAllAuthorNames
     @Test
     void shouldReturnAuthorNamesDTO() {
-        AuthorDTO_US025 dto = controller.getAllAuthorNames();
+        List<AuthorDTO_US025> authors = controller.getAllAuthorNames();
 
-        assertNotNull(dto);
-        assertEquals(2, dto.getAuthors().size());
-        List<AuthorDTO_US025> authors = dto.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
         assertTrue(authors.stream().anyMatch(a -> "Author One".equals(a.getName())));
         assertTrue(authors.stream().anyMatch(a -> "Author Two".equals(a.getName())));
-
     }
 
     // getListOfItemsOnDirectSale

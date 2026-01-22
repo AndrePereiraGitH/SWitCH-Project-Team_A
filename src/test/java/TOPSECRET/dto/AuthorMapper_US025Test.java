@@ -25,11 +25,11 @@ class AuthorMapper_US025Test {
         Country country = new Country("PORTUGAL");
         Author author = new Author("José Saramago", country, LocalDate.of(2000, 11, 25), "bio");
 
-        var dto = mapper.toDTO(List.of(author));
+        var dtos = mapper.toDTO(List.of(author));
 
-        assertNotNull(dto);
-        assertEquals(1, dto.getAuthors().size());
-        var firstAuthor = dto.getAuthors().get(0);
+        assertNotNull(dtos);
+        assertEquals(1, dtos.size());
+        var firstAuthor = dtos.get(0);
         assertEquals("José Saramago", firstAuthor.getName());
         assertEquals(country, firstAuthor.getCountry());
         assertEquals(LocalDate.of(2000, 11, 25), firstAuthor.getDateOfBirth());

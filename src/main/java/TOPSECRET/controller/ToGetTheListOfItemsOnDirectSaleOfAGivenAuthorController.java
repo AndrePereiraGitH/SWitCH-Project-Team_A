@@ -31,7 +31,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         return authorRepository.getAllAuthors();
     }
 
-    public AuthorDTO_US025 getAllAuthorNames() {
+    public List<AuthorDTO_US025> getAllAuthorNames() {
         return amapper.toDTO(authorRepository.getAllAuthors());
     }
 
