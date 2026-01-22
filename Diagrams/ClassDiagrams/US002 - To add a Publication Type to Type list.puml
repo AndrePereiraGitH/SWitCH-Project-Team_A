@@ -3,26 +3,30 @@ title US002 - To add a publication type to type list in the system
 
 'Need to create class
 
-class RegisterPubType {
-  -_pubTypeRepository: PubTypeRepository
-    +createAndAddPubType(mediaFormat: String, typeOfBinding: String, details: String): PubType
+class RegisterPubTypeController {
+  -_pubTypeRepo: PublicationTypeRepository
+    +RegisterPubType(mediaFormat: Media Format, typeOfBinding: TypeOfBinding, details: String): PublicationType
 }
 
-class PubTypeRepository {
-    -_pubType: List<pubType>
-  +
-  -validator: boolean
+class PublicationTypeRepository {
+  -_publicationTypes: List<PublicationType>
+  +createPublicationType(mediaFormat: Media Format, typeOfBinding: TypeOfBinding, details: String): PublicationType
+  +validatePublicationType(pubType: PublicationType): boolean
+  +addToList(pubType: PublicationType): PublicationType
 }
 
-class PubType {
-  -_pubType: String
-    +getPubType(): String
-
+class PublicationType {
+  -mediaFormat : MediaFormat
+  -typeOfBinding : TypeOfBinding
+  -details : String
+  +getMediaFormat(): MediaFormat
+  +getTypeOfBinding() : TypeOfBinding
+  +getDetails() : String
 }
 
 ' Interactions
 
-RegisterPubType "1 " -- "1 " PubTypeRepository : requests registration to >
-PubTypeRepository "1 " -- " * " PubType : manages / stores >
+RegisterPubTypeController "1 " -- "1 " PublicationTypeRepository : requests registration to >
+PublicationTypeRepository "1 " -- " * " PublicationType : manages / stores >
 
 @enduml

@@ -9,14 +9,14 @@ actor Buyer
 participant ":UI024" as UI024
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PublicationRepository
-participant ":PublicationMapper" as PubMapper
-participant "publicationDTO:PublicationDTO" as PubDTO
-participant ":AuctionMapper" as Mapper
+participant ":PublicationMapper_US024" as PubMapper
+participant "publicationDTO:\nPublicationDTO_US024" as PubDTO
+participant ":AuctionMapper_US024" as Mapper
 participant ":AuctionRepository" as AuctionRepository
 participant "listOfAuction:\nList<Auction>" as ListAuc
-participant ":Auction" as AucDomain
-participant "auctionDTO:\nAuctionDTO" as DTO
-participant "listOfAuctionDTO:\nList<AuctionDTO>" as ListDTO
+'participant ":Auction" as AucDomain
+participant "auctionDTO:\nAuctionDTO_US024" as DTO
+participant "listOfAuctionDTO:\nList<AuctionDTO_US024>" as ListDTO
 
 'Interactions
 Buyer -> UI024 : I want to get the list of items\n on auction of a given publication
@@ -31,11 +31,7 @@ deactivate PublicationRepository
 Ctrl -> PubMapper: toDTO(listOfAllPublications)
 activate PubMapper
 'PubMapper -> PubDTO
-PubMapper -> PubDTO ** : create()
-activate PubDTO
-PubDTO --> PubMapper: PublicationDTO
-deactivate PubDTO
-PubMapper -> PubMapper : listOfAllPublicationsDTO.add(PublicationDTO)
+PubMapper -> PubDTO **
 PubMapper --> Ctrl: listOfAllPublicationsDTO
 deactivate PubMapper
 
@@ -66,15 +62,8 @@ activate Mapper
 Mapper -> ListDTO ** :
 
     loop for each auction
-        Mapper -> AucDomain : getDetails()
-        activate AucDomain
-        AucDomain --> Mapper : details
-        deactivate AucDomain
 
-        Mapper -> DTO ** : create(details)
-        activate DTO
-        DTO --> Mapper : auctionDTO
-        deactivate DTO
+        Mapper -> DTO **
 
         Mapper -> Mapper : listOfAuctionsDTO.add(auctionDTO)
     end

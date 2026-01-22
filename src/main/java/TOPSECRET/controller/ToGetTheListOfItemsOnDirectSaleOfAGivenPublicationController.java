@@ -1,4 +1,4 @@
-package TOPSECRET.controller;
+/*package TOPSECRET.controller;
 
 import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Publication;
@@ -41,3 +41,4 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
         return _directSaleMapper.toDTO(listOfDirectSale);
     }
 }
+*/

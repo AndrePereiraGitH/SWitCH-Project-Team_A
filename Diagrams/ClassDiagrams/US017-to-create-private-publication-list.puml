@@ -1,5 +1,6 @@
 @startuml
-title US017 - Create Private Collection Of Publications
+title US017 - Create Private Collection Of Publications with a name and a set a genre
+
 
 ' ======================
 ' DOMAIN
@@ -10,14 +11,14 @@ class User {
   -username
 }
 
-class CollectionOfPublications {
-  -name : String
-  -isPrivate : boolean
-}
-
 class Genre {
   -id
   -name
+}
+
+class CollectionOfPublications {
+  -name : String
+  -isPrivate : boolean
 }
 
 class Publication {
@@ -34,8 +35,17 @@ CollectionOfPublications "1" --> "*" Publication : contains
 ' ======================
 
 class CreateCollectionOfPublicationsController {
-  +requestGenres() : List<Genre>
+  +getAllGenres() : List<GenreDTO>
   +createAndAddCollectionOfPublications(name : String, genre : Genre)
+}
+
+class GenreMapper {
+  +toDTO(genres : List<Genre>) : List<GenreDTO>
+}
+
+class GenreDTO {
+ - id
+ - name
 }
 
 ' ======================
@@ -52,12 +62,14 @@ class CollectionOfPublicationsRepository {
 }
 
 ' ======================
-' DEPENDENCIES (FROM SEQUENCE)
+' DEPENDENCIES
 ' ======================
 
 CreateCollectionOfPublicationsController ..> GenreRepository : uses
+CreateCollectionOfPublicationsController ..> GenreMapper : uses
 CreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
 
-CollectionOfPublicationsRepository ..> CollectionOfPublications : create
+GenreMapper ..> Genre : maps
+GenreMapper ..> GenreDTO : creates
 
 @enduml

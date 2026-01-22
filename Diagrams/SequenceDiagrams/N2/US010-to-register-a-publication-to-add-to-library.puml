@@ -13,9 +13,9 @@ participant ":UI010" as UI
 
 
 
-participant ":RegisterNewPublicationCtrl" as Ctrl
+participant ":ToRegisterNewPublicationCtrl" as Ctrl
 
-participant ":SystemPublicationRepository" as SystemRepo
+participant ":PublicationRepository" as SystemRepo
 
 
 ' Publication is to be treated the same as "Item", supposedly

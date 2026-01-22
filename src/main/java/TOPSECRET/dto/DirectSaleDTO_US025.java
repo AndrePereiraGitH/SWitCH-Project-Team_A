@@ -3,7 +3,7 @@ package TOPSECRET.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class DirectSaleDTO {
+public class DirectSaleDTO_US025 {
 
     public final String publicationTitle;
     public final List<String> authors;
@@ -11,7 +11,7 @@ public class DirectSaleDTO {
     public final String listingTitle;
     public final String seller;
 
-    public DirectSaleDTO(String publicationTitle, List<String> authors, BigDecimal price, String listingTitle, String _seller) {
+    public DirectSaleDTO_US025(String publicationTitle, List<String> authors, BigDecimal price, String listingTitle, String _seller) {
         this.publicationTitle = publicationTitle;
         this.authors = authors;
         this.price = price;

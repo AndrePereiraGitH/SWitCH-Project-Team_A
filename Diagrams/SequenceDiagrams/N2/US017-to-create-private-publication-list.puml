@@ -2,53 +2,64 @@
 hide footbox
 autonumber
 
-title US017 - Create Private Collection Of Publications
+title US017 - Create Private Collection Of Publications with a name and a set a genre
 
 actor "User" as User
 participant ":UI017" as UI
 participant ":CreateCollectionOfPublicationsController" as Controller
 participant ":GenreRepository" as GenreRepository
+participant ":GenreMapper" as GenreMapper
+participant "genreDTO:GenreDTO" as GenreDTO
 participant ":CollectionOfPublicationsRepository" as CollectionRepository
 
+
 User -> UI : I want to create a new private collection
+
 activate UI
 
-UI --> User : Request collection name
+UI --> User : Provide collection name
 deactivate UI
-User -> UI : Provide collection name
+User -> UI : collection name provided
 activate UI
 
-UI -> Controller : requestGenre()
+UI -> Controller : getAllGenres()
 activate Controller
 
 Controller -> GenreRepository : getAllGenres()
 activate GenreRepository
-
-GenreRepository -> GenreRepository : loadAllGenres()
-
-GenreRepository --> Controller : genres : List<Genre>
+GenreRepository --> Controller : listOfAllGenres
 deactivate GenreRepository
 
-Controller --> UI :  genres
+Controller -> GenreMapper: toDTO(listOfAllGenre)
+activate GenreMapper
+GenreMapper -> GenreDTO ** : create()
+activate GenreDTO
+GenreDTO --> GenreMapper: GenreDTO
+deactivate GenreDTO
+GenreMapper -> GenreMapper : listOfAllGenreDTO.add(GenreDTO)
+GenreMapper --> Controller: listOfAllGenreDTO
+deactivate GenreMapper
+
+Controller --> UI : listOfAllGenres
 deactivate Controller
 
-UI --> User : Display genres (select one)
+UI --> User : Which genres? Select one!
 deactivate UI
 
-User -> UI : Select genre
+User -> UI : Selected genre
 activate UI
 
-UI -> Controller : createAndAddCollectionOfPublication(name, selectedGenre)
+UI -> Controller : createAndAddCollectionOfPublication\n(name, selectedGenre)
 activate Controller
 
-Controller -> CollectionRepository  : createAndAddCollectionOfPublication(name, selectedGenre)
+Controller -> CollectionRepository  : createAndAddCollectionOfPublication\n(name, selectedGenre)
 activate CollectionRepository
 
 create "cp1:CollectionOfPublications" as CollectionOfPublications
 
 CollectionRepository -> CollectionOfPublications : create(name, selectedGenre)
-CollectionRepository -> CollectionRepository : validate(cp1)
-CollectionRepository -> CollectionRepository : add(cp1)
+CollectionRepository -> CollectionRepository : validateCollectionOfPublicationsExists(cp1)
+CollectionRepository -> CollectionRepository : addToList(cp1)
 
 CollectionRepository --> Controller : cp1
 deactivate CollectionRepository
@@ -56,7 +67,7 @@ deactivate CollectionRepository
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : Your private collection of publications was created
+UI --> User : Your private collection of publications\n was created
 deactivate UI
 
 @enduml

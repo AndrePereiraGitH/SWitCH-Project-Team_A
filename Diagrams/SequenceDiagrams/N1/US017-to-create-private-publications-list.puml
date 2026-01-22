@@ -2,12 +2,12 @@
 autonumber
 hide footbox
 
-title US017 - Create a private Collection Of Publications
+title US017 - Create a private Collection Of Publications with a name and a set a genre
 
 actor "User" as User
 participant ":System" as System
 
-User -> System : I want to create a new private collection of publications
+User -> System : I want to create a new private collection of publications\n with a name and a set a genre
 activate System
 
 System --> User : Provide the collection name

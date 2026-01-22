@@ -25,6 +25,18 @@ class PublicationTypeTest {
     }
 
     @Test
+    void shouldReturnFalseWhenComparedWithNull() {
+        PublicationType pt = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
+        assertFalse(pt.equals(null));
+    }
+
+    @Test
+    void shouldReturnFalseWhenComparedWithDifferentClass() {
+        PublicationType pt = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
+        assertFalse(pt.equals("not a PublicationType"));
+    }
+
+    @Test
     void TestInvalidPublicationTypes()
     {
         assertThrows(IllegalArgumentException.class, () -> new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, ""));
