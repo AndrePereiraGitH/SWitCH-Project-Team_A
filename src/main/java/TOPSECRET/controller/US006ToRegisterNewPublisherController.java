@@ -5,7 +5,7 @@ import TOPSECRET.domain.Publisher;
 import TOPSECRET.repository.PublisherRepository;
 import TOPSECRET.domain.User;
 
-public class US006ToRegisterNewPublisherController {
+public class  US006ToRegisterNewPublisherController {
 
     private PublisherRepository _publisherRepository;
     private User admin;
