@@ -26,7 +26,7 @@ activate UI
 UI -> Ctrl : getListOfOtherPublications()
 activate Ctrl
 
-Ctrl -> LibDomain: getAll()
+Ctrl -> LibDomain: getAllPublications()
 activate LibDomain
 LibDomain --> Ctrl: listOfPublicationsInLibrary
 deactivate LibDomain

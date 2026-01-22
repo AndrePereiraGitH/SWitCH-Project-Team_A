@@ -37,7 +37,7 @@ public class GetListOfPublicationsInLibraryController {
 
     public List<PublicationDTO> getListOfPublicationsInLibrary(String username){
 
-        List<Publication> publications = getUserLibrary(username).getAll();
+        List<Publication> publications = getUserLibrary(username).getAllPublications();
 
         return PublicationMapper.getListOfPublicationsDTO(publications);
     }

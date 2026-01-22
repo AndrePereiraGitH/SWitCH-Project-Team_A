@@ -35,11 +35,10 @@ class CountryRepository{
     +getCountryName (countryName)
 }
 class "List<City>"{
-    +addNewCityToCitiesList (cityName : City)
 }
 
 ' Interactions
-US008RegisterNewCityController "1" --> "1" CityRepository : request registering city
+US008RegisterNewCityController "1" .--> "1" CityRepository : request registering city
 US008RegisterNewCityController "1" .--> "1" CountryRepository : asks verification
 CityRepository "1" --> "1" "List<City>" : contains
 "List<City>" "1" --> "*" City : stores

@@ -20,7 +20,6 @@ class US007RegisterNewCountryController{
 }
 
 class "List<Country>" {
-    +addNewCountryToRegisteredCountriesList (countryName : Country)
 }
 
 class Country {
@@ -28,7 +27,7 @@ class Country {
 }
 
 ' Interactions
-US007RegisterNewCountryController "1" --> "1" CountryRepository : request registering country
+US007RegisterNewCountryController "1" .--> "1" CountryRepository : request registering country
 CountryRepository "1" --> "1" "List<Country>" : has a
 "List<Country>" "1" --> "*" Country : contains
 CountryRepository "1" .--> "*" Country : creates/manages

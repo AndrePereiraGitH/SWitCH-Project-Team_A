@@ -7,12 +7,8 @@ public class Library {
 
     private final List<Publication> publications = new ArrayList<>();
 
-    User username;
-
-
-
     //Get publications in the Library
-    public List<Publication> getAll(){
+    public List<Publication> getAllPublications(){
         return List.copyOf(publications); //read-only, so there are no external changes
     }
 
@@ -25,16 +21,11 @@ public class Library {
 
     // US0018
 
-    // Returns a defensive copy of publications
-    public List<Publication> getPublications() {
-        return new ArrayList<>(publications);
-    }
-
     public boolean containsPublication(Publication publication) {
         return publications.contains(publication);
     }
 
-    // Necessary methods to compare the objects
+    // Necessary methods to co  mpare the objects
     // Allows Library objects to be compared by content instead of reference.
     @Override
     public boolean equals(Object obj) {
@@ -44,13 +35,13 @@ public class Library {
 
         Library other = (Library) obj;
 
-        return this.getPublications().equals(other.getPublications());
+        return this.getAllPublications().equals(other.getAllPublications());
     }
 
     // Ensures consistency with equals().
     @Override
     public int hashCode() {
-        return getPublications().hashCode();
+        return getAllPublications().hashCode();
     }
 
 }

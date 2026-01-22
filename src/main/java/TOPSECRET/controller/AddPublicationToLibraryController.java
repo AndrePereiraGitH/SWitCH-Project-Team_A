@@ -21,7 +21,7 @@ public class AddPublicationToLibraryController {
     //Call by the UI and response
     public List<Publication> getListOfOtherPublications(){
         //Get publications in user library
-        List<Publication> listOfPublicationsInLibrary = library.getAll();
+        List<Publication> listOfPublicationsInLibrary = library.getAllPublications();
 
         //Get publications not in library
         List<Publication> listOfDifferentPublications =

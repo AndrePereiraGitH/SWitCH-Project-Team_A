@@ -34,9 +34,9 @@ class AddPublicationToLibraryControllerTest {
     private PublicationRepository publicationRepository;
     private AddPublicationToLibraryController controller;
 
-    private Publication p1;
-    private Publication p2;
-    private Publication p3;
+    private Publication publication1;
+    private Publication publication2;
+    private Publication publication3;
 
     private PublicationType type;
     private Country country1, country2, country3;
@@ -100,17 +100,17 @@ class AddPublicationToLibraryControllerTest {
         User user3 = new User();
 
         //Creating some sample publications, using empty users from the empty constructor in User class
-        p1 = new Publication(data1, type, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
-        p2 = new Publication(data2, type, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
-        p3 = new Publication(data3, type, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
+        publication1 = new Publication(data1, type, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
+        publication2 = new Publication(data2, type, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
+        publication3 = new Publication(data3, type, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
 
         //Add samples to repository
-        publicationRepository.addPublication(p1);
-        publicationRepository.addPublication(p2);
-        publicationRepository.addPublication(p3);
+        publicationRepository.addPublication(publication1);
+        publicationRepository.addPublication(publication2);
+        publicationRepository.addPublication(publication3);
 
         //Add publication to library
-        library.addPublication(p1);
+        library.addPublication(publication1);
     }
     @Test //This test should return a list with 2 publications since we added 1 publication to the library
     void getListOfOtherPublications_shouldReturnPublicationsNotInLibrary(){
@@ -119,9 +119,9 @@ class AddPublicationToLibraryControllerTest {
 
         //Assert
         assertEquals(2, otherPublications.size(), "There should be 2 publications not in the Library");
-        assertTrue(otherPublications.contains(p2), "The list should contain p2");
-        assertTrue(otherPublications.contains(p3), "The list should contain p3");
-        assertFalse(otherPublications.contains(p1), "The list should not contain the p1 because it's in the library");
+        assertTrue(otherPublications.contains(publication2), "The list should contain p2");
+        assertTrue(otherPublications.contains(publication3), "The list should contain p3");
+        assertFalse(otherPublications.contains(publication1), "The list should not contain the p1 because it's in the library");
     }
 
     @Test //This test should return all publications since we create a new library but without any publication
@@ -133,17 +133,17 @@ class AddPublicationToLibraryControllerTest {
         List<Publication> otherPublications = controller2.getListOfOtherPublications();
 
         assertEquals(3, otherPublications.size(), "There should be 3 publications, none of which are in the Library");
-        assertTrue(otherPublications.contains(p1), "The list should contain p1");
-        assertTrue(otherPublications.contains(p2), "The list should contain p2");
-        assertTrue(otherPublications.contains(p3), "The list should contain p3");
+        assertTrue(otherPublications.contains(publication1), "The list should contain p1");
+        assertTrue(otherPublications.contains(publication2), "The list should contain p2");
+        assertTrue(otherPublications.contains(publication3), "The list should contain p3");
         assertFalse(otherPublications.contains(null), "The list must have publications");
     }
 
     @Test //This test should return an empty list since we add the remaining 2 publications to the library
     void getListOfOtherPublications_shouldReturnNothing_libraryHasAllPublications(){
         //Make sure the library has all publications (add the missing ones)
-        library.addPublication(p2);
-        library.addPublication(p3);
+        library.addPublication(publication2);
+        library.addPublication(publication3);
 
         AddPublicationToLibraryController controller3 = new AddPublicationToLibraryController(library, publicationRepository);
 
@@ -154,8 +154,8 @@ class AddPublicationToLibraryControllerTest {
 
     @Test //This test verifies that the getAll returns a copy of the original list so it can't be modified externally
     void getListOfOtherPublications_shouldNotBeAbleToModifyTheList(){
-        List<Publication> originalListReadOnly = library.getAll();
-        assertThrows(UnsupportedOperationException.class, () -> originalListReadOnly.add(p2),
+        List<Publication> originalListReadOnly = library.getAllPublications();
+        assertThrows(UnsupportedOperationException.class, () -> originalListReadOnly.add(publication2),
                 "The list from the library is unmodifiable!");
     }
 }
