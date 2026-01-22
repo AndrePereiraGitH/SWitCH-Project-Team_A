@@ -1,20 +1,15 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Enum.UserRole;
+
 import TOPSECRET.dto.PublicationDTO;
 
 import TOPSECRET.dto.PublicationMapper;
 import TOPSECRET.repository.LibraryRepository;
 
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
 
 public class GetListOfPublicationsInLibraryController {
 
@@ -24,6 +19,7 @@ public class GetListOfPublicationsInLibraryController {
     public GetListOfPublicationsInLibraryController(LibraryRepository libraryRepo) {
         this._libraryRepo = libraryRepo;
     }
+
 
     public Library getUserLibrary(String userName){
         if(userName==null){
@@ -41,10 +37,7 @@ public class GetListOfPublicationsInLibraryController {
 
     public List<PublicationDTO> getListOfPublicationsInLibrary(String username){
 
-        List<PublicationDTO> dtoList = new ArrayList<>();
-
         List<Publication> publications = getUserLibrary(username).getAll();
-
 
         return PublicationMapper.getListOfPublicationsDTO(publications);
     }
