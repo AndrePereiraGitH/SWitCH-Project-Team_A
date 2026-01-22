@@ -1,14 +1,14 @@
 @startuml
 title US005 - Register Author in MIteLovers
 
-class RegisterAuthorController {
-  -_registerAuthorRepository: RegisterAuthorRepository
-  +createAndAddAuthor(Profile profile, String biography): Author
+class ToRegisterAuthorController {
+  -AuthorRepository: AuthorRepository
+  +registerAuthor(name: String, country: Country, birthday: LocalDate, biography: String): Author
 }
 
 class AuthorRepository {
   -_authors: List<Author>
-  +createAndAddAuthor(profile: Profile, biography: String): Author
+  +createAndAddAuthor(name: String, country: Country, birthday: LocalDate, biography: String): Author
   -exists(author: Author): boolean
 }
 
@@ -20,15 +20,15 @@ class Author {
 }
 
 class Profile {
-  -name: String
-  -country: Country
-  -birthday: LocalDate
+  -_name: String
+  -_country: Country
+  -_birthday: LocalDate
   +getName(): String
   +getCountry(): Country
   +getBirthday(): LocalDate
 }
 
-RegisterAuthorController "1" -.-> "1" AuthorRepository : uses
+ToRegisterAuthorController "1" -.-> "1" AuthorRepository : uses
 AuthorRepository "1" --> "*" Author : stores
 AuthorRepository "1" --> "*" Author : creates
 Author "1" --> "1" Profile : has

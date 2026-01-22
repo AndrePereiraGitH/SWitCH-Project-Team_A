@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AuthorControllerTest {
     @Test
     void shouldAddAuthor() {
-        US005_ToRegisterAuthorController controller = new US005_ToRegisterAuthorController(AuthorRepository.getInstance());
+        ToRegisterAuthorController controller = new ToRegisterAuthorController(AuthorRepository.getInstance());
         Author expected = new Author("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
 
         // Act + Assert
-        Author result = controller.createAndAddAuthor("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
+        Author result = controller.registerAuthor("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
 
         assertEquals(expected, result);
     }

@@ -6,7 +6,7 @@ title US003 - Register Genre to Official Genre List
 actor Administrator
 participant ":UI003" as UI
 
-participant ":RegisterGenreController" as RegisterGenreController
+participant "ToGetListOfGenreController" as RegisterGenreController
 
 participant ":GenreRepository" as GenreRepository
 participant ":List<Genre>" as LG
@@ -19,7 +19,7 @@ UI -->> Administrator : **2** Please enter the genre name
 Administrator -> UI : **3** name("romance")
 
 
-UI -> RegisterGenreController : **4** createAndAddGenre(name)
+UI -> RegisterGenreController : **4** registerGenre(name)
 activate RegisterGenreController
 
 RegisterGenreController -> GenreRepository : **5** createAndAddGenre(name)

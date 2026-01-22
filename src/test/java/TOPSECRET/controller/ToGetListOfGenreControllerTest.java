@@ -8,11 +8,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class US013_ToGetListOfGenreControllerTest {
+class ToGetListOfGenreControllerTest {
     @Test
     void constructor_shouldThrow_whenRepositoryIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> new US013_ToGetListOfGenreController(null));
+                () -> new ToGetListOfGenreController(null));
     }
 
     @Test
@@ -21,8 +21,8 @@ class US013_ToGetListOfGenreControllerTest {
         GenreRepository repo = GenreRepository.getINSTANCE();
         repo.createAndAddGenre("Romance");
 
-        US013_ToGetListOfGenreController controller =
-                new US013_ToGetListOfGenreController(repo);
+        ToGetListOfGenreController controller =
+                new ToGetListOfGenreController(repo);
 
         // Act
         List<Genre> result = controller.getGenresList();
