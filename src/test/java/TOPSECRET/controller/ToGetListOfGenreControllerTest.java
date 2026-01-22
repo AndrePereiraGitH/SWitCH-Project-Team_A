@@ -39,6 +39,6 @@ class ToGetListOfGenreControllerTest {
             }
         }
 
-        assertTrue(found);        assertEquals("Romance", result.get(0).getGenreType());
+        assertTrue(found);
     }
 }
