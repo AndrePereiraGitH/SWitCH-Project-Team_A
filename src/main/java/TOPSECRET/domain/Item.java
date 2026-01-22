@@ -3,7 +3,10 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.Condition;
 
 import java.util.Objects;
-
+/**
+ * Represents an Item that is being sold/appraised, defined by its condition, weight, dimensions, and publication.
+ * NOTE: This class validates all inputs in the constructor to guarantee a consistent (valid) Item.
+ */
 public class Item {
 
     private final Condition _condition;
