@@ -63,4 +63,19 @@ public class DirectSaleRepository {
 
         return dsList;
     }
+
+    public List<DirectSale> getListOfItemsOnDirectSale(Publisher publisher) {
+        List<DirectSale> dsList = new ArrayList<>();
+
+        for (DirectSale ds : _directSaleList) {
+            for (Item item : ds.getListing().getItems()) {
+                if (item.getPublication().getBibliographicalData().getPublisher().equals(publisher)) {
+                    dsList.add(ds);
+                    break;
+                }
+            }
+        }
+
+        return dsList;
+    }
 }
