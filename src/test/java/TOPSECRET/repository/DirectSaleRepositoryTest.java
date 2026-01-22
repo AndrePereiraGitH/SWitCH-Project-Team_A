@@ -119,7 +119,6 @@ class DirectSaleRepositoryTest {
         assertTrue(result);
     }
 
-
     @Test
     void ensureIfDirectSaleExistsReturnsTrue(){
         // Arrange
