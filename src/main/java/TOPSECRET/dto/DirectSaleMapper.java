@@ -10,24 +10,40 @@ import java.util.List;
 
 public class DirectSaleMapper {
 
-    public DirectSaleDTO toDTO(DirectSale ds) {
-        Item firstItem = ds.getListing().getItems().get(0);
-        String publicationTitle = firstItem.getPublication().getBibliographicalData().getTitle();
-        List<String> authors = new ArrayList<>();
-        for (Author author : firstItem.getPublication().getBibliographicalData().getAuthors()) {
-            authors.add(author.getProfile().getName());
-        }        BigDecimal price = ds.getListing().getPrice().getPrice();
-        String listingTitle = ds.getListing().getListingTitle();
-        String seller = ds.getListing().getSeller().getProfile().getName();
+    public List<DirectSaleDTO> toDTO(DirectSale ds) {
 
-        return new DirectSaleDTO(publicationTitle,authors,price,listingTitle,seller);
+        List<DirectSaleDTO> dtos = new ArrayList<>();
+
+        for (Item item : ds.getListing().getItems()) {
+
+            String publicationTitle = item.getPublication().getBibliographicalData().getTitle();
+
+            List<String> authors = new ArrayList<>();
+            for (Author author : item.getPublication().getBibliographicalData().getAuthors()) {
+                authors.add(author.getProfile().getName());
+            }
+
+            BigDecimal price = ds.getListing().getPrice().getPrice();
+
+            String listingTitle = ds.getListing().getListingTitle();
+
+            String seller = ds.getListing().getSeller().getProfile().getName();
+
+            dtos.add(new DirectSaleDTO(publicationTitle, authors, price, listingTitle, seller));
+        }
+
+        return dtos;
     }
 
     public List<DirectSaleDTO> toDTO(List<DirectSale> directSales) {
-        List<DirectSaleDTO> dtos = new ArrayList<>();
+
+        List<DirectSaleDTO> result = new ArrayList<>();
+
         for (DirectSale ds : directSales) {
-            dtos.add(toDTO(ds));
+            List<DirectSaleDTO> itemDTOs = toDTO(ds);
+            result.addAll(itemDTOs);
         }
-        return dtos;
+
+        return result;
     }
 }

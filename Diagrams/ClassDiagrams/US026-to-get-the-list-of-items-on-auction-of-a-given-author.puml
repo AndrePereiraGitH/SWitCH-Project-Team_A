@@ -16,7 +16,6 @@ class AuthorRepository{
 
 class AuctionRepository {
   +getListOfItemsOnAuction(author)
-  -checkAuctionAuthor(author)
 }
 
 class Auction {

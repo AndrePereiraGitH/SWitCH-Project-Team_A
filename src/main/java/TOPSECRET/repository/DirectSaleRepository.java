@@ -63,8 +63,4 @@ public class DirectSaleRepository {
 
         return dsList;
     }
-
-    public List<DirectSale> getAll() {
-        return new ArrayList<>(_directSaleList);
-    }
 }
