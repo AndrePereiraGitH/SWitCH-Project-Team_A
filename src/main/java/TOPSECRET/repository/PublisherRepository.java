@@ -6,7 +6,7 @@ import TOPSECRET.domain.Publisher;
 import java.util.ArrayList;
 import  java.util.List;
 
-public class  PublisherRepository {
+public class   PublisherRepository {
 
     private List<Publisher> publishers;
 
