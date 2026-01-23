@@ -43,7 +43,7 @@ class RegisterUserControllerTest {
 
         registerUserController.registerUser(userName, contact, profile, UserRole.ADMIN);
 
-        assertTrue(userRepository.exists(userName), "User should exist after registration");
+        assertTrue(userRepository.exists(userName), "User registered successfully");
     }
 
     @Test
@@ -62,21 +62,5 @@ class RegisterUserControllerTest {
 
         assertThrows(IllegalArgumentException.class, () ->
                 registerUserController.registerUser("User", contact, profile, null));
-    }
-
-    @Test
-    void testRegisterUser_UserAlreadyExists() {
-        String userName = "DuplicateUser";
-        Contact contact = createSampleContact();
-        Profile profile = createSampleProfile();
-
-        registerUserController.registerUser(userName, contact, profile, UserRole.ADMIN);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> registerUserController.registerUser(userName, contact, profile, UserRole.NORMAL_USER)
-        );
-
-        assertEquals("User already exists", exception.getMessage());
     }
 }

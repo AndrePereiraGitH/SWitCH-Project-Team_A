@@ -11,34 +11,6 @@ public class UserRepository {
 
     private final List<User> users = new ArrayList<>();
 
-    private boolean validateUser(User user) {
-        if (user == null) {
-            return false;
-        }
-
-        for (User u : users) {
-            if (u.getUserName().equals(user.getUserName())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public void createAndAddUser(String _userName, Contact _contact, Profile _profile, UserRole _userRole) {
-        User newUser = new User(_userName, _contact, _profile, _userRole);
-
-        if (!validateUser(newUser)) {
-            throw new IllegalArgumentException("User already exists");
-        }
-
-        addUserToUserList(newUser);
-    }
-
-    private void addUserToUserList(User user) {
-        users.add(user);
-    }
-
     public boolean exists(String userName) {
 
         for (User user : users) {
@@ -47,5 +19,14 @@ public class UserRepository {
             }
         }
         return false;
+    }
+
+    public void createAndAddUser(String username, Contact contact, Profile profile, UserRole userRole) {
+        if (exists(username)) throw new IllegalArgumentException("Username already exists");
+        users.add(new User(username, contact, profile, userRole));
+    }
+
+    public int getUserCount() {
+        return users.size();
     }
 }
