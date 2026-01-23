@@ -1,91 +1,57 @@
 @startuml
 title US026 - To get the list of items on auction of a given author
 
-class UI026{
-
+' UI Layer
+class UI026 {
 }
 
+' Controller
 class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
   +getAllAuthors()
   +getListOfItemsOnAuction(author)
 }
 
-class AuthorRepository{
-    +getAllAuthors()
-}
-
-class AuthorDTO_US026 {
-}
-
-class AuthorMapper_US026 {
-  +toDTO(listOfAuthor)
+' Repositories
+class AuthorRepository {
+  +getAllAuthors()
 }
 
 class AuctionRepository {
   +getListOfItemsOnAuction(author)
+  -checkAuctionAuthor(author)
 }
 
-/'
-class Auction {
-  - listing: Listing
-  +getDetails()
-}
-'/
-
-class AuctionMapper_US026 {
-  +toDTO(listOfAuction)
+' DTOs
+class AuthorDTO_US026 {
 }
 
 class AuctionDTO_US026 {
 }
 
-/'
-class Listing {
-  - item: Item
-  - saleType: SaleType
+' Mappers
+class AuthorMapper_US026 {
+  +toDTO(listOfAllAuthors)
 }
 
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
+class AuctionMapper_US026 {
+  +toDTO(listOfAuction)
 }
 
-'class Item {
-'    - bibliographicalData: BibliographicalData
-'}
-
-class Item {
-    - author: author
+' Domain classes
+class Auction {
+  - listing: Listing
+  - auctionDate: LocalDateTime
+  +getDetails()
 }
-
-class author {
-    - bibliographicalData: BibliographicalData
-    - code: Code
-}
-
-class BibliographicalData {
-    - title: String
-}
-'/
 
 ' Interactions
-
 UI026 ..> ToGetTheListOfItemsOnAuctionOfAGivenAuthorController : uses
 ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionRepository : uses
-ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorRepository: uses
+ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorRepository : uses
 AuthorMapper_US026 ..> AuthorDTO_US026 : maps to
-'AuctionRepository "1 " --> " * " Auction : contains
-ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionMapper_US026 : uses
 AuctionMapper_US026 ..> AuctionDTO_US026 : maps to
-'AuctionMapper_UI025 ..> Auction : uses
 ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorMapper_US026 : uses
-/'
-Auction "1" -- "1" Listing : uses
-Listing "                                *" -- "1" SaleType : can be sold by
-Listing "1" -- "1..*    " Item : lists an
-' Item "*" -- "1" BibliographicalData: has
-Item "*" -- "1" author: refers to a
-author "*" -- "1" BibliographicalData: has
-'/
+ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionMapper_US026 : uses
+AuctionMapper_US026 ..> Auction : communicates with
 
 @enduml

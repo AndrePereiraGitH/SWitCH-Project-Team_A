@@ -15,9 +15,9 @@ participant ":authorDTO:AuthorDTO_US025" as AuthorDTO
 participant ":DirectSaleMapper_US025" as Mapper
 participant ":DirectSaleRepository" as DirectSaleRepository
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-'participant ":DirectSale" as DSDomain
 participant "directSaleDTO:\nDirectSaleDTO_US025" as DTO
 participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US025>" as ListDTO
+participant ":DirectSale" as DS
 
 
 ' Interactions
@@ -32,7 +32,6 @@ deactivate AuthorRepository
 
 Ctrl -> AuthorMapper: toDTO(listOfAllAuthors)
 activate AuthorMapper
-'AuthorMapper -> PubDTO
 AuthorMapper -> AuthorDTO **
 AuthorMapper --> Ctrl: listOfAllAuthorsDTO
 deactivate AuthorMapper
@@ -54,20 +53,24 @@ loop for each direct sale
     DirectSaleRepository -> DirectSaleRepository : checkDirectSaleAuthor(author))
 end
 
-DirectSaleRepository -> ListDS ** :
+DirectSaleRepository -> ListDS ** : create ()
 DirectSaleRepository --> Ctrl : listOfDirectSale
 
 deactivate DirectSaleRepository
 
 Ctrl -> Mapper : toDTO(listOfDirectSale)
 activate Mapper
-Mapper -> ListDTO ** :
+Mapper -> ListDTO ** : create ()
 
     loop for each direct sale
+    Mapper -> DS: getDetails(directSale)
+        activate DS
+        DS --> Mapper: directSaleDetails
+        deactivate DS
 
-        Mapper -> DTO **
-
-        Mapper -> Mapper : listOfDirectSalesDTO.add(directSaleDTO)
+        Mapper -> DTO ** : createDTO(directSaleDetails)
+        DTO --> Mapper: directSaleDTO
+            Mapper -> ListDTO : add(directSaleDTO)
     end
 
 Mapper --> Ctrl : listOfDirectSalesDTO

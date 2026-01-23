@@ -1,91 +1,57 @@
 @startuml
 title US025 - To get the list of items on direct sale of a given author
 
-class UI025{
-
+' UI Layer
+class UI025 {
 }
 
+' Controller
 class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
   +getAllAuthors()
   +getListOfItemsOnDirectSale(author)
 }
 
-class AuthorRepository{
-    +getAllAuthors()
-}
-
-class AuthorDTO_US025 {
-}
-
-class AuthorMapper_US025 {
-  +toDTO(listOfAuthor)
+' Repositories
+class AuthorRepository {
+  +getAllAuthors()
 }
 
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(author)
+  -checkDirectSaleAuthor(author)
 }
 
-/'
-class DirectSale {
-  - listing: Listing
-  +getDetails()
-}
-'/
-
-class DirectSaleMapper_US025 {
-  +toDTO(listOfDirectSale)
+' DTOs
+class AuthorDTO_US025 {
 }
 
 class DirectSaleDTO_US025 {
 }
 
-/'
-class Listing {
-  - item: Item
-  - saleType: SaleType
+' Mappers
+class AuthorMapper_US025 {
+  +toDTO(listOfAllAuthors)
 }
 
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
+class DirectSaleMapper_US025 {
+  +toDTO(listOfDirectSale)
 }
 
-'class Item {
-'    - bibliographicalData: BibliographicalData
-'}
-
-class Item {
-    - author: author
+' Domain classes
+class DirectSale {
+  - listing: Listing
+  - directSaleDate: LocalDateTime
+  +getDetails()
 }
-
-class author {
-    - bibliographicalData: BibliographicalData
-    - code: Code
-}
-
-class BibliographicalData {
-    - title: String
-}
-'/
 
 ' Interactions
-
 UI025 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> AuthorRepository: uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> AuthorRepository : uses
 AuthorMapper_US025 ..> AuthorDTO_US025 : maps to
-'DirectSaleRepository "1 " --> " * " DirectSale : contains
-ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleMapper_US025 : uses
 DirectSaleMapper_US025 ..> DirectSaleDTO_US025 : maps to
-'DirectSaleMapper_US025 ..> DirectSale : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> AuthorMapper_US025 : uses
-/'
-DirectSale "1" -- "1" Listing : uses
-Listing "                                *" -- "1" SaleType : can be sold by
-Listing "1" -- "1..*    " Item : lists an
-' Item "*" -- "1" BibliographicalData: has
-Item "*" -- "1" author: refers to a
-author "*" -- "1" BibliographicalData: has
-'/
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController ..> DirectSaleMapper_US025 : uses
+DirectSaleMapper_US025 ..> DirectSale : communicates with
 
 @enduml
