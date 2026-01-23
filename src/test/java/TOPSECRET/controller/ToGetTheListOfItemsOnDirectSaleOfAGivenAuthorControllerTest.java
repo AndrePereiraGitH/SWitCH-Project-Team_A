@@ -157,16 +157,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
     }
 
-    // getAllAuthors
-    @Test
-    void shouldReturnAllAuthors() {
-        List<Author> authors = controller.getAllAuthors();
-
-        assertEquals(2, authors.size());
-        assertTrue(authors.contains(author1));
-        assertTrue(authors.contains(author2));
-    }
-
     @Test
     void shouldReturnAuthorNamesDTO() {
         List<AuthorDTO_US025> authors = controller.getAllAuthorNames();

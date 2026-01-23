@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationDTOTest {
+class PublicationDTO_US023Test {
 
     @Test
     void ensureConstructorShouldSetFieldsCorrectly() {
@@ -18,7 +18,7 @@ class PublicationDTOTest {
         String expectedType = "BOOK";
 
         // Act
-        PublicationDTO dto = new PublicationDTO(expectedTitle, expectedAuthors, expectedCode, expectedType);
+        PublicationDTO_US023 dto = new PublicationDTO_US023(expectedTitle, expectedAuthors, expectedCode, expectedType);
 
         // Assert
         assertEquals(expectedTitle, dto.pubTitle);
@@ -35,9 +35,9 @@ class PublicationDTOTest {
         String code = "123-456";
         String type = "TECHNICAL_BOOK";
 
-        PublicationDTO dto = new PublicationDTO(title, authors, code, type);
+        PublicationDTO_US023 dto = new PublicationDTO_US023(title, authors, code, type);
 
-        String expectedString = "PublicationDTO{" +
+        String expectedString = "PublicationDTO_US023 {" +
                 "pubTitle='Clean Code'" +
                 ", authorName='[Robert C. Martin, Dean Wampler]'" +
                 ", code='123-456'" +
@@ -54,7 +54,7 @@ class PublicationDTOTest {
     @Test
     void ensureConstructorWithNullValuesShouldNotCrash() {
         // Arrange & Act
-        PublicationDTO dto = new PublicationDTO(null, null, null, null);
+        PublicationDTO_US023 dto = new PublicationDTO_US023(null, null, null, null);
 
         // Assert
         assertNull(dto.pubTitle);
@@ -62,6 +62,8 @@ class PublicationDTOTest {
         assertNull(dto.code);
         assertNull(dto.publicationType);
         assertNotNull(dto.toString());
+
+        assertTrue(dto.toString().contains("PublicationDTO_US023"));
     }
 
 }

@@ -74,5 +74,27 @@ public class Publication {
         return Objects.hash(_bibliographicalData, _publicationType, _userName, _publicationStatus, _edition, _code);
     }
 
+    // US023 Start ----------------------------------------------------------------------------------------------------
 
+    public PublicationDetails getDetails() {
+        return new PublicationDetails(
+                _bibliographicalData,
+                _publicationType,
+                _userName,
+                _publicationStatus,
+                _edition,
+                _code
+        );
+    }
+
+    public record PublicationDetails(
+            BibliographicalData bibliographicalData,
+            PublicationType publicationType,
+            User userName,
+            PublicationStatus publicationStatus,
+            String edition,
+            Code code
+    ) {}
+
+    // US023 End ----------------------------------------------------------------------------------------------------
 }

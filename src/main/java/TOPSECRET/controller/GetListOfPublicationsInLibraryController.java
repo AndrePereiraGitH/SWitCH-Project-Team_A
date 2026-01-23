@@ -2,9 +2,9 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 
-import TOPSECRET.dto.PublicationDTO;
+import TOPSECRET.dto.PublicationDTO_US012;
 
-import TOPSECRET.dto.PublicationMapper;
+import TOPSECRET.dto.PublicationMapper_US012;
 import TOPSECRET.repository.LibraryRepository;
 
 
@@ -36,11 +36,11 @@ public class GetListOfPublicationsInLibraryController {
         return userLibrary;
     }
 
-    public List<PublicationDTO> getListOfPublicationsInLibrary(String username) throws InstanceNotFoundException {
+    public List<PublicationDTO_US012> getListOfPublicationsInLibrary(String username) throws InstanceNotFoundException {
 
         List<Publication> publications = getUserLibrary(username).getAllPublications();
 
-        return PublicationMapper.getListOfPublicationsDTO(publications);
+        return PublicationMapper_US012.getListOfPublicationsDTO(publications);
     }
 
 }

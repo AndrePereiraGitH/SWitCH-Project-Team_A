@@ -34,12 +34,18 @@ public class DirectSaleRepository {
         return false;
     }
 
+    // US023 Start --------------------------------------------------------------------------------------------------
     public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {
+
+        if (publication == null) {
+            throw new IllegalArgumentException("Publication cannot be null");
+        }
+
         List<DirectSale> dsList = new ArrayList<>();
 
         for (DirectSale ds : _directSaleList) {
             for (Item item : ds.getListing().getItems()) {          // one listing can have one or more items
-                if (item.getPublication().equals(publication)) {
+                if (item.getPublication().equals(publication)) {    // representation of method isDirectSaleFromPublication on design
                     dsList.add(ds);
                     break;                                          //avoids adding twice the same DirectSale
                 }
@@ -48,6 +54,8 @@ public class DirectSaleRepository {
 
         return dsList;
     }
+
+    // US023 End --------------------------------------------------------------------------------------------------
 
     public List<DirectSale> getListOfItemsOnDirectSale(Author author) {
         List<DirectSale> dsList = new ArrayList<>();

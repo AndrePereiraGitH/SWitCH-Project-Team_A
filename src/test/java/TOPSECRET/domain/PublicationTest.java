@@ -226,6 +226,52 @@ class PublicationTest {
         assertEquals(expectedCode, publicationWantCode.getCode());
 
     }
+    // US023 Start -----------------------------------------------------------------------------------------------------
+    // Tests to method getDetails()
+
+    @Test
+    void verifiesIfMethodGetDetailsReturnsNonNullRecord() {
+        // Arrange
+        Publication publication = new Publication(biblioData, pubType, anyUser, pubStatus, anyEdition, anyCode);
+
+        // Act
+        Publication.PublicationDetails details = publication.getDetails();
+
+        // Assert
+        assertNotNull(details);
+    }
+
+    @Test
+    void verifiesIfMethodGetDetailsReturnsCorrectValues() {
+        // Arrange
+        Publication publication = new Publication(biblioData, pubType, anyUser, pubStatus, anyEdition, anyCode);
+
+        // Act
+        Publication.PublicationDetails details = publication.getDetails();
+
+        // Assert
+        assertEquals(biblioData, details.bibliographicalData());
+        assertEquals(pubType, details.publicationType());
+        assertEquals(anyUser, details.userName());
+        assertEquals(pubStatus, details.publicationStatus());
+        assertEquals(anyEdition, details.edition());
+        assertEquals(anyCode, details.code());
+    }
+
+    @Test
+    void verifiesIfMethodGetDetailsHandlesNullableFields() {
+        // Arrange
+        Publication publication = new Publication(biblioData, pubType, anyUser, pubStatus, null, null);
+
+        // Act
+        Publication.PublicationDetails details = publication.getDetails();
+
+        // Assert
+        assertNull(details.edition());
+        assertNull(details.code());
+    }
+
+    // US023 End -------------------------------------------------------------------------------------------------------
 
 
     //TODO test the other assertThrows

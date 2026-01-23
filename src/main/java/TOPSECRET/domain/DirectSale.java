@@ -43,4 +43,18 @@ public class DirectSale {
     public int hashCode() {
         return Objects.hash(_listing, _directSaleDate);
     }
+
+    // US023 Start --------------------------------------------------------------------------------------------------
+
+    public DirectSaleDetails getDetails() {
+        return new DirectSaleDetails(_listing, _directSaleDate);
+    }
+
+    public record DirectSaleDetails(
+            Listing listing,
+            LocalDateTime directSaleDate
+    ) {}
+
+    // US023 End --------------------------------------------------------------------------------------------------
+
 }

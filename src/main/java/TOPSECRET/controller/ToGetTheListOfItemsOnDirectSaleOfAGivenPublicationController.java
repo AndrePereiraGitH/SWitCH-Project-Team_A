@@ -34,6 +34,10 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
     // Provides a publication, user chooses a publication and retrieves a list of items on DS (step 11)
     public List<DirectSaleDTO_US023> getListOfItemsOnDirectSale(Publication publication) {
 
+        if (publication == null) {
+            throw new IllegalArgumentException("Publication cannot be null");
+        }
+
         // Asks DS repo for domain objects
         List<DirectSale> listOfDirectSale = _directSaleRepo.getListOfItemsOnDirectSale(publication);
 

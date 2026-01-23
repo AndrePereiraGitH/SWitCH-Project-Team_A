@@ -18,8 +18,8 @@ class UserRepositoryTest {
         userRepository = new UserRepository();
     }
 
-    Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
-    Email email = new Email("test.user", "example.com");
+    private final Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
+    private final Email email = new Email("test.user", "example.com");
 
     private Contact createSampleContact() {
         return new Contact("987654321", "351", email, address);
@@ -40,10 +40,12 @@ class UserRepositoryTest {
                         createSampleContact(),
                         createSampleProfile(),
                         UserRole.ADMIN));
+
+        assertTrue(userRepository.exists("TestUser"));
     }
 
     @Test
-    void testCreateAndAddUser_UserAlreadyExists() {
+    void testCreateAndAddUser_UserNameAlreadyExists() {
         userRepository.createAndAddUser(
                 "DuplicateUser",
                 createSampleContact(),
@@ -58,12 +60,8 @@ class UserRepositoryTest {
                         createSampleProfile(),
                         UserRole.NORMAL_USER));
 
-        assertEquals("User already exists", exception.getMessage());
-    }
-
-    @Test
-    void testExists_ReturnsFalse_WhenUserDoesNotExist() {
-        assertFalse(userRepository.exists("NonExistingUser"));
+        assertEquals("Username already exists", exception.getMessage());
+        assertEquals(1, userRepository.getUserCount());
     }
 
     @Test
@@ -75,5 +73,10 @@ class UserRepositoryTest {
                 UserRole.ADMIN);
 
         assertTrue(userRepository.exists("ExistingUser"));
+    }
+
+    @Test
+    void testExists_ReturnsFalse_WhenUserDoesNotExist() {
+        assertFalse(userRepository.exists("NonExistingUser"));
     }
 }

@@ -13,7 +13,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationMapperTest {
+class LibraryPublicationMapperTest_US015 {
 
     // BibliographicalData
     Country country1 = new Country("Denmark");
@@ -69,73 +69,47 @@ class PublicationMapperTest {
             pubStatus1, edition1, code2);
 
 
+    // Test 1 - toDTO(Publication) --------------------------------------------------------------------------------------
     @Test
-    void toDTOShouldMapAllFieldsCorrectly() {
+    void ensureSinglePublicationIsMappedCorrectly() {
         // Arrange
-        String expectedTitle = bibliographicalData1.getTitle();
-        String expectedIsbn = code1.toString();
-        String expectedType = publicationType.getMediaFormat().toString();
-
-        List<String> expectedAuthors = List.of(profileAuthor1.getName());
+        Publication pub = publication1;
 
         // Act
-        PublicationDTO result = PublicationMapper.toDTO(publication1);
+        LibraryPublicationDTO_US015 dto = LibraryPublicationMapper_US015.toDTO(pub);
 
         // Assert
-        assertNotNull(result);
-
-        assertEquals(expectedTitle, result.pubTitle);
-        assertEquals(expectedIsbn, result.code);
-        assertEquals(expectedType, result.publicationType);
-
-        assertIterableEquals(expectedAuthors, result.authorName);
+        assertEquals("Childhood, Youth, Dependency: The Copenhagen Trilogy", dto.pubTitle);
+        assertEquals(List.of("Tove Ditlevsen"), dto.authorName);
+        assertEquals("1234567890", dto.code);
+        assertEquals("BOOK", dto.publicationType);
     }
 
 
-    @Test
-    void getListOfPublicationsDTOShouldMapListOfObjects() {
+    // Test 2 - toDTO(List<Publication>) ------------------------------------------------------------------------------
+    @Test void ensureListOfPublicationsIsMappedCorrectly() {
         // Arrange
-        List<Publication> publicationList = List.of(publication1, publication2);
-
-
-        String expectedTitle = bibliographicalData1.getTitle();
-        String expectedType = publicationType.getMediaFormat().toString();
-        List<String> expectedAuthors = List.of(profileAuthor1.getName());
+        List<Publication> publications = List.of(publication1, publication2);
 
         // Act
-        List<PublicationDTO> resultList = PublicationMapper.getListOfPublicationsDTO(publicationList);
+        List<LibraryPublicationDTO_US015> dtos = LibraryPublicationMapper_US015.toDTO(publications);
 
         // Assert
-        assertNotNull(resultList);
-        assertEquals(2, resultList.size());
-
-
-        PublicationDTO dto1 = resultList.get(0);
-
-        assertEquals(expectedTitle, dto1.pubTitle);
-        assertEquals(code1.toString(), dto1.code);
-        assertEquals(expectedType, dto1.publicationType);
-        assertIterableEquals(expectedAuthors, dto1.authorName);
-
-
-        PublicationDTO dto2 = resultList.get(1);
-
-        assertEquals(expectedTitle, dto2.pubTitle);
-        assertEquals(code2.toString(), dto2.code);
-        assertEquals(expectedType, dto2.publicationType);
-        assertIterableEquals(expectedAuthors, dto2.authorName);
+        assertEquals(2, dtos.size());
+        assertEquals("1234567890", dtos.get(0).code);
+        assertEquals("1234567899", dtos.get(1).code);
     }
 
-    @Test
-    void getListOfPublicationsDTOEmptyListShouldReturnEmptyList() {
+
+    // Test 3 - Empty list ---------------------------------------------------------------------------------------------
+    @Test void ensureEmptyListReturnsEmptyDTOList() {
         // Arrange
         List<Publication> emptyList = List.of();
 
         // Act
-        List<PublicationDTO> result = PublicationMapper.getListOfPublicationsDTO(emptyList);
+        List<LibraryPublicationDTO_US015> dtos = LibraryPublicationMapper_US015.toDTO(emptyList);
 
         // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertTrue(dtos.isEmpty());
     }
 }

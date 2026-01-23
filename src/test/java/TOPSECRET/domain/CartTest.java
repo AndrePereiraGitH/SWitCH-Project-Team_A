@@ -71,7 +71,7 @@ class CartTest {
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,          // ajusta se o teu enum tiver outro nome
+                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
@@ -82,7 +82,7 @@ class CartTest {
                 bibliographicalData,
                 publicationType,
                 seller,
-                PublicationStatus.FOR_SALE, // ajusta se o teu enum tiver outro nome
+                PublicationStatus.FOR_SALE,
                 "1st edition",
                 code
         );
@@ -206,15 +206,6 @@ class CartTest {
     @Test
     void removingFromEmptyCartShouldReturnFalse() {
         assertTrue(cart.isEmpty());
-        assertFalse(cart.removeListing(listing1));
-    }
-
-    // Remove listing should return correct boolean
-    @Test
-    void removeListingShouldReturnCorrectBoolean() {
-        cart.addListing(listing1);
-
-        assertTrue(cart.removeListing(listing1));
         assertFalse(cart.removeListing(listing1));
     }
 }

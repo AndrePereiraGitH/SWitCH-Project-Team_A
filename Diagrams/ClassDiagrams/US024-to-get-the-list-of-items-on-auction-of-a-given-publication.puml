@@ -7,59 +7,54 @@ class UI024 {
 
 class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
   +getAllPublications()
-  +getListOfItemsOnAuction(publication)
+  +getListOfItemsOnAuctionDTO(Publication publication)
 }
 
 class PublicationRepository{
+    -listOfAllPublications:List<Publication
     +getAllPublications()
 }
 
-class PublicationDTO_US024 {
+class PublicationDTO_US012 {
 }
 
 class Publication {
-    - bibliographicalData: BibliographicalData;
-    - publicationType: PublicationType;
-    - userName: User;
-    - publicationStatus: PublicationStatus;
-    - edition: String;
-    - code: Code;
     +getDetails()
 }
 
-class PublicationMapper_US024 {
-  +toDTO(listOfPublications)
+class PublicationMapper_US012 {
+  +getListOfPublicationsDTO(List<Publication> publications)
 }
 
 class AuctionRepository {
+  -listOfItemsOnAuction:List<Item>
   +getListOfItemsOnAuction(publication)
   -isAuctionFromPublication(publication)
 }
 
 class Auction {
- - listing: Listing
- - initialDate: LocalDateTime
- - finalDate: LocalDateTime
- +getDetails()
++ getItemOnAuctionDetails()
 }
 
-class AuctionMapper_US024 {
-  +toDTO(listOfAuction)
+class ItemDTO_US024 {
+- listOfAuctionsDTO:List<ItemDTO_US024>
++ getListOfItemsAuctionDTO()
 }
 
-class AuctionDTO_US024 {
-}
 
 ' Interactions
 
-UI024 ..> ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: uses
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionRepository : uses
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationRepository : uses
-PublicationMapper_US024 ..> Publication: communicates with
-PublicationMapper_US024 ..> PublicationDTO_US024 : maps to
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> AuctionMapper_US024 : uses
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> PublicationMapper_US024 : uses
-AuctionMapper_US024 ..> AuctionDTO_US024 : maps to
-AuctionMapper_US024 ..> Auction : uses
+UI024 ..> "1" ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: delegates request to
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationRepository : retrieves publications from
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationMapper_US012 : calls for conversion
+PublicationMapper_US012 "1" ..> "1..*" Publication: reads data from
+PublicationMapper_US012 "1" ..> "1..*" PublicationDTO_US012 : instantiates
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1"AuctionRepository : queries items in
+AuctionRepository "1" --> "*" Auction: manages
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> "0..*" ItemDTO_US024 : produces list of
+
+
+
+
 
 @enduml
