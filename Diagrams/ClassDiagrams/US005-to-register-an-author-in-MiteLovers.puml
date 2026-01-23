@@ -2,7 +2,6 @@
 title US005 - Register Author in MIteLovers
 
 class ToRegisterAuthorController {
-  -AuthorRepository: AuthorRepository
   +registerAuthor(name: String, country: Country, birthday: LocalDate, biography: String): Author
 }
 
@@ -28,7 +27,7 @@ class Profile {
   +getBirthday(): LocalDate
 }
 
-ToRegisterAuthorController "1" -.-> "1" AuthorRepository : uses
+ToRegisterAuthorController "1 " -.-> "_AuthorRepository 1" AuthorRepository : uses
 AuthorRepository "1" --> "*" Author : stores
 AuthorRepository "1" -.-> "*" Author : creates
 Author "1" --> "1" Profile : has
