@@ -1,42 +1,34 @@
 @startuml
-title US022 - To get the list of items on auction of a given genre
+title US014 - Get Publication Types
 
-class UI022 {
-
-}
-
-class ToGetPublicationTypeController{
-  +getListOfPublicationType()
+class ToGetPublicationTypeController {
+    +getAllPublicationTypes() : List<PublicationTypeDTO>
 }
 
 class PublicationTypeRepository {
-  +getListOfPublicationType()
-}
-
-class PublicationType {
-    -mediaFormat: MediaFormat
-    -typeOfBinding: TypeOfBinding
-    -details: String
-    +getDetails()
+    -publicationTypes : List<PublicationType>
+    +getAllPublicationTypes() : List<PublicationType>
 }
 
 class PublicationTypeMapper {
-  +toDTO(listOfPublicationType)
+    +toDTO(list : List<PublicationTypeDTO>)
 }
 
 class PublicationTypeDTO {
+    +mediaFormat : MediaFormat
+    +typeOfBinding : TypeOfBinding
+    +details : String
 }
 
-' --- Interactions ---
+class PublicationType {
+    -mediaFormat : MediaFormat
+    -typeOfBinding : TypeOfBinding
+    -details : String
+    +getAllDetails
+}
 
-UI022 ..> ToGetPublicationTypeController : uses
-ToGetPublicationTypeController ..> PublicationTypeRepository : uses
-ToGetPublicationTypeController ..> PublicationTypeMapper : uses
-PublicationTypeMapper ..> PublicationTypeDTO : maps to
-PublicationTypeMapper ..> PublicationType : uses
-PublicationTypeRepository "1" --> "*" PublicationType : contains
-
-
-
-
+ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses
+ToGetPublicationTypeController "1" -.-> "1" PublicationTypeMapper : uses
+PublicationTypeMapper "1" -.> "1" PublicationTypeDTO : maps
+PublicationTypeRepository "1" --> "1" PublicationType : contains
 @enduml

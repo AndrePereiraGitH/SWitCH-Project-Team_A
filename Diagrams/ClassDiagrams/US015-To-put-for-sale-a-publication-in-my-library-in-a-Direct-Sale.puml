@@ -4,9 +4,9 @@ title US015 - Put a publication for sale in Direct Sale
 class UI015 {}
 
 class ToPutPublicationInDirectSaleController {
-    + getListPublications() : List<LibraryPublicationDTO>
+    + getListPublications()
     + createAndAddItem(publication, condition, dimensions, weight) : Item
-    + createDirectSale(item : Item, price, shortDescription, listingTitle, seller, pictures) : DirectSale
+    + createDirectSale(item, price, shortDescription, listingTitle, seller, pictures) : DirectSale
 }
 class Library {
     - publications : List<Publication>
@@ -16,14 +16,16 @@ class Library {
 class Publication {
     - bibliographicalData : BibliographicalData
     - publicationType : PublicationType
-    - editio : String
+    - edition : String
     - code : Code
+    +getDetails();
 }
 
 class LibraryPublicationDTO
 
 class LibraryPublicationMapper {
     + toDTO(publications : List<Publication>) : List<LibraryPublicationDTO>
+
 }
 
 class Item {

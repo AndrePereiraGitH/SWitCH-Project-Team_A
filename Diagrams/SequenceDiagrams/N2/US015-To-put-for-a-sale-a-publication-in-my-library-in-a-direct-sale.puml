@@ -11,7 +11,7 @@ participant ":ToPutPublicationInDirectSaleController" as C
 participant ":ItemRepository" as I
 participant ":DirectSaleRepository" as S
 participant ":Library" as Lib
-participant ":LibraryPublicationMapper" as Mapper
+participant ":LibraryPublicationMapper_US015" as Mapper
 
 User -> UI : I want to sell a publication in my library in Direct Sale
 activate UI
@@ -29,13 +29,15 @@ C -> Mapper : toDTO(listOfPublications)
 activate Mapper
 
 create "ListOfLibraryPublicationsDTO:\nList<publicationDTO>" as listDTO
-Mapper -> listDTO
+Mapper -> listDTO : create()
     loop for each Publication
-
-        Mapper -> LibraryPublicationDTO **
-
-
-        Mapper -> Mapper : listOfLibraryPublicationsDTO.add(publicationDTO)
+        Mapper -> "Publication" : getDetails()
+        activate Publication
+        "Publication" --> Mapper : publicationDetails
+        deactivate Publication
+        Mapper -> "LibraryPublicationDTO\n:LibraryPublicationDTO_US015" ** : CreateDTO(publicationDetails)
+        "LibraryPublicationDTO\n:LibraryPublicationDTO_US015" --> Mapper : publicationDTO
+        Mapper -> listDTO : add(publicationDTO)
     end
 Mapper --> C : listOfLibraryPublicationsDTO
 deactivate Mapper

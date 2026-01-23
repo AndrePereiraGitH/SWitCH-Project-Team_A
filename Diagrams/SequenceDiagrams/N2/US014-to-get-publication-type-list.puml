@@ -7,10 +7,7 @@ actor User
 participant ":UI014" as UI
 participant ":ToGetPublicationTypeController" as C
 participant ":PublicationTypeRepository" as PTR
-participant ":PublicationTypeMapper" as PTM
-participant ":PublicationType" as PT
-participant "publicationTypeDTO:\npublicationTypeDTO" as DTO
-
+participant ":PublicationTypeMapper_US014" as PTM
 
 User -> UI : I want to get a list of all publication types
 activate UI
@@ -28,21 +25,18 @@ deactivate PTR
 
 C -> PTM : toDTO(listOfPublicationType)
 activate PTM
-create "listOfPublicationTypeDTO:\nList<PublicationTypeDTO>" as lopt1
-PTM -> lopt1
 
+create "ListOfPublicationTypesDTO:\nList<publicationTypeDTO>" as listDTO
+PTM -> listDTO : create()
     loop for each PublicationType
-        PTM -> PT : getDetails()
-        activate PT
-        PT --> PTM : details
-        deactivate PT
-
-        PTM -> DTO ** : create(details)
-        activate DTO
-        DTO --> PTM : publicationTypeDTO
-        deactivate DTO
-
-        PTM -> PTM : listOfPublicationTypeDTO.add(publicationTypeDTO)
+        PTM -> "PublicationType" : getAllDetails()
+        activate PublicationType
+        PublicationType --> PTM : publicationTypeAllDetails
+        deactivate PublicationType
+        create "PublicationTypeDTO\n:PublicationTypeDTO_US014" as PTDTO
+        PTM -> PTDTO : createDTO(publicationTypeAllDetails)
+        PTDTO --> PTM : publicationTypeDTO
+        PTM -> listDTO : add(publicationTypeDTO)
     end
 
 PTM --> C :listOfPublicationTypesDTO
@@ -51,7 +45,7 @@ deactivate PTM
 C --> UI : listOfPublicationTypesDTO
 deactivate C
 
-UI --> User : Official List of Publication Types
+UI --> User : Show List of Publication Types
 deactivate UI
 
 
