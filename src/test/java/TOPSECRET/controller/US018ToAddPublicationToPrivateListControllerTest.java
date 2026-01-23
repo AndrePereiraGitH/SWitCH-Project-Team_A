@@ -119,7 +119,7 @@ class US018ToAddPublicationToPrivateListControllerTest {
         boolean result = controller.addPublicationToPrivateList(null, null, null);
 
         // ASSERT
-        assertFalse(result);                                         // Null parameters are not allowed
+        assertFalse(result, "User can´t be null");                                         // Null parameters are not allowed
     }
 
     @Test

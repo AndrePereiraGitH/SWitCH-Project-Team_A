@@ -5,11 +5,11 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.repository.PublicationTypeRepository;
 
-public class US002_RegisterPubTypeController {
+public class US002ToRegisterPubTypeController {
 
     private PublicationTypeRepository _pubTypeRepo;
 
-    public US002_RegisterPubTypeController(PublicationTypeRepository pubTypeRepo){
+    public US002ToRegisterPubTypeController(PublicationTypeRepository pubTypeRepo){
         _pubTypeRepo = pubTypeRepo;
     }
 

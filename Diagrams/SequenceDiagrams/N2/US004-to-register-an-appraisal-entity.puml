@@ -8,18 +8,19 @@ title US004 - To Register an Appraisal Entity
 
 actor Administrator
 participant ":UI004" as UI
-participant ":RegisterAppraisalController" as RegisterAppraisalController
+participant ":US004ToRegisterAppraisalEntityController" as RegisterAppraisalController
 participant ":AppraisalEntityRepository" as AppraisalEntityRepository
 participant ":List<AppraisalEntity>"
 
-activate UI
+
 ' Human communication started by Administrator
 Administrator -> UI : I want to register an Appraisal Entity in the system
+activate UI
 UI -->> Administrator : Provide the information for the New Appraisal Entity
 deactivate UI
 
 
-Administrator -> UI : For the new Appraisal Entity (apEntityXPTO), here's the information
+Administrator -> UI : For the new Appraisal Entity, here's the information
 
 activate UI
 ' First contact between UI and the System
@@ -31,23 +32,28 @@ RegisterAppraisalController -> AppraisalEntityRepository : createAndAddAppraisal
 activate AppraisalEntityRepository
 
 ' Creation of new AppraisalEntity
-create "apEntityXPTO: AppraisalEntity" as AppraisalEntity
+create "apEn: AppraisalEntity" as AppraisalEntity
 
 ' Creation, validation and addition made in AppraisalEntityRepository
 AppraisalEntityRepository -> AppraisalEntity : createAppraisalEntity(name, contact, genre, publicationType)
-AppraisalEntityRepository -> AppraisalEntityRepository : validateAppraisalEntity(apEntityXPTO)
+
+AppraisalEntityRepository -> ":List<AppraisalEntity>" : existAppraisalEntity(apEn)
+activate ":List<AppraisalEntity>"
+":List<AppraisalEntity>" -->> AppraisalEntityRepository : false
+deactivate ":List<AppraisalEntity>"
 
 ' Adding new appraisal entity
-AppraisalEntityRepository -> ":List<AppraisalEntity>" : addToAppraisalEntityList(apEntityXPTO)
+AppraisalEntityRepository -> ":List<AppraisalEntity>" : add(apEn)
+
 activate ":List<AppraisalEntity>"
-":List<AppraisalEntity>" -->> AppraisalEntityRepository : apEntityXPTO added to the AppraisalEntityList
+":List<AppraisalEntity>" -->> AppraisalEntityRepository : apEn added to the AppraisalEntityList
 deactivate
 
 ' Return from AppraisalEntityRepository to RegisterAppraisalController
-AppraisalEntityRepository --> RegisterAppraisalController : apEntityXPTO
+AppraisalEntityRepository --> RegisterAppraisalController : apEn
 deactivate AppraisalEntityRepository
 
-' Return from RegisterAppraisalConstroller to the UI
+' Return from RegisterAppraisalController to the UI
 RegisterAppraisalController --> UI : Success
 deactivate RegisterAppraisalController
 

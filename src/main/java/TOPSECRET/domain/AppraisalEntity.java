@@ -9,7 +9,7 @@ public class AppraisalEntity {
     private PublicationType _publicationType;  // ToDo change to PublicationType
     private Genre _genre;
 
-    // Construtor
+    // Constructor
     public AppraisalEntity(String name, Contact contact, PublicationType publicationType, Genre genre) {
 
         if (name == null || name.isBlank()) {

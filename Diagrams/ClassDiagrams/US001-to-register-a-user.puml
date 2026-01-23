@@ -2,29 +2,29 @@
 title US001 - To register a user in the system
 
 class RegisterUserController {
-  +registerUser(username: String, contact: String, profile: String)
+  +registerUser(username: String, contact: Contact, profile: Profile, userRole: UserRole)
 }
 
 class UserRepository {
-  +createAndAddUser(username: String, contact: String, profile: String)
+  +createAndAddUser(username: String, contact: Contact, profile: Profile, userRole: UserRole)
 ' Those methods are part of createAndAddUser
 '  -validateUser(u: User) : boolean
 '  -addUserToUserList(u: User) : void
 }
 
 class "List<User>" {
-  +addUserToTheList(user: User)
 }
 
 class User {
   -username: String
+  -userRole: UserRole
 }
 
 class Contact {
   -phoneNum: String
   -extension: String
   -email: Email
-  -location: Address
+  -address: Address
 }
 
 
@@ -37,7 +37,7 @@ class Profile {
 ' Interaction
 
 RegisterUserController "1 " -- "1 " UserRepository : request registration to >
-UserRepository "1 " .----- " * " User : creates / manages >
+UserRepository "1 " .--- " * " User : creates / manages >
 UserRepository "1    " -- "1 " "List<User>" : has >
 "List<User>" "1 " -- " *    " User : contains >
 User "1  " -- "1 " Contact : contains >

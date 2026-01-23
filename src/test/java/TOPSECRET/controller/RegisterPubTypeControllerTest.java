@@ -15,7 +15,7 @@ class RegisterPubTypeControllerTest {
     void createAndAddPublicationTypesToRepository()
     {
         PublicationTypeRepository repo = new PublicationTypeRepository();
-        US002_RegisterPubTypeController controller = new US002_RegisterPubTypeController(repo);
+        US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
         PublicationType pt1 = controller.RegisterPubType( MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Book with gold engravings");
 
@@ -36,7 +36,7 @@ class RegisterPubTypeControllerTest {
     void shouldThrowExceptionAndNotAddToRepository()
     {
         PublicationTypeRepository repo = new PublicationTypeRepository();
-        US002_RegisterPubTypeController controller = new US002_RegisterPubTypeController(repo);
+        US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
         assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(null, TypeOfBinding.HARDBACK, "test"));
 

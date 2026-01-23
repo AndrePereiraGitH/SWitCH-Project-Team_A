@@ -1,8 +1,13 @@
 @startuml
 title US004 - To Register A Appraisal Entity
 
+class US004ToRegisterAppraisalEntity {
+  +registerAppraisalEntity (name: String, contact: Contact, publicationType: PublicationType, genre: Genre)
+}
+
 class AppraisalEntityRepository {
-  +createAndRegisterAppraisalEntity(name: String, contact: String)
+  +createAndAddToAppraisalEntityList(name: String, contact: Contact, publicationType: PublicationType, genre: Genre)
+  +existAppraisalEntity () : boolean
 ' Those methods are part of createAndRegisterAppraisalEntity
 '  +validateAppraisalEntity(ae: AppraisalEntity) : boolean
 '  +addToAppraisalEntityList(ae: AppraisalEntity) : void
@@ -14,12 +19,12 @@ class "List<AppraisalEntity>" {
 
 
 class AppraisalEntity {
-  -name : String
-  -contact : Contact
+  -name: String
+  -contact: Contact
+  -publicationType: PublicationType
+  -genre: Genre
 }
 
-class "List<Genre>" {
-}
 
 class Genre {
   -genreType : String
@@ -40,17 +45,14 @@ class Contact {
 
 ' Interactions
 
-RegisterAppraisalController "1 " -- "1 " AppraisalEntityRepository : request registration to >
-AppraisalEntityRepository "    1" .------- "      *   " AppraisalEntity : creates / manages >
+US004ToRegisterAppraisalEntity "1 " -- "1 " AppraisalEntityRepository : request registration to >
+AppraisalEntityRepository  .------- AppraisalEntity : creates / manages >
 AppraisalEntityRepository "1    " --- " 1  " "List<AppraisalEntity>" : has >
 
 "List<AppraisalEntity>" "1 " -- " *  " AppraisalEntity : contains >
-"List<AppraisalEntity>" "1 " ---- " 1    " "List<Genre>" : contains >
-"List<AppraisalEntity>" "1 " ---- " 1    " PublicationType : has >
+"List<AppraisalEntity>" "1  " ---- " * " "Genre" : has >
+"List<AppraisalEntity>" "1" ---- " 1  " PublicationType : has >
 
-"List<Genre>" "1" -- "1" Genre : has >
-
-AppraisalEntity "1 " -- "1 " Contact : contains >
 
 @enduml
 

@@ -4,11 +4,11 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.repository.PublicationRepository;
 
-public class US010_ToRegisterNewPublicationCtrl {
+public class US010ToRegisterNewPublicationCtrl {
 
     private final PublicationRepository _publicationRepository;
 
-    public US010_ToRegisterNewPublicationCtrl(PublicationRepository publicationRepository) {
+    public US010ToRegisterNewPublicationCtrl(PublicationRepository publicationRepository) {
 
         if (publicationRepository == null) {
             throw new IllegalArgumentException("PublicationRepository cannot be left blank");

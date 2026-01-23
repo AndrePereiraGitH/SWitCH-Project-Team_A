@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 
-public class US016_ToPutPublicationInAuctionController {
+public class US016ToPutPublicationInAuctionController {
 
     private final LibraryRepository libraryRepo;
     private final ItemRepository itemRepository;
     private final ListingRepository listingRepository;
     private final AuctionRepository auctionRepository;
 
-    public US016_ToPutPublicationInAuctionController(LibraryRepository libraryRepo, ItemRepository itemRepository, ListingRepository listingRepository, AuctionRepository auctionRepository) {
+    public US016ToPutPublicationInAuctionController(LibraryRepository libraryRepo, ItemRepository itemRepository, ListingRepository listingRepository, AuctionRepository auctionRepository) {
 
         this.libraryRepo = libraryRepo;
         this.itemRepository = itemRepository;

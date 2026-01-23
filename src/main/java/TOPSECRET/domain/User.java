@@ -106,7 +106,7 @@ public class User {
     }
 
     // US0018
-    // Checks if the user owns a given collection
+    // Checks if the user owns a collection
     public boolean ownsCollection(CollectionOfPublications collection) {
         return _collectionOfPublications.contains(collection);
     }

@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-class US010_ToRegisterNewPublicationCtrlTest {
+class US010ToRegisterNewPublicationCtrlTest {
 
     @Test
     void shouldAddPublication() {
         PublicationRepository publicationRepository1 = new PublicationRepository();
 
-        US010_ToRegisterNewPublicationCtrl pubCtrl1 = new US010_ToRegisterNewPublicationCtrl(publicationRepository1);
+        US010ToRegisterNewPublicationCtrl pubCtrl1 = new US010ToRegisterNewPublicationCtrl(publicationRepository1);
 
         //Instantiating Publication here, could also do that above to standardize future tests and make it more readable
 

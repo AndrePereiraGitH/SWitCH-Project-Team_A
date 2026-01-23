@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class US008_toRegisterACityCtrlTest {
+class US008ToRegisterACityCtrlTest {
 
     //TODO Reminder to learn how to validate that an ADMIN is adding the city and not just any regular User
 
@@ -15,7 +15,7 @@ class US008_toRegisterACityCtrlTest {
     void shouldAddACity() {
         CityRepository cityRepository1 = new CityRepository();
 
-        US008_ToRegisterACityCtrl cityCtrl1 = new US008_ToRegisterACityCtrl(cityRepository1);
+        US008ToRegisterACityCtrl cityCtrl1 = new US008ToRegisterACityCtrl(cityRepository1);
 
         Country country1 = new Country("United_States"); //When countries have multiple words, write like so
         String cityName1 = "Jacksonville";

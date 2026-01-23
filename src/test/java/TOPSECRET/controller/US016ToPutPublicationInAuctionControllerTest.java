@@ -9,7 +9,6 @@ import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.ItemRepository;
 import TOPSECRET.repository.LibraryRepository;
 import TOPSECRET.repository.ListingRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -21,7 +20,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class US016_ToPutPublicationInAuctionControllerTest {
+class US016ToPutPublicationInAuctionControllerTest {
 
     // --------------------------------------
     // -----getAllPublicationsInUserLibrary ------
@@ -140,7 +139,7 @@ class US016_ToPutPublicationInAuctionControllerTest {
         AuctionRepository auctionRepo = new AuctionRepository();
         LibraryRepository libraryRepo = new LibraryRepository(Map.of());
 
-        var controller = new US016_ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
+        var controller = new US016ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
 
         Publication pub = publication(user("owner1"));
         User seller = user("seller"); // mesma instância para facilitar equals do Listing
@@ -170,7 +169,7 @@ class US016_ToPutPublicationInAuctionControllerTest {
         AuctionRepository auctionRepo = new AuctionRepository();
         LibraryRepository libraryRepo = new LibraryRepository(Map.of());
 
-        var controller = new US016_ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
+        var controller = new US016ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
 
         Publication pub = publication(user("owner1"));
         User seller = user("seller");
@@ -196,12 +195,12 @@ class US016_ToPutPublicationInAuctionControllerTest {
     // ========================== Helpers =========================
     // ============================================================
 
-    private US016_ToPutPublicationInAuctionController newControllerWithLibraries(Map<String, Library> libs) {
+    private US016ToPutPublicationInAuctionController newControllerWithLibraries(Map<String, Library> libs) {
         LibraryRepository libraryRepo = new LibraryRepository(libs);
         ItemRepository itemRepo = new ItemRepository();
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository();
-        return new US016_ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
+        return new US016ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
     }
 
     private Price price(String v) {

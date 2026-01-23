@@ -16,11 +16,11 @@ import java.util.List;
 
 public class CollectionOfPublicationsRepository {
 
-//    private List<CollectionOfPublications> _collectionOfPublicationsList;
-//
-//    public CollectionOfPublicationsRepository() {
-//        this._collectionOfPublicationsList = new ArrayList<>();
-//    }
+    private List<CollectionOfPublications> _collectionOfPublicationsList;
+
+    public CollectionOfPublicationsRepository() {
+        this._collectionOfPublicationsList = new ArrayList<>();
+    }
 
     // METHOD: Adds a publication to a user's collection.
     // Returns true if the publication was added successfully,

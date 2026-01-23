@@ -18,8 +18,11 @@ participant ":List<User>"
 activate UI
 Administrator -> UI : I want to register a user in the system
 UI -->> Administrator :  Provide username, contact and profile information for the user
+deactivate UI
+
 Administrator -> UI :  Here's the username, contact and profile information
 
+activate UI
 ' First contact between UI and the System
 UI -> RegisterUserController : RegisterUser(username, contact, profile)
 activate RegisterUserController

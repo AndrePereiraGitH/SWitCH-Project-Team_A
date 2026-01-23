@@ -3,11 +3,11 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Country;
 import TOPSECRET.repository.CountryRepository;
 
-public class US007RegisterCountryController {
+public class US007ToRegisterCountryController {
 
     private final CountryRepository _countryRepository;
 
-    public US007RegisterCountryController(CountryRepository countryRepository) {
+    public US007ToRegisterCountryController(CountryRepository countryRepository) {
         this._countryRepository = countryRepository;
     }
 

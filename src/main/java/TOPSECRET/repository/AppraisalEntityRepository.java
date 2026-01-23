@@ -24,7 +24,6 @@ public class AppraisalEntityRepository {
         // Create AppraisalEntity
         AppraisalEntity newApEntity  = new AppraisalEntity(name, contact, publicationType, genre);
 
-
         // checking if the new entity is unique in the list
         if (!existAppraisalEntity(newApEntity)) {
             // adding to the list
