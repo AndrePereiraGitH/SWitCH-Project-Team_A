@@ -4,6 +4,7 @@ import TOPSECRET.domain.Enum.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class User {
 
@@ -115,6 +116,20 @@ public class User {
     public boolean hasPublicationInLibrary(Publication publication) {
         return _library.containsPublication(publication);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(_userName, user._userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_userName);
+    }
+
 
 }
 

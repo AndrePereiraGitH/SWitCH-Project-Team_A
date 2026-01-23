@@ -53,7 +53,10 @@ public class Item {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return Double.compare(_weight, item._weight) == 0 && _condition == item._condition && Objects.equals(_dimension, item._dimension) && Objects.equals(_publication, item._publication);
+        return Double.compare(_weight, item._weight) == 0
+                && _condition == item._condition
+                && Objects.equals(_dimension, item._dimension)
+                && Objects.equals(_publication, item._publication);
     }
 
     @Override

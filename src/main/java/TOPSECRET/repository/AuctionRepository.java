@@ -21,7 +21,8 @@ public class AuctionRepository {
         return auctionsList;
     }
 
-    public boolean createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
+    public boolean createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) {
+
         Auction auction = new Auction(listing, initialDate, finalDate, buyOutPrice);
 
         if (isExistent(auction)) {
