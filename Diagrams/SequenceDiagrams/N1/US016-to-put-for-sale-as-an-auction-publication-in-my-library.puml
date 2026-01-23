@@ -9,12 +9,12 @@ participant System
 User -> System : I want to sell a publication of my library as an auction
 activate User
 activate System
-System --> User : Select a publication from your Library: List of Publications
-User -> System : publication
-System --> User : Insert initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
-User -> System : provide data : initialDate, finalDate, initialPrice, buyOutPrice
+System --> User : Please, select a publication from your Library: pub1, pub2, pub3...
+User -> System : send selected publication: pub1
+System --> User : Please, insert listingPrice, shortDescription, listingTitle, seller,\n initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
+User -> System : provide data
 
-System --> User : Done (Auction created)
+System --> User : Your publication pub1 is now in an Auction
 deactivate System
 deactivate User
 @enduml

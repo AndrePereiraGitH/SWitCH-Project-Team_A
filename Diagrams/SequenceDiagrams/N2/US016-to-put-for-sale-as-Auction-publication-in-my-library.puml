@@ -10,51 +10,91 @@ end box
 
     participant ":ToPutPublicationInAuctionController" as ctrl
 
-    participant ":AuctionRepository" as AucRepo
+
 
     participant ":Library" as Lib
 
+    participant ":ItemRepository" as ItemRepo
+
+    participant ":ListingRepository" as ListingRepo
+
+    participant ":AuctionRepository" as AucRepo
 
 
 
 User -> UI : I want to sell a publication of my library as an auction"
 activate UI
+
+/' ====== GET LIST OF PUBLICATIONS IN LIBRARY ========= '/
 UI -> ctrl : getAllPublicationsInLibrary()
 activate ctrl
 ctrl -> Lib : getAllPublications()
 activate Lib
 create "listOfPublications:List<Publication>" as listPub
-Lib -> listPub
+Lib -> listPub : getAllPublications()
+
+Lib -> Lib : Copy.of(listOfPublications)
+
 Lib --> ctrl : listOfPublications
 deactivate Lib
 ctrl --> UI : listOfPublications
 deactivate ctrl
-
-UI --> User : Please, select a publication from your list: pub1, pub2, pub3
+UI --> User : Please, select a publication from your Library: pub1, pub2, pub3...
 deactivate UI
+
+
+/' ====== AUCTION AND LISTING REQUESTS ========= '/
+
 User -> UI : Selected publication: pub1
 activate UI
-UI --> User : Please, insert initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
+UI --> User : Please, insert listingPrice, shortDescription, listingTitle, seller,\n initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
 deactivate UI
-User -> UI : provide data: initialDate, finalDate, initialPrice, buyOutPrice
+User -> UI : provide data
 activate UI
-
-
-UI -> ctrl : putPublicationForAuction(pub1, initialDate, finalDate, initialPrice, buyOutPrice)
+UI -> ctrl : putPublicationForAuction(pub1, listingPrice, shortDescription,\n listingTitle, seller, initialDate, finalDate, initialPrice, buyOutPrice)
 activate ctrl
-ctrl -> AucRepo : putPublicationForAuction(pub1, initialDate, finalDate, initialPrice, buyOutPrice)
-activate AucRepo
 
+/' ====== ITEMS OF PUBLICATION ========= '/
+
+
+ctrl -> ItemRepo : createAndAddItem(condition, weight,dimensions, pub1)
+
+activate ItemRepo
+create "itemsList: List<Item>" as itemsList
+ItemRepo -> itemsList : createListOfItems
+create "i1:Item" as i1
+ItemRepo --> i1 : createAndAddItem(condition, weight,dimensions, pub1)
+
+ItemRepo -> ItemRepo : verifyIfExists()
+ItemRepo -> ItemRepo : add
+ItemRepo -> ItemRepo : itemsList.add(i1)
+
+ItemRepo --> ctrl : itemsList
+deactivate ItemRepo
+
+/' ====== ===== LISTING ========= '/
+
+ctrl -> ListingRepo : createAndAdd(itemsList, listingPrice, shortDescription, listingTitle, seller)
+activate ListingRepo
 create "l1:Listing" as l1
-AucRepo -> l1 : createListing()
+ListingRepo -> l1 : createAndAdd(itemsList, listingPrice, shortDescription, listingTitle, seller)
+ListingRepo -> ListingRepo : isExistent(l1)
+ListingRepo -> ListingRepo : add(l1)
+ListingRepo --> ctrl : l1
+deactivate ListingRepo
 
+/' ====== ===== AUCTION ========= '/
+ctrl -> AucRepo : createAndAdd(l1, initialDate, finalDate, initialPrice, buyOutPrice)
+activate AucRepo
 create "auction1:Auction" as a1
-AucRepo -> a1 : createAuction(l1, initialDate, finalDate, initialPrice, buyOutPrice)
+AucRepo -> a1 : createAndAdd(l1, initialDate, finalDate, initialPrice, buyOutPrice)
 
 AucRepo -> AucRepo : validateAuction(auction1)
 AucRepo -> AucRepo : addAuction(auction1)
 AucRepo --> ctrl : auction1
 deactivate AucRepo
+
+/'========== RETURN SUCCESS ========== '/
 
 ctrl --> UI : success
 deactivate ctrl
