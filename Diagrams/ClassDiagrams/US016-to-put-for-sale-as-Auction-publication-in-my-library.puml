@@ -6,7 +6,7 @@ title US016 - Put a publication from my library for sale in an auction
 
 
   class Library {
-    -myLibrary: List<Publications>
+    -library: List<Publications>
     +getAllPublications() : List<Publication>
   }
 
@@ -33,13 +33,28 @@ title US016 - Put a publication from my library for sale in an auction
     +Auction(listing, initialDate, finalDate, initialPrice, buyOutPrice)
   }
 
+  class ItemRepository {
+    -items : List<Item>
+
+    +createListOfItems()
+    +createAndAddItem(condition, weight,dimensions, pub1)
+    +
+
+  }
+
+  class ListingRepository {
+    -listings : List<Listing>
+
+    +createAndAdd(itemsList, listingPrice, shortDescription, listingTitle, seller)
+  }
+
   class AuctionRepository {
-    +createAuction(Listing listing,LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice) : Auction
+    +createAuction(listing,initialDate, finalDate, buyOutPrice) : Auction
   }
 
   class ToPutPublicationInAuctionController {
-    +getAllPublicationsInLibrary()
-    +putPublicationForAuction(publication, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
+    +getAllPublicationsInUserLibrary(String username)
+    +putPublicationForAuction(pub1, listingPrice, shortDescription,\n listingTitle, seller, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
   }
 
 ' -------------------- Relationships --------------------
@@ -50,6 +65,8 @@ Library "1" o-- "*" Publication : contains
 
 ToPutPublicationInAuctionController ..> AuctionRepository
 AuctionRepository --> Auction
-AuctionRepository --> Listing : uses ListingRepo to create a Listing that will be auctioned
+ToPutPublicationInAuctionController ..> ListingRepository
+ListingRepository --> Listing : uses ListingRepo to create a Listing that will be auctioned
+ToPutPublicationInAuctionController ..> ItemRepository
 
 @enduml
