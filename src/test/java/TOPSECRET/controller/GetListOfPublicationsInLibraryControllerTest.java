@@ -5,11 +5,9 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.dto.PublicationDTO;
 import TOPSECRET.repository.LibraryRepository;
 import org.junit.jupiter.api.Test;
 
-import javax.management.InstanceNotFoundException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;

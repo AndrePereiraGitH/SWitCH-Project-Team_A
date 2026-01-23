@@ -207,4 +207,6 @@ public class Auction {
     public int hashCode() {
         return Objects.hash(_listing, _initialDate, _finalDate, _buyOutPrice);
     }
+
+
 }

@@ -1,22 +1,25 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.Enum.AuctionStatus;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.Listing;
 import TOPSECRET.domain.Price;
+import TOPSECRET.domain.*;
 
-import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionRepository {
 
-    private static List<Auction> auctionsList;
+    private List<Auction> auctionsList;
 
     public AuctionRepository() {
         auctionsList = new ArrayList<>();
+    }
+
+    public AuctionRepository(List<Auction> auctionsList) {
+        this.auctionsList = auctionsList;
     }
 
     public List<Auction> getAllAuctions() {
@@ -59,4 +62,28 @@ public class AuctionRepository {
     private boolean isExistent(Auction auction) {
         return auctionsList.contains(auction);
     }
+
+    public List<Item> getListOfItemsOnAuctionByGivenPublication(Publication publication) {
+        List<Item> listOfItemsOnAuction = new ArrayList<>();
+
+        for (Auction auc : auctionsList) {
+            Listing listing = auc.getListing();
+
+            if (listing != null && listing.getItems() != null) {
+
+                for (Item item : listing.getItems()) {
+
+                    if (item.getPublication() != null && item.getPublication().equals(publication)) {
+                        listOfItemsOnAuction.add(item);
+                    }
+                }
+            }
+        }
+
+        return listOfItemsOnAuction;
+    }
+
+
+
+
 }
