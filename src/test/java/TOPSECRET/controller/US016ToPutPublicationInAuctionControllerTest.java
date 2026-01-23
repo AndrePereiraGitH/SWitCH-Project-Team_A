@@ -142,12 +142,12 @@ class US016ToPutPublicationInAuctionControllerTest {
         var controller = new US016ToPutPublicationInAuctionController(libraryRepo, itemRepo, listingRepo, auctionRepo);
 
         Publication pub = publication(user("owner1"));
-        User seller = user("seller"); // mesma instância para facilitar equals do Listing
+        User seller = user("seller");
         Price listingPrice = price("35.50");
         Price buyOutPrice = price("100.00");
 
-        LocalDateTime initial = LocalDateTime.of(2026, 1, 23, 10, 0);
-        LocalDateTime fin = LocalDateTime.of(2026, 1, 30, 10, 0);
+        LocalDateTime initial = LocalDateTime.of(2027, 1, 2, 10, 0);
+        LocalDateTime fin = LocalDateTime.of(2027, 1, 30, 10, 0);
 
         int before = auctionRepo.getAllAuctions().size();
 
