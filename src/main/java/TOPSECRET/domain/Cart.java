@@ -15,7 +15,6 @@ public class Cart {
         this.finished = false;
     }
 
-    // Add listing to cart
     public void addListing(Listing listing) {
         if (finished) {
             throw new IllegalStateException("Listings cannot be added to a finished cart");
@@ -26,7 +25,6 @@ public class Cart {
         listingList.add(listing);
     }
 
-    // Remove listing from cart
     public boolean removeListing(Listing listing) {
         if (finished) {
             throw new IllegalStateException("Listings cannot be removed from a finished cart");
@@ -34,22 +32,16 @@ public class Cart {
         return listingList.remove(listing);
     }
 
-    // Get listings list
     public List<Listing> getListingsList() {
         return List.copyOf(listingList);
     }
 
-    // Check if cart is empty
-    public boolean isEmpty() {
-        return listingList.isEmpty();
-    }
+    public boolean isEmpty() { return listingList.isEmpty(); }
 
-    // Get cart's buyer
     public User getBuyer() {
         return buyer;
     }
 
-    // Mark cart as finished
     public void finish() {
         if (listingList.isEmpty()) {
             throw new IllegalStateException("It's not possible to finish an empty cart");
@@ -57,7 +49,6 @@ public class Cart {
         this.finished = true;
     }
 
-    // Check if cart is finished
     public boolean isFinished() {
         return finished;
     }
