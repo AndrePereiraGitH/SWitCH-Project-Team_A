@@ -34,6 +34,10 @@ public class GenreRepository {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
 
+    public void clear() {
+        _genres.clear();
+    }
+
     private boolean exists(Genre genre) {
         for (Genre newGenre : this._genres) {
             if (genre.equals(newGenre)) {

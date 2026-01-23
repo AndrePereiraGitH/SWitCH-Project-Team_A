@@ -15,8 +15,8 @@ class PublicationTypeMapper {
 }
 
 class PublicationTypeDTO {
-    +mediaFormat : MediaFormat
-    +typeOfBinding : TypeOfBinding
+    +mediaFormat : String
+    +typeOfBinding : String
     +details : String
 }
 

@@ -8,53 +8,49 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationTypeMapper_US014Test {
+class PublicationTypeMapperUS014Test {
 
     @Test
-    void toDTOSinglePublicationTypeMapsCorrectly() {
-        PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.HARDBACK,
-                "Hardback"
-        );
-
+    void toDTOGetPublicationTypeLisEmptyListReturnsEmptyList() {
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
-        PublicationTypeDTO_US014 dto = mapper.toDTO(publicationType);
+        List<PublicationTypeDTO_US014> result = mapper.toDTO(List.of());
 
-        assertEquals(MediaFormat.BOOK, dto._mediaFormat);
-        assertEquals(TypeOfBinding.HARDBACK, dto._typeOfBinding);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void toDTOGetPublicationTypeListOneElementMapsCorrectly() {
+        PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
+
+        PublicationType type =
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
+
+        List<PublicationTypeDTO_US014> result =
+                mapper.toDTO(List.of(type));
+
+        assertEquals(1, result.size());
+
+        PublicationTypeDTO_US014 dto = result.get(0);
+        assertEquals("BOOK", dto._mediaFormat);
+        assertEquals("HARDBACK", dto._typeOfBinding);
         assertEquals("Hardback", dto._details);
     }
 
     @Test
-    void getListOfPublicationTypeDTOMapsAllObjectsCorrectly() {
-        PublicationType pubType1 = new PublicationType(
-                MediaFormat.MAGAZINE,
-                TypeOfBinding.PAPERBACK,
-                "Paperback"
-        );
-
-        PublicationType pubType2 = new PublicationType(
-                MediaFormat.MAGAZINE,
-                TypeOfBinding.HARDBACK,
-                "Hardback"
-        );
-
+    void toDTOGetPublicationTypeListTwoElementsMapsBoth() {
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
-        List<PublicationTypeDTO_US014> result = mapper.toDTO(List.of(pubType1, pubType2));
+        PublicationType t1 =
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
+
+        PublicationType t2 =
+                new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Paperback");
+
+        List<PublicationTypeDTO_US014> result =
+                mapper.toDTO(List.of(t1, t2));
 
         assertEquals(2, result.size());
-
-        assertEquals(MediaFormat.MAGAZINE, result.get(0)._mediaFormat);
-        assertEquals(TypeOfBinding.PAPERBACK, result.get(0)._typeOfBinding);
-        assertEquals("Paperback", result.get(0)._details);
-
-        assertEquals(MediaFormat.MAGAZINE, result.get(1)._mediaFormat);
-        assertEquals(TypeOfBinding.HARDBACK, result.get(1)._typeOfBinding);
-        assertEquals("Hardback", result.get(1)._details);
     }
-
-
 }

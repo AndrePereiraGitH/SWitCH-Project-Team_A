@@ -87,6 +87,9 @@ public class Listing {
         List<Item> copyItems = new ArrayList<>(_items);
         return copyItems;
     }
+    public Item getMainItem() {
+        return _items.get(0);
+    }
 
     public Price getPrice() {
         return _price;

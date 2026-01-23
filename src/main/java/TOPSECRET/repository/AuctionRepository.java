@@ -1,6 +1,8 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Auction;
+import TOPSECRET.domain.Enum.AuctionStatus;
+import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.Listing;
 import TOPSECRET.domain.Price;
 
@@ -32,6 +34,26 @@ public class AuctionRepository {
         auctionsList.add(auction);
 
         return true;
+    }
+
+    public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
+
+        if (genre == null) {
+            throw new IllegalArgumentException("genre cannot be null");
+        }
+
+        List<Auction> result = new ArrayList<>();
+
+        for (Auction auction : auctionsList) {
+
+            List<Genre> genres = auction.getListing().getMainItem().getPublication().getBibliographicalData().getGenres();
+
+            if (genres.contains(genre)) {
+                result.add(auction);
+            }
+        }
+
+        return result;
     }
 
     private boolean isExistent(Auction auction) {

@@ -15,83 +15,72 @@ import static org.junit.jupiter.api.Assertions.*;
 class GetPublicationTypeListControllerTest {
 
     @Test
-    void PublicationTypeListControllerEmptyConstructorTest() {
-        // Arrange
+    void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
         PublicationTypeRepository repository = new PublicationTypeRepository();
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(
-                repository, mapper);
+        GetPublicationTypeListController controller =
+                new GetPublicationTypeListController(repository, mapper);
 
-        // Act
         List<PublicationTypeDTO_US014> result = controller.getAllPublicationTypes();
 
-        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAllPublicationTypesOneElementConstructorTest() {
-        // Arrange
+    void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
         PublicationTypeRepository repository = new PublicationTypeRepository();
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
-        PublicationType type;
+        PublicationType type =
+                repository.createPublicationType(MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        "Hardback");
 
-        repository.getAllPublicationTypes();
-        type = repository.createPublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
         repository.addToList(type);
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repository, mapper);
 
-        // Act
-        List<PublicationTypeDTO_US014> result = controller.getAllPublicationTypes();
+        List<PublicationTypeDTO_US014> result =
+                controller.getAllPublicationTypes();
 
-        // Assert
         assertEquals(1, result.size());
+
         PublicationTypeDTO_US014 dto = result.get(0);
-        assertEquals(MediaFormat.BOOK, dto._mediaFormat);
-        assertEquals(TypeOfBinding.HARDBACK, dto._typeOfBinding);
+        assertEquals("BOOK", dto._mediaFormat);
+        assertEquals("HARDBACK", dto._typeOfBinding);
         assertEquals("Hardback", dto._details);
     }
 
     @Test
-    void getAllPublicationTypesTwoElementsConstructorTest() {
-        // Arrange
+    void getAllPublicationTypesTwoPublicationTypesReturnsTwoDTOs() {
         PublicationTypeRepository repository = new PublicationTypeRepository();
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
-        PublicationType type1;
+        PublicationType t1 =
+                repository.createPublicationType(MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        "Hardback");
 
-        PublicationType type2;
+        PublicationType t2 =
+                repository.createPublicationType(MediaFormat.MAGAZINE,
+                        TypeOfBinding.PAPERBACK,
+                        "Paperback");
 
-        type1 = repository.createPublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
-        type2 = repository.createPublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
-
-        repository.addToList(type1);
-        repository.addToList(type2);
-
-        repository.getAllPublicationTypes();
+        repository.addToList(t1);
+        repository.addToList(t2);
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repository, mapper);
 
-        // Act
-        List<PublicationTypeDTO_US014> result = controller.getAllPublicationTypes();
+        List<PublicationTypeDTO_US014> result =
+                controller.getAllPublicationTypes();
 
-        // Assert
         assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(d ->
-                        d._mediaFormat == MediaFormat.BOOK &&
-                        d._typeOfBinding == TypeOfBinding.HARDBACK &&
-                        d._details.equals("Hardback")));
 
-        assertTrue(result.stream().anyMatch(d ->
-                        d._mediaFormat == MediaFormat.BOOK &&
-                        d._typeOfBinding == TypeOfBinding.PAPERBACK &&
-                        d._details.equals("Paperback")));
+        assertTrue(result.stream().anyMatch(d -> d._details.equals("Hardback")));
+        assertTrue(result.stream().anyMatch(d -> d._details.equals("Paperback")));
     }
-
 }

@@ -76,7 +76,6 @@ public class Auction {
         if (_auctionStatus != AuctionStatus.ACTIVE)
             throw new IllegalStateException("Auction is not active");
 
-
         if (_bidHistory == null)
             _bidHistory = new ArrayList<>();
 
@@ -169,6 +168,29 @@ public class Auction {
 
     public AuctionStatus getAuctionStatus() {
         return _auctionStatus;
+    }
+
+    public Listing getListing() {
+        return _listing;
+    }
+
+    public Price getInitialPrice() {
+        return _initialPrice;
+    }
+
+    public Price getFinalPrice() {
+        return _finalPrice;
+    }
+
+    public Price getBuyOutPrice() {
+        return _buyOutPrice;
+    }
+
+    public LocalDateTime getInitialDate() {
+        return _initialDate;
+    }
+    public LocalDateTime getFinalDate() {
+        return _finalDate;
     }
 
     @Override

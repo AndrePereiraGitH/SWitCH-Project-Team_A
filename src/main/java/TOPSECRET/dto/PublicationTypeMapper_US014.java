@@ -7,25 +7,23 @@ import java.util.List;
 
 public class PublicationTypeMapper_US014 {
 
-    // Cria um DTO de um único Objeto
+    // Creates a DTO from a PublicationType domain
     public PublicationTypeDTO_US014 toDTO(PublicationType publicationType) {
 
         return new PublicationTypeDTO_US014(publicationType);
     }
 
-    // Cria um DTO de uma lista
+    // Creates a list of DTOs from a list of PublicationType domains
     public List<PublicationTypeDTO_US014> toDTO(List<PublicationType> publicationTypes) {
-        // Cria uma nova lista Vazia
-
+        // Creates an empty list to store DTOs
         List<PublicationTypeDTO_US014> listOfPublicationTypeDTO_US014 = new ArrayList<>();
 
-        // percorre todos os objetos da class
-        // pT é uma variável temporária que aponta para class PublicationType
-
+        // Iterates over all PublicationType
+        // pT is a temporary variable tha refers to each PublicationType
         for (PublicationType pT : publicationTypes) {
-            // result.add vai adicionar o DTO à lista, assim só contém DTO
-            // cria um novo DTO, passa a domain class e o construtor DTO extrai os dados
 
+            // a new DTO is created from the domain and the DTO extracts the data
+            // add a new DTO to the list
             listOfPublicationTypeDTO_US014.add(toDTO(pT));
         }
 

@@ -6,13 +6,13 @@ import TOPSECRET.domain.PublicationType;
 
 public class PublicationTypeDTO_US014 {
 
-    public MediaFormat _mediaFormat;
-    public TypeOfBinding _typeOfBinding;
+    public String _mediaFormat;
+    public String _typeOfBinding;
     public String _details;
 
     public PublicationTypeDTO_US014(PublicationType publicationType) {
-        this._mediaFormat = publicationType.getMediaFormat();
-        this._typeOfBinding = publicationType.getTypeOfBinding();
+        this._mediaFormat = publicationType.getMediaFormat().name();
+        this._typeOfBinding = publicationType.getTypeOfBinding().name();
         this._details = publicationType.getDetails();
     }
 }
