@@ -227,6 +227,9 @@ class PublicationTest {
 
     }
 
+
+    //TODO test the other assertThrows
+
 }
 
 
