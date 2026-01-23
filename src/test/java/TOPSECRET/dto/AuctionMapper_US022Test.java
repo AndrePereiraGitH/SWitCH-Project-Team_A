@@ -172,7 +172,8 @@ class AuctionMapper_US022Test {
         );
 
         LocalDateTime start = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime end = LocalDateTime.now().plusMinutes(1);
+        //LocalDateTime end = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime end = start.plusMinutes(1);
 
         return new Auction(
                 listing,

@@ -249,4 +249,24 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
                 () -> assertEquals(List.of(author.getProfile().getName()), dto.authors)
         );
     }
+
+    @Test
+    void getListOfItemsOnDirectSaleThrowsWhenPublicationIsNull() {
+        // arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of());
+        PublicationRepository pubRepo = new PublicationRepository(List.of());
+        DirectSaleMapper_US023 mapper = new DirectSaleMapper_US023();
+
+        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, dsRepo, mapper);
+
+        // act
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.getListOfItemsOnDirectSale(null)
+        );
+
+        // assert
+        assertEquals("Publication cannot be null", e.getMessage());
+    }
 }
