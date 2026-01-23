@@ -167,7 +167,7 @@ class DirectSaleRepositoryTest {
 
     }
 
-    // START - Tests for method getListOfItemsOnDirectSale -------------------------------------------------------------
+    // US023 Start-------------------------------------- -------------------------------------------------------------
 
     // Test1 - Return all DS that contains publication
     @Test
@@ -262,7 +262,24 @@ class DirectSaleRepositoryTest {
         assertEquals(1, result.size());
         assertSame(ds, result.get(0));
     }
-    // END - Tests for method getListOfItemsOnDirectSale ---------------------------------------------------------------
+
+    // Test4 - Verifies if publication is not null
+    @Test
+    void getListOfItemsOnDirectSaleShouldThrowWhenPublicationIsNull() {
+        // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(validDirectSale));
+
+        // Act
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> dsRepo.getListOfItemsOnDirectSale((Publication) null)     // Publication cast because there's also this method signature for Author
+        );
+
+        // Assert
+        assertEquals("Publication cannot be null", e.getMessage());
+    }
+
+    // US023 End -------------------------------------------------------------------------------------------------------
 
 //    @Test
 //    void getListOfItemsOnDirectSale_shouldReturnCopyOfListOfDirectSales() {

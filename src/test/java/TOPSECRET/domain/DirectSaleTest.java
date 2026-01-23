@@ -124,6 +124,49 @@ class DirectSaleTest {
         assertSame(listing, result);
     }
 
+    // US023 Start ----------------------------------------------------------------------------------------------------
+
+    @Test
+    void getDetails_shouldReturnRecordWithCorrectValues() {
+        // Arrange
+        Listing listing = createListing();
+        LocalDateTime date = LocalDateTime.of(2025, 5, 10, 14, 30);
+        DirectSale directSale = new DirectSale(listing, date);
+
+        // Act
+        DirectSale.DirectSaleDetails details = directSale.getDetails();
+
+        // Assert
+        assertNotNull(details);
+        assertSame(listing, details.listing());
+        assertEquals(date, details.directSaleDate());
+    }
+
+    @Test
+    void directSaleDetailsRecord_shouldStoreValuesCorrectly() {
+        // Arrange
+        Listing listing = createListing();
+        LocalDateTime date = LocalDateTime.of(2024, 12, 1, 9, 0);
+
+        // Act
+        DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(listing, date);
+
+        // Assert
+        assertSame(listing, details.listing());
+        assertEquals(date, details.directSaleDate());
+    }
+
+    @Test
+    void directSaleDetailsRecord_shouldAllowNullValues() {
+        // Act
+        DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(null, null);
+
+        // Assert
+        assertNull(details.listing());
+        assertNull(details.directSaleDate());
+    }
+
+    // US023 End ----------------------------------------------------------------------------------------------------
 
     //===============================================
     // Private Methods to Help Instantiate
@@ -233,4 +276,6 @@ class DirectSaleTest {
                 List.of(new Picture("pic"))
         );
     }
+
+
 }

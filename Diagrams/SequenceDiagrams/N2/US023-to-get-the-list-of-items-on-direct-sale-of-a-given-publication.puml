@@ -1,5 +1,4 @@
 @startuml
-
 hide footbox
 autonumber
 title US023 - To get the list of items on direct sale of a given publication
