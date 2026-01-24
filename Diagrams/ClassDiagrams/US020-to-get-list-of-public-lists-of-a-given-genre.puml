@@ -1,52 +1,57 @@
 @startuml
 skinparam classAttributeIconSize 0
 
-title US020 - Class Diagram (matches updated sequence)
+title US020 - Public Lists by Genre (using DTOs)
 
-class PublicListController {
-  -genreRepository : GenreRepository
-  -listRepository : ListRepository
-  +getGenres() : List<Genre>
-  +getPublicListsByGenre(genreId : String) : List<ListSummary>
+class US020_PublicListByGenreController {
+  - _genreRepository : GenreRepository
+  - _collectionRepo : CollectionOfPublicationsRepository
+  + getGenres() : List<Genre>
+  + getPublicListsByGenre(genre : Genre) : List<CollectionOfPublicationsDTO>
 }
 
 class GenreRepository {
-  +findAll() : List<Genre>
+  + getAllGenres() : List<Genre>
 }
 
-class ListRepository {
-  +findPublicByGenre(genreId : String) : List<ListSummary>
+class CollectionOfPublicationsRepository {
+  + findPublicByGenre(genre : Genre) : List<CollectionOfPublicationsDTO>
 }
 
 class Genre {
-  -name : String
+  - _genreType : String
 }
 
 class User {
-  -username : String
+  - _userName : String
 }
 
-class List {
-  -name : String
-  -isPublic : boolean
-  -genre : Genre
-  -owner : User
+class CollectionOfPublications {
+  - _collectionName : String
+  - _isPrivate : boolean
+  - _collectionGenre : Genre
+  - _owner : User
+  - _collectionOfPublications : List<Publication>
+  + getCollectionGenre() : Genre
+  + getCollectionName() : String
+  + isPrivate() : boolean
+  + getOwner() : User
 }
 
-class ListSummary {
-  +listName : String
-  +ownerUsername : String
+class CollectionOfPublicationsDTO {
+  + listName : String
+  + ownerUsername : String
 }
 
-PublicListController --> GenreRepository : searches
-PublicListController --> ListRepository : searches
+US020_PublicListByGenreController --> GenreRepository : queries
+US020_PublicListByGenreController --> CollectionOfPublicationsRepository : queries
 
-ListRepository --> List : contains
+CollectionOfPublicationsRepository --> CollectionOfPublications : reads
+CollectionOfPublicationsRepository ..> CollectionOfPublicationsDTO : creates
 
-List "0..*" --> "1" Genre : has
-List "0..*" --> "1" User : owner
+CollectionOfPublications "0..*" --> "1" Genre : has
+CollectionOfPublications "0..*" --> "1" User : owned by
 
-PublicListController ..> ListSummary : returns
-
+US020_PublicListByGenreController ..> CollectionOfPublicationsDTO : returns
 
 @enduml
