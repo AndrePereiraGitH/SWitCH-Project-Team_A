@@ -15,9 +15,9 @@ participant ":LibraryPublicationMapper_US015" as Mapper
 
 User -> UI : I want to sell a publication in my library in Direct Sale
 activate UI
-UI -> C : getListPublications()
+UI -> C : getAllPublications()
 activate C
-C -> Lib : getListPublications()
+C -> Lib : getAllPublications()
 activate Lib
 
 create "listOfPublications: List<Publication>" as LP
@@ -49,9 +49,9 @@ deactivate UI
 User -> UI : Selected publication and insert information for Item
 activate UI
 
-UI -> C : createAndAddItem(publication, condition,\n dimensions, weight)
+UI -> C : createAndAddItem(condition,weight,\n dimensions, publication)
 activate C
-C -> I : createAndAddItem(publication, condition,\n dimensions, weight)
+C -> I : createAndAddItem(condition,weight,\n dimensions, publication)
 activate I
 
 create "item1:Item" as item1
@@ -69,13 +69,13 @@ deactivate UI
 User -> UI : Information about Direct Sale
 activate UI
 
-UI -> C : createDirectSale(item1, price, shortDescription,\n listingTitle, seller, pictures)
+UI -> C : createAndAddDirectSale(items, price, shortDescription,\n listingTitle, seller, pictures)
 activate C
 
-C -> S : createDirectSale(item1, price, shortDescription,\n listingTitle, seller, pictures)
+C -> S : createAndAddDirectSale(items, price, shortDescription,\n listingTitle, seller, pictures)
 activate S
 create "listing1:Listing" as listing1
-S -> listing1 : create(item1, price, shortDescription,\n listingTitle, seller, pictures)
+S -> listing1 : create(items, price, shortDescription,\n listingTitle, seller, pictures)
 
 
 

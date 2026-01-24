@@ -5,11 +5,12 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.dto.PublicationDTO_US012;
 import TOPSECRET.repository.LibraryRepository;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceNotFoundException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,11 +21,6 @@ class GetListOfPublicationsInLibraryControllerTest {
 
 
 
-    private Map<String, Library> publicationList = new HashMap<>();
-
-    private LibraryRepository libraryRepo = new LibraryRepository(publicationList);
-
-    private GetListOfPublicationsInLibraryController ctrl = new GetListOfPublicationsInLibraryController(libraryRepo);
 
     // BibliographicalData
     Country country1 = new Country("Denmark");
@@ -58,6 +54,8 @@ class GetListOfPublicationsInLibraryControllerTest {
 
     UserRole userRole1 = UserRole.ADMIN;
     User user1 = new User("coolGuy", contact1, profile2, userRole1);
+    User user2 = new User("niceGuy", contact1, profile2, userRole1);
+    User user3 = new User("emptyGuy", contact1, profile2, userRole1);
 
     //PublicationStatus
     PublicationStatus pubStatus1 = PublicationStatus.READING;
@@ -79,65 +77,105 @@ class GetListOfPublicationsInLibraryControllerTest {
     Publication publication2= new Publication(bibliographicalData1, publicationType, user1,
             pubStatus1, edition1, code2);
 
+    // Create library
+    Library lib1 = new Library(List.of(publication1,publication2),"mylib1",user1);
+    Library lib2 = new Library(List.of(publication1),"mylib2",user2);
+    Library emptyLibrary = new Library(List.of(),"emptyLib",user3);
 
+    // Instantiates LibraryRepo
+    LibraryRepository userLib = new LibraryRepository(
+            Map.of(
+                    user1.getUserName(), lib1,
+                    user2.getUserName(), lib2,
+                    user3.getUserName(), emptyLibrary
+            )
+    );
 
-//    @Test
-//    void getUserLibraryIfItExists() throws InstanceNotFoundException {
-//        // Arrange
-//        String username = "testUser";
-//
-//        // Act
-//        Library lib = ctrl.getUserLibrary(username);
-//
-//        // Assert
-//        assertNotNull(lib);
-//        assertTrue(publicationList.containsKey(username));
-//    }
+    // Instantiates LibraryRepo
+    GetListOfPublicationsInLibraryController ctrl = new GetListOfPublicationsInLibraryController(userLib);
+
 
 
     @Test
-    void getUserLibraryNullUserThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ctrl.getUserLibrary(null);
+    void getUserLibraryIfItExists() throws InstanceNotFoundException {
+        // Arrange
+        String username = user1.getUserName();
+
+        // Act
+        Library lib = ctrl.getUserLibrary(user1.getUserName());
+
+        // Assert
+        assertNotNull(lib);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserDoesNotExist() {
+        // Arrange
+        String nonExistentUser = "AAAA";
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () -> {
+            ctrl.getUserLibrary(nonExistentUser);
         });
     }
 
     @Test
-    void getUserLibraryEmptyUserThrowsException() {
+    void shouldThrowExceptionWhenUserNameIsNull(){
+        // Arrange
+        String nonExistentUser = null;
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            ctrl.getUserLibrary("");
+            ctrl.getUserLibrary(nonExistentUser);
         });
+
     }
 
-//    @Test
-//    void getListOfPublicationsInLibrary_EmptyLibraryReturnsEmptyList() throws InstanceNotFoundException {
-//        // Arrange
-//        String username = "user";
-//        ctrl.getUserLibrary(username);
-//
-//        // Act
-//        List<PublicationDTO> result = ctrl.getListOfPublicationsInLibrary(username);
-//
-//        // Assert
-//        assertNotNull(result);
-//        assertTrue(result.isEmpty());
-//    }
+    @Test
+    void shouldThrowExceptionWhenUserNameIsEmpty(){
+        // Arrange
+        String nonExistentUser = "";
 
-//    @Test
-//    void getListOfPublicationsInLibraryShouldReturnsDTOs() throws InstanceNotFoundException {
-//        //Arrange
-//        String username = "user";
-//        Library userLib = ctrl.getUserLibrary(username);
-//        userLib.addPublication(publication1);
-//        userLib.addPublication(publication2);
-//
-//        //Act
-//        List<PublicationDTO> result = ctrl.getListOfPublicationsInLibrary(username);
-//
-//        //Assert
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//
-//    }
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            ctrl.getUserLibrary(nonExistentUser);
+        });
+
+    }
+
+
+    @Test
+    void ensureListOfPublicationsInLibraryIsEmptyWhenLibraryReturnsEmptyAList() throws InstanceNotFoundException {
+
+        // Arrange
+        String username = user3.getUserName();
+        ctrl.getUserLibrary(username);
+
+        // Act
+        List<PublicationDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensureListOfPublicationsInLibraryReturnsDTOs() throws InstanceNotFoundException {
+        //Arrange
+        String username = user1.getUserName();
+
+        //Act
+        List<PublicationDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+
+        String expectedTitle1= publication1.getBibliographicalData().getTitle();
+        String expectedTitle2=publication2.getBibliographicalData().getTitle();
+
+        //Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(expectedTitle1,result.get(0).pubTitle);
+        assertEquals(expectedTitle2,result.get(1).pubTitle);
+
+    }
 
 }

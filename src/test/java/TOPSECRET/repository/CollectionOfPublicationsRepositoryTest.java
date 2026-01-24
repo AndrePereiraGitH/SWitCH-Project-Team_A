@@ -105,11 +105,12 @@ class CollectionOfPublicationsRepositoryTest {
     }
 
     private CollectionOfPublications createValidCollection(Library library) {
+
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
                 library,
-                true
+                true, createValidUser()
         );
     }
 

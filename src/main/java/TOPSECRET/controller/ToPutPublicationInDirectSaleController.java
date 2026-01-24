@@ -35,20 +35,21 @@ public class ToPutPublicationInDirectSaleController {
     }
 
     public Item createAndAddItem(Condition condition, double weight, Dimensions dimensions, Publication publication) throws InstanceAlreadyExistsException {
-
-        if (condition == null) throw new IllegalArgumentException("Condition cannot be null");
-        if (dimensions == null) throw new IllegalArgumentException("Dimensions cannot be null");
-        if (publication == null) throw new IllegalArgumentException("Publication cannot be null");
-        if (weight <= 0) throw new IllegalArgumentException("Weight must be positive");
-
         return itemRepo.createAndAddItem(condition, weight, dimensions, publication);
     }
 
+
     public boolean createAndAddDirectSale(Listing listing) {
+
+        if (listing == null)
+            throw new IllegalArgumentException("Listing cannot be null");
+
+        for (Item item : listing.getItems()) {
+            if (item == null)
+                throw new IllegalArgumentException("Listing contains a null item");
+        }
 
         return directSaleRepo.createAndAddDirectSale(listing, LocalDateTime.now());
     }
-
-
 
 }

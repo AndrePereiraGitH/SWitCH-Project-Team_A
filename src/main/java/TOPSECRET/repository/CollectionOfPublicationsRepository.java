@@ -1,11 +1,14 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.Publication;
 import TOPSECRET.domain.User;
+import TOPSECRET.dto.CollectionOfPublicationsDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // This repository is responsible for managing PrivateList operations.
 // Even though PrivateLists are conceptually associated with a user's Library,
@@ -43,7 +46,38 @@ public class CollectionOfPublicationsRepository {
 
         // Delegates duplicate validation to the domain object
         return collection.addPublication(publication);
+
     }
+
+    public boolean addCollectionToRepo(CollectionOfPublications collection)
+    {
+        if (_collectionOfPublicationsList.contains(collection)) {
+            return false;
+        }
+
+        return _collectionOfPublicationsList.add(collection);
+    }
+
+    // This method will search for public collections of publications (lists) of a certain genre.
+    public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName)
+    {
+        if (genreName == null) {
+            throw new IllegalArgumentException("Genre can't be null.");
+        }
+
+        List<CollectionOfPublicationsDTO> result = new ArrayList<>();
+
+        for (CollectionOfPublications c : _collectionOfPublicationsList)
+        {
+            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre()))
+            {
+                result.add(new CollectionOfPublicationsDTO(c.getCollectionName(), c.getOwner()));
+            }
+        }
+
+        return List.copyOf(result);
+    }
+
 }
 
 

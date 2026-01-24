@@ -14,10 +14,11 @@ public class CollectionOfPublications {
     private Genre _collectionGenre;
     private Library _privateLibrary;
     private List<Publication> _collectionOfPublications;
+    private String _ownerUserName;
     private boolean _isPrivate;
 
     // Constructor
-    public CollectionOfPublications(String collectionName, Genre collectionGenre, Library privateLibrary, boolean isPrivate) {
+    public CollectionOfPublications(String collectionName, Genre collectionGenre, Library privateLibrary, boolean isPrivate, User user) {
 
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
@@ -31,10 +32,15 @@ public class CollectionOfPublications {
             throw new IllegalArgumentException("Library cannot be null.");
         }
 
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
         this._privateLibrary = privateLibrary;
         this._isPrivate = isPrivate;
+        this._ownerUserName = user.getUserName();
         this._collectionOfPublications = new ArrayList<>();
     }
 
@@ -44,9 +50,11 @@ public class CollectionOfPublications {
         return _collectionName;
     }
 
-    public Genre getCollectionGenre() {
-        return _collectionGenre;
-    }
+    public boolean getIsPrivate() { return _isPrivate; }
+
+    public Genre getCollectionGenre() { return _collectionGenre; }
+
+    public String getOwner() { return _ownerUserName; }
 
     public Library getPrivateLibrary() {
         return _privateLibrary;

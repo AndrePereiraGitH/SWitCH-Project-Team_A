@@ -10,9 +10,9 @@ class GenreRepositoryTest {
     @Test
     void shouldCreateGenre() {
         //Arrange
-        Genre expected = new Genre("Sci-fi");
+        Genre expected = new Genre("Social Studies");
         //Act
-        Genre result = GenreRepository.getINSTANCE().createAndAddGenre("Sci-fi");
+        Genre result = GenreRepository.getINSTANCE().createAndAddGenre("Social Studies");
         //Assert
         assertEquals(expected, result);
     }
@@ -25,4 +25,6 @@ class GenreRepositoryTest {
         //Assert
         assertEquals(expected, result);
     }
+
+
 }

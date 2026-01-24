@@ -4,13 +4,13 @@ title US015 - Put a publication for sale in Direct Sale
 class UI015 {}
 
 class ToPutPublicationInDirectSaleController {
-    + getListPublications()
-    + createAndAddItem(publication, condition, dimensions, weight) : Item
-    + createDirectSale(item, price, shortDescription, listingTitle, seller, pictures) : DirectSale
+    + getAllPublications()
+    + createAndAddItem(condition, weight, dimensions, publication) : Item
+    + createAndAddDirectSale(items, price, shortDescription, listingTitle, seller, pictures) : boolean
 }
 class Library {
     - publications : List<Publication>
-    + getListPublications() : List<Publication>
+    + getAllPublications() : List<Publication>
 }
 
 class Publication {
@@ -33,7 +33,6 @@ class Item {
     - condition : Condition
     - weight : weight
     - dimensions : dimensions
-
 }
 
 class Listing {

@@ -24,7 +24,7 @@ public class Library {
         }
         this.libraryName = libraryName;
         this.user = user;
-        this.myPublications = new ArrayList<>();
+        this.myPublications = myPublications;
     }
 
     //Get publications in the Library
