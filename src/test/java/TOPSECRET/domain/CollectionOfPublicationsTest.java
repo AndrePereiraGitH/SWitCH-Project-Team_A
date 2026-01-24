@@ -126,6 +126,7 @@ class CollectionOfPublicationsTest {
     // Verifies that a publication can be added to the collection
     @Test
     void shouldAddPublicationSuccessfully() {
+        // US018: Add a publication to an existing collection
 
         // ARRANGE
         CollectionOfPublications expected = createBaseCollection();
@@ -246,4 +247,19 @@ class CollectionOfPublicationsTest {
         // ASSERT
         assertEquals(expected, result);   // Collection must remain unchanged
     }
+
+    // US017
+    @Test
+    void shouldCreateEmptyCollection_US017() {
+        // When a collection is created, it must start with no publications.
+        // The population of the collection is handled by later user stories (e.g. US018).
+
+        // Arrange & Act
+        CollectionOfPublications collection = createBaseCollection();
+
+        // Assert
+        assertNotNull(collection.getPublications());
+        assertTrue(collection.getPublications().isEmpty());
+    }
+
 }

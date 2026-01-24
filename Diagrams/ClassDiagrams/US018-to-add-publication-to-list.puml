@@ -6,37 +6,45 @@ title US018 - Add Publication to Collection Of Publications
 ' ======================
 
 class User {
-  -id
-  -username
+  - username : String
+  - library : Library
+  - collections : List<CollectionOfPublications>
+  + getLibrary() : Library
+  + getCollections() : List<CollectionOfPublications>
 }
 
 class Publication {
-  -id
-  -title
+  - id : String
+  - title : String
+
 }
 
 class CollectionOfPublications {
-  -name : String
-  -isPrivate : boolean
-  +getPublications() : List<Publication>
-  +addPublication(publication : Publication)
+  - name : String
+  - publications : List<Publication>
+
+  + getPublications() : List<Publication>
+  + addPublication(publication : Publication) : boolean
+
 }
 
 class Library {
-  +getPublications() : List<Publication>
+- publications : List<Publication>
++ getPublications() : List<Publication>
+
 }
 
 User "1" --> "*" CollectionOfPublications : owns
 CollectionOfPublications "1" --> "*" Publication : contains
-User "1" --> "1" Library : owns
+User "1" --> "0...1 " Library : owns
 
-' ======================
-' Application
 ' ======================
 
 class AddCollectionOfPublicationsController {
-  +getUserCollections(user : User) : List<CollectionOfPublications>
-  +addPublicationToCollection(collection : CollectionOfPublications, publication : Publication)
+ + getUserCollections(user : User) : List<CollectionOfPublications>
+ + getPublicationsForCollection(user : User, collection : CollectionOfPublications) : List<Publication>
+ + addPublicationToCollection(collection : CollectionOfPublications, publication : Publication) : boolean
+
 }
 
 ' ======================
@@ -44,16 +52,16 @@ class AddCollectionOfPublicationsController {
 ' ======================
 
 class CollectionOfPublicationsRepository {
-  +getUserCollections(user : User) : List<CollectionOfPublications>
-  +addPublicationToCollection(collection : CollectionOfPublications, publication : Publication)
+  + getUserCollections(user : User) : List<CollectionOfPublications>
+  + addPublicationToCollection(collection : CollectionOfPublications, publication : Publication) : boolean
 }
 
 class LibraryRepository {
-  +getLibrary(user : User) : Library
+  + getLibrary(user : User) : Library
 }
 
 ' ======================
-' Dependencies (from SSD)
+' Dependencies
 ' ======================
 
 AddCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses

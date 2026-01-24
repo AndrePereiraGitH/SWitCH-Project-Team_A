@@ -2,41 +2,40 @@
 title US017 - Create Private Collection Of Publications with a name and a set a genre
 
 
-' ======================
+' _____________________
 ' DOMAIN
-' ======================
+' _____________________
 
 class User {
-  -id
-  -username
+  -username : String
 }
 
 class Genre {
-  -id
-  -name
+    - genreType  : String
 }
 
+
 class CollectionOfPublications {
-  -name : String
-  -isPrivate : boolean
+  - collectionName : String
+  - genre : Genre
+  - isPrivate : boolean
+  - publications : List<Publication>
 }
 
 class Publication {
-  -id
-  -title
 }
 
-User "1" --> "*" CollectionOfPublications : owns
+User "1" --> " *   " CollectionOfPublications : owns
 CollectionOfPublications "1" --> "1" Genre : has
-CollectionOfPublications "1" --> "*" Publication : contains
+CollectionOfPublications "1     " --> "*" Publication : contains
 
-' ======================
+' ______________________
 ' APPLICATION
-' ======================
+' ______________________
 
 class CreateCollectionOfPublicationsController {
   +getAllGenres() : List<GenreDTO>
-  +createAndAddCollectionOfPublications(name : String, genre : Genre)
+  +createAndAddCollectionOfPublications(name : String, genre : Genre, user : User) : CollectionOfPublications
 }
 
 class GenreMapper {
@@ -44,32 +43,33 @@ class GenreMapper {
 }
 
 class GenreDTO {
- - id
- - name
+   - name : String
 }
 
-' ======================
+' ___________________
 ' PERSISTENCE
-' ======================
+' ___________________
 
 class GenreRepository {
   +getAllGenres() : List<Genre>
 }
 
 class CollectionOfPublicationsRepository {
-  +create(name : String, genre : Genre) : CollectionOfPublications
-  +add(collection : CollectionOfPublications)
+  + createIfNotExists(user : User, name : String, genre : Genre,\n isPrivate : boolean) : CollectionOfPublications
 }
 
-' ======================
+' _____________________
 ' DEPENDENCIES
-' ======================
+' ____________________
 
 CreateCollectionOfPublicationsController ..> GenreRepository : uses
 CreateCollectionOfPublicationsController ..> GenreMapper : uses
 CreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
+CollectionOfPublicationsRepository ..> CollectionOfPublications : uses
 
 GenreMapper ..> Genre : maps
 GenreMapper ..> GenreDTO : creates
+
+
 
 @enduml
