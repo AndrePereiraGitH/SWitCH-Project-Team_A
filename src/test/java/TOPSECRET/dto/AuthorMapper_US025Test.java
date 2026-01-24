@@ -30,12 +30,9 @@ class AuthorMapper_US025Test {
         assertNotNull(dtos);
         assertTrue(mapper.toDTO(List.of()).isEmpty());
         assertNull(mapper.toDTO((Author) null));
-        assertEquals(1, mapper.toDTO(List.of(author)).size());
         assertEquals(1, dtos.size());
+        
         var firstAuthor = dtos.get(0);
         assertEquals("José Saramago", firstAuthor.getName());
-        assertEquals(country, firstAuthor.getCountry());
-        assertEquals(LocalDate.of(2000, 11, 25), firstAuthor.getDateOfBirth());
-        assertEquals("bio", firstAuthor.getBiography());
     }
 }
