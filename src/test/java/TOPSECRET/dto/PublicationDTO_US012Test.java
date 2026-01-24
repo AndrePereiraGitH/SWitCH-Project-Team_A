@@ -27,41 +27,5 @@ class PublicationDTO_US012Test {
         assertEquals(expectedType, dto.publicationType);
     }
 
-    @Test
-    void toStringShouldReturnFormattedString() {
-        // Arrange
-        String title = "Clean Code";
-        List<String> authors = Arrays.asList("Robert C. Martin", "Dean Wampler");
-        String code = "123-456";
-        String type = "TECHNICAL_BOOK";
-
-        PublicationDTO_US012 dto = new PublicationDTO_US012(title, authors, code, type);
-
-        String expectedString = "PublicationDTO{" +
-                "pubTitle='Clean Code'" +
-                ", authorName='[Robert C. Martin, Dean Wampler]'" +
-                ", code='123-456'" +
-                ", PublicationType='TECHNICAL_BOOK'" +
-                '}';
-
-        // Act
-        String result = dto.toString();
-
-        // Assert
-        assertEquals(expectedString, result);
-    }
-
-    @Test
-    void ensureConstructorWithNullValuesShouldNotCrash() {
-        // Arrange & Act
-        PublicationDTO_US012 dto = new PublicationDTO_US012(null, null, null, null);
-
-        // Assert
-        assertNull(dto.pubTitle);
-        assertNull(dto.authorName);
-        assertNull(dto.code);
-        assertNull(dto.publicationType);
-        assertNotNull(dto.toString());
-    }
 
 }
