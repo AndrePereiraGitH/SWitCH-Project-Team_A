@@ -17,28 +17,13 @@ class ToGetListOfGenreControllerTest {
 
     @Test
     void getGenresList_shouldReturnGenresFromRepository() {
-        // Arrange
-        // Get the repository instance and add a genre to it
         GenreRepository repo = GenreRepository.getINSTANCE();
         repo.createAndAddGenre("Romance");
 
-        // Create the controller using the repository
-        ToGetListOfGenreController controller =
-                new ToGetListOfGenreController(repo);
+        ToGetListOfGenreController controller = new ToGetListOfGenreController(repo);
 
-        // Act
         List<Genre> result = controller.getGenresList();
 
-        // Assert
-        boolean found = false;
-
-        for (Genre genre : result) {
-            if (genre.getGenreType().equals("Romance")) {
-                found = true;
-                break;
-            }
-        }
-
-        assertTrue(found);
+        assertTrue(result.contains(new Genre("Romance")));
     }
 }
