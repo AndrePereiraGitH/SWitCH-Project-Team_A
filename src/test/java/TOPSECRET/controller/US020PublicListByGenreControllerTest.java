@@ -19,6 +19,9 @@ class US020PublicListByGenreControllerTest {
     void resetRepository() {
         GenreRepository.getINSTANCE().clear();
     }
+    GenreRepository genreRepo = GenreRepository.getINSTANCE();
+    CollectionOfPublicationsRepository collectionRepo =  new CollectionOfPublicationsRepository();
+    US020PublicListByGenreController controller = new US020PublicListByGenreController(genreRepo, collectionRepo);
 
     @Test
     void shouldReturnAllGenresFromGenreRepository()
@@ -27,7 +30,7 @@ class US020PublicListByGenreControllerTest {
         Genre genre2 = GenreRepository.getINSTANCE().createAndAddGenre("Action");
         Genre genre3 = GenreRepository.getINSTANCE().createAndAddGenre("History");
 
-        List<Genre> genreList = GenreRepository.getINSTANCE().getAllGenres();
+        List<Genre> genreList = controller.getGenres();
 
         assertNotNull(genreList);
         assertEquals(3, genreList.size());
@@ -39,8 +42,6 @@ class US020PublicListByGenreControllerTest {
     @Test
     void shouldReturnPublicListByGenre()
     {
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository();
-
         Genre desiredGenre = new Genre("Action");
 
         List<Publication> pubs = List.of();
@@ -86,8 +87,6 @@ class US020PublicListByGenreControllerTest {
 
         Library privateLibrary = new Library("My Library", userName);
 
-//        privateLibrary.addPublication(publicationSample);
-
 
         // Creation of Collection of Publications
 
@@ -125,19 +124,19 @@ class US020PublicListByGenreControllerTest {
 
 
 
-        repo.addPublicationToCollection(userName,c1,publicationSample);
-        repo.addPublicationToCollection(userName,c2,publicationSample);
-        repo.addPublicationToCollection(userName,c3,publicationSample);
-        repo.addPublicationToCollection(userName,c4,publicationSample);
+        collectionRepo.addPublicationToCollection(userName,c1,publicationSample);
+        collectionRepo.addPublicationToCollection(userName,c2,publicationSample);
+        collectionRepo.addPublicationToCollection(userName,c3,publicationSample);
+        collectionRepo.addPublicationToCollection(userName,c4,publicationSample);
 
-        repo.addCollectionToRepo(c1);
-        repo.addCollectionToRepo(c2);
-        repo.addCollectionToRepo(c3);
-        repo.addCollectionToRepo(c4);
+        collectionRepo.addCollectionToRepo(c1);
+        collectionRepo.addCollectionToRepo(c2);
+        collectionRepo.addCollectionToRepo(c3);
+        collectionRepo.addCollectionToRepo(c4);
 
 
-        assertEquals(2, repo.findPublicByGenre(desiredGenre).size()); // checks if the function correctly found the 2 public lists of the desired genre
-        assertThrows(IllegalArgumentException.class, () -> repo.findPublicByGenre(null)); // Checks if exception is thrown wehn genre is null
+        assertEquals(2, controller.getPublicListsByGenre(desiredGenre).size()); // checks if the function correctly found the 2 public lists of the desired genre
+        assertThrows(IllegalArgumentException.class, () -> controller.getPublicListsByGenre(null)); // Checks if exception is thrown wehn genre is null
 
     }
 
