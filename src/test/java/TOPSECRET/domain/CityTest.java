@@ -1,6 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +8,9 @@ class CityTest {
 
     //Arrange
     Country anyCountry = new Country("Finland");
-    String anyCity = "Helsinki";
+    String anyCityName = "Helsinki";
+    City anyCity = new City(anyCountry, anyCityName);
+
 
     @Test
     void shouldCreateCityWithValidData() {
@@ -45,11 +46,139 @@ class CityTest {
         assertThrows(IllegalArgumentException.class, () -> new City(country3, cityName3));
     }
 
-
-    //TODO test override methods
     @Test
-    void should() {
+    void shouldReturnCityName() {
 
+        //Arrange
+        Country country4 = new Country("Italy");
+        String cityName4 = "Florence";
+
+        City city4 = new City(country4, cityName4);
+
+        //Act + assert
+        String wantCityName = "Florence";
+
+        assertEquals(wantCityName, city4.getCityName());
+    }
+
+    @Test
+    void shouldReturnCityMultipleWords() {
+
+        //Arrange
+        Country country5 = new Country("Australia");
+        String cityName5 = "Gold Coast";
+
+        City city5 = new City(country5, cityName5);
+
+        //Act + assert
+        String wantCityMultipleWords = "Gold Coast";
+
+        assertEquals(wantCityMultipleWords, city5.getCityName());
+    }
+
+    @Test
+    void shouldReturnCityCountry() {
+        //Arrange
+        Country country6 = new Country("Norway");
+        String cityName6 = "Oslo";
+
+        City city6 = new City(country6, cityName6);
+
+        //Act + assert
+        Country wantCityCountry = new Country("Norway");
+
+        assertEquals(wantCityCountry, city6.getCityCountry());
+    }
+
+    @Test
+    void shouldReturnCountryMultipleWords() {
+
+        //Arrange
+        Country country7 = new Country("South_Korea"); //did not exist in enum?
+        String cityName7 = "Seoul";
+
+        City city7 = new City(country7, cityName7);
+
+        //Act + assert
+        Country wantCountryMultipleWords = new Country("South_Korea"); // do not forget " _ " in countries
+
+        assertEquals(wantCountryMultipleWords, city7.getCityCountry());
+
+    }
+
+
+    //Testing the override methods, following the same format as in Publication
+
+    @Test
+    void equals_shouldReturnTrueForSameObject() {
+        assertEquals(anyCity, anyCity);
+    }
+
+    @Test
+    void equals_shouldReturnFalseWhenComparedToNull() {
+
+        //Arrange
+        City nullCity = null;
+
+        assertNotEquals(anyCity, nullCity);
+    }
+
+    @Test
+    void equals_shouldReturnFalseWhenComparedToNotCities() {
+
+        //Arrange
+        Country notACity = new Country("Czech_Republic");
+
+        assertNotEquals(anyCity, notACity);
+    }
+
+    @Test
+    void equals_shouldReturnTrueForEqualCities() {
+
+        //Arrange
+        City cityA = anyCity;
+        City cityB = anyCity;
+
+        assertEquals(cityA, cityB);
+
+    }
+
+    @Test
+    void equals_shouldReturnFalseWhenSameCityDifferentCountry() {
+
+        //Arrange
+        Country countryA = new Country("Canada");
+        String london = "London";
+
+        Country countryB = new Country("United_Kingdom");
+
+        City cityC = new City(countryA, london);
+        City cityD = new City(countryB, london);
+
+    }
+
+    @Test
+    void hashCode_SameIfEqualObjects() {
+
+        City hashCity = anyCity;
+        assertEquals(anyCity.hashCode(), anyCity.hashCode());
+        assertEquals(hashCity.hashCode(), anyCity.hashCode());
+    }
+
+    @Test
+    void hashCode_NotEqualIfDifferentAttributes() {
+
+        //differing fields
+        Country countryC = new Country("China");
+        Country countryD = new Country("Djibouti");
+
+        String beijing = "Beijing";
+
+        City hashCity = new City(countryC, beijing);
+        City hashCity2 = new City(countryD, beijing);
+
+        //Assert
+        assertNotEquals(hashCity.hashCode(), hashCity2.hashCode());
 
     }
 
