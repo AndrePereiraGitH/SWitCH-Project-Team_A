@@ -86,7 +86,7 @@ class US020PublicListByGenreControllerTest {
 
         Library privateLibrary = new Library("My Library", userName);
 
-        privateLibrary.addPublication(publicationSample);
+//        privateLibrary.addPublication(publicationSample);
 
 
         // Creation of Collection of Publications

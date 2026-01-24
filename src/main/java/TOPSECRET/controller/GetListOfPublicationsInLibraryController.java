@@ -36,11 +36,15 @@ public class GetListOfPublicationsInLibraryController {
         return userLibrary;
     }
 
-    public List<PublicationDTO_US012> getListOfPublicationsInLibrary(String username) throws InstanceNotFoundException {
+    public List<PublicationDTO_US012> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
 
-        List<Publication> publications = getUserLibrary(username).getAllPublications();
+        Library userLib = getUserLibrary(username);
 
-        return PublicationMapper_US012.getListOfPublicationsDTO(publications);
+        List<Publication> publications = userLib.getAllPublications();
+
+        List<PublicationDTO_US012> publicationsDTO = PublicationMapper_US012.getListOfPublicationsDTO(publications);
+
+        return publicationsDTO;
     }
 
 }
