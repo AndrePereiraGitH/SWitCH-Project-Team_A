@@ -7,14 +7,13 @@ import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepository;
 
 import java.util.List;
-import java.util.Objects;
 
-public class US020_PublicListByGenreController {
+public class US020PublicListByGenreController {
 
     private final GenreRepository _genreRepository;
     private final CollectionOfPublicationsRepository _collectionRepo;
 
-    public US020_PublicListByGenreController(GenreRepository genreRepository, CollectionOfPublicationsRepository collectionRepo)
+    public US020PublicListByGenreController(GenreRepository genreRepository, CollectionOfPublicationsRepository collectionRepo)
     {
         this._genreRepository = genreRepository;
         this._collectionRepo = collectionRepo;

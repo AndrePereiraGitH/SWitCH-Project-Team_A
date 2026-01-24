@@ -83,14 +83,17 @@ class US018ToAddPublicationToPrivateListControllerTest {
         );
     }
 
-    private CollectionOfPublications createValidCollection(Library library) {
+    private CollectionOfPublications createValidCollection(Library library, User user) {
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
                 library,
-                true
+                true,
+                user
         );
     }
+
+
 
     // SUCCESS TEST
     @Test
@@ -100,7 +103,7 @@ class US018ToAddPublicationToPrivateListControllerTest {
         User user = createValidUser();                                  // Create valid user
         Publication publication = createValidPublication(user);         // Create valid publication
         user.getLibrary().addPublication(publication);                  // Add publication to user's library
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());           // Create collection
+        CollectionOfPublications collection = createValidCollection(user.getLibrary(), user);           // Create collection
         user.addCollection(collection);                                 // User owns the collection
 
         // ACT
@@ -131,7 +134,7 @@ class US018ToAddPublicationToPrivateListControllerTest {
 
         user.getLibrary().addPublication(publication);               // Publication exists in library
 
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());           // Collection NOT owned by user
+        CollectionOfPublications collection = createValidCollection(user.getLibrary(), user);           // Collection NOT owned by user
 
         // ACT
         boolean result = controller.addPublicationToPrivateList(user, collection, publication);
@@ -147,7 +150,7 @@ class US018ToAddPublicationToPrivateListControllerTest {
         User user = createValidUser();
         Publication publication = createValidPublication(user);
 
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());
+        CollectionOfPublications collection = createValidCollection(user.getLibrary(), user);
 
         user.addCollection(collection);                              // User owns the collection
 
@@ -167,7 +170,7 @@ class US018ToAddPublicationToPrivateListControllerTest {
 
         user.getLibrary().addPublication(publication);
 
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());
+        CollectionOfPublications collection = createValidCollection(user.getLibrary(), user);
 
         user.addCollection(collection);
 
@@ -180,3 +183,4 @@ class US018ToAddPublicationToPrivateListControllerTest {
         assertFalse(result);                                         // Duplicate publication is not allowed
     }
 }
+

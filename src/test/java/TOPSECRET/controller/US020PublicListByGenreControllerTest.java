@@ -3,6 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.repository.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -12,7 +13,12 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class US020_PublicListByGenreControllerTest {
+class US020PublicListByGenreControllerTest {
+
+    @BeforeEach
+    void resetRepository() {
+        GenreRepository.getINSTANCE().clear();
+    }
 
     @Test
     void shouldReturnAllGenresFromGenreRepository()
