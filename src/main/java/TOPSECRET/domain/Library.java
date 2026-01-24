@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Library {
 
-    private final List<Publication> myPublications;
-    private String libraryName;
-    private User user;
+    private List<Publication> myPublications;
+    private final String libraryName;
+    private final User user;
 
     //Constructor
     public Library(String libraryName, User user) {

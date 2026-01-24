@@ -30,7 +30,8 @@ public class PublicationMapper_US012 {
     public static List<PublicationDTO_US012> getListOfPublicationsDTO(List<Publication> publications){
         List<PublicationDTO_US012> listOfPublicationsDTO = new ArrayList<>();
         for(Publication pub: publications){
-            listOfPublicationsDTO.add(toDTO(pub));
+            PublicationDTO_US012 pubDTO = toDTO(pub);
+            listOfPublicationsDTO.add(pubDTO);
         }
 
         return listOfPublicationsDTO;

@@ -15,14 +15,5 @@ public class PublicationDTO_US012 {
         this.publicationType = publicationType;
     }
 
-    @Override
-    public String toString() {
-        return "PublicationDTO{" +
-                "pubTitle='" + pubTitle + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", code='" + code + '\'' +
-                ", PublicationType='" + publicationType + '\'' +
-                '}';
-    }
 
 }

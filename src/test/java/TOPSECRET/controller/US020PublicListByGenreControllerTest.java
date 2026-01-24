@@ -136,8 +136,12 @@ class US020PublicListByGenreControllerTest {
 
 
         assertEquals(2, controller.getPublicListsByGenre(desiredGenre).size()); // checks if the function correctly found the 2 public lists of the desired genre
-        assertThrows(IllegalArgumentException.class, () -> controller.getPublicListsByGenre(null)); // Checks if exception is thrown wehn genre is null
+    }
 
+    @Test
+    void shouldThrownWhenGenreIsNull()
+    {
+        assertThrows(IllegalArgumentException.class, () -> controller.getPublicListsByGenre(null)); // Checks if exception is thrown wehn genre is null
     }
 
 }
