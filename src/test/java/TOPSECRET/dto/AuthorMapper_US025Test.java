@@ -23,16 +23,21 @@ class AuthorMapper_US025Test {
     void toDTO_shouldMapSingleAuthorCorrectly() {
 
         Country country = new Country("PORTUGAL");
-        Author author = new Author("José Saramago", country, LocalDate.of(2000, 11, 25), "bio");
+        Author author1 = new Author("José Saramago", country, LocalDate.of(2000, 11, 25), "bio");
+        Author author2 = new Author("João Silva", country, LocalDate.of(2000, 11, 25), "bio");
 
-        var dtos = mapper.toDTO(List.of(author));
+
+        var dtos = mapper.toDTO(List.of(author1,author2));
 
         assertNotNull(dtos);
         assertTrue(mapper.toDTO(List.of()).isEmpty());
         assertNull(mapper.toDTO((Author) null));
-        assertEquals(1, dtos.size());
+        assertEquals(2, dtos.size());
         
         var firstAuthor = dtos.get(0);
+        var secondAuthor = dtos.get(1);
+
         assertEquals("José Saramago", firstAuthor.getName());
+        assertEquals("João Silva", secondAuthor.getName());
     }
 }
