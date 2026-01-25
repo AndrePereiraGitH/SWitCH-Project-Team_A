@@ -39,8 +39,9 @@ class AddPublicationToLibraryControllerTest {
     private Contact contact1, contact2, contact3;
     private Publisher publisher1, publisher2, publisher3;
     private BibliographicalData data1, data2, data3;
+    //Atributos desta classe
 
-    @BeforeEach
+    @BeforeEach //Vai fazer antes de cada teste
     void preparation() {
         publicationRepository = new PublicationRepository();
 

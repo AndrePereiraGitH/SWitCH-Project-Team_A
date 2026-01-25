@@ -3,54 +3,56 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Library {
+public class Library { //Define a classe Library (biblioteca de publicações, pertencente a um User
 
-    private List<Publication> myPublications;
-    private final String libraryName;
-    private final User user;
+    private List<Publication> myPublications; //private para encapsulamento, cria uma List<Publication> chamada myPublications
+    private final String libraryName; //private final para ser privado e imutável, de um String intitulado libraryName
+    private final User user; //private final para ser privado e imutável, do tipo User (classe User) chamada "user"
 
     //Constructor
-    public Library(String libraryName, User user) {
-        this(List.of(), libraryName, user);
-    }
+    public Library(String libraryName, User user) { //Construtor de Library, como atributos tem um String (os acima indicados) e um User (o acima indicado)
+        this(List.of(), libraryName, user); //Vai chamar o construtor principal com o "this"
+    } //List.of() é um méto.do do Java para criar uma lista imutável vazia, resulta em List<Publications> myPublications = []
+    //Resumindo, este construtor cria uma biblioteca nova com nome = libraryName, user = user, lista de publicações inicialmente vazia
 
-    public Library(List<Publication> myPublications, String libraryName, User user){
+    public Library(List<Publication> myPublications, String libraryName, User user){ //Construtor completo, quando temos a lista inicial de publications
 
-        if (libraryName == null || libraryName.isBlank()){
+        if (libraryName == null || libraryName.isBlank()){ //Casos de libraryName ser null ou vazia
             throw new IllegalArgumentException("Library Name cannot be null or blank");
         }
-        if (user == null){
+        if (user == null){ //Casos de user ser null
             throw new IllegalArgumentException("User cannot be Null");
         }
         this.libraryName = libraryName;
         this.user = user;
         this.myPublications = myPublications;
-    }
+    } //Estes vão atribuir valores fornecidos aos atributos da classe.
 
     //Get publications in the Library
-    public List<Publication> getAllPublications(){
-        return List.copyOf(myPublications); //read-only, so there are no external changes
+    public List<Publication> getAllPublications(){ //Um getter
+        return List.copyOf(myPublications); //Vai retornar uma cópia da lista myPublications, de modo a ser imutável, não se pode alterar (Read-Only)
     }
 
-    public String getLibraryName(){
-        return libraryName;
+    public String getLibraryName(){ //Um getter
+        return libraryName; //retorna o nome da library
     }
 
-    public User getUser(){
-        return user;
+    public User getUser(){ //Um getter
+        return user; //retorna o nome do user (dono da library)
     }
 
     //Add publication
-    public boolean addPublication(Publication publication){
-        if (!myPublications.contains(publication)){
-            myPublications.add(publication);
+    public boolean addPublication(Publication publication){ //Este é um méto.do, do tipo boolean, que vai verificar se a publicação já existe na library e se não existir, adiciona e retorna True
+        if (!myPublications.contains(publication)){ //Se na myPublications NÃO estiver a "publication" fornecida, irá executar a linha 47
+            myPublications.add(publication); //dá add à publication à myPublications
             return true; //Publication was added
         }
         return false; //Publication was not added (already exists)
     }
 
-    // US0018
 
+
+    // US0018
     public boolean containsPublication(Publication publication) {
         return myPublications.contains(publication);
     }
@@ -73,5 +75,4 @@ public class Library {
     public int hashCode() {
         return getAllPublications().hashCode();
     }
-
 }

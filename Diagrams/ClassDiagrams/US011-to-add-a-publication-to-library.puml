@@ -1,6 +1,6 @@
 @startuml
 title US011 - Add publication to library
-
+hide circle
 
 class UI011 {
 }

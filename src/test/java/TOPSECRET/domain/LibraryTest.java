@@ -29,8 +29,9 @@ class LibraryTest {
     private Publication publication1;
     private Publication publication2;
     private Publication publication3;
+    //Atributos do teste
 
-    @BeforeEach
+    @BeforeEach //O que estiver neste BeforeEach será feito antes de cada teste
     void preparation(){
         Country country = new Country("Portugal");
         Profile profile = new Profile("profile1", country, LocalDate.of(1990, 1, 1));
@@ -49,22 +50,22 @@ class LibraryTest {
         Country country3 = new Country ("Germany");
 
 
-        //Author
+        //Author - used for Bibliographical Data
         Author author1 = new Author("Author One", country1, LocalDate.of(1980, 1, 1), "Bio1");
         Author author2 = new Author("Author Two", country2, LocalDate.of(1985, 2, 2), "Bio2");
         Author author3 = new Author("Author Three", country3, LocalDate.of(1990, 3, 3), "Bio3");
 
-        //Genre
+        //Genre - used for Bibliographical Data
         Genre genre1 = new Genre("Fiction");
         Genre genre2 = new Genre("Adventure");
         Genre genre3 = new Genre("Mystery");
 
-        //Contact
+        //Contact - used for Publisher
         Contact contact1 = new Contact();
         Contact contact2 = new Contact();
         Contact contact3 = new Contact();
 
-        //Publisher
+        //Publisher - used for Bibliographical Data
         Publisher publisher1 = new Publisher("Publisher1", "VAT001", contact1);
         Publisher publisher2 = new Publisher("Publisher2", "VAT002", contact2);
         Publisher publisher3 = new Publisher("Publisher3", "VAT003", contact3);
@@ -89,7 +90,7 @@ class LibraryTest {
         User user2 = new User();
         User user3 = new User();
 
-        //Creating some sample publications, using empty users from the empty constructor in User class
+        //Creating some sample publications, dependent on a lot of different classes, created above for testing purposes
         publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
         publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
         publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
