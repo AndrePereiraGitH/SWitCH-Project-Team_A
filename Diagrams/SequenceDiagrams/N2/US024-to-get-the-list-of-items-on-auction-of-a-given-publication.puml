@@ -19,7 +19,7 @@ participant ":AuctionRepository" as AuctionRepo
 participant "listOfItemsOnAuction:\nList<Item>" as ListAuc
 participant ":ItemDTO_US024" as itemDTO
 participant "listOfAuctionsDTO:\nList<ItemDTO_US024>" as ListAucDTO
-participant ":Auction" as Auc
+participant ":Item" as item
 participant "ItemDTO:ItemDTO_US024" as itemdto
 
 ' Interactions
@@ -71,10 +71,8 @@ Ctrl -> itemDTO : getListOfItemsAuctionDTO()
 activate itemDTO
 itemDTO -> ListAucDTO ** : create()
 loop for each item
-    itemDTO -> Auc: getItemOnAuctionDetails()
-    activate Auc
-    Auc --> itemDTO: itemDetailsOnAuction
-    deactivate Auc
+    itemDTO -> item: getItemOnAuctionDetails()
+    item --> itemDTO: itemDetailsOnAuction
     itemDTO-> itemdto **: createDTO(itemDetailsOnAuction)
     itemDTO -> itemDTO : listOfAuctionsDTO.add(itemDTO)
 end
