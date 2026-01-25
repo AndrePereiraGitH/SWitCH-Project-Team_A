@@ -25,7 +25,7 @@ class PublicationTest {
     Email email1 = new Email("Maria1", "gmail.com");
     Contact contact1 = new Contact("915945695", "+351", email1, address1);
     Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
-    BibliographicalData biblioData = new BibliographicalData(
+    BibliographicalData anyBiblioData = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author1),
             Locale.ENGLISH,
@@ -54,8 +54,11 @@ class PublicationTest {
 
     UserRole userRole1 = UserRole.ADMIN;
     User anyUser = new User("coolGuy", contact2, profile2, userRole1);
-    PublicationStatus pubStatus = PublicationStatus.READING;
-    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationStatus anyPubStatus = PublicationStatus.READING;
+    PublicationType anyPubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+
+
+    Publication anyPublication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
 
 
     @Test
@@ -102,7 +105,8 @@ class PublicationTest {
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
         PublicationStatus pubStatus1 = PublicationStatus.READING;
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK,
+                "Paperback");
 
         //Act
         Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,
@@ -146,7 +150,8 @@ class PublicationTest {
 
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
-        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK,
+                "Paperback");
         PublicationStatus pubStatus1 = PublicationStatus.READING;
 
 
@@ -169,8 +174,8 @@ class PublicationTest {
 
         //Act and assert
         // calling upon the getEdition method here
-        Publication publicationWantEdition = new Publication(biblioData, pubType, anyUser,
-                pubStatus, expectedEdition, anyCode);
+        Publication publicationWantEdition = new Publication(anyBiblioData, anyPubType, anyUser,
+                anyPubStatus, expectedEdition, anyCode);
 
         assertEquals(expectedEdition, publicationWantEdition.getEdition());
     }
@@ -180,12 +185,13 @@ class PublicationTest {
     void shouldReturnPublicationType() {
 
         //Reusing instance here, again, just changing the PublicationType
-        PublicationType expectedPubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Cool binding");
+        PublicationType expectedPubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK,
+                "Cool binding");
 
         //Act and assert
         // calling upon the getPublicationType method here
-        Publication publicationWantPubType = new Publication(biblioData, expectedPubType, anyUser,
-                pubStatus, anyEdition, anyCode);
+        Publication publicationWantPubType = new Publication(anyBiblioData, expectedPubType, anyUser,
+                anyPubStatus, anyEdition, anyCode);
 
         assertEquals(expectedPubType, publicationWantPubType.getPublicationType());
 
@@ -207,8 +213,8 @@ class PublicationTest {
                 "Some text");
 
         //Act and assert
-        Publication publicationWantBiblioData = new Publication(expectedBibliographicalData, pubType, anyUser,
-                pubStatus, anyEdition, anyCode);
+        Publication publicationWantBiblioData = new Publication(expectedBibliographicalData, anyPubType, anyUser,
+                anyPubStatus, anyEdition, anyCode);
 
         assertEquals(expectedBibliographicalData, publicationWantBiblioData.getBibliographicalData());
     }
@@ -220,19 +226,90 @@ class PublicationTest {
         Code expectedCode = Code.fromIsbn13("123456789101");
 
         //Act
-        Publication publicationWantCode = new Publication(biblioData, pubType, anyUser,
-                pubStatus, anyEdition, expectedCode);
+        Publication publicationWantCode = new Publication(anyBiblioData, anyPubType, anyUser,
+                anyPubStatus, anyEdition, expectedCode);
 
         assertEquals(expectedCode, publicationWantCode.getCode());
-
     }
+
+    //Testing the override methods
+
+    @Test
+    void equals_shouldReturnTrueForSameObject() {
+        assertEquals(anyPublication, anyPublication);
+    }
+
+    @Test
+    void equals_shouldReturnFalseWhenComparedToNull() {
+
+        //Arrange
+        Publication nullPublication = null;
+
+        assertNotEquals(anyPublication,  nullPublication);
+    }
+
+    @Test
+    void equals_shouldReturnFalseWhenComparedToNotPublications() {
+
+        assertNotEquals(anyPublication, anyPubType);
+        assertNotEquals(anyPublication, "this is not a publication");
+    }
+
+    @Test
+    void equals_shouldReturnTrueForEqualPublications() {
+
+        Publication publicationA = anyPublication;
+        Publication publicationB = anyPublication;
+
+        assertEquals(publicationA, publicationB);
+        assertEquals(publicationB, publicationA); // testing symmetry
+    }
+
+    @Test
+    void equals_shouldReturnFalseIfDifferentAttribute() {
+
+        // differing fields here
+        String goldEdition = "gold";
+        String silverEdition = "silver";
+
+        Publication publicationReading = new Publication(anyBiblioData, anyPubType,
+                anyUser, anyPubStatus, goldEdition, anyCode);
+        Publication publicationRead = new Publication(anyBiblioData, anyPubType,
+                anyUser, anyPubStatus, silverEdition, anyCode);
+
+        assertNotEquals(publicationReading, publicationRead);
+    }
+
+    @Test
+    void hashCode_SameIfEqualObjects() {
+        assertEquals(anyPublication.hashCode(), anyPublication.hashCode());
+    }
+
+    @Test
+    void hashCode_NotEqualIfDifferentAttributes() {
+
+        // differing fields
+        Code cloudCode = Code.fromIsbn10("cloud12345");
+        Code squallCode = Code.fromIsbn13("squall1234567");
+
+        Publication publicationCloud = new Publication(anyBiblioData, anyPubType,
+                anyUser, anyPubStatus, anyEdition, cloudCode);
+
+        Publication publicationSquall = new Publication(anyBiblioData, anyPubType,
+                anyUser, anyPubStatus, anyEdition, squallCode);
+
+        //Assert
+        assertNotEquals(publicationCloud.hashCode(), publicationSquall.hashCode());
+    }
+
+
     // US023 Start -----------------------------------------------------------------------------------------------------
     // Tests to method getDetails()
 
     @Test
     void verifiesIfMethodGetDetailsReturnsNonNullRecord() {
         // Arrange
-        Publication publication = new Publication(biblioData, pubType, anyUser, pubStatus, anyEdition, anyCode);
+        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
 
         // Act
         Publication.PublicationDetails details = publication.getDetails();
@@ -244,16 +321,16 @@ class PublicationTest {
     @Test
     void verifiesIfMethodGetDetailsReturnsCorrectValues() {
         // Arrange
-        Publication publication = new Publication(biblioData, pubType, anyUser, pubStatus, anyEdition, anyCode);
+        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
 
         // Act
         Publication.PublicationDetails details = publication.getDetails();
 
         // Assert
-        assertEquals(biblioData, details.bibliographicalData());
-        assertEquals(pubType, details.publicationType());
+        assertEquals(anyBiblioData, details.bibliographicalData());
+        assertEquals(anyPubType, details.publicationType());
         assertEquals(anyUser, details.userName());
-        assertEquals(pubStatus, details.publicationStatus());
+        assertEquals(anyPubStatus, details.publicationStatus());
         assertEquals(anyEdition, details.edition());
         assertEquals(anyCode, details.code());
     }
@@ -261,7 +338,7 @@ class PublicationTest {
     @Test
     void verifiesIfMethodGetDetailsHandlesNullableFields() {
         // Arrange
-        Publication publication = new Publication(biblioData, pubType, anyUser, pubStatus, null, null);
+        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, null, null);
 
         // Act
         Publication.PublicationDetails details = publication.getDetails();
@@ -273,8 +350,6 @@ class PublicationTest {
 
     // US023 End -------------------------------------------------------------------------------------------------------
 
-
-    //TODO test the other assertThrows
 
 }
 

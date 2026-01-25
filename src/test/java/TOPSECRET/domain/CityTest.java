@@ -120,6 +120,7 @@ class CityTest {
         //Arrange
         City nullCity = null;
 
+        //Assert
         assertNotEquals(anyCity, nullCity);
     }
 
@@ -129,6 +130,7 @@ class CityTest {
         //Arrange
         Country notACity = new Country("Czech_Republic");
 
+        //Assert
         assertNotEquals(anyCity, notACity);
     }
 
@@ -139,6 +141,7 @@ class CityTest {
         City cityA = anyCity;
         City cityB = anyCity;
 
+        //Assert
         assertEquals(cityA, cityB);
 
     }
@@ -154,6 +157,9 @@ class CityTest {
 
         City cityC = new City(countryA, london);
         City cityD = new City(countryB, london);
+
+        //Assert
+        assertNotEquals(cityC, cityD);
 
     }
 
