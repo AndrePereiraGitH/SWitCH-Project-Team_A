@@ -107,7 +107,33 @@ public class AuctionRepository {
         return listOfItemsOnAuction;
     }
 
+    public List<Item> getItemsOnAuctionGivenPublisher(Publisher publisher) {
+        if (publisher == null) {
+            throw new IllegalArgumentException("publisher cannot be null");
+        }
 
+        List<Item> result = new ArrayList<>();
+
+        for (Auction auction : auctionsList) {
+            Listing listing = auction.getListing();
+            if (listing == null || listing.getItems() == null) continue;
+
+            for (Item item : listing.getItems()) {
+                Publication pub = item.getPublication();
+                if (pub == null) continue;
+
+                BibliographicalData bd = pub.getBibliographicalData();
+                if (bd == null) continue;
+
+                Publisher pubPublisher = bd.getPublisher();
+                if (publisher.equals(pubPublisher)) {
+                    result.add(item);   // ✅ add item, not auction
+                }
+            }
+        }
+
+        return result;
+    }
 
 
 }
