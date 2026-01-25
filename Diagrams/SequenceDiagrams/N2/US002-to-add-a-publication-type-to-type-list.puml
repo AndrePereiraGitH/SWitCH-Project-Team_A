@@ -6,41 +6,33 @@ autonumber
 
 actor Administrator
 participant ":UI002" as UI
-participant ":US002_RegisterPubTypeController" as US002_RegisterPubTypeController
+participant ":US002RegisterPubTypeController" as Ctrl
+participant ":PublicationTypeRepository" as Repo
+participant ":PublicationType" as PubType
 
-
-' Human contact between Administrator and UI
 Administrator -> UI : I want to register a Publication Type in the system
 UI -->> Administrator : Please enter mediaFormat, typeOfBinding, details
 Administrator -> UI : Book, Hard Cover, Book with gold engravings
 
-' First contact between UI and the System
-UI -> US002_RegisterPubTypeController : RegisterPubType(mediaFormat, typeOfBinding, details)
-activate US002_RegisterPubTypeController
+UI -> Ctrl : RegisterPubType(mediaFormat, typeOfBinding, details)
+activate Ctrl
 
-US002_RegisterPubTypeController -> PublicationTypeRepository : createAndAddPubType(mediaFormat, typeOfBinding, details)
-activate PublicationTypeRepository
+Ctrl -> Repo : createPublicationType(mediaFormat, typeOfBinding, details)
 
-participant ":List<PublicationType>" as LT
+activate Repo
+deactivate PubType
 
-' Creation of p1 instance from User class
-participant ":PublicationType" as PublicationType
+Repo -> PubType ++ : createPublicationType(mediaFormat, typeOfBinding, details)
+Repo -> Repo : validatePublicationType(PubType)
 
-' Creation, validation and addition
-PublicationTypeRepository -> PublicationType : PublicationType(mediaFormat, typeOfBinding, details)
-PublicationTypeRepository -> PublicationTypeRepository : ValidatePublicationType (pubType)
-PublicationTypeRepository -> LT: addToList
+Repo -> Repo : addToList(PubType)
 
+Repo --> Ctrl : PubType
+deactivate Repo
 
-' Return from PubTypeRepository to RegisterPubTypeController
-PublicationTypeRepository --> US002_RegisterPubTypeController :  PubType
-deactivate PublicationTypeRepository
+Ctrl --> UI : PubType
+deactivate Ctrl
 
-' Return from RegisterUserController to UI
-US002_RegisterPubTypeController --> UI : Success
-deactivate US002_RegisterPubTypeController
-
-' Return from UI to Administrator
 UI --> Administrator : Success
 
 @enduml

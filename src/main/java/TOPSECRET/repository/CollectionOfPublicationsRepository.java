@@ -24,11 +24,9 @@ import java.util.Objects;
 
 public class CollectionOfPublicationsRepository {
 
-    private List<CollectionOfPublications> _collectionOfPublicationsList;
+    private List<CollectionOfPublications> _collectionOfPublicationsList = new ArrayList<>();;
 
-    public CollectionOfPublicationsRepository() {
-        this._collectionOfPublicationsList = new ArrayList<>();
-    }
+    public CollectionOfPublicationsRepository() {}
 
     // METHOD: Adds a publication to a user's collection.
     // Returns true if the publication was added successfully,

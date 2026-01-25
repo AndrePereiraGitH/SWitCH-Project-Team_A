@@ -39,8 +39,6 @@ class US020PublicListByGenreControllerTest {
     {
         Genre desiredGenre = new Genre("Action");
 
-        List<Publication> pubs = List.of();
-
         // User Creation
         Profile profile = new Profile("Joao",new Country("Portugal"), LocalDate.of(1974,7,24));
         Email email = new Email("john.doe25","hotmail.com");
@@ -116,7 +114,6 @@ class US020PublicListByGenreControllerTest {
                 false,
                 userName
         );
-
 
 
         collectionRepo.addPublicationToCollection(userName,c1,publicationSample);
