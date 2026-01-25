@@ -194,6 +194,28 @@ class AuctionRepositoryTest {
         assertTrue(genres.contains(fantasy));
     }
 
+    @Test
+    void getListOfItemsOnAuctionGivenAuthor_shouldThrow_ifAuthorNull() {
+        // arrange
+        AuctionRepository auctionRepo = new AuctionRepository();
+
+
+        Listing listing = instantiateListing();
+        Listing listing2 = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+        LocalDateTime date2 = now.plusDays(4);
+
+
+        auctionRepo.createAndAdd(listing, initialDate, finalDate, price("150.50"));
+        auctionRepo.createAndAdd(listing2, finalDate, date2, price("200.00"));
+
+        assertEquals(2, auctionRepo.getAllAuctions().size());
+
+
+    }
+
 
     // ============================================================
     // ========================= Test Clock =======================
@@ -399,6 +421,68 @@ class AuctionRepositoryTest {
         Profile profile = new Profile("Albert Trump", new Country("EL_SALVADOR"), birthday);
         UserRole userRole = UserRole.NORMAL_USER;
         return new User(name, contact, profile,userRole);
+    }
+
+    private static Listing instantiateListingAuthors(List<String> authors) {
+        Item bookItem = instantiateItem(instantiateBibliographicalDataAuthor(authors), new Dimensions(12, 10, 2));
+        Price price = new Price(new BigDecimal("35.00"));
+        final List<Item> items = new ArrayList<>(List.of(bookItem));
+        return new Listing(
+                items,
+                price,
+                "short description",
+                "This is our first listing",
+                instantiateUser("Joseph"),
+                instantiatePictures()
+        );
+    }
+
+    private static  Profile profile(String name) {
+        return new Profile(name, new Country("PORTUGAL"), LocalDate.of(12, 3, 1977));
+    }
+
+    private static Author author(String name) {
+        return new Author(profile(name), "This is the Biography of " + name);
+    }
+
+    private static BibliographicalData instantiateBibliographicalDataAuthor(List<String> authorsNameList) {
+        Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
+        //Author author = new Author(authorProfile, "valid bio");
+        List<Author> authors = new ArrayList<>();
+
+        for (int i = 0; i < authorsNameList.size(); i++) {
+
+            authors.add(
+                    new Author(
+                            profile(authorsNameList.get(i)),
+                            "this is my biography!"
+
+                            ));
+
+        }
+
+        List<Genre> genres = new ArrayList<>();
+        genres.add(new Genre ("Fantasy"));
+        genres.add(new Genre ("Mister"));
+
+        String chunkOfText =
+                "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, " +
+                        "The Lord of the Rings, in one paperback. Features the definitive edition of the text, " +
+                        "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
+
+        Contact contact = new Contact();
+        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
+
+        return new BibliographicalData(
+                "The Lord Of The Rings",
+                authors,
+                Locale.ENGLISH,
+                publisher,
+                LocalDate.of(1991, 11, 1),
+                List.of(new Genre ("Fantasy")),
+                700,
+                chunkOfText
+        );
     }
 
 
