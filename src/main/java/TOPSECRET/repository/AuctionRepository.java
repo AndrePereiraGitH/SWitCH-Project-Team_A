@@ -1,18 +1,17 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.Price;
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.AuctionStatus;
+import TOPSECRET.dto.AuthorDTO_US026;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionRepository {
 
-    private List<Auction> auctionsList;
+    private static List<Auction> auctionsList;
 
     public AuctionRepository() {
         auctionsList = new ArrayList<>();
@@ -64,6 +63,26 @@ public class AuctionRepository {
         return result;
     }
 
+
+    public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {
+
+        if (author == null || author.name().isBlank())
+            throw new IllegalArgumentException("Author cannot be null or blank");
+
+        List<Auction> authorAuctions = auctionsList.stream().filter(auction -> auction.getListing().getItems()
+                .stream()
+                .anyMatch( item ->
+                        item.getPublication()
+                                .getBibliographicalData()
+                                .getAuthors().stream()
+                                .anyMatch(a -> a.getProfile().getName().equals(author.name()))
+                )
+        ).toList();
+
+        return authorAuctions;
+    }
+
+
     private boolean isExistent(Auction auction) {
         return auctionsList.contains(auction);
     }
@@ -88,7 +107,33 @@ public class AuctionRepository {
         return listOfItemsOnAuction;
     }
 
+    public List<Item> getItemsOnAuctionGivenPublisher(Publisher publisher) {
+        if (publisher == null) {
+            throw new IllegalArgumentException("publisher cannot be null");
+        }
 
+        List<Item> result = new ArrayList<>();
+
+        for (Auction auction : auctionsList) {
+            Listing listing = auction.getListing();
+            if (listing == null || listing.getItems() == null) continue;
+
+            for (Item item : listing.getItems()) {
+                Publication pub = item.getPublication();
+                if (pub == null) continue;
+
+                BibliographicalData bd = pub.getBibliographicalData();
+                if (bd == null) continue;
+
+                Publisher pubPublisher = bd.getPublisher();
+                if (publisher.equals(pubPublisher)) {
+                    result.add(item);   // ✅ add item, not auction
+                }
+            }
+        }
+
+        return result;
+    }
 
 
 }

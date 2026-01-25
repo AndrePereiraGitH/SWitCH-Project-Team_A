@@ -26,6 +26,20 @@ public class   PublisherRepository {
         return publisher;
     }
 
+    public List<Publisher> getAllPublishers() {
+        return List.copyOf(publishers); // safe read-only copy
+    }
+
+    public Publisher findByVatNumber(String vatNumber) {
+        for (Publisher p : publishers) {
+            if (p.getVatNumber().equals(vatNumber)) {
+                return p;
+            }
+        }
+        return null; // or throw, depending on your style
+    }
+
+
     private boolean exists(Publisher publisher) {
         for (Publisher p : publishers) {
             if (p.equals(publisher)) {

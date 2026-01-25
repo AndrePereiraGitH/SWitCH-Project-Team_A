@@ -12,6 +12,7 @@ public class DirectSaleMapper_US023 {
 
     public List<DirectSaleDTO_US023> toDTO(DirectSale ds) {
 
+        DirectSale.DirectSaleDetails details = ds.getDetails();
         List<DirectSaleDTO_US023> dtos = new ArrayList<>();
 
         for (Item item : ds.getListing().getItems()) {
@@ -40,8 +41,7 @@ public class DirectSaleMapper_US023 {
         List<DirectSaleDTO_US023> result = new ArrayList<>();
 
         for (DirectSale ds : directSales) {
-            List<DirectSaleDTO_US023> itemDTOs = toDTO(ds);
-            result.addAll(itemDTOs);
+            result.addAll(toDTO(ds));
         }
 
         return result;

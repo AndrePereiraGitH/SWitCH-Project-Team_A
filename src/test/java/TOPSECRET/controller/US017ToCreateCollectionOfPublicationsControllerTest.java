@@ -5,9 +5,7 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.dto.GenreDTO_US022;
 import TOPSECRET.dto.GenreMapper_US017;
-import TOPSECRET.dto.GenreMapper_US022;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepository;
 import TOPSECRET.domain.Contact;
@@ -18,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,8 +31,8 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     void setup() {
 
         // Genre repository is a singleton, so we clear it before each test
-        genreRepository = GenreRepository.getINSTANCE();
-        genreRepository.clear();
+        genreRepository = new GenreRepository(new ArrayList<>());
+       
 
         collectionRepository = new CollectionOfPublicationsRepository();
 
