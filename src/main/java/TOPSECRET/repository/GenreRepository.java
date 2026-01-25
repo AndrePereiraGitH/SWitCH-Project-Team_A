@@ -1,24 +1,20 @@
 package TOPSECRET.repository;
+
 import TOPSECRET.domain.*;
-import java.util.ArrayList;
 import java.util.List;
+
 /**
- * Repository responsible for creating and storing Genre objects (Singleton).
- * NOTE: It prevents duplicates and returns an unmodifiable copy of the internal list.
+ * Repository responsible for creating and storing Genre objects.
+ * NOTE: Returns an unmodifiable copy of the internal list.
  */
 public class GenreRepository {
-    private final List<Genre> _genres = new ArrayList<>();
-    private static GenreRepository INSTANCE;           // Singleton instance (only one repository shared in the application)
+    private final List<Genre> _genres;
 
-
-    private GenreRepository() {
-    }
-
-    public static GenreRepository getINSTANCE() {
-        if (INSTANCE == null) {
-            INSTANCE = new GenreRepository();
+    public GenreRepository(List<Genre> genres) {
+        if (genres == null) {
+            throw new IllegalArgumentException("Genre List cannot be null");
         }
-        return INSTANCE;
+        this._genres = genres;
     }
 
     public Genre createAndAddGenre(String genre1) {
@@ -32,10 +28,6 @@ public class GenreRepository {
 
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
-    }
-
-    public void clear() {
-        _genres.clear();
     }
 
     private boolean exists(Genre genre) {

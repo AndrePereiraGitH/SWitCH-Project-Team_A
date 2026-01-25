@@ -4,7 +4,6 @@ import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Country;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,20 +14,13 @@ import java.util.List;
  * return different results depending on which repository you used).
  */
 public class AuthorRepository {
-    private final List<Author> _authors = new ArrayList<>();
-    private static AuthorRepository INSTANCE;       // Singleton instance (static = belongs to the class, not to an object)
+    private final List<Author> _authors;
 
-
-    private AuthorRepository() {        // Private constructor: prevents other classes from doing: new AuthorRepository()
-    }
-
-    public static AuthorRepository getInstance() {
-        if (INSTANCE == null) {     // - First time someone calls getInstance(), INSTANCE is null, so we create the repository.
-
-            INSTANCE = new AuthorRepository();
+    public AuthorRepository(List<Author> authors) {
+        if (authors == null) {
+            throw new IllegalArgumentException("Author cannot be null");
         }
-        return INSTANCE;             // - Next calls return the same object, so everyone shares the same author list.
-
+        this._authors = authors;
     }
 
     public Author createAndAddAuthor(String name, Country country, LocalDate dateOfBirth, String biography) {
@@ -53,13 +45,5 @@ public class AuthorRepository {
 
     public List<Author> getAllAuthors() {
         return List.copyOf(this._authors);
-    }
-
-    /**
-     * Clears repository state.
-     * Intended for testing purposes only.
-     */
-    public void clear() {
-        _authors.clear();
     }
 }

@@ -4,6 +4,7 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.repository.GenreRepository;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +18,7 @@ class ToGetListOfGenreControllerTest {
 
     @Test
     void getGenresList_shouldReturnGenresFromRepository() {
-        GenreRepository repo = GenreRepository.getINSTANCE();
+        GenreRepository repo = new GenreRepository(new ArrayList<>());
         repo.createAndAddGenre("Romance");
 
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repo);

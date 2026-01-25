@@ -24,7 +24,7 @@ class AuctionMapper_US022Test {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(),
-                        GenreRepository.getINSTANCE(),
+                        new GenreRepository(List.of()),
                         new AuctionMapper_US022(),
                         new GenreMapper_US022()
                 );
@@ -42,7 +42,7 @@ class AuctionMapper_US022Test {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(),
-                        GenreRepository.getINSTANCE(),
+                        new GenreRepository(List.of()),
                         new AuctionMapper_US022(),
                         new GenreMapper_US022()
                 );
@@ -65,7 +65,7 @@ class AuctionMapper_US022Test {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         auctionRepository,
-                        GenreRepository.getINSTANCE(),
+                        new GenreRepository(List.of()),
                         new AuctionMapper_US022(),
                         new GenreMapper_US022()
                 );
@@ -90,7 +90,7 @@ class AuctionMapper_US022Test {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         auctionRepository,
-                        GenreRepository.getINSTANCE(),
+                        new GenreRepository(List.of()),
                         new AuctionMapper_US022(),
                         new GenreMapper_US022()
                 );
@@ -115,7 +115,7 @@ class AuctionMapper_US022Test {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         auctionRepository,
-                        GenreRepository.getINSTANCE(),
+                        new GenreRepository(List.of()),
                         new AuctionMapper_US022(),
                         new GenreMapper_US022()
                 );

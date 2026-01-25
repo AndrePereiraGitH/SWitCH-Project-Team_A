@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,9 +32,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     @BeforeEach
     void setUp() {
 
-        authorRepository = AuthorRepository.getInstance();
-        authorRepository.clear();
-        authorRepository = AuthorRepository.getInstance();
+        authorRepository = new AuthorRepository(new ArrayList<>());
 
         author1 = authorRepository.createAndAddAuthor(
                 "Author One",
