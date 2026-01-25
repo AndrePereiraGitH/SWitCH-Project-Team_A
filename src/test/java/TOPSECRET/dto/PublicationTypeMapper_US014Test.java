@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationTypeMapperUS014Test {
+class PublicationTypeMapper_US014Test {
 
     @Test
     void toDTOGetPublicationTypeLisEmptyListReturnsEmptyList() {

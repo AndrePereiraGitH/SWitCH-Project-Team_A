@@ -4,7 +4,12 @@ import TOPSECRET.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Mapper for US022 – Converts Auction domain objects into AuctionDTO_US022.
+ *
+ * Each Auction may contain multiple Items; therefore, this mapper
+ * produces one DTO per Item.
+ */
 public class AuctionMapper_US022 {
     // Creates a list of AuctionDTO from a list of Auction domain
     public List<AuctionDTO_US022> toDTO(List<Auction> auctions) {
@@ -19,7 +24,7 @@ public class AuctionMapper_US022 {
             // Each item represents a publication being auctioned
             for (Item item : listing.getItems()) {
                 // Gets the publication associated with the item
-                // Gets the Biobliographical Data of the publication
+                // Gets the Bibliographical Data of the publication
                 Publication publication = item.getPublication();
                 BibliographicalData bibliographicalData = publication.getBibliographicalData();
                 // Gets the title of the publication

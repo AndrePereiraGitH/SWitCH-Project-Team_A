@@ -174,25 +174,6 @@ public class Auction {
         return _listing;
     }
 
-    public Price getInitialPrice() {
-        return _initialPrice;
-    }
-
-    public Price getFinalPrice() {
-        return _finalPrice;
-    }
-
-    public Price getBuyOutPrice() {
-        return _buyOutPrice;
-    }
-
-    public LocalDateTime getInitialDate() {
-        return _initialDate;
-    }
-    public LocalDateTime getFinalDate() {
-        return _finalDate;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

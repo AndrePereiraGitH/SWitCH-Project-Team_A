@@ -118,6 +118,82 @@ class AuctionRepositoryTest {
 
     }
 
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreNullGenre(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> auctionRepository.getListOfItemsOnAuctionGivenGenre(null));
+
+    }
+
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreEmptyList(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+        Genre fantasy = new Genre("Fantasy");
+
+        // Act
+        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreOneMatchGenre(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+        Genre fantasy = new Genre("Fantasy");
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+
+        // Act
+        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(1,result.size());
+
+    }
+
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreFilterByGenre(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+        Genre fantasy = new Genre("Fantasy");
+        Genre romance = new Genre("Romance");
+
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(romance));
+
+        // Act
+        List<Auction> result =  auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(1,result.size());
+
+    }
+
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreMultipleMatchingGenre(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+        Genre fantasy = new Genre("Fantasy");
+        Genre romance = new Genre("Romance");
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+
+        // Act
+        List<Auction> result =  auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        Auction auction = result.get(0);
+        List<Genre> genres = auction.getListing().getItems().get(0).getPublication().getBibliographicalData().getGenres();
+
+        // Assert
+        assertEquals(2,result.size());
+        assertTrue(genres.contains(fantasy));
+    }
+
 
     // ============================================================
     // ========================= Test Clock =======================
@@ -138,6 +214,59 @@ class AuctionRepositoryTest {
 
     private static Price price(String value) {
         return new Price(new BigDecimal(value));
+    }
+
+    private Auction createAuctionWithGenre(Genre genre){
+        BibliographicalData bd = new BibliographicalData(
+                "Book",
+                List.of(new Author(
+                        new Profile("Author", new Country("Portugal"), LocalDate.of(1980, 1, 1)),
+                        "bio"
+                )),
+                new java.util.Locale("pt","PT"),
+                new Publisher("Pub","123", null),
+                LocalDate.of(2020,1,1),
+                List.of(genre),
+                100,
+                "Desc"
+        );
+
+        User seller = instantiateUser("Seller");
+
+        Publication publication = new Publication(
+                bd,
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"),
+                seller,
+                PublicationStatus.FOR_SALE,
+                "1st",
+                Code.fromIsbn13("9781234567890")
+        );
+
+        Item item = new Item(
+                Condition.LIKE_NEW,
+                100,
+                new Dimensions(10,10,10),
+                publication
+        );
+
+        Listing listing = new Listing(
+                List.of(item),
+                new Price(new BigDecimal("10.00")),
+                "Short desc",
+                "Title",
+                seller,
+                List.of()
+        );
+
+        LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
+        LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
+
+        return new Auction(
+                listing,
+                start,
+                end,
+                new Price(new BigDecimal("20.00"))
+        );
     }
 
     private static Auction createValidActiveAuction() {

@@ -1,9 +1,13 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationType;
 
+import TOPSECRET.domain.PublicationType;
+/**
+ * Data Transfer Object (DTO) for PublicationType.
+ *
+ * This class represents the data that is sent to the UI layer.
+ * It contains only simple values and no domain logic.
+ */
 public class PublicationTypeDTO_US014 {
 
     public String _mediaFormat;

@@ -2,7 +2,15 @@ package TOPSECRET.domain;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+/**
+ * Represents a Direct Sale in the system.
+ *
+ * A DirectSale is a type of sale where a listing is sold immediately
+ * for a fixed price, without bidding.
+ *
+ * This class links a Listing with the date when the direct sale
+ * was created.
+ */
 public class DirectSale {
 
     private Listing _listing;
