@@ -78,12 +78,14 @@ class ToPutPublicationInDirectSaleControllerTest {
         directSaleRepo = new DirectSaleRepository(new ArrayList<>());
         itemRepo = new ItemRepository();
 
-        controller = new ToPutPublicationInDirectSaleController(
-                library,
-                directSaleRepo,
-                itemRepo
-        );
+        controller = new ToPutPublicationInDirectSaleController(library, directSaleRepo, itemRepo) {
+            @Override
+            LocalDateTime date() {
+                return LocalDateTime.of(2026, 1, 25, 12, 0);
+            }
+        };
     }
+
 
     // TEST 1 - getAllPublications -------------------------------------------------------------------------------------
     @Test

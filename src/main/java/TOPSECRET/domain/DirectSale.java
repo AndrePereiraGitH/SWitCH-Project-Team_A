@@ -36,7 +36,7 @@ public class DirectSale {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         DirectSale that = (DirectSale) o;
-        return Objects.equals(_listing, that._listing) && Objects.equals(_directSaleDate, that._directSaleDate);
+        return Objects.equals(_listing, that._listing);
     }
 
     @Override
