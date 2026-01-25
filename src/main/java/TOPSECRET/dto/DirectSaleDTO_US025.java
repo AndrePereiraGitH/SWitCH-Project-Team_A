@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class DirectSaleDTO_US025 {
+
     public final String publicationTitle;
     public final List<String> authors;
     public final BigDecimal price;
@@ -18,24 +19,13 @@ public class DirectSaleDTO_US025 {
         this.seller = seller;
     }
 
-    public String getTitle() {
+    public String getTitle() { return publicationTitle; }
 
-        return publicationTitle;
-    }
+    public List<String> getAuthors() { return authors; }
 
-    public List<String> getAuthors() {
-        return authors;
-    }
+    public BigDecimal getPrice() { return price; }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+    public String getListingTitle() { return listingTitle; }
 
-    public String getListingTitle() {
-        return listingTitle;
-    }
-
-    public String getSeller() {
-        return seller;
-    }
+    public String getSeller() { return seller; }
 }

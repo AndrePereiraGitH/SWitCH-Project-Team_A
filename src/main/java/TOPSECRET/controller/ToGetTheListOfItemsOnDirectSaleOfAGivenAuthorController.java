@@ -27,10 +27,12 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         this.dsmapper = dsmapper;
     }
 
-    public List<AuthorDTO_US025> getAllAuthorNames() {
+    // Returns a list of all authors in the system
+    public List<AuthorDTO_US025> getAllAuthors() {
         return amapper.toDTO(authorRepository.getAllAuthors());
     }
 
+    // Returns the list of items on direct sale by a specific author
     public List<DirectSaleDTO_US025> getListOfItemsOnDirectSale(Author author) {
         return dsmapper.toDTO(directSaleRepository.getListOfItemsOnDirectSale(author));
     }

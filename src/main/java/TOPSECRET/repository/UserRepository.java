@@ -11,6 +11,7 @@ public class UserRepository {
 
     private final List<User> users = new ArrayList<>();
 
+    // To check if the username already exists
     public boolean exists(String userName) {
 
         for (User user : users) {
@@ -21,11 +22,13 @@ public class UserRepository {
         return false;
     }
 
+    // To create user and add to the list
     public void createAndAddUser(String username, Contact contact, Profile profile, UserRole userRole) {
         if (exists(username)) throw new IllegalArgumentException("Username already exists");
         users.add(new User(username, contact, profile, userRole));
     }
 
+    // To get the list's size
     public int getUserCount() {
         return users.size();
     }
