@@ -4,6 +4,8 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.repository.GenreRepository;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class US003ToRegisterGenreControllerTest {
@@ -12,7 +14,7 @@ class US003ToRegisterGenreControllerTest {
     void registerValidGenre() {
 
         // arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
+        GenreRepository genreRepository = new GenreRepository(new ArrayList<>());
         US003ToRegisterGenreController controller = new US003ToRegisterGenreController(genreRepository);
 
         String genreType = "Drama";
@@ -28,7 +30,7 @@ class US003ToRegisterGenreControllerTest {
     @Test
     void registerDuplicateGenre() {
         // arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
+        GenreRepository genreRepository = new GenreRepository(new ArrayList<>());
         US003ToRegisterGenreController controller =
                 new US003ToRegisterGenreController(genreRepository);
 

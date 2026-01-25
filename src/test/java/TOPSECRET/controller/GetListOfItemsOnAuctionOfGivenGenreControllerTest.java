@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,8 +23,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getAllGenresReturnsAllGenresFromRepository() {
         // Arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
-        genreRepository.clear();
+        GenreRepository genreRepository = new GenreRepository(new ArrayList<>());
 
         GenreMapper_US022 genreMapper = new GenreMapper_US022();
 
@@ -50,8 +50,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getListOfItemsOnAuctionNullGenreThrowsException() {
         // Arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
-        genreRepository.clear();
+        GenreRepository genreRepository = new GenreRepository(List.of());
+       
 
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
@@ -70,8 +70,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getListOfItemsOnAuctionNoAuctionsReturnsEmptyList() {
         // Arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
-        genreRepository.clear();
+        GenreRepository genreRepository = new GenreRepository(List.of());
+       
 
         Genre fantasy = new Genre("Fantasy");
 
@@ -93,8 +93,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getListOfItemsOnAuctionOneMatchingAuctionReturnsOneDTO() {
         // Arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
-        genreRepository.clear();
+        GenreRepository genreRepository = new GenreRepository(List.of());
+       
 
         Genre fantasy = new Genre("Fantasy");
 
@@ -117,8 +117,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getListOfItemsOnAuctionFiltersByGenre() {
         // Arrange
-        GenreRepository genreRepository = GenreRepository.getINSTANCE();
-        genreRepository.clear();
+        GenreRepository genreRepository = new GenreRepository(List.of());
+       
 
         Genre fantasy = new Genre("Fantasy");
         Genre romance = new Genre("Romance");

@@ -13,7 +13,9 @@ public class ToRegisterAuthorController {
     private final AuthorRepository _authorRepository;
 
     public ToRegisterAuthorController(AuthorRepository authorRepository) {
-        if (authorRepository == null) throw new IllegalArgumentException("AuthorRepository cannot be null");
+        if (authorRepository == null) {
+            throw new IllegalArgumentException("AuthorRepository cannot be null");
+        }
 
         this._authorRepository = authorRepository;
     }

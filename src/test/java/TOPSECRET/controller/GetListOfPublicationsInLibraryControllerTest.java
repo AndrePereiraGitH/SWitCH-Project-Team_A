@@ -5,7 +5,7 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.dto.PublicationDTO_US012;
+import TOPSECRET.dto.PublicationDetailsDTO;
 import TOPSECRET.repository.LibraryRepository;
 import org.junit.jupiter.api.Test;
 
@@ -152,7 +152,7 @@ class GetListOfPublicationsInLibraryControllerTest {
         ctrl.getUserLibrary(username);
 
         // Act
-        List<PublicationDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
 
         // Assert
         assertNotNull(result);
@@ -165,7 +165,7 @@ class GetListOfPublicationsInLibraryControllerTest {
         String username = user1.getUserName();
 
         //Act
-        List<PublicationDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
 
         String expectedTitle1= publication1.getBibliographicalData().getTitle();
         String expectedTitle2=publication2.getBibliographicalData().getTitle();

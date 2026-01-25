@@ -11,32 +11,33 @@ public class PublicationTypeRepository {
 
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
 
-    public PublicationTypeRepository() {}
+    public PublicationTypeRepository() {} //Constructor
 
+    // Instantiates a publication type domain entity
     public PublicationType createPublicationType(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
         PublicationType pubType = new PublicationType(mediaFormat, typeOfBinding, details);
         return pubType;
     }
 
-    //Validates if the created publication is either null or duplicated
+    //Validates if the instantiated publication type is either null or duplicated
     private boolean validatePublicationType(PublicationType pubType)
     {
         if (pubType == null) {
             return false;
         }
-        return !_publicationTypes.contains(pubType);
+        return !_publicationTypes.contains(pubType); // Returns true if the publication type does not already exist in the list and false if it does
     }
 
 
-    //Adds a publication type to the repo list if it passes validation
+    //Adds a publication type to the list if it passes validation
     public PublicationType addToList(PublicationType pubType)
     {
-        if (!validatePublicationType(pubType)) {
+        if (!validatePublicationType(pubType)) { // if validation returns false
             throw new IllegalArgumentException("PublicationType already exists or is null");
         }
 
-        _publicationTypes.add(pubType);
+        _publicationTypes.add(pubType); // if it returns true, adds publication type to the list
         return pubType;
     }
 

@@ -4,7 +4,6 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -15,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CollectionOfPublicationsTest {
 
-    private User createValidUser() {
+    private User createValidUser()
+    {
         Contact contact = new Contact("912222222", "351", null, null);
         Country country = new Country("PORTUGAL");
         LocalDate birthday = LocalDate.of(1980, 4, 29);
@@ -26,20 +26,22 @@ class CollectionOfPublicationsTest {
 
 
     // Creates a valid Genre
-    private Genre createValidGenre() {
+    private Genre createValidGenre()
+    {
         return new Genre("Fiction");
     }
 
     // Creates a valid Library
-    private Library createValidLibrary() {
+    private Library createValidLibrary()
+    {
         User user = createValidUser();
         return new Library("Library name", user);
     }
 
     // Creates a valid Publication
-    private Publication createValidPublication() {
-
-        // BIBLIOGRAPHICAL DATA
+    private Publication createValidPublication()
+    {
+        // Create Bibliographical data for publication
         Country country = new Country("PORTUGAL");
 
         Profile profile = new Profile("John Doe", country, LocalDate.of(1980, 4, 29));
@@ -66,14 +68,14 @@ class CollectionOfPublicationsTest {
                 "Sample text"
         );
 
-        // PUBLICATION TYPE
+        // Create a publication type
         PublicationType publicationType = new PublicationType(
                 MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );
 
-        // USER
+        // Create a user
         User user = new User(
                 "validUser",
                 new Contact("911111111", "351", null, null),
@@ -81,14 +83,14 @@ class CollectionOfPublicationsTest {
                 UserRole.ADMIN   // adjust enum value if needed
         );
 
-        // CODE
+        // Create a code
         Code code = Code.fromIsbn13("9783161484100");
 
-        // OTHER ATTRIBUTES
+
         PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
         String edition = "First Edition";
 
-        // CREATE PUBLICATION
+        // Create publication
         return new Publication(
                 bibliographicalData,
                 publicationType,
@@ -100,8 +102,8 @@ class CollectionOfPublicationsTest {
     }
 
     // Creates a base valid collection
-    private CollectionOfPublications createBaseCollection() {
-
+    private CollectionOfPublications createBaseCollection()
+    {
         return new CollectionOfPublications(
                 "Favorites",
                 createValidGenre(),
@@ -113,14 +115,12 @@ class CollectionOfPublicationsTest {
     // SUCCESS TESTS
     // Verifies that two collections with the same data are equal
     @Test
-    void shouldCreateEqualCollectionsSuccessfully() {
-
-        // ARRANGE AND ACT
+    void shouldCreateEqualCollectionsSuccessfully()
+    {
         CollectionOfPublications expected = createBaseCollection();
         CollectionOfPublications result   = createBaseCollection();
 
-        // ASSERT
-        assertEquals(expected, result);   // Collections must be equal after creation
+        assertEquals(expected, result);   // Collections must be equal
     }
 
     // Verifies that a publication can be added to the collection
@@ -144,107 +144,90 @@ class CollectionOfPublicationsTest {
 
     // Verifies that duplicate publications are not added
     @Test
-    void shouldNotAddDuplicatePublication() {
-
-        // ARRANGE
+    void shouldNotAddDuplicatePublication()
+    {
         CollectionOfPublications expected = createBaseCollection();
         CollectionOfPublications result   = createBaseCollection();
         Publication publication = createValidPublication();
 
-        // ACT
         expected.addPublication(publication);
         result.addPublication(publication);
-        result.addPublication(publication);   // Attempt duplicate add
+        result.addPublication(publication);   // Try to add duplicate
 
-        // ASSERT
         assertEquals(expected, result);   // Collection should contain only one publication
     }
 
     // ERROR TESTS
     // Verifies exception when collection name is null
     @Test
-    void shouldThrowExceptionWhenCollectionNameIsNull() {
-
-        // ARRANGE AND ACT
+    void shouldThrowExceptionWhenCollectionNameIsNull()
+    {
         Genre genre = createValidGenre();
         Library library = createValidLibrary();
         User user = createValidUser();
 
-        // ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {   // Name cannot be null
+        assertThrows(IllegalArgumentException.class, () -> {
             new CollectionOfPublications(null, genre, library, true, user);
         });
     }
 
     // Verifies exception when collection name is blank
     @Test
-    void shouldThrowExceptionWhenCollectionNameIsBlank() {
-
-        // ARRANGE AND ACT
+    void shouldThrowExceptionWhenCollectionNameIsBlank()
+    {
         Genre genre = createValidGenre();
         Library library = createValidLibrary();
         User user = createValidUser();
 
-        // ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {   // Name cannot be blank
+        assertThrows(IllegalArgumentException.class, () -> {
             new CollectionOfPublications("   ", genre, library, true ,user);
         });
     }
 
     // Verifies exception when genre is null
     @Test
-    void shouldThrowExceptionWhenGenreIsNull() {
-
-        // ARRANGE AND ACT
+    void shouldThrowExceptionWhenGenreIsNull()
+    {
         Library library = createValidLibrary();
         User user = createValidUser();
 
-        // ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {   // Genre cannot be null
+        assertThrows(IllegalArgumentException.class, () -> {
             new CollectionOfPublications("Favorites", null, library, true,  user);
         });
     }
 
     // Verifies exception when library is null
     @Test
-    void shouldThrowExceptionWhenLibraryIsNull() {
-
-        // ARRANGE AND ACT
+    void shouldThrowExceptionWhenLibraryIsNull()
+    {
         Genre genre = createValidGenre();
         User user = createValidUser();
 
-        // ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {   // Library cannot be null
+        assertThrows(IllegalArgumentException.class, () -> {
             new CollectionOfPublications("Favorites", genre, null, true, user);
         });
     }
 
-    // Verifies exception when library is null
+    // Verifies exception when User is null
     @Test
-    void shouldThrowExceptionWhenUserIsNull() {
-
-        // ARRANGE AND ACT
-        Library library = createValidLibrary();
+    void shouldThrowExceptionWhenUserIsNull()
+    {
         Genre genre = createValidGenre();
 
-        // ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {   // User cannot be null
+        assertThrows(IllegalArgumentException.class, () -> {
             new CollectionOfPublications("Favorites", genre, null, true, null);
         });
     }
 
     // Verifies that adding null publication does not change the collection
     @Test
-    void shouldNotAddNullPublication() {
-
-        // ARRANGE
+    void shouldNotAddNullPublication()
+    {
         CollectionOfPublications expected = createBaseCollection();
         CollectionOfPublications result   = createBaseCollection();
 
-        // ACT
         result.addPublication(null);   // Attempt to add null
 
-        // ASSERT
         assertEquals(expected, result);   // Collection must remain unchanged
     }
 

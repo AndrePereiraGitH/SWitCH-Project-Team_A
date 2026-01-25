@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DimensionsTest {
 
-
+    private final Dimensions validDimensions = new Dimensions(10.0, 0.2, 5.2);
+    
     static Stream<Arguments> validDimensionsProvider() {
         return Stream.of(
                 // normal positive values
@@ -92,31 +93,28 @@ class DimensionsTest {
         assertEquals(depth, dimensions.getDepth(), 0.0);
     }
 
-    // Helper
-    // -------------------------
-    private Dimensions validDimensions() {
-        return new Dimensions(10.0, 0.2, 5.2);
-    }
 
-    // -------------------------
-    // equals
-    // -------------------------
+// -------------------------
+// equals
+// -------------------------
 
     @Test
     void equals_shouldReturnTrue_whenSameReference() {
-        Dimensions d = validDimensions();
-        assertEquals(d, d); // same object
+        Dimensions dimensions1 = validDimensions;
+        Dimensions dimensions2 = validDimensions;
+
+        assertEquals(dimensions1, dimensions2); // same object
     }
 
     @Test
     void equals_shouldReturnFalse_whenOtherIsNull() {
-        Dimensions d = validDimensions();
+        Dimensions d = validDimensions;
         assertNotEquals(null, d);
     }
 
     @Test
     void equals_shouldReturnFalse_whenOtherIsDifferentClass() {
-        Dimensions d = validDimensions();
+        Dimensions d = validDimensions;
         assertNotEquals("not dimensions", d);
     }
 
@@ -131,7 +129,7 @@ class DimensionsTest {
 
     @Test
     void equals_shouldReturnFalse_whenHeightDiffers() {
-        Dimensions a = validDimensions();
+        Dimensions a = validDimensions;
         Dimensions b = new Dimensions(99.0, 0.2, 5.2);
 
         assertNotEquals(a, b);
@@ -139,7 +137,7 @@ class DimensionsTest {
 
     @Test
     void equals_shouldReturnFalse_whenWidthDiffers() {
-        Dimensions a = validDimensions();
+        Dimensions a = validDimensions;
         Dimensions b = new Dimensions(10.0, 9.9, 5.2);
 
         assertNotEquals(a, b);
@@ -147,7 +145,7 @@ class DimensionsTest {
 
     @Test
     void equals_shouldReturnFalse_whenDepthDiffers() {
-        Dimensions a = validDimensions();
+        Dimensions a = validDimensions;
         Dimensions b = new Dimensions(10.0, 0.2, 99.9);
 
         assertNotEquals(a, b);

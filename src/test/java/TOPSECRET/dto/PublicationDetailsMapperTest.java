@@ -13,7 +13,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationMapperTest_US012 {
+class PublicationDetailsMapperTest {
 
     // BibliographicalData
     Country country1 = new Country("Denmark");
@@ -79,7 +79,7 @@ class PublicationMapperTest_US012 {
         List<String> expectedAuthors = List.of(profileAuthor1.getName());
 
         // Act
-        PublicationDTO_US012 result = PublicationMapper_US012.toDTO(publication1);
+        PublicationDetailsDTO result = PublicationDetailsMapper.toDTO(publication1);
 
         // Assert
         assertNotNull(result);
@@ -103,14 +103,14 @@ class PublicationMapperTest_US012 {
         List<String> expectedAuthors = List.of(profileAuthor1.getName());
 
         // Act
-        List<PublicationDTO_US012> resultList = PublicationMapper_US012.getListOfPublicationsDTO(publicationList);
+        List<PublicationDetailsDTO> resultList = PublicationDetailsMapper.toDTOs(publicationList);
 
         // Assert
         assertNotNull(resultList);
         assertEquals(2, resultList.size());
 
 
-        PublicationDTO_US012 dto1 = resultList.get(0);
+        PublicationDetailsDTO dto1 = resultList.get(0);
 
         assertEquals(expectedTitle, dto1.pubTitle);
         assertEquals(code1.toString(), dto1.code);
@@ -118,7 +118,7 @@ class PublicationMapperTest_US012 {
         assertIterableEquals(expectedAuthors, dto1.authorName);
 
 
-        PublicationDTO_US012 dto2 = resultList.get(1);
+        PublicationDetailsDTO dto2 = resultList.get(1);
 
         assertEquals(expectedTitle, dto2.pubTitle);
         assertEquals(code2.toString(), dto2.code);
@@ -132,7 +132,7 @@ class PublicationMapperTest_US012 {
         List<Publication> emptyList = List.of();
 
         // Act
-        List<PublicationDTO_US012> result = PublicationMapper_US012.getListOfPublicationsDTO(emptyList);
+        List<PublicationDetailsDTO> result = PublicationDetailsMapper.toDTOs(emptyList);
 
         // Assert
         assertNotNull(result);

@@ -9,10 +9,13 @@ public class US002ToRegisterPubTypeController {
 
     private PublicationTypeRepository _pubTypeRepo;
 
-    public US002ToRegisterPubTypeController(PublicationTypeRepository pubTypeRepo){
+    //Constructor
+    public US002ToRegisterPubTypeController(PublicationTypeRepository pubTypeRepo)
+    {
         _pubTypeRepo = pubTypeRepo;
     }
 
+    //Register Publication Type in Repository
     public PublicationType RegisterPubType(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
         PublicationType pubType = _pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);

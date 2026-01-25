@@ -15,11 +15,11 @@ class Library {
 class Publication {
 }
 
-class PublicationDTO {
+class PublicationDetailsDTO {
 }
 
-class PublicationMapper {
-    +getListOfPublicationsDTO(List<Publication> publications)
+class PublicationDetailsMapper {
+    +toDTOs(List<Publication> publications)
 }
 
 ' ---------------- Relationships ----------------
@@ -27,11 +27,11 @@ class PublicationMapper {
 UI012 ..> GetListOfPublicationsInLibraryController : delegates to
 
 GetListOfPublicationsInLibraryController "1" --> Library : retrieves publications from
-GetListOfPublicationsInLibraryController "1" ..> "1" PublicationMapper : invokes
+GetListOfPublicationsInLibraryController "1" ..> "1" PublicationDetailsMapper : invokes
 
 Library "1" --> "*" Publication : contains
 
-PublicationMapper "1" ..> "1..*" Publication : converts
-PublicationMapper "1" ..> "1..*" PublicationDTO : produces
+PublicationDetailsMapper "1" ..> "1..*" Publication : converts
+PublicationDetailsMapper "1" ..> "1..*" PublicationDetailsDTO : produces
 
 @enduml

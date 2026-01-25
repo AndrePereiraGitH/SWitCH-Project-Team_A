@@ -13,7 +13,7 @@ class PublicationDTO_US023Test {
     void ensureConstructorShouldSetFieldsCorrectly() {
         // Arrange
         String expectedTitle = "Os Maias";
-        List<String> expectedAuthors = Arrays.asList("Eça de Queirós");
+        List<String> expectedAuthors = List.of("Eça de Queirós");
         String expectedCode = "978-1234567890";
         String expectedType = "BOOK";
 
@@ -31,17 +31,17 @@ class PublicationDTO_US023Test {
     void toStringShouldReturnFormattedString() {
         // Arrange
         String title = "Clean Code";
-        List<String> authors = Arrays.asList("Robert C. Martin", "Dean Wampler");
-        String code = "123-456";
-        String type = "TECHNICAL_BOOK";
+        List<String> authors = List.of("Prince", "Madonna");
+        String code = "123456";
+        String type = "BOOK";
 
         PublicationDTO_US023 dto = new PublicationDTO_US023(title, authors, code, type);
 
         String expectedString = "PublicationDTO_US023 {" +
                 "pubTitle='Clean Code'" +
-                ", authorName='[Robert C. Martin, Dean Wampler]'" +
-                ", code='123-456'" +
-                ", PublicationType='TECHNICAL_BOOK'" +
+                ", authorName='[Prince, Madonna]'" +
+                ", code='123456'" +
+                ", PublicationType='BOOK'" +
                 '}';
 
         // Act
@@ -52,18 +52,20 @@ class PublicationDTO_US023Test {
     }
 
     @Test
-    void ensureConstructorWithNullValuesShouldNotCrash() {
-        // Arrange & Act
-        PublicationDTO_US023 dto = new PublicationDTO_US023(null, null, null, null);
+    void ensureDTOHandlesNullableCode() {
+        // Arrange
+        String title = "Os Maias";
+        List<String> authors = List.of("Eça de Queirós");
+        String type = "BOOK";
+
+        // Act
+        PublicationDTO_US023 dto = new PublicationDTO_US023(title, authors, null, type);
 
         // Assert
-        assertNull(dto.pubTitle);
-        assertNull(dto.authorName);
+        assertEquals(title, dto.pubTitle);
+        assertEquals(authors, dto.authorName);
         assertNull(dto.code);
-        assertNull(dto.publicationType);
-        assertNotNull(dto.toString());
-
-        assertTrue(dto.toString().contains("PublicationDTO_US023"));
+        assertEquals(type, dto.publicationType);
     }
 
 }

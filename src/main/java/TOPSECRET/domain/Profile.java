@@ -47,9 +47,4 @@ public class Profile {
                 && Objects.equals(_country, profile._country)
                 && Objects.equals(_birthday, profile._birthday);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(_name, _country, _birthday);
-    }
 }

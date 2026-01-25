@@ -3,8 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 
-import TOPSECRET.dto.ItemDTO_US024;
-import TOPSECRET.dto.PublicationDTO_US012;
+import TOPSECRET.dto.ItemDetailsDTO;
+import TOPSECRET.dto.PublicationDetailsDTO;
 import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.PublicationRepository;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class GetTheListOfItemsOnAuctionControllerOfAGivenPublicationTest {
+class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     //Publication
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
@@ -98,7 +98,7 @@ class GetTheListOfItemsOnAuctionControllerOfAGivenPublicationTest {
     private final PublicationRepository pubRepo = new PublicationRepository(pubList);
 
     //Controller
-    private GetTheListOfItemsOnAuctionControllerOfAGivenPublication ctrl = new GetTheListOfItemsOnAuctionControllerOfAGivenPublication(pubRepo,aucRepo);
+    private GetTheListOfItemsOnAuctionOfAGivenPublicationController ctrl = new GetTheListOfItemsOnAuctionOfAGivenPublicationController(pubRepo,aucRepo);
 
     @Test
     void getAllPublicationsShouldReturnListOfDTOsWhenPublicationsExist() {
@@ -108,7 +108,7 @@ class GetTheListOfItemsOnAuctionControllerOfAGivenPublicationTest {
 
 
         // Act
-        List<PublicationDTO_US012> result = ctrl.getAllPublications();
+        List<PublicationDetailsDTO> result = ctrl.getAllPublications();
 
         // Assert
         assertNotNull(result);
@@ -127,7 +127,7 @@ class GetTheListOfItemsOnAuctionControllerOfAGivenPublicationTest {
         pubList.clear();
 
         // Act
-        List<PublicationDTO_US012> result = ctrl.getAllPublications();
+        List<PublicationDetailsDTO> result = ctrl.getAllPublications();
 
         // Assert
         assertNotNull(result);
@@ -139,7 +139,7 @@ class GetTheListOfItemsOnAuctionControllerOfAGivenPublicationTest {
         // Arrange
 
         // Act
-        List<ItemDTO_US024> result = ctrl.getListOfItemsOnAuctionDTO(pub1);
+        List<ItemDetailsDTO> result = ctrl.getListOfItemsOnAuctionByGivenPublicationDTO(pub1);
         String expectedTitle = pub1.getBibliographicalData().getTitle();
 
         // Assert
@@ -155,7 +155,7 @@ class GetTheListOfItemsOnAuctionControllerOfAGivenPublicationTest {
         // Arrange
 
         // Act
-        List<ItemDTO_US024> result = ctrl.getListOfItemsOnAuctionDTO(pub2);
+        List<ItemDetailsDTO> result = ctrl.getListOfItemsOnAuctionByGivenPublicationDTO(pub2);
 
         // Assert
         assertNotNull(result);

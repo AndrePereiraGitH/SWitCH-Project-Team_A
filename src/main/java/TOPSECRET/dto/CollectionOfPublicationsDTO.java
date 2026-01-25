@@ -5,7 +5,8 @@ public class CollectionOfPublicationsDTO {
     private final String listName;
     private final String ownerUsername;
 
-    public CollectionOfPublicationsDTO(String listName, String ownerUsername) {
+    public CollectionOfPublicationsDTO(String listName, String ownerUsername)
+    {
         if (listName == null || listName.isBlank()) {
             throw new IllegalArgumentException("List name can't be null/blank.");
         }
@@ -16,12 +17,8 @@ public class CollectionOfPublicationsDTO {
         this.ownerUsername = ownerUsername.trim();
     }
 
-    public String getListName() {
-        return listName;
-    }
+    public String getListName() { return listName; }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
-    }
+    public String getOwnerUsername() { return ownerUsername; }
 
 }

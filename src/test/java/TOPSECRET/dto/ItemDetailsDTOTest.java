@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class US024ItemDTOTest {
+class ItemDetailsDTOTest {
 
 
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
@@ -56,7 +56,7 @@ class US024ItemDTOTest {
         String expectedPublicationTitle = "Harry Potter";
 
         // Act
-        ItemDTO_US024 dto = new ItemDTO_US024(expectedCondition, expectedPublicationTitle);
+        ItemDetailsDTO dto = new ItemDetailsDTO(expectedCondition, expectedPublicationTitle);
 
         // Assert
         assertNotNull(dto);
@@ -82,7 +82,7 @@ class US024ItemDTOTest {
     @Test
     void ensureToDTOCreatesADTOWithSuccess(){
 
-        ItemDTO_US024 dto = ItemDTO_US024.toDTO(item1);
+        ItemDetailsDTO dto = ItemDetailsDTO.toDTO(item1);
 
         assertNotNull(dto);
         assertEquals(item1.getCondition().toString(), dto.condition);
@@ -97,7 +97,7 @@ class US024ItemDTOTest {
         listItems.add(item2);
 
         // Act
-        List<ItemDTO_US024> expectedList = ItemDTO_US024.getListOfItemsAuctionDTO(listItems);
+        List<ItemDetailsDTO> expectedList = ItemDetailsDTO.toDTOs(listItems);
 
         //Arrange
         assertNotNull(expectedList);

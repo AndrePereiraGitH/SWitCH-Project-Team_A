@@ -30,17 +30,17 @@ class CollectionOfPublications {
   - _collectionName : String
   - _isPrivate : boolean
   - _collectionGenre : Genre
-  - _owner : User
+  - _ownerUserName : String
   - _collectionOfPublications : List<Publication>
   + getCollectionGenre() : Genre
   + getCollectionName() : String
-  + isPrivate() : boolean
-  + getOwner() : User
+  + getIsPrivate() : boolean
+  + getOwner() : String
 }
 
 class CollectionOfPublicationsDTO {
-  + listName : String
-  + ownerUsername : String
+  - listName : String
+  - ownerUsername : String
 }
 
 US020_PublicListByGenreController --> GenreRepository : queries

@@ -3,7 +3,6 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.repository.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -15,20 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class US020PublicListByGenreControllerTest {
 
-    @BeforeEach
-    void resetRepository() {
-        GenreRepository.getINSTANCE().clear();
-    }
-    GenreRepository genreRepo = GenreRepository.getINSTANCE();
+    GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
     CollectionOfPublicationsRepository collectionRepo =  new CollectionOfPublicationsRepository();
     US020PublicListByGenreController controller = new US020PublicListByGenreController(genreRepo, collectionRepo);
 
     @Test
     void shouldReturnAllGenresFromGenreRepository()
     {
-        Genre genre1 = GenreRepository.getINSTANCE().createAndAddGenre("Sci-Fi");
-        Genre genre2 = GenreRepository.getINSTANCE().createAndAddGenre("Action");
-        Genre genre3 = GenreRepository.getINSTANCE().createAndAddGenre("History");
+        Genre genre1 = genreRepo.createAndAddGenre("Sci-Fi");
+        Genre genre2 = genreRepo.createAndAddGenre("Action");
+        Genre genre3 = genreRepo.createAndAddGenre("History");
 
         List<Genre> genreList = controller.getGenres();
 
@@ -43,8 +38,6 @@ class US020PublicListByGenreControllerTest {
     void shouldReturnPublicListByGenre()
     {
         Genre desiredGenre = new Genre("Action");
-
-        List<Publication> pubs = List.of();
 
         // User Creation
         Profile profile = new Profile("Joao",new Country("Portugal"), LocalDate.of(1974,7,24));
@@ -121,7 +114,6 @@ class US020PublicListByGenreControllerTest {
                 false,
                 userName
         );
-
 
 
         collectionRepo.addPublicationToCollection(userName,c1,publicationSample);

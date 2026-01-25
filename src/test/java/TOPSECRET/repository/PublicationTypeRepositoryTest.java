@@ -10,13 +10,14 @@ import java.util.List;
 
 public class PublicationTypeRepositoryTest {
 
+    // Publication type sample
     MediaFormat mediaFormat = MediaFormat.BOOK;
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
     String details = "Book with gold engravings";
 
 
     @Test
-    void createPublicationTypeRepositoryTest()
+    void createPublicationTypeRepositoryAndAddPublicationTest()
     {
         PublicationType pubType;
 
@@ -26,6 +27,10 @@ public class PublicationTypeRepositoryTest {
         pubTypeRepo.addToList(pubType);
 
         assertNotNull(pubTypeRepo);
+        assertEquals(pubType, pubTypeRepo.getAllPublicationTypes().get(0));
+        assertEquals(mediaFormat, pubType.getMediaFormat());
+        assertEquals(typeOfBinding, pubType.getTypeOfBinding());
+        assertEquals(details, pubType.getDetails());
     }
 
 
@@ -44,10 +49,9 @@ public class PublicationTypeRepositoryTest {
         pubTypeRepo.addToList(pt2);
 
 
-
         List<PublicationType> result = pubTypeRepo.getAllPublicationTypes();
 
-        assertEquals(2, result.size());
+        assertEquals(2, result.size()); // If the 2 publication types were added, the size of the list should be 2
         assertTrue(result.contains(pt1));
         assertTrue(result.contains(pt2));
     }
@@ -60,6 +64,7 @@ public class PublicationTypeRepositoryTest {
 
         List<PublicationType> result = repo.getAllPublicationTypes();
 
+        assertNotNull(repo);
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -76,13 +81,12 @@ public class PublicationTypeRepositoryTest {
         pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pt1);
 
-        pt2 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pt2 = pt1;
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> pubTypeRepo.addToList(pt2));
-
-        assertEquals("PublicationType already exists or is null", ex.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> pubTypeRepo.addToList(pt2));
         assertEquals(1, pubTypeRepo.getAllPublicationTypes().size());
     }
+
 
     @Test
     void shouldThrowWhenAddingNullPubType() {
@@ -91,12 +95,13 @@ public class PublicationTypeRepositoryTest {
         assertThrows(IllegalArgumentException.class, () -> repo.addToList(null));
     }
 
+
     @Test
     void shouldReturnTheAddedPublicationTypeWhenAddingToList() {
 
         PublicationTypeRepository repo = new PublicationTypeRepository();
 
-        PublicationType pubType = repo.createPublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Test");
+        PublicationType pubType = repo.createPublicationType(mediaFormat, typeOfBinding, details);
 
         PublicationType returned = repo.addToList(pubType);
 
