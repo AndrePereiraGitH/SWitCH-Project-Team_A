@@ -29,12 +29,12 @@ activate PTM
 create "ListOfPublicationTypesDTO:\nList<publicationTypeDTO>" as listDTO
 PTM -> listDTO : create()
     loop for each PublicationType
-        PTM -> "PublicationType" : getAllDetails()
+        PTM -> "PublicationType" : getDetails()
         activate PublicationType
-        PublicationType --> PTM : publicationTypeAllDetails
+        PublicationType --> PTM : publicationTypeDetails
         deactivate PublicationType
         create "PublicationTypeDTO\n:PublicationTypeDTO_US014" as PTDTO
-        PTM -> PTDTO : createDTO(publicationTypeAllDetails)
+        PTM -> PTDTO : createDTO(publicationTypexDetails)
         PTDTO --> PTM : publicationTypeDTO
         PTM -> listDTO : add(publicationTypeDTO)
     end
