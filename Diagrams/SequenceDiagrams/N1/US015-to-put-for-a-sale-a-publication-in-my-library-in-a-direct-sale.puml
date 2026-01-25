@@ -12,9 +12,9 @@ activate User
    User -> System : Request "I want to sell a publication in my Library in a Direct Sale
    activate System
    System --> User : Choose a publication!
-   User -> System : Publication Selected
-   System --> User : Insert Price
-   User -> System : Price
+   User -> System : Selected Publication and information for Item
+   System --> User : Insert information for Direct Sale
+   User -> System : Information about Direct Sale
    System --> User : Direct Sale successfully created!
    deactivate System
 
