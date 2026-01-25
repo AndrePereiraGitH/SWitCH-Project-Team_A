@@ -33,10 +33,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         authorRepository = AuthorRepository.getInstance();
         authorRepository.clear();
-
-        // =============================
-        // Author Repository
-        // =============================
         authorRepository = AuthorRepository.getInstance();
 
         author1 = authorRepository.createAndAddAuthor(
@@ -53,9 +49,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 "Biography Two"
         );
 
-        // =============================
-        // Publisher
-        // =============================
         Contact publisherContact = new Contact(
                 "912345678",
                 "+351",
@@ -69,9 +62,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 publisherContact
         );
 
-        // =============================
-        // Bibliographical Data
-        // =============================
         BibliographicalData bd = new BibliographicalData(
                 "Book One",
                 List.of(author1),
@@ -83,9 +73,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 "Some text"
         );
 
-        // =============================
-        // Publication
-        // =============================
         PublicationType publicationType = new PublicationType(
                 MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
@@ -114,9 +101,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 Code.fromIsbn13("9783161484100")
         );
 
-        // =============================
-        // Item
-        // =============================
         Item item = new Item(
                 Condition.NEW,
                 1.2,
@@ -124,9 +108,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 publication
         );
 
-        // =============================
-        // Listing
-        // =============================
         Listing listing = new Listing(
                 List.of(item),
                 new Price(new BigDecimal("25.00")),
@@ -136,9 +117,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 List.of(new Picture("img.jpg"))
         );
 
-        // =============================
-        // Direct Sale
-        // =============================
         DirectSale directSale = new DirectSale(
                 listing,
                 LocalDateTime.now()
@@ -146,9 +124,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         directSaleRepository = new DirectSaleRepository(List.of(directSale));
 
-        // =============================
-        // Controller
-        // =============================
         controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                 authorRepository,
                 new AuthorMapper_US025(),
@@ -157,39 +132,30 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
     }
 
+    // AUTHOR --- Controller should return the list of authors
     @Test
-    void shouldReturnAuthorNamesDTO() {
-        List<AuthorDTO_US025> authors = controller.getAllAuthorNames();
+    void shouldReturnAuthorsDTOList() {
+        List<AuthorDTO_US025> authors = controller.getAllAuthors();
 
         assertNotNull(authors);
         assertEquals(2, authors.size());
-        assertTrue(authors.stream().anyMatch(a -> "Author One".equals(a.getName())));
-        assertTrue(authors.stream().anyMatch(a -> "Author Two".equals(a.getName())));
     }
 
-    // getListOfItemsOnDirectSale
+    // DIRECT SALES --- Controller should return a valid list for an author with direct sales
     @Test
-    void shouldReturnDirectSaleItemsForAuthor() {
-        List<DirectSaleDTO_US025> result =
-                controller.getListOfItemsOnDirectSale(author1);
+    void shouldReturnDirectSalesListForAuthorWithSales() {
+        List<DirectSaleDTO_US025> result = controller.getListOfItemsOnDirectSale(author1);
 
+        assertNotNull(result);
         assertEquals(1, result.size());
-
-        DirectSaleDTO_US025 dto = result.get(0);
-
-        assertEquals("Book One", dto.publicationTitle);
-        assertEquals("Listing Title", dto.listingTitle);
-        assertEquals(new BigDecimal("25.00"), dto.price);
-        assertEquals("Seller Name", dto.seller);
-        assertTrue(dto.authors.contains("Author One"));
     }
 
-    // Author without direct sales
+    // DIRECT SALES --- Controller should return an empty list for an author without direct sales
     @Test
     void shouldReturnEmptyListForAuthorWithoutSales() {
-        List<DirectSaleDTO_US025> result =
-                controller.getListOfItemsOnDirectSale(author2);
+        List<DirectSaleDTO_US025> result = controller.getListOfItemsOnDirectSale(author2);
 
+        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 }

@@ -4,7 +4,19 @@ import TOPSECRET.domain.Enum.TransactionStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+/**
+ * Represents a financial transaction in the system.
+ *
+ * A Transaction records the result of a sale or auction, including:
+ * - the buyer
+ * - the seller
+ * - the final price
+ * - the date when the transaction occurred
+ * - the listing that was sold
+ *
+ * This class belongs to the domain layer and contains business data
+ * related to a completed sale.
+ */
 public class Transaction {
 
     private User _buyer;
@@ -90,36 +102,6 @@ public class Transaction {
         // this._logisticsServices = logisticsServices;
 
     }
-
-    // ====================================
-    // Getters
-
-    /*public LocalDateTime getTransactionDate() {
-        return this._transactionDate;
-    }
-    public LocalDateTime getPaymentDate() {
-        return paymentDate;
-    }
-
-    public List<String> getSellers() {
-        return this._sellers;
-    }
-
-    public double getTotalAmount() {
-        return this._totalAmount;
-    }
-
-    public String getBuyer(){
-        return this.buyer;
-    }
-
-    public String getAuction(){
-        return this.auction;
-    }
-
-    public String getCart(){
-        return this.cart;
-    }*/
 
 }
 

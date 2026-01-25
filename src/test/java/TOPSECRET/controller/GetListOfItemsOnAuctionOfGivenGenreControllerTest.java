@@ -109,8 +109,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         new GenreMapper_US022()
                 );
         // Act
-        List<AuctionDTO_US022> result =
-                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+        List<AuctionDTO_US022> result = controller.getListOfItemsOnAuctionGivenGenre(fantasy);
         // Assert
         assertEquals(1, result.size());
     }
@@ -136,8 +135,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         new GenreMapper_US022()
                 );
         // Act
-        List<AuctionDTO_US022> result =
-                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+        List<AuctionDTO_US022> result = controller.getListOfItemsOnAuctionGivenGenre(fantasy);
         // Assert
         assertEquals(1, result.size());
     }
@@ -161,8 +159,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 List.of(new Picture("pic1"))
         );
 
-        LocalDateTime start = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime end = start.plusDays(1);
+        LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
+        LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
 
         return new Auction(listing, start, end, new Price(new BigDecimal("20.00")));
     }

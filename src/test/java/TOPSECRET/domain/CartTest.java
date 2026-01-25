@@ -116,7 +116,7 @@ class CartTest {
         );
     }
 
-    // Buyer must have a cart
+    // Cart must have a buyer
     @Test
     void cartShouldBeCreatedWithBuyer() {
         assertEquals(buyer, cart.getBuyer());
@@ -125,7 +125,7 @@ class CartTest {
     // Cart should start empty
     @Test
     void cartShouldStartEmpty() {
-        assertTrue(cart.getListingsList().isEmpty());
+        assertTrue(cart.isEmpty());
     }
 
     // Cart should add listings

@@ -15,21 +15,37 @@ class GenreTest {
     }
 
     @Test
-    void genreNameCannotBeNull() {
+    void genreTypeCannotBeNull() {
         assertThrows(IllegalArgumentException.class, () -> new Genre(null));
     }
 
     @Test
-    void genreNameCannotBeEmpty() {
+    void genreTypeCannotBeEmpty() {
         assertThrows(IllegalArgumentException.class, () -> new Genre(""));
     }
 
     @Test
-    void genreNameCannotBeBlank() {
+    void genreTypeCannotBeBlank() {
         assertThrows(IllegalArgumentException.class, () -> new Genre(" "));
     }
 
 
+    //US004
+    @Test
+    void genresWithSameTypeShouldBeEqualIgnoringCase() {
+        Genre g1 = new Genre("Fantasy");
+        Genre g2 = new Genre("fantasy");
+
+        assertEquals(g1, g2);
+    }
+
+    @Test
+    void equalGenresShouldHaveSameHashCode() {
+        Genre g1 = new Genre("SciFi");
+        Genre g2 = new Genre("scifi");
+
+        assertEquals(g1.hashCode(), g2.hashCode());
+    }
 }
 
 

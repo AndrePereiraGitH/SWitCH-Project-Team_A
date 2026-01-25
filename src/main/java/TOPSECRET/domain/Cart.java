@@ -5,48 +5,67 @@ import java.util.List;
 
 public class Cart {
 
+/**
+ * Creates a new cart for the given buyer.
+ * The cart starts empty and can receive and remove listings until it is finished.
+ */
+
+    //Attributes
     private List<Listing> listingList;
-    private User buyer;
+    private final User buyer;
     private boolean finished;
 
+    //Constructor
     public Cart(User buyer) {
-        this.listingList = new ArrayList<>();
+        if (buyer == null) {
+            throw new IllegalArgumentException("Buyer cannot be null");
+        }
         this.buyer = buyer;
+        this.listingList = new ArrayList<>();
         this.finished = false;
     }
 
-    public void addListing(Listing listing) {
+    // To ensure cart is not finished
+    private void ensureNotFinished() {
         if (finished) {
-            throw new IllegalStateException("Listings cannot be added to a finished cart");
+            throw new IllegalStateException("Cart is already finished");
         }
+    }
+
+    // To add a listing
+    public void addListing(Listing listing) {
+        ensureNotFinished();
         if (listing == null) {
             throw new IllegalArgumentException("Listing cannot be null");
         }
         listingList.add(listing);
     }
 
+    // To remove a listing
     public boolean removeListing(Listing listing) {
-        if (finished) {
-            throw new IllegalStateException("Listings cannot be removed from a finished cart");
-        }
+        ensureNotFinished();
         return listingList.remove(listing);
     }
 
-    public List<Listing> getListingsList() {
-        return List.copyOf(listingList);
-    }
-
-    public boolean isEmpty() { return listingList.isEmpty(); }
-
-    public User getBuyer() {
-        return buyer;
-    }
-
+    // To finish the cart
     public void finish() {
         if (listingList.isEmpty()) {
             throw new IllegalStateException("It's not possible to finish an empty cart");
         }
         this.finished = true;
+    }
+
+    // For encapsulation
+    public boolean isEmpty() { return listingList.isEmpty(); }
+
+
+    // Getters
+    public List<Listing> getListingsList() {
+        return List.copyOf(listingList);
+    }
+
+    public User getBuyer() {
+        return buyer;
     }
 
     public boolean isFinished() {

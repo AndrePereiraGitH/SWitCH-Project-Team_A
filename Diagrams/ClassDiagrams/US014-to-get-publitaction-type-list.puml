@@ -24,7 +24,7 @@ class PublicationType {
     -mediaFormat : MediaFormat
     -typeOfBinding : TypeOfBinding
     -details : String
-    +getAllDetails
+    +getDetails()
 }
 
 ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses

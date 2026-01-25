@@ -9,10 +9,10 @@ participant ":System" as System
 
 activate User
 
-    User -> System : I want to request list of publication types
+    User -> System : I want to get a list of all publication types
     activate System
 
-    System --> User : return list of publication types
+    System --> User : Show list of publication types
     deactivate System
 
 deactivate User

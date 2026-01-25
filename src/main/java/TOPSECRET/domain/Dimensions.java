@@ -30,4 +30,14 @@ public class Dimensions {
     public double getDepth() {
         return this._depth;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Dimensions that = (Dimensions) o;
+        return Double.compare(this._height, that._height) == 0
+                && Double.compare(this._width, that._width) == 0
+                && Double.compare(this._depth, that._depth) == 0;
+    }
 }

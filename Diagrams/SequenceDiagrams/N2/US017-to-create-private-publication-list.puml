@@ -12,62 +12,82 @@ participant ":GenreMapper" as GenreMapper
 participant "genreDTO:GenreDTO" as GenreDTO
 participant ":CollectionOfPublicationsRepository" as CollectionRepository
 
-
+'_____
 User -> UI : I want to create a new private collection
-
 activate UI
 
 UI --> User : Provide collection name
 deactivate UI
 User -> UI : collection name provided
 activate UI
+'______
 
 UI -> Controller : getAllGenres()
 activate Controller
 
 Controller -> GenreRepository : getAllGenres()
 activate GenreRepository
-GenreRepository --> Controller : listOfAllGenres
+GenreRepository --> Controller : listOfGenres
 deactivate GenreRepository
 
-Controller -> GenreMapper: toDTO(listOfAllGenre)
+Controller -> GenreMapper: toDTO(listOfGenres)
 activate GenreMapper
-GenreMapper -> GenreDTO ** : create()
+GenreMapper -> "genreDTO:GenreDTO" ** : create()
+activate "genreDTO:GenreDTO"
+"genreDTO:GenreDTO" --> GenreMapper : genreDTO
+deactivate "genreDTO:GenreDTO"
+
+/'
 activate GenreDTO
-GenreDTO --> GenreMapper: GenreDTO
+/'
+GenreDTO --> GenreMapper: genreDTO
+
 deactivate GenreDTO
-GenreMapper -> GenreMapper : listOfAllGenreDTO.add(GenreDTO)
+'/
+GenreMapper -> GenreMapper : addToList(genreDTO)
 GenreMapper --> Controller: listOfAllGenreDTO
 deactivate GenreMapper
 
-Controller --> UI : listOfAllGenres
+Controller --> UI : listOfAllGenreDTO
 deactivate Controller
 
-UI --> User : Which genres? Select one!
+UI --> User : Which genres type? Select one!
 deactivate UI
 
-User -> UI : Selected genre
+User -> UI : Selected genre type
 activate UI
+'______
 
-UI -> Controller : createAndAddCollectionOfPublication\n(name, selectedGenre)
+
+UI -> Controller : createAndAddCollectionOfPublication(name, genreType, user)
 activate Controller
 
-Controller -> CollectionRepository  : createAndAddCollectionOfPublication\n(name, selectedGenre)
+Controller -> CollectionRepository : createIfNotExists(user, name, genreType, true)
 activate CollectionRepository
 
-create "cp1:CollectionOfPublications" as CollectionOfPublications
+loop for each existing collection of the user
+    CollectionRepository -> CollectionRepository : compare(name, genreType)
+end
 
-CollectionRepository -> CollectionOfPublications : create(name, selectedGenre)
-CollectionRepository -> CollectionRepository : validateCollectionOfPublicationsExists(cp1)
-CollectionRepository -> CollectionRepository : addToList(cp1)
+alt collection already exists
+    CollectionRepository --> CollectionRepository  : duplicateFound
+        CollectionRepository --> Controller : error (duplicate)
 
-CollectionRepository --> Controller : cp1
+else collection does not exist
+    create "cp:CollectionOfPublications"
+    CollectionRepository -> "cp:CollectionOfPublications" : create(name, genreType, true)
+    CollectionRepository -> CollectionRepository : addToList(cp)
+    CollectionRepository --> Controller : cp
+
+end
+
 deactivate CollectionRepository
 
 Controller --> UI : success
 deactivate Controller
 
-UI --> User : Your private collection of publications\n was created
+UI --> User : Private collection of publications was created
 deactivate UI
 
 @enduml
+

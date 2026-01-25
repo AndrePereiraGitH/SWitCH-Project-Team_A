@@ -210,4 +210,55 @@ class CollectionOfPublicationsRepositoryTest {
         // ASSERT
         assertFalse(result);   // Duplicate publications are not allowed
     }
+
+/**
+ * - US017: Creation of private collections and duplicate validation.
+ */
+
+    @Test
+    void shouldCreatePrivateCollectionSuccessfully_US017() {
+        // US017: Create a private collection with name and genre
+
+        User user = createValidUser();
+        Genre genre = new Genre("Fiction");
+
+        CollectionOfPublications result =
+                repository.createIfNotExists(user, "Favorites", genre, true);
+
+        assertNotNull(result);
+        assertEquals("Favorites", result.getCollectionName());
+        assertEquals(genre, result.getCollectionGenre());
+        assertTrue(result.getIsPrivate());
+        assertTrue(result.getPublications().isEmpty());
+    }
+
+    @Test
+    void shouldNotAllowDuplicateCollectionForSameUser_US017() {
+        // US017: Prevent duplicate collections with same name and genre
+
+        User user = createValidUser();
+        Genre genre = new Genre("Fiction");
+
+        repository.createIfNotExists(user, "Favorites", genre, true);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createIfNotExists(user, "Favorites", genre, true)
+        );
+    }
+
+    @Test
+    void shouldAllowSameNameWithDifferentGenre_US017() {
+
+        User user = createValidUser();
+
+        repository.createIfNotExists(user, "Favorites", new Genre("Fiction"), true);
+
+        CollectionOfPublications result =
+                repository.createIfNotExists(user, "Favorites", new Genre("History"), true);
+
+        assertNotNull(result);
+    }
+
+
+
 }

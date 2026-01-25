@@ -40,18 +40,6 @@ public class CityRepository {
 
 }
 
-
-
-// should it be like this later? Based on how PublicationRepository works right now, for example. STANDARDIZE METHODS when
-// data persistence becomes relevant.
-
-// public boolean createAndAddNewCity (Country _country, String _cityName) {
-// City newCity = new City(_country, _cityName);
-
-// if (existsByName(City city)) {
-    // return false;
-    // }
-
-//
+// STANDARDIZE METHODS when data persistence becomes relevant.
 
 

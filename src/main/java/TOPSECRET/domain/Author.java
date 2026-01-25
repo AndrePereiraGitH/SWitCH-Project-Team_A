@@ -23,7 +23,7 @@ public class Author {
     }
 
     public Author(String name, Country countries, LocalDate dateOfBirth, String bio) {
-        this(new Profile(name, countries, dateOfBirth), bio);      //para não repetir validaç~oes
+        this(new Profile(name, countries, dateOfBirth), bio);
     }
 
     public Profile getProfile() {
@@ -44,10 +44,5 @@ public class Author {
         }
         Author author = (Author) o;
         return Objects.equals(_authorProfile, author._authorProfile) && Objects.equals(_biography, author._biography);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(_authorProfile, _biography);
     }
 }

@@ -17,6 +17,11 @@ import java.util.Objects;
 // improves separation of concerns, and makes the system easier to maintain,
 // test, and extend in the future.
 
+/** This repository supports multiple user stories:
+ - US017: Creation of private collections with name and genre, including duplicate validation per user.
+ - US018: Adding publications to existing collections.
+*/
+
 public class CollectionOfPublicationsRepository {
 
     private List<CollectionOfPublications> _collectionOfPublicationsList;
@@ -78,6 +83,43 @@ public class CollectionOfPublicationsRepository {
         return List.copyOf(result);
     }
 
+/**
+ * Creates a new private collection for a user if no duplicate exists.
+ * US017 - A user cannot have two private collections with the same name and genre.
+ */
+
+    public CollectionOfPublications createIfNotExists(
+            User user,
+            String name,
+            Genre genre,
+            boolean isPrivate
+    ) {
+        if (user == null || name == null || genre == null) {
+            throw new IllegalArgumentException("Invalid arguments.");
+        }
+
+        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+            if (user.ownsCollection(c)
+                    && c.getCollectionName().equalsIgnoreCase(name)
+                    && c.getCollectionGenre().equals(genre)) {
+
+                throw new IllegalArgumentException(
+                        "Collection with same name and genre already exists for this user."
+                );
+            }
+        }
+
+        CollectionOfPublications newCollection =
+                new CollectionOfPublications(name, genre, user.getLibrary(), isPrivate, user);
+
+        _collectionOfPublicationsList.add(newCollection);
+        user.addCollection(newCollection);
+
+        return newCollection;
+    }
+
 }
+
+
 
 

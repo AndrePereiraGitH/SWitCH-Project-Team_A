@@ -4,7 +4,12 @@ import TOPSECRET.domain.PublicationType;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Mapper responsible for converting PublicationType domain objects
+ * into PublicationTypeDTO_US014 objects.
+ *
+ * This class isolates the UI from the internal domain model.
+ */
 public class PublicationTypeMapper_US014 {
 
     // Creates a DTO from a PublicationType domain

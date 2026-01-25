@@ -49,7 +49,10 @@ public class ToPutPublicationInDirectSaleController {
                 throw new IllegalArgumentException("Listing contains a null item");
         }
 
-        return directSaleRepo.createAndAddDirectSale(listing, LocalDateTime.now());
+        return directSaleRepo.createAndAddDirectSale(listing, date());
+    }
+    LocalDateTime date() {
+        return LocalDateTime.now();
     }
 
 }

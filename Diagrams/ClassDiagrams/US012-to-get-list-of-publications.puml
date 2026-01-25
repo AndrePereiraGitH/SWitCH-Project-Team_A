@@ -5,11 +5,11 @@ class UI012 {
 }
 
 class GetListOfPublicationsInLibraryController {
-    +getListOfPublicationsInLibrary(): List<PublicationDTO>
+    +getListOfPublicationsInLibraryDTO(String username)
 }
 
 class Library {
-    +getListOfPublicationsInLibrary(): List<Publication>
+    +getListOfPublicationsInLibrary()
 }
 
 class Publication {
@@ -19,19 +19,19 @@ class PublicationDTO {
 }
 
 class PublicationMapper {
-    +toDTO(publications: List<Publication>): List<PublicationDTO>
+    +getListOfPublicationsDTO(List<Publication> publications)
 }
 
 ' ---------------- Relationships ----------------
 
-UI012 ..> GetListOfPublicationsInLibraryController : uses
+UI012 ..> GetListOfPublicationsInLibraryController : delegates to
 
-GetListOfPublicationsInLibraryController --> Library : uses
-GetListOfPublicationsInLibraryController --> PublicationMapper : uses
+GetListOfPublicationsInLibraryController "1" --> Library : retrieves publications from
+GetListOfPublicationsInLibraryController "1" ..> "1" PublicationMapper : invokes
 
-Library "1" <-- "*" Publication : contains
+Library "1" --> "*" Publication : contains
 
-PublicationMapper ..> Publication : maps from
-PublicationMapper ..> PublicationDTO : maps to
+PublicationMapper "1" ..> "1..*" Publication : converts
+PublicationMapper "1" ..> "1..*" PublicationDTO : produces
 
 @enduml

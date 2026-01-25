@@ -18,7 +18,7 @@ public class Genre {
         return _genreType;
     }
 
-    // US0018
+    // US004
     // Necessary methods to compare the objects
     // Allows Genre objects to be compared by value instead of reference.
     @Override
@@ -32,7 +32,7 @@ public class Genre {
         return _genreType.equalsIgnoreCase(other._genreType);
     }
 
-    // US0018
+    // US004
     // Ensures consistency with equals().
     @Override
     public int hashCode() {

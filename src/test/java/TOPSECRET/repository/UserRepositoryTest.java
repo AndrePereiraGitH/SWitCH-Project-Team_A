@@ -32,6 +32,7 @@ class UserRepositoryTest {
                 LocalDate.of(1997, 8, 15));
     }
 
+    // To test the happy path
     @Test
     void testCreateAndAddUser_Success() {
         assertDoesNotThrow(() ->
@@ -44,6 +45,7 @@ class UserRepositoryTest {
         assertTrue(userRepository.exists("TestUser"));
     }
 
+    // To test an already existing username
     @Test
     void testCreateAndAddUser_UserNameAlreadyExists() {
         userRepository.createAndAddUser(
@@ -64,6 +66,7 @@ class UserRepositoryTest {
         assertEquals(1, userRepository.getUserCount());
     }
 
+    // To test the exists method (existing user)
     @Test
     void testExists_ReturnsTrue_WhenUserExists() {
         userRepository.createAndAddUser(
@@ -75,6 +78,7 @@ class UserRepositoryTest {
         assertTrue(userRepository.exists("ExistingUser"));
     }
 
+    // To test the exists method (non-existing user)
     @Test
     void testExists_ReturnsFalse_WhenUserDoesNotExist() {
         assertFalse(userRepository.exists("NonExistingUser"));

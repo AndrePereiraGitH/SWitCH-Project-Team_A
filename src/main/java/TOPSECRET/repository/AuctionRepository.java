@@ -46,13 +46,18 @@ public class AuctionRepository {
         }
 
         List<Auction> result = new ArrayList<>();
-
+        // will iterate over all auctions in the repository
         for (Auction auction : auctionsList) {
-
-            List<Genre> genres = auction.getListing().getMainItem().getPublication().getBibliographicalData().getGenres();
-
-            if (genres.contains(genre)) {
-                result.add(auction);
+           // for each auction, will iterate over all items that are in Listing
+            for(Item item : auction.getListing().getItems()) {
+                //this condition means that we are getting throw all the information necessary to get the final list of genres
+                if(item.getPublication()
+                        .getBibliographicalData()
+                        .getGenres().contains(genre)) {
+                    result.add(auction);
+                   // break when finds one, prevents the duplication
+                    break;
+                }
             }
         }
 

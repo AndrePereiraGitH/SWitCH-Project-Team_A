@@ -1,19 +1,33 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Genres;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
-// Represents a user's private list of publications.
-// A PrivateList groups publications according to a specific purpose or genre.
+/**
+ * Represents a collection of publications created by a user.
+
+ * In the context of US017, this class is responsible for representing
+ * a private collection with a name and an associated genre.
+
+ * Some attributes (such as library and owner information) are used
+ * by other user stories and are not required for the creation logic
+ * of US017 itself.
+ */
+
 public class CollectionOfPublications {
 
+    // Attributes
     private String _collectionName;
     private Genre _collectionGenre;
+    // Library where this collection is stored.
+    // This attribute is NOT required for US017,
+    // but is used in later user stories involving library management.
     private Library _privateLibrary;
     private List<Publication> _collectionOfPublications;
+    // Username of the collection owner.
+    // Ownership validation is handled at repository level (US017),
+    // but this attribute supports other user stories.(US20)
     private String _ownerUserName;
     private boolean _isPrivate;
 
@@ -45,7 +59,7 @@ public class CollectionOfPublications {
     }
 
 
-    // GETTERS
+    // Getters
     public String getCollectionName() {
         return _collectionName;
     }
@@ -65,7 +79,9 @@ public class CollectionOfPublications {
         return new ArrayList<>(_collectionOfPublications);
     }
 
-
+    // _______________
+    // Used in US018
+    // _______________
     //  Adds a publication to the private list.
     //  Returns true if the publication was added successfully.
     //  Returns false if the publication already exists in the list.
@@ -118,4 +134,3 @@ public class CollectionOfPublications {
     }
 
 }
-

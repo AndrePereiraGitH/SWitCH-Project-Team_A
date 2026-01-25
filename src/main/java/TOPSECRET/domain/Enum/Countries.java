@@ -179,6 +179,7 @@ public enum Countries {
     SOLOMON_ISLANDS,
     SOMALIA,
     SOUTH_AFRICA,
+    SOUTH_KOREA,
     SOUTH_SUDAN,
     SPAIN,
     SRI_LANKA,
