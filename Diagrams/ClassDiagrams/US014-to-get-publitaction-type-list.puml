@@ -1,6 +1,8 @@
 @startuml
 title US014 - Get Publication Types
 
+class UI014{}
+
 class ToGetPublicationTypeController {
     +getAllPublicationTypes() : List<PublicationTypeDTO>
 }
@@ -24,11 +26,11 @@ class PublicationType {
     -mediaFormat : MediaFormat
     -typeOfBinding : TypeOfBinding
     -details : String
-    +getDetails()
 }
 
+UI014 "1" -.-> "1" ToGetPublicationTypeController : uses
 ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses
 ToGetPublicationTypeController "1" -.-> "1" PublicationTypeMapper : uses
 PublicationTypeMapper "1" -.> "1" PublicationTypeDTO : maps
-PublicationTypeRepository "1" --> "1" PublicationType : contains
+PublicationTypeRepository "1" --> "1..*" PublicationType : contains
 @enduml
