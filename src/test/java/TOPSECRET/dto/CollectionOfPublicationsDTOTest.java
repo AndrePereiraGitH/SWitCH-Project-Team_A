@@ -1,15 +1,14 @@
 package TOPSECRET.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class CollectionOfPublicationsDTOTest {
 
     @Test
-    void shouldCreateDTOWithValidData() {
+    void shouldCreateDTOWithValidData()
+    {
         CollectionOfPublicationsDTO dto =
                 new CollectionOfPublicationsDTO("List Name", "Raul");
 
@@ -19,7 +18,8 @@ class CollectionOfPublicationsDTOTest {
     }
 
     @Test
-    void shouldTrimInputValues() {
+    void shouldTrimInputValues()
+    {
         CollectionOfPublicationsDTO dto =
                 new CollectionOfPublicationsDTO("  List Name  ", "  Raul  ");
 
@@ -28,28 +28,32 @@ class CollectionOfPublicationsDTOTest {
     }
 
     @Test
-    void shouldThrowWhenListNameIsNull() {
+    void shouldThrowWhenListNameIsNull()
+    {
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublicationsDTO(null, "Raul")
         );
     }
 
     @Test
-    void shouldThrowWhenListNameIsBlank() {
+    void shouldThrowWhenListNameIsBlank()
+    {
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublicationsDTO("   ", "Raul")
         );
     }
 
     @Test
-    void shouldThrowWhenOwnerUsernameIsNull() {
+    void shouldThrowWhenOwnerUsernameIsNull()
+    {
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublicationsDTO("List Name", null)
         );
     }
 
     @Test
-    void shouldThrowWhenOwnerUsernameIsBlank() {
+    void shouldThrowWhenOwnerUsernameIsBlank()
+    {
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublicationsDTO("List Name", "   ")
         );
