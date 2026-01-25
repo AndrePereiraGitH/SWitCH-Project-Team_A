@@ -63,6 +63,61 @@ class AuctionRepositoryTest {
         assertEquals(1, auctionRepository.getAllAuctions().size());
     }
 
+    @Test
+
+    void getItemWhenAuctionHasThePublication(){
+
+        //Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+        auctionRepository.createAndAdd(listing,initialDate,finalDate,price("150.50"));
+        Publication publication= listing.getItems().get(0).getPublication();
+        String expectedPublicationTitle= publication.getBibliographicalData().getTitle();
+
+
+        // Act
+        List<Item> listOfItemsOnAuction = auctionRepository.getListOfItemsOnAuctionByGivenPublication(publication);
+        String realPublicationTitle = listOfItemsOnAuction.get(0).getPublication().getBibliographicalData().getTitle();
+
+        // Assert
+
+        assertEquals(1,listOfItemsOnAuction.size());
+        assertEquals(expectedPublicationTitle,realPublicationTitle);
+
+
+    }
+
+    @Test
+    void shouldReturnAnEmptyListWhenAuctionDoesNotHaveThePublication(){
+
+        //Arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+        auctionRepository.createAndAdd(listing,initialDate,finalDate,price("150.50"));
+
+
+
+        Publication publication2 = createValidPublication2(instantiateBibliographicalData());
+
+        //Act
+        List<Item> listOfItemsOnAuction = auctionRepository.getListOfItemsOnAuctionByGivenPublication(publication2);
+
+
+        // Assert
+
+        assertEquals(0,listOfItemsOnAuction.size());
+        assertTrue(listOfItemsOnAuction.isEmpty());
+
+
+    }
+
 
     // ============================================================
     // ========================= Test Clock =======================
@@ -172,6 +227,30 @@ class AuctionRepositoryTest {
 
         // Code
         Code code = Code.fromIsbn13("9781234567890");
+
+        return new Publication(
+                bd,
+                publicationType,
+                user,
+                PublicationStatus.FOR_SALE,
+                "1st edition",
+                code
+        );
+    }
+
+    private static Publication createValidPublication2(BibliographicalData bd) {
+        // PublicationType
+        PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.PAPERBACK,
+                "Paperback"
+        );
+
+        // User (seller/owner of the publication)
+        User user = instantiateUser("maria1");
+
+        // Code
+        Code code = Code.fromIsbn13("9781234567820");
 
         return new Publication(
                 bd,
