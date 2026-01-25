@@ -15,29 +15,27 @@ class PublicationRepository{
     +getAllPublications()
 }
 
-class PublicationDTO_US012 {
+class PublicationDetailsDTO {
 }
 
 class Publication {
     +getDetails()
 }
 
-class PublicationMapper_US012 {
-  +getListOfPublicationsDTO(List<Publication> publications)
+class PublicationDetailsMapper {
+  +toDTOs(List<Publication> publications)
 }
 
 class AuctionRepository {
-  -listOfItemsOnAuction:List<Item>
+  -listOfItemsOnAuctionByPublication:List<Item>
   +getListOfItemsOnAuction(publication)
-  -isAuctionFromPublication(publication)
+  -verifyIfAuctionHasItemsOfThatPublication(publication)
 }
 
-class Auction {
-+ getItemOnAuctionDetails()
-}
 
-class ItemDTO_US024 {
-- listOfAuctionsDTO:List<ItemDTO_US024>
+
+class ItemDetailsDTO {
+- listOfAuctionsDTO:List<ItemDetailsDTO>
 + getListOfItemsAuctionDTO()
 }
 
@@ -46,12 +44,11 @@ class ItemDTO_US024 {
 
 UI024 ..> "1" ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: delegates request to
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationRepository : retrieves publications from
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationMapper_US012 : calls for conversion
-PublicationMapper_US012 "1" ..> "1..*" Publication: reads data from
-PublicationMapper_US012 "1" ..> "1..*" PublicationDTO_US012 : instantiates
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationDetailsMapper : calls for conversion
+PublicationDetailsMapper "1" ..> "1..*" Publication: reads data from
+PublicationDetailsMapper "1" ..> "1..*" PublicationDetailsDTO : instantiates
 ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1"AuctionRepository : queries items in
-AuctionRepository "1" --> "*" Auction: manages
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController ..> "0..*" ItemDTO_US024 : produces list of
+ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "0..*" ItemDetailsDTO : produces list of
 
 
 

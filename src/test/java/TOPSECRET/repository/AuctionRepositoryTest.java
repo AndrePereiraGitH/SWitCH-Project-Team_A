@@ -84,7 +84,6 @@ class AuctionRepositoryTest {
         String realPublicationTitle = listOfItemsOnAuction.get(0).getPublication().getBibliographicalData().getTitle();
 
         // Assert
-
         assertEquals(1,listOfItemsOnAuction.size());
         assertEquals(expectedPublicationTitle,realPublicationTitle);
 
@@ -101,7 +100,6 @@ class AuctionRepositoryTest {
         LocalDateTime initialDate = now;
         LocalDateTime finalDate = now.plusDays(2);
         auctionRepository.createAndAdd(listing,initialDate,finalDate,price("150.50"));
-
 
 
         Publication publication2 = createValidPublication2(instantiateBibliographicalData());

@@ -11,16 +11,16 @@ participant ":UI024" as UI
 participant ":GetTheListOfItemsOn\nAuctionOfAGivenPublicationController" as Ctrl
 participant ":PublicationRepository" as PubRepo
 participant "listOfAllPublications:\n List<Publication>" as ListPub
-participant ":PublicationMapper_US012" as PubMapper
-participant "publicationDTO:\nPublicationDTO_US024" as PubDTO
+participant ":PublicationDetailsMapper" as PubMapper
+participant "publicationDTO:\nPublicationDetailsDTO" as PubDTO
 participant ":Publication" as Pub
-participant "listOfAllPublicationsDTO:\nList<PublicationDTO>" as ListPubDTO
+participant "listOfAllPublicationsDTO:\nList<PublicationDetailsDTO>" as ListPubDTO
 participant ":AuctionRepository" as AuctionRepo
-participant "listOfItemsOnAuction:\nList<Item>" as ListAuc
-participant ":ItemDTO_US024" as itemDTO
-participant "listOfAuctionsDTO:\nList<ItemDTO_US024>" as ListAucDTO
+participant "listOfItemsOnAuctionByPublication:\nList<Item>" as ListAuc
+participant ":ItemDetailsDTO" as itemDTO
+participant "listOfItemsDTO:\nList<ItemDetailsDTO>" as ListAucDTO
 participant ":Item" as item
-participant "ItemDTO:ItemDTO_US024" as itemdto
+participant "ItemDTO:ItemDetailsDTO" as itemdto
 
 ' Interactions
 
@@ -34,7 +34,7 @@ activate PubRepo
 PubRepo -> ListPub **: create()
 PubRepo --> Ctrl: listOfAllPublications
 deactivate PubRepo
-Ctrl -> PubMapper: getListOfPublicationsDTO(listOfAllPublications)
+Ctrl -> PubMapper: toDTOs(listOfAllPublications)
 activate PubMapper
 PubMapper -> ListPubDTO ** : create()
 loop for each publication
@@ -43,7 +43,6 @@ loop for each publication
     Pub --> PubMapper: publicationDetails
     deactivate Pub
         PubMapper -> PubDTO ** : createDTO(publicationDetails)
-    PubDTO --> PubMapper: publicationDTO
     PubMapper --> PubMapper: listOfAllPublicationsDTO.add(publicationDTO)
 end    
 PubMapper --> Ctrl: listOfPublicationsDTO
@@ -56,29 +55,31 @@ deactivate UI
 ' Section 2 - Get list of auctions with the publication chosen
 Buyer -> UI : publication
 activate UI
-UI -> Ctrl : getListOfItemsOnAuctionDTO(publication)
+UI -> Ctrl : getListOfItemsOnAuctionByGivenPublicationDTO(publication)
 activate Ctrl
 Ctrl -> AuctionRepo : getListOfItemsOnAuctionByGivenPublication(publication)
 activate AuctionRepo
 AuctionRepo -> ListAuc ** : create()
 loop for each auction
-    AuctionRepo -> AuctionRepo : verifyIfAuctionHasThePublication()
-    AuctionRepo -> AuctionRepo: listOfItemsOnAuction.add(auction)
+    AuctionRepo -> AuctionRepo : verifyIfAuctionHasItemsOfThatPublication(publication)
+    AuctionRepo -> AuctionRepo: listOfItemsOnAuctionByPublication.add(item)
 end
-AuctionRepo --> Ctrl : listOfItemsOnAuction
+AuctionRepo --> Ctrl : listOfItemsOnAuctionByPublication
 deactivate AuctionRepo
-Ctrl -> itemDTO : getListOfItemsAuctionDTO()
+Ctrl -> itemDTO : toDTOs()
 activate itemDTO
 itemDTO -> ListAucDTO ** : create()
 loop for each item
     itemDTO -> item: getItemOnAuctionDetails()
+    activate item
     item --> itemDTO: itemDetailsOnAuction
+    deactivate item
     itemDTO-> itemdto **: createDTO(itemDetailsOnAuction)
-    itemDTO -> itemDTO : listOfAuctionsDTO.add(itemDTO)
+    itemDTO -> itemDTO : listOfItemsDTO.add(itemDTO)
 end
-itemDTO --> Ctrl : listOfAuctionsDTO;
+itemDTO --> Ctrl : listOfItemsDTO
 deactivate itemDTO
-Ctrl --> UI : listOfAuctionDTO
+Ctrl --> UI : listOfItemsDTO
 deactivate Ctrl
 UI --> Buyer : Shows the list of items on auction
 deactivate UI

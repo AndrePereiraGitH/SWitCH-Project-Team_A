@@ -88,7 +88,8 @@ public class AuctionRepository {
     }
 
     public List<Item> getListOfItemsOnAuctionByGivenPublication(Publication publication) {
-        List<Item> listOfItemsOnAuction = new ArrayList<>();
+
+        List<Item> listOfItemsOnAuctionByPublication = new ArrayList<>();
 
         for (Auction auc : auctionsList) {
             Listing listing = auc.getListing();
@@ -98,13 +99,13 @@ public class AuctionRepository {
                 for (Item item : listing.getItems()) {
 
                     if (item.getPublication() != null && item.getPublication().equals(publication)) {
-                        listOfItemsOnAuction.add(item);
+                        listOfItemsOnAuctionByPublication.add(item);
                     }
                 }
             }
         }
 
-        return listOfItemsOnAuction;
+        return listOfItemsOnAuctionByPublication;
     }
 
     public List<Item> getItemsOnAuctionGivenPublisher(Publisher publisher) {

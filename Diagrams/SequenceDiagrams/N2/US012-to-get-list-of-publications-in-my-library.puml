@@ -13,14 +13,14 @@ participant ":GetListOfPublicationsInLibraryController" as Ctrl
 
 
 
-participant ":PublicationMapper_US012" as Mapper
-participant "pubDTO:PublicationDTO_US012" as DTO
+participant ":PublicationDetailsMapper" as Mapper
+participant "pubDTO:PublicationDetailsDTO" as DTO
 
 
 
 participant ":Library" as LibDomain
 
-participant "listOfPublicationsDTO:List<PublicationDTO>" as ListDTO
+participant "listOfPublicationsDTO:List<PublicationDetailsDTO>" as ListDTO
 
 participant "listOfPublications:List<Publication>" as ListPubs
 
@@ -33,7 +33,7 @@ participant ":Publication" as PubDomain
 User -> UI : asks to see a list of publications in library
 activate UI
 
-UI -> Ctrl: getListOfPublicationsInLibraryDTO(username)
+UI -> Ctrl: getListOfPublicationsInLibraryDTO()
 activate Ctrl
 Ctrl -> LibDomain: getAllPublications()
 activate LibDomain
@@ -44,7 +44,7 @@ LibDomain --> Ctrl: listOfPublications
 deactivate LibDomain
 
 
-Ctrl -> Mapper: toDTO(listOfPublications)
+Ctrl -> Mapper: toDTOs(listOfPublications)
 
 activate Mapper
 Mapper -> ListDTO **: create()
