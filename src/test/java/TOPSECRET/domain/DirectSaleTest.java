@@ -56,6 +56,18 @@ class DirectSaleTest {
         assertEquals("BuyDate cannot be null", e.getMessage());
     }
 
+    @Test
+    void ensureEqualsWithNullReturnsFalse() {
+        // Arrange
+        DirectSale directSale = new DirectSale(createListing(), LocalDateTime.now());
+
+        // Act
+        boolean result = directSale.equals(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
 
     @Test
     void ensureDifferentObjectsReturnFalse(){
