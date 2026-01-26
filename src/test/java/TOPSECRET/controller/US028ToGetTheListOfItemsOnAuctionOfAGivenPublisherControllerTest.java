@@ -19,19 +19,32 @@ import TOPSECRET.repository.PublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests for the controller that retrieves:
+ * - the list of publishers
+ * - the list of items on auction for a given publisher
+ */
 class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
+    // Test publishers
     private Publisher publisher1;
     private Publisher publisher2;
 
+    // Auctions related to different publishers
     private Auction auction1;
     private Auction auction2;
 
+    // Repositories used by the controller
     private PublisherRepository publisherRepo;
     private AuctionRepository auctionRepo;
 
+    // Controller being tested
     private US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller;
 
+    /**
+     * This method runs before each test.
+     * It prepares all the data needed for the tests.
+     */
     @BeforeEach
     void setUp() {
         // Common contact
@@ -47,6 +60,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Bibliographical data
         Author author = new Author(profile, "Author bio");
 
+        // Book published by publisher1
         BibliographicalData data1 = new BibliographicalData(
                 "Java Fundamentals",
                 List.of(author),
@@ -58,6 +72,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 "Description"
         );
 
+        // Book published by publisher2
         BibliographicalData data2 = new BibliographicalData(
                 "Python Basics",
                 List.of(author),
@@ -69,14 +84,17 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 "Description"
         );
 
+        // -------- Publication type --------
         PublicationType type = new PublicationType(
                 MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
 
+        // Seller user
         User seller = new User("seller", contact, profile, UserRole.NORMAL_USER);
 
+        // -------- Publications --------
         Publication pub1 = new Publication(
                 data1, type, seller, PublicationStatus.FOR_SALE,
                 "1st edition", Code.fromIsbn13("9780000000001")
@@ -87,9 +105,11 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 "1st edition", Code.fromIsbn13("9780000000002")
         );
 
+        // -------- Items --------
         Item item1 = new Item(Condition.NEW, 1.0, new Dimensions(10, 2, 20), pub1);
         Item item2 = new Item(Condition.LIKE_NEW, 1.1, new Dimensions(11, 2, 21), pub2);
 
+        // -------- Listings --------
         Listing listing1 = new Listing(
                 List.of(item1),
                 new Price(BigDecimal.valueOf(40)),
@@ -116,8 +136,6 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         auction1 = new Auction(listing1, start, end, buyOut);
         auction2 = new Auction(listing2, start, end, buyOut);
-        //auction1 = new Auction(listing1, LocalDateTime.now(), LocalDateTime.now().plusDays(7), buyOut);
-        //auction2 = new Auction(listing2, LocalDateTime.now(), LocalDateTime.now().plusDays(7), buyOut);
 
         // Repos
         publisherRepo = new PublisherRepository();
@@ -137,16 +155,26 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         );
     }
 
+    /**
+     * Tests if the controller returns all publishers as DTOs.
+     */
     @Test
     void getAllPublishers_returnsAllPublishersAsDTOs() {
+
         List<PublisherDTO_US028> result = controller.getAllPublishers();
 
+        // Check that both publishers are returned
         assertEquals(2, result.size());
+
         List<String> names = result.stream().map(dto -> dto.name).toList();
         assertTrue(names.contains("Tech Books"));
         assertTrue(names.contains("Other Books"));
     }
 
+    /**
+     * Tests if the controller returns auction items
+     * for the first publisher.
+     */
     @Test
     void getListOfItemsOnAuction_returnsItemsForPublisher1() {
         List<AuctionDTO_US028> result =
@@ -156,6 +184,10 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Tests if the controller returns auction items
+     * for the second publisher.
+     */
     @Test
     void getListOfItemsOnAuction_returnsItemsForPublisher2() {
         List<AuctionDTO_US028> result =
@@ -164,6 +196,9 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Tests if an unknown VAT number returns an empty list.
+     */
     @Test
     void getListOfItemsOnAuction_returnsEmptyForUnknownVat() {
         List<AuctionDTO_US028> result =

@@ -108,31 +108,56 @@ public class AuctionRepository {
         return listOfItemsOnAuctionByPublication;
     }
 
+    /**
+     * Returns all items that are currently on auction
+     * and belong to the given publisher.
+     *
+     * @param publisher the publisher to search for
+     * @return list of items on auction for that publisher
+     */
     public List<Item> getItemsOnAuctionGivenPublisher(Publisher publisher) {
+
+        // Check that the publisher was provided
         if (publisher == null) {
             throw new IllegalArgumentException("publisher cannot be null");
         }
 
+        // List to store the matching items
         List<Item> result = new ArrayList<>();
 
+        // Go through all auctions in the system
         for (Auction auction : auctionsList) {
+
+            // Get the listing associated with the auction
             Listing listing = auction.getListing();
+
+            // If the listing or its items are missing, skip this auction
             if (listing == null || listing.getItems() == null) continue;
 
+            // Go through each item in the listing
             for (Item item : listing.getItems()) {
+
+                // Get the publication of the item
                 Publication pub = item.getPublication();
                 if (pub == null) continue;
 
+                // Get bibliographical data of the publication
                 BibliographicalData bd = pub.getBibliographicalData();
                 if (bd == null) continue;
 
+                // Get the publisher of the publication
                 Publisher pubPublisher = bd.getPublisher();
+
+
+                // If the item's publisher matches the given publisher,
+                // add the item to the result list
                 if (publisher.equals(pubPublisher)) {
                     result.add(item);   // ✅ add item, not auction
                 }
             }
         }
 
+        // Return all matching items
         return result;
     }
 
