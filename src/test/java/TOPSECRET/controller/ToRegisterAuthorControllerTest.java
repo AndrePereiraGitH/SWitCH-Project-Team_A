@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ToRegisterAuthorControllerTest {
 
     private final AuthorRepository authorRepository = new AuthorRepository(new ArrayList<>());
-        // teste c null
     // ========================================
     // CONSTRUCTOR TESTS
     // ========================================

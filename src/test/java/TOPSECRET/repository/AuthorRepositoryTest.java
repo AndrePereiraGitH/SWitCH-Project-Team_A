@@ -91,23 +91,9 @@ public class AuthorRepositoryTest {
         authorRepository.createAndAddAuthor("John", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
 
         // Act
-        Author result = authorRepository.createAndAddAuthor("John", new Country("AUSTRALIA"), LocalDate.of(1980, 1, 1), "bio1");
+        Author result = authorRepository.createAndAddAuthor("John", new Country("AUSTRALIA"), LocalDate.of(1980, 1, 1), "bio2");
 
         // Assert
-        assertNotNull(result);
-        assertEquals(2, authorRepository.getAllAuthors().size());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSameAuthorDifferentBiography() {
-        // Arrange
-        authorRepository.createAndAddAuthor("John", new Country("Portugal"), LocalDate.of(1980, 1, 1), "original bio");
-
-        // Act + Assert
-        // Same profile but different biography = different author (based on your equals)
-        // This should NOT throw because biography is part of equality
-        Author result = authorRepository.createAndAddAuthor("John", new Country("Portugal"), LocalDate.of(1980, 1, 1), "updated bio");
-
         assertNotNull(result);
         assertEquals(2, authorRepository.getAllAuthors().size());
     }

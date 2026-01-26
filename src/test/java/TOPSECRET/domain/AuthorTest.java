@@ -34,13 +34,10 @@ class AuthorTest {
 
     @Test
     void shouldThrowExceptionWhenProfileIsNull() {
-        // Arrange
-        Profile profile = null;
-
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Author(profile, "valid bio")
+                () -> new Author(null, "valid bio")
         );
         assertEquals("Profile cannot be null", exception.getMessage());    }
 

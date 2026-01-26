@@ -226,12 +226,7 @@ class ItemTest {
     void hashCode_shouldBeEqual_whenItemsAreEqual() {
         Item a = validItem();
 
-        Item b = itemWith(
-                a.getCondition(),
-                a.getWeight(),
-                a.getDimension(),
-                a.getPublication()
-        );
+        Item b = itemWith(a.getCondition(), a.getWeight(), a.getDimension(), a.getPublication());
 
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
