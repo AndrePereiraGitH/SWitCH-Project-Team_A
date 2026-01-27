@@ -1,72 +1,77 @@
 @startuml
-hide empty members
 hide circle
 skinparam classAttributeIconSize 0
 title US016 - Put a publication from my library for sale in an auction
 
 
-  class Library {
-    -library: List<Publications>
-    +getAllPublications() : List<Publication>
-  }
 
+class ToPutPublicationInAuctionController <<controller>> {
+  +getAllPublicationsInUserLibrary(username: String): List<Publication>
+  +putPublicationForAuction(
+    /'-pub: Publication,
+    -listingPrice: Price,
+    -shortDescription: String,
+    -listingTitle: String,
+    -seller: String,
+    -initialDate: DateTime,
+    -finalDate: DateTime,
+    -initialPrice: Price,
+    -buyOutPrice: Price'/
+  ): boolean
+}
 
-  class Publication {
-    -saleType : SaleType
-    +setSaleTypeAsAuction() : void
-  }
+class Library  {
+  +getAllPublications(): List<Publication>
+}
 
-  class Listing {
-    -item : Item
-    -price : Price
-    -seller : User
-  }
+class Publication
+class Item
+class Listing
+class Auction
 
+class ItemRepository <<repository>> {
+  +createAndAddItem(condition: Condition, weight: Weight, dimensions: Dimensions, pub: Publication): List<Item>
+  -verifyIfExists(): void
+  -add(): void
+}
 
-  class Auction {
-    -_listing : Listing
-    -_initialDate : LocalDateTime
-    -_finalDate : LocalDateTime
-    -_initialPrice : Price
-    -_buyOutPrice : Price
+class ListingRepository <<repository>> {
+  +create(): Listing
+  -isExistent(listing: Listing): boolean
+  -add(listing: Listing): void
+}
 
-    +Auction(listing, initialDate, finalDate, initialPrice, buyOutPrice)
-  }
+class AuctionRepository <<repository>> {
+  +createAndAdd(listing: Listing, initialDate: DateTime, finalDate: DateTime, initialPrice: Price, buyOutPrice: Price): Auction
+  -validateAuction(auction: Auction): void
+  -addAuction(auction: Auction): void
+}
 
-  class ItemRepository {
-    -items : List<Item>
+'======================
+' Controller uses
+'======================
+ToPutPublicationInAuctionController --> Library : retrieves publications from
+ToPutPublicationInAuctionController --> ItemRepository
+ToPutPublicationInAuctionController --> ListingRepository
+ToPutPublicationInAuctionController --> AuctionRepository
 
-    +createListOfItems()
-    +createAndAddItem(condition, weight,dimensions, pub1)
-    +
+'======================
+' Repositories handles with
+'======================
+ItemRepository ..> Item : creates/adds
+ItemRepository ..> Publication : uses pub
 
-  }
+ListingRepository ..> Listing : creates/adds
 
-  class ListingRepository {
-    -listings : List<Listing>
+AuctionRepository ..> Auction : creates/adds
+AuctionRepository ..> Listing : uses l1
 
-    +createAndAdd(itemsList, listingPrice, shortDescription, listingTitle, seller)
-  }
-
-  class AuctionRepository {
-    +createAuction(listing,initialDate, finalDate, buyOutPrice) : Auction
-  }
-
-  class ToPutPublicationInAuctionController {
-    +getAllPublicationsInUserLibrary(String username)
-    +putPublicationForAuction(pub1, listingPrice, shortDescription,\n listingTitle, seller, initialDate, finalDate, initialPrice, buyOutPrice) : Auction
-  }
-
-' -------------------- Relationships --------------------
-
-ToPutPublicationInAuctionController --> Library
-
-Library "1" o-- "*" Publication : contains
-
-ToPutPublicationInAuctionController ..> AuctionRepository
-AuctionRepository --> Auction
-ToPutPublicationInAuctionController ..> ListingRepository
-ListingRepository --> Listing : uses ListingRepo to create a Listing that will be auctioned
-ToPutPublicationInAuctionController ..> ItemRepository
+'======================
+' Domain interactions
+'======================
+Library "1" -- "*" Publication : contains
+Item "0..*" --> "1" Publication : publication
+Listing "1" o-- "1..*" Item : items
+Auction "1" --> "1" Listing : listing
 
 @enduml

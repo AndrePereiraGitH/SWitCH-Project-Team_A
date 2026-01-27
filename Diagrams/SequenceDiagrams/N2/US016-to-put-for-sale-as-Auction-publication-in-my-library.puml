@@ -26,14 +26,14 @@ User -> UI : I want to sell a publication of my library as an auction"
 activate UI
 
 /' ====== GET LIST OF PUBLICATIONS IN LIBRARY ========= '/
-UI -> ctrl : getAllPublicationsInLibrary()
+UI -> ctrl : getAllPublicationsInUserLibrary(username)
 activate ctrl
 ctrl -> Lib : getAllPublications()
 activate Lib
 create "listOfPublications:List<Publication>" as listPub
-Lib -> listPub : getAllPublications()
+Lib -> listPub : create()
 
-Lib -> Lib : Copy.of(listOfPublications)
+/'Lib -> Lib : Copy.of(listOfPublications)'/
 
 Lib --> ctrl : listOfPublications
 deactivate Lib
@@ -61,9 +61,9 @@ ctrl -> ItemRepo : createAndAddItem(condition, weight,dimensions, pub1)
 
 activate ItemRepo
 create "itemsList: List<Item>" as itemsList
-ItemRepo -> itemsList : createListOfItems
+ItemRepo -> itemsList : create()
 create "i1:Item" as i1
-ItemRepo --> i1 : createAndAddItem(condition, weight,dimensions, pub1)
+ItemRepo --> i1 : create()
 
 ItemRepo -> ItemRepo : verifyIfExists()
 ItemRepo -> ItemRepo : add
@@ -74,10 +74,10 @@ deactivate ItemRepo
 
 /' ====== ===== LISTING ========= '/
 
-ctrl -> ListingRepo : createAndAdd(itemsList, listingPrice, shortDescription, listingTitle, seller)
+ctrl -> ListingRepo : create()
 activate ListingRepo
 create "l1:Listing" as l1
-ListingRepo -> l1 : createAndAdd(itemsList, listingPrice, shortDescription, listingTitle, seller)
+ListingRepo -> l1 : create()
 ListingRepo -> ListingRepo : isExistent(l1)
 ListingRepo -> ListingRepo : add(l1)
 ListingRepo --> ctrl : l1
@@ -87,7 +87,7 @@ deactivate ListingRepo
 ctrl -> AucRepo : createAndAdd(l1, initialDate, finalDate, initialPrice, buyOutPrice)
 activate AucRepo
 create "auction1:Auction" as a1
-AucRepo -> a1 : createAndAdd(l1, initialDate, finalDate, initialPrice, buyOutPrice)
+AucRepo -> a1 : create()
 
 AucRepo -> AucRepo : validateAuction(auction1)
 AucRepo -> AucRepo : addAuction(auction1)
