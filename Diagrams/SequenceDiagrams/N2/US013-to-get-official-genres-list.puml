@@ -11,6 +11,12 @@ participant ":ListAllGenresGenreController" as AddGenreCtrl
 
 participant ":GenreRepository" as GenreRepository
 
+participant ":GenreMapper" as mapper
+
+participant ":Genre" as genre
+
+participant "genreDTO:GenreDTO" as DTO
+
 User -> UI : I want to get a list of official genres in the system
 activate UI
 UI -> AddGenreCtrl : getGenresList()
@@ -19,10 +25,32 @@ activate AddGenreCtrl
 AddGenreCtrl -> GenreRepository : findAllGenres()
 activate GenreRepository
 
-GenreRepository --> AddGenreCtrl : List<Genre>
-deactivate GenreRepository
+create "_genres:List<Genre>" as listGenres
+GenreRepository -> listGenres : create()
 
-AddGenreCtrl --> UI : List<Genre>
+GenreRepository --> AddGenreCtrl : _genres
+
+deactivate GenreRepository
+AddGenreCtrl -> mapper : toDTO(_genres)
+activate mapper
+
+create "_genresDTO : List<genresDTO>" as genDTO
+mapper -> genDTO :create()
+
+loop for each Genre in list
+        mapper -> genre : getGenreType()
+        activate genre
+        genre --> mapper : genreType
+        deactivate genre
+        mapper -> DTO ** : createDTO(genreType)
+        mapper -> mapper : addToGenresDTO()
+
+    end
+
+mapper --> AddGenreCtrl : _genresDTO
+deactivate mapper
+
+AddGenreCtrl --> UI : _genresDTO
 deactivate AddGenreCtrl
 
 UI --> User : Official List of Genres
