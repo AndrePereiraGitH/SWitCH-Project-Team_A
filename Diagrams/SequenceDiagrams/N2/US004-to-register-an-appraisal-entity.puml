@@ -2,62 +2,151 @@
 
 hide footbox
 autonumber
-
-title US004 - To Register an Appraisal Entity
-
+title US004 - Register Appraisal Entity (DTO + Mapper)
 
 actor Administrator
 participant ":UI004" as UI
-participant ":US004ToRegisterAppraisalEntityController" as RegisterAppraisalController
-participant ":AppraisalEntityRepository" as AppraisalEntityRepository
-participant ":List<AppraisalEntity>"
+participant ":US004ToRegisterAppraisalEntityController" as Controller
 
+participant ":GenreRepository" as GenreRepo
+participant ":GenreMapper" as GenreMapper
 
-' Human communication started by Administrator
-Administrator -> UI : I want to register an Appraisal Entity in the system
+participant "listOfGenreDTO:List<GenreDTO>" as GenreDTO
+participant ":Genre" as Genre
+participant "Genre: GenreDTO" as GDTO
+
+participant ":PublicationTypeRepository" as PubTypeRepo
+participant ":PublicationTypeMapper" as PubTypeMapper
+
+participant "listOfPublicationTypDTO:List<PubTypeDTO>" as PubTypeDTO
+participant ":PublicationType" as PublicationType
+participant "PublicationType: PubTypeDTO" as PDTO
+
+participant ":AppraisalEntityRepository" as AppraisalRepo
+participant ":List<AppraisalEntity>" as AppraisalList
+
+' --- Start ---
+Administrator -> UI : I want to register an Appraisal Entity
 activate UI
-UI -->> Administrator : Provide the information for the New Appraisal Entity
+
+' =========================
+' Get Genres (DTO)
+' =========================
+UI -> Controller : requestGenres()
+activate Controller
+
+Controller -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo --> Controller : List<Genre>
+deactivate GenreRepo
+
+Controller -> GenreMapper : toDTO(List<Genre>)
+activate GenreMapper
+
+' ----- Loop ----
+GenreMapper -> GenreDTO** : create()
+
+    loop for each publicationType in list
+        GenreMapper -> Genre: getDetails(listOfGenreDTO)
+        activate Genre
+        Genre --> GenreMapper: GenreDetailsDTO
+        deactivate Genre
+        GenreMapper -> GDTO **: createDTO(GenreDetailsDTO)
+
+
+        GenreMapper -> GenreMapper: listOfGenreDTO.add(GenreDetailsDTO)
+    end
+
+' ----- End loop ----
+
+GenreMapper --> Controller : List<GenreDTO>
+deactivate GenreMapper
+
+Controller --> UI : List<GenreDTO>
+deactivate Controller
+
+UI --> Administrator : Display available Genres
 deactivate UI
 
-
-Administrator -> UI : For the new Appraisal Entity, here's the information
-
+Administrator -> UI : Selected 1..* Genres
 activate UI
-' First contact between UI and the System
-UI -> RegisterAppraisalController : registerAppraisalEntity(name, contact, genre, publicationType)
-activate RegisterAppraisalController
+' =========================
+' Get Publication Types (DTO)
+' =========================
+UI -> Controller : requestPublicationTypes()
+activate Controller
 
-' Communication between RegisterAppraisalController and AppraisalEntityRepository
-RegisterAppraisalController -> AppraisalEntityRepository : createAndAddAppraisalEntity(name, contact, genre, publicationType)
-activate AppraisalEntityRepository
+Controller -> PubTypeRepo : getAllPublicationTypes()
+activate PubTypeRepo
+PubTypeRepo --> Controller : List<PublicationType>
+deactivate PubTypeRepo
 
-' Creation of new AppraisalEntity
-create "apEn: AppraisalEntity" as AppraisalEntity
+Controller -> PubTypeMapper : toDTO(List<PublicationType>)
+activate PubTypeMapper
 
-' Creation, validation and addition made in AppraisalEntityRepository
-AppraisalEntityRepository -> AppraisalEntity : createAppraisalEntity(name, contact, genre, publicationType)
+' ----- Loop ----
+PubTypeMapper -> PubTypeDTO** : create()
 
-AppraisalEntityRepository -> ":List<AppraisalEntity>" : existAppraisalEntity(apEn)
-activate ":List<AppraisalEntity>"
-":List<AppraisalEntity>" -->> AppraisalEntityRepository : false
-deactivate ":List<AppraisalEntity>"
+    loop for each publicationType in list
+        PubTypeMapper -> PublicationType: getDetails(listOfPubTypeDTO)
+        activate PublicationType
+        PublicationType --> PubTypeMapper: PubTypeDetailsDTO
+        deactivate PublicationType
+        PubTypeMapper -> PDTO **: createDTO(PubTypeDetailsDTO)
 
-' Adding new appraisal entity
-AppraisalEntityRepository -> ":List<AppraisalEntity>" : add(apEn)
 
-activate ":List<AppraisalEntity>"
-":List<AppraisalEntity>" -->> AppraisalEntityRepository : apEn added to the AppraisalEntityList
-deactivate
+        PubTypeMapper -> PubTypeMapper: listOfPubTypeDTO.add(PubTypeDetailsDTO)
+    end
 
-' Return from AppraisalEntityRepository to RegisterAppraisalController
-AppraisalEntityRepository --> RegisterAppraisalController : apEn
-deactivate AppraisalEntityRepository
+' ----- End loop ----
 
-' Return from RegisterAppraisalController to the UI
-RegisterAppraisalController --> UI : Success
-deactivate RegisterAppraisalController
+PubTypeMapper --> Controller : List<PublicationTypeDTO>
+deactivate PubTypeMapper
 
-' Return from UI to Administrator
-UI --> Administrator :  Success
+Controller --> UI : List<PublicationTypeDTO>
+deactivate Controller
+
+UI --> Administrator : Display available Publication Types
 deactivate UI
+
+Administrator -> UI : Selected 1..* Publication Types
+activate UI
+' =========================
+' Register Appraisal Entity
+' =========================
+UI -> Controller : registerAppraisalEntity(name, contact, selectedGenresDTO : List<GenreDTO>, selectedPublicationTypesDTO : List<PublicationTypeDTO> )
+activate Controller
+
+' Convert DTO -> Domain
+Controller -> GenreMapper : toDomain(selectedGenresDTO)
+GenreMapper --> Controller : List<Genre>
+
+Controller -> PubTypeMapper : toDomain(selectedPublicationTypesDTO)
+PubTypeMapper --> Controller : List<PublicationType>
+
+Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, genres : List<Genre>, publicationTypes : List<PublicationType> )
+activate AppraisalRepo
+
+create "apEn : AppraisalEntity" as AppraisalEntity
+AppraisalRepo --> AppraisalEntity : create(...)
+
+AppraisalRepo -> AppraisalList : exists(apEn)
+activate AppraisalList
+AppraisalList --> AppraisalRepo : false
+deactivate AppraisalList
+
+AppraisalRepo -> AppraisalList : add(apEn)
+activate AppraisalList
+AppraisalList --> AppraisalRepo : apEn added
+deactivate AppraisalList
+
+AppraisalRepo --> Controller : apEn
+deactivate AppraisalRepo
+
+Controller --> UI : Success
+deactivate Controller
+
+UI --> Administrator : Success
+deactivate UI
+
 @enduml

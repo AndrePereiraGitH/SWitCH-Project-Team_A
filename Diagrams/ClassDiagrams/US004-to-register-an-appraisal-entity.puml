@@ -14,7 +14,6 @@ class AppraisalEntityRepository {
 }
 
 class "List<AppraisalEntity>" {
-  +addAppraisalEntityToAppraisalList (apEntity: AppraisalEntity)
 }
 
 
@@ -36,13 +35,13 @@ class PublicationType {
   -details : String
 }
 
-class Contact {
+/' class Contact {
   -phoneNum: String
   -extension: String
   -email: Email
   -location: Address
 }
-
+'/
 ' Interactions
 
 US004ToRegisterAppraisalEntity "1 " -- "1 " AppraisalEntityRepository : request registration to >
