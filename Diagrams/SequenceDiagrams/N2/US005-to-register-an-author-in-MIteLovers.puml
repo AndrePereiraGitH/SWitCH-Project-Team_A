@@ -40,11 +40,14 @@ activate R
  deactivate A
 
 
-
+alt author already exists
+  R -->> C : Author already exists
+  C -->> UI : Author already exists
+  UI -->> Administrator : Author already exists
+else author does NOT exist
   R -> R : addToList(author1)
-
   R -->> C :  author1
-
+end
 deactivate R
 C -->> UI :  success
 deactivate C

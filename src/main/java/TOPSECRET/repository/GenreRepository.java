@@ -31,8 +31,8 @@ public class GenreRepository {
     }
 
     private boolean exists(Genre genre) {
-        for (Genre newGenre : this._genres) {
-            if (genre.equals(newGenre)) {
+        for (Genre existingGenre : this._genres) {   
+            if (genre.equals(existingGenre)) {
                 return true;
             }
         }

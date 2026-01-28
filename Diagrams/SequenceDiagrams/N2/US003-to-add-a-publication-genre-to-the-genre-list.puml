@@ -9,7 +9,6 @@ participant ":UI003" as UI
 participant ":ToRegisterGenreController" as RegisterGenreController
 
 participant ":GenreRepository" as GenreRepository
-participant ":List<Genre>" as LG
 
 Administrator -> UI : **1** I want to add a new genre to the official list
 
@@ -29,9 +28,14 @@ activate GenreRepository
 
   GenreRepository -> Genre : **6** create(genreType)
   GenreRepository -> GenreRepository : **7** exists(romance)
-
-  GenreRepository -> LG : **8** addToList(romance)
+  alt genre already exists
+    GenreRepository -->> RegisterGenreController : Genre already exists
+    RegisterGenreController -->> UI : Genre already exists
+    UI -->> Administrator : Genre already exists
+  else genre does NOT exist
+  GenreRepository -> GenreRepository : **8** addToList(romance)
   GenreRepository  -->> RegisterGenreController : **9** romance
+  end
 
 
 deactivate GenreRepository
