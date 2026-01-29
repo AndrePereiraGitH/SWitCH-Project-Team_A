@@ -10,7 +10,6 @@ participant ":US020PublicListByGenreController" as Controller
 participant ":GenreRepository" as GenreRepo
 participant ":CollectionOfPublicationsRepository" as CollectionRepo
 participant "CollectionOfPublications" as Collection
-participant "CollectionOfPublicationsDTO" as DTO
 
 User -> UI : Request public lists by genre
 UI -> Controller : getGenres()
@@ -19,21 +18,27 @@ activate Controller
 Controller -> GenreRepo : getAllGenres()
 GenreRepo --> Controller : List<Genre>
 Controller --> UI : List<Genre>
+UI --> User : Select genre (List<Genre>)
 deactivate Controller
 
-User -> UI : Select genre (genreId)
+User -> UI : Selected (genreId)
 UI -> Controller : getPublicListsByGenre(genreId)
 
 activate Controller
 Controller -> CollectionRepo : findPublicByGenre(genreId)
 activate CollectionRepo
 
-loop for each CollectionOfPublications in repository
-  CollectionRepo -> Collection : getIsPrivate()
+CollectionRepo -> CollectionRepo : result = new List<CollectionOfPublicationsDTO>()
+
+loop for each CollectionOfPublications in CollectionOfPublicationsRepo
+  CollectionRepo -> Collection : isPrivate()
+  Collection --> CollectionRepo : return isPrivate
   CollectionRepo -> Collection : getCollectionGenre()
-  CollectionRepo -> Collection : getCollectionName()
-  CollectionRepo -> Collection : getOwner().getUserName()
-  CollectionRepo -> DTO : new CollectionOfPublicationsDTO(listName, ownerUsername)
+  Collection --> CollectionRepo : return collectionGenre
+  alt if is NOT private and matches genreId
+    create CollectionOfPublicationsDTO
+    CollectionRepo -> CollectionOfPublicationsDTO : result.add new CollectionOfPublicationsDTO(getCollectionName(), getOwner())
+  end
 end
 
 CollectionRepo --> Controller : List<CollectionOfPublicationsDTO>
@@ -41,6 +46,6 @@ deactivate CollectionRepo
 Controller --> UI : List<CollectionOfPublicationsDTO>
 deactivate Controller
 
-UI --> User : Display list summaries
+UI --> User : List of public lists by requested genre
 
 @enduml

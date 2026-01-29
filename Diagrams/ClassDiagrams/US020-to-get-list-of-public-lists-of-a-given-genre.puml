@@ -47,7 +47,7 @@ US020_PublicListByGenreController --> GenreRepository : queries
 US020_PublicListByGenreController --> CollectionOfPublicationsRepository : queries
 
 CollectionOfPublicationsRepository --> CollectionOfPublications : reads
-CollectionOfPublicationsRepository ..> CollectionOfPublicationsDTO : creates
+CollectionOfPublicationsRepository --> CollectionOfPublicationsDTO : creates
 
 CollectionOfPublications "0..*" --> "1" Genre : has
 CollectionOfPublications "0..*" --> "1" User : owned by

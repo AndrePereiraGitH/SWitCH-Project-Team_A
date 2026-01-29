@@ -8,7 +8,7 @@ actor Administrator
 participant ":UI002" as UI
 participant ":US002RegisterPubTypeController" as Ctrl
 participant ":PublicationTypeRepository" as Repo
-participant ":PublicationType" as PubType
+
 
 Administrator -> UI : I want to register a Publication Type in the system
 UI -->> Administrator : Please enter mediaFormat, typeOfBinding, details
@@ -20,17 +20,20 @@ activate Ctrl
 Ctrl -> Repo : createPublicationType(mediaFormat, typeOfBinding, details)
 
 activate Repo
-deactivate PubType
 
-Repo -> PubType ++ : createPublicationType(mediaFormat, typeOfBinding, details)
-Repo -> Repo : validatePublicationType(PubType)
-
-Repo -> Repo : addToList(PubType)
-
-Repo --> Ctrl : PubType
+create PublicationType
+Repo -> PublicationType: create (mediaFormat, typeOfBinding, details)
+PublicationType --> Repo : pubType
+Repo --> Ctrl : pubType
 deactivate Repo
 
-Ctrl --> UI : PubType
+Ctrl -> Repo : addToList(pubType)
+activate Repo
+Repo -> Repo : validatePublicationType(pubType)
+Repo --> Ctrl : pubType
+deactivate Repo
+
+Ctrl --> UI : Success
 deactivate Ctrl
 
 UI --> Administrator : Success
