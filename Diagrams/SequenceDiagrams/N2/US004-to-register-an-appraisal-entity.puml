@@ -32,7 +32,7 @@ activate UI
 ' =========================
 ' Get Genres (DTO)
 ' =========================
-UI -> Controller : requestGenres()
+UI -> Controller : getAllGenres()
 activate Controller
 
 Controller -> GenreRepo : getAllGenres()
@@ -46,7 +46,7 @@ activate GenreMapper
 ' ----- Loop ----
 GenreMapper -> GenreDTO** : create()
 
-    loop for each publicationType in list
+    loop for each genre in the list
         GenreMapper -> Genre: getDetails(listOfGenreDTO)
         activate Genre
         Genre --> GenreMapper: GenreDetailsDTO
@@ -73,7 +73,7 @@ activate UI
 ' =========================
 ' Get Publication Types (DTO)
 ' =========================
-UI -> Controller : requestPublicationTypes()
+UI -> Controller : getAllPublicationTypes()
 activate Controller
 
 Controller -> PubTypeRepo : getAllPublicationTypes()
@@ -85,9 +85,9 @@ Controller -> PubTypeMapper : toDTO(List<PublicationType>)
 activate PubTypeMapper
 
 ' ----- Loop ----
-PubTypeMapper -> PubTypeDTO** : create()
+PubTypeMapper -->> PubTypeDTO** : create()
 
-    loop for each publicationType in list
+    loop for each publicationType in the list
         PubTypeMapper -> PublicationType: getDetails(listOfPubTypeDTO)
         activate PublicationType
         PublicationType --> PubTypeMapper: PubTypeDetailsDTO
@@ -119,16 +119,21 @@ activate Controller
 
 ' Convert DTO -> Domain
 Controller -> GenreMapper : toDomain(selectedGenresDTO)
+activate GenreMapper
 GenreMapper --> Controller : List<Genre>
 
-Controller -> PubTypeMapper : toDomain(selectedPublicationTypesDTO)
-PubTypeMapper --> Controller : List<PublicationType>
+deactivate GenreMapper
 
-Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, genres : List<Genre>, publicationTypes : List<PublicationType> )
+Controller -> PubTypeMapper : toDomain(selectedPublicationTypesDTO)
+activate PubTypeMapper
+PubTypeMapper --> Controller : List<PublicationType>
+deactivate PubTypeMapper
+
+Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, List<Genre>, List<PublicationType>)
 activate AppraisalRepo
 
 create "apEn : AppraisalEntity" as AppraisalEntity
-AppraisalRepo --> AppraisalEntity : create(...)
+AppraisalRepo --> AppraisalEntity : create(name, contact, List<Genre>, List<PublicationType>)
 
 AppraisalRepo -> AppraisalList : exists(apEn)
 activate AppraisalList
@@ -137,7 +142,7 @@ deactivate AppraisalList
 
 AppraisalRepo -> AppraisalList : add(apEn)
 activate AppraisalList
-AppraisalList --> AppraisalRepo : apEn added
+AppraisalList --> AppraisalRepo : apEn
 deactivate AppraisalList
 
 AppraisalRepo --> Controller : apEn
