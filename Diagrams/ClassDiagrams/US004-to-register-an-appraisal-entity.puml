@@ -1,57 +1,104 @@
 @startuml
-title US004 - To Register A Appraisal Entity
+title US004 - Register Appraisal Entity (Class Diagram)
 
-class US004ToRegisterAppraisalEntity {
-  +registerAppraisalEntity (name: String, contact: Contact, publicationType: PublicationType, genre: Genre)
+' =========================
+' UI
+' =========================
+class ":UI004" {
 }
 
-class AppraisalEntityRepository {
-  +createAndAddToAppraisalEntityList(name: String, contact: Contact, publicationType: PublicationType, genre: Genre)
-  +existAppraisalEntity () : boolean
-' Those methods are part of createAndRegisterAppraisalEntity
-'  +validateAppraisalEntity(ae: AppraisalEntity) : boolean
-'  +addToAppraisalEntityList(ae: AppraisalEntity) : void
+' =========================
+' Controller
+' =========================
+class ":US004ToRegisterAppraisalEntityController" {
+    +getAllGenres()
+    +getAllPublicationTypes()
+    +registerAppraisalEntity()
 }
 
-class "List<AppraisalEntity>" {
+' =========================
+' Genre
+' =========================
+class ":GenreRepository" {
+    -listOfGenre : List<Genre>
+    +getAllGenres()
+}
+
+class ":GenreMapper" {
+    -listOfGenreDTO : List<GenreDTO>
+    +toDTO(allGenreList)
+}
+
+class ":Genre" {
+    +getTitle()
+}
+
+' class "GenreDetailsDTO" {
+' }
+
+' class "GenreDTO" {
+' }
+
+' =========================
+' Publication Type
+' =========================
+class ":PublicationTypeRepository" {
+    -listOfPublicationType : List<PublicationType>
+    +getAllPublicationTypes()
+}
+
+class ":PublicationTypeMapper" {
+    -listOfPubTypeDTO : List<PubTypeDTO>
+    +toDTO(List<PublicationType>)
+}
+
+class ":PublicationType" {
+    +getDetails(listOfPubTypeDTO)
+}
+
+' class "PubTypeDTO" {
+' }
+
+' class "PubTypeDetailsDTO" {
+' }
+
+' =========================
+' Appraisal Entity
+' =========================
+class ":AppraisalEntityRepository" {
+    -lisOfAppraisalEntity: List<AppraisalEntity>
+    +createAndAddAppraisalEntity()
+}
+
+class "AppraisalEntity" {
+    -name : String
+    -contact : Contact
+    -selectedGenres : List<Genre>
+    -selectedPublicationType : List<PublicationType>
 }
 
 
-class AppraisalEntity {
-  -name: String
-  -contact: Contact
-  -publicationType: PublicationType
-  -genre: Genre
-}
+' =========================
+' Relationships
+' =========================
+":UI004" ..> ":US004ToRegisterAppraisalEntityController" : delegates to
 
+":US004ToRegisterAppraisalEntityController" "1" ---> "1  " ":GenreRepository" : requests a list of
+":US004ToRegisterAppraisalEntityController" "1      " ....> "1  " ":GenreMapper" : invokes
 
-class Genre {
-  -genreType : String
-}
+":GenreMapper" "1    " ..> "1..*  " ":Genre" : converts
+' ":GenreMapper" --> "GenreDetailsDTO"
+":GenreMapper" "1  " ..> "1..*  " "GenreDTO" : produces
 
-class PublicationType {
-  -mediaFormat : MediaFormat
-  -typeOfBiding : TypeOfBinding
-  -details : String
-}
+":US004ToRegisterAppraisalEntityController" "1 " ---> "1 " ":PublicationTypeRepository" : requests a list of
+":US004ToRegisterAppraisalEntityController" "1 " ....> "1  " ":PublicationTypeMapper" : invokes
 
-/' class Contact {
-  -phoneNum: String
-  -extension: String
-  -email: Email
-  -location: Address
-}
-'/
-' Interactions
+":PublicationTypeMapper" "  1      " ..> "1..* " ":PublicationType" : converts
+' ":PublicationTypeMapper" ..> "PubTypeDTO" : produces
+":PublicationTypeMapper" "1 " ..> "1..*   " "PubTypeDetailsDTO" : produces
 
-US004ToRegisterAppraisalEntity "1 " -- "1 " AppraisalEntityRepository : request registration to >
-AppraisalEntityRepository  .------- AppraisalEntity : creates / manages >
-AppraisalEntityRepository "1    " --- " 1  " "List<AppraisalEntity>" : has >
+":US004ToRegisterAppraisalEntityController" "1 " ---> "1      " ":AppraisalEntityRepository" : requests registration to
 
-"List<AppraisalEntity>" "1 " -- " *  " AppraisalEntity : contains >
-"List<AppraisalEntity>" "1  " ---- " * " "Genre" : has >
-"List<AppraisalEntity>" "1" ---- " 1  " PublicationType : has >
-
+":AppraisalEntityRepository" "1 " ..> " *   " "AppraisalEntity" : can create
 
 @enduml
-
