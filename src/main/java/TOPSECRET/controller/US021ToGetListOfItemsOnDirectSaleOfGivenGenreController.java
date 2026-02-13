@@ -21,7 +21,7 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
     }
 
 
-    // Vai buscar todos os géneros para o usuário escolher
+    // Vai buscar todos os géneros para o utilizador escolher
     public List<Genre> getAllGenres(){
         return genreRepository.getAllGenres();
     }

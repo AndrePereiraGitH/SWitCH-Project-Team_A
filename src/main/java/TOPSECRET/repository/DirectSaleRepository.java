@@ -60,7 +60,7 @@ public class DirectSaleRepository {
         }
         return listOfItems;
     }
-
+// end
 
     // US023 Start --------------------------------------------------------------------------------------------------
     public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {
