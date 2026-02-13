@@ -11,28 +11,56 @@ public class DirectSaleRepository {
     private List<DirectSale> _directSaleList;
 
     public DirectSaleRepository(List<DirectSale> directSaleList) {
-        _directSaleList =  new ArrayList<>(directSaleList);
+        _directSaleList = new ArrayList<>(directSaleList);
     }
 
-    public boolean createAndAddDirectSale(Listing listing, LocalDateTime directSaleDate){
+    public boolean createAndAddDirectSale(Listing listing, LocalDateTime directSaleDate) {
 
         DirectSale directSaleToBeCreated = new DirectSale(listing, directSaleDate);
 
-        if(ifDirectSaleExists(directSaleToBeCreated)){
+        if (ifDirectSaleExists(directSaleToBeCreated)) {
             return false;
         }
         _directSaleList.add(directSaleToBeCreated);
         return true;
     }
 
-    public boolean ifDirectSaleExists(DirectSale dirSale){
-        for(DirectSale directSale: _directSaleList){
-            if(dirSale.equals(directSale)){
+    public DirectSale createAndAddDirectSaleReturn(Listing listing, LocalDateTime directSaleDate) {
+
+        DirectSale directSaleToBeCreated = new DirectSale(listing, directSaleDate);
+
+        if (ifDirectSaleExists(directSaleToBeCreated)) {
+            throw new IllegalArgumentException("Instance already exists");
+        }
+        _directSaleList.add(directSaleToBeCreated);
+        return directSaleToBeCreated;
+    }
+
+    public boolean ifDirectSaleExists(DirectSale dirSale) {
+        for (DirectSale directSale : _directSaleList) {
+            if (dirSale.equals(directSale)) {
                 return true;
             }
         }
         return false;
     }
+
+    // US021 --------------------------------------------------------------------------------------------------
+    public List<DirectSale> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
+
+        List<DirectSale> listOfItems = new ArrayList<>();
+
+        for (DirectSale directSale : _directSaleList) { // Percorre as direct sales
+            for (Item item : directSale.getListing().getItems()) { // Percorre de item a item de uma direct sale
+                if (item.getPublication().getBibliographicalData().getGenres().contains(genre)) { // Verifica se é o género pretendido
+                    listOfItems.add(directSale);// Adiciona o item à lista de direct sale
+                    break;
+                }
+            }
+        }
+        return listOfItems;
+    }
+
 
     // US023 Start --------------------------------------------------------------------------------------------------
     public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {

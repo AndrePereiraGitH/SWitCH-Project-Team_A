@@ -26,8 +26,11 @@ public class GenreRepository {
         throw new IllegalArgumentException("Genre already exists");
     }
 
+
+    // US021, US022
     public List<Genre> getAllGenres() {
-        return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
+        List<Genre> copiedList = List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
+        return copiedList;
     }
 
     private boolean exists(Genre genre) {

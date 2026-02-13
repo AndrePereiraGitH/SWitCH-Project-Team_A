@@ -41,11 +41,18 @@ class DirectSale {
   - directSaleDate: LocalDateTime
   +getDetails()
 }
+
+class Item{
+-condition: Condition
+
+
+}
+
 ' Interactions
 
-UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreRepository : uses
+UI021 --> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController --> DirectSaleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController --> GenreRepository : uses
 
 'tirei
 'ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreMapper_US021 : uses
@@ -55,8 +62,8 @@ ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreRepository : use
 'ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper_US021 : uses
 'DirectSaleMapper_US021 ..> DirectSaleDTO_US021 : maps to
 
-GenreRepository ..> Genre : stores
-DirectSaleRepository ..> DirectSale : stores
+GenreRepository --> Genre : stores
+DirectSaleRepository --> DirectSale : stores
 
 
 @enduml
