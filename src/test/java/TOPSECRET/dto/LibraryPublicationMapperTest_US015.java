@@ -59,7 +59,7 @@ class LibraryPublicationMapperTest_US015 {
     Code code2 = Code.fromIsbn10("1234567899");
 
     //PublicationType
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
 
     Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,
@@ -82,7 +82,7 @@ class LibraryPublicationMapperTest_US015 {
         assertEquals("Childhood, Youth, Dependency: The Copenhagen Trilogy", dto.pubTitle);
         assertEquals(List.of("Tove Ditlevsen"), dto.authorName);
         assertEquals("1234567890", dto.code);
-        assertEquals("BOOK", dto.publicationType);
+        assertEquals("Paperback", dto.publicationType);
     }
 
 

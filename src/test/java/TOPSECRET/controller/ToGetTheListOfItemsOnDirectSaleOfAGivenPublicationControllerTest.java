@@ -91,7 +91,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
                 "Some text"
         );
 
-        publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+        publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
         user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
         publicationStatus = PublicationStatus.FOR_SALE;
 

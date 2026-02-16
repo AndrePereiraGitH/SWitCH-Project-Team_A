@@ -25,7 +25,7 @@ class PublicationTypeMapper_US014Test {
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         PublicationType type =
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
+                new PublicationType(TypeOfBinding.HARDBACK, "Hardback");
 
         List<PublicationTypeDTO_US014> result =
                 mapper.toDTO(List.of(type));
@@ -33,7 +33,6 @@ class PublicationTypeMapper_US014Test {
         assertEquals(1, result.size());
 
         PublicationTypeDTO_US014 dto = result.get(0);
-        assertEquals("BOOK", dto._mediaFormat);
         assertEquals("HARDBACK", dto._typeOfBinding);
         assertEquals("Hardback", dto._details);
     }
@@ -43,10 +42,10 @@ class PublicationTypeMapper_US014Test {
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         PublicationType t1 =
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
+                new PublicationType(TypeOfBinding.HARDBACK, "Hardback");
 
         PublicationType t2 =
-                new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Paperback");
+                new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
         List<PublicationTypeDTO_US014> result =
                 mapper.toDTO(List.of(t1, t2));

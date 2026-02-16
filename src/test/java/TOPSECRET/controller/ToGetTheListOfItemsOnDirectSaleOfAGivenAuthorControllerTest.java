@@ -73,7 +73,6 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
 
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Hardcover edition"
         );

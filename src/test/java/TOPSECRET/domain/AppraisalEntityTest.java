@@ -22,7 +22,6 @@ class AppraisalEntityTest {
     // Creates a valid PublicationType for testing
     private PublicationType createValidPublicationType() {
         return new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );
@@ -41,7 +40,6 @@ class AppraisalEntityTest {
     // Static helper used by MethodSource
     private static PublicationType createValidPublicationTypeStatic() {
         return new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );

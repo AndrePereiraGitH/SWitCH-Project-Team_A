@@ -57,7 +57,7 @@ class MagazineTest {
                 "Text"
         );
         // PublicationType
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+        PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
         // User
         User user = new User("user01", contact, profile, UserRole.NORMAL_USER);

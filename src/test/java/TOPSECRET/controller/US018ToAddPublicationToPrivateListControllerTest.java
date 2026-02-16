@@ -68,7 +68,6 @@ class US018ToAddPublicationToPrivateListControllerTest {
         );
 
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );

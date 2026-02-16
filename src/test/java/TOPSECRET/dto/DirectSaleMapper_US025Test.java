@@ -43,7 +43,7 @@ class DirectSaleMapper_US025Test {
                 200,
                 "Some text"
         );
-        return new Publication(biblio, new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardcover"),
+        return new Publication(biblio, new PublicationType(TypeOfBinding.HARDBACK, "Hardcover"),
                 seller, PublicationStatus.FOR_SALE, "12", new Code("123", "123", "123"));
     }
 

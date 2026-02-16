@@ -68,7 +68,7 @@ class GetListOfPublicationsInLibraryControllerTest {
     Code code2 = Code.fromIsbn10("1234567899");
 
     //PublicationType
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
 
     Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,

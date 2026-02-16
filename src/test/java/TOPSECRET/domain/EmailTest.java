@@ -79,4 +79,18 @@ class EmailTest {
         // Attempting to create an Email with an invalid domain must fail
         assertThrows(IllegalArgumentException.class, () -> new Email("john", domain));
     }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnCorrectUserName(String userName) {
+        Email email = new Email("john", "gmail.com");
+        assertEquals("john", email.getUserName());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnCorrectDomain(String domain) {
+        Email email = new Email("john", "gmail.com");
+        assertEquals("gmail.com", email.getDomain());
+    }
 }

@@ -29,7 +29,7 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     Email email = new Email("maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
     Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
     BibliographicalData bd = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",

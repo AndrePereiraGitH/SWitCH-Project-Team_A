@@ -88,7 +88,7 @@ class PublicationRepositoryTest {
 
 
     //PublicationType
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
     //Publications
     Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,

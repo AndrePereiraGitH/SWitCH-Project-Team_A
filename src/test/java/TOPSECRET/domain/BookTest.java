@@ -58,7 +58,7 @@ class BookTest {
         BibliographicalData information = sampleInformation();
 
         PublicationType publicationType =
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
+                new PublicationType(TypeOfBinding.HARDBACK, "Hardback");
 
         // --- minimal User created here ---
 

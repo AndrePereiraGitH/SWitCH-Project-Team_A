@@ -60,7 +60,6 @@ class CollectionOfPublicationsRepositoryTest {
         );
 
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );

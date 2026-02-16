@@ -855,7 +855,6 @@ class AuctionTest {
     private static Publication createValidPublication(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );

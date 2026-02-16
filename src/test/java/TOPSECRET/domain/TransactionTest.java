@@ -340,7 +340,6 @@ class TransactionTest {
 
     private static PublicationType createValidPublicationType() {
         return new PublicationType(
-                MediaFormat.BOOK,            // adjust if needed
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );

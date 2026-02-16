@@ -62,7 +62,7 @@ class ListingRepositoryTest {
 
 
     private Publication instaciatePublication() {
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "some details");
+        PublicationType pubType = new PublicationType(TypeOfBinding.PAPERBACK, "some details");
         Publication pub = new Publication(instantiateBibliographicalData(), pubType, instantiateUser("Owner"), PublicationStatus.FOR_SALE, "2Edition", Code.fromIsbn13("ghjgajhsggkdagdk"));
 
         return pub;

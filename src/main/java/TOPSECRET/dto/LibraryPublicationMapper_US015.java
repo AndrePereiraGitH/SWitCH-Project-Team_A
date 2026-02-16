@@ -1,3 +1,4 @@
+
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author;
@@ -17,7 +18,7 @@ public class LibraryPublicationMapper_US015 {
             authorsDTO.add(author.getProfile().getName());
         }
 
-        String typeDTO = String.valueOf(publication.getPublicationType().getMediaFormat());
+        String typeDTO = String.valueOf(publication.getPublicationType().getTypeOfBinding());
         String codeDTO = String.valueOf(publication.getCode());
 
         return new LibraryPublicationDTO_US015(titleDTO, authorsDTO, codeDTO, typeDTO);
@@ -36,5 +37,4 @@ public class LibraryPublicationMapper_US015 {
 
 
 }
-
 

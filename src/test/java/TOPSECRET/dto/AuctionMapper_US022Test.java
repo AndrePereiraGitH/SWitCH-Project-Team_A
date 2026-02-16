@@ -148,7 +148,7 @@ class AuctionMapper_US022Test {
 
         Publication publication = new Publication(
                 bd,
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"),
+                new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"),
                 seller,
                 PublicationStatus.FOR_SALE,
                 "1st",

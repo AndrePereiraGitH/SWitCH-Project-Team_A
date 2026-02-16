@@ -71,7 +71,6 @@ class CartTest {
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );

@@ -48,7 +48,7 @@ class DirectSaleMapper_US023Test {
     private Publication publication(String title, Author author) {
         return new Publication(
                 bd (title, author),
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "PB"),
+                new PublicationType(TypeOfBinding.PAPERBACK, "PB"),
                 new User("seller", null, profile("Seller"), UserRole.NORMAL_USER),
                 PublicationStatus.FOR_SALE,
                 "1st",

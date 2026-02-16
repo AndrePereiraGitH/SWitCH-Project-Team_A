@@ -59,7 +59,7 @@ class PublicationDetailsMapperTest {
     Code code2 = Code.fromIsbn10("1234567899");
 
     //PublicationType
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
 
     Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,
@@ -74,7 +74,7 @@ class PublicationDetailsMapperTest {
         // Arrange
         String expectedTitle = bibliographicalData1.getTitle();
         String expectedIsbn = code1.toString();
-        String expectedType = publicationType.getMediaFormat().toString();
+        String expectedType = publicationType.getTypeOfBinding().toString();
 
         List<String> expectedAuthors = List.of(profileAuthor1.getName());
 
@@ -99,7 +99,7 @@ class PublicationDetailsMapperTest {
 
 
         String expectedTitle = bibliographicalData1.getTitle();
-        String expectedType = publicationType.getMediaFormat().toString();
+        String expectedType = publicationType.getTypeOfBinding().toString();
         List<String> expectedAuthors = List.of(profileAuthor1.getName());
 
         // Act

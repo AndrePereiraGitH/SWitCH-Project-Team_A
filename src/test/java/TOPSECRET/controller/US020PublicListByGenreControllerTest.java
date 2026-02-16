@@ -43,7 +43,7 @@ class US020PublicListByGenreControllerTest {
         Profile profile = new Profile("Joao",new Country("Portugal"), LocalDate.of(1974,7,24));
         Email email = new Email("john.doe25","hotmail.com");
         Address location = new Address("rua das pedras","29","4852-2524",new Country("Portugal"));
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "publication test");
+        PublicationType pubType = new PublicationType(TypeOfBinding.PAPERBACK, "publication test");
         Contact contact = new Contact("919402245", "+351", email, location);
         User userName = new User("John Doe", contact, profile, UserRole.NORMAL_USER);
 
