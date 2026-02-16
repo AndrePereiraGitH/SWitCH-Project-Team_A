@@ -47,7 +47,6 @@ public class DirectSaleRepository {
 
     // US021 --------------------------------------------------------------------------------------------------
     // To do
-// end
 
     // US023 Start --------------------------------------------------------------------------------------------------
     public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {

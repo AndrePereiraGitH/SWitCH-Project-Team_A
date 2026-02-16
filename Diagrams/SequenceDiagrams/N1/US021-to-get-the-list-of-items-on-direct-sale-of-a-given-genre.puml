@@ -12,13 +12,10 @@ participant ":System" as System
 ' Interactions
 Buyer -> System : I want to get the list of items on direct sale of a given genre
 activate System
-
 Buyer <-- System : Which genre? Choose!
 deactivate System
-
 Buyer -> System : selectedgenre
 activate System
-
 System --> Buyer : Shows the list of items on direct sale
 deactivate System
 
