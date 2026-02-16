@@ -27,9 +27,7 @@ public class GenreRepository {
     }
 
     public List<Genre> getAllGenres() {
-        // Prof modificou no exame
-        List<Genre> copiedList = List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
-        return copiedList;
+        return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
 
     private boolean exists(Genre genre) {
