@@ -168,44 +168,8 @@ class DirectSaleRepositoryTest {
     }
 
     //US021
-//    @Test
-//    void getListOfItemsOnDirectSale() {
-//        // Arrange
-//        Genre targetPublication = validItem1.getPublication().getBibliographicalData().getGenres();
+//    // To do tests
 //
-//        // Criar duas DirectSale diferentes com items que contêm a mesma publicação
-//        Listing listing1 = new Listing(
-//                List.of(validItem1),
-//                validPrice,
-//                validDescription,
-//                validTitle,
-//                validSeller,
-//                validPictures
-//        );
-//
-//        Listing listing2 = new Listing(
-//                List.of(new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication)),
-//                validPrice,
-//                validDescription,
-//                validTitle,
-//                validSeller,
-//                validPictures
-//        );
-//
-//        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
-//        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
-//
-//        DirectSaleRepository repo = new DirectSaleRepository(List.of(ds1, ds2));
-//
-//        // Act
-//        List<DirectSale> result = repo.getListOfItemsOnDirectSale(targetPublication);
-//
-//        // Assert
-//        assertEquals(2, result.size());
-//        assertTrue(result.contains(ds1));
-//        assertTrue(result.contains(ds2));
-//    }
-
 
     // US023 Start-------------------------------------- -------------------------------------------------------------
 

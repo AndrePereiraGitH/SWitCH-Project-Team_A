@@ -46,20 +46,7 @@ public class DirectSaleRepository {
     }
 
     // US021 --------------------------------------------------------------------------------------------------
-    public List<DirectSale> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
-
-        List<DirectSale> listOfItems = new ArrayList<>();
-
-        for (DirectSale directSale : _directSaleList) { // Percorre as direct sales
-            for (Item item : directSale.getListing().getItems()) { // Percorre de item a item de uma direct sale
-                if (item.getPublication().getBibliographicalData().getGenres().contains(genre)) { // Verifica se é o género pretendido
-                    listOfItems.add(directSale);// Adiciona o item à lista de direct sale
-                    break;
-                }
-            }
-        }
-        return listOfItems;
-    }
+    // To do
 // end
 
     // US023 Start --------------------------------------------------------------------------------------------------

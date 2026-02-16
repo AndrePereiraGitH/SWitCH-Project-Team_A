@@ -18,27 +18,29 @@ participant "listOfDirectSale:\nList<DirectSale>" as ListDS
 ' Section 1 - Get all genres
 Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
 activate UI
+
 UI -> Ctrl : getAllGenres()
 activate Ctrl
+
 Ctrl -> GenreRepo: getAllGenres()
 activate GenreRepo
 GenreRepo -> ListGenre ** : create()
-
 
 GenreRepo --> Ctrl: List<Genre> copyGenres
 deactivate GenreRepo
 
 Ctrl --> UI : List<Genre> copyGenres
 deactivate Ctrl
+
 Buyer <-- UI : Which genre? Choose!
 deactivate UI
-
 
 ' Section 2 - Get list of direct sales with the genre chosen
 Buyer -> UI : selectedgenre
 activate UI
 UI -> Ctrl : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate Ctrl
+
 Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate DirectSaleRepo
 DirectSaleRepo -> ListDS ** : create()
@@ -53,7 +55,6 @@ deactivate DirectSaleRepo
 
 Ctrl --> UI : listOfItems
 deactivate Ctrl
-
 
 UI --> Buyer : Shows the list of items on direct sale
 deactivate UI
