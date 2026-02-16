@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 /**
  * Immutable value object representing physical dimensions.
- *
  * Invariants:
  * - height > 0
  * - width  > 0
@@ -33,11 +32,10 @@ public class Dimensions {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Dimensions that = (Dimensions) o;
-        return Double.compare(this._height, that._height) == 0
-                && Double.compare(this._width, that._width) == 0
-                && Double.compare(this._depth, that._depth) == 0;
+        return Double.compare(_height, that._height) == 0
+                && Double.compare(_width, that._width) == 0
+                && Double.compare(_depth, that._depth) == 0;
     }
 }

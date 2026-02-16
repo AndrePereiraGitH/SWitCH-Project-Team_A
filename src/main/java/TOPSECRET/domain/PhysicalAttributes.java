@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 /**
  *Represents the physical characteristics of a given sample, including its dimensions,
  * weight, and number of pages.
@@ -47,4 +49,12 @@ public class PhysicalAttributes {
         this._numberOfPages = numberOfPages;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PhysicalAttributes that = (PhysicalAttributes) o;
+        return Double.compare(_weight, that._weight) == 0
+                && _numberOfPages == that._numberOfPages
+                && Objects.equals(_dimensions, that._dimensions);
+    }
 }

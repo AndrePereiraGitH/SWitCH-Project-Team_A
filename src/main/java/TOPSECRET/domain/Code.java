@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class Code {
 
     // Attributes
@@ -63,4 +65,12 @@ public class Code {
         return "No Code";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Code code = (Code) o;
+        return Objects.equals(isbn10, code.isbn10)
+                && Objects.equals(isbn13, code.isbn13)
+                && Objects.equals(issn, code.issn);
+    }
 }

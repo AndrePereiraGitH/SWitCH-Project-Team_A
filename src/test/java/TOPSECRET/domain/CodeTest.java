@@ -54,4 +54,37 @@ class CodeTest {
                 Code.fromIssn(" ")
         );
     }
+
+    //-------------
+    //--- Equals---
+    //-------------
+
+    @Test
+    void equals_shouldBeFalse_whenNull() {
+        Code code = Code.fromIsbn13("9783161484100");
+        assertNotEquals(null, code);
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenDifferentClass() {
+        Code code = Code.fromIsbn13("9783161484100");
+        assertNotEquals("not a code", code);
+    }
+
+    @Test
+    void equals_shouldBeTrue_whenSameIsbn13() {
+        Code a = Code.fromIsbn13("9783161484100");
+        Code b = Code.fromIsbn13("9783161484100");
+
+        assertEquals(a, b);
+        assertEquals(b, a);
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenDifferentIsbn13() {
+        Code a = Code.fromIsbn13("9783161484100");
+        Code b = Code.fromIsbn13("9783161484101");
+
+        assertNotEquals(a, b);
+    }
 }
