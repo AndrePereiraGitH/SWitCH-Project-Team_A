@@ -91,7 +91,7 @@ public class ItemRepositoryTest {
     }
 
     private static PublicationType crestePublicationType() {
-        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "some details");
+        return new PublicationType(TypeOfBinding.PAPERBACK, "some details");
     }
 
     private static BibliographicalData instantiateBibliographicalData() {

@@ -17,7 +17,6 @@ class US004ToRegisterAppraisalEntityControllerTest {
     // Helper to create a valid PublicationType
     private PublicationType createValidPublicationType() {
         return new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );

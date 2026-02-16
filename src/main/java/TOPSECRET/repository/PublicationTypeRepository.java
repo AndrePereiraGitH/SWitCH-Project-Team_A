@@ -14,9 +14,9 @@ public class PublicationTypeRepository {
     public PublicationTypeRepository() {} //Constructor
 
     // Instantiates a publication type domain entity
-    public PublicationType createPublicationType(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
+    public PublicationType createPublicationType(TypeOfBinding typeOfBinding, String details)
     {
-        PublicationType pubType = new PublicationType(mediaFormat, typeOfBinding, details);
+        PublicationType pubType = new PublicationType(typeOfBinding, details);
         return pubType;
     }
 

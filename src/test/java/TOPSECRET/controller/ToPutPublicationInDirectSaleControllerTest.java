@@ -62,7 +62,7 @@ class ToPutPublicationInDirectSaleControllerTest {
     Code code1 = Code.fromIsbn10("1234567890");
 
     PublicationType publicationType =
-            new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+            new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
     Publication publication1 = new Publication(
             bibliographicalData1, publicationType, user1, pubStatus1, edition1, code1
@@ -96,7 +96,7 @@ class ToPutPublicationInDirectSaleControllerTest {
         assertEquals("Childhood, Youth, Dependency: The Copenhagen Trilogy", result.get(0).pubTitle);
         assertEquals("1234567890", result.get(0).code);
         assertEquals(List.of("Tove Ditlevsen"), result.get(0).authorName);
-        assertEquals("BOOK", result.get(0).publicationType);
+        assertEquals("Paperback", result.get(0).publicationType);
     }
 
     // Test 2 - createAndAddItem ---------------------------------------------------------------------------------------

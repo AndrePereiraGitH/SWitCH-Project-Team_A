@@ -30,7 +30,7 @@ public class PublicationDetailsMapper {
             authorsDTO.add(author.getProfile().getName());
         }
 
-        String typeDTO = String.valueOf(publication.getPublicationType().getMediaFormat());
+        String typeDTO = String.valueOf(publication.getPublicationType().getTypeOfBinding());
 
         String codeDTO = String.valueOf(publication.getCode());
 
@@ -39,9 +39,6 @@ public class PublicationDetailsMapper {
 
         return pubDTO;
     }
-
-
-
 
 
 }

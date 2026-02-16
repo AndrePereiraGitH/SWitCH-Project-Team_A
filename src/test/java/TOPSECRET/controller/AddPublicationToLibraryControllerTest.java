@@ -46,7 +46,7 @@ class AddPublicationToLibraryControllerTest {
         publicationRepository = new PublicationRepository();
 
         //Creating a valid PublicationType
-        PublicationType type = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Details1");
+        PublicationType type = new PublicationType(TypeOfBinding.HARDBACK, "Details1");
 
         //Creating valid countries
         Country country1 = new Country("Portugal");

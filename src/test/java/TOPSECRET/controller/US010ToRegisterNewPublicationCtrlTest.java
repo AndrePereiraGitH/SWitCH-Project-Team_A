@@ -67,7 +67,7 @@ class US010ToRegisterNewPublicationCtrlTest {
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
         PublicationStatus pubStatus1 = PublicationStatus.READING;
-        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+        PublicationType publicationType1 = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
 
         //Act is here

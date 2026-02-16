@@ -34,7 +34,7 @@ class GetPublicationTypeListControllerTest {
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         PublicationType type =
-                repository.createPublicationType(MediaFormat.BOOK,
+                repository.createPublicationType(
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
@@ -49,7 +49,6 @@ class GetPublicationTypeListControllerTest {
         assertEquals(1, result.size());
 
         PublicationTypeDTO_US014 dto = result.get(0);
-        assertEquals("BOOK", dto._mediaFormat);
         assertEquals("HARDBACK", dto._typeOfBinding);
         assertEquals("Hardback", dto._details);
     }
@@ -60,12 +59,12 @@ class GetPublicationTypeListControllerTest {
         PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         PublicationType t1 =
-                repository.createPublicationType(MediaFormat.BOOK,
+                repository.createPublicationType(
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
         PublicationType t2 =
-                repository.createPublicationType(MediaFormat.MAGAZINE,
+                repository.createPublicationType(
                         TypeOfBinding.PAPERBACK,
                         "Paperback");
 

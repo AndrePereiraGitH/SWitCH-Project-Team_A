@@ -99,7 +99,7 @@ class AuctionMapper_US026Test {
     }
 
     private Publication instantiatePublication(List<Author> authors, User user) {
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "some details");
+        PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "some details");
         BibliographicalData bd = createBibliographicalData("Pillars Of the Earth", authors);
 
         return new Publication(

@@ -11,7 +11,16 @@ import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.GenreRepository;
 
 import java.util.List;
-
+/**
+ * Controller for US022 – Retrieve the list of publication types.
+ * This controller coordinates the interaction between:
+ * - ItemTypeRepository (data source)
+ * - DirectSaleRepository (data source)
+ * - AuctionMapper_US022 (conversion to DTOs)
+ * - AuctioDTO_US022 (DTO)
+ * It exposes application services used by the UI to retrieve
+ * publication types in a safe and presentation-ready format.
+ */
 public class GetListOfItemsOnAuctionOfGivenGenreController {
 
     private final AuctionRepository auctionRepository;

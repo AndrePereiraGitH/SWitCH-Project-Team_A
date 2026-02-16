@@ -42,7 +42,7 @@ class LibraryTest {
 
 
         //PublicationType
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "HardCover");
+        PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "HardCover");
 
         //Country
         Country country1 = new Country ("Portugal");

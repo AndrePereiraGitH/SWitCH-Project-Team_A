@@ -58,7 +58,7 @@ class DirectSaleRepositoryTest {
     );
 
 
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"
+    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"
     );
 
     User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);

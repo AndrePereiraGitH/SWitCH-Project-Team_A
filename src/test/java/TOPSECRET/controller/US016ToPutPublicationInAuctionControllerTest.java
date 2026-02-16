@@ -223,7 +223,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     }
 
     private PublicationType publicationType() {
-        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "some details");
+        return new PublicationType(TypeOfBinding.HARDBACK, "some details");
     }
 
     private void addPublicationToLibrary(Library lib, Publication p) {

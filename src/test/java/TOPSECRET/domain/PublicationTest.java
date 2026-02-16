@@ -55,7 +55,7 @@ class PublicationTest {
     UserRole userRole1 = UserRole.ADMIN;
     User anyUser = new User("coolGuy", contact2, profile2, userRole1);
     PublicationStatus anyPubStatus = PublicationStatus.READING;
-    PublicationType anyPubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType anyPubType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
 
     Publication anyPublication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
@@ -105,7 +105,7 @@ class PublicationTest {
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
         PublicationStatus pubStatus1 = PublicationStatus.READING;
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK,
+        PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK,
                 "Paperback");
 
         //Act
@@ -150,7 +150,7 @@ class PublicationTest {
 
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
-        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK,
+        PublicationType publicationType1 = new PublicationType(TypeOfBinding.PAPERBACK,
                 "Paperback");
         PublicationStatus pubStatus1 = PublicationStatus.READING;
 
@@ -185,7 +185,7 @@ class PublicationTest {
     void shouldReturnPublicationType() {
 
         //Reusing instance here, again, just changing the PublicationType
-        PublicationType expectedPubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK,
+        PublicationType expectedPubType = new PublicationType(TypeOfBinding.HARDBACK,
                 "Cool binding");
 
         //Act and assert

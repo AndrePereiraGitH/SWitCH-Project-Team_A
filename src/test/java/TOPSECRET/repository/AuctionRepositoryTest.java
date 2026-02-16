@@ -255,7 +255,7 @@ class AuctionRepositoryTest {
 
         Publication publication = new Publication(
                 bd,
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"),
+                new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"),
                 seller,
                 PublicationStatus.FOR_SALE,
                 "1st",
@@ -366,7 +366,6 @@ class AuctionRepositoryTest {
     private static Publication createValidPublication(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
@@ -390,7 +389,6 @@ class AuctionRepositoryTest {
     private static Publication createValidPublication2(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );

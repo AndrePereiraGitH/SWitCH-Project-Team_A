@@ -180,7 +180,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     private Publication createPublication(BibliographicalData bd, User seller) {
         return new Publication(
                 bd,
-                new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"),
+                new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"),
                 seller,
                 PublicationStatus.FOR_SALE,
                 "1st",

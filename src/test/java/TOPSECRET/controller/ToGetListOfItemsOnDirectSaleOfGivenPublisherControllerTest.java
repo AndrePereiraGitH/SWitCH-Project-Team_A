@@ -117,7 +117,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         "ChunksOfText"
                 );
 
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details");
+        PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "details");
         Address address = new Address("street", "number", "zipCode", country);
         Email email = new Email("userName", "domain.com");
         Contact contact = new Contact("915945695", "+351", email, address);

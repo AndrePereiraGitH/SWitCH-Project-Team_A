@@ -86,7 +86,6 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         // -------- Publication type --------
         PublicationType type = new PublicationType(
-                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
