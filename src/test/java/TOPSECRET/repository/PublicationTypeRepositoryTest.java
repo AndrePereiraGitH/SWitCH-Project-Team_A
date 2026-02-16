@@ -1,6 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import java.util.List;
 public class PublicationTypeRepositoryTest {
 
     // Publication type sample
+    // mediaFormat removed
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
     String details = "Book with gold engravings";
 

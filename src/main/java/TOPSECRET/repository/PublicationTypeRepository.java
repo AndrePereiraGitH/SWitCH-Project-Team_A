@@ -1,6 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 
@@ -14,6 +13,7 @@ public class PublicationTypeRepository {
     public PublicationTypeRepository() {} //Constructor
 
     // Instantiates a publication type domain entity
+    // mediaFormat removed
     public PublicationType createPublicationType(TypeOfBinding typeOfBinding, String details)
     {
         PublicationType pubType = new PublicationType(typeOfBinding, details);
