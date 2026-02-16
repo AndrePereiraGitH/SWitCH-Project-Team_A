@@ -83,5 +83,54 @@ class PhysicalAttributesTest {
       assertEquals(expectedMessage, exception.getMessage());
    }
 
+     //-------------
+     //----Equals---
+    //-------------
+
+    @Test
+    void equals_shouldBeTrue_whenSameValues() {
+        PhysicalAttributes a =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+
+        PhysicalAttributes b =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+
+        assertEquals(a, b);
+        assertEquals(b, a);
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenDimensionsDiffer() {
+        PhysicalAttributes a =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+
+        PhysicalAttributes b =
+                new PhysicalAttributes(new Dimensions(11.0, 2.0, 5.0), 300.0, 200);
+
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenWeightDiffers() {
+        PhysicalAttributes a =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+
+        PhysicalAttributes b =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 350.0, 200);
+
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenPageCountDiffers() {
+        PhysicalAttributes a =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+
+        PhysicalAttributes b =
+                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 250);
+
+        assertNotEquals(a, b);
+    }
+
 
 }
