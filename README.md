@@ -6,11 +6,34 @@
 ### Issue Name
 
 - User Stories
-```
-US_Number - Implementation - US description
+  
+**Main issue: US006 - As an Administrator, I want to register a Publishing Company in the system (what we currently have, the fulfilment of the acceptance criteria of the US)**
 
-US_Number - OOD or OOA - US description
-```
+   - sub-issue: US006 Analysis Design
+     
+      Description: create/update SSD/SD/CD
+
+     
+   - sub-issue: Add Controller for registering publisher functionality
+   
+       Description: create RegisterPublisherController and unit tests
+
+   
+   - other sub-issues that are directly related to our US
+
+<br>
+
+- **Refinement Issue if needed**
+
+````
+Refinement + Donain class + changes/topic
+
+or
+
+Refinement - US_number  
+
+````
+
 
 <br>
 
