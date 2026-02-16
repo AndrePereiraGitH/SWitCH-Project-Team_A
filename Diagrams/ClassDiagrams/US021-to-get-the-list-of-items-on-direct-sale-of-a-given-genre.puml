@@ -14,22 +14,10 @@ class GenreRepository {
   +getAllGenres()
 }
 
-'class GenreDTO_US021 {}
-
 class Genre {
     -genreType: String
     +getDetails()
 }
-
-'tirei
-'class GenreMapper_US021 {
-   '+toDTO(listOfAllGenres: List<Genre)
-'}
-
-
-'tirei
-'class DirectSaleMapper_US021 {
- '  +toDTO(listOfDirectSales: List<DirectSale)}
 
 class DirectSaleRepository {
   +getListOfItemsOnDirectSale(genre: Genre)
@@ -44,26 +32,19 @@ class DirectSale {
 
 class Item{
 -condition: Condition
-
-
+-dimension: Dimension
+-publication: Publication
+-weight: double
 }
 
 ' Interactions
-
 UI021 --> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController --> DirectSaleRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController --> GenreRepository : uses
 
-'tirei
-'ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> GenreMapper_US021 : uses
-'GenreMapper_US021 ..> GenreDTO_US021 : maps to
-'GenreMapper_US021 ..> Genre : communicates\n with
-'DirectSaleMapper_US021 ..>  DirectSale : communicates\n with
-'ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> DirectSaleMapper_US021 : uses
-'DirectSaleMapper_US021 ..> DirectSaleDTO_US021 : maps to
-
 GenreRepository --> Genre : stores
 DirectSaleRepository --> DirectSale : stores
 
-
+Genre --> Item : categorizes
+DirectSale --> Item : has
 @enduml

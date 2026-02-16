@@ -7,20 +7,11 @@ actor Buyer
 
 ' Participants
 participant ":UI021" as UI
-participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenGenreController" as Ctrl
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
 participant "listOfAllGenres:\n List<Genre>" as ListGenre
-'participant ":GenreMapper_US021" as GenreMapper
-'participant "genreDTO:\nGenreDTO_US021" as GenreDTO
-participant ":Genre" as Genre
-'participant "listOfAllGenresDTO:\nList<GenreDTO_US021>" as ListGenreDTO
-'participant ":DirectSaleMapper_US021" as DSMapper
 participant ":DirectSaleRepository" as DirectSaleRepo
 participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-'participant "directSaleDTO:\nDirectSaleDTO_US021" as DSDTO
-'participant ":DirectSale" as DS
-'participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US021>" as ListDSDTO
-
 
 ' Interactions
 
@@ -32,33 +23,10 @@ activate Ctrl
 Ctrl -> GenreRepo: getAllGenres()
 activate GenreRepo
 GenreRepo -> ListGenre ** : create()
-'GenreRepo --> Ctrl: listOfAllGenres
-'deactivate GenreRepo
 
 
 GenreRepo --> Ctrl: List<Genre> copyGenres
 deactivate GenreRepo
-
-'Ctrl -> GenreMapper: toDTO(listOfAllGenres)
-'activate GenreMapper
-'GenreMapper -> ListGenreDTO ** : create()
-'loop for each genre
-'    GenreMapper -> Genre: getDetails(genre)
-'    activate Genre
-'    Genre --> GenreMapper: genreDetails
-'    deactivate Genre
-'        GenreMapper -> GenreDTO ** : createDTO(genreDetails)
-'    GenreDTO --> GenreMapper: genreDTO
-'    GenreMapper --> ListGenreDTO: add(genreDTO)
-'end
-'GenreMapper --> Ctrl: listOfAllGenresDTO
-'deactivate GenreMapper
-'Ctrl --> UI : listOfAllGenresDTO
-'deactivate Ctrl
-'Buyer <-- UI : Which genre? Choose!
-'deactivate UI
-
-
 
 Ctrl --> UI : List<Genre> copyGenres
 deactivate Ctrl
@@ -69,9 +37,9 @@ deactivate UI
 ' Section 2 - Get list of direct sales with the genre chosen
 Buyer -> UI : selectedgenre
 activate UI
-UI -> Ctrl : getListOfItemsOnDirectSale(selectedgenre)
+UI -> Ctrl : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate Ctrl
-Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSale(selectedgenre)
+Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate DirectSaleRepo
 DirectSaleRepo -> ListDS ** : create()
 
@@ -80,29 +48,8 @@ loop for each direct sale
     DirectSaleRepo -> ListDS: add(Item)
 end
 
-'DirectSaleRepo --> Ctrl : listOfDirectSale
-'deactivate DirectSaleRepo
-
 DirectSaleRepo --> Ctrl : listOfItems
 deactivate DirectSaleRepo
-
-
-'Ctrl -> DSMapper : toDTO(listOfDirectSale)
-'activate DSMapper
-'DSMapper -> ListDSDTO ** : create()
-'loop for each direct sale
-    'DSMapper -> DS: getDetails(directSale)
-    'activate DS
-    'DS --> DSMapper: directSaleDetails
-    'deactivate DS
-    'DSMapper -> DSDTO **: createDTO(directSaleDetails)
-    'DSDTO --> DSMapper: directSaleDTO
-    'DSMapper -> ListDSDTO : add(directSaleDTO)
-'end
-'DSMapper --> Ctrl : listOfDirectSaleDTO
-'deactivate DSMapper
-'Ctrl --> UI : listOfDirectSaleDTO
-'deactivate Ctrl
 
 Ctrl --> UI : listOfItems
 deactivate Ctrl

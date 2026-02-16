@@ -15,7 +15,7 @@ Buyer -> System : I want to get the list of items on direct sale of a given genr
 activate System
 Buyer <-- System : Which genre? Choose!
 deactivate System
-Buyer -> System : genre
+Buyer -> System : selectedgenre
 activate System
 System --> Buyer : Shows the list of items on direct sale
 deactivate System
