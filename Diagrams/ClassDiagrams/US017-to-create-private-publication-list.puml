@@ -7,13 +7,12 @@ title US017 - Create Private Collection Of Publications with a name and a set a 
 ' _____________________
 
 class User {
-  -username : String
+  - username : String
 }
 
 class Genre {
-    - genreType  : String
+  - genreType : String
 }
-
 
 class CollectionOfPublications {
   - collectionName : String
@@ -25,25 +24,22 @@ class CollectionOfPublications {
 class Publication {
 }
 
-User "1" --> " *   " CollectionOfPublications : owns
+User "1" --> "*" CollectionOfPublications : owns
 CollectionOfPublications "1" --> "1" Genre : has
-CollectionOfPublications "1     " --> "*" Publication : contains
+CollectionOfPublications "1" --> "*" Publication : contains
 
 ' ______________________
 ' APPLICATION
 ' ______________________
 
 class CreateCollectionOfPublicationsController {
-  +getAllGenres() : List<GenreDTO>
-  +createAndAddCollectionOfPublications(name : String, genre : Genre, user : User) : CollectionOfPublications
-}
-
-class GenreMapper {
-  +toDTO(genres : List<Genre>) : List<GenreDTO>
+  + getAllGenres() : List<GenreDTO>
+  + createAndAddCollectionOfPublications(name : String, genre : Genre, user : User) : CollectionOfPublications
 }
 
 class GenreDTO {
-   - name : String
+  - name : String
+  + {static} from(genre : Genre) : GenreDTO
 }
 
 ' ___________________
@@ -51,7 +47,7 @@ class GenreDTO {
 ' ___________________
 
 class GenreRepository {
-  +getAllGenres() : List<Genre>
+  + getAllGenres() : List<Genre>
 }
 
 class CollectionOfPublicationsRepository {
@@ -63,13 +59,9 @@ class CollectionOfPublicationsRepository {
 ' ____________________
 
 CreateCollectionOfPublicationsController ..> GenreRepository : uses
-CreateCollectionOfPublicationsController ..> GenreMapper : uses
+CreateCollectionOfPublicationsController ..> GenreDTO : uses
 CreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
 CollectionOfPublicationsRepository ..> CollectionOfPublications : uses
-
-GenreMapper ..> Genre : maps
-GenreMapper ..> GenreDTO : creates
-
-
+GenreDTO ..> Genre : converts
 
 @enduml

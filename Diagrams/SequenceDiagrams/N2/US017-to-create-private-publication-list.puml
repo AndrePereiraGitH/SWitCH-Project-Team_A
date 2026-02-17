@@ -8,11 +8,8 @@ actor "User" as User
 participant ":UI017" as UI
 participant ":CreateCollectionOfPublicationsController" as Controller
 participant ":GenreRepository" as GenreRepository
-participant ":GenreMapper" as GenreMapper
-participant "genreDTO:GenreDTO" as GenreDTO
 participant ":CollectionOfPublicationsRepository" as CollectionRepository
 
-'_____
 User -> UI : I want to create a new private collection
 activate UI
 
@@ -20,7 +17,6 @@ UI --> User : Provide collection name
 deactivate UI
 User -> UI : collection name provided
 activate UI
-'______
 
 UI -> Controller : getAllGenres()
 activate Controller
@@ -30,23 +26,13 @@ activate GenreRepository
 GenreRepository --> Controller : listOfGenres
 deactivate GenreRepository
 
-Controller -> GenreMapper: toDTO(listOfGenres)
-activate GenreMapper
-GenreMapper -> "genreDTO:GenreDTO" ** : create()
-activate "genreDTO:GenreDTO"
-"genreDTO:GenreDTO" --> GenreMapper : genreDTO
-deactivate "genreDTO:GenreDTO"
-
-/'
-activate GenreDTO
-/'
-GenreDTO --> GenreMapper: genreDTO
-
-deactivate GenreDTO
-'/
-GenreMapper -> GenreMapper : addToList(genreDTO)
-GenreMapper --> Controller: listOfAllGenreDTO
-deactivate GenreMapper
+loop for each genre in listOfGenres
+    create "genreDTO:GenreDTO"
+    Controller -> "genreDTO:GenreDTO" : from(genre)
+    activate "genreDTO:GenreDTO"
+    "genreDTO:GenreDTO" --> Controller : genreDTO
+    deactivate "genreDTO:GenreDTO"
+end
 
 Controller --> UI : listOfAllGenreDTO
 deactivate Controller
@@ -56,8 +42,6 @@ deactivate UI
 
 User -> UI : Selected genre type
 activate UI
-'______
-
 
 UI -> Controller : createAndAddCollectionOfPublication(name, genreType, user)
 activate Controller
@@ -70,8 +54,8 @@ loop for each existing collection of the user
 end
 
 alt collection already exists
-    CollectionRepository --> CollectionRepository  : duplicateFound
-        CollectionRepository --> Controller : error (duplicate)
+    CollectionRepository --> CollectionRepository : duplicateFound
+    CollectionRepository --> Controller : error (duplicate)
 
 else collection does not exist
     create "cp:CollectionOfPublications"
@@ -90,4 +74,8 @@ UI --> User : Private collection of publications was created
 deactivate UI
 
 @enduml
+```
 
+A única diferença é que **removi a linha:**
+```
+participant "genreDTO:GenreDTO" as GenreDTO
