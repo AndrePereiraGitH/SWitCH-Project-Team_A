@@ -91,9 +91,10 @@ public class DirectSaleRepository {
 
         for (DirectSale ds : _directSaleList) {
             for (Item item : ds.getListing().getItems()) {
-                if (item.getPublication().getBibliographicalData().getPublisher().equals(publisher)) {
-                    dsList.add(ds);
-                    break;
+//                if (item.getPublication().getBibliographicalData().getPublisher().equals(publisher)) {
+                if (item.getPublication().getEdition().getPublisher().equals(publisher)) {
+                        dsList.add(ds);
+                        break;
                 }
             }
         }

@@ -244,21 +244,30 @@ class AuctionRepositoryTest {
                         "bio"
                 )),
                 new java.util.Locale("pt","PT"),
-                new Publisher("Pub","123", null),
+//                new Publisher("Pub","123", null),
                 LocalDate.of(2020,1,1),
                 List.of(genre),
-                100,
+//                100,
                 "Desc"
         );
 
         User seller = instantiateUser("Seller");
+
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         Publication publication = new Publication(
                 bd,
                 new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"),
                 seller,
                 PublicationStatus.FOR_SALE,
-                "1st",
+//                "1st",
+                edition,
                 Code.fromIsbn13("9781234567890")
         );
 
@@ -331,16 +340,16 @@ class AuctionRepositoryTest {
                         "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
 
         Contact contact = new Contact();
-        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
+//        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
 
         return new BibliographicalData(
                 "The Lord Of The Rings",
                 authors,
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(1991, 11, 1),
                 List.of(new Genre ("Fantasy")),
-                700,
+//                700,
                 chunkOfText
         );
     }
@@ -376,12 +385,20 @@ class AuctionRepositoryTest {
         // Code
         Code code = Code.fromIsbn13("9781234567890");
 
+        // Edition
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         return new Publication(
                 bd,
                 publicationType,
                 user,
                 PublicationStatus.FOR_SALE,
-                "1st edition",
+//                "1st edition",
+                edition,
                 code
         );
     }
@@ -399,12 +416,20 @@ class AuctionRepositoryTest {
         // Code
         Code code = Code.fromIsbn13("9781234567820");
 
+        // Edition
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         return new Publication(
                 bd,
                 publicationType,
                 user,
                 PublicationStatus.FOR_SALE,
-                "1st edition",
+//                "1st edition",
+                edition,
                 code
         );
     }
@@ -467,16 +492,16 @@ class AuctionRepositoryTest {
                         "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
 
         Contact contact = new Contact();
-        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
+//        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
 
         return new BibliographicalData(
                 "The Lord Of The Rings",
                 authors,
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(1991, 11, 1),
                 List.of(new Genre ("Fantasy")),
-                700,
+//                700,
                 chunkOfText
         );
     }

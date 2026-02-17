@@ -32,28 +32,28 @@ class PublicationRepositoryTest {
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author1),
             Locale.ENGLISH,
-            publisher1,
+//            publisher1,
             LocalDate.of(2020, 1, 1),
             List.of(new Genre ("Fiction")),
-            200,
+//            200,
             "Some text");
     BibliographicalData bibliographicalData2 = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author1),
             Locale.ENGLISH,
-            publisher1,
+//            publisher1,
             LocalDate.of(2020, 1, 1),
             List.of(new Genre ("Fiction")),
-            200,
+//            200,
             "Some text");
     BibliographicalData bibliographicalData3 = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author1),
             Locale.ENGLISH,
-            publisher1,
+//            publisher1,
             LocalDate.of(2020, 1, 1),
             List.of(new Genre ("Fiction")),
-            200,
+//            200,
             "Some text");
 
     // User
@@ -77,9 +77,18 @@ class PublicationRepositoryTest {
 
 
     //Edition
-    String edition1 = "2nd Edition";
-    String edition2 = "1st Edition";
-    String edition3 = "3rd Edition";
+//    String edition1 = "2nd Edition";
+//    String edition2 = "1st Edition";
+//    String edition3 = "3rd Edition";
+    Code code = Code.fromIsbn13 ("978316148412");
+    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+
+    Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition3= new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     //Code
     Code code1 = Code.fromIsbn10("1234567890");

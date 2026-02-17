@@ -21,21 +21,27 @@ class PublicationTest {
 
     Profile profile1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
     Author author1 = new Author(profile1, "valio bio");
-    Address address1 = new Address("R Maria", "12", "156-5", country2);
-    Email email1 = new Email("Maria1", "gmail.com");
-    Contact contact1 = new Contact("915945695", "+351", email1, address1);
-    Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
+//    Address address1 = new Address("R Maria", "12", "156-5", country2);
+//    Email email1 = new Email("Maria1", "gmail.com");
+//    Contact contact1 = new Contact("915945695", "+351", email1, address1);
+//    Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
     BibliographicalData anyBiblioData = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author1),
             Locale.ENGLISH,
-            publisher1,
+//            publisher1,
             LocalDate.of(2020, 1, 1),
             List.of(new Genre("Fiction")),
-            200,
+//            200,
             "Some text");
 
-    String anyEdition = "2nd Edition";
+//    String anyEdition = "2nd Edition";
+    Code code = Code.fromIsbn13 ("978316148412");
+    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+    Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     Code anyCode = Code.fromIsbn10("1234567890");
 
     Country country3 = new Country("Italy");
@@ -58,7 +64,7 @@ class PublicationTest {
     PublicationType anyPubType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
 
-    Publication anyPublication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
+    Publication anyPublication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, edition, anyCode);
 
 
     @Test
@@ -71,18 +77,18 @@ class PublicationTest {
 
         Profile profile1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
         Author author1 = new Author(profile1, "valio bio");
-        Address address1 = new Address("R Maria", "12", "156-5", country2);
-        Email email1 = new Email("Maria1", "gmail.com");
-        Contact contact1 = new Contact("915945695", "+351", email1, address1);
-        Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
+//        Address address1 = new Address("R Maria", "12", "156-5", country2);
+//        Email email1 = new Email("Maria1", "gmail.com");
+//        Contact contact1 = new Contact("915945695", "+351", email1, address1);
+//        Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
         BibliographicalData bibliographicalData1 = new BibliographicalData(
                 "Childhood, Youth, Dependency: The Copenhagen Trilogy",
                 List.of(author1),
                 Locale.ENGLISH,
-                publisher1,
+//                publisher1,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Some text");
 
         String edition1 = "2nd Edition";
@@ -110,7 +116,7 @@ class PublicationTest {
 
         //Act
         Publication publication1 = new Publication(bibliographicalData1, publicationType, user1,
-                pubStatus1, edition1, code1);
+                pubStatus1, edition, code1);
 
         //Assert
         assertNotNull(publication1);
@@ -131,7 +137,13 @@ class PublicationTest {
         Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
         BibliographicalData nullBiblioData = null;
 
-        String edition1 = "2nd Edition";
+//        String edition1 = "2nd Edition";
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
         Code code1 = Code.fromIsbn10("1234567890");
 
         Country country3 = new Country("Italy");
@@ -170,7 +182,13 @@ class PublicationTest {
 
 
         // Variable that actually changes
-        String expectedEdition = "coolEdition";
+//        String expectedEdition = "coolEdition";
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition expectedEdition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         //Act and assert
         // calling upon the getEdition method here
@@ -191,7 +209,7 @@ class PublicationTest {
         //Act and assert
         // calling upon the getPublicationType method here
         Publication publicationWantPubType = new Publication(anyBiblioData, expectedPubType, anyUser,
-                anyPubStatus, anyEdition, anyCode);
+                anyPubStatus, edition, anyCode);
 
         assertEquals(expectedPubType, publicationWantPubType.getPublicationType());
 
@@ -206,15 +224,15 @@ class PublicationTest {
         BibliographicalData expectedBibliographicalData = new BibliographicalData("The Name of the Wind",
                 List.of(author1),
                 Locale.ENGLISH,
-                publisher1,
+//                publisher1,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                700,
+//                700,
                 "Some text");
 
         //Act and assert
         Publication publicationWantBiblioData = new Publication(expectedBibliographicalData, anyPubType, anyUser,
-                anyPubStatus, anyEdition, anyCode);
+                anyPubStatus, edition, anyCode);
 
         assertEquals(expectedBibliographicalData, publicationWantBiblioData.getBibliographicalData());
     }
@@ -227,7 +245,7 @@ class PublicationTest {
 
         //Act
         Publication publicationWantCode = new Publication(anyBiblioData, anyPubType, anyUser,
-                anyPubStatus, anyEdition, expectedCode);
+                anyPubStatus, edition, expectedCode);
 
         assertEquals(expectedCode, publicationWantCode.getCode());
     }
@@ -269,8 +287,15 @@ class PublicationTest {
     void equals_shouldReturnFalseIfDifferentAttribute() {
 
         // differing fields here
-        String goldEdition = "gold";
-        String silverEdition = "silver";
+//        String goldEdition = "gold";
+//        String silverEdition = "silver";
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition goldEdition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition silverEdition= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         Publication publicationReading = new Publication(anyBiblioData, anyPubType,
                 anyUser, anyPubStatus, goldEdition, anyCode);
@@ -293,10 +318,10 @@ class PublicationTest {
         Code squallCode = Code.fromIsbn13("squall1234567");
 
         Publication publicationCloud = new Publication(anyBiblioData, anyPubType,
-                anyUser, anyPubStatus, anyEdition, cloudCode);
+                anyUser, anyPubStatus, edition, cloudCode);
 
         Publication publicationSquall = new Publication(anyBiblioData, anyPubType,
-                anyUser, anyPubStatus, anyEdition, squallCode);
+                anyUser, anyPubStatus, edition, squallCode);
 
         //Assert
         assertNotEquals(publicationCloud.hashCode(), publicationSquall.hashCode());
@@ -309,7 +334,7 @@ class PublicationTest {
     @Test
     void verifiesIfMethodGetDetailsReturnsNonNullRecord() {
         // Arrange
-        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
+        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, edition, anyCode);
 
         // Act
         Publication.PublicationDetails details = publication.getDetails();
@@ -321,7 +346,7 @@ class PublicationTest {
     @Test
     void verifiesIfMethodGetDetailsReturnsCorrectValues() {
         // Arrange
-        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, anyEdition, anyCode);
+        Publication publication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, edition, anyCode);
 
         // Act
         Publication.PublicationDetails details = publication.getDetails();
@@ -331,7 +356,7 @@ class PublicationTest {
         assertEquals(anyPubType, details.publicationType());
         assertEquals(anyUser, details.userName());
         assertEquals(anyPubStatus, details.publicationStatus());
-        assertEquals(anyEdition, details.edition());
+        assertEquals(edition, details.edition());
         assertEquals(anyCode, details.code());
     }
 

@@ -146,14 +146,24 @@ public class AuctionRepository {
                 if (bd == null) continue;
 
                 // Get the publisher of the publication
-                Publisher pubPublisher = bd.getPublisher();
+//                Publisher pubPublisher = pub.getEdition().getPublisher();
+//
+//
+//                // If the item's publisher matches the given publisher,
+//                // add the item to the result list
+//                if (publisher.equals(pubPublisher)) {
+//                    result.add(item);   // ✅ add item, not auction
+//                }
+                Edition edition = pub.getEdition();
+                if (edition == null) continue;
 
+                Publisher pubPublisher = edition.getPublisher();
+                if (pubPublisher == null) continue;
 
-                // If the item's publisher matches the given publisher,
-                // add the item to the result list
                 if (publisher.equals(pubPublisher)) {
-                    result.add(item);   // ✅ add item, not auction
+                    result.add(item);
                 }
+
             }
         }
 

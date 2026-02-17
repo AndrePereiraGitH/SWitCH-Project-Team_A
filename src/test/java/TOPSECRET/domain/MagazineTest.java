@@ -50,10 +50,10 @@ class MagazineTest {
                 "Title",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre ("Nonfiction")),
-                100,
+//                100,
                 "Text"
         );
         // PublicationType
@@ -65,8 +65,15 @@ class MagazineTest {
         // Code for the publication
         Code code = Code.fromIsbn13("9781234567890");
 
+        // Edition
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         // Publication
-        Publication publication = new Publication(bib, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+//        Publication publication = new Publication(bib, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+        Publication publication = new Publication(bib, publicationType, user, PublicationStatus.FOR_SALE, edition, code);
 
         // Item (NEW signature)
         return new Item(Condition.NEW, 0.1, new Dimensions(1.0, 1.0, 1.0), publication);

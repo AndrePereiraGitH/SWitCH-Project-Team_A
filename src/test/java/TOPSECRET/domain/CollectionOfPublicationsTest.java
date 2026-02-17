@@ -60,10 +60,10 @@ class CollectionOfPublicationsTest {
                 "Test Title",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Sample text"
         );
 
@@ -86,7 +86,11 @@ class CollectionOfPublicationsTest {
 
 
         PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
-        String edition = "First Edition";
+//        String edition = "First Edition";
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         // Create publication
         return new Publication(

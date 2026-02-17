@@ -74,4 +74,9 @@ public class Edition {
                 && Objects.equals(_editionDate, edition._editionDate);
     }
 
+    // Getters
+
+    public Publisher getPublisher() {
+        return _publisher;
+    }
 }

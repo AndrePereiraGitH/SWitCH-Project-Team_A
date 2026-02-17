@@ -41,13 +41,29 @@ class US010ToRegisterNewPublicationCtrlTest {
                 "Childhood, Youth, Dependency: The Copenhagen Trilogy",
                 List.of(author1),
                 Locale.ENGLISH,
-                publisher1,
+//                publisher1,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Some text");
 
-        String edition1 = "2nd Edition";
+//        String edition1 = "2nd Edition";
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition(
+                "1st",
+                code,
+                physicalAttributes,
+                pubType,
+                publisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+
         Code code1 = Code.fromIsbn10("1234567890");
 
         Country country3 = new Country("Italy");

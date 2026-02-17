@@ -76,18 +76,18 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Bibliographical data
         profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
         author = new Author(profile, "valio bio");
-        address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
-        email = new Email("Maria1", "gmail.com");
-        contact = new Contact("915945695", "+351", email, address);
-        publisher = new Publisher("Some Publisher", "PT123456789", contact);
+//        address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
+//        email = new Email("Maria1", "gmail.com");
+//        contact = new Contact("915945695", "+351", email, address);
+//        publisher = new Publisher("Some Publisher", "PT123456789", contact);
         bibliographicalData = new BibliographicalData(
                 "Childhood, Youth, Dependency: The Copenhagen Trilogy",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Some text"
         );
 
@@ -99,15 +99,28 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         code2 = Code.fromIsbn13("9781234567891");
         code3 = Code.fromIsbn13("9781234567892");
 
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition3= new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         // Items referencing different publication editions
         validItem1 = new Item(Condition.LIKE_NEW, 1.2, dimensions,
-                new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1));
+//                new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1));
+                new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1));
 
         validItem2 = new Item(Condition.POOR, 1.2, dimensions,
-                new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2));
+//                new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2));
+                new Publication(bibliographicalData, publicationType, user, publicationStatus, edition2, code2));
 
         validItem3 = new Item(Condition.POOR, 1.2, dimensions,
-                new Publication(bibliographicalData, publicationType, user, publicationStatus, "3rd edition", code3));
+//                new Publication(bibliographicalData, publicationType, user, publicationStatus, "3rd edition", code3));
+                new Publication(bibliographicalData, publicationType, user, publicationStatus, edition3, code3));
 
         severalItemList = new ArrayList<>(List.of(validItem1, validItem2, validItem3));
         validListing = new Listing(severalItemList, validPrice, validDescription, validTitle, validSeller, validPictures);
@@ -117,8 +130,20 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationsReturnsMappedDTOs() {
         // arrange
-        Publication pub1 = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
-        Publication pub2 = new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2);
+//        Publication pub1 = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
+//        Publication pub2 = new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2);
+
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+        Publication pub1 = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1);
+        Publication pub2 = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition2, code2);
 
         PublicationRepository pubRepo = new PublicationRepository(List.of(pub1, pub2));
         PublicationMapper_US023 pubMapper = new PublicationMapper_US023();
@@ -139,7 +164,17 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationsReturnsMappedListThatIsIndependentAndMutable() {
         // arrange
-        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
+
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+//        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
+        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1);
 
         PublicationRepository pubRepo = new PublicationRepository(List.of(pub));
         PublicationMapper_US023 pubMapper = new PublicationMapper_US023();

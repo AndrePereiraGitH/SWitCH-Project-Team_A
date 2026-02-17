@@ -170,12 +170,21 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     private Publication instanciatePublication( List<Author> authors, User user) {
         PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "some details" );
         BibliographicalData bd = createBibliographicalData("Pillars Of the Earth", authors);
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         return new Publication(
                 bd,
                 publicationType,
                 user,
                 PublicationStatus.FOR_SALE,
-                "2nd",
+//                "2nd",
+                edition,
                 Code.fromIsbn10("fghdsjhklfgjhksgfjhksad")
         );
     }
@@ -189,18 +198,18 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
                 title,
                 authors,
                 Locale.ENGLISH,
-                new Publisher("Bertrand",
-                        "1111111111",
-                        new Contact(
-                                "9111111111",
-                                "321",
-                                new Email("example", "example.com"),
-                                new Address("street xxxx", "1234", "1223-212", new Country("united_kingdom"))
-                        )
-                ),
+//                new Publisher("Bertrand",
+//                        "1111111111",
+//                        new Contact(
+//                                "9111111111",
+//                                "321",
+//                                new Email("example", "example.com"),
+//                                new Address("street xxxx", "1234", "1223-212", new Country("united_kingdom"))
+//                        )
+//                ),
                 LocalDate.of(1989, 3, 1),
                 genres,
-                432,
+//                432,
                 "chunks chunks chunks"
         );
 

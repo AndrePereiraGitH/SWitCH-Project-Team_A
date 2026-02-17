@@ -321,19 +321,19 @@ class TransactionTest {
                 "O Senhor do Anéis: A irmandade do Anel",
                 authors,
                 new Locale("pt","PT"),
-                new Publisher(
-                        "PortoEditora",
-                        "123456748",
-                        new Contact(
-                                "918475648",
-                                "+351",
-                                new Email("asa", "example.com"),
-                                new Address("Rua Antónia Pinto", "123", "5503-231", new Country("Portugal"))
-                        )
-                ),
+//                new Publisher(
+//                        "PortoEditora",
+//                        "123456748",
+//                        new Contact(
+//                                "918475648",
+//                                "+351",
+//                                new Email("asa", "example.com"),
+//                                new Address("Rua Antónia Pinto", "123", "5503-231", new Country("Portugal"))
+//                        )
+//                ),
                 LocalDate.of(2020,1,10),
                 List.of(new Genre ("Fiction")),
-                200,
+//                200,
                 "Text Description"
                 );
     }
@@ -347,13 +347,19 @@ class TransactionTest {
 
     private static Publication createValidPublication(BibliographicalData bd, User seller) {
         Code code = Code.fromIsbn13("9781234567890");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new Publication(
                 bd,
                 createValidPublicationType(),
                 seller,
                 PublicationStatus.FOR_SALE,  // adjust if needed
-                "1st Edition",
+//                "1st Edition",
+                edition,
                 code
         );
     }

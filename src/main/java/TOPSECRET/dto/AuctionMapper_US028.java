@@ -35,7 +35,8 @@ public class AuctionMapper_US028 {
 
             // Get the name of the publisher
             // Publisher is ONE object
-                String publisherName = bd.getPublisher().getName();
+            Publisher pub = item.getPublication().getEdition().getPublisher();
+            String publisherName = pub.getName();
 
             // Create a DTO and add it to the result list
             result.add(new AuctionDTO_US028(title,

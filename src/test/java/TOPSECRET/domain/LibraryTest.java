@@ -72,17 +72,17 @@ class LibraryTest {
 
         //BibliographicalData
         BibliographicalData data1 = new BibliographicalData(
-                "Title1", List.of(author1), Locale.ENGLISH, publisher1,
-                LocalDate.of(2020, 1, 1), List.of(genre1), 100, "Some text 1"
+                "Title1", List.of(author1), Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1), List.of(genre1),"Some text 1"
         );
         BibliographicalData data2 = new BibliographicalData(
-                "Title2", List.of(author2), Locale.ENGLISH, publisher2,
-                LocalDate.of(2021, 2, 2), List.of(genre2), 150, "Some text 2"
+                "Title2", List.of(author2), Locale.ENGLISH,
+                LocalDate.of(2021, 2, 2), List.of(genre2), "Some text 2"
         );
 
         BibliographicalData data3 = new BibliographicalData(
-                "Title3", List.of(author3), Locale.ENGLISH, publisher3,
-                LocalDate.of(2022, 3, 3), List.of(genre3), 200, "Some text 3"
+                "Title3", List.of(author3), Locale.ENGLISH,
+                LocalDate.of(2022, 3, 3), List.of(genre3), "Some text 3"
         );
 
         //Users (using the empty constructor)
@@ -90,10 +90,21 @@ class LibraryTest {
         User user2 = new User();
         User user3 = new User();
 
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         //Creating some sample publications, dependent on a lot of different classes, created above for testing purposes
-        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
-        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
-        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
+//        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
+//        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
+//        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
+        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, edition, Code.fromIsbn10("001"));
+        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, edition, Code.fromIsbn13("002"));
+        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, edition, Code.fromIsbn10("003"));
     }
 
     //Now that we have the preparation setup, we begin the Tests

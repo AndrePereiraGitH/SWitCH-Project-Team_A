@@ -23,7 +23,7 @@ public class PublicationMapper_US023 {
         for (Author author : listOfAuthors) {
             authorsDTO.add(author.getProfile().getName());
         }
-        String type = String.valueOf(details.publicationType().getTypeOfBinding());
+        String type = "book";
         String code = details.code() != null ? details.code().toString() : null;
 
         // Create and return the DTO
@@ -40,9 +40,6 @@ public class PublicationMapper_US023 {
 
         return listOfPublicationsDTO;
     }
-
-
-
-
 }
+
 

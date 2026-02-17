@@ -28,17 +28,17 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     Address address = new Address("R Maria", "12", "156-5", new Country("PORTUGAL"));
     Email email = new Email("maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
-    Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
+//    Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
     PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
     BibliographicalData bd = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author),
             Locale.ENGLISH,
-            publisher,
+//            publisher,
             LocalDate.of(2020, 1, 1),
             List.of(new Genre ("Fiction")),
-            200,
+//            200,
             "Some text"
     );
 
@@ -47,9 +47,19 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     Code code = Code.fromIsbn13("9781234567890");
 
-    Publication pub1 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+    // Edition
+    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+    Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-    Publication pub2 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, "2st edition", code);
+//    Publication pub1 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+    Publication pub1 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, edition1, code);
+
+//    Publication pub2 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, "2st edition", code);
+    Publication pub2 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, edition2, code);
 
 
 
@@ -103,8 +113,10 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationsShouldReturnListOfDTOsWhenPublicationsExist() {
         // Arrange
-        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
-        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "2st edition", code);
+//        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+//        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "2st edition", code);
+        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, edition1, code);
+        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, edition2, code);
 
 
         // Act

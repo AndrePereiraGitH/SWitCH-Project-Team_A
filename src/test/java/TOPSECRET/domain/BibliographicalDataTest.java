@@ -32,11 +32,13 @@ class BibliographicalDataTest {
 
         Locale language = ENGLISH;
 
-        Country country1 = new Country("UNITED_KINGDOM");
-        Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", country1);
-        Email email2 = new Email("enquiries", "hachette.co.uk");
-        Contact contact2 = new Contact("2031227222", "+44", email2, address2);
-        Publisher publisher = new Publisher("John Murray Press", "GB205505305", contact2);
+
+        // publisher became an attribute of the Edition class
+//        Country country1 = new Country("UNITED_KINGDOM");
+//        Address address2 = new Address("Carmelite House","50", "EC4Y 0DZ", country1);
+//        Email email2 = new Email("enquiries", "hachette.co.uk");
+//        Contact contact2 = new Contact("2031227222", "+44", email2, address2);
+//        Publisher publisher = new Publisher("John Murray Press", "GB205505305", contact2);
 
         LocalDate publishDate = LocalDate.of(2022, 8, 4);
 
@@ -44,12 +46,14 @@ class BibliographicalDataTest {
         List<Genre> genres = new ArrayList<>();
         genres.add(new Genre ("Fantasy"));
 
-        int numberOfPages = 272;
+        // numberOfPages became an attribute of the PhysicalAttributes class
+//        int numberOfPages = 272;
 
         String chunksOfText = "The sweet spot is in partnership—AI handles scale, I bring empathy, wisdom, and context.";
 
         // act
-        return new BibliographicalData(title, authors, language, publisher, publishDate, genres, numberOfPages, chunksOfText);
+//        return new BibliographicalData(title, authors, language, publisher, publishDate, genres, numberOfPages, chunksOfText);
+        return new BibliographicalData(title, authors, language, publishDate, genres, chunksOfText);
     }
 
     // Test With More Than One Author And Genre
@@ -72,90 +76,95 @@ class BibliographicalDataTest {
 
         assertEquals(Locale.ENGLISH, bibliographicalData.getLanguage());
 
-        assertEquals("John Murray Press", bibliographicalData.getPublisher().getName());
+//        assertEquals("John Murray Press", bibliographicalData.getPublisher().getName());
 
         assertEquals(LocalDate.of(2022, 8, 4), bibliographicalData.getPublishDate());
 
         assertEquals("Fantasy", bibliographicalData.getGenres().get(0).getGenreType());
 
-        assertEquals(272, bibliographicalData.getNumberOfPages());
+//        assertEquals(272, bibliographicalData.getNumberOfPages());
 
         assertEquals("The sweet spot is in partnership—AI handles scale, I bring empathy, wisdom, and context.", bibliographicalData.getChunksOfText());
     }
 
-        // Test Lists Are Not Empty
-        @Test
-        void testAuthorsListAndGenreListAreNotEmpty() {
+    // Test To Verify That Authors and Genre Lists Are Not Empty
+    @Test
+    void testAuthorsListAndGenreListAreNotEmpty() {
 
-            // act
-            BibliographicalData bibliographicalData = sampleBibliographicalData();
+        // act
+        BibliographicalData bibliographicalData = sampleBibliographicalData();
 
-            // assert
-            assertFalse(bibliographicalData.getAuthors().isEmpty());
-            assertFalse(bibliographicalData.getGenres().isEmpty());
-        }
+        // assert
+        assertFalse(bibliographicalData.getAuthors().isEmpty());
+        assertFalse(bibliographicalData.getGenres().isEmpty());
+    }
 
-        // Test Number of Pages Is Positive
-        @Test
-        void testNumberOfPagesIsPositive() {
-            BibliographicalData data = sampleBibliographicalData();
-            assertTrue(data.getNumberOfPages() > 0);
-        }
+    // Test Number of Pages Is Positive
+//  @Test
+//  void testNumberOfPagesIsPositive() {
+//        BibliographicalData data = sampleBibliographicalData();
+//        assertTrue(data.getNumberOfPages() > 0);
+//  }
 
 
-        // Sample Builder With Empty Authors List
-        private BibliographicalData sampleBibliographicalDataWithEmptyAuthorsList() {
+    // Sample Builder With Empty Authors List
+    private BibliographicalData sampleBibliographicalDataWithEmptyAuthorsList() {
 
-            // act
-            BibliographicalData bibliographicalData = sampleBibliographicalData();
+        // act
+        BibliographicalData bibliographicalData = sampleBibliographicalData();
 
-            return new BibliographicalData(bibliographicalData.getTitle(), List.of(), bibliographicalData.getLanguage(),
-                    bibliographicalData.getPublisher(), bibliographicalData.getPublishDate(), bibliographicalData.getGenres(), bibliographicalData.getNumberOfPages(),
-                    bibliographicalData.getChunksOfText());
-        }
-        // Test Authors Lists Is Empty
-        @Test
-        void testConstructorThrowsExceptionWhenAuthorsListIsEmpty() {
+//      return new BibliographicalData(bibliographicalData.getTitle(), List.of(), bibliographicalData.getLanguage(),
+//                    bibliographicalData.getPublisher(), bibliographicalData.getPublishDate(), bibliographicalData.getGenres(), bibliographicalData.getNumberOfPages(),
+//                    bibliographicalData.getChunksOfText());
+          return new BibliographicalData(bibliographicalData.getTitle(), List.of(), bibliographicalData.getLanguage(),
+                    bibliographicalData.getPublishDate(), bibliographicalData.getGenres(), bibliographicalData.getChunksOfText());
+    }
 
-            // assert
-            assertThrows(IllegalArgumentException.class, this::sampleBibliographicalDataWithEmptyAuthorsList);
-        }
+    // Test To Throw Error If Authors Lists Is Empty
+    @Test
+    void testConstructorThrowsExceptionWhenAuthorsListIsEmpty() {
 
-        // Sample Builder With Empty Genres List
-        private BibliographicalData sampleBibliographicalDataWithEmptyGenresList() {
+        // assert
+        assertThrows(IllegalArgumentException.class, this::sampleBibliographicalDataWithEmptyAuthorsList);
+    }
 
-            // act
-            BibliographicalData bibliographicalData = sampleBibliographicalData();
+    // Sample Builder With Empty Genres List
+    private BibliographicalData sampleBibliographicalDataWithEmptyGenresList() {
 
-            return new BibliographicalData(bibliographicalData.getTitle(), bibliographicalData.getAuthors(), bibliographicalData.getLanguage(),
-                    bibliographicalData.getPublisher(), bibliographicalData.getPublishDate(), List.of(), bibliographicalData.getNumberOfPages(),
-                    bibliographicalData.getChunksOfText());
-        }
+        // act
+        BibliographicalData bibliographicalData = sampleBibliographicalData();
 
-        // Test Genre Lists Is Empty
-        @Test
-        void testConstructorThrowsExceptionWhenGenresListIsEmpty() {
+//      return new BibliographicalData(bibliographicalData.getTitle(), bibliographicalData.getAuthors(), bibliographicalData.getLanguage(),
+//                    bibliographicalData.getPublisher(), bibliographicalData.getPublishDate(), List.of(), bibliographicalData.getNumberOfPages(),
+//                    bibliographicalData.getChunksOfText());
+        return new BibliographicalData(bibliographicalData.getTitle(), bibliographicalData.getAuthors(), bibliographicalData.getLanguage(),
+                bibliographicalData.getPublishDate(), List.of(),bibliographicalData.getChunksOfText());
+    }
 
-            // assert
-            assertThrows(IllegalArgumentException.class, this::sampleBibliographicalDataWithEmptyGenresList);
-        }
+    // Test To Throw Error If Genre Lists Is Empty
+    @Test
+    void testConstructorThrowsExceptionWhenGenresListIsEmpty() {
 
-        // Sample Builder With Number of Pages Not Positive
-        private BibliographicalData sampleBibliographicalDataWithNumberOfPagesNotPositive() {
+        // assert
+        assertThrows(IllegalArgumentException.class, this::sampleBibliographicalDataWithEmptyGenresList);
+    }
 
-            // act
-            BibliographicalData bibliographicalData = sampleBibliographicalData();
+    // Sample Builder With Number of Pages Not Positive
+//  private BibliographicalData sampleBibliographicalDataWithNumberOfPagesNotPositive() {
+//
+//      // act
+//      BibliographicalData bibliographicalData = sampleBibliographicalData();
+//
+//      return new BibliographicalData(bibliographicalData.getTitle(), bibliographicalData.getAuthors(), bibliographicalData.getLanguage(),
+//                    bibliographicalData.getPublisher(), bibliographicalData.getPublishDate(), bibliographicalData.getGenres(), 0,
+//                    bibliographicalData.getChunksOfText());
+//  }
 
-            return new BibliographicalData(bibliographicalData.getTitle(), bibliographicalData.getAuthors(), bibliographicalData.getLanguage(),
-                    bibliographicalData.getPublisher(), bibliographicalData.getPublishDate(), bibliographicalData.getGenres(), 0,
-                    bibliographicalData.getChunksOfText());
-        }
-
-        // Test Genre Lists Is Empty
-        @Test
-        void testConstructorThrowsExceptionWhenNumberOfPagesNotPositive() {
-
-            // assert
-            assertThrows(IllegalArgumentException.class, this::sampleBibliographicalDataWithNumberOfPagesNotPositive);
-        }
+    // Test To Throw Error If NumberOfPages Is Not Positive
+//    @Test
+//    void testConstructorThrowsExceptionWhenNumberOfPagesNotPositive() {
+//
+//        // assert
+//        assertThrows(IllegalArgumentException.class, this::sampleBibliographicalDataWithNumberOfPagesNotPositive);
+//    }
 }

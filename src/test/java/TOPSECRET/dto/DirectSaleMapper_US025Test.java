@@ -37,14 +37,31 @@ class DirectSaleMapper_US025Test {
                 title,
                 List.of(author),
                 Locale.ENGLISH,
-                new Publisher("Publisher", "VAT123", new Contact()),
+//                new Publisher("Publisher", "VAT123", new Contact()),
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Some text"
         );
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition(
+                "1st",
+                code,
+                physicalAttributes,
+                pubType,
+                publisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+//        return new Publication(biblio, new PublicationType(TypeOfBinding.HARDBACK, "Hardcover"),
+//                seller, PublicationStatus.FOR_SALE, "12", new Code("123", "123", "123"));
         return new Publication(biblio, new PublicationType(TypeOfBinding.HARDBACK, "Hardcover"),
-                seller, PublicationStatus.FOR_SALE, "12", new Code("123", "123", "123"));
+               seller, PublicationStatus.FOR_SALE, edition, new Code("123", "123", "123"));
     }
 
     // To test if it maps a single direct sale's items correctly

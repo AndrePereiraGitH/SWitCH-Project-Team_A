@@ -60,10 +60,10 @@ class US018ToAddPublicationToPrivateListControllerTest {
                 "Test Title",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Sample text"
         );
 
@@ -72,12 +72,29 @@ class US018ToAddPublicationToPrivateListControllerTest {
                 "Standard publication"
         );
 
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher1 = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition(
+                "1st",
+                code,
+                physicalAttributes,
+                pubType,
+                publisher1,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+
         return new Publication(
                 bibliographicalData,
                 publicationType,
                 user,
                 PublicationStatus.READING,
-                "First Edition",
+//                "First Edition",
+                edition,
                 Code.fromIsbn13("9783161484100")
         );
     }

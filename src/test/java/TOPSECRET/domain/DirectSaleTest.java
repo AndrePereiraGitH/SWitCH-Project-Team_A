@@ -209,19 +209,19 @@ class DirectSaleTest {
                 "Harry Potter: Pedra Filosofal",
                 List.of(createAuthor()),
                 new Locale("pt", "PT"),
-                new Publisher(
-                        "PortoEditora",
-                        "192394938",
-                        new Contact(
-                                "917485647",
-                                "+351",
-                                new Email("asa", "example.com"),
-                                new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry())
-                        )
-                ),
+//                new Publisher(
+//                        "PortoEditora",
+//                        "192394938",
+//                        new Contact(
+//                                "917485647",
+//                                "+351",
+//                                new Email("asa", "example.com"),
+//                                new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry())
+//                        )
+//                ),
                 LocalDate.of(2020, 1, 30),
                 List.of(new Genre("FANTASY")),
-                504,
+//                504,
                 "Text Description"
         );
     }
@@ -239,13 +239,42 @@ class DirectSaleTest {
         );
     }
 
+    private static PhysicalAttributes createPhysicalAttributes(){
+        return new PhysicalAttributes(
+                new Dimensions(123, 242, 124),
+                100,
+                230
+        );
+    }
+
+    private static Publisher createPublisher(){
+        return new Publisher(
+                "John Snow",
+                "UK198067290",
+                null
+        );
+    }
+
+    private static Edition createEdition(){
+        return new Edition(
+                "1st",
+                createCode(),
+                createPhysicalAttributes(),
+                createPublicationType(),
+                createPublisher(),
+                Locale.ENGLISH,
+                LocalDate.of(2025,10, 12)
+        );
+    }
+
     private static Publication createPublication(){
         return new Publication(
                 createBibliographicalData(),
                 createPublicationType(),
                 createUser(),
                 PublicationStatus.FOR_SALE,
-                "1st Edition",
+//                "1st Edition",
+                createEdition(),
                 createCode()
         );
     }

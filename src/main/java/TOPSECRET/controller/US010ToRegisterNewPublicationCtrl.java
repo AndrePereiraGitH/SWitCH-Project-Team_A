@@ -22,7 +22,7 @@ public class US010ToRegisterNewPublicationCtrl {
 
     public boolean createAndAddPublication(
             BibliographicalData bibliographicalData1, PublicationType publicationType1,
-            User user1, PublicationStatus publicationStatus1, String _edition, Code _code
+            User user1, PublicationStatus publicationStatus1, Edition _edition, Code _code
     ) {
 
         return _publicationRepository.createAndAdd(bibliographicalData1, publicationType1,

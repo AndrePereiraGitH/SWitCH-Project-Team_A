@@ -837,17 +837,17 @@ class AuctionTest {
                         "The Lord of the Rings, in one paperback. Features the definitive edition of the text, " +
                         "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
 
-        Contact contact = new Contact();
-        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
+//        Contact contact = new Contact();
+//        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
 
         return new BibliographicalData(
                 "The Lord Of The Rings",
                 authors,
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(1991, 11, 1),
                 List.of(new Genre ("Fantasy")),
-                700,
+//                700,
                 chunkOfText
         );
     }
@@ -865,12 +865,20 @@ class AuctionTest {
         // Code
         Code code = Code.fromIsbn13("9781234567890");
 
+        // Edition
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         return new Publication(
                 bd,
                 publicationType,
                 user,
                 PublicationStatus.FOR_SALE,
-                "1st edition",
+//                "1st edition",
+                edition,
                 code
         );
     }

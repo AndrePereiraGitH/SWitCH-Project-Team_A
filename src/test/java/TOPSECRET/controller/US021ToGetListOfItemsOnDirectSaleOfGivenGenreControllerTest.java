@@ -218,27 +218,27 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         );
     }
 
-    private static BibliographicalData createBibliographicalData(){
-        return new BibliographicalData(
-                "Harry Potter: Pedra Filosofal",
-                List.of(createAuthor()),
-                new Locale("pt", "PT"),
-                new Publisher(
-                        "PortoEditora",
-                        "192394938",
-                        new Contact(
-                                "917485647",
-                                "+351",
-                                new Email("asa", "example.com"),
-                                new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry())
-                        )
-                ),
-                LocalDate.of(2020, 1, 30),
-                List.of(new Genre("Fiction")),
-                504,
-                "Text Description"
-        );
-    }
+//    private static BibliographicalData createBibliographicalData(){
+//        return new BibliographicalData(
+//                "Harry Potter: Pedra Filosofal",
+//                List.of(createAuthor()),
+//                new Locale("pt", "PT"),
+//                new Publisher(
+//                        "PortoEditora",
+//                        "192394938",
+//                        new Contact(
+//                                "917485647",
+//                                "+351",
+//                                new Email("asa", "example.com"),
+//                                new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry())
+//                        )
+//                ),
+//                LocalDate.of(2020, 1, 30),
+//                List.of(new Genre("Fiction")),
+//                504,
+//                "Text Description"
+//        );
+//    }
 //
 //    private static PublicationType createPublicationType(){
 //        return new PublicationType(

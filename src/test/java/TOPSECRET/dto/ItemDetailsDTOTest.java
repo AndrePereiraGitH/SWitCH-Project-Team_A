@@ -26,10 +26,10 @@ class ItemDetailsDTOTest {
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author),
             Locale.ENGLISH,
-            publisher,
+//            publisher,
             LocalDate.of(2020, 1, 1),
             List.of(new Genre ("Fiction")),
-            200,
+//            200,
             "Some text"
     );
 
@@ -38,8 +38,23 @@ class ItemDetailsDTOTest {
 
     Code code = Code.fromIsbn13("9781234567890");
 
-    Publication pub = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+    // Edition
+    Code code1 = Code.fromIsbn13 ("978316148412");
+    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    Publisher publisher1 = new Publisher("Porto Editora", "PT987654321", null);
+    Edition edition= new Edition(
+            "1st",
+            code1,
+            physicalAttributes,
+            pubType,
+            publisher1,
+            Locale.ENGLISH,
+            LocalDate.of(2020, 1, 1)
+    );
 
+    Publication pub = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, edition, code);
 
     Dimensions dim = new Dimensions(10,10,10);
 

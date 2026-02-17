@@ -24,8 +24,10 @@ public class PublicationRepository {
     }
 
 
+//    public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
+//                                PublicationStatus publicationStatus, String edition, Code code){
     public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
-                                PublicationStatus publicationStatus, String edition, Code code){
+                            PublicationStatus publicationStatus, Edition edition, Code code){
 
         Publication publication = new Publication(bibliographicalData,publicationType,username,publicationStatus,edition,code);
 

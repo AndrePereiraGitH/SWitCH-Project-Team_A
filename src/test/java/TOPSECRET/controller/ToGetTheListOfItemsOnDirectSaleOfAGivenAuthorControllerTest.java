@@ -55,20 +55,20 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 new Address("Street A", "10", "1000-001", new Country("PORTUGAL"))
         );
 
-        Publisher publisher = new Publisher(
-                "Publisher A",
-                "VAT123",
-                publisherContact
-        );
+//        Publisher publisher = new Publisher(
+//                "Publisher A",
+//                "VAT123",
+//                publisherContact
+//        );
 
         BibliographicalData bd = new BibliographicalData(
                 "Book One",
                 List.of(author1),
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                300,
+//                300,
                 "Some text"
         );
 
@@ -90,12 +90,22 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 UserRole.NORMAL_USER
         );
 
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+
         Publication publication = new Publication(
                 bd,
                 publicationType,
                 seller,
                 PublicationStatus.FOR_SALE,
-                "1st Edition",
+//                "1st Edition",
+                edition,
                 Code.fromIsbn13("9783161484100")
         );
 

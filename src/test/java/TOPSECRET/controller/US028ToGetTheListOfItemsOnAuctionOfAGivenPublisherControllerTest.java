@@ -65,10 +65,10 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 "Java Fundamentals",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher1,
+//                publisher1,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Tech")),
-                300,
+//                300,
                 "Description"
         );
 
@@ -77,10 +77,10 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 "Python Basics",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher2,
+//                publisher2,
                 LocalDate.of(2021, 1, 1),
                 List.of(new Genre("Tech")),
-                250,
+//                250,
                 "Description"
         );
 
@@ -93,15 +93,27 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Seller user
         User seller = new User("seller", contact, profile, UserRole.NORMAL_USER);
 
+        // Edition
+        Code code1 = Code.fromIsbn13 ("978316148412");
+        Code code2 = Code.fromIsbn13 ("978316148413");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+//        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition("1st", code1, physicalAttributes, pubType, publisher1, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition2= new Edition("1st", code2, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         // -------- Publications --------
         Publication pub1 = new Publication(
                 data1, type, seller, PublicationStatus.FOR_SALE,
-                "1st edition", Code.fromIsbn13("9780000000001")
+//                "1st edition", Code.fromIsbn13("9780000000001")
+                edition1, Code.fromIsbn13("9780000000001")
         );
 
         Publication pub2 = new Publication(
                 data2, type, seller, PublicationStatus.FOR_SALE,
-                "1st edition", Code.fromIsbn13("9780000000002")
+//                "1st edition", Code.fromIsbn13("9780000000002")
+                edition2, Code.fromIsbn13("9780000000002")
         );
 
         // -------- Items --------

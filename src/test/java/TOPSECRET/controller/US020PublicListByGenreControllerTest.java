@@ -52,10 +52,10 @@ class US020PublicListByGenreControllerTest {
         List<Author> authors = new ArrayList<>();
         authors.add(new Author(authorProfile, "Author Biography"));
         Locale language = Locale.getDefault();
-        Email publisherEmail = new Email("publishing.inc", "gmail.com");
-        Address publisherLocation = new Address("Avenida das ruas","63","2525-524",new Country("Portugal"));
-        Contact publisherContact = new Contact("94839202", "+351", publisherEmail, publisherLocation);
-        Publisher publisher = new Publisher("Publishing Inc", "249412852", publisherContact);
+//        Email publisherEmail = new Email("publishing.inc", "gmail.com");
+//        Address publisherLocation = new Address("Avenida das ruas","63","2525-524",new Country("Portugal"));
+//        Contact publisherContact = new Contact("94839202", "+351", publisherEmail, publisherLocation);
+//        Publisher publisher = new Publisher("Publishing Inc", "249412852", publisherContact);
         List<Genre> genre = new ArrayList<>();
         genre.add(new Genre("Sci-Fi"));
         LocalDate publishDate = LocalDate.now();
@@ -64,16 +64,24 @@ class US020PublicListByGenreControllerTest {
                 "bibliographical data test",
                 authors,
                 language,
-                publisher,
+//                publisher,
                 publishDate,
                 genre,
-                405,
+//                405,
                 "Sample text"
         );
 
 
         PublicationStatus pubStatus = PublicationStatus.FOR_SALE;
-        String edition = "4th Edition";
+//        String edition = "4th Edition";
+        // Edition
+        Code code1 = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType1 = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code1, physicalAttributes, pubType1, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         Code code = Code.fromIsbn10("1234567890");
 
         Publication publicationSample = new Publication(data, pubType, userName, pubStatus, edition, code);

@@ -20,11 +20,11 @@ class BookTest {
 
         String title = "The Lord of the Rings";
 
-        Email publisherEmail = new Email("HarperCollins", "gmail.com");
-        Country country = new Country("UNITED_STATES");
-        Address publisherAddress = new Address("Broadway","195","10007", country);
-        Contact publisherContact = new Contact("987654321", "+351", publisherEmail, publisherAddress);
-        Publisher publisher = new Publisher("HarperCollins Publishers","123456", publisherContact);
+//        Email publisherEmail = new Email("HarperCollins", "gmail.com");
+//        Country country = new Country("UNITED_STATES");
+//        Address publisherAddress = new Address("Broadway","195","10007", country);
+//        Contact publisherContact = new Contact("987654321", "+351", publisherEmail, publisherAddress);
+//        Publisher publisher = new Publisher("HarperCollins Publishers","123456", publisherContact);
 
         LocalDate publishDate = LocalDate.of(1954,07,29);
 
@@ -39,11 +39,11 @@ class BookTest {
         Author author = new Author (authorProfile, "valid bio");
         authors.add(author);
 
-        int numOfPages = 1100;
+//        int numOfPages = 1100;
 
 //        BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
-        BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
-
+//        BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publisher, publishDate, genres, numOfPages, "I will take the Ring,' he said, 'Though I do not know the way.");
+        BibliographicalData information = new BibliographicalData(title, authors, Locale.ENGLISH, publishDate, genres, "I will take the Ring,' he said, 'Though I do not know the way.");
         return information;
     }
 
@@ -54,7 +54,13 @@ class BookTest {
         Dimensions dimensions = new Dimensions(12.2, 8.7, 0.2);
 
         // Publication basics
-        String edition = "Sample Edition";
+//        String edition = "Sample Edition";
+        Code code1 = Code.fromIsbn13 ("978316148412");
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code1, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         BibliographicalData information = sampleInformation();
 
         PublicationType publicationType =

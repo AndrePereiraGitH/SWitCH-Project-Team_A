@@ -42,20 +42,20 @@ class CollectionOfPublicationsRepositoryTest {
 
         List<Author> authors = List.of(author);
 
-        Publisher publisher = new Publisher(
-                "Test Publisher",
-                "PT123456789",
-                new Contact("912345678", "351", null, null)
-        );
+//        Publisher publisher = new Publisher(
+//                "Test Publisher",
+//                "PT123456789",
+//                new Contact("912345678", "351", null, null)
+//        );
 
         BibliographicalData bibliographicalData = new BibliographicalData(
                 "Test Title",
                 authors,
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "Sample text"
         );
 
@@ -77,12 +77,21 @@ class CollectionOfPublicationsRepositoryTest {
                 UserRole.ADMIN
         );
 
+        // Edition
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
         return new Publication(
                 bibliographicalData,
                 publicationType,
                 user,
                 PublicationStatus.READING,
-                "First Edition",
+//                "First Edition",
+                edition,
                 Code.fromIsbn13("9783161484100")
         );
     }

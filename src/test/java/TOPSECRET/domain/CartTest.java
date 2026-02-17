@@ -61,10 +61,10 @@ class CartTest {
                 "Childhood, Youth, Dependency: The Copenhagen Trilogy",
                 List.of(author),
                 Locale.ENGLISH,
-                publisher,
+//                publisher,
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre ("Fiction")),
-                200,
+//                200,
                 "Some text"
         );
 
@@ -76,13 +76,26 @@ class CartTest {
         );
         User seller = new User("seller1", contact, profile, UserRole.NORMAL_USER);
         Code code = Code.fromIsbn13("9781234567890");
+        // Edition
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Edition edition= new Edition(
+                "1st",
+                code,
+                physicalAttributes,
+                pubType,
+                publisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
 
         Publication publication = new Publication(
                 bibliographicalData,
                 publicationType,
                 seller,
                 PublicationStatus.FOR_SALE,
-                "1st edition",
+//                "1st edition",
+                edition,
                 code
         );
 

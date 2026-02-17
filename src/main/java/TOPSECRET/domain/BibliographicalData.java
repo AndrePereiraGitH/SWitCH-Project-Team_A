@@ -9,17 +9,18 @@ public class BibliographicalData {
     // Attributes
     private String _title;
     private List<Author> _author;
-    private Locale _language;
-    private Publisher _publisher;
+    private Locale _originalLanguage;
+//    private Publisher _publisher;                 //It became an attribute of the Edition class
     private LocalDate _publishDate;
     private List<Genre> _genre;
-    private int _numberOfPages;
+//    private int _numberOfPages;                   //It became an attribute of the PhysicalAttributes class
     private String _chunksOfText;
 
     // Constructor
-    public BibliographicalData(String title, List<Author> authors, Locale language, Publisher publisher, LocalDate publishDate,
-                               List<Genre> genre, int numberOfPages, String chunksOfText) {
-
+    //public BibliographicalData(String title, List<Author> authors, Locale originalLanguage, Publisher publisher, LocalDate publishDate,
+    //List<Genre> genre, int numberOfPages, String chunksOfText) {
+    public BibliographicalData(String title, List<Author> authors, Locale originalLanguage, LocalDate publishDate,
+                List<Genre> genre, String chunksOfText) {
         // Validations
 
         if (authors == null || authors.isEmpty()) {
@@ -30,17 +31,17 @@ public class BibliographicalData {
             throw new IllegalArgumentException("Genres list cannot be empty");
         }
 
-        if (numberOfPages <= 0) {
-            throw new IllegalArgumentException("Number of pages must be positive");
-        }
+//        if (numberOfPages <= 0) {
+//            throw new IllegalArgumentException("Number of pages must be positive");
+//        }
 
         this._title = title;
         this._author = List.copyOf(authors);
-        this._language = language;
-        this._publisher = publisher;
+        this._originalLanguage = originalLanguage;
+//        this._publisher = publisher;
         this._publishDate = publishDate;
         this._genre = List.copyOf(genre);
-        this._numberOfPages = numberOfPages;
+//        this._numberOfPages = numberOfPages;
         this._chunksOfText = chunksOfText;
     }
 
@@ -54,12 +55,12 @@ public class BibliographicalData {
     }
 
     public Locale getLanguage() {
-        return _language;
+        return _originalLanguage;
     }
 
-    public Publisher getPublisher() {
-        return _publisher;
-    }
+//    public Publisher getPublisher() {
+//        return _publisher;
+//    }
 
     public LocalDate getPublishDate() {
         return _publishDate;
@@ -69,9 +70,9 @@ public class BibliographicalData {
         return _genre;
     }
 
-    public int getNumberOfPages() {
-        return _numberOfPages;
-    }
+//    public int getNumberOfPages() {
+//        return _numberOfPages;
+//    }
 
     public String getChunksOfText() {
         return _chunksOfText;

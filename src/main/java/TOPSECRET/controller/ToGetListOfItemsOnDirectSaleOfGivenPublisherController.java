@@ -30,7 +30,8 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
         List<DirectSale> directSales = _directSaleRepository.getListOfItemsOnDirectSale(publisher);
         for (DirectSale directSale : directSales) {
             for (Item item : directSale.getListing().getItems()) {
-                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
+//                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
+                Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
                 if (publisher.equals(itemPublisher)) {
                     // item is on direct sale and has the target publisher, add it to the result!
                     result.add(item);

@@ -93,9 +93,13 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         assertEquals(2, result.size());
         result.forEach(item ->
+//                assertEquals(publisherA,
+//                        item.getPublication()
+//                                .getBibliographicalData()
+//                                .getPublisher()));
                 assertEquals(publisherA,
                         item.getPublication()
-                                .getBibliographicalData()
+                                .getEdition()
                                 .getPublisher()));
     }
 
@@ -110,10 +114,10 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         "Title",
                         List.of(author),
                         Locale.getDefault(),
-                        publisher,
+//                        publisher,
                         LocalDate.now(),
                         List.of(genre),
-                        100,
+//                        100,
                         "ChunksOfText"
                 );
 
@@ -124,7 +128,21 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         User user = new User("userName", contact, profile, UserRole.NORMAL_USER);
         Code code = Code.fromIsbn13("isbn13");
 
-        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, "edition", code);
+        // Edition
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Edition edition= new Edition(
+                "1st",
+                code,
+                physicalAttributes,
+                pubType,
+                publisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+//        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, "edition", code);
+        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, edition, code);
     }
 
     private static Item item(Publication publication) {

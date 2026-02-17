@@ -37,13 +37,21 @@ class DirectSaleMapper_US023Test {
                 title,
                 List.of(author),
                 Locale.ENGLISH,
-                new Publisher("Porto Editora", "123", null),
+//                new Publisher("Porto Editora", "123", null),
                 LocalDate.of(2020, 1, 1),
                 List.of(new Genre("Fiction")),
-                200,
+//                200,
                 "desc"
         );
     }
+
+    // Edition
+    Code code = Code.fromIsbn13 ("978316148412");
+    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+    Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     private Publication publication(String title, Author author) {
         return new Publication(
@@ -51,7 +59,8 @@ class DirectSaleMapper_US023Test {
                 new PublicationType(TypeOfBinding.PAPERBACK, "PB"),
                 new User("seller", null, profile("Seller"), UserRole.NORMAL_USER),
                 PublicationStatus.FOR_SALE,
-                "1st",
+//                "1st",
+                edition,
                 Code.fromIsbn10("1234567890")
         );
     }

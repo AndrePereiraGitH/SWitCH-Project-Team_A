@@ -14,13 +14,16 @@ public class Publication {
 
     private PublicationStatus _publicationStatus;
 
-    private String _edition;
+//    private String _edition;
+    private Edition _edition;
 
     private Code _code;
 
 
-    public Publication(BibliographicalData bibliographicalData, PublicationType publicationType, User userName, PublicationStatus publicationStatus,
-                       String edition, Code code) {
+//    public Publication(BibliographicalData bibliographicalData, PublicationType publicationType, User userName, PublicationStatus publicationStatus,
+//                       String edition, Code code) {
+public Publication(BibliographicalData bibliographicalData, PublicationType publicationType, User userName, PublicationStatus publicationStatus,
+                   Edition edition, Code code) {
 
         if (bibliographicalData == null) {
             throw new IllegalArgumentException("BibliographicalData must not be left blank");
@@ -46,7 +49,10 @@ public class Publication {
 
     }
 
-    public String getEdition() {
+//    public String getEdition() {
+//        return _edition;
+//    }
+    public Edition getEdition() {
         return _edition;
     }
 
@@ -92,7 +98,8 @@ public class Publication {
             PublicationType publicationType,
             User userName,
             PublicationStatus publicationStatus,
-            String edition,
+//            String edition,
+            Edition edition,
             Code code
     ) {}
 
