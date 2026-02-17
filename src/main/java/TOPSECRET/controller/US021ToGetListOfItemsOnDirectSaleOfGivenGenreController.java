@@ -28,14 +28,14 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
 
 
 
-    // Obtém lista de items em direct sale por género
-    public List<DirectSale> getListOfItemsOnDirectSale(Genre selectedgenre){
-        if (selectedgenre == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
-
-        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre);
-
-    }
+//    // Obtém lista de items em direct sale por género
+//    public List<DirectSale> getListOfItemsOnDirectSale(Genre selectedgenre){
+//        if (selectedgenre == null) {
+//            throw new IllegalArgumentException("Genre cannot be null");
+//        }
+//
+//        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre);
+//
+//    }
 
 }

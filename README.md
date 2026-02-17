@@ -3,36 +3,122 @@
 
 ## Issue Template
 
-### Issue Name
+### Main issue: US[NUMBER] - [US Text]
 
-- User Stories
-  
-**Main issue: US006 - As an Administrator, I want to register a Publishing Company in the system (what we currently have, the fulfilment of the acceptance criteria of the US)**
+- **sub-issue:** US[NUMBER] - Analysis & Design
 
-   - sub-issue: US006 Analysis Design
-     
-      Description: create/update SSD/SD/CD
+  **Description:**
+     - Acceptance Criteria:
+          - SSD covers the main success scenario.
+          - SD is consistent with the SSD and reflects the chosen design.
+          - CD includes all classes involved and their relationships.
+          - Diagrams are reviewed and approved by the team.
 
-     
-   - sub-issue: Add Controller for registering publisher functionality
-   
-       Description: create RegisterPublisherController and unit tests
 
-   
-   - other sub-issues that are directly related to our US
+- (if needed) **sub-issue:** US[NUMBER] - Implement domain class and unit tests.
+
+  **Description:**
+     - Acceptance Criteria:
+          - Class follows domain rules and OOD best practices.
+          - All edge cases are covered by unit tests.
+          - Test coverage ≥ 95%.
+          - Code is documented with JavaDoc.
+
+
+
+- **sub-issue:** US[NUMBER] - Implement repository class and unit tests.
+
+  **Description:**
+     - Acceptance Criteria:
+          - Repository correctly retrieves domain objects.
+          - All edge cases are covered by unit tests.
+          - Test coverage ≥ 95%.
+          - Code is documented with JavaDoc.
+
+
+
+- **sub-issue:** US[NUMBER] - Implement controller class and unit tests.
+
+  **Description:**
+     - Acceptance Criteria:
+          - Controller correctly orchestrates domain and repository interactions.
+          - All edge cases are covered by unit tests.
+          - Test coverage ≥ 95%.
+          - Code is documented with JavaDoc.
+
+
+__All acceptance criteria must be reviewed and adjusted to fit each US. 
+Additional criteria may be added as needed to ensure completeness.__
 
 <br>
 
-- **Refinement Issue if needed**
+## Refinement Issue if needed
+
+
+### Domain class Refinement
+
+**Main issue (if needed):** Refinement - [Domain Class Name] - [Brief Description of Change]
+
+**Description:** [What needs to be clarified, revised or reworked — e.g. domain class restructure, new edge cases discovered, design corrections.]
+
+**Acceptance Criteria:**
+- [Domain Class Name] correctly reflects the updated domain rules and OOD best practices.
+- Any impacted classes or tests are updated accordingly.
+- All edge cases are covered by unit tests.
+- Test coverage ≥ 95%.
+- Code is documented with JavaDoc.
+- Changes are reviewed and approved by the team.
+
+<br>
+
+### US Refinement
+
+**Main issue (if needed):** US[NUMBER] - Refinement - [Topic]
+
+**Description:** [What needs to be clarified, revised or reworked — e.g. domain changes, design corrections, new edge cases discovered mid-sprint.]
+
+**Acceptance Criteria:**
+- All open questions related to [Topic] are documented and resolved.
+- Any impacted diagrams (SSD/SD/CD) are updated to reflect the changes.
+- Any impacted classes or tests are updated and still meet ≥ 95% coverage.
+- Changes are reviewed and approved by the team.
+
+
+<br>
+
+### Commit template
+
+Design implementation/creation:
 
 ````
-Refinement + Donain class + changes/topic
+Working on #Issue, created SSD, SD & CD related to US_NUMBER
 
-or
+Working on #Issue, implemented tests & class for X domain class 
 
-Refinement - US_number  
+Working on #Issue, implemented tests & class for X repository class 
+
+Working on #Issue, implemented tests & class for X controller class related to US_NUMBER
 
 ````
+
+Additional work (new methods, corrections, updates):
+
+````
+Working on #Issue, implemented additional tests & method(s) in X domain class
+
+Working on #Issue, implemented additional tests & method(s) in X repository class
+
+Working on #Issue, corrected mistakes in X class (write details here)
+
+Working on #Issue, updated X class to reflect new design (write details here)
+
+Working on #Issue, updated (SSD/SD/CD) to reflect new design
+````
+
+- When the item meets the definition of done, the commit message should end with (@close #ISSUENUMBER)
+
+
+- When working with someone else, you should reference that person in the commit message (@Github_Username)
 
 
 <br>
