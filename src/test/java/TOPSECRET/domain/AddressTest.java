@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
     public class AddressTest {
-/*
+
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  ", "\t", "\n"})
@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
         @ParameterizedTest
         @NullSource
-        void constructor_whenCalledWithInvalidCountry_ThrowsException(Countries country) {
-            assertThrows(IllegalArgumentException.class, () -> new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL")));
+        void constructor_whenCalledWithInvalidCountry_ThrowsException(Country country) {
+            assertThrows(IllegalArgumentException.class, () -> new Address("dummyStreet", "dummyNumber", "dummyZipCode", country));
         }
 
         @Test
@@ -128,11 +128,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
         @Test
         void toString_whenCalled_ReturnsExpectedString() {
-            Address address = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
+            Country country = new Country("PORTUGAL");
+            Address address = new Address("dummyStreet", "dummyNumber", "dummyZipCode", country);
 
             assertEquals("dummyStreet, no. dummyNumber, dummyZipCode, PORTUGAL", address.toString());
         }
 
- */
+
     }
 
