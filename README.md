@@ -12,7 +12,7 @@
           - SSD covers the main success scenario.
           - SD is consistent with the SSD and reflects the chosen design.
           - CD includes all classes involved and their relationships.
-          - Diagrams are reviewed and approved by the team.
+          - Diagrams are reviewed and approved by the team (at least one team member).
 
 
 - (if needed) **sub-issue:** US[NUMBER] - Implement domain class and unit tests.
@@ -23,6 +23,7 @@
           - All edge cases are covered by unit tests.
           - Test coverage ≥ 95%.
           - Code is documented with JavaDoc.
+          - Code reviewed and approved by the team (at least one team member).
 
 
 
@@ -34,6 +35,7 @@
           - All edge cases are covered by unit tests.
           - Test coverage ≥ 95%.
           - Code is documented with JavaDoc.
+          - Code reviewed and approved by the team (at least one team member).
 
 
 
@@ -45,6 +47,7 @@
           - All edge cases are covered by unit tests.
           - Test coverage ≥ 95%.
           - Code is documented with JavaDoc.
+          - Code reviewed and approved by the team (at least one team member).
 
 
 __All acceptance criteria must be reviewed and adjusted to fit each US. 
@@ -67,7 +70,7 @@ Additional criteria may be added as needed to ensure completeness.__
 - All edge cases are covered by unit tests.
 - Test coverage ≥ 95%.
 - Code is documented with JavaDoc.
-- Changes are reviewed and approved by the team.
+- Changes are reviewed and approved by the team (at least one team member).
 
 <br>
 
@@ -81,7 +84,7 @@ Additional criteria may be added as needed to ensure completeness.__
 - All open questions related to [Topic] are documented and resolved.
 - Any impacted diagrams (SSD/SD/CD) are updated to reflect the changes.
 - Any impacted classes or tests are updated and still meet ≥ 95% coverage.
-- Changes are reviewed and approved by the team.
+- Changes are reviewed and approved by the team (at least one team member).
 
 
 <br>
