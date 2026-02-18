@@ -39,7 +39,7 @@ class CreateCollectionOfPublicationsController {
 
 class GenreDTO {
   - name : String
-  + {static} from(genre : Genre) : GenreDTO
+  + {static} toDTO(genre : Genre) : GenreDTO
 }
 
 ' ___________________

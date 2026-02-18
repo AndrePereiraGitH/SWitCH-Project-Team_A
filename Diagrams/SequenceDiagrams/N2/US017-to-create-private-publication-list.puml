@@ -28,7 +28,7 @@ deactivate GenreRepository
 
 loop for each genre in listOfGenres
     create "genreDTO:GenreDTO"
-    Controller -> "genreDTO:GenreDTO" : from(genre)
+    Controller -> "genreDTO:GenreDTO" : toDTO(genre)
     activate "genreDTO:GenreDTO"
     "genreDTO:GenreDTO" --> Controller : genreDTO
     deactivate "genreDTO:GenreDTO"
