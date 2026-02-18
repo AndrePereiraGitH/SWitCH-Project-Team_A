@@ -3,7 +3,7 @@
 hide footbox
 autonumber
 
-title US019 - As a User, I want to publicly share a list of mine
+title US019 - To publicly share a list of mine
 
 box #WhiteSmoke
 actor User

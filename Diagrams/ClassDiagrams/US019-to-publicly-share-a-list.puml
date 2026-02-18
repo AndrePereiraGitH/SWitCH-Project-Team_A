@@ -1,23 +1,33 @@
 @startuml
+hide circle
 skinparam classAttributeIconSize 0
 
-title US019 - Class Diagram (matches updated sequence)
+title US019 - To publicly share a list of user
 
-class ShareListController {
-  -listRepository : ListRepository
-  +shareList(listId : String) : void
+class US019ToPubliclyShareListController {
+  '-collectionOfPublicationsRepository : CollectionOfPublicationRepository
+  +getAllCollectionsOfPublications() : List<CollectionOfPublications>
+  +shareCollectionOfPublications(collectionDTO : CollectionOfPublicationsDTO) : boolean
 }
 
-class ListRepository {
-  +getList(listId : String) : List
+class CollectionOfPublicationRepository {
+  +getAllCollectionsOfPublicationsByUser(User user) : List<CollectionOfPublications>
+  +getCollectionOfPublications(collectionDTO : CollectionOfPublicationsDTO) : CollectionsOfPublications
+  +makeCollectionOfPublicationsPublic(CollectionOfPublications) : boolean
 }
 
-class List {
-  -isPublic : boolean
-  +makePublic() : void
+class CollectionOfPublications {
+  -isPrivate : boolean
+  +set_isPrivate() : void
 }
 
-ShareListController --> ListRepository : uses
-ListRepository --> List : returns/persists
+class CollectionOfPublicationsDTO {
 
+    +fromDomain(CollectionOfPublications) : CollectionOfPublicationsDTO
+
+}
+
+US019ToPubliclyShareListController ..> CollectionOfPublicationRepository : uses
+CollectionOfPublicationRepository --> CollectionOfPublications : returns/persists
+US019ToPubliclyShareListController ..> CollectionOfPublicationsDTO : uses
 @enduml
