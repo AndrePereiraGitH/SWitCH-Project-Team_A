@@ -10,45 +10,80 @@ actor User
 participant ":UI019" as UI
 end box
 
-participant ":ShareListController" as ShareListController
-participant ":ListRepository" as ListRepository
-participant "list: List" as List
+participant ":US019ToPubliclyShareListController" as Controller
+participant ":CollectionOfPublicationRepository" as CollectionRepository
+participant "collectionOfPublication: CollectionOfPublications" as CollectionOfPublications
+participant "CollectionOfPublicationsDTO_US019" as dto
 
 activate UI
 
-User -> UI : I want to publicly share a list of mine
-UI --> ShareListController: requestAllLists()
+User -> UI : I want to publicly share a CollectionOfPublications of mine
+UI --> Controller: requestAllCollectionOfPublicationsByUser(user)
 
-activate ShareListController
-ShareListController --> ListRepository: getAllLists()
+activate Controller
+Controller --> CollectionRepository: getAllCollectionOfPublicationsByUser(user)
+activate CollectionRepository
+create "listOfUserCollections:List<CollectionOfPublications>" as CollectionOfPublicationsList
+CollectionRepository -> CollectionOfPublicationsList : create()
 
-activate ListRepository
-ListRepository --> ShareListController: lists
-deactivate ListRepository
+loop for each CollectionOfPublications in list
+    CollectionRepository -> CollectionOfPublications : isOwnerEqualsUser(user)
+    activate CollectionOfPublications
+    CollectionOfPublications --> CollectionRepository : true
 
-ShareListController --> UI: lists
-deactivate ShareListController
+    deactivate CollectionOfPublications
 
-UI -->> User : Select the list you want to share (lists)
-User -> UI : Selected list (listId)
-UI -> ShareListController : shareList(listId)
+    CollectionRepository -> CollectionRepository : addCollectionToListOfUserCollections()
 
-activate ShareListController
-ShareListController -> ListRepository : getList(listId)
-activate ListRepository
-ListRepository -> List : makePublic()
 
-activate List
-List --> ListRepository : updated
-deactivate List
 
-ListRepository --> ShareListController: Updated
-deactivate ListRepository
+end
 
-ShareListController --> UI : Success
-deactivate ShareListController
 
-UI --> User: Done!
+CollectionRepository --> Controller: listOfUserCollections
+deactivate CollectionRepository
+
+'Controller --> UI: listOfUserCollections
+create "listCollectionsDTO : List<CollectionOfPublicationsDTO>" as CollectionDTOList
+Controller -> CollectionDTOList : create()
+loop for each CollectionOfPublications in listOfUserCollections
+    Controller -> dto : fromDomain(collection)
+    activate dto
+    dto --> Controller : collectionDTO
+    deactivate dto
+    Controller -> Controller : addToListCollectionsDTO(collectionDTO)
+
+end
+Controller --> UI : listCollectionsDTO
+deactivate Controller
+
+UI -->> User : Select the list you want to share : collectionDTO_A, collectionDTO_B, ...
+User -> UI : Selected collection (collectionDTO_A)
+UI -> Controller : shareCollectionOfPublications(collectionDTO_A)
+
+
+activate Controller
+Controller -> CollectionRepository : getCollectionOfPublication(collectionDTO_A)
+activate CollectionRepository
+CollectionRepository --> Controller : collectionA
+deactivate CollectionRepository
+
+
+Controller -> CollectionRepository : makeCollectionOfPublicationsPublic(collection)
+activate CollectionRepository
+CollectionRepository -> CollectionOfPublications : set_isPrivate(false)
+activate CollectionOfPublications
+CollectionOfPublications --> CollectionRepository
+deactivate CollectionOfPublications
+
+CollectionRepository --> Controller : true
+
+deactivate CollectionRepository
+
+Controller --> UI : Success
+deactivate Controller
+
+UI --> User: Your collection is public now!
 
 deactivate UI
 
