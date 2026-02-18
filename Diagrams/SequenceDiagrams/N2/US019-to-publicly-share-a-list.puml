@@ -27,13 +27,13 @@ create "listOfUserCollections:List<CollectionOfPublications>" as CollectionOfPub
 CollectionRepository -> CollectionOfPublicationsList : create()
 
 loop for each CollectionOfPublications in list
-    CollectionRepository -> CollectionOfPublications : isOwnerEqualsUser(user)
+    CollectionRepository -> CollectionOfPublications : verifyIfCollectionBelongsToUser(user)
     activate CollectionOfPublications
     CollectionOfPublications --> CollectionRepository : true
 
     deactivate CollectionOfPublications
 
-    CollectionRepository -> CollectionRepository : addCollectionToListOfUserCollections()
+    CollectionRepository -> CollectionRepository : listOfUserCollections.add(collectionOfPublication)
 
 
 
@@ -46,12 +46,12 @@ deactivate CollectionRepository
 'Controller --> UI: listOfUserCollections
 create "listCollectionsDTO : List<CollectionOfPublicationsDTO>" as CollectionDTOList
 Controller -> CollectionDTOList : create()
-loop for each CollectionOfPublications in listOfUserCollections
-    Controller -> dto : fromDomain(collection)
+loop for each collection in listOfUserCollections
+    Controller -> dto : toDTO(collection)
     activate dto
     dto --> Controller : collectionDTO
     deactivate dto
-    Controller -> Controller : addToListCollectionsDTO(collectionDTO)
+    Controller -> Controller : listCollectionsDTO.add(collectionDTO)
 
 end
 Controller --> UI : listCollectionsDTO
@@ -63,15 +63,17 @@ UI -> Controller : shareCollectionOfPublications(collectionDTO_A)
 
 
 activate Controller
-Controller -> CollectionRepository : getCollectionOfPublication(collectionDTO_A)
+Controller -> CollectionRepository : getCollectionOfPublications(collectionDTO_A)
 activate CollectionRepository
 CollectionRepository --> Controller : collectionA
 deactivate CollectionRepository
 
 
-Controller -> CollectionRepository : makeCollectionOfPublicationsPublic(collection)
+Controller -> CollectionRepository : makeCollectionOfPublicationsPublic(collectionA)
 activate CollectionRepository
+'create CollectionOfPublications
 CollectionRepository -> CollectionOfPublications : set_isPrivate(false)
+
 activate CollectionOfPublications
 CollectionOfPublications --> CollectionRepository
 deactivate CollectionOfPublications
