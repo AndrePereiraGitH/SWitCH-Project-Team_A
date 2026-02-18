@@ -158,10 +158,11 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         // Cria um listing com item do género "Fiction"
         Listing listing = createListing();
-        LocalDateTime date = LocalDateTime.of(2024, 12, 1, 9, 0);
+//        LocalDateTime date = LocalDateTime.of(2024, 12, 1, 9, 0);
 
         // Adiciona o DirectSale ao repositório
-        directSaleRepository.createAndAddDirectSale(listing, date);
+//        directSaleRepository.createAndAddDirectSale(listing, date);
+        directSaleRepository.createAndAddDirectSale(List.of(listing), createBuyer(), false);
 
         // Testa
         List<Item> result = controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
@@ -177,7 +178,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
                 new Price(new BigDecimal("19.99")),
                 "Short Description",
                 "Listing Title",
-                createUser(),
+                createSeller(),
                 List.of(new Picture("pic"))
         );
     }
@@ -191,7 +192,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         );
     }
 
-    private static User createUser(){
+    private static User createSeller(){
         return new User(
                 "Seller",
                 new Contact(
@@ -202,6 +203,24 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
                 ),
                 new Profile(
                         "Seller",
+                        createCountry(),
+                        LocalDate.of(1993, 9, 19)
+                ),
+                UserRole.NORMAL_USER
+        );
+    }
+
+    private static User createBuyer(){
+        return new User(
+                "Buyer",
+                new Contact(
+                        "919999999",
+                        "+351",
+                        new Email("buyer", "example.com"),
+                        new Address("Avenida da Republica", "25", "3470-302", createCountry())
+                ),
+                new Profile(
+                        "Buyer_username",
                         createCountry(),
                         LocalDate.of(1993, 9, 19)
                 ),
@@ -297,7 +316,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         return new Publication(
                 createBibliographicalData(),
                 createPublicationType(),
-                createUser(),
+                createSeller(),
                 PublicationStatus.FOR_SALE,
                 createEdition(),
                 createCode()

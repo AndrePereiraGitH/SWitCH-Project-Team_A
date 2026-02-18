@@ -9,14 +9,18 @@ import TOPSECRET.repository.ItemRepository;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ToPutPublicationInDirectSaleController {
+
+    //TODO - rever este controller (US015). ItemRepository deixa de fazer sentido? Passará a ter o ListingRepository? A classe Item deixa de existir no novo design
 
     // attributes
     private final Library library;
     private final DirectSaleRepository directSaleRepo;
     private final ItemRepository itemRepo;
+
 
     public ToPutPublicationInDirectSaleController(Library library, DirectSaleRepository directSaleRepo, ItemRepository itemRepo) {
 
@@ -39,20 +43,30 @@ public class ToPutPublicationInDirectSaleController {
     }
 
 
-    public boolean createAndAddDirectSale(Listing listing) {
+//    public boolean createAndAddDirectSale(Listing listing) {
+//
+//        if (listing == null)
+//            throw new IllegalArgumentException("Listing cannot be null");
+//
+//        for (Item item : listing.getItems()) {
+//            if (item == null)
+//                throw new IllegalArgumentException("Listing contains a null item");
+//        }
+//
+//        return directSaleRepo.createAndAddDirectSale(listing, date());
+//    }
+//    LocalDateTime date() {
+//        return LocalDateTime.now();
+//    }
 
-        if (listing == null)
-            throw new IllegalArgumentException("Listing cannot be null");
+    public boolean createAndAddDirectSale(List<Listing> listings, User buyer, boolean isFinished) {
 
-        for (Item item : listing.getItems()) {
-            if (item == null)
-                throw new IllegalArgumentException("Listing contains a null item");
-        }
+        if (listings == null)
+            throw new IllegalArgumentException("List of Listings cannot be null");
 
-        return directSaleRepo.createAndAddDirectSale(listing, date());
+        if (buyer == null)
+            throw new IllegalArgumentException("Buyer cannot be null");
+
+        return directSaleRepo.createAndAddDirectSale(listings, buyer, isFinished);
     }
-    LocalDateTime date() {
-        return LocalDateTime.now();
-    }
-
 }

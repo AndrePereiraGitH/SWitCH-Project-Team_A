@@ -83,10 +83,23 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 LocalDate.of(1990, 1, 1)
         );
 
+        Profile buyerProfile = new Profile(
+                "Buyer Name",
+                new Country("PORTUGAL"),
+                LocalDate.of(1990, 1, 1)
+        );
+
         User seller = new User(
                 "Seller Name",
                 new Contact(),
                 sellerProfile,
+                UserRole.NORMAL_USER
+        );
+
+        User buyer = new User(
+                "Buyer Name",
+                new Contact(),
+                buyerProfile,
                 UserRole.NORMAL_USER
         );
 
@@ -125,9 +138,15 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 List.of(new Picture("img.jpg"))
         );
 
+//        DirectSale directSale = new DirectSale(
+//                listing,
+//                LocalDateTime.now()
+//        );
+
         DirectSale directSale = new DirectSale(
-                listing,
-                LocalDateTime.now()
+                List.of(listing),
+                buyer,
+                false
         );
 
         directSaleRepository = new DirectSaleRepository(List.of(directSale));
