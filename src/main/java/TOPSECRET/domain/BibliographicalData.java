@@ -78,4 +78,10 @@ public class BibliographicalData {
         return _chunksOfText;
     }
 
+
+    //US021 Start
+    public boolean hasGenre(Genre genre) {
+        return _genre.contains(genre);
+    }
+    //US021 End
 }

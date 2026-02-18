@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Item;
 import TOPSECRET.repository.DirectSaleRepository;
 import TOPSECRET.repository.GenreRepository;
 
@@ -27,15 +28,13 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
     }
 
 
-
-//    // Obtém lista de items em direct sale por género
-//    public List<DirectSale> getListOfItemsOnDirectSale(Genre selectedgenre){
-//        if (selectedgenre == null) {
-//            throw new IllegalArgumentException("Genre cannot be null");
-//        }
-//
-//        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre);
-//
-//    }
+    // US021 Start ---------------------------------------------------------
+    public List<Item> getListOfItemsOnDirectSaleOfAGivenGenre(Genre selectedGenre) {
+        if (selectedGenre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedGenre);
+    }
+    // US021 End -----------------------------------------------------------
 
 }

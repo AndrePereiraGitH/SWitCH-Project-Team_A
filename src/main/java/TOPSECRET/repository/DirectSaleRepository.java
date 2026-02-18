@@ -45,8 +45,38 @@ public class DirectSaleRepository {
         return false;
     }
 
-    // US021 --------------------------------------------------------------------------------------------------
-    // To do
+    // US021 -----------------------------------------------------------------------------------------
+    public List<Item> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
+
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+
+        List<Item> listOfItems = new ArrayList<>();
+
+        for (DirectSale directSale : _directSaleList) {
+            if (isDirectSaleFromGenre(directSale, genre)) {
+                for (Item item : directSale.getListing().getItems()) {
+                    if (item.hasGenre(genre)) {
+                        listOfItems.add(item);
+                    }
+                }
+            }
+        }
+
+        return listOfItems;
+    }
+
+    private boolean isDirectSaleFromGenre(DirectSale directSale, Genre genre) {
+        for (Item item : directSale.getListing().getItems()) {
+            if (item.hasGenre(genre)) {
+                return true;
+            }
+        }
+        return false;
+    }
+   // US021 End -----------------------------------------------------------
+
 
     // US023 Start --------------------------------------------------------------------------------------------------
     public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {
