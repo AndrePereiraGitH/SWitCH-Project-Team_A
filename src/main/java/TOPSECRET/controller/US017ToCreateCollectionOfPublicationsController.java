@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller da US017 - criar coleção privada.
- * Basicamente faz duas coisas:
- * - Dá a lista de genres disponíveis
- * - Cria a coleção chamando o repositório
+ * US017 Controller - Create private collection.
+ * Basically does two things:
+ * - Provides a list of available genres
+ * - Creates the collection by calling the repository
  */
 public class US017ToCreateCollectionOfPublicationsController {
     private final GenreRepository genreRepository;
@@ -33,8 +33,8 @@ public class US017ToCreateCollectionOfPublicationsController {
     }
 
     /**
-     * Vai buscar todos os genres e converte para DTOs.
-     * A UI usa isto para mostrar as opções ao user.
+     * Retrieves all genres and converts them to DTOs.
+     * The UI uses this to display the options to the user.
      */
     public List<GenreDTO_US017> getAllGenres() {
 
@@ -52,8 +52,8 @@ public class US017ToCreateCollectionOfPublicationsController {
     }
 
     /**
-     * Cria uma coleção privada para o user.
-     * O repositório valida se já existe ou não.
+     * Creates a private collection for the user.
+     * The repository checks if it already exists.
      */
     public CollectionOfPublications createCollection(
             String name,

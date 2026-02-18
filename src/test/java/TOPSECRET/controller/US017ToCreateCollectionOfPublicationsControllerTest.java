@@ -48,7 +48,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         );
     }
 
-    // Testa se o controller consegue buscar genres e convertê-los para DTOs
+    // Tests whether the controller can retrieve genres and convert them to DTOs.
     @Test
     void shouldReturnAllGenresAsDTOs() {
         // Arrange
@@ -64,7 +64,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         assertEquals("History", result.get(1).name);
     }
 
-    // US017 - Testa criar uma coleção privada com sucesso
+    // US017 - Try creating a private collection successfully.
     @Test
     void shouldCreatePrivateCollectionSuccessfully_US017() {
         // ARRANGE
@@ -82,7 +82,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         assertTrue(collection.getIsPrivate());
     }
 
-    // US017 - Testa que não deixa criar duas coleções iguais
+    // US017 - Test that prevents the creation of two identical collections.
     @Test
     void shouldThrowExceptionWhenDuplicateCollectionExists_US017() {
         // ARRANGE
