@@ -63,6 +63,13 @@ public class Item {
     public int hashCode() {
         return Objects.hash(_condition, _weight, _dimension, _publication);
     }
+
+    // US021
+    public boolean hasGenre(Genre genre) {
+        return _publication.hasGenre(genre);
+    }
+    // US021 End
+
 }
 
 

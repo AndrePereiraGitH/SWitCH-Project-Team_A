@@ -178,8 +178,250 @@ class DirectSaleRepositoryTest {
 
     }
 
-    //US021
-//    // To do tests
+    //US021-------------------------------------------------------------------------------------------
+    @Test
+    public void testGetListOfItemsOnDirectSaleOfAGivenGenre_NullGenre() {
+        // Arrange
+        List<DirectSale> directSales = new ArrayList<>();
+        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(null);
+        });
+        assertEquals("Genre cannot be null", exception.getMessage());
+    }
+
+    @Test
+    public void testGetListOfItemsOnDirectSaleOfAGivenGenre_EmptyRepository() {
+        // Arrange
+        List<DirectSale> directSales = new ArrayList<>();
+        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+        Genre genre = new Genre("Fiction");
+
+        // Act
+        List<Item> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetListOfItemsOnDirectSaleOfAGivenGenre_NoMatchingGenre() {
+        // Arrange
+        List<DirectSale> directSales = new ArrayList<>();
+        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+
+        // Add a DirectSale with "Science" genre
+        Listing listing = createListingWithGenre("Science");
+        directSaleRepository.createAndAddDirectSale(listing, LocalDateTime.now());
+
+        Genre genre = new Genre("Fiction"); // looking for Fiction, but only Science exists
+
+        // Act
+        List<Item> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty()); // should return nothing
+    }
+
+    @Test
+    public void testGetListOfItemsOnDirectSaleOfAGivenGenre_OneMatch() {
+        // Arrange
+        List<DirectSale> directSales = new ArrayList<>();
+        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+
+        Listing listing = createListingWithGenre("Fiction");
+        directSaleRepository.createAndAddDirectSale(listing, LocalDateTime.now());
+
+        Genre genre = new Genre("Fiction");
+
+        // Act
+        List<Item> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testGetListOfItemsOnDirectSaleOfAGivenGenre_MultipleMatches() {
+        // Arrange
+        List<DirectSale> directSales = new ArrayList<>();
+        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+
+        // Two different listings both with Fiction items
+        directSaleRepository.createAndAddDirectSale(createListingWithGenre("Fiction"), LocalDateTime.now());
+        directSaleRepository.createAndAddDirectSale(createListingWithGenre("Fiction"), LocalDateTime.now().plusDays(1));
+
+        Genre genre = new Genre("Fiction");
+
+        // Act
+        List<Item> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testGetListOfItemsOnDirectSaleOfAGivenGenre_MixedGenres() {
+        // Arrange
+        List<DirectSale> directSales = new ArrayList<>();
+        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+
+        // One Fiction, one Science
+        directSaleRepository.createAndAddDirectSale(createListingWithGenre("Fiction"), LocalDateTime.now());
+        directSaleRepository.createAndAddDirectSale(createListingWithGenre("Science"), LocalDateTime.now().plusDays(1));
+
+        Genre genre = new Genre("Fiction");
+
+        // Act
+        List<Item> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size()); // only Fiction item returned
+    }
+
+    private static Listing createListingWithGenre(String genreName) {
+        return new Listing(
+                List.of(createItemWithGenre(genreName)),
+                new Price(new BigDecimal("19.99")),
+                "Short Description",
+                "Listing Title",
+                createUser(),
+                List.of(new Picture("pic"))
+        );
+    }
+
+    private static User createUser(){
+        return new User(
+                "Seller",
+                new Contact(
+                        "918374628",
+                        "+351",
+                        new Email("user", "example.com"),
+                        new Address("Avenida da Liberdade", "25", "3470-302", createCountry())
+                ),
+                new Profile(
+                        "Seller",
+                        createCountry(),
+                        LocalDate.of(1993, 9, 19)
+                ),
+                UserRole.NORMAL_USER
+        );
+    }
+
+    private static Country createCountry() {
+        return new Country("PORTUGAL");       // match your Countries enum value
+    }
+
+    private static Item createItemWithGenre(String genreName) {
+        return new Item(
+                Condition.LIKE_NEW,
+                230.30,
+                new Dimensions(123, 242, 124),
+                createPublicationWithGenre(genreName)
+        );
+    }
+
+    private static Publication createPublicationWithGenre(String genreName) {
+        return new Publication(
+                createBibliographicalDataWithGenre(genreName),
+                createPublicationType(),
+                createUser(),
+                PublicationStatus.FOR_SALE,
+                createEdition(),
+                createCode()
+        );
+    }
+
+    private static Code createCode(){
+        return Code.fromIsbn10(
+                "1928375849"
+        );
+    }
+
+
+    private static Edition createEdition() {
+        return new Edition(
+                "1st Edition",
+                createCode(),
+                createPhysicalAttributes(),
+                createPublicationType(),
+                createPublisher(),
+                Locale.ENGLISH,
+                LocalDate.now()
+        );
+    }
+
+    private static Publisher createPublisher() {
+        return new Publisher(
+                "Publisher Name",  // name: String
+                "123456789",       // vatNumber: String
+                createContact()    // contact: Contact
+        );
+    }
+
+    private static Contact createContact() {
+        return new Contact("912345678", "123", createEmail(), createAddress());
+    }
+
+    private static Email createEmail() {
+        return new Email("test", "test.com");
+    }
+
+    private static Address createAddress() {
+        return new Address("Rua Test", "1", "4000-000", createCountry());
+    }
+
+
+    private static PhysicalAttributes createPhysicalAttributes() {
+        return new PhysicalAttributes(
+                new Dimensions(10.0, 20.0, 5.0),  // dimensions
+                1.5,                               // weight: double
+                300                                // numberOfPages: int
+        );
+    }
+
+
+    private static PublicationType createPublicationType(){
+        return new PublicationType(
+                TypeOfBinding.HARDBACK,
+                "Details"
+        );
+    }
+
+    private static BibliographicalData createBibliographicalDataWithGenre(String genreName) {
+        return new BibliographicalData(
+                "Harry Potter",
+                List.of(createAuthor()),
+                new Locale("pt", "PT"),
+                LocalDate.of(2020, 1, 30),
+                List.of(new Genre(genreName)),  // dynamic genre
+                "Text Description"
+        );
+    }
+
+
+    private static Author createAuthor(){
+        return new Author(
+                createProfile(),
+                "valid bio"
+        );
+    }
+
+    private static Profile createProfile(){
+        return new Profile(
+                "Freida",
+                createCountry(),
+                LocalDate.of(1968, 10, 12)
+        );
+    }
+    // US021 End ----------------------------------------------------------
 
 
     // US023 Start-------------------------------------- -------------------------------------------------------------
