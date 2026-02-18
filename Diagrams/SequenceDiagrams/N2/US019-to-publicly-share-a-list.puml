@@ -10,7 +10,7 @@ actor User
 participant ":UI019" as UI
 end box
 
-participant ":US019ToPubliclyShareListController" as Controller
+participant ":US019ToPubliclyShareCollectionOfPublicationsController" as Controller
 participant ":CollectionOfPublicationRepository" as CollectionRepository
 participant "collectionOfPublication: CollectionOfPublications" as CollectionOfPublications
 participant "CollectionOfPublicationsDTO_US019" as dto
