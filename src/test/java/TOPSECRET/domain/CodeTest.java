@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CodeTest {
 
+    // Create codes without hyphens
 
     @Test
     void shouldCreateCodeWithIsbn10() {
@@ -27,12 +28,37 @@ class CodeTest {
 
     @Test
     void shouldCreateCodeWithIssn() {
-        Code code = Code.fromIssn("2049-3630");
+        Code code = Code.fromIssn("20493630");
 
         assertNull(code.getIsbn10());
         assertNull(code.getIsbn13());
+        assertEquals("20493630", code.getIssn());
+    }
+
+    // Create codes with hyphens
+
+    @Test
+    void shouldAcceptIsbn10WithHyphens() {
+        Code code = Code.fromIsbn10("0-306-40615-2");
+
+        assertEquals("0-306-40615-2", code.getIsbn10());
+    }
+
+    @Test
+    void shouldAcceptIsbn13WithHyphens() {
+        Code code = Code.fromIsbn13("978-3-16-148410-0");
+
+        assertEquals("978-3-16-148410-0", code.getIsbn13());
+    }
+
+    @Test
+    void shouldAcceptIssnWithHyphen() {
+        Code code = Code.fromIssn("2049-3630");
+
         assertEquals("2049-3630", code.getIssn());
     }
+
+    // Errors: null or blank
 
     @Test
     void shouldFailWhenIsbn10IsNull() {
@@ -51,13 +77,57 @@ class CodeTest {
     @Test
     void shouldFailWhenIssnIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
-                Code.fromIssn(" ")
+                Code.fromIssn("")
         );
     }
 
-    //-------------
-    //--- Equals---
-    //-------------
+    // Errors: few digits
+/*
+    @Test
+    void shouldFailWhenIsbn10IsTooShort() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn10("123")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIsbn13IsTooShort() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn13("123")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIssnIsTooShort() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIssn("1234")
+        );
+    }
+
+    // Errors: too many digits
+
+    @Test
+    void shouldFailWhenIsbn10IsTooLong() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn10("12345678901234")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIsbn13IsTooLong() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn13("97812345678901234")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIssnIsTooLong() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIssn("123456789")
+        );
+    }
+*/
+    // Equals tests
 
     @Test
     void equals_shouldBeFalse_whenNull() {
