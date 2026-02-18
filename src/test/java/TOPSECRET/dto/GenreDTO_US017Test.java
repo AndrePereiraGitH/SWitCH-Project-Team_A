@@ -5,16 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GenreMapper_US017Test {
-
-    private final GenreMapper_US017 mapper = new GenreMapper_US017();
+class GenreDTO_US017Test {
 
     @Test
     void shouldConvertGenreToDTO() {
-
         Genre genre = new Genre("Fiction");
 
-        GenreDTO_US017 dto = mapper.toDTO(genre);
+        GenreDTO_US017 dto = GenreDTO_US017.toDTO(genre);
 
         assertNotNull(dto);
         assertEquals("Fiction", dto.name);
@@ -22,9 +19,8 @@ class GenreMapper_US017Test {
 
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
-
         assertThrows(IllegalArgumentException.class, () -> {
-            mapper.toDTO(null);
+            GenreDTO_US017.toDTO(null);
         });
     }
 }

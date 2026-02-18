@@ -22,6 +22,14 @@ public class Code {
         if (isbn10 == null || isbn10.isBlank()) {
             throw new IllegalArgumentException("ISBN10 cannot be null or blank");
         }
+
+        // Remove hyphens and check if it has 10 digits.
+    //    String semHifens = isbn10.replace("-", "");
+    //
+    //    if (semHifens.length() != 10) {
+    //        throw new IllegalArgumentException("ISBN10 must have 10 digits");
+    //    }
+
         return new Code(isbn10, null, null);
     }
 
@@ -29,6 +37,13 @@ public class Code {
         if (isbn13 == null || isbn13.isBlank()) {
             throw new IllegalArgumentException("ISBN13 cannot be null or blank");
         }
+
+        // Remove hyphens and check if it has 13 digits.
+    //    String semHifens = isbn13.replace("-", "");
+    //
+    //     if (semHifens.length() != 13) {
+    //        throw new IllegalArgumentException("ISBN13 must have 13 characters");
+    //    }
         return new Code(null, isbn13, null);
     }
 
@@ -36,6 +51,14 @@ public class Code {
         if (issn == null || issn.isBlank()) {
             throw new IllegalArgumentException("ISSN cannot be null or blank");
         }
+
+        // Remove hyphens and check if it has 8 digits.
+    //    String semHifens = issn.replace("-", "");
+    //
+    //     if (semHifens.length() != 8) {
+    //        throw new IllegalArgumentException("ISSN must have 8 characters");
+    //    }
+
         return new Code(null, null, issn);
     }
 

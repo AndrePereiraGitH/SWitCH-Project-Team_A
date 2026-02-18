@@ -5,7 +5,6 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.dto.GenreMapper_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepository;
 import TOPSECRET.domain.Contact;
@@ -29,21 +28,17 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
     @BeforeEach
     void setup() {
-
-        // Genre repository is a singleton, so we clear it before each test
+        // Cria os repositórios e o controller antes de cada teste
         genreRepository = new GenreRepository(new ArrayList<>());
-       
-
         collectionRepository = new CollectionOfPublicationsRepository();
 
         controller = new US017ToCreateCollectionOfPublicationsController(
                 genreRepository,
-                collectionRepository,
-                new GenreMapper_US017()
+                collectionRepository
         );
     }
 
-    // Helper method to create a valid user
+    // Método auxiliar para criar um user válido
     private User createValidUser() {
         return new User(
                 "validUser",
@@ -53,10 +48,9 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         );
     }
 
-    // getAllGenres
+    // Tests whether the controller can retrieve genres and convert them to DTOs.
     @Test
     void shouldReturnAllGenresAsDTOs() {
-
         // Arrange
         genreRepository.createAndAddGenre("Fiction");
         genreRepository.createAndAddGenre("History");
@@ -70,13 +64,9 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         assertEquals("History", result.get(1).name);
     }
 
-    // createCollection
-
+    // US017 - Try creating a private collection successfully.
     @Test
     void shouldCreatePrivateCollectionSuccessfully_US017() {
-
-        // A user creates a private collection with name and genre
-
         // ARRANGE
         User user = createValidUser();
         Genre genre = new Genre("Fiction");
@@ -92,11 +82,9 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         assertTrue(collection.getIsPrivate());
     }
 
+    // US017 - Test that prevents the creation of two identical collections.
     @Test
     void shouldThrowExceptionWhenDuplicateCollectionExists_US017() {
-
-        // The same user tries to create two collections with the same name and genre
-
         // ARRANGE
         User user = createValidUser();
         Genre genre = new Genre("Fiction");
