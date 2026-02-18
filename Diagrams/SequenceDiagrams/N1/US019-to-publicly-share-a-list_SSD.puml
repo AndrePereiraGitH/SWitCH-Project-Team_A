@@ -12,12 +12,12 @@ participant ":System" as System
 activate User
 activate System
 
-User --> System: I want to publicly share a list
+User --> System: I want to publicly share a Collection of Publications
 
-System --> User: Select list! (lists)
+System --> User: Select a collection! (lists)
 
-User --> System: Selected! (listID)
+User --> System: SelectedCollection
 
-System --> User: Done!
+System --> User: Your collection is public now!
 
 @enduml
