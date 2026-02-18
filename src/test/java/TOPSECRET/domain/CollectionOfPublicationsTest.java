@@ -247,4 +247,38 @@ class CollectionOfPublicationsTest {
         assertTrue(collection.getPublications().isEmpty());
     }
 
+    /**
+     * US019 set_isPrivate false test - make collection public
+     */
+    @Test
+    void set_isPrivate_shouldChangeIsPrivateToFalse_whenFalseIsPassed() {
+        // arrange
+        CollectionOfPublications collection = createBaseCollection();
+
+        // act
+        collection.set_isPrivate(false);
+
+        // assert
+        assertFalse(collection.getIsPrivate());
+
+    }
+
+    /**
+     * US019 set_isPrivate test - make collection private
+     */
+
+    @Test
+    void set_isPrivate_shouldChangeIsPrivateToTrue_whenTrueIsPassed() {
+        // arrange
+        CollectionOfPublications collection = createBaseCollection();
+        collection.set_isPrivate(false);
+
+        // act
+        collection.set_isPrivate(true);
+
+        // assert
+        assertTrue(collection.getIsPrivate());
+
+    }
+
 }

@@ -79,6 +79,17 @@ public class CollectionOfPublications {
         return new ArrayList<>(_collectionOfPublications);
     }
 
+
+
+    /**
+     * US019 - to publicly share a collection of publications
+     *
+     *
+     */
+    public void set_isPrivate(boolean _isPrivate) {
+        this._isPrivate = _isPrivate;
+    }
+
     // _______________
     // Used in US018
     // _______________
