@@ -22,10 +22,12 @@ public class UserRepository {
         return false;
     }
 
-    // To create user and add to the list
-    public void createAndAddUser(String username, Contact contact, Profile profile, UserRole userRole) {
+    // To createAndAdd user and add to the list
+    public User createAndAddUser(String username, Contact contact, Profile profile, UserRole userRole) {
         if (exists(username)) throw new IllegalArgumentException("Username already exists");
-        users.add(new User(username, contact, profile, userRole));
+        User newUser = new User(username, contact, profile, userRole);
+        users.add(newUser);
+        return newUser;
     }
 
     // To get the list's size

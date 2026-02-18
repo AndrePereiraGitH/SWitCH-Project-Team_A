@@ -9,32 +9,38 @@ participant ":UI009" as UI
 
 
 
-participant ":CreateLibraryCtrl" as Ctrl
+participant ":US009ToCreateLibraryCtrl" as Ctrl
 participant ":LibraryRepository" as LibraryRepo
+
 
 
 User -> UI : I want to create a library.
 activate UI
 UI --> User : What name?
 deactivate UI
-User -> UI : myCoolLib
+User -> UI : libraryName, user
 activate UI
 
-UI -> Ctrl : createAndAddLibrary(myCoolLib)
+UI -> Ctrl : createAndAddLibrary(libraryName,user)
 activate Ctrl
-Ctrl -> LibraryRepo : createAndAddLibrary(myCoolLib)
+Ctrl -> LibraryRepo : createAndAdd(libraryName,user)
 activate LibraryRepo
 
+create "Map<String, Library> libraries" as list
+LibraryRepo -> list : create()
+
+LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary()
+
 create "lib1:Library" as Library
-LibraryRepo -> Library : create(myCoolLib)
-
-LibraryRepo -> LibraryRepo : validate(lib1)
-LibraryRepo -> LibraryRepo : add(lib1)
+LibraryRepo -> Library : create(libraryName,user)
 
 
-LibraryRepo --> Ctrl : true
+LibraryRepo -> LibraryRepo : libraries.put(user,lib1)
+
+
+LibraryRepo --> Ctrl : lib1
 deactivate LibraryRepo
-Ctrl --> UI : Success
+Ctrl --> UI : true
 deactivate Ctrl
 UI --> User : Your library was created
 deactivate UI
