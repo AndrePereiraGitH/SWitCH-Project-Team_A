@@ -116,6 +116,27 @@ public class CollectionOfPublicationsRepository {
         return newCollection;
     }
 
+    /**
+     * Creates a List of CollectionOfPublications owned by a given user
+     */
+    public List<CollectionOfPublications> getAllCollectionOfPublicationsByUser(User owner) {
+
+        if (owner == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        List<CollectionOfPublications> userCollections = new ArrayList<>();
+
+        _collectionOfPublicationsList.forEach(collection -> {
+            if (collection.getOwner().equals(owner.getUserName())) {
+                userCollections.add(collection);
+            }
+        });
+
+        return userCollections;
+
+    }
+
 }
 
 

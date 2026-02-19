@@ -267,6 +267,50 @@ class CollectionOfPublicationsRepositoryTest {
         assertNotNull(result);
     }
 
+    /**
+     * US019 - tests for getAllCollectionsOfPublicationsByUser
+     */
 
+    @Test
+    void getAllCollectionOfPublicationsByUser_shouldReturnEmptyList_ifUserDoesNotOwnsAnyCollection() {
+
+        List<CollectionOfPublications> result = repository.getAllCollectionOfPublicationsByUser(createValidUser());
+
+        assertEquals(0, result.size());
+
+    }
+
+    @Test
+    void getAllCollectionOfPublicationsByUser_shouldReturn_ListOfCollectionOfPublications_IfUserOwnsACollection() {
+
+        // arrange
+
+        User owner = createValidUser();
+
+        CollectionOfPublications collection = repository.createIfNotExists(
+                owner,
+                "My Funny Collection",
+                new Genre("Fiction"),
+                true
+        );
+
+        repository.addCollectionToRepo(collection);
+
+        // act
+        List<CollectionOfPublications> result = repository.getAllCollectionOfPublicationsByUser(owner);
+
+        // assert
+        assertEquals(1, result.size());
+
+    }
+
+    @Test
+    void getAllCollectionOfPublicationsByUser_shouldThrow_IfUIserIsNull() {
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repository.getAllCollectionOfPublicationsByUser(null));
+
+        assertEquals("User cannot be null", exception.getMessage());
+
+    }
 
 }
