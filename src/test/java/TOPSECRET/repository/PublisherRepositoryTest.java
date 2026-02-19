@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 //import TOPSECRET.domain.Publisher; ...
 
-class PublisherRepoTest {
+class PublisherRepositoryTest {
 
     /**
      * Test that verifies a Publisher is successfully added
