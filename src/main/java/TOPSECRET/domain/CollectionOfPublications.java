@@ -6,13 +6,9 @@ import java.util.List;
 
 /**
  * Represents a collection of publications created by a user.
-
- * In the context of US017, this class is responsible for representing
- * a private collection with a name and an associated genre.
-
- * Some attributes (such as library and owner information) are used
- * by other user stories and are not required for the creation logic
- * of US017 itself.
+ *
+ * A collection has a name, genre, and can be private or public.
+ * Collections are created private by default (US017) but can be made public (US019).
  */
 
 public class CollectionOfPublications {
@@ -20,19 +16,22 @@ public class CollectionOfPublications {
     // Attributes
     private String _collectionName;
     private Genre _collectionGenre;
-    // Library where this collection is stored.
-    // This attribute is NOT required for US017,
-    // but is used in later user stories involving library management.
-    private Library _privateLibrary;
     private List<Publication> _collectionOfPublications;
-    // Username of the collection owner.
-    // Ownership validation is handled at repository level (US017),
-    // but this attribute supports other user stories.(US20)
+    // private List<PublicationSample> _collectionOfPublications;
     private String _ownerUserName;
     private boolean _isPrivate;
 
+    /**
+     * Creates a new collection of publications.
+     *
+     * @param collectionName Name of the collection
+     * @param collectionGenre Genre of the collection
+     * @param user Owner of the collection
+     * @throws IllegalArgumentException if any parameter is null or invalid
+     */
+
     // Constructor
-    public CollectionOfPublications(String collectionName, Genre collectionGenre, Library privateLibrary, boolean isPrivate, User user) {
+    public CollectionOfPublications(String collectionName, Genre collectionGenre, User user) {
 
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
@@ -42,18 +41,13 @@ public class CollectionOfPublications {
             throw new IllegalArgumentException("Collection genre cannot be null.");
         }
 
-        if (privateLibrary == null) {
-            throw new IllegalArgumentException("Library cannot be null.");
-        }
-
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
 
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
-        this._privateLibrary = privateLibrary;
-        this._isPrivate = isPrivate;
+        this._isPrivate = true;
         this._ownerUserName = user.getUserName();
         this._collectionOfPublications = new ArrayList<>();
     }
@@ -70,15 +64,14 @@ public class CollectionOfPublications {
 
     public String getOwner() { return _ownerUserName; }
 
-    public Library getPrivateLibrary() {
-        return _privateLibrary;
-    }
-
-    // Returns a copy of the publications list
+    /**
+     * Returns a copy of the publications list.
+     * Modifications to the returned list will not affect the collection.
+     */
+    // public List<PublicationSample> getPublications() {
     public List<Publication> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }
-
 
 
     /**
@@ -90,12 +83,14 @@ public class CollectionOfPublications {
         this._isPrivate = _isPrivate;
     }
 
-    // _______________
-    // Used in US018
-    // _______________
-    //  Adds a publication to the private list.
-    //  Returns true if the publication was added successfully.
-    //  Returns false if the publication already exists in the list.
+    /**
+     * US018 - Adds a publication to the collection.
+     * Duplicates are not allowed.
+     *
+     * @param publication Publication to add
+     * @return true if added, false if null or already exists
+     */
+    // public boolean addPublication(PublicationSample publication) {
     public boolean addPublication (Publication publication) {
 
         if (publication == null) return false;
@@ -108,7 +103,13 @@ public class CollectionOfPublications {
         return true;
     }
 
-    // Validade if a publication exists in the private list.
+    /**
+     * Checks if a publication exists in the collection.
+     *
+     * @param publication Publication to check
+     * @return true if exists, false otherwise
+     */
+    // public boolean containsPublication(PublicationSample publication) {
     public boolean containsPublication (Publication publication) {
         return _collectionOfPublications.contains(publication);
     }
@@ -128,7 +129,6 @@ public class CollectionOfPublications {
 
         return _collectionName.equalsIgnoreCase(other._collectionName)
                 && _collectionGenre.equals(other._collectionGenre)
-                && _privateLibrary.equals(other._privateLibrary)
                 && _isPrivate == other._isPrivate
                 && _collectionOfPublications.equals(other._collectionOfPublications);
     }
@@ -139,7 +139,6 @@ public class CollectionOfPublications {
     public int hashCode() {
         return (_collectionName.toLowerCase()
                 + _collectionGenre.hashCode()
-                + _privateLibrary.hashCode()
                 + _isPrivate
                 + _collectionOfPublications.hashCode()).hashCode();
     }

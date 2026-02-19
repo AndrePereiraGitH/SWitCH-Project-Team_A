@@ -30,13 +30,6 @@ class CollectionOfPublicationsTest {
         return new Genre("Fiction");
     }
 
-    // Creates a valid Library
-    private Library createValidLibrary()
-    {
-        User user = createValidUser();
-        return new Library("Library name", user);
-    }
-
     // Creates a valid Publication
     private Publication createValidPublication()
     {
@@ -109,8 +102,7 @@ class CollectionOfPublicationsTest {
         return new CollectionOfPublications(
                 "Favorites",
                 createValidGenre(),
-                createValidLibrary(),
-                true, createValidUser()
+                createValidUser()
         );
     }
 
@@ -165,11 +157,10 @@ class CollectionOfPublicationsTest {
     void shouldThrowExceptionWhenCollectionNameIsNull()
     {
         Genre genre = createValidGenre();
-        Library library = createValidLibrary();
         User user = createValidUser();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications(null, genre, library, true, user);
+            new CollectionOfPublications(null, genre, user);
         });
     }
 
@@ -178,11 +169,10 @@ class CollectionOfPublicationsTest {
     void shouldThrowExceptionWhenCollectionNameIsBlank()
     {
         Genre genre = createValidGenre();
-        Library library = createValidLibrary();
         User user = createValidUser();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("   ", genre, library, true ,user);
+            new CollectionOfPublications("   ", genre, user);
         });
     }
 
@@ -190,23 +180,10 @@ class CollectionOfPublicationsTest {
     @Test
     void shouldThrowExceptionWhenGenreIsNull()
     {
-        Library library = createValidLibrary();
         User user = createValidUser();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", null, library, true,  user);
-        });
-    }
-
-    // Verifies exception when library is null
-    @Test
-    void shouldThrowExceptionWhenLibraryIsNull()
-    {
-        Genre genre = createValidGenre();
-        User user = createValidUser();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", genre, null, true, user);
+            new CollectionOfPublications("Favorites", null,  user);
         });
     }
 
@@ -217,7 +194,7 @@ class CollectionOfPublicationsTest {
         Genre genre = createValidGenre();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", genre, null, true, null);
+            new CollectionOfPublications("Favorites", genre, null);
         });
     }
 
