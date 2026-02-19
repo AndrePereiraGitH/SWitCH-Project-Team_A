@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import static TOPSECRET.domain.Enum.Countries.PORTUGAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
@@ -41,8 +42,17 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         Listing listing1 = listingWithItems(itemA1, itemB);
         Listing listing2 = listingWithItems(itemA2);
 
-        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
-        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
+        User buyer = new User (
+                "Buyer name", 
+                new Contact("919999999","+351",new Email ("buyer", "gmail.com"), null),
+                new Profile("Buyer name", new Country("Portugal"), LocalDate.of(1999,12,01)),
+                UserRole.NORMAL_USER
+        );
+
+//        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
+//        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
+        DirectSale ds1 = new DirectSale(List.of(listing1), buyer, false);
+        DirectSale ds2 = new DirectSale(List.of(listing2), buyer, false);
 
         repository = new DirectSaleRepository(List.of(ds1, ds2));
         controller = new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(repository);

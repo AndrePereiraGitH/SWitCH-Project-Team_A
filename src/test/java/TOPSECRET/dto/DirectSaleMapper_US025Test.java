@@ -29,7 +29,14 @@ class DirectSaleMapper_US025Test {
         User seller = new User("Seller Name", null, null, UserRole.NORMAL_USER);
         Item item = new Item(Condition.GOOD, 1.2, new Dimensions(1.1, 1.1, 1.1), createPublication(bookTitle, author, seller));
         Listing listing = new Listing(List.of(item), new Price(price), "Short description", "Listing Title 1", seller, List.of());
-        return new DirectSale(listing, LocalDateTime.now());
+        User buyer = new User (
+                "Buyer name",
+                new Contact("919999999","+351",new Email ("buyer", "gmail.com"), null),
+                new Profile("Buyer name", new Country("Portugal"), LocalDate.of(1999,12,01)),
+                UserRole.NORMAL_USER
+        );
+//        return new DirectSale(listing, LocalDateTime.now());
+        return new DirectSale(List.of(listing), buyer, false);
     }
 
     private Publication createPublication(String title, Author author, User seller) {

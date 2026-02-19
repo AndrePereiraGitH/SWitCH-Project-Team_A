@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Item;
+import TOPSECRET.domain.Listing;
 import TOPSECRET.domain.Publisher;
 import TOPSECRET.repository.DirectSaleRepository;
 
@@ -28,13 +29,26 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
         }
 
         List<DirectSale> directSales = _directSaleRepository.getListOfItemsOnDirectSale(publisher);
+//        for (DirectSale directSale : directSales) {
+//            for (Item item : directSale.getListing().getItems()) {
+////                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
+//                Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
+//                if (publisher.equals(itemPublisher)) {
+//                    // item is on direct sale and has the target publisher, add it to the result!
+//                    result.add(item);
+//                }
+//            }
+//        }
+
         for (DirectSale directSale : directSales) {
-            for (Item item : directSale.getListing().getItems()) {
+            for (Listing listing : directSale.getListings()) {
+                for (Item item : listing.getItems()) {
 //                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
-                Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
-                if (publisher.equals(itemPublisher)) {
-                    // item is on direct sale and has the target publisher, add it to the result!
-                    result.add(item);
+                    Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
+                    if (publisher.equals(itemPublisher)) {
+                        // item is on direct sale and has the target publisher, add it to the result!
+                        result.add(item);
+                    }
                 }
             }
         }

@@ -85,12 +85,23 @@ class DirectSaleMapper_US023Test {
         );
     }
 
+    private User buyer() {
+        return new User(
+                "Buyer name",
+                new Contact("919999999","+351",new Email ("buyer", "gmail.com"), null),
+                new Profile("Buyer name", new Country("Portugal"), LocalDate.of(1999,12,01)),
+                UserRole.NORMAL_USER
+        );
+    }
+
+
     // Teste 1 - DirectSale with 1 item
     @Test
     void toDTO_shouldMapSingleItemCorrectly() {
         // Arrange
         Item item = item("SCRUM for Dummies", "Prince");
-        DirectSale ds = new DirectSale(listingWithItems(item), LocalDateTime.now());
+//        DirectSale ds = new DirectSale(listingWithItems(item), LocalDateTime.now());
+        DirectSale ds = new DirectSale(List.of(listingWithItems(item)), buyer(), false);
 
         // Act
         List<DirectSaleDTO_US023> result = mapper.toDTO(ds);
@@ -115,7 +126,8 @@ class DirectSaleMapper_US023Test {
         Item item1 = item("Book A", "Author A");
         Item item2 = item("Book B", "Author B");
 
-        DirectSale ds = new DirectSale(listingWithItems(item1, item2), LocalDateTime.now());
+//        DirectSale ds = new DirectSale(listingWithItems(item1, item2), LocalDateTime.now());
+        DirectSale ds = new DirectSale(List.of(listingWithItems(item1, item2)), buyer(), false);
 
         // Act
         List<DirectSaleDTO_US023> result = mapper.toDTO(ds);
@@ -131,8 +143,10 @@ class DirectSaleMapper_US023Test {
     @Test
     void toDTOList_shouldFlattenAllDirectSales() {
         // Arrange
-        DirectSale ds1 = new DirectSale(listingWithItems(item("A", "X")), LocalDateTime.now());
-        DirectSale ds2 = new DirectSale(listingWithItems(item("B", "Y")), LocalDateTime.now());
+//        DirectSale ds1 = new DirectSale(listingWithItems(item("A", "X")), LocalDateTime.now());
+//        DirectSale ds2 = new DirectSale(listingWithItems(item("B", "Y")), LocalDateTime.now());
+        DirectSale ds1 = new DirectSale(List.of(listingWithItems(item("A", "X"))), buyer(), false);
+        DirectSale ds2 = new DirectSale(List.of(listingWithItems(item("B", "Y"))), buyer(), false);
 
         List<DirectSale> list = List.of(ds1, ds2);
 

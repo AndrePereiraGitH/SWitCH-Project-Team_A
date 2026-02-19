@@ -34,6 +34,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     Address validAddress;
     Contact validContact;
     User validSeller;
+    User validBuyer;
 
     Profile profile;
     Author author;
@@ -72,6 +73,13 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
         validContact = new Contact("123456789", "+351", validEmail, validAddress);
         validSeller = new User("Seller1", validContact, validProfile, UserRole.NORMAL_USER);
+
+        // Initialize buyer
+        validProfile = new Profile("Ross", new Country("PORTUGAL"), LocalDate.of(2000, 1, 1));
+        validEmail = new Email("ross.doe", "example.com");
+        validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
+        validContact = new Contact("123456789", "+351", validEmail, validAddress);
+        validBuyer = new User("Buyer1", validContact, validProfile, UserRole.NORMAL_USER);
 
         // Bibliographical data
         profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
@@ -124,7 +132,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         severalItemList = new ArrayList<>(List.of(validItem1, validItem2, validItem3));
         validListing = new Listing(severalItemList, validPrice, validDescription, validTitle, validSeller, validPictures);
-        validDirectSale = new DirectSale(validListing, LocalDateTime.now());
+//        validDirectSale = new DirectSale(validListing, LocalDateTime.now());
+        validDirectSale = new DirectSale(List.of(validListing), validBuyer, false);
     }
 
     @Test
@@ -201,8 +210,10 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
         Listing listing2 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
 
-        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
-        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
+//        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
+//        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
+        DirectSale ds1 = new DirectSale(List.of(listing1), validBuyer, false);
+        DirectSale ds2 = new DirectSale(List.of(listing2), validBuyer, false);
 
         PublicationRepository pubRepo = new PublicationRepository(List.of());
         PublicationMapper_US023 pubMapper = new PublicationMapper_US023();
@@ -256,7 +267,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
                 validPictures
         );
 
-        DirectSale ds = new DirectSale(listing, LocalDateTime.now());
+//        DirectSale ds = new DirectSale(listing, LocalDateTime.now());
+        DirectSale ds = new DirectSale(List.of(listing), validBuyer, false);
 
         PublicationRepository pubRepo = new PublicationRepository(List.of());
         PublicationMapper_US023 pubMapper = new PublicationMapper_US023();

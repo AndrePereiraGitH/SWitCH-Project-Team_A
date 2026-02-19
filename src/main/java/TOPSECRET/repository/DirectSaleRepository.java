@@ -10,13 +10,17 @@ public class DirectSaleRepository {
 
     private List<DirectSale> _directSaleList;
 
+    //============================================================================================================
+    // Constructor
     public DirectSaleRepository(List<DirectSale> directSaleList) {
         _directSaleList = new ArrayList<>(directSaleList);
     }
 
-    public boolean createAndAddDirectSale(Listing listing, LocalDateTime directSaleDate) {
+    //============================================================================================================
 
-        DirectSale directSaleToBeCreated = new DirectSale(listing, directSaleDate);
+    public boolean createAndAddDirectSale(List<Listing> listings, User buyer, boolean isFinished) {
+
+        DirectSale directSaleToBeCreated = new DirectSale(listings, buyer, isFinished);
 
         if (ifDirectSaleExists(directSaleToBeCreated)) {
             return false;
@@ -25,9 +29,20 @@ public class DirectSaleRepository {
         return true;
     }
 
-    public DirectSale createAndAddDirectSaleReturn(Listing listing, LocalDateTime directSaleDate) {
+//    public boolean createAndAddDirectSale(Listing listing, LocalDateTime directSaleDate) {
+//
+//        DirectSale directSaleToBeCreated = new DirectSale(listing, directSaleDate);
+//
+//        if (ifDirectSaleExists(directSaleToBeCreated)) {
+//            return false;
+//        }
+//        _directSaleList.add(directSaleToBeCreated);
+//        return true;
+//    }
 
-        DirectSale directSaleToBeCreated = new DirectSale(listing, directSaleDate);
+    public DirectSale createAndAddDirectSaleReturn(List<Listing> listings, User buyer, boolean isFinished) {
+
+        DirectSale directSaleToBeCreated = new DirectSale(listings, buyer, isFinished);
 
         if (ifDirectSaleExists(directSaleToBeCreated)) {
             throw new IllegalArgumentException("Instance already exists");
@@ -35,6 +50,17 @@ public class DirectSaleRepository {
         _directSaleList.add(directSaleToBeCreated);
         return directSaleToBeCreated;
     }
+
+//    public DirectSale createAndAddDirectSaleReturn(Listing listing, LocalDateTime directSaleDate) {
+//
+//        DirectSale directSaleToBeCreated = new DirectSale(listing, directSaleDate);
+//
+//        if (ifDirectSaleExists(directSaleToBeCreated)) {
+//            throw new IllegalArgumentException("Instance already exists");
+//        }
+//        _directSaleList.add(directSaleToBeCreated);
+//        return directSaleToBeCreated;
+//    }
 
     public boolean ifDirectSaleExists(DirectSale dirSale) {
         for (DirectSale directSale : _directSaleList) {
@@ -45,7 +71,6 @@ public class DirectSaleRepository {
         return false;
     }
 
-    // US021 -----------------------------------------------------------------------------------------
     public List<Item> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
 
         if (genre == null) {
@@ -55,8 +80,8 @@ public class DirectSaleRepository {
         List<Item> listOfItems = new ArrayList<>();
 
         for (DirectSale directSale : _directSaleList) {
-            if (isDirectSaleFromGenre(directSale, genre)) {
-                for (Item item : directSale.getListing().getItems()) {
+            for (Listing listing : directSale.getListings()) {
+                for (Item item : listing.getItems()) {
                     if (item.hasGenre(genre)) {
                         listOfItems.add(item);
                     }
@@ -67,18 +92,8 @@ public class DirectSaleRepository {
         return listOfItems;
     }
 
-    private boolean isDirectSaleFromGenre(DirectSale directSale, Genre genre) {
-        for (Item item : directSale.getListing().getItems()) {
-            if (item.hasGenre(genre)) {
-                return true;
-            }
-        }
-        return false;
-    }
-   // US021 End -----------------------------------------------------------
+    //TODO - rever este metodo. o argumento nao deveria ser bibliographicalData?
 
-
-    // US023 Start --------------------------------------------------------------------------------------------------
     public List<DirectSale> getListOfItemsOnDirectSale(Publication publication) {
 
         if (publication == null) {
@@ -87,28 +102,52 @@ public class DirectSaleRepository {
 
         List<DirectSale> dsList = new ArrayList<>();
 
+//        for (DirectSale ds : _directSaleList) {
+//            for (Item item : ds.getListing().getItems()) {          // one listing can have one or more items
+//                if (item.getPublication().equals(publication)) {    // representation of method isDirectSaleFromPublication on design
+//                    dsList.add(ds);
+//                    break;                                          //avoids adding twice the same DirectSale
+//                }
+//            }
+//        }
+
         for (DirectSale ds : _directSaleList) {
-            for (Item item : ds.getListing().getItems()) {          // one listing can have one or more items
-                if (item.getPublication().equals(publication)) {    // representation of method isDirectSaleFromPublication on design
-                    dsList.add(ds);
-                    break;                                          //avoids adding twice the same DirectSale
+            boolean added = false;
+            for (Listing listing : ds.getListings()) {
+                for (Item item : listing.getItems()) {
+                    if (item.getPublication().equals(publication)) {
+                        dsList.add(ds);
+                        added = true;
+                        break;                                          // avoids adding twice the same DirectSale
+                    }
                 }
+                if (added) break;                                      // leaves listings
             }
         }
 
         return dsList;
     }
 
-    // US023 End --------------------------------------------------------------------------------------------------
 
     public List<DirectSale> getListOfItemsOnDirectSale(Author author) {
         List<DirectSale> dsList = new ArrayList<>();
 
+//        for (DirectSale ds : _directSaleList) {
+//            for (Item item : ds.getListing().getItems()) {
+//                if (item.getPublication().getBibliographicalData().getAuthors().contains(author)) {
+//                    dsList.add(ds);
+//                    break;
+//                }
+//            }
+//        }
+
         for (DirectSale ds : _directSaleList) {
-            for (Item item : ds.getListing().getItems()) {
-                if (item.getPublication().getBibliographicalData().getAuthors().contains(author)) {
-                    dsList.add(ds);
-                    break;
+            for (Listing listing : ds.getListings()) {
+                for (Item item : listing.getItems()) {
+                    if (item.getPublication().getBibliographicalData().getAuthors().contains(author)) {
+                        dsList.add(ds);
+                        break;
+                    }
                 }
             }
         }
@@ -119,12 +158,23 @@ public class DirectSaleRepository {
     public List<DirectSale> getListOfItemsOnDirectSale(Publisher publisher) {
         List<DirectSale> dsList = new ArrayList<>();
 
+//        for (DirectSale ds : _directSaleList) {
+//            for (Item item : ds.getListing().getItems()) {
+////                if (item.getPublication().getBibliographicalData().getPublisher().equals(publisher)) {
+//                if (item.getPublication().getEdition().getPublisher().equals(publisher)) {
+//                        dsList.add(ds);
+//                        break;
+//                }
+//            }
+//        }
+
         for (DirectSale ds : _directSaleList) {
-            for (Item item : ds.getListing().getItems()) {
-//                if (item.getPublication().getBibliographicalData().getPublisher().equals(publisher)) {
-                if (item.getPublication().getEdition().getPublisher().equals(publisher)) {
+            for (Listing listing : ds.getListings()) {
+                for (Item item : listing.getItems()) {
+                    if (item.getPublication().getEdition().getPublisher().equals(publisher)) {
                         dsList.add(ds);
                         break;
+                    }
                 }
             }
         }
