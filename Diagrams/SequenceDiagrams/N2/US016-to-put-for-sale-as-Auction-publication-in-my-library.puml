@@ -8,17 +8,20 @@ box #whitesmoke
     participant ":UI" as UI
 end box
 
-    participant ":ToPutPublicationInAuctionController" as ctrl
+participant ":ToPutPublicationInAuctionController" as ctrl
+
+participant ":Library" as Lib
+
+participant ":PublicationSampleDTO_US016" as pubDto
+
+participant ":PublicationSampleRepository" as pubRepo
+
+participant ":ListingRepository" as ListingRepo
 
 
+participant ":AuctionRepository" as AucRepo
 
-    participant ":Library" as Lib
 
-    participant ":ItemRepository" as ItemRepo
-
-    participant ":ListingRepository" as ListingRepo
-
-    participant ":AuctionRepository" as AucRepo
 
 
 
@@ -31,60 +34,67 @@ activate ctrl
 ctrl -> Lib : getAllPublications()
 activate Lib
 create "listOfPublications:List<Publication>" as listPub
-Lib -> listPub : create()
-
-/'Lib -> Lib : Copy.of(listOfPublications)'/
+Lib -> listPub : getPublications()
 
 Lib --> ctrl : listOfPublications
 deactivate Lib
-ctrl --> UI : listOfPublications
+
+create "listOfPublicationsDTO : List<PublicationSampleDTO" as pubDtoList
+ctrl -> pubDtoList : create()
+
+loop for each PublicationAmple in Library
+    ctrl -> pubDto : toDTO(publication)
+    activate pubDto
+    pubDto --> ctrl : publicationDTO
+    deactivate pubDto
+    ctrl -> ctrl : listOfPublicationsDTO.add(publicationDTO)
+end
+
+
+ctrl --> UI : listOfPublicationsDTO
 deactivate ctrl
-UI --> User : Please, select a publication from your Library: pub1, pub2, pub3...
+UI --> User : Please, select one or more publications from your Library: pub1_dto, pub2_dto, pub3_dto...
 deactivate UI
 
 
 /' ====== AUCTION AND LISTING REQUESTS ========= '/
 
-User -> UI : Selected publication: pub1
+User -> UI : Selected publications: pub1_dto
 activate UI
-UI --> User : Please, insert listingPrice, shortDescription, listingTitle, seller,\n initialDate, finalDate, initialPrice, buyOutPrice you want to this Auction
+UI --> User : Please, insert listingPrice, shortDescription, listingTitle, seller,\n initialDate, finalDate, buyOutPrice.
 deactivate UI
 User -> UI : provide data
 activate UI
-UI -> ctrl : putPublicationForAuction(pub1, listingPrice, shortDescription,\n listingTitle, seller, initialDate, finalDate, initialPrice, buyOutPrice)
+UI -> ctrl : putPublicationForAuction(List<PublicationSampleDTO_US016> pubDtoList, price, shortDescription,\n listingTitle, seller, initialDate, finalDate, initialPrice, buyOutPrice)
 activate ctrl
 
-/' ====== ITEMS OF PUBLICATION ========= '/
+ctrl -> pubRepo : getPublicationByDto(List<PublicationSampleDTO_US016> pubDtoList)
+activate pubRepo
 
+create ":listOfPublicationSamples : List<PublicationSample>" as listPubSelected
+pubRepo -> listPubSelected : create()
 
-ctrl -> ItemRepo : createAndAddItem(condition, weight,dimensions, pub1)
+loop for each PublicationSampleDTO in pubDtoList
+    pubRepo -> pubRepo : getPublicationByDto()
+    pubRepo -> pubRepo : listOfPublicationSamples.add(publicationByDto)
+end
 
-activate ItemRepo
-create "itemsList: List<Item>" as itemsList
-ItemRepo -> itemsList : create()
-create "i1:Item" as i1
-ItemRepo --> i1 : create()
-
-ItemRepo -> ItemRepo : verifyIfExists()
-ItemRepo -> ItemRepo : add
-ItemRepo -> ItemRepo : itemsList.add(i1)
-
-ItemRepo --> ctrl : itemsList
-deactivate ItemRepo
+pubRepo --> ctrl : listOfPublicationSamples
+deactivate pubRepo
 
 /' ====== ===== LISTING ========= '/
 
-ctrl -> ListingRepo : create()
+ctrl -> ListingRepo : createAuctionListing(listing_title, price, listOfPublicationSamples)
 activate ListingRepo
-create "l1:Listing" as l1
-ListingRepo -> l1 : create()
+create "listing :Listing" as listing
+ListingRepo -> listing : create()
 ListingRepo -> ListingRepo : isExistent(l1)
 ListingRepo -> ListingRepo : add(l1)
-ListingRepo --> ctrl : l1
+ListingRepo --> ctrl : listing
 deactivate ListingRepo
 
 /' ====== ===== AUCTION ========= '/
-ctrl -> AucRepo : createAndAdd(l1, initialDate, finalDate, initialPrice, buyOutPrice)
+ctrl -> AucRepo : createAndAdd(listing, initialDate, finalDate, buyOutPrice)
 activate AucRepo
 create "auction1:Auction" as a1
 AucRepo -> a1 : create()
