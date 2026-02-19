@@ -1,0 +1,29 @@
+package TOPSECRET.dto;
+
+import TOPSECRET.domain.CollectionOfPublications;
+
+public class CollectionOfPublicationsDTO_US019 {
+
+    private String _name;
+    private String _genreName;
+    private String ownerName;
+
+    public CollectionOfPublicationsDTO_US019(String name, String genreName, String ownerName) {
+        this._name = name;
+        this._genreName = genreName;
+        this.ownerName = ownerName;
+    }
+
+    public static CollectionOfPublicationsDTO_US019 toDTO(CollectionOfPublications collection) {
+
+       CollectionOfPublicationsDTO_US019 collection1DTO = new CollectionOfPublicationsDTO_US019(
+               collection.getCollectionName(),
+               collection.getCollectionGenre().getGenreType(),
+               collection.getOwner()
+       );
+
+        return collection1DTO;
+    }
+
+
+}
