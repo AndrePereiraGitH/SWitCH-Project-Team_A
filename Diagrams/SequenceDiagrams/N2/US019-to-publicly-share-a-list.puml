@@ -63,15 +63,11 @@ UI -> Controller : shareCollectionOfPublications(collectionDTO_A)
 
 
 activate Controller
-Controller -> CollectionRepository : getCollectionOfPublications(collectionDTO_A)
-activate CollectionRepository
-CollectionRepository --> Controller : collectionA
-deactivate CollectionRepository
 
-
-Controller -> CollectionRepository : makeCollectionOfPublicationsPublic(collectionA)
+Controller -> CollectionRepository : makeCollectionOfPublicationsPublic(collectionDTO_A)
 activate CollectionRepository
-'create CollectionOfPublications
+CollectionRepository -> CollectionRepository : getCollectionByDTO()
+
 CollectionRepository -> CollectionOfPublications : set_isPrivate(false)
 
 activate CollectionOfPublications
@@ -82,7 +78,7 @@ CollectionRepository --> Controller : true
 
 deactivate CollectionRepository
 
-Controller --> UI : Success
+Controller --> UI : true
 deactivate Controller
 
 UI --> User: Your collection is public now!

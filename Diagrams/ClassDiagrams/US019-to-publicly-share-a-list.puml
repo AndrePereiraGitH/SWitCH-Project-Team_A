@@ -1,33 +1,50 @@
 @startuml
 hide circle
+title US019 - To publicly share a list of mine
+
 skinparam classAttributeIconSize 0
 
-title US019 - To publicly share a list of user
-
-class US019ToPubliclyShareListController {
-  '-collectionOfPublicationsRepository : CollectionOfPublicationRepository
-  +getAllCollectionsOfPublications() : List<CollectionOfPublications>
-  +shareCollectionOfPublications(collectionDTO : CollectionOfPublicationsDTO) : boolean
-}
-
-class CollectionOfPublicationRepository {
-  +getAllCollectionsOfPublicationsByUser(User user) : List<CollectionOfPublications>
-  +getCollectionOfPublications(collectionDTO : CollectionOfPublicationsDTO) : CollectionsOfPublications
-  +makeCollectionOfPublicationsPublic(CollectionOfPublications) : boolean
-}
-
-class CollectionOfPublications {
-  -isPrivate : boolean
-  +set_isPrivate() : void
-}
-
-class CollectionOfPublicationsDTO {
-
-    +fromDomain(CollectionOfPublications) : CollectionOfPublicationsDTO
+class "UI019" as UI019 {
 
 }
 
-US019ToPubliclyShareListController ..> CollectionOfPublicationRepository : uses
-CollectionOfPublicationRepository --> CollectionOfPublications : returns/persists
-US019ToPubliclyShareListController ..> CollectionOfPublicationsDTO : uses
+class "US019ToPubliclyShareCollectionOfPublicationsController" as Controller {
+  +requestAllCollectionOfPublicationsByUser(user: User): List<CollectionOfPublicationsDTO>
+  +shareCollectionOfPublications(dto: CollectionOfPublicationsDTO): boolean
+}
+
+class "CollectionOfPublicationRepository" as Repository  {
+  +getAllCollectionOfPublicationsByUser(user: User): List<CollectionOfPublications>
+  +makeCollectionOfPublicationsPublic(dto: CollectionOfPublicationsDTO): boolean
+  -getCollectionByDTO(dto: CollectionOfPublicationsDTO): CollectionOfPublications
+}
+
+class "CollectionOfPublications" as Collection  {
+  -isPrivate: boolean
+  +verifyIfCollectionBelongsToUser(user: User): boolean
+  +set_isPrivate(value: boolean): void
+}
+
+class "CollectionOfPublicationsDTO" as DTO {
+  +username: String
+  +name: String
+  +genreName: String
+  +toDTO(collection: CollectionOfPublications): CollectionOfPublicationsDTO
+}
+
+class User {
+  +username: String
+}
+
+' Associations / Dependencies
+UI019 ..> Controller : uses
+Controller ..> Repository : uses
+Repository --> Collection : manages
+Controller ..> DTO : creates/maps
+Repository ..> DTO : uses (lookup)
+Collection ..> User : verify owner
+
+' Multiplicities (implicit in the sequence)
+'Repository "1" o-- "0..*" Collection : collections
+
 @enduml
