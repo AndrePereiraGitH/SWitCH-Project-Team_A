@@ -103,8 +103,6 @@ class US018ToAddPublicationToPrivateListControllerTest {
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
-                library,
-                true,
                 user
         );
     }

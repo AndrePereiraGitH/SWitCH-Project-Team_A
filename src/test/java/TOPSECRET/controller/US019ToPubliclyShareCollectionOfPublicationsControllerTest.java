@@ -71,10 +71,9 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         return new CollectionOfPublications(
                 collectionName,
                 new Genre("Fiction"),
-                new Library("myLib", user),
-                true,
                 user
         );
+        // Collection is created private by default (US017)
     }
 
     private User createUser(String username) {
