@@ -112,13 +112,12 @@ class CollectionOfPublicationsRepositoryTest {
         );
     }
 
-    private CollectionOfPublications createValidCollection(Library library) {
+    private CollectionOfPublications createValidCollection(User user) {
 
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
-                library,
-                true, createValidUser()
+                user
         );
     }
 
@@ -134,7 +133,7 @@ class CollectionOfPublicationsRepositoryTest {
         user.getLibrary().addPublication(publication);
 
         CollectionOfPublications collection =
-                createValidCollection(user.getLibrary());
+                createValidCollection(user);
 
         // User owns the collection
         user.addCollection(collection);
@@ -169,7 +168,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // Collection NOT added to user
         CollectionOfPublications collection =
-                createValidCollection(user.getLibrary());
+                createValidCollection(user);
 
         // ACT
         boolean result = repository.addPublicationToCollection(user, collection, publication);
@@ -186,7 +185,7 @@ class CollectionOfPublicationsRepositoryTest {
         Publication publication = createValidPublication();
 
         // Publication NOT added to library
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());
+        CollectionOfPublications collection = createValidCollection(user);
 
         user.addCollection(collection);
 
@@ -206,7 +205,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ACT
         user.getLibrary().addPublication(publication);
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());
+        CollectionOfPublications collection = createValidCollection(user);
         user.addCollection(collection);
 
         // Add once
@@ -231,7 +230,7 @@ class CollectionOfPublicationsRepositoryTest {
         Genre genre = new Genre("Fiction");
 
         CollectionOfPublications result =
-                repository.createIfNotExists(user, "Favorites", genre, true);
+                repository.createIfNotExists(user, "Favorites", genre);
 
         assertNotNull(result);
         assertEquals("Favorites", result.getCollectionName());
@@ -247,10 +246,10 @@ class CollectionOfPublicationsRepositoryTest {
         User user = createValidUser();
         Genre genre = new Genre("Fiction");
 
-        repository.createIfNotExists(user, "Favorites", genre, true);
+        repository.createIfNotExists(user, "Favorites", genre);
 
         assertThrows(IllegalArgumentException.class, () ->
-                repository.createIfNotExists(user, "Favorites", genre, true)
+                repository.createIfNotExists(user, "Favorites", genre)
         );
     }
 
@@ -259,10 +258,10 @@ class CollectionOfPublicationsRepositoryTest {
 
         User user = createValidUser();
 
-        repository.createIfNotExists(user, "Favorites", new Genre("Fiction"), true);
+        repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
 
         CollectionOfPublications result =
-                repository.createIfNotExists(user, "Favorites", new Genre("History"), true);
+                repository.createIfNotExists(user, "Favorites", new Genre("History"));
 
         assertNotNull(result);
     }
@@ -290,8 +289,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublications collection = repository.createIfNotExists(
                 owner,
                 "My Funny Collection",
-                new Genre("Fiction"),
-                true
+                new Genre("Fiction")
         );
 
         repository.addCollectionToRepo(collection);
