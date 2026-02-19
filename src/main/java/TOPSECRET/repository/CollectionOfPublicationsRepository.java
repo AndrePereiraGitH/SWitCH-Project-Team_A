@@ -2,10 +2,13 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.CollectionOfPublicationsDTO;
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -172,6 +175,68 @@ public class CollectionOfPublicationsRepository {
 
         return userCollections;
 
+    }
+
+    /**
+     * US019 - Retrieves a {@link CollectionOfPublications} using a
+     * {@link CollectionOfPublicationsDTO_US019}.
+     * <p>
+     * The search is performed over the internal {@code _collectionOfPublicationsList}. A collection is
+     * considered a match when all of the following attributes are equal (using
+     * {@link java.util.Objects#equals(Object, Object)} for null-safe comparison):
+     * </p>
+     * <ul>
+     *   <li>Collection name: {@code c.getCollectionName()} equals {@code collectionDTO.get_name()}</li>
+     *   <li>Genre type: {@code c.getCollectionGenre().getGenreType()} equals {@code collectionDTO.get_genreName()}</li>
+     *   <li>Owner username: {@code c.getOwner().getUserName()} equals {@code collectionDTO.getOwnerName().getUserName()}</li>
+     * </ul>
+     *
+     * @param collectionDTO the DTO containing the identifying data of the collection to be retrieved.
+     * @return the {@link CollectionOfPublications} instance that matches the provided DTO.
+     * @throws InstanceNotFoundException if no collection in {@code _collectionOfPublicationsList} matches the DTO fields.
+     */
+    public CollectionOfPublications getCollectionByDTO(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
+
+        Optional<CollectionOfPublications> collectionFound = _collectionOfPublicationsList.stream()
+                .filter(c ->
+                        Objects.equals(c.getCollectionName(), collectionDTO.get_name()) &&
+                        Objects.equals(c.getCollectionGenre().getGenreType(), collectionDTO.get_genreName()) &&
+                        Objects.equals(c.getOwner().getUserName(), collectionDTO.getOwnerName().getUserName())
+                )
+                .findFirst();
+
+        if (collectionFound.isEmpty()) {
+            throw new InstanceNotFoundException("selected collection, does not match any CollectionOfPublications");
+        }
+
+        CollectionOfPublications collection = collectionFound.get();
+
+        return collection;
+
+    }
+
+    /**
+     * US019 - Makes a collection of publications public.
+     * <p>
+     * This method validates the received DTO, locates the corresponding collection through
+     * {@link #getCollectionByDTO(CollectionOfPublicationsDTO_US019)}, and updates its privacy state by
+     * setting {@code isPrivate} to {@code false}.
+     * </p>
+     *
+     * @param collectionDTO the DTO that identifies the collection to be made public.
+     * @return {@code true} if the operation completes successfully.
+     * @throws IllegalArgumentException if {@code collectionDTO} is {@code null}.
+     * @throws InstanceNotFoundException if no collection matches the provided DTO.
+     */
+    public boolean makeCollectionOfPublicationsPublic(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
+        if (collectionDTO == null) {
+            throw new IllegalArgumentException("collection dto cannot be null");
+        }
+
+        CollectionOfPublications coll = getCollectionByDTO(collectionDTO);
+
+        coll.set_isPrivate(false);
+        return true;
     }
 
 }
