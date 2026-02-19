@@ -17,7 +17,8 @@ public class CollectionOfPublications {
     // Attributes
     private String _collectionName;
     private Genre _collectionGenre;
-    private List<Publication> _collectionOfPublications;    // TODO change to PublicationSample
+    // TODO: private List<PublicationSample> _collectionOfPublications;
+    private List<Publication> _collectionOfPublications;
     private User _owner;
     private boolean _isPrivate;
 
@@ -68,6 +69,8 @@ public class CollectionOfPublications {
      * Returns a copy of the publications list.
      * Modifications to the returned list will not affect the collection.
      */
+
+    // TODO: public List<PublicationSample> getPublications() {
     public List<Publication> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }
@@ -89,8 +92,9 @@ public class CollectionOfPublications {
      * @param publication Publication to add
      * @return true if added, false if null or already exists
      */
-    // public boolean addPublication(PublicationSample publication) {
-    public boolean addPublication (Publication publication) {
+
+    // TODO: public boolean addPublication(PublicationSample publication) {
+    public boolean addPublication(Publication publication) {
 
         if (publication == null) return false;
 
@@ -108,8 +112,9 @@ public class CollectionOfPublications {
      * @param publication Publication to check
      * @return true if exists, false otherwise
      */
-    // public boolean containsPublication(PublicationSample publication) {
-    public boolean containsPublication (Publication publication) {
+
+    // TODO: public boolean containsPublication(PublicationSample publication) {
+    public boolean containsPublication(Publication publication) {
         return _collectionOfPublications.contains(publication);
     }
 

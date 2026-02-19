@@ -34,11 +34,17 @@ public class CollectionOfPublicationsRepository {
      * @param publication Publication to add
      * @return true if added successfully, false if validation fails
      */
-    // public boolean addPublicationToCollection(User user, CollectionOfPublications collection, PublicationSample publication) {
+
     public boolean addPublicationToCollection(User user,
                                               Library userLibrary,
                                               CollectionOfPublications collection,
                                               Publication publication) {
+
+// TODO: public boolean addPublicationToCollection(User user,
+//                                           Library userLibrary,
+//                                           CollectionOfPublications collection,
+//                                           PublicationSample publication) {
+
 
         if (user == null || userLibrary == null || collection == null || publication == null) {
             return false;
@@ -54,6 +60,7 @@ public class CollectionOfPublicationsRepository {
             return false;
         }
 
+        // TODO: Library.containsPublication needs to accept PublicationSample
         // publication must exist in user's library
         if (!userLibrary.containsPublication(publication)) {
             return false;
