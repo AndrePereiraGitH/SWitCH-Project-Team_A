@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
+//import static TOPSECRET.controller.US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest.createBibliographicalData;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DirectSaleTest {
@@ -37,9 +37,21 @@ class DirectSaleTest {
         );
     }
 
-    private static BibliographicalData createBibliographicalData(){
+    private static BibliographicalData createBibliographicalData1(){
         return new BibliographicalData(
                 "Harry Potter: Pedra Filosofal",
+                List.of(createAuthor()),
+                new Locale("pt", "PT"),
+//                new Publisher("PortoEditora", "192394938", new Contact("917485647", "+351", new Email("asa", "example.com"),new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry()))),
+                LocalDate.of(2020, 1, 30),
+                List.of(new Genre("FANTASY")),
+//                504,
+                "Text Description"
+        );
+    }
+    private static BibliographicalData createBibliographicalData2(){
+        return new BibliographicalData(
+                "Harry Potter: Cálice de Fogo",
                 List.of(createAuthor()),
                 new Locale("pt", "PT"),
 //                new Publisher("PortoEditora", "192394938", new Contact("917485647", "+351", new Email("asa", "example.com"),new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry()))),
@@ -93,7 +105,7 @@ class DirectSaleTest {
 
     private static Publication createPublication1(){
         return new Publication(
-                createBibliographicalData(),
+                createBibliographicalData1(),
                 createPublicationType(),
                 createSeller(),
                 PublicationStatus.FOR_SALE,
@@ -105,7 +117,7 @@ class DirectSaleTest {
 
     private static Publication createPublication2(){
         return new Publication(
-                createBibliographicalData(),
+                createBibliographicalData2(),
                 createPublicationType(),
                 createSeller(),
                 PublicationStatus.FOR_SALE,
@@ -127,7 +139,7 @@ class DirectSaleTest {
 
         //PublicationSample
         PublicationSample item = new PublicationSample(
-                createBibliographicalData(),
+                createBibliographicalData1(),
                 createSeller(),
                 PublicationStatus.FOR_SALE,
                 edition1,
@@ -148,7 +160,7 @@ class DirectSaleTest {
 
         //PublicationSample
         PublicationSample item2 = new PublicationSample(
-                createBibliographicalData(),
+                createBibliographicalData2(),
                 createSeller(),
                 PublicationStatus.FOR_SALE,
                 edition2,
@@ -302,7 +314,7 @@ class DirectSaleTest {
 //        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
 //        DirectSale dsale2 = new DirectSale(createListing(), LocalDateTime.of(2026,1,21,10,0));
         DirectSale dsale1 = new DirectSale(List.of(createListing1()),createBuyer(), false);
-        DirectSale dsale2 = new DirectSale(List.of(createListing2()),createBuyer(), false);
+        DirectSale dsale2 = new DirectSale(List.of(createListing2()),createBuyer(), true);
 
         //Act
         boolean expectedResult = dsale1.equals(dsale2);

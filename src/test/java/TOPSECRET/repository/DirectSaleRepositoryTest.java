@@ -107,9 +107,9 @@ class DirectSaleRepositoryTest {
     // Private Methods for Tests With Genre
     private BibliographicalData createBibliographicalDataWithGenre(String genreName) {
         return new BibliographicalData(
-                bibliographicalData.getTitle(),
+                "Different Title",
                 bibliographicalData.getAuthors(),
-                bibliographicalData.getLanguage(),
+                bibliographicalData.getOriginalLanguage(),
                 bibliographicalData.getPublishDate(),
                 List.of(new Genre(genreName)),
                 bibliographicalData.getChunksOfText()
@@ -123,7 +123,7 @@ class DirectSaleRepositoryTest {
                 validSeller,
                 publicationStatus,
                 edition1,
-                code1
+                Code.fromIsbn13("978" + System.nanoTime())
         );
 
         return new Item(Condition.LIKE_NEW, 1.2, dimensions, pub);

@@ -63,14 +63,14 @@ class US016ToPutPublicationInAuctionControllerTest {
         // arrange
         User user = user("Rodolph");
         Publication p1 = publication(user);
-        Publication p2 = publication(user);
+        Publication p2 = uniquePublication(user);
 
-        Library lib = new Library("Lib1" + user.getUserName(), user);
-        addPublicationToLibrary(lib, p1);
-        addPublicationToLibrary(lib, p2);
+        Library lib1 = new Library("Lib1" + user.getUserName(), user);
+        addPublicationToLibrary(lib1, p1);
+        addPublicationToLibrary(lib1, p2);
 
         Map<String, Library> libs = new HashMap<>();
-        libs.put(user.getUserName(), lib);
+        libs.put(user.getUserName(), lib1);
 
         var controller = newControllerWithLibraries(libs);
 
@@ -233,6 +233,29 @@ class US016ToPutPublicationInAuctionControllerTest {
         );
 
 //        return new Publication(bd, type, owner, status, "1st", code);
+        return new Publication(bd, type, owner, status, edition, code);
+    }
+
+    private Publication uniquePublication(User owner) {
+        BibliographicalData bd = bibliographicalData();
+        PublicationType type = publicationType();
+        PublicationStatus status = PublicationStatus.FOR_SALE;
+        Code code = Code.fromIsbn10("978" + System.nanoTime());                 // generates always a new code --> new publication
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+
+        Edition edition = new Edition(
+                "2st",
+                code,
+                physicalAttributes,
+                pubType,
+                publisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+
         return new Publication(bd, type, owner, status, edition, code);
     }
 
