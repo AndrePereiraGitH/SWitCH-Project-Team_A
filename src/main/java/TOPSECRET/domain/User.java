@@ -61,7 +61,7 @@ public class User {
 
     // Method: full user information
     public String getUserInfo() {
-        return "User: " + _userName + "Role: " + _userRole + ", Contact: " + _contact + ", Profile: " + _profile;
+        return "User: " + _userName + ", Role: " + _userRole + ", Contact: " + _contact + ", Profile: " + _profile;
     }
 
 
