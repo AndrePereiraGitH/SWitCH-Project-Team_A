@@ -98,6 +98,7 @@ class US020PublicListByGenreControllerTest {
                 false,
                 userName
         );
+        c1.set_isPrivate(false);  // Torna pública para US020
 
         CollectionOfPublications c2 = new CollectionOfPublications(
                 "Collectioion2",
@@ -106,6 +107,7 @@ class US020PublicListByGenreControllerTest {
                 true,
                 userName
         );
+        // c2 fica privada (default)
 
         CollectionOfPublications c3 = new CollectionOfPublications(
                 "Collection3",
@@ -114,6 +116,7 @@ class US020PublicListByGenreControllerTest {
                 false,
                 userName
         );
+        c3.set_isPrivate(false);  // Torna pública
 
         CollectionOfPublications c4 = new CollectionOfPublications(
                 "Collection4",
@@ -122,7 +125,7 @@ class US020PublicListByGenreControllerTest {
                 false,
                 userName
         );
-
+        c4.set_isPrivate(false);  // Torna pública
 
         collectionRepo.addPublicationToCollection(userName, privateLibrary, c1, publicationSample);
         collectionRepo.addPublicationToCollection(userName, privateLibrary, c2,publicationSample);

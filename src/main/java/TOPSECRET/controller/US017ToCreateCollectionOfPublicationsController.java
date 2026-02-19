@@ -64,7 +64,7 @@ public class US017ToCreateCollectionOfPublicationsController {
             throw new IllegalArgumentException("Invalid arguments");
         }
 
-        return collectionRepository.createIfNotExists(user, name, selectedGenre, true);
+        return collectionRepository.createIfNotExists(user, name, selectedGenre);
     }
 
 }

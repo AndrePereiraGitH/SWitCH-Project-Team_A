@@ -25,7 +25,8 @@ public class Library { //Define a classe Library (biblioteca de publicações, p
         }
         this.libraryName = libraryName;
         this.user = user;
-        this.myPublications = myPublications;
+        // ✅ garante sempre lista mutável
+        this.myPublications = new ArrayList<>(myPublications == null ? List.of() : myPublications);
     } //Estes vão atribuir valores fornecidos aos atributos da classe.
 
     //Get publications in the Library

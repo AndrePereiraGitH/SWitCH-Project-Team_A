@@ -103,7 +103,8 @@ class CollectionOfPublicationsTest {
         return new CollectionOfPublications(
                 "Favorites",
                 createValidGenre(),
-                true, createValidUser()
+                true,
+                createValidUser()
         );
     }
 

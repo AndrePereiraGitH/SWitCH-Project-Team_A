@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -30,6 +31,15 @@ public class CollectionOfPublications {
     // but this attribute supports other user stories.(US20)
     private User _owner;
     private boolean _isPrivate;
+
+    /**
+     * Creates a new collection of publications.
+     *
+     * @param collectionName Name of the collection
+     * @param collectionGenre Genre of the collection
+     * @param user Owner of the collection
+     * @throws IllegalArgumentException if any parameter is null or invalid
+     */
 
     // Constructor
     public CollectionOfPublications(String collectionName, Genre collectionGenre, boolean isPrivate, User user) {
@@ -71,12 +81,23 @@ public class CollectionOfPublications {
     }
 
 
-    // _______________
-    // Used in US018
-    // _______________
-    //  Adds a publication to the private list.
-    //  Returns true if the publication was added successfully.
-    //  Returns false if the publication already exists in the list.
+    /**
+     * US019 - to publicly share a collection of publications
+     *
+     *
+     */
+    public void set_isPrivate(boolean _isPrivate) {
+        this._isPrivate = _isPrivate;
+    }
+
+    /**
+     * US018 - Adds a publication to the collection.
+     * Duplicates are not allowed.
+     *
+     * @param publication Publication to add
+     * @return true if added, false if null or already exists
+     */
+    // public boolean addPublication(PublicationSample publication) {
     public boolean addPublication (Publication publication) {
 
         if (publication == null) return false;
@@ -89,7 +110,13 @@ public class CollectionOfPublications {
         return true;
     }
 
-    // Validade if a publication exists in the private list.
+    /**
+     * Checks if a publication exists in the collection.
+     *
+     * @param publication Publication to check
+     * @return true if exists, false otherwise
+     */
+    // public boolean containsPublication(PublicationSample publication) {
     public boolean containsPublication (Publication publication) {
         return _collectionOfPublications.contains(publication);
     }
@@ -118,23 +145,10 @@ public class CollectionOfPublications {
     // If two objects are considered equal by equals(), they must return the same hash code.
     @Override
     public int hashCode() {
-        return Objects.hash(
-                _collectionName.toLowerCase(),
-                _collectionGenre,
-                _owner,
-                _isPrivate,
-                _collectionOfPublications
-        );
-    }
-
-
-    /**
-     * US019 - to publicly share a collection of publications
-     *
-     *
-     */
-    public void set_isPrivate(boolean _isPrivate) {
-        this._isPrivate = _isPrivate;
+        return (_collectionName.toLowerCase()
+                + _collectionGenre.hashCode()
+                + _isPrivate
+                + _collectionOfPublications.hashCode()).hashCode();
     }
 
 }
