@@ -26,5 +26,15 @@ public class CollectionOfPublicationsDTO_US019 {
         return collection1DTO;
     }
 
+    public String get_name() {
+        return _name;
+    }
 
+    public String get_genreName() {
+        return _genreName;
+    }
+
+    public User getOwnerName() {
+        return ownerName;
+    }
 }
