@@ -131,7 +131,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
                 new Publication(bibliographicalData, publicationType, user, publicationStatus, edition3, code3));
 
         severalItemList = new ArrayList<>(List.of(validItem1, validItem2, validItem3));
-        validListing = new Listing(severalItemList, validPrice, validDescription, validTitle, validSeller, validPictures);
+        validListing = new Listing(validTitle, severalItemList,SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 //        validDirectSale = new DirectSale(validListing, LocalDateTime.now());
         validDirectSale = new DirectSale(List.of(validListing), validBuyer, false);
     }
@@ -207,8 +207,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // arrange
         Publication targetPublication = validItem1.getPublication();
 
-        Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-        Listing listing2 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listing1 = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
+        Listing listing2 = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 
 //        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
 //        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
@@ -259,10 +259,11 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         Publication targetPublication = validItem1.getPublication();
 
         Listing listing = new Listing(
+                validTitle,
                 List.of(validItem1),
+                SaleType.DIRECT_SALE,
                 validPrice,
                 validDescription,
-                validTitle,
                 validSeller,
                 validPictures
         );

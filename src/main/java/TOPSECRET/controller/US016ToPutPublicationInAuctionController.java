@@ -50,27 +50,27 @@ public class US016ToPutPublicationInAuctionController {
         return userLibrary.getAllPublications();
     }
 
-    public boolean putPublicationForAuction(Publication pub1, Price listingPrice, String shortDescription, String listingTitle, User seller, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
-
-        if (pub1 == null) {
-            throw new IllegalArgumentException("Publication cannot be null");
-        }
-
-        if (initialDate == null || finalDate == null || buyOutPrice == null) {
-            throw new IllegalArgumentException("initialDate, finalDate and buyOutPrice cannot be null");
-        }
-
-        List<Item> items = new ArrayList<>();
-
-        Item item = itemRepository.createAndAddItem(Condition.LIKE_NEW, 1.2, new Dimensions(10, 10, 10), pub1);
-        items.add(item);
-
-        Listing listing = listingRepository.createAndAdd(items, listingPrice, shortDescription, listingTitle, seller);
-
-        auctionRepository.createAndAdd(listing, initialDate, finalDate, buyOutPrice);
-
-        return true;
-    }
+//    public boolean putPublicationForAuction(Publication pub1, Price listingPrice, String shortDescription, String listingTitle, User seller, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
+//
+//        if (pub1 == null) {
+//            throw new IllegalArgumentException("Publication cannot be null");
+//        }
+//
+//        if (initialDate == null || finalDate == null || buyOutPrice == null) {
+//            throw new IllegalArgumentException("initialDate, finalDate and buyOutPrice cannot be null");
+//        }
+//
+//        List<Item> items = new ArrayList<>();
+//
+//        Item item = itemRepository.createAndAddItem(Condition.LIKE_NEW, 1.2, new Dimensions(10, 10, 10), pub1);
+//        items.add(item);
+//
+//        Listing listing = listingRepository.createAndAdd(items, listingPrice, shortDescription, listingTitle, seller);
+//
+//        auctionRepository.createAndAdd(listing, initialDate, finalDate, buyOutPrice);
+//
+//        return true;
+//    }
 
 
 }

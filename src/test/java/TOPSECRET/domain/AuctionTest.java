@@ -801,10 +801,11 @@ class AuctionTest {
         Price price = new Price(new BigDecimal("35.00"));
         final List<Item> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
+                "This is our first listing",
                 items,
+                SaleType.AUCTION,
                 price,
                 "short description",
-                "This is our first listing",
                 instantiateUser("Joseph"),
                 instantiatePictures()
         );

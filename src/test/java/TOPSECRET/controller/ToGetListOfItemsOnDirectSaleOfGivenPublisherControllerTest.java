@@ -174,6 +174,6 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         User user = new User("userName", contact, profile, UserRole.NORMAL_USER);
         Picture picture = new Picture("picture");
 
-        return new Listing(Arrays.stream(items).toList(), price, "shortDescription", "listingTitle", user, List.of(picture));
+        return new Listing("listingTitle", Arrays.stream(items).toList(), SaleType.DIRECT_SALE, price, "shortDescription", user, List.of(picture));
     }
 }

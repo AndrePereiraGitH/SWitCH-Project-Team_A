@@ -279,10 +279,11 @@ class AuctionRepositoryTest {
         );
 
         Listing listing = new Listing(
+                "Title",
                 List.of(item),
+                SaleType.AUCTION,
                 new Price(new BigDecimal("10.00")),
                 "Short desc",
-                "Title",
                 seller,
                 List.of()
         );
@@ -313,10 +314,11 @@ class AuctionRepositoryTest {
         Price price = new Price(new BigDecimal("35.00"));
         final List<Item> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
+                "This is our first listing",
                 items,
+                SaleType.AUCTION,
                 price,
                 "short description",
-                "This is our first listing",
                 instantiateUser("Joseph"),
                 instantiatePictures()
         );
@@ -449,10 +451,11 @@ class AuctionRepositoryTest {
         Price price = new Price(new BigDecimal("35.00"));
         final List<Item> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
+                "This is our first listing",
                 items,
+                SaleType.AUCTION,
                 price,
                 "short description",
-                "This is our first listing",
                 instantiateUser("Joseph"),
                 instantiatePictures()
         );

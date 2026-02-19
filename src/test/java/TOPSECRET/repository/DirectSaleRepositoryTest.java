@@ -89,7 +89,7 @@ class DirectSaleRepositoryTest {
     private final String validTitle = "PS5 Pro";
     List<Picture> validPictures = List.of(new Picture("path/to/pic.jpg"));
 
-    Listing validListing = new Listing(severalItemList, validPrice, validDescription, validTitle, validSeller, validPictures);
+    Listing validListing = new Listing(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 
     // DirectSale
     // Buyer
@@ -131,10 +131,11 @@ class DirectSaleRepositoryTest {
 
     private Listing createListingWithGenre(String genreName) {
         return new Listing(
+                validTitle,
                 List.of(createItemWithGenre(genreName)),
+                SaleType.DIRECT_SALE,
                 validPrice,
                 validDescription,
-                validTitle,
                 validSeller,
                 validPictures
         );
@@ -395,8 +396,8 @@ class DirectSaleRepositoryTest {
         // Create 2 directSale with 1 item each, referring to the same publication (same BibliographicalData, not PublicationSample)
         Publication targetPublication = validItem1.getPublication();
 
-        Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-        Listing listing2 = new Listing(List.of(new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication)), validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listing1 = new Listing(validTitle, List.of(validItem1),SaleType.DIRECT_SALE, validPrice,validDescription, validSeller, validPictures);
+        Listing listing2 = new Listing(validTitle, List.of(new Item(Condition.LIKE_NEW, 1.2, dimensions, targetPublication)), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 
 //        DirectSale ds1 = new DirectSale(listing1, LocalDateTime.now());
 //        DirectSale ds2 = new DirectSale(listing2, LocalDateTime.now());
@@ -441,9 +442,9 @@ class DirectSaleRepositoryTest {
     void getListOfItemsOnDirectSale_shouldReturnsAllItemsOnDirectSaleForAGivenAuthor() {
         // Arrange
         // Create 3 listings and directSales with publications from the same author
-        Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-        Listing listing2 = new Listing(List.of(validItem2), validPrice, validDescription, validTitle, validSeller, validPictures);
-        Listing listing3 = new Listing(List.of(validItem3), validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listing1 = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
+        Listing listing2 = new Listing(validTitle, List.of(validItem2), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
+        Listing listing3 = new Listing(validTitle, List.of(validItem3), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 
         DirectSale ds1 = new DirectSale(List.of(listing1), validBuyer, false);
         DirectSale ds2 = new DirectSale(List.of(listing2), validBuyer, false);
@@ -478,8 +479,8 @@ class DirectSaleRepositoryTest {
     void getListOfItemsOnDirectSale_shouldReturnsAllItemsOnDirectSaleForAGivenPublisher() {
         // Arrange
         // Create 2 listings and directSales with the same publisher
-        Listing listing1 = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-        Listing listing2 = new Listing(List.of(validItem2), validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listing1 = new Listing(validTitle, List.of(validItem1),SaleType.DIRECT_SALE, validPrice, validDescription,  validSeller, validPictures);
+        Listing listing2 = new Listing(validTitle, List.of(validItem2),SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 
         DirectSale ds1 = new DirectSale(List.of(listing1), validBuyer, false);
         DirectSale ds2 = new DirectSale(List.of(listing2), validBuyer, false);
@@ -515,7 +516,7 @@ class DirectSaleRepositoryTest {
         // Arrange
         Publication targetPublication = validItem1.getPublication();
 
-        Listing listing1 = new Listing(List.of(validItem1, validItem2), validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listing1 = new Listing( validTitle, List.of(validItem1, validItem2), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 
 //        DirectSale ds = new DirectSale(listing, LocalDateTime.now());
         DirectSale ds = new DirectSale(List.of(listing1), validBuyer, false);
@@ -551,8 +552,8 @@ class DirectSaleRepositoryTest {
     void getListOfItemsOnDirectSale_shouldNotDuplicateWhenMultipleListingsMatch() {
         Publication target = validItem1.getPublication();
 
-        Listing listingA = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
-        Listing listingB = new Listing(List.of(validItem1), validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listingA = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
+        Listing listingB = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE,  validPrice, validDescription, validSeller, validPictures);
 
         DirectSale ds = new DirectSale(List.of(listingA, listingB), validBuyer, false);
 

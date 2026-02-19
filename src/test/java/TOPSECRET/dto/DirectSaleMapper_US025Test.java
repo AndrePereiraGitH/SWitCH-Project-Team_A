@@ -28,7 +28,7 @@ class DirectSaleMapper_US025Test {
         Author author = new Author(authorName, new Country("PORTUGAL"), LocalDate.of(1980, 1, 1), "Bio");
         User seller = new User("Seller Name", null, null, UserRole.NORMAL_USER);
         Item item = new Item(Condition.GOOD, 1.2, new Dimensions(1.1, 1.1, 1.1), createPublication(bookTitle, author, seller));
-        Listing listing = new Listing(List.of(item), new Price(price), "Short description", "Listing Title 1", seller, List.of());
+        Listing listing = new Listing("Listing Title 1", List.of(item),SaleType.DIRECT_SALE, new Price(price), "Short description", seller, List.of());
         User buyer = new User (
                 "Buyer name",
                 new Contact("919999999","+351",new Email ("buyer", "gmail.com"), null),

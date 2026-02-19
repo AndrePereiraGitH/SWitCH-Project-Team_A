@@ -1,9 +1,7 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.Price;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.SaleType;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
@@ -17,9 +15,10 @@ public class ListingRepository {
         this.listings = new ArrayList<>();
     }
 
-    public Listing createAndAdd(List<Item> items, Price price, String shortDescription, String listingTitle, User seller) throws InstanceAlreadyExistsException {
+    public Listing createAndAdd(String listingTitle, List<Item> items, SaleType saleType,
+                                Price price, String shortDescription, User seller, List<Picture> pictures) throws InstanceAlreadyExistsException {
 
-        Listing newListing = new Listing(items, price, shortDescription, listingTitle, seller );
+        Listing newListing = new Listing(listingTitle, items, saleType, price, shortDescription, seller, pictures);
 
         if (isExistent(newListing))
             throw new InstanceAlreadyExistsException("Listing already exists.");

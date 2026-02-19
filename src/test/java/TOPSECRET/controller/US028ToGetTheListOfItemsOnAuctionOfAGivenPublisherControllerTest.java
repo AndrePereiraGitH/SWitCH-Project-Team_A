@@ -122,19 +122,21 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         // -------- Listings --------
         Listing listing1 = new Listing(
+                "Auction 1",
                 List.of(item1),
+                SaleType.AUCTION,
                 new Price(BigDecimal.valueOf(40)),
                 "ShortDescription 1",
-                "Auction 1",
                 seller,
                 List.of(new Picture("img1.jpg"))
         );
 
         Listing listing2 = new Listing(
+                "Auction 2",
                 List.of(item2),
+                SaleType.AUCTION,
                 new Price(BigDecimal.valueOf(35)),
                 "ShortDescription 2",
-                "Auction 2",
                 seller,
                 List.of(new Picture("img2.jpg"))
         );

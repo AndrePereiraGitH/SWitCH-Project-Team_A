@@ -33,6 +33,9 @@ class AuctionMapper_US026Test {
     private static final Instant FIXED_INSTANT = Instant.parse("2030-01-01T10:00:00Z");
     private static final Clock FIXED_CLOCK = Clock.fixed(FIXED_INSTANT, ZONE);
 
+    // Pictures
+    List<Picture> pictures = List.of(new Picture("path/to/pic.jpg"));
+
     private static LocalDateTime fixedNow() {
         return LocalDateTime.ofInstant(FIXED_INSTANT, ZONE);
     }
@@ -86,11 +89,13 @@ class AuctionMapper_US026Test {
         );
 
         return new Listing(
+                "Book Pillars of the earth",
                 List.of(item),
+                SaleType.AUCTION,
                 price("35.50"),
                 "short description",
-                "Book Pillars of the earth",
-                user
+                user,
+                pictures
         );
     }
 

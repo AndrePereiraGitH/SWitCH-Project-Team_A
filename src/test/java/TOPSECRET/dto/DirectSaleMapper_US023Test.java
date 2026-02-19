@@ -76,10 +76,11 @@ class DirectSaleMapper_US023Test {
 
     private Listing listingWithItems(Item... items) {
         return new Listing(
+                "Listing Title",
                 List.of(items),
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("19.99")),
                 "best book ever",
-                "Listing Title",
                 new User("seller", null, profile("Seller"), UserRole.NORMAL_USER),
                 List.of(new Picture("pic"))
         );

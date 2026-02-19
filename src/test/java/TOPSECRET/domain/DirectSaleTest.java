@@ -189,10 +189,11 @@ class DirectSaleTest {
 
     private static Listing createListing1(){
         return new Listing(
+                "Listing Title",
                 List.of(createItem1()),
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("19.99")),
                 "Short Description",
-                "Listing Title",
                 createSeller(),
                 List.of(new Picture("pic"))
         );
@@ -200,10 +201,11 @@ class DirectSaleTest {
 
     private static Listing createListing2(){
         return new Listing(
+                "Listing Title",
                 List.of(createItem2()),
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("9.99")),
                 "Short Description",
-                "Listing Title",
                 createSeller(),
                 List.of(new Picture("pic"))
         );

@@ -110,19 +110,21 @@ class CartTest {
         final List<Item> Item = new ArrayList<>(List.of(item));
 
         listing1 = new Listing(
+                "Listing Title 1",
                 Item,
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("50.00")),
                 "Short description 1",
-                "Listing Title 1",
                 new User("Seller1", null, null, UserRole.NORMAL_USER),
                 pictures
         );
 
         listing2 = new Listing(
+                "Listing Title 2",
                 Item,
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("50.00")),
                 "Short description 2",
-                "Listing Title 2",
                 new User("Seller2", null, null, UserRole.NORMAL_USER),
                 pictures
         );

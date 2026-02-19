@@ -33,7 +33,7 @@ class ListingRepositoryTest {
         items.add(item);
 
         // act
-        Listing list = listingRepo.createAndAdd(items, price("35.50"), "This is the listing description", "Title Auction", instantiateUser("ImSeller"));
+        Listing list = listingRepo.createAndAdd("Title Auction",items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", instantiateUser("ImSeller"),List.of(new Picture("pic1")));
 
         // assert
         assertNotNull(list);
@@ -49,11 +49,11 @@ class ListingRepositoryTest {
         Item item = itemRepo.createAndAddItem(Condition.LIKE_NEW, 2, new Dimensions(10, 10, 10), instaciatePublication());
         items.add(item);
         User owner = instantiateUser("ImSeller");
-        listingRepo.createAndAdd(items, price("35.50"), "This is the listing description", "Title Auction", owner);
+        listingRepo.createAndAdd("Title Auction", items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", owner, List.of(new Picture("pic1")));
 
 
         // act + assert
-        InstanceAlreadyExistsException e = assertThrows(InstanceAlreadyExistsException.class, () -> listingRepo.createAndAdd(items, price("35.50"), "This is the listing description", "Title Auction", owner));
+        InstanceAlreadyExistsException e = assertThrows(InstanceAlreadyExistsException.class, () -> listingRepo.createAndAdd("Title Auction", items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", owner, List.of(new Picture("pic1"))));
 
         assertEquals("Listing already exists.", e.getMessage());
 

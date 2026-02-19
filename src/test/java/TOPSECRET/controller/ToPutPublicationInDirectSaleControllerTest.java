@@ -74,6 +74,8 @@ class ToPutPublicationInDirectSaleControllerTest {
             bibliographicalData1, publicationType, user1, pubStatus1, edition1, code1
     );
 
+
+
     // ------------------------------------------------------
 
     @BeforeEach
@@ -124,7 +126,7 @@ class ToPutPublicationInDirectSaleControllerTest {
         Item item = controller.createAndAddItem(Condition.GOOD, 1.5, dimensions, publication1);
 
         Price price = new Price(new BigDecimal("10.5"));
-        Listing listing = new Listing(List.of(item), price, "Short description", "Mag for sale like new", user1);
+        Listing listing = new Listing("Mag for sale like new", List.of(item), SaleType.DIRECT_SALE, price, "Short description", user1, List.of(new Picture("pic")));
 
 //        boolean result = controller.createAndAddDirectSale(listing);
         boolean result = controller.createAndAddDirectSale(List.of(listing), user1, false);
@@ -150,7 +152,7 @@ class ToPutPublicationInDirectSaleControllerTest {
         Item item = controller.createAndAddItem(Condition.GOOD, 1.5, dimensions, publication1);
 
         Price price = new Price(new BigDecimal("10.5"));
-        Listing listing = new Listing(List.of(item), price, "Short description", "Mag for sale like new", user1);
+        Listing listing = new Listing("Mag for sale like new",List.of(item), SaleType.DIRECT_SALE,price,"Short description", user1, List.of(new Picture("pic1")));
 
         assertThrows(IllegalArgumentException.class, () ->
                 controller.createAndAddDirectSale(List.of(listing), null, false)
@@ -184,7 +186,7 @@ class ToPutPublicationInDirectSaleControllerTest {
         Item item = controller.createAndAddItem(Condition.GOOD, 1.5, dimensions, publication1);
 
         Price price = new Price(new BigDecimal("10.5"));
-        Listing listing = new Listing(List.of(item), price, "description", "title", user1);
+        Listing listing = new Listing("title", List.of(item),SaleType.DIRECT_SALE, price, "description", user1, List.of(new Picture("pic1")));
 
         // First time should return true
 //        assertTrue(controller.createAndAddDirectSale(listing));

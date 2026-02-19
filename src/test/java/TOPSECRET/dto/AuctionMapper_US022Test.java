@@ -172,10 +172,11 @@ class AuctionMapper_US022Test {
         );
 
         Listing listing = new Listing(
+                "Valid Title",
                 List.of(item),
+                SaleType.AUCTION,
                 new Price(new BigDecimal("10.00")),
                 "Short desc",
-                "Valid Title",
                 seller,
                 List.of(new Picture("pic1"))
         );

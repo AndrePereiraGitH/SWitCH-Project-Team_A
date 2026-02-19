@@ -151,10 +151,11 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         Item item = new Item(Condition.LIKE_NEW, 100, new Dimensions(10,10,10), publication);
 
         Listing listing = new Listing(
+                "Valid Title",
                 List.of(item),
+                SaleType.AUCTION,
                 new Price(new BigDecimal("10.00")),
                 "Short desc",
-                "Valid Title",
                 seller,
                 List.of(new Picture("pic1"))
         );

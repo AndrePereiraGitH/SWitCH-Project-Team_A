@@ -90,7 +90,7 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     Price validPrice = new Price(BigDecimal.valueOf(50.99));
     private final String validDescription = "Valid Description";
     private final String validTitle = "PS5 Pro";
-    Listing validListing1 = new Listing(itemList1,validPrice,validDescription,validTitle,validSeller, validPictures);
+    Listing validListing1 = new Listing(validTitle,itemList1,SaleType.AUCTION,validPrice,validDescription,validSeller, validPictures);
 
 
 

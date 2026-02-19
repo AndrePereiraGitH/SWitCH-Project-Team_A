@@ -379,10 +379,11 @@ class TransactionTest {
 
     private static Listing createValidListing(){
         return new Listing(
+                "Invalid Title",
                 List.of(createValidItem()),
+                SaleType.DIRECT_SALE,
                 new Price (new BigDecimal("19.00")),
                 "ShortDescription",
-                "Invalid Title",
                 createValidUser("Seller"),
                 List.of(new Picture("Pic1"))
         );

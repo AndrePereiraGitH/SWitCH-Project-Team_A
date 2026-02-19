@@ -174,10 +174,11 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
     private static Listing createListing(){
         return new Listing(
+                "Listing Title",
                 List.of(createItem()),
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("19.99")),
                 "Short Description",
-                "Listing Title",
                 createSeller(),
                 List.of(new Picture("pic"))
         );

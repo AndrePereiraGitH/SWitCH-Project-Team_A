@@ -130,10 +130,11 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
 
         Listing listing = new Listing(
+                "Listing Title",
                 List.of(item),
+                SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("25.00")),
                 "Valid short description",
-                "Listing Title",
                 seller,
                 List.of(new Picture("img.jpg"))
         );

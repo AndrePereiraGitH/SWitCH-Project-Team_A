@@ -107,8 +107,8 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<Item> items2 = new ArrayList<>();
         items2.add(item2);
 
-        Listing listing = new Listing(items, price("35.50"), "short description", "Book Pillars of the earth", user);
-        Listing listing2 = new Listing(items2, price("35.50"), "short description", "Book Pillars of the earth", user);
+        Listing listing = new Listing("Book Pillars of the earth",items, SaleType.AUCTION, price("35.50"), "short description", user, List.of(new Picture("pic1")));
+        Listing listing2 = new Listing("Book Pillars of the earth", items2, SaleType.AUCTION, price("35.50"), "short description", user, List.of(new Picture("pic1")));
 
 
         LocalDateTime now = fixedNow();

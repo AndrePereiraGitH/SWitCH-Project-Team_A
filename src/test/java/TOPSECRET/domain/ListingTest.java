@@ -102,7 +102,7 @@ class ListingTest {
         // Arrange
 
         //Act
-        Listing validListing = new Listing(oneItemList,validPrice,validDescription,validTitle,validSeller, validPictures);
+        Listing validListing = new Listing(validTitle,oneItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures);
 
         //Assert
         assertNotNull(validListing);
@@ -115,7 +115,7 @@ class ListingTest {
         // Arrange
 
         //Act
-        Listing validListing = new Listing(severalItemList,validPrice,validDescription,validTitle,validSeller, validPictures);
+        Listing validListing = new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures);
 
         //Assert
         assertNotNull(validListing);
@@ -129,8 +129,10 @@ class ListingTest {
         // Arrange
         final String invalidDescription = "123456780";
 
+
+
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(oneItemList,validPrice,invalidDescription,validTitle,validSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,validPrice,invalidDescription,validSeller, validPictures));
     }
 
     @Test
@@ -140,7 +142,7 @@ class ListingTest {
         final String descriptionWith10Char = "1234567890";
 
         //Act
-        Listing testingDescriptionWith10Char = new Listing(oneItemList,validPrice,descriptionWith10Char,validTitle,validSeller, validPictures);
+        Listing testingDescriptionWith10Char = new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,validPrice,descriptionWith10Char,validSeller, validPictures);
 
         //Assert
         assertNotNull(testingDescriptionWith10Char);
@@ -155,7 +157,7 @@ class ListingTest {
         final String titleLessThanFiveCharacters = "acbd";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(oneItemList,validPrice,validDescription,titleLessThanFiveCharacters,validSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(titleLessThanFiveCharacters,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures));
     }
 
     @Test
@@ -165,7 +167,7 @@ class ListingTest {
         final String titleTooLong = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(oneItemList,validPrice,validDescription,titleTooLong,validSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(titleTooLong,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures));
     }
 
     @Test
@@ -175,7 +177,7 @@ class ListingTest {
         final String validTitle5Chars = "12345";
 
         // Act
-        Listing listing = new Listing(oneItemList,validPrice,validDescription,validTitle5Chars,validSeller, validPictures);
+        Listing listing = new Listing(validTitle5Chars,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures);
 
         // Assert
         assertNotNull(listing);
@@ -188,7 +190,7 @@ class ListingTest {
         final String validTitle100Chars = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
 
         // Act
-        Listing listing = new Listing(oneItemList,validPrice,validDescription,validTitle100Chars,validSeller, validPictures);
+        Listing listing = new Listing(validTitle100Chars,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures);
 
         // Assert
         assertNotNull(listing);
@@ -203,7 +205,7 @@ class ListingTest {
         Price price = new Price(BigDecimal.valueOf(10.00));
 
         // Act
-        Listing listing = new Listing(oneItemList,price,validDescription,validTitle,validSeller, validPictures);
+        Listing listing = new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,price,validDescription,validSeller, validPictures);
 
         // Assert
         assertEquals(price,listing.getPrice());
@@ -213,10 +215,9 @@ class ListingTest {
     void shouldThrowExceptionWhenPriceIsNull(){
 
         //Arrange
-        Price nullPrice = null;
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(oneItemList,nullPrice,validDescription,validTitle,validSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,null,validDescription,validSeller, validPictures));
 
     }
 
@@ -227,10 +228,10 @@ class ListingTest {
     @Test
     void shouldThrowExceptionWhenSellerIsNull(){
         //Arrange
-        User nullSeller = null;
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(oneItemList,validPrice,validDescription,validTitle,nullSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,null, validPictures));
+
 
     }
 
@@ -241,11 +242,9 @@ class ListingTest {
     void shouldThrowExceptionWhenItemIsNull(){
 
         //Arrange
-        final List<Item> nullItemList = null;
-
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(nullItemList,validPrice,validDescription,validTitle,validSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(validTitle,null,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures));
 
     }
 
@@ -257,17 +256,16 @@ class ListingTest {
 
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(emptyItemList,validPrice,validDescription,validTitle,validSeller, validPictures));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(validTitle,emptyItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures));
 
     }
 
     @Test
     void shouldThrowExceptionWhenPicturesIsNull(){
         //Arrange
-        final List<Picture> nullPicture = null;
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, ()-> new Listing(severalItemList,validPrice,validDescription,validTitle,validSeller, nullPicture));
+        assertThrows(IllegalArgumentException.class, ()-> new Listing(validTitle,null,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, null));
 
 
     }
@@ -281,7 +279,7 @@ class ListingTest {
 
 
         //Act
-        Listing listing = new Listing(severalItemList, validPrice, validDescription, validTitle, validSeller, validPictures);
+        Listing listing = new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures);
         List<Item> items = listing.getItems();
 
         //Assert
