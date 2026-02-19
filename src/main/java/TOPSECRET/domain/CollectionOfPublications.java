@@ -7,13 +7,9 @@ import java.util.Objects;
 
 /**
  * Represents a collection of publications created by a user.
-
- * In the context of US017, this class is responsible for representing
- * a private collection with a name and an associated genre.
-
- * Some attributes (such as library and owner information) are used
- * by other user stories and are not required for the creation logic
- * of US017 itself.
+ *
+ * A collection has a name, genre, and can be private or public.
+ * Collections are created private by default (US017) but can be made public (US019).
  */
 
 public class CollectionOfPublications {
@@ -21,14 +17,7 @@ public class CollectionOfPublications {
     // Attributes
     private String _collectionName;
     private Genre _collectionGenre;
-    // Library where this collection is stored.
-    // This attribute is NOT required for US017,
-    // but is used in later user stories involving library management.
-//    private Library _privateLibrary; REMOVED
     private List<Publication> _collectionOfPublications;    // TODO change to PublicationSample
-    // Username of the collection owner.
-    // Ownership validation is handled at repository level (US017),
-    // but this attribute supports other user stories.(US20)
     private User _owner;
     private boolean _isPrivate;
 
@@ -42,7 +31,7 @@ public class CollectionOfPublications {
      */
 
     // Constructor
-    public CollectionOfPublications(String collectionName, Genre collectionGenre, boolean isPrivate, User user) {
+    public CollectionOfPublications(String collectionName, Genre collectionGenre, User user) {
 
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
@@ -58,7 +47,7 @@ public class CollectionOfPublications {
 
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
-        this._isPrivate = isPrivate;
+        this._isPrivate = true;
         this._owner = user;
         this._collectionOfPublications = new ArrayList<>();
     }
@@ -75,7 +64,10 @@ public class CollectionOfPublications {
 
     public User getOwner() { return _owner; }
 
-    // Returns a copy of the publications list
+    /**
+     * Returns a copy of the publications list.
+     * Modifications to the returned list will not affect the collection.
+     */
     public List<Publication> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }

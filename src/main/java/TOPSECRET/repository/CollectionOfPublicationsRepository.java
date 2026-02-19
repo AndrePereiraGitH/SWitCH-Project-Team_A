@@ -7,12 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-// This repository is responsible for managing PrivateList operations.
-// Even though PrivateLists are conceptually associated with a user's Library,
-// they represent a distinct domain concept with their own business rules.
-// Creating a dedicated repository avoids overloading the LibraryRepository,
-// improves separation of concerns, and makes the system easier to maintain,
-// test, and extend in the future.
 
 /**
  * Repository for managing collections of publications.
@@ -27,10 +21,6 @@ public class CollectionOfPublicationsRepository {
     private List<CollectionOfPublications> _collectionOfPublicationsList = new ArrayList<>();;
 
     public CollectionOfPublicationsRepository() {}
-
-    // METHOD: Adds a publication to a user's collection.
-    // Returns true if the publication was added successfully,
-    // or false if any validation fails.
 
     /**
      * US018 - Adds a publication to a user's collection.
@@ -124,17 +114,17 @@ public class CollectionOfPublicationsRepository {
      * @return Created collection
      * @throws IllegalArgumentException if parameters are invalid or duplicate exists
      */
-/**
- * Creates a new private collection for a user if no duplicate exists.
- * US017 - A user cannot have two private collections with the same name and genre.
- */
+
+    /**
+     * Creates a new private collection for a user if no duplicate exists.
+     * US017 - A user cannot have two private collections with the same name and genre.
+    */
 
     public CollectionOfPublications createIfNotExists(
             User user,
             String name,
-            Genre genre,
-            boolean isPrivate
-    ) {
+            Genre genre)
+    {
         if (user == null || name == null || genre == null) {
             throw new IllegalArgumentException("Invalid arguments.");
         }
@@ -153,7 +143,7 @@ public class CollectionOfPublicationsRepository {
 
         // Create new collection (always private)
         CollectionOfPublications newCollection =
-                new CollectionOfPublications(name, genre, isPrivate, user);
+                new CollectionOfPublications(name, genre, user);
 
         _collectionOfPublicationsList.add(newCollection);
         return newCollection;
