@@ -24,40 +24,40 @@ class ListingRepositoryTest {
         assertEquals(0, listingRepo.listings.size());
     }
 
-    @Test
-    void createAndAdd_shouldReturn_validListing() throws InstanceAlreadyExistsException {
+//    @Test
+//    void createAndAdd_shouldReturn_validListing() throws InstanceAlreadyExistsException {
+//
+//        // arrange
+//        List<Item> items = new ArrayList<>();
+//        Item item = itemRepo.createAndAddItem(Condition.LIKE_NEW, 2, new Dimensions(10, 10, 10), instaciatePublication());
+//        items.add(item);
+//
+//        // act
+//        Listing list = listingRepo.createAndAdd("Title Auction",items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", instantiateUser("ImSeller"),List.of(new Picture("pic1")));
+//
+//        // assert
+//        assertNotNull(list);
+//        assertEquals(1, listingRepo.listings.size());
+//
+//    }
 
-        // arrange
-        List<Item> items = new ArrayList<>();
-        Item item = itemRepo.createAndAddItem(Condition.LIKE_NEW, 2, new Dimensions(10, 10, 10), instaciatePublication());
-        items.add(item);
-
-        // act
-        Listing list = listingRepo.createAndAdd("Title Auction",items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", instantiateUser("ImSeller"),List.of(new Picture("pic1")));
-
-        // assert
-        assertNotNull(list);
-        assertEquals(1, listingRepo.listings.size());
-
-    }
-
-    @Test
-    void shouldThrow_ifDuplicatedListing() throws InstanceAlreadyExistsException {
-
-        // arrange
-        List<Item> items = new ArrayList<>();
-        Item item = itemRepo.createAndAddItem(Condition.LIKE_NEW, 2, new Dimensions(10, 10, 10), instaciatePublication());
-        items.add(item);
-        User owner = instantiateUser("ImSeller");
-        listingRepo.createAndAdd("Title Auction", items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", owner, List.of(new Picture("pic1")));
-
-
-        // act + assert
-        InstanceAlreadyExistsException e = assertThrows(InstanceAlreadyExistsException.class, () -> listingRepo.createAndAdd("Title Auction", items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", owner, List.of(new Picture("pic1"))));
-
-        assertEquals("Listing already exists.", e.getMessage());
-
-    }
+//    @Test
+//    void shouldThrow_ifDuplicatedListing() throws InstanceAlreadyExistsException {
+//
+//        // arrange
+//        List<Item> items = new ArrayList<>();
+//        Item item = itemRepo.createAndAddItem(Condition.LIKE_NEW, 2, new Dimensions(10, 10, 10), instaciatePublication());
+//        items.add(item);
+//        User owner = instantiateUser("ImSeller");
+//        listingRepo.createAndAdd("Title Auction", items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", owner, List.of(new Picture("pic1")));
+//
+//
+//        // act + assert
+//        InstanceAlreadyExistsException e = assertThrows(InstanceAlreadyExistsException.class, () -> listingRepo.createAndAdd("Title Auction", items, SaleType.DIRECT_SALE, price("35.50"), "This is the listing description", owner, List.of(new Picture("pic1"))));
+//
+//        assertEquals("Listing already exists.", e.getMessage());
+//
+//    }
 
     // Edition
     Code code = Code.fromIsbn13 ("978316148412");

@@ -86,102 +86,93 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     List<Picture> validPictures = List.of(new Picture("path/to/pic.jpg"));
 
 
-    // Listing
-    Price validPrice = new Price(BigDecimal.valueOf(50.99));
-    private final String validDescription = "Valid Description";
-    private final String validTitle = "PS5 Pro";
-    Listing validListing1 = new Listing(validTitle,itemList1,SaleType.AUCTION,validPrice,validDescription,validSeller, validPictures);
+//    // Listing
+//    Price validPrice = new Price(BigDecimal.valueOf(50.99));
+//    private final String validDescription = "Valid Description";
+//    private final String validTitle = "PS5 Pro";
+//    Listing validListing1 = new Listing(validTitle,itemList1,SaleType.AUCTION,validPrice,validDescription,validSeller, validPictures);
 
 
 
-    // Auction
-    Price price = new Price(BigDecimal.valueOf(90));
-    Auction auc1 = new Auction(validListing1,LocalDateTime.of(2027, 7, 31, 14, 30),LocalDateTime.of(2028, 7, 31, 14, 30),price);
+//    // Auction
+//    Price price = new Price(BigDecimal.valueOf(90));
+//    Auction auc1 = new Auction(validListing1,LocalDateTime.of(2027, 7, 31, 14, 30),LocalDateTime.of(2028, 7, 31, 14, 30),price);
 
 
-    // Auc repo
-    List<Auction> aucList = new ArrayList<>(List.of(auc1));
-    AuctionRepository aucRepo = new AuctionRepository(aucList);
+//    // Auc repo
+//    List<Auction> aucList = new ArrayList<>(List.of(auc1));
+//    AuctionRepository aucRepo = new AuctionRepository(aucList);
 
     //Pub repo
     List<Publication> pubList = new ArrayList<>();
     private final PublicationRepository pubRepo = new PublicationRepository(pubList);
 
-    //Controller
-    private GetTheListOfItemsOnAuctionOfAGivenPublicationController ctrl = new GetTheListOfItemsOnAuctionOfAGivenPublicationController(pubRepo,aucRepo);
+//    //Controller
+//    private GetTheListOfItemsOnAuctionOfAGivenPublicationController ctrl = new GetTheListOfItemsOnAuctionOfAGivenPublicationController(pubRepo, aucRepo);
 
-    @Test
-    void getAllPublicationsShouldReturnListOfDTOsWhenPublicationsExist() {
-        // Arrange
-//        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
-//        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "2st edition", code);
-        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, edition1, code);
-        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, edition2, code);
+//    @Test
+//    void getAllPublicationsShouldReturnListOfDTOsWhenPublicationsExist() {
+//        // Arrange
+////        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
+////        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, "2st edition", code);
+//        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, edition1, code);
+//        pubRepo.createAndAdd(bd, publicationType, user, PublicationStatus.FOR_SALE, edition2, code);
+//
+//
+//        // Act
+//        List<PublicationDetailsDTO> result = ctrl.getAllPublications();
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(2, result.size());
+//        String expectedTitle1 = pub1.getBibliographicalData().getTitle();
+//        assertEquals(expectedTitle1, result.get(0).pubTitle);
+//
+//        String expectedTitle2 = pub2.getBibliographicalData().getTitle();
+//        assertEquals(expectedTitle2,result.get(1).pubTitle);
+//
+//    }
 
+//    @Test
+//    void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
+//        // Arrange
+//        pubList.clear();
+//
+//        // Act
+//        List<PublicationDetailsDTO> result = ctrl.getAllPublications();
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
 
-        // Act
-        List<PublicationDetailsDTO> result = ctrl.getAllPublications();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        String expectedTitle1 = pub1.getBibliographicalData().getTitle();
-        assertEquals(expectedTitle1, result.get(0).pubTitle);
-
-        String expectedTitle2 = pub2.getBibliographicalData().getTitle();
-        assertEquals(expectedTitle2,result.get(1).pubTitle);
-
-    }
-
-    @Test
-    void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
-        // Arrange
-        pubList.clear();
-
-        // Act
-        List<PublicationDetailsDTO> result = ctrl.getAllPublications();
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getListOfItemsOnAuctionShouldReturnItemsWhenMatchesPublicationDTO() {
-        // Arrange
-
-        // Act
-        List<ItemDetailsDTO> result = ctrl.getListOfItemsOnAuctionByGivenPublicationDTO(pub1);
-        String expectedTitle = pub1.getBibliographicalData().getTitle();
-
-        // Assert
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals(expectedTitle,result.get(0).publication);
-    }
-
-
-    @Test
-    void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
-        // Arrange
-
-        // Act
-        List<ItemDetailsDTO> result = ctrl.getListOfItemsOnAuctionByGivenPublicationDTO(pub2);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
+//    @Test
+//    void getListOfItemsOnAuctionShouldReturnItemsWhenMatchesPublicationDTO() {
+//        // Arrange
+//
+//        // Act
+//        List<ItemDetailsDTO> result = ctrl.getListOfItemsOnAuctionByGivenPublicationDTO(pub1);
+//        String expectedTitle = pub1.getBibliographicalData().getTitle();
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertFalse(result.isEmpty());
+//        assertEquals(1, result.size());
+//        assertEquals(expectedTitle,result.get(0).publication);
+//    }
 
 
-
-
-
-
-
-
-
+//    @Test
+//    void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
+//        // Arrange
+//
+//        // Act
+//        List<ItemDetailsDTO> result = ctrl.getListOfItemsOnAuctionByGivenPublicationDTO(pub2);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
 
 
 

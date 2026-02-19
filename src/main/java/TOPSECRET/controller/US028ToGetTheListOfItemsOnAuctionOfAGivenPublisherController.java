@@ -83,20 +83,20 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
      * @param publisherVatNumber VAT number of the selected publisher
      * @return list of auction items as DTOs (empty list if publisher not found)
      */
-    public List<AuctionDTO_US028> getListOfItemsOnAuction(String publisherVatNumber) {
-
-        // Find the publisher using the provided VAT number
-        Publisher publisher =
-                publisherRepo.findByVatNumber(publisherVatNumber);
-
-        // If the publisher does not exist, return an empty list
-        if (publisher == null) return List.of();
-
-        // Retrieve all auction items associated with the given publisher
-        List<Item> items = auctionRepo.getItemsOnAuctionGivenPublisher(publisher);
-
-        // Convert domain items into DTOs suitable for the UI
-        return auctionMapper.toDTO(items);
-
-    }
+//    public List<AuctionDTO_US028> getListOfItemsOnAuction(String publisherVatNumber) {
+//
+//        // Find the publisher using the provided VAT number
+//        Publisher publisher =
+//                publisherRepo.findByVatNumber(publisherVatNumber);
+//
+//        // If the publisher does not exist, return an empty list
+//        if (publisher == null) return List.of();
+//
+//        // Retrieve all auction items associated with the given publisher
+//        List<Item> items = auctionRepo.getItemsOnAuctionGivenPublisher(publisher);
+//
+//        // Convert domain items into DTOs suitable for the UI
+//        return auctionMapper.toDTO(items);
+//
+//    }
 }

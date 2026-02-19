@@ -33,12 +33,12 @@ public class GetTheListOfItemsOnAuctionOfAGivenPublicationController {
     // In this part, a dedicated mapper was not used. US024ItemDTO implements the DTO
     // conversion logic and is therefore used directly as a mapper.
 
-    public List<ItemDetailsDTO> getListOfItemsOnAuctionByGivenPublicationDTO(Publication publication){
-
-        List<Item> listOfItemsOnAuctionByPublication = _aucRepo.getListOfItemsOnAuctionByGivenPublication(publication);
-
-        List<ItemDetailsDTO> listOfAuctionsDTO = ItemDetailsDTO.toDTOs(listOfItemsOnAuctionByPublication);
-
-        return listOfAuctionsDTO;
-    }
+//    public List<ItemDetailsDTO> getListOfItemsOnAuctionByGivenPublicationDTO(Publication publication){
+//
+//        List<Item> listOfItemsOnAuctionByPublication = _aucRepo.getListOfItemsOnAuctionByGivenPublication(publication);
+//
+//        List<ItemDetailsDTO> listOfAuctionsDTO = ItemDetailsDTO.toDTOs(listOfItemsOnAuctionByPublication);
+//
+//        return listOfAuctionsDTO;
+//    }
 }

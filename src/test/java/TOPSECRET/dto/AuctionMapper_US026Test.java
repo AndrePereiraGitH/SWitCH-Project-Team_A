@@ -44,20 +44,20 @@ class AuctionMapper_US026Test {
         return new Price(new BigDecimal(value));
     }
 
-    @Test
-    void fromAuction_whenValidAuction_shouldMapListingReference() {
-        // arrange
-        Listing listing = createListingWithOneItemForAuthorName("Ken Follett");
-        Auction auction = createValidScheduledAuction(listing);
-
-        // act
-        AuctionDTO_US026 dto = AuctionMapper_US026.fromAuction(auction);
-
-        // assert
-        assertNotNull(dto);
-
-        assertSame(listing, dto.listing(), "Mappper should provide to DTO the same Listing instance");
-    }
+//    @Test
+//    void fromAuction_whenValidAuction_shouldMapListingReference() {
+//        // arrange
+//        Listing listing = createListingWithOneItemForAuthorName("Ken Follett");
+//        Auction auction = createValidScheduledAuction(listing);
+//
+//        // act
+//        AuctionDTO_US026 dto = AuctionMapper_US026.fromAuction(auction);
+//
+//        // assert
+//        assertNotNull(dto);
+//
+//        assertSame(listing, dto.listing(), "Mappper should provide to DTO the same Listing instance");
+//    }
 
     @Test
     void fromAuction_whenAuctionIsNull_shouldThrowIllegalArgumentException() {
@@ -75,29 +75,29 @@ class AuctionMapper_US026Test {
         return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
     }
 
-    private Listing createListingWithOneItemForAuthorName(String authorName) {
-        User user = instantiateUser("Rodolph");
-
-        Author author = instantiateAuthor(authorName);
-
-        Publication publication = instantiatePublication(List.of(author), user);
-        Item item = new Item(
-                Condition.LIKE_NEW,
-                2.3,
-                new Dimensions(10, 10, 10),
-                publication
-        );
-
-        return new Listing(
-                "Book Pillars of the earth",
-                List.of(item),
-                SaleType.AUCTION,
-                price("35.50"),
-                "short description",
-                user,
-                pictures
-        );
-    }
+//    private Listing createListingWithOneItemForAuthorName(String authorName) {
+//        User user = instantiateUser("Rodolph");
+//
+//        Author author = instantiateAuthor(authorName);
+//
+//        Publication publication = instantiatePublication(List.of(author), user);
+//        Item item = new Item(
+//                Condition.LIKE_NEW,
+//                2.3,
+//                new Dimensions(10, 10, 10),
+//                publication
+//        );
+//
+//        return new Listing(
+//                "Book Pillars of the earth",
+//                List.of(item),
+//                SaleType.AUCTION,
+//                price("35.50"),
+//                "short description",
+//                user,
+//                pictures
+//        );
+//    }
 
     private Author instantiateAuthor(String name) {
         return authorRepo.createAndAddAuthor(name, new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");

@@ -36,16 +36,16 @@ public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
     }
 
 
-    public List<AuctionDTO_US026> getListOfItemsOnAuctionByAuthor(AuthorDTO_US026 author) {
-
-        List<Auction> auctions = auctionRepo.getListOfItemsOnAuctionGivenAuthor(author);
-        List<AuctionDTO_US026> auctionsListDto = new ArrayList<>();
-
-        for (Auction a : auctions) {
-            auctionsListDto.add(AuctionMapper_US026.fromAuction(a));
-        }
-
-        return auctionsListDto;
-    }
+//    public List<AuctionDTO_US026> getListOfItemsOnAuctionByAuthor(AuthorDTO_US026 author) {
+//
+//        List<Auction> auctions = auctionRepo.getListOfItemsOnAuctionGivenAuthor(author);
+//        List<AuctionDTO_US026> auctionsListDto = new ArrayList<>();
+//
+//        for (Auction a : auctions) {
+//            auctionsListDto.add(AuctionMapper_US026.fromAuction(a));
+//        }
+//
+//        return auctionsListDto;
+//    }
 
 }

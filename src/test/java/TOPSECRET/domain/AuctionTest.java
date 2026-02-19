@@ -797,9 +797,9 @@ class AuctionTest {
 
     private static Listing instantiateListing() {
         List<Picture> pictures = instantiatePictures();
-        Item bookItem = instantiateItem(instantiateBibliographicalData(), new Dimensions(12, 10, 2));
+        PublicationSample bookItem = instantiateItem(instantiateBibliographicalData());
         Price price = new Price(new BigDecimal("35.00"));
-        final List<Item> items = new ArrayList<>(List.of(bookItem));
+        final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
                 "This is our first listing",
                 items,
@@ -884,14 +884,23 @@ class AuctionTest {
         );
     }
 
-    private static Item instantiateItem(BibliographicalData bd, Dimensions dimensions) {
-        Publication publication = createValidPublication(bd);
+    private static PublicationSample instantiateItem(BibliographicalData bd) {
 
-        return new Item(
-                Condition.LIKE_NEW,
-                1.2,
-                dimensions,
-                publication
+        return new PublicationSample(
+                bd,
+                instantiateUser("Johny123"),
+                PublicationStatus.FOR_SALE,
+                instantiateEdition(),
+                Condition.LIKE_NEW
         );
+    }
+
+    private static Edition instantiateEdition(){
+        Code code = Code.fromIsbn13 ("978316148412");
+        Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        return new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     }
 }

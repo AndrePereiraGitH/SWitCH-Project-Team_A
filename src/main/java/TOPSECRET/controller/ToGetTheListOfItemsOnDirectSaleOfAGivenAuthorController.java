@@ -33,7 +33,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
     }
 
     // Returns the list of items on direct sale by a specific author
-    public List<DirectSaleDTO_US025> getListOfItemsOnDirectSale(Author author) {
-        return dsmapper.toDTO(directSaleRepository.getListOfItemsOnDirectSale(author));
-    }
+//    public List<DirectSaleDTO_US025> getListOfItemsOnDirectSale(Author author) {
+//        return dsmapper.toDTO(directSaleRepository.getListOfItemsOnDirectSale(author));
+//    }
 }

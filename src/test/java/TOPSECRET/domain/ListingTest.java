@@ -55,15 +55,8 @@ class ListingTest {
     //Item
     // --- minimal objects needed for Publication ---
 
-    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"
-    );
-
     User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
-    PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
 
-    Code code1 = Code.fromIsbn13("9781234567890");
-    Code code2 = Code.fromIsbn13("9781234567891");
-    Code code3 = Code.fromIsbn13("9781234567892");
 
     // Edition
     Code code = Code.fromIsbn13 ("978316148412");
@@ -74,25 +67,17 @@ class ListingTest {
     Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     Edition edition3= new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-    Item validItem1 = new Item(Condition.LIKE_NEW, 1.2, dimensions,
-//            new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1));
-            new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1));
+    //PublicationSample
+    PublicationSample validItem1 = new PublicationSample(bibliographicalData,user,PublicationStatus.FOR_SALE,edition1,Condition.LIKE_NEW);
 
-    Item validItem2 = new Item(Condition.POOR, 1.2, dimensions,
-//            new Publication(bibliographicalData, publicationType, user, publicationStatus, "2nd edition", code2));
-            new Publication(bibliographicalData, publicationType, user, publicationStatus, edition2, code2));
+    PublicationSample validItem2 = new PublicationSample(bibliographicalData,user,PublicationStatus.FOR_SALE,edition2,Condition.LIKE_NEW);
 
-    Item validItem3 = new Item(Condition.POOR, 1.2, dimensions,
-//            new Publication(bibliographicalData, publicationType, user, publicationStatus, "3rd edition", code3));
-            new Publication(bibliographicalData, publicationType, user, publicationStatus, edition3, code3));
+    PublicationSample validItem3 = new PublicationSample(bibliographicalData,user,PublicationStatus.FOR_SALE,edition3,Condition.LIKE_NEW);
 
 
+    private final List<PublicationSample> oneItemList = List.of(validItem1);
 
-    private final List<Item> oneItemList =
-            new ArrayList<>(List.of(validItem1));
-
-    private final List<Item> severalItemList =
-            new ArrayList<>(List.of(validItem1, validItem2, validItem3));
+    private final List<PublicationSample> severalItemList = List.of(validItem1, validItem2, validItem3);
 
 
     // Happy path
@@ -251,7 +236,7 @@ class ListingTest {
     @Test
     void shouldThrowExceptionWhenItemIsEmpty(){
         //Arrange
-        final List<Item> emptyItemList =
+        final List<PublicationSample> emptyItemList =
                 new ArrayList<>(List.of());
 
 
@@ -280,7 +265,7 @@ class ListingTest {
 
         //Act
         Listing listing = new Listing(validTitle,severalItemList,SaleType.DIRECT_SALE,validPrice,validDescription,validSeller, validPictures);
-        List<Item> items = listing.getItems();
+        List<PublicationSample> items = listing.getItems();
 
         //Assert
         assertEquals(severalItemList, items);

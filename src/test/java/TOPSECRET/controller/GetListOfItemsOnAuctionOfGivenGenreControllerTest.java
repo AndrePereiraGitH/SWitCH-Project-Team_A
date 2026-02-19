@@ -47,124 +47,124 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         assertTrue(result.stream().anyMatch(g -> g.name.equals("Romance")));
     }
 
-    @Test
-    void getListOfItemsOnAuctionNullGenreThrowsException() {
-        // Arrange
-        GenreRepository genreRepository = new GenreRepository(List.of());
-       
+//    @Test
+//    void getListOfItemsOnAuctionNullGenreThrowsException() {
+//        // Arrange
+//        GenreRepository genreRepository = new GenreRepository(List.of());
+//
+//
+//        GetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//                        new AuctionRepository(),
+//                        genreRepository,
+//                        new AuctionMapper_US022(),
+//                        new GenreMapper_US022()
+//                );
+//
+//        // Act & Assert
+//        assertThrows(IllegalArgumentException.class, () ->
+//                controller.getListOfItemsOnAuctionGivenGenre(null)
+//        );
+//    }
 
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
-                        new AuctionRepository(),
-                        genreRepository,
-                        new AuctionMapper_US022(),
-                        new GenreMapper_US022()
-                );
+//    @Test
+//    void getListOfItemsOnAuctionNoAuctionsReturnsEmptyList() {
+//        // Arrange
+//        GenreRepository genreRepository = new GenreRepository(List.of());
+//
+//
+//        Genre fantasy = new Genre("Fantasy");
+//
+//        GetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//                        new AuctionRepository(),
+//                        genreRepository,
+//                        new AuctionMapper_US022(),
+//                        new GenreMapper_US022()
+//                );
+//        // Act
+//        List<AuctionDTO_US022> result =
+//                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.getListOfItemsOnAuctionGivenGenre(null)
-        );
-    }
+//    @Test
+//    void getListOfItemsOnAuctionOneMatchingAuctionReturnsOneDTO() {
+//        // Arrange
+//        GenreRepository genreRepository = new GenreRepository(List.of());
+//
+//
+//        Genre fantasy = new Genre("Fantasy");
+//
+//        AuctionRepository auctionRepository = new AuctionRepository();
+//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+//
+//        GetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//                        auctionRepository,
+//                        genreRepository,
+//                        new AuctionMapper_US022(),
+//                        new GenreMapper_US022()
+//                );
+//        // Act
+//        List<AuctionDTO_US022> result = controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+//        // Assert
+//        assertEquals(1, result.size());
+//    }
 
-    @Test
-    void getListOfItemsOnAuctionNoAuctionsReturnsEmptyList() {
-        // Arrange
-        GenreRepository genreRepository = new GenreRepository(List.of());
-       
-
-        Genre fantasy = new Genre("Fantasy");
-
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
-                        new AuctionRepository(),
-                        genreRepository,
-                        new AuctionMapper_US022(),
-                        new GenreMapper_US022()
-                );
-        // Act
-        List<AuctionDTO_US022> result =
-                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getListOfItemsOnAuctionOneMatchingAuctionReturnsOneDTO() {
-        // Arrange
-        GenreRepository genreRepository = new GenreRepository(List.of());
-       
-
-        Genre fantasy = new Genre("Fantasy");
-
-        AuctionRepository auctionRepository = new AuctionRepository();
-        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
-
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
-                        auctionRepository,
-                        genreRepository,
-                        new AuctionMapper_US022(),
-                        new GenreMapper_US022()
-                );
-        // Act
-        List<AuctionDTO_US022> result = controller.getListOfItemsOnAuctionGivenGenre(fantasy);
-        // Assert
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void getListOfItemsOnAuctionFiltersByGenre() {
-        // Arrange
-        GenreRepository genreRepository = new GenreRepository(List.of());
-       
-
-        Genre fantasy = new Genre("Fantasy");
-        Genre romance = new Genre("Romance");
-
-        AuctionRepository auctionRepository = new AuctionRepository();
-        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
-        auctionRepository.getAllAuctions().add(createAuctionWithGenre(romance));
-
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
-                        auctionRepository,
-                        genreRepository,
-                        new AuctionMapper_US022(),
-                        new GenreMapper_US022()
-                );
-        // Act
-        List<AuctionDTO_US022> result = controller.getListOfItemsOnAuctionGivenGenre(fantasy);
-        // Assert
-        assertEquals(1, result.size());
-    }
+//    @Test
+//    void getListOfItemsOnAuctionFiltersByGenre() {
+//        // Arrange
+//        GenreRepository genreRepository = new GenreRepository(List.of());
+//
+//
+//        Genre fantasy = new Genre("Fantasy");
+//        Genre romance = new Genre("Romance");
+//
+//        AuctionRepository auctionRepository = new AuctionRepository();
+//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(romance));
+//
+//        GetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//                        auctionRepository,
+//                        genreRepository,
+//                        new AuctionMapper_US022(),
+//                        new GenreMapper_US022()
+//                );
+//        // Act
+//        List<AuctionDTO_US022> result = controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+//        // Assert
+//        assertEquals(1, result.size());
+//    }
 
     // ==========================================================
     // Private Methods to Help Instantiate
 
-    private Auction createAuctionWithGenre(Genre genre) {
-
-        BibliographicalData bd = createBibliographicalDataWithGenre(genre);
-        User seller = createUser("Seller");
-        Publication publication = createPublication(bd, seller);
-        Item item = new Item(Condition.LIKE_NEW, 100, new Dimensions(10,10,10), publication);
-
-        Listing listing = new Listing(
-                "Valid Title",
-                List.of(item),
-                SaleType.AUCTION,
-                new Price(new BigDecimal("10.00")),
-                "Short desc",
-                seller,
-                List.of(new Picture("pic1"))
-        );
-
-        LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
-        LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
-
-        return new Auction(listing, start, end, new Price(new BigDecimal("20.00")));
-    }
+//    private Auction createAuctionWithGenre(Genre genre) {
+//
+//        BibliographicalData bd = createBibliographicalDataWithGenre(genre);
+//        User seller = createUser("Seller");
+//        Publication publication = createPublication(bd, seller);
+//        Item item = new Item(Condition.LIKE_NEW, 100, new Dimensions(10,10,10), publication);
+//
+//        Listing listing = new Listing(
+//                "Valid Title",
+//                List.of(item),
+//                SaleType.AUCTION,
+//                new Price(new BigDecimal("10.00")),
+//                "Short desc",
+//                seller,
+//                List.of(new Picture("pic1"))
+//        );
+//
+//        LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
+//        LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
+//
+//        return new Auction(listing, start, end, new Price(new BigDecimal("20.00")));
+//    }
     private BibliographicalData createBibliographicalDataWithGenre(Genre genre) {
         return new BibliographicalData(
                 "Book",

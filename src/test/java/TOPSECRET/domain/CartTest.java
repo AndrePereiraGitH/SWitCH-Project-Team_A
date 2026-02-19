@@ -99,15 +99,25 @@ class CartTest {
                 code
         );
 
-        Item item = new Item(
-                Condition.LIKE_NEW,
-                1.2,
-                dimensions,
-                publication
-        );
+
+        // Edition
+        Edition edition1= new Edition("1st",
+                code,
+                physicalAttributes,
+                pubType, publisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+
+        //PublicationSample
+        PublicationSample item = new PublicationSample(
+                bibliographicalData,
+                seller,
+                PublicationStatus.FOR_SALE,
+                edition1,
+                Condition.LIKE_NEW);
 
 
-        final List<Item> Item = new ArrayList<>(List.of(item));
+        final List<PublicationSample> Item = new ArrayList<>(List.of(item));
 
         listing1 = new Listing(
                 "Listing Title 1",

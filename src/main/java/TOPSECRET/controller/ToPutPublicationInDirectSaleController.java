@@ -59,14 +59,14 @@ public class ToPutPublicationInDirectSaleController {
 //        return LocalDateTime.now();
 //    }
 
-    public boolean createAndAddDirectSale(List<Listing> listings, User buyer, boolean isFinished) {
-
-        if (listings == null)
-            throw new IllegalArgumentException("List of Listings cannot be null");
-
-        if (buyer == null)
-            throw new IllegalArgumentException("Buyer cannot be null");
-
-        return directSaleRepo.createAndAddDirectSale(listings, buyer, isFinished);
-    }
+//    public boolean createAndAddDirectSale(List<Listing> listings, User buyer, boolean isFinished) {
+//
+//        if (listings == null)
+//            throw new IllegalArgumentException("List of Listings cannot be null");
+//
+//        if (buyer == null)
+//            throw new IllegalArgumentException("Buyer cannot be null");
+//
+//        return directSaleRepo.createAndAddDirectSale(listings, buyer, isFinished);
+//    }
 }

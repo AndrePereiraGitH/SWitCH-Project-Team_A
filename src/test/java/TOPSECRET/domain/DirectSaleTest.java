@@ -115,22 +115,46 @@ class DirectSaleTest {
         );
     }
 
-    private static Item createItem1(){
-        return new Item(
-                Condition.LIKE_NEW,
-                230.30,
-                new Dimensions(123, 242, 124),
-                createPublication1()
-        );
+    private static PublicationSample createItem1(){
+        // Edition
+        Edition edition1= new Edition("1st",
+                createCode(),
+                createPhysicalAttributes(),
+                createPublicationType(),
+                createPublisher(),
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+
+        //PublicationSample
+        PublicationSample item = new PublicationSample(
+                createBibliographicalData(),
+                createSeller(),
+                PublicationStatus.FOR_SALE,
+                edition1,
+                Condition.LIKE_NEW);
+
+        return item;
     }
 
-    private static Item createItem2(){
-        return new Item(
-                Condition.NEW,
-                230.30,
-                new Dimensions(123, 242, 124),
-                createPublication2()
-        );
+    private static PublicationSample createItem2(){
+        // Edition
+        Edition edition2= new Edition("2st",
+                createCode(),
+                createPhysicalAttributes(),
+                createPublicationType(),
+                createPublisher(),
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+
+        //PublicationSample
+        PublicationSample item2 = new PublicationSample(
+                createBibliographicalData(),
+                createSeller(),
+                PublicationStatus.FOR_SALE,
+                edition2,
+                Condition.LIKE_NEW);
+
+        return item2;
     }
 
 //    private static User createUser(){

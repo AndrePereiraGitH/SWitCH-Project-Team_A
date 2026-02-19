@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -364,16 +363,21 @@ class TransactionTest {
         );
     }
 
-    private static Item createValidItem(){
+    private static PublicationSample createValidItem(){
         User seller = createValidUser("Seller");
         BibliographicalData bd = createValidBibliographicalData();
-        Publication publication = createValidPublication(bd, seller);
+        Code code = Code.fromIsbn13 ("978316148412");
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(new Dimensions(45,15,20), 400.0, 250);
+        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-        return new Item(
-                Condition.LIKE_NEW,
-                250.30,
-                new Dimensions(102, 120, 102),
-                publication
+        return new PublicationSample(
+                bd,
+                seller,
+                PublicationStatus.FOR_SALE,
+                edition1,
+                Condition.LIKE_NEW
         );
     }
 

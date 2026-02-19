@@ -21,39 +21,39 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
         }
     }
 
-    public List<Item> getItemsOnDirectSaleByPublisher(Publisher publisher) {
-        List<Item> result = new ArrayList<>();
-
-        if (publisher == null) {
-            return result;
-        }
-
-        List<DirectSale> directSales = _directSaleRepository.getListOfItemsOnDirectSale(publisher);
+//    public List<Item> getItemsOnDirectSaleByPublisher(Publisher publisher) {
+//        List<Item> result = new ArrayList<>();
+//
+//        if (publisher == null) {
+//            return result;
+//        }
+//
+//        List<DirectSale> directSales = _directSaleRepository.getListOfItemsOnDirectSale(publisher);
+////        for (DirectSale directSale : directSales) {
+////            for (Item item : directSale.getListing().getItems()) {
+//////                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
+////                Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
+////                if (publisher.equals(itemPublisher)) {
+////                    // item is on direct sale and has the target publisher, add it to the result!
+////                    result.add(item);
+////                }
+////            }
+////        }
+//
 //        for (DirectSale directSale : directSales) {
-//            for (Item item : directSale.getListing().getItems()) {
+//            for (Listing listing : directSale.getListings()) {
+//                for (Item item : listing.getItems()) {
 ////                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
-//                Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
-//                if (publisher.equals(itemPublisher)) {
-//                    // item is on direct sale and has the target publisher, add it to the result!
-//                    result.add(item);
+//                    Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
+//                    if (publisher.equals(itemPublisher)) {
+//                        // item is on direct sale and has the target publisher, add it to the result!
+//                        result.add(item);
+//                    }
 //                }
 //            }
 //        }
-
-        for (DirectSale directSale : directSales) {
-            for (Listing listing : directSale.getListings()) {
-                for (Item item : listing.getItems()) {
-//                Publisher itemPublisher = item.getPublication().getBibliographicalData().getPublisher();
-                    Publisher itemPublisher = item.getPublication().getEdition().getPublisher();
-                    if (publisher.equals(itemPublisher)) {
-                        // item is on direct sale and has the target publisher, add it to the result!
-                        result.add(item);
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
+//
+//        return result;
+//    }
 
 }

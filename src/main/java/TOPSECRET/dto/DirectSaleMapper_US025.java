@@ -70,23 +70,23 @@ public class DirectSaleMapper_US025 {
         return new DirectSaleDTO_US025(title, authors, price, listingTitle, seller);
     }
 
-    // Creates a list of DTOs for all items in all direct sales
-    public List<DirectSaleDTO_US025> toDTO(List<DirectSale> directSales) {
-        List<DirectSaleDTO_US025> dtos = new ArrayList<>();
-
+//    // Creates a list of DTOs for all items in all direct sales
+//    public List<DirectSaleDTO_US025> toDTO(List<DirectSale> directSales) {
+//        List<DirectSaleDTO_US025> dtos = new ArrayList<>();
+//
+////        for (DirectSale ds : directSales) {
+////            for (Item item : ds.getListings().getItems()) {
+////                dtos.add(mapItemToDTO(item, ds));
+////            }
+////        }
 //        for (DirectSale ds : directSales) {
-//            for (Item item : ds.getListings().getItems()) {
-//                dtos.add(mapItemToDTO(item, ds));
+//            for (Listing listing : ds.getListings()) {
+//                for (Item item : listing.getItems()) {
+//                    dtos.add(mapItemToDTO(item, ds));
+//                }
 //            }
 //        }
-        for (DirectSale ds : directSales) {
-            for (Listing listing : ds.getListings()) {
-                for (Item item : listing.getItems()) {
-                    dtos.add(mapItemToDTO(item, ds));
-                }
-            }
-        }
-
-        return dtos;
-    }
+//
+//        return dtos;
+//    }
 }

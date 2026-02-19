@@ -39,15 +39,15 @@ public class GetListOfItemsOnAuctionOfGivenGenreController {
         List<Genre> genres = genreRepository.getAllGenres();
         return genreMapper.toDTO(genres);
     }
-
-    public List<AuctionDTO_US022> getListOfItemsOnAuctionGivenGenre(Genre genre) {
-
-        if (genre == null) {
-            throw new IllegalArgumentException("genre cannot be null");
-        }
-
-        List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(genre);
-
-        return auctionMapper.toDTO(auctions);
-    }
+//
+//    public List<AuctionDTO_US022> getListOfItemsOnAuctionGivenGenre(Genre genre) {
+//
+//        if (genre == null) {
+//            throw new IllegalArgumentException("genre cannot be null");
+//        }
+//
+//        List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(genre);
+//
+//        return auctionMapper.toDTO(auctions);
+//    }
 }

@@ -46,10 +46,10 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * @param selectedGenre genre selected by the buyer
      * @return list of items matching the given genre
      */
-    public List<Item> getListOfItemsOnDirectSaleOfAGivenGenre(Genre selectedGenre) {
-        if (selectedGenre == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
-        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedGenre);
-    }
+//    public List<Item> getListOfItemsOnDirectSaleOfAGivenGenre(Genre selectedGenre) {
+//        if (selectedGenre == null) {
+//            throw new IllegalArgumentException("Genre cannot be null");
+//        }
+//        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedGenre);
+//    }
   }

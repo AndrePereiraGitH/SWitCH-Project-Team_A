@@ -1,22 +1,21 @@
 package TOPSECRET.domain;
-
 import TOPSECRET.domain.Enum.SaleType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 
 public class Listing {
 
     private final String _listingTitle;
-    private final List<Item> _items; //MUDAR ISTO
+    private final List<PublicationSample> _items; //MUDAR ISTO
     private final SaleType _saleType;
     private final Price _price;
     private final String _shortDescription;
     private final User _seller;
     private List<Picture> _pictures;
 
-    public Listing(String listingTitle, List<Item> items, SaleType saleType,
+    public Listing(String listingTitle, List<PublicationSample> items, SaleType saleType,
                    Price price, String shortDescription, User seller, List<Picture> pictures) {
 
         if (listingTitle == null || listingTitle.length() < 5) {
@@ -47,7 +46,7 @@ public class Listing {
 
 
         _listingTitle = listingTitle;
-        _items = List.copyOf(items);  //MUDAR
+        _items = List.copyOf(items);
         _saleType = saleType;
         _price = price;
         _shortDescription = shortDescription;
@@ -56,12 +55,12 @@ public class Listing {
     }
 
 
-    public List<Item> getItems() {
-        List<Item> copyItems = new ArrayList<>(_items);
+    public List<PublicationSample> getItems() {
+        List<PublicationSample> copyItems = new ArrayList<>(_items);
         return copyItems;
     }
 
-    public Item getMainItem() {
+    public PublicationSample getMainItem() {
         return _items.get(0);
     }
 
@@ -77,30 +76,30 @@ public class Listing {
         return _seller;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Listing other = (Listing) o;
-
-        if (!Objects.equals(this._seller, other._seller)) return false;
-
-        return samePublications(this._items, other._items);
-    }
-
-    private boolean samePublications(List<Item> a, List<Item> b) {
-        if (a == null || b == null) return a == b;
-        if (a.size() != b.size()) return false;
-
-        // sorted
-        for (int i = 0; i < a.size(); i++) {
-            Publication pa = a.get(i).getPublication();
-            Publication pb = b.get(i).getPublication();
-            if (!Objects.equals(pa, pb)) return false;
-        }
-        return true;
-
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Listing other = (Listing) o;
+//
+//        if (!Objects.equals(this._seller, other._seller)) return false;
+//
+//        return samePublications(this._items, other._items);
+//    }
+//
+//    private boolean samePublications(List<PublicationSample> a, List<PublicationSample> b) {
+//        if (a == null || b == null) return a == b;
+//        if (a.size() != b.size()) return false;
+//
+//        // sorted
+//        for (int i = 0; i < a.size(); i++) {
+//            Publication pa = a.get(i).getPublication();
+//            Publication pb = b.get(i).getPublication();
+//            if (!Objects.equals(pa, pb)) return false;
+//        }
+//        return true;
+//
+//    }
 
 }
