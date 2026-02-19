@@ -94,8 +94,6 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c1 = new CollectionOfPublications(
                 "Collection1",
                 new Genre("Action"),
-//                privateLibrary,
-                false,
                 userName
         );
         c1.set_isPrivate(false);  // Torna pública para US020
@@ -103,8 +101,6 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c2 = new CollectionOfPublications(
                 "Collectioion2",
                 new Genre("Action"),
-//                privateLibrary,
-                true,
                 userName
         );
         // c2 fica privada (default)
@@ -112,8 +108,6 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c3 = new CollectionOfPublications(
                 "Collection3",
                 new Genre("Sci-fi"),
-//                privateLibrary,
-                false,
                 userName
         );
         c3.set_isPrivate(false);  // Torna pública
@@ -121,11 +115,18 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c4 = new CollectionOfPublications(
                 "Collection4",
                 new Genre("Action"),
-//                privateLibrary,
-                false,
                 userName
         );
         c4.set_isPrivate(false);  // Torna pública
+
+//        // Adiciona user como owner das coleções
+//        userName.addCollection(c1);
+//        userName.addCollection(c2);
+//        userName.addCollection(c3);
+//        userName.addCollection(c4);
+//
+//        // Adiciona publicação às bibliotecas primeiro
+//        userName.getLibrary().addPublication(publicationSample);
 
         collectionRepo.addPublicationToCollection(userName, privateLibrary, c1, publicationSample);
         collectionRepo.addPublicationToCollection(userName, privateLibrary, c2,publicationSample);

@@ -117,7 +117,6 @@ class CollectionOfPublicationsRepositoryTest {
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
-                true,
                 createValidUser()
         );
     }
@@ -135,7 +134,7 @@ class CollectionOfPublicationsRepositoryTest {
         Genre genre = new Genre("Fiction");
 
         CollectionOfPublications result =
-                repository.createIfNotExists(user, "Favorites", genre, true);
+                repository.createIfNotExists(user, "Favorites", genre);
 
         assertNotNull(result);
         assertEquals("Favorites", result.getCollectionName());
@@ -151,10 +150,10 @@ class CollectionOfPublicationsRepositoryTest {
         User user = createValidUser();
         Genre genre = new Genre("Fiction");
 
-        repository.createIfNotExists(user, "Favorites", genre, true);
+        repository.createIfNotExists(user, "Favorites", genre);
 
         assertThrows(IllegalArgumentException.class, () ->
-                repository.createIfNotExists(user, "Favorites", genre, true)
+                repository.createIfNotExists(user, "Favorites", genre)
         );
     }
 
@@ -163,10 +162,10 @@ class CollectionOfPublicationsRepositoryTest {
 
         User user = createValidUser();
 
-        repository.createIfNotExists(user, "Favorites", new Genre("Fiction"), true);
+        repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
 
         CollectionOfPublications result =
-                repository.createIfNotExists(user, "Favorites", new Genre("History"), true);
+                repository.createIfNotExists(user, "Favorites", new Genre("History"));
 
         assertNotNull(result);
     }
@@ -194,8 +193,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublications collection = repository.createIfNotExists(
                 owner,
                 "My Funny Collection",
-                new Genre("Fiction"),
-                true
+                new Genre("Fiction")
         );
 
         repository.addCollectionToRepo(collection);

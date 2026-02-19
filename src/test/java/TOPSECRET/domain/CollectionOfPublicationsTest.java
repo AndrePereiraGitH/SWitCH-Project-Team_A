@@ -103,7 +103,6 @@ class CollectionOfPublicationsTest {
         return new CollectionOfPublications(
                 "Favorites",
                 createValidGenre(),
-                true,
                 createValidUser()
         );
     }
@@ -162,7 +161,7 @@ class CollectionOfPublicationsTest {
         User user = createValidUser();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications(null, genre, true, user);
+            new CollectionOfPublications(null, genre, user);
         });
     }
 
@@ -174,7 +173,7 @@ class CollectionOfPublicationsTest {
         User user = createValidUser();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("   ", genre, true ,user);
+            new CollectionOfPublications("   ", genre, user);
         });
     }
 
@@ -185,21 +184,20 @@ class CollectionOfPublicationsTest {
         User user = createValidUser();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", null, true,  user);
+            new CollectionOfPublications("Favorites", null,  user);
         });
     }
 
-    // Verifies exception when library is null
-//    @Test
-//    void shouldThrowExceptionWhenLibraryIsNull()
-//    {
-//        Genre genre = createValidGenre();
-//        User user = createValidUser();
-//
-//        assertThrows(IllegalArgumentException.class, () -> {
-//            new CollectionOfPublications("Favorites", genre, true, user);
-//        });
-//    }
+     // Verifies exception when library is null
+    @Test
+    void shouldThrowExceptionWhenLibraryIsNull()
+    {
+        Genre genre = createValidGenre();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            new CollectionOfPublications("Favorites", genre, null);
+        });
+    }
 
     // Verifies exception when User is null
     @Test
@@ -208,7 +206,7 @@ class CollectionOfPublicationsTest {
         Genre genre = createValidGenre();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", genre, true, null);
+            new CollectionOfPublications("Favorites", genre, null);
         });
     }
 

@@ -100,7 +100,6 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
-                false,
                 user
         );
     }

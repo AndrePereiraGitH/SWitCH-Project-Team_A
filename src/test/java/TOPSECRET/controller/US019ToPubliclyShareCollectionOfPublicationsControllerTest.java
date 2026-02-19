@@ -71,7 +71,6 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         return new CollectionOfPublications(
                 collectionName,
                 new Genre("Fiction"),
-                true,
                 user
         );
     }
