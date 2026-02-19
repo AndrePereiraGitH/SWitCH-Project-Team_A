@@ -106,7 +106,7 @@ public Publication(BibliographicalData bibliographicalData, PublicationType publ
     // US023 End ----------------------------------------------------------------------------------------------------
 
     //US021 Start
-    public boolean hasGenre(Genre genre) {
+    public boolean hasGenre (Genre genre) {
         return _bibliographicalData.hasGenre(genre);
     }
     //US021 End

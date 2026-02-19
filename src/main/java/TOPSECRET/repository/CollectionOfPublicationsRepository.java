@@ -28,59 +28,6 @@ public class CollectionOfPublicationsRepository {
 
     public CollectionOfPublicationsRepository() {}
 
-    // METHOD: Adds a publication to a user's collection.
-    // Returns true if the publication was added successfully,
-    // or false if any validation fails.
-    public boolean addPublicationToCollection(User user, CollectionOfPublications collection, Publication publication) {
-
-        if (user == null || collection == null || publication == null) {
-            return false;
-        }
-
-        // Checks if the user owns the collection
-        if (!user.ownsCollection(collection)) {
-            return false;
-        }
-
-        // Checks if the publication belongs to the user's library
-        if (!user.hasPublicationInLibrary(publication)) {
-            return false;
-        }
-
-        // Delegates duplicate validation to the domain object
-        return collection.addPublication(publication);
-
-    }
-
-    public boolean addCollectionToRepo(CollectionOfPublications collection)
-    {
-        if (_collectionOfPublicationsList.contains(collection)) {
-            return false;
-        }
-
-        return _collectionOfPublicationsList.add(collection);
-    }
-
-    // This method will search for public collections of publications (lists) of a certain genre.
-    public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName)
-    {
-        if (genreName == null) {
-            throw new IllegalArgumentException("Genre can't be null.");
-        }
-
-        List<CollectionOfPublicationsDTO> result = new ArrayList<>();
-
-        for (CollectionOfPublications c : _collectionOfPublicationsList)
-        {
-            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre()))
-            {
-                result.add(new CollectionOfPublicationsDTO(c.getCollectionName(), c.getOwner()));
-            }
-        }
-
-        return List.copyOf(result);
-    }
-
 /**
  * Creates a new private collection for a user if no duplicate exists.
  * US017 - A user cannot have two private collections with the same name and genre.
@@ -97,7 +44,7 @@ public class CollectionOfPublicationsRepository {
         }
 
         for (CollectionOfPublications c : _collectionOfPublicationsList) {
-            if (user.ownsCollection(c)
+            if (user.equals(c.getOwner())
                     && c.getCollectionName().equalsIgnoreCase(name)
                     && c.getCollectionGenre().equals(genre)) {
 
@@ -108,11 +55,9 @@ public class CollectionOfPublicationsRepository {
         }
 
         CollectionOfPublications newCollection =
-                new CollectionOfPublications(name, genre, user.getLibrary(), isPrivate, user);
+                new CollectionOfPublications(name, genre, isPrivate, user);
 
         _collectionOfPublicationsList.add(newCollection);
-        user.addCollection(newCollection);
-
         return newCollection;
     }
 
@@ -128,7 +73,7 @@ public class CollectionOfPublicationsRepository {
         List<CollectionOfPublications> userCollections = new ArrayList<>();
 
         _collectionOfPublicationsList.forEach(collection -> {
-            if (collection.getOwner().equals(owner.getUserName())) {
+            if (collection.getOwner().equals(owner)) {
                 userCollections.add(collection);
             }
         });
@@ -136,6 +81,60 @@ public class CollectionOfPublicationsRepository {
         return userCollections;
 
     }
+
+    // This method will search for public collections of publications (lists) of a certain genre.
+    public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName)
+    {
+        if (genreName == null) {
+            throw new IllegalArgumentException("Genre can't be null.");
+        }
+
+        List<CollectionOfPublicationsDTO> result = new ArrayList<>();
+
+        for (CollectionOfPublications c : _collectionOfPublicationsList)
+        {
+            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre()))
+            {
+                result.add(new CollectionOfPublicationsDTO(c.getCollectionName(), c.getOwner().getUserName()));
+            }
+        }
+
+        return List.copyOf(result);
+    }
+
+    public boolean addCollectionToRepo(CollectionOfPublications collection)
+    {
+        if (_collectionOfPublicationsList.contains(collection)) {
+            return false;
+        }
+
+        return _collectionOfPublicationsList.add(collection);
+    }
+
+    // METHOD: Adds a publication to a user's collection.
+    // Returns true if the publication was added successfully,
+    // or false if any validation fails.
+    public boolean addPublicationToCollection(User user, Library userLibrary, CollectionOfPublications collection, Publication publication) {
+
+        if (user == null || userLibrary == null || collection == null || publication == null) {
+            return false;
+        }
+
+        if (!user.equals(collection.getOwner())) {
+            return false;
+        }
+
+        if (!user.equals(userLibrary.getUser())) {
+            return false;
+        }
+
+        if (!userLibrary.containsPublication(publication)) {
+            return false;
+        }
+
+        return collection.addPublication(publication);
+    }
+
 
 }
 

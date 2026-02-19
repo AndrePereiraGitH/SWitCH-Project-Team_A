@@ -1,14 +1,15 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.User;
 
 public class CollectionOfPublicationsDTO_US019 {
 
     private String _name;
     private String _genreName;
-    private String ownerName;
+    private User ownerName;
 
-    public CollectionOfPublicationsDTO_US019(String name, String genreName, String ownerName) {
+    public CollectionOfPublicationsDTO_US019(String name, String genreName, User ownerName) {
         this._name = name;
         this._genreName = genreName;
         this.ownerName = ownerName;

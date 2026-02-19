@@ -46,7 +46,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     void getAllPublicationsInUserLibrary_shouldThrowEmptyStack_ifNoPublications() throws Exception {
         // arrange
         User user = user("Rodolph");
-        Library lib = user.getLibrary();
+        Library lib = new Library("Lib1" + user.getUserName(), user);
 
         Map<String, Library> libs = new HashMap<>();
         libs.put(user.getUserName(), lib);
@@ -65,7 +65,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         Publication p1 = publication(user);
         Publication p2 = publication(user);
 
-        Library lib = user.getLibrary();
+        Library lib = new Library("Lib1" + user.getUserName(), user);
         addPublicationToLibrary(lib, p1);
         addPublicationToLibrary(lib, p2);
 

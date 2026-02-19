@@ -57,7 +57,7 @@ public class Library { //Define a classe Library (biblioteca de publicações, p
         return myPublications.contains(publication);
     }
 
-    // Necessary methods to co  mpare the objects
+    // Necessary methods to compare the objects
     // Allows Library objects to be compared by content instead of reference.
     @Override
     public boolean equals(Object obj) {
@@ -75,4 +75,6 @@ public class Library { //Define a classe Library (biblioteca de publicações, p
     public int hashCode() {
         return getAllPublications().hashCode();
     }
+
+
 }

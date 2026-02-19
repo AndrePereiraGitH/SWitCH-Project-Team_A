@@ -112,112 +112,16 @@ class CollectionOfPublicationsRepositoryTest {
         );
     }
 
-    private CollectionOfPublications createValidCollection(Library library) {
+    private CollectionOfPublications createValidCollection (Library library) {
 
         return new CollectionOfPublications(
                 "Favorites",
                 new Genre("Fiction"),
-                library,
-                true, createValidUser()
+                true,
+                createValidUser()
         );
     }
 
-    // SUCCESS TEST
-    @Test
-    void shouldAddPublicationSuccessfully() {
-
-        // ARRANGE
-        User user = createValidUser();
-        Publication publication = createValidPublication();
-
-        // Add publication to user's library
-        user.getLibrary().addPublication(publication);
-
-        CollectionOfPublications collection =
-                createValidCollection(user.getLibrary());
-
-        // User owns the collection
-        user.addCollection(collection);
-
-        // ACT
-        boolean result =
-                repository.addPublicationToCollection(user, collection, publication);
-
-        // ASSERT
-        assertTrue(result);                                         // Publication was added
-        assertTrue(collection.containsPublication(publication));    // Publication exists in collection
-    }
-
-
-    // ERROR TESTS
-    @Test
-    void shouldReturnFalseWhenUserIsNull() {
-
-        boolean result = repository.addPublicationToCollection(null, null, null);
-
-        assertFalse(result);   // Null parameters are not allowed
-    }
-
-    @Test
-    void shouldReturnFalseWhenCollectionDoesNotBelongToUser() {
-
-        // ARRANGE
-        User user = createValidUser();
-        Publication publication = createValidPublication();
-
-        user.getLibrary().addPublication(publication);
-
-        // Collection NOT added to user
-        CollectionOfPublications collection =
-                createValidCollection(user.getLibrary());
-
-        // ACT
-        boolean result = repository.addPublicationToCollection(user, collection, publication);
-
-        // ASSERT
-        assertFalse(result);   // User does not own the collection
-    }
-
-    @Test
-    void shouldReturnFalseWhenPublicationIsNotInLibrary() {
-
-        // ARRANGE
-        User user = createValidUser();
-        Publication publication = createValidPublication();
-
-        // Publication NOT added to library
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());
-
-        user.addCollection(collection);
-
-        // ACT
-        boolean result = repository.addPublicationToCollection(user, collection, publication);
-
-        // ASSERT
-        assertFalse(result);   // Publication must exist in user's library
-    }
-
-    @Test
-    void shouldReturnFalseWhenPublicationAlreadyExistsInCollection() {
-
-        // ARRANGE
-        User user = createValidUser();
-        Publication publication = createValidPublication();
-
-        // ACT
-        user.getLibrary().addPublication(publication);
-        CollectionOfPublications collection = createValidCollection(user.getLibrary());
-        user.addCollection(collection);
-
-        // Add once
-        repository.addPublicationToCollection(user, collection, publication);
-
-        // Try to add again
-        boolean result = repository.addPublicationToCollection(user, collection, publication);
-
-        // ASSERT
-        assertFalse(result);   // Duplicate publications are not allowed
-    }
 
 /**
  * - US017: Creation of private collections and duplicate validation.

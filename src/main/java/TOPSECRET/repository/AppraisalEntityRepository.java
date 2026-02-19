@@ -22,23 +22,23 @@ public class AppraisalEntityRepository {
     public AppraisalEntity createAndAddToAppraisalEntityList (String name, Contact contact, PublicationType publicationType, Genre genre) {
 
         // Create AppraisalEntity
-        AppraisalEntity newApEntity  = new AppraisalEntity(name, contact, publicationType, genre);
+        AppraisalEntity apEn  = new AppraisalEntity(name, contact, publicationType, genre);
 
         // checking if the new entity is unique in the list
-        if (!existAppraisalEntity(newApEntity)) {
+        if (!existAppraisalEntity(apEn)) {
             // adding to the list
-            this._appraisalEntityList.add(newApEntity);
-            return newApEntity;
+            this._appraisalEntityList.add(apEn);
+            return apEn;
         }
         throw new IllegalArgumentException("AppraisalEntity already exists");
 
     }
 
     // Ensures no duplicates exist in the list.
-    private boolean existAppraisalEntity (AppraisalEntity apEntity) {
+    private boolean existAppraisalEntity (AppraisalEntity apEn) {
 
         for (AppraisalEntity newApEntity : this._appraisalEntityList) {
-            if (apEntity.equals(newApEntity)) {
+            if (apEn.equals(newApEntity)) {
                 return true;   // Entity already exists in the list
             }
         }

@@ -94,7 +94,7 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c1 = new CollectionOfPublications(
                 "Collection1",
                 new Genre("Action"),
-                privateLibrary,
+//                privateLibrary,
                 false,
                 userName
         );
@@ -102,7 +102,7 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c2 = new CollectionOfPublications(
                 "Collectioion2",
                 new Genre("Action"),
-                privateLibrary,
+//                privateLibrary,
                 true,
                 userName
         );
@@ -110,7 +110,7 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c3 = new CollectionOfPublications(
                 "Collection3",
                 new Genre("Sci-fi"),
-                privateLibrary,
+//                privateLibrary,
                 false,
                 userName
         );
@@ -118,16 +118,16 @@ class US020PublicListByGenreControllerTest {
         CollectionOfPublications c4 = new CollectionOfPublications(
                 "Collection4",
                 new Genre("Action"),
-                privateLibrary,
+//                privateLibrary,
                 false,
                 userName
         );
 
 
-        collectionRepo.addPublicationToCollection(userName,c1,publicationSample);
-        collectionRepo.addPublicationToCollection(userName,c2,publicationSample);
-        collectionRepo.addPublicationToCollection(userName,c3,publicationSample);
-        collectionRepo.addPublicationToCollection(userName,c4,publicationSample);
+        collectionRepo.addPublicationToCollection(userName, privateLibrary, c1, publicationSample);
+        collectionRepo.addPublicationToCollection(userName, privateLibrary, c2,publicationSample);
+        collectionRepo.addPublicationToCollection(userName, privateLibrary, c3,publicationSample);
+        collectionRepo.addPublicationToCollection(userName, privateLibrary, c4,publicationSample);
 
         collectionRepo.addCollectionToRepo(c1);
         collectionRepo.addCollectionToRepo(c2);

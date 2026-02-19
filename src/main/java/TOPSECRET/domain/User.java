@@ -12,8 +12,6 @@ public class User {
     private Contact _contact;
     private Profile _profile;
     private UserRole _userRole;
-    private Library _library;
-    private List<CollectionOfPublications> _collectionOfPublications;
 
     //Constructor
     public User(String userName, Contact contact, Profile profile, UserRole userRole) {
@@ -38,15 +36,13 @@ public class User {
         this._contact = contact;
         this._profile = profile;
         this._userRole = userRole;
-        this._library = new Library(new ArrayList<>(),userName + "'s Library",this);
-        this._collectionOfPublications = new ArrayList<>();
     }
 
     // Empty Constructor
     public User() {
     }
 
-    // Getters (não sei se necessário)
+    // Getters
     public String getUserName() {
         return _userName;
     }
@@ -59,63 +55,16 @@ public class User {
         return _profile;
     }
 
+    public UserRole getUserRole() {
+        return _userRole;
+    }
+
     // Method: full user information
     public String getUserInfo() {
-        return "User: " + _userName + ", Contact: " + _contact + ", Profile: " + _profile;
-    }
-
-    // PRIVATE LIST MANAGEMENT
-    // Adds a private list to the user
-    public boolean addPrivateList(CollectionOfPublications list) {
-
-        if (list == null) return false;
-
-        if (_collectionOfPublications.contains(list)) return false;
-
-        _collectionOfPublications.add(list);
-        return true;
-    }
-
-    // Checks if the user owns a given private list
-    public boolean ownsPrivateList(CollectionOfPublications list) {
-        return _collectionOfPublications.contains(list);
-    }
-
-    // Returns a copy of private lists
-    public List<CollectionOfPublications> getPrivateLists() {
-        return new ArrayList<>(_collectionOfPublications);
+        return "User: " + _userName + "Role: " + _userRole + ", Contact: " + _contact + ", Profile: " + _profile;
     }
 
 
-    // US018
-    // Returns the user's library
-    public Library getLibrary() {
-        return _library;
-    }
-
-    // US0018
-    // Adds a collection to the user
-    public boolean addCollection(CollectionOfPublications collection) {
-
-        if (collection == null) return false;
-
-        if (_collectionOfPublications.contains(collection)) return false;
-
-        _collectionOfPublications.add(collection);
-        return true;
-    }
-
-    // US0018
-    // Checks if the user owns a collection
-    public boolean ownsCollection(CollectionOfPublications collection) {
-        return _collectionOfPublications.contains(collection);
-    }
-
-    // US0018
-    // Checks if a publication exists in the user's library
-    public boolean hasPublicationInLibrary(Publication publication) {
-        return _library.containsPublication(publication);
-    }
 
     @Override
     public boolean equals(Object o) {

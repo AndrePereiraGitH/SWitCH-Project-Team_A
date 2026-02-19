@@ -23,16 +23,16 @@ public class CollectionOfPublications {
     // Library where this collection is stored.
     // This attribute is NOT required for US017,
     // but is used in later user stories involving library management.
-    private Library _privateLibrary;
-    private List<Publication> _collectionOfPublications;
+//    private Library _privateLibrary; REMOVED
+    private List<Publication> _collectionOfPublications;    // TODO change to PublicationSample
     // Username of the collection owner.
     // Ownership validation is handled at repository level (US017),
     // but this attribute supports other user stories.(US20)
-    private String _ownerUserName;
+    private User _owner;
     private boolean _isPrivate;
 
     // Constructor
-    public CollectionOfPublications(String collectionName, Genre collectionGenre, Library privateLibrary, boolean isPrivate, User user) {
+    public CollectionOfPublications(String collectionName, Genre collectionGenre, boolean isPrivate, User user) {
 
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
@@ -42,19 +42,14 @@ public class CollectionOfPublications {
             throw new IllegalArgumentException("Collection genre cannot be null.");
         }
 
-        if (privateLibrary == null) {
-            throw new IllegalArgumentException("Library cannot be null.");
-        }
-
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
 
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
-        this._privateLibrary = privateLibrary;
         this._isPrivate = isPrivate;
-        this._ownerUserName = user.getUserName();
+        this._owner = user;
         this._collectionOfPublications = new ArrayList<>();
     }
 
@@ -68,27 +63,13 @@ public class CollectionOfPublications {
 
     public Genre getCollectionGenre() { return _collectionGenre; }
 
-    public String getOwner() { return _ownerUserName; }
-
-    public Library getPrivateLibrary() {
-        return _privateLibrary;
-    }
+    public User getOwner() { return _owner; }
 
     // Returns a copy of the publications list
     public List<Publication> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }
 
-
-
-    /**
-     * US019 - to publicly share a collection of publications
-     *
-     *
-     */
-    public void set_isPrivate(boolean _isPrivate) {
-        this._isPrivate = _isPrivate;
-    }
 
     // _______________
     // Used in US018
@@ -128,7 +109,7 @@ public class CollectionOfPublications {
 
         return _collectionName.equalsIgnoreCase(other._collectionName)
                 && _collectionGenre.equals(other._collectionGenre)
-                && _privateLibrary.equals(other._privateLibrary)
+                && Objects.equals(_owner, other._owner)
                 && _isPrivate == other._isPrivate
                 && _collectionOfPublications.equals(other._collectionOfPublications);
     }
@@ -137,11 +118,23 @@ public class CollectionOfPublications {
     // If two objects are considered equal by equals(), they must return the same hash code.
     @Override
     public int hashCode() {
-        return (_collectionName.toLowerCase()
-                + _collectionGenre.hashCode()
-                + _privateLibrary.hashCode()
-                + _isPrivate
-                + _collectionOfPublications.hashCode()).hashCode();
+        return Objects.hash(
+                _collectionName.toLowerCase(),
+                _collectionGenre,
+                _owner,
+                _isPrivate,
+                _collectionOfPublications
+        );
+    }
+
+
+    /**
+     * US019 - to publicly share a collection of publications
+     *
+     *
+     */
+    public void set_isPrivate(boolean _isPrivate) {
+        this._isPrivate = _isPrivate;
     }
 
 }
