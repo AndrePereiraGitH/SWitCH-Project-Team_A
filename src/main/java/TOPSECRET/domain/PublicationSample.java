@@ -82,4 +82,35 @@ public class PublicationSample {
         return Objects.hash(_bd, _owner, _publicationStatus, _edition, _condition);
     }
 
+    //US021 Start
+    public boolean hasGenre (Genre genre) {
+        return _bd.hasGenre(genre);
+    }
+    //US021 End
+
+    // US023 Start ----------------------------------------------------------------------------------------------------
+
+    public PublicationSample.PublicationDetails getDetails() {
+        return new PublicationSample.PublicationDetails(
+                _bd,
+                _owner,
+                _publicationStatus,
+                _edition,
+                _condition
+        );
+    }
+
+    public record PublicationDetails(
+            BibliographicalData bibliographicalData,
+//            PublicationType publicationType,
+            User owner,
+            PublicationStatus publicationStatus,
+//            String edition,
+            Edition edition,
+            Condition condition
+//            Code code
+    ) {}
+
+    // US023 End ----------------------------------------------------------------------------------------------------
+
 }
