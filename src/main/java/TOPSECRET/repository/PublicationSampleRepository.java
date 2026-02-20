@@ -1,25 +1,26 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PublicationRepository {
+public class PublicationSampleRepository {
 
-    private List<Publication> allPublicationsInSystem = new ArrayList<>();
+    private List<PublicationSample> allPublicationsInSystem = new ArrayList<>();
 
-    public PublicationRepository(List<Publication> publicationList) {
+    public PublicationSampleRepository(List<PublicationSample> publicationList) {
         allPublicationsInSystem = new ArrayList<>(publicationList);
     }
 
-    public PublicationRepository(){
+    public PublicationSampleRepository(){
         this.allPublicationsInSystem = new ArrayList<>(); //no-argument constructor so that it can compile (this way it's not restrictive)
     }
 
-    public List<Publication> getAllPublications() { //getter to obtain list of all publications in the system
+    public List<PublicationSample> getAllPublications() { //getter to obtain list of all publications in the system
         return List.copyOf(allPublicationsInSystem);
     }
 
@@ -27,9 +28,9 @@ public class PublicationRepository {
 //    public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
 //                                PublicationStatus publicationStatus, String edition, Code code){
     public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
-                            PublicationStatus publicationStatus, Edition edition, Code code){
+                            PublicationStatus publicationStatus, Edition edition, Condition condition){
 
-        Publication publication = new Publication(bibliographicalData,publicationType,username,publicationStatus,edition,code);
+        PublicationSample publication = new PublicationSample(bibliographicalData, username, publicationStatus,edition, condition);
 
         if(isExistent(publication)){
             return false;
@@ -39,8 +40,8 @@ public class PublicationRepository {
     }
 
 
-    public boolean isExistent(Publication pub){
-        for(Publication publication: allPublicationsInSystem){
+    public boolean isExistent(PublicationSample pub){
+        for(PublicationSample publication: allPublicationsInSystem){
             if(pub.equals(publication)){
                 return true;
             }
@@ -48,10 +49,10 @@ public class PublicationRepository {
         return false;
     }
 
-    public List<Publication> getListOfDifferentPublications(List<Publication> listOfPublicationsInLibrary){
-        List<Publication> listOfDifferentPublications = new ArrayList<>();
+    public List<PublicationSample> getListOfDifferentPublications(List<Publication> listOfPublicationsInLibrary){
+        List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
 
-        for (Publication publication : allPublicationsInSystem) {
+        for (PublicationSample publication : allPublicationsInSystem) {
             //If the user library does not contain the publication
             if (!listOfPublicationsInLibrary.contains(publication)){
                 listOfDifferentPublications.add(publication);
@@ -61,7 +62,7 @@ public class PublicationRepository {
 
     }
     //Method for testing purposes only (AddPublicationToLibraryControllerTest)
-    public void addPublication(Publication p) {
+    public void addPublication(PublicationSample p) {
         if (!allPublicationsInSystem.contains(p)) {
             allPublicationsInSystem.add(p);
         }

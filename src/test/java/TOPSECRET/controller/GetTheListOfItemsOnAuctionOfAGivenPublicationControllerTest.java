@@ -3,21 +3,13 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 
-import TOPSECRET.dto.ItemDetailsDTO;
-import TOPSECRET.dto.PublicationDetailsDTO;
-import TOPSECRET.repository.AuctionRepository;
-import TOPSECRET.repository.PublicationRepository;
-import org.junit.jupiter.api.Test;
+import TOPSECRET.repository.PublicationSampleRepository;
 
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
@@ -104,8 +96,8 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 //    AuctionRepository aucRepo = new AuctionRepository(aucList);
 
     //Pub repo
-    List<Publication> pubList = new ArrayList<>();
-    private final PublicationRepository pubRepo = new PublicationRepository(pubList);
+    List<PublicationSample> pubList = new ArrayList<>();
+    private final PublicationSampleRepository pubRepo = new PublicationSampleRepository(pubList);
 
 //    //Controller
 //    private GetTheListOfItemsOnAuctionOfAGivenPublicationController ctrl = new GetTheListOfItemsOnAuctionOfAGivenPublicationController(pubRepo, aucRepo);

@@ -2,17 +2,18 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.PublicationSample;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PublicationDetailsMapper {
-
-    public static List<PublicationDetailsDTO> toDTOs(List<Publication> publications){
+/*
+    public static List<PublicationDetailsDTO> toDTOs(List<PublicationSample> publications){
         List<PublicationDetailsDTO> listOfPublicationsDTO = new ArrayList<>();
 
-        for(Publication pub: publications){
+        for(PublicationSample pub: publications){
             PublicationDetailsDTO pubDTO = toDTO(pub);
             listOfPublicationsDTO.add(pubDTO);
         }
@@ -21,7 +22,7 @@ public class PublicationDetailsMapper {
 
     }
 
-    public static PublicationDetailsDTO toDTO(Publication publication){
+    public static PublicationDetailsDTO toDTO(PublicationSample publication){
         String titleDTO = publication.getBibliographicalData().getTitle();
         List<Author> listOfAuthors = publication.getBibliographicalData().getAuthors();
         List<String> authorsDTO = new ArrayList<>();
@@ -39,6 +40,8 @@ public class PublicationDetailsMapper {
 
         return pubDTO;
     }
+
+ */
 
 
 }

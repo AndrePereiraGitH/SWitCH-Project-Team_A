@@ -1,26 +1,25 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Publication;
-import TOPSECRET.dto.DirectSaleDTO_US023;
+import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.DirectSaleMapper_US023;
 import TOPSECRET.dto.PublicationDTO_US023;
 import TOPSECRET.dto.PublicationMapper_US023;
 import TOPSECRET.repository.DirectSaleRepository;
-import TOPSECRET.repository.PublicationRepository;
+import TOPSECRET.repository.PublicationSampleRepository;
 
 import java.util.List;
 
 public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
     // attributes
-    private final PublicationRepository _publicationRepo;
+    private final PublicationSampleRepository _publicationRepo;
     private final PublicationMapper_US023 _publicationMapper_US023;
     private final DirectSaleRepository _directSaleRepo;
     private final DirectSaleMapper_US023 _DirectSaleMapper_US023;
 
     // constructor
-    public ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(PublicationRepository publicationRepo, PublicationMapper_US023 _publicationMapper_US023, DirectSaleRepository dsRepo, DirectSaleMapper_US023 dsMapper) {
+    public ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(PublicationSampleRepository publicationRepo, PublicationMapper_US023 _publicationMapper_US023, DirectSaleRepository dsRepo, DirectSaleMapper_US023 dsMapper) {
         this._publicationRepo = publicationRepo;
         this._publicationMapper_US023 = _publicationMapper_US023;
         this._directSaleRepo = dsRepo;
@@ -30,10 +29,12 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
     // methods
 
     // Requests all publications to the mapper
-    public List<PublicationDTO_US023> getAllPublications() {
+ /*   public List<PublicationDTO_US023> getAllPublications() {
         List<Publication> publications = _publicationRepo.getAllPublications();
         return _publicationMapper_US023.getListOfPublicationsDTO(publications);
     }
+
+  */
 
 
 //    // Provides a publication, user chooses a publication and retrieves a list of items on DS

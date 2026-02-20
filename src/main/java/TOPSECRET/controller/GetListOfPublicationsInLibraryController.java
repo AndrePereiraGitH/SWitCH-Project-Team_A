@@ -21,7 +21,7 @@ public class GetListOfPublicationsInLibraryController {
         this._libraryRepo = libraryRepo;
     }
 
-    public List<PublicationDetailsDTO> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
+  /*  public List<PublicationDetailsDTO> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
 
         Library userLib = getUserLibrary(username);
 
@@ -31,6 +31,8 @@ public class GetListOfPublicationsInLibraryController {
 
         return listOfPublicationsDTO;
     }
+
+   */
 
     public Library getUserLibrary(String userName) throws InstanceNotFoundException {
 
