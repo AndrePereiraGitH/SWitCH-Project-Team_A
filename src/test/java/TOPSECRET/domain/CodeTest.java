@@ -4,9 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for the Code class.
+ * These tests validate the creation of ISBN-10, ISBN-13 and ISSN codes,
+ * including valid cases and error cases.
+ */
 class CodeTest {
 
-    // Create codes without hyphens
+    // Valid codes without hyphens
 
     @Test
     void shouldCreateCodeWithIsbn10() {
@@ -35,7 +40,7 @@ class CodeTest {
         assertEquals("20493630", code.getIssn());
     }
 
-    // Create codes with hyphens
+    // Valid codes with hyphens
 
     @Test
     void shouldAcceptIsbn10WithHyphens() {
@@ -58,7 +63,7 @@ class CodeTest {
         assertEquals("2049-3630", code.getIssn());
     }
 
-    // Errors: null or blank
+    // Errors: null or blank values
 
     @Test
     void shouldFailWhenIsbn10IsNull() {
@@ -81,8 +86,8 @@ class CodeTest {
         );
     }
 
-    // Errors: few digits
-/*
+    // Errors: too few characters
+
     @Test
     void shouldFailWhenIsbn10IsTooShort() {
         assertThrows(IllegalArgumentException.class, () ->
@@ -104,7 +109,7 @@ class CodeTest {
         );
     }
 
-    // Errors: too many digits
+    // Errors: too many characters
 
     @Test
     void shouldFailWhenIsbn10IsTooLong() {
@@ -126,7 +131,37 @@ class CodeTest {
                 Code.fromIssn("123456789")
         );
     }
-*/
+
+    // Errors: invalid characters
+
+    @Test
+    void shouldFailWhenIsbn10HasLetterInMiddle() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn10("12345A7890")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIsbn10EndsWithInvalidLetter() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn10("123456789A")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIsbn13HasLetters() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn13("97812345A7890")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIssnHasLetterInMiddle() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIssn("2049A630")
+        );
+    }
+
     // Equals tests
 
     @Test
