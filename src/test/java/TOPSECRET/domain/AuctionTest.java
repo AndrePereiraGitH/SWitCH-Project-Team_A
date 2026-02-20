@@ -313,12 +313,12 @@ class AuctionTest {
                         "Final date must not be before the initial date."
                 ),
                 Arguments.of("buyout <= initial",
-                        listing, now.plusDays(1), now.plusDays(2), price("35.50"), price("35.50"),
+                        listing, now.plusDays(1), now.plusDays(2), price("35.00"), price("35.00"),
                         "Buy out price must be greater than Initial price."
                 )
         );
     }
-/*
+
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidAuctionConstructorCases_withoutClock")
     void testConstructor_withoutClock_invalidCases_throwAndMessage(
@@ -339,7 +339,7 @@ class AuctionTest {
         assertEquals(expectedMessage, ex.getMessage());
     }
 
- */
+
 
 
     // ============================================================
@@ -361,7 +361,7 @@ class AuctionTest {
                         "bid equal to initial price must throw (<=)",
                         (Executable) () -> {
                             Auction auction = createValidActiveAuction();
-                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.50"))); // == initial
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.00"))); // == initial
                         },
                         "Bid value must be greater than initial Price.",
                         true
@@ -370,7 +370,7 @@ class AuctionTest {
                         "bid below initial price must throw",
                         (Executable) () -> {
                             Auction auction = createValidActiveAuction();
-                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.20"))); // < initial
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("34.00"))); // < initial
                         },
                         "Bid value must be greater than initial Price.",
                         true
@@ -397,7 +397,7 @@ class AuctionTest {
                 )
         );
     }
-/*
+
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidAcceptBidCases")
     void testAcceptBid_invalidCases_throwAndMessage(
@@ -416,7 +416,7 @@ class AuctionTest {
         }
     }
 
- */
+
 
     static Stream<Arguments> validAcceptBidCases() {
         return Stream.of(
@@ -749,19 +749,19 @@ class AuctionTest {
         assertNotEquals(a1, a2);
     }
 
-//    @Test
-//    void testEquals_differentBidHistory_false() {
-//
-//        // arrange
-//        Auction a1 = createValidActiveAuction();
-//        Auction a2 = createValidActiveAuction();
-//
-//        // act
-//        a1.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
-//
-//        // assert
-//        assertNotEquals(a1, a2);
-//    }
+    @Test
+    void testEquals_differentBidHistory_false() {
+
+        // arrange
+        Auction a1 = createValidActiveAuction();
+        Auction a2 = createValidActiveAuction();
+
+        // act
+        a1.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
+
+        // assert
+        assertNotEquals(a1, a2);
+    }
 
     @Test
     void testEquals_withNullAndDifferentClass() {
@@ -838,17 +838,12 @@ class AuctionTest {
                         "The Lord of the Rings, in one paperback. Features the definitive edition of the text, " +
                         "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
 
-//        Contact contact = new Contact();
-//        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
-
         return new BibliographicalData(
                 "The Lord Of The Rings",
                 authors,
                 Locale.ENGLISH,
-//                publisher,
                 LocalDate.of(1991, 11, 1),
                 List.of(new Genre ("Fantasy")),
-//                700,
                 chunkOfText
         );
     }
