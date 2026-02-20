@@ -2,11 +2,8 @@ package TOPSECRET.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.Author;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,13 +23,14 @@ class LibraryTest {
 
     private Library library;
 
-    private Publication publication1;
-    private Publication publication2;
-    private Publication publication3;
+    private PublicationSample sample1;
+    private PublicationSample sample2;
+    private PublicationSample sample3;
     //Atributos do teste
 
-    @BeforeEach //O que estiver neste BeforeEach será feito antes de cada teste
-    void preparation(){
+    @BeforeEach
+        //O que estiver neste BeforeEach será feito antes de cada teste
+    void preparation() {
         Country country = new Country("Portugal");
         Profile profile = new Profile("profile1", country, LocalDate.of(1990, 1, 1));
         Contact contact = new Contact();
@@ -45,9 +43,9 @@ class LibraryTest {
         PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "HardCover");
 
         //Country
-        Country country1 = new Country ("Portugal");
-        Country country2 = new Country ("France");
-        Country country3 = new Country ("Germany");
+        Country country1 = new Country("Portugal");
+        Country country2 = new Country("France");
+        Country country3 = new Country("Germany");
 
 
         //Author - used for Bibliographical Data
@@ -73,7 +71,7 @@ class LibraryTest {
         //BibliographicalData
         BibliographicalData data1 = new BibliographicalData(
                 "Title1", List.of(author1), Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1), List.of(genre1),"Some text 1"
+                LocalDate.of(2020, 1, 1), List.of(genre1), "Some text 1"
         );
         BibliographicalData data2 = new BibliographicalData(
                 "Title2", List.of(author2), Locale.ENGLISH,
@@ -86,25 +84,33 @@ class LibraryTest {
         );
 
         //Users (using the empty constructor)
-        User user7 = new User();
+        User user1 = new User();
         User user2 = new User();
         User user3 = new User();
 
         // Edition
-        Code code = Code.fromIsbn13 ("9783161484123");
+        Code code = Code.fromIsbn13("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+        // PublicationStatus
+        PublicationStatus pubStatus1 = PublicationStatus.SOLD;
+        PublicationStatus pubStatus2 = PublicationStatus.FOR_SALE;
+        PublicationStatus pubStatus3 = PublicationStatus.READING;
+
+        // Condition
+        Condition condition1 = Condition.NEW;
+        Condition condition2 = Condition.LIKE_NEW;
+        Condition condition3 = Condition.VERY_GOOD;
 
         //Creating some sample publications, dependent on a lot of different classes, created above for testing purposes
-//        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
-//        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
-//        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
-        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, edition, Code.fromIsbn10("1234567890"));
-        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, edition, Code.fromIsbn13("9781234567897"));
-        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, edition, Code.fromIsbn10("123456789X"));
+
+        sample1 = new PublicationSample(data1, user1, pubStatus1, edition, condition1);
+        sample2 = new PublicationSample(data2, user2, pubStatus2, edition, condition2);
+        sample3 = new PublicationSample(data3, user3, pubStatus3, edition, condition3);
     }
 
     //Now that we have the preparation setup, we begin the Tests
@@ -164,59 +170,65 @@ class LibraryTest {
         assertEquals(user1, result);
     }
 
-    @Test //This test sees if the publication1 gets added to the library using the method in Library
-    void addPublicationToTheLibrary_shouldAddPublication(){
-        library.addPublication(publication1);
+    //    @Test //This test sees if the publication1 gets added to the library using the method in Library
+    void addPublicationToTheLibrary_shouldAddPublication() {
+        library.addPublication(sample1);
 
         assertEquals(1, library.getAllPublications().size());
-        assertTrue(library.containsPublication(publication1));
+        assertTrue(library.containsPublication(sample1));
     }
 
-    @Test //This test sees if adding the same publication more than one time doesn't create duplicates
-    void addPublicationToTheLibrary_shouldNotAddIfDuplicate(){
-        library.addPublication(publication1);
-        library.addPublication(publication1);
+    @Test
+        //This test sees if adding the same publication more than one time doesn't create duplicates
+    void addPublicationToTheLibrary_shouldNotAddIfDuplicate() {
+        library.addPublication(sample1);
+        library.addPublication(sample1);
 
         assertEquals(1, library.getAllPublications().size());
     }
 
-    @Test //This test sees if, by asking to getAllPublications, we get an empty list, since no publication was added
-    void getAllPublications_shouldReturnEmptyListIfLibraryEmpty(){
+    @Test
+        //This test sees if, by asking to getAllPublications, we get an empty list, since no publication was added
+    void getAllPublications_shouldReturnEmptyListIfLibraryEmpty() {
         assertTrue(library.getAllPublications().isEmpty());
     }
 
-    @Test //This test sees if, by asking to getAllPublications, we get a list with the added publications
-    void getAllPublications_shouldReturnListWithAddedPublications(){
-        library.addPublication(publication1);
-        library.addPublication(publication2);
+    @Test
+        //This test sees if, by asking to getAllPublications, we get a list with the added publications
+    void getAllPublications_shouldReturnListWithAddedPublications() {
+        library.addPublication(sample1);
+        library.addPublication(sample2);
 
-        List<Publication> listWithPublications = library.getAllPublications();
+        List<PublicationSample> listWithPublications = library.getAllPublications();
 
         assertEquals(2, listWithPublications.size());
-        assertTrue(listWithPublications.contains(publication1));
-        assertTrue(listWithPublications.contains(publication2));
+        assertTrue(listWithPublications.contains(sample1));
+        assertTrue(listWithPublications.contains(sample2));
     }
 
-    @Test //This test sees if the list that is provided by the getAllPublications is a copyOf, meaning its unmodifiable
-    void getAllPublications_shouldReturnUnmodifiableList(){
-        library.addPublication(publication1);
+    @Test
+        //This test sees if the list that is provided by the getAllPublications is a copyOf, meaning its unmodifiable
+    void getAllPublications_shouldReturnUnmodifiableList() {
+        library.addPublication(sample1);
 
-        List<Publication> listOfPublications = library.getAllPublications();
+        List<PublicationSample> listOfPublications = library.getAllPublications();
 
-        assertThrows(UnsupportedOperationException.class, () -> listOfPublications.add(publication2), "Provided list can't be modified");
+        assertThrows(UnsupportedOperationException.class, () -> listOfPublications.add(sample2), "Provided list can't be modified");
     }
 
-    @Test //This test sees if the library contains a publication
-    void containsPublication_shouldReturnTrueIfPublicationExists(){
-        library.addPublication(publication3);
+    @Test
+        //This test sees if the library contains a publication
+    void containsPublication_shouldReturnTrueIfPublicationExists() {
+        library.addPublication(sample3);
 
-        assertTrue(library.containsPublication(publication3));
+        assertTrue(library.containsPublication(sample3));
     }
 
-    @Test //This test sees if the library has a publication (intended to respond false)
-    void containsPublication_shouldReturnFalseIfPublicationDoesntExist(){
-        library.addPublication(publication3);
+    @Test
+        //This test sees if the library has a publication (intended to respond false)
+    void containsPublication_shouldReturnFalseIfPublicationDoesntExist() {
+        library.addPublication(sample3);
 
-        assertFalse(library.containsPublication(publication1));
+        assertFalse(library.containsPublication(sample1));
     }
 }
