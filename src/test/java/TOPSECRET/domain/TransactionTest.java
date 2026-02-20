@@ -366,7 +366,7 @@ class TransactionTest {
     private static PublicationSample createValidItem(){
         User seller = createValidUser("Seller");
         BibliographicalData bd = createValidBibliographicalData();
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(new Dimensions(45,15,20), 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);

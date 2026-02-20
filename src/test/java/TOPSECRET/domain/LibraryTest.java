@@ -91,7 +91,7 @@ class LibraryTest {
         User user3 = new User();
 
         // Edition
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -102,9 +102,9 @@ class LibraryTest {
 //        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
 //        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
 //        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
-        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, edition, Code.fromIsbn10("001"));
-        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, edition, Code.fromIsbn13("002"));
-        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, edition, Code.fromIsbn10("003"));
+        publication1 = new Publication(data1, publicationType, user1, PublicationStatus.READ, edition, Code.fromIsbn10("1234567890"));
+        publication2 = new Publication(data2, publicationType, user2, PublicationStatus.READ, edition, Code.fromIsbn13("9781234567897"));
+        publication3 = new Publication(data3, publicationType, user3, PublicationStatus.READ, edition, Code.fromIsbn10("123456789X"));
     }
 
     //Now that we have the preparation setup, we begin the Tests

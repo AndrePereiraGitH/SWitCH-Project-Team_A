@@ -217,7 +217,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         BibliographicalData bd = bibliographicalData();
         PublicationType type = publicationType();
         PublicationStatus status = PublicationStatus.READING;
-        Code code = Code.fromIsbn10("12bhg32123");
+        Code code = Code.fromIsbn10("123456789X");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -240,7 +240,8 @@ class US016ToPutPublicationInAuctionControllerTest {
         BibliographicalData bd = bibliographicalData();
         PublicationType type = publicationType();
         PublicationStatus status = PublicationStatus.FOR_SALE;
-        Code code = Code.fromIsbn10("978" + System.nanoTime());                 // generates always a new code --> new publication
+        Code code = Code.fromIsbn10("12345678" + (System.nanoTime() % 10) + "X");
+    //    Code code = Code.fromIsbn10("978" + System.nanoTime());                 // generates always a new code --> new publication
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");

@@ -171,7 +171,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "some details" );
         BibliographicalData bd = createBibliographicalData("Pillars Of the Earth", authors);
         // Edition
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -185,7 +185,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
                 PublicationStatus.FOR_SALE,
 //                "2nd",
                 edition,
-                Code.fromIsbn10("fghdsjhklfgjhksgfjhksad")
+                Code.fromIsbn10("123456789X")
         );
     }
 

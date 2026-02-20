@@ -895,7 +895,8 @@ class AuctionTest {
         User user = instantiateUser("maria1");
 
         // Code
-        Code code = Code.fromIsbn13("978" + System.nanoTime());
+       // Code code = Code.fromIsbn13("978" + System.nanoTime());
+        Code code = Code.fromIsbn13("978000000000" + (System.nanoTime() % 10));
 
         // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
@@ -927,7 +928,7 @@ class AuctionTest {
     }
 
     private static Edition instantiateEdition(){
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");

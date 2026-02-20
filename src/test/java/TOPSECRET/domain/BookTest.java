@@ -55,7 +55,7 @@ class BookTest {
 
         // Publication basics
 //        String edition = "Sample Edition";
-        Code code1 = Code.fromIsbn13 ("978316148412");
+        Code code1 = Code.fromIsbn13 ("9783161484123");
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);

@@ -97,7 +97,7 @@ class AddPublicationToLibraryControllerTest {
         user4 = new User("user4", contact1, profile1, UserRole.NORMAL_USER);
 
         // Edition
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -108,9 +108,9 @@ class AddPublicationToLibraryControllerTest {
 //        publication1 = new Publication(data1, type, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
 //        publication2 = new Publication(data2, type, user2, PublicationStatus.READ, "1st", Code.fromIsbn13("002"));
 //        publication3 = new Publication(data3, type, user3, PublicationStatus.READ, "1st", Code.fromIsbn10("003"));
-        publication1 = new Publication(data1, type, user1, PublicationStatus.READ, edition, Code.fromIsbn10("001"));
-        publication2 = new Publication(data2, type, user2, PublicationStatus.READ, edition, Code.fromIsbn13("002"));
-        publication3 = new Publication(data3, type, user3, PublicationStatus.READ, edition, Code.fromIsbn10("003"));
+        publication1 = new Publication(data1, type, user1, PublicationStatus.READ, edition, Code.fromIsbn10("1234567890"));
+        publication2 = new Publication(data2, type, user2, PublicationStatus.READ, edition, Code.fromIsbn13("9781234567897"));
+        publication3 = new Publication(data3, type, user3, PublicationStatus.READ, edition, Code.fromIsbn10("123456789X"));
 
         //Add samples to repository
         publicationRepository.addPublication(publication1);

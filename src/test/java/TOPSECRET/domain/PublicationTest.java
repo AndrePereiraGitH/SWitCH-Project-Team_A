@@ -36,7 +36,7 @@ class PublicationTest {
             "Some text");
 
 //    String anyEdition = "2nd Edition";
-    Code code = Code.fromIsbn13 ("978316148412");
+    Code code = Code.fromIsbn13 ("9783161484123");
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -138,7 +138,7 @@ class PublicationTest {
         BibliographicalData nullBiblioData = null;
 
 //        String edition1 = "2nd Edition";
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -183,7 +183,7 @@ class PublicationTest {
 
         // Variable that actually changes
 //        String expectedEdition = "coolEdition";
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -241,7 +241,7 @@ class PublicationTest {
     void shouldReturnCode() {
 
         //Arrange
-        Code expectedCode = Code.fromIsbn13("123456789101");
+        Code expectedCode = Code.fromIsbn13("1234567891013");
 
         //Act
         Publication publicationWantCode = new Publication(anyBiblioData, anyPubType, anyUser,
@@ -289,7 +289,7 @@ class PublicationTest {
         // differing fields here
 //        String goldEdition = "gold";
 //        String silverEdition = "silver";
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -314,8 +314,10 @@ class PublicationTest {
     void hashCode_NotEqualIfDifferentAttributes() {
 
         // differing fields
-        Code cloudCode = Code.fromIsbn10("cloud12345");
-        Code squallCode = Code.fromIsbn13("squall1234567");
+    //    Code cloudCode = Code.fromIsbn10("cloud12345");
+    //    Code squallCode = Code.fromIsbn13("squall1234567");
+        Code cloudCode = Code.fromIsbn10("123456789X");
+        Code squallCode = Code.fromIsbn13("9781234567897");
 
         Publication publicationCloud = new Publication(anyBiblioData, anyPubType,
                 anyUser, anyPubStatus, edition, cloudCode);

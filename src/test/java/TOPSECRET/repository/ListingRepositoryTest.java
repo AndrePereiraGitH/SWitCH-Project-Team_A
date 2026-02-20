@@ -60,7 +60,7 @@ class ListingRepositoryTest {
 //    }
 
     // Edition
-    Code code = Code.fromIsbn13 ("978316148412");
+    Code code = Code.fromIsbn13 ("9783161484123");
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
@@ -70,7 +70,7 @@ class ListingRepositoryTest {
     private Publication instaciatePublication() {
         PublicationType pubType = new PublicationType(TypeOfBinding.PAPERBACK, "some details");
 //        Publication pub = new Publication(instantiateBibliographicalData(), pubType, instantiateUser("Owner"), PublicationStatus.FOR_SALE, "2Edition", Code.fromIsbn13("ghjgajhsggkdagdk"));
-        Publication pub = new Publication(instantiateBibliographicalData(), pubType, instantiateUser("Owner"), PublicationStatus.FOR_SALE, edition, Code.fromIsbn13("ghjgajhsggkdagdk"));
+        Publication pub = new Publication(instantiateBibliographicalData(), pubType, instantiateUser("Owner"), PublicationStatus.FOR_SALE, edition, Code.fromIsbn13("9781234567897"));
 
         return pub;
     }
