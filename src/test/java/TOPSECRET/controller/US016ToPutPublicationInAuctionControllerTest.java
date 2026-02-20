@@ -26,62 +26,62 @@ class US016ToPutPublicationInAuctionControllerTest {
     // -----getAllPublicationsInUserLibrary ------
     // --------------------------------------
 
-    @Test
-    void getAllPublicationsInUserLibrary_shouldThrow_ifUsernameNull() {
-        var controller = newControllerWithLibraries(Map.of());
-
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getAllPublicationsInUserLibrary(null));
-    }
-
-    @Test
-    void getAllPublicationsInUserLibrary_shouldThrow_ifLibraryNotFound() {
-        var controller = newControllerWithLibraries(Map.of());
-
-        assertThrows(InstanceNotFoundException.class,
-                () -> controller.getAllPublicationsInUserLibrary("user1x"));
-    }
-
-    @Test
-    void getAllPublicationsInUserLibrary_shouldThrowEmptyStack_ifNoPublications() throws Exception {
-        // arrange
-        User user = user("Rodolph");
-        Library lib = new Library("Lib1" + user.getUserName(), user);
-
-        Map<String, Library> libs = new HashMap<>();
-        libs.put(user.getUserName(), lib);
-
-        var controller = newControllerWithLibraries(libs);
-
-        // act + assert
-        assertThrows(EmptyStackException.class,
-                () -> controller.getAllPublicationsInUserLibrary(user.getUserName()));
-    }
-
-    @Test
-    void getAllPublicationsInUserLibrary_shouldReturnPublications() throws Exception {
-        // arrange
-        User user = user("Rodolph");
-        Publication p1 = publication(user);
-        Publication p2 = uniquePublication(user);
-
-        Library lib1 = new Library("Lib1" + user.getUserName(), user);
-        addPublicationToLibrary(lib1, p1);
-        addPublicationToLibrary(lib1, p2);
-
-        Map<String, Library> libs = new HashMap<>();
-        libs.put(user.getUserName(), lib1);
-
-        var controller = newControllerWithLibraries(libs);
-
-        // act
-        List<Publication> pubs = controller.getAllPublicationsInUserLibrary(user.getUserName());
-
-        // assert
-        assertEquals(2, pubs.size());
-        assertTrue(pubs.contains(p1));
-        assertTrue(pubs.contains(p2));
-    }
+//    @Test
+//    void getAllPublicationsInUserLibrary_shouldThrow_ifUsernameNull() {
+//        var controller = newControllerWithLibraries(Map.of());
+//
+//        assertThrows(IllegalArgumentException.class,
+//                () -> controller.getAllPublicationsInUserLibrary(null));
+//    }
+//
+//    @Test
+//    void getAllPublicationsInUserLibrary_shouldThrow_ifLibraryNotFound() {
+//        var controller = newControllerWithLibraries(Map.of());
+//
+//        assertThrows(InstanceNotFoundException.class,
+//                () -> controller.getAllPublicationsInUserLibrary("user1x"));
+//    }
+//
+//    @Test
+//    void getAllPublicationsInUserLibrary_shouldThrowEmptyStack_ifNoPublications() throws Exception {
+//        // arrange
+//        User user = user("Rodolph");
+//        Library lib = new Library("Lib1" + user.getUserName(), user);
+//
+//        Map<String, Library> libs = new HashMap<>();
+//        libs.put(user.getUserName(), lib);
+//
+//        var controller = newControllerWithLibraries(libs);
+//
+//        // act + assert
+//        assertThrows(EmptyStackException.class,
+//                () -> controller.getAllPublicationsInUserLibrary(user.getUserName()));
+//    }
+//
+//    @Test
+//    void getAllPublicationsInUserLibrary_shouldReturnPublications() throws Exception {
+//        // arrange
+//        User user = user("Rodolph");
+//        Publication p1 = publication(user);
+//        Publication p2 = uniquePublication(user);
+//
+//        Library lib1 = new Library("Lib1" + user.getUserName(), user);
+//        addPublicationToLibrary(lib1, p1);
+//        addPublicationToLibrary(lib1, p2);
+//
+//        Map<String, Library> libs = new HashMap<>();
+//        libs.put(user.getUserName(), lib1);
+//
+//        var controller = newControllerWithLibraries(libs);
+//
+//        // act
+//        List<Publication> pubs = controller.getAllPublicationsInUserLibrary(user.getUserName());
+//
+//        // assert
+//        assertEquals(2, pubs.size());
+//        assertTrue(pubs.contains(p1));
+//        assertTrue(pubs.contains(p2));
+//    }
 
 
     // -------------------------
@@ -264,9 +264,9 @@ class US016ToPutPublicationInAuctionControllerTest {
         return new PublicationType(TypeOfBinding.HARDBACK, "some details");
     }
 
-    private void addPublicationToLibrary(Library lib, Publication p) {
-        lib.addPublication(p);
-    }
+//    private void addPublicationToLibrary(Library lib, Publication p) {
+//        lib.addPublication(p);
+//    }
 
     private Contact contact() {
         return new Contact("12343244",

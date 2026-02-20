@@ -17,8 +17,7 @@ public class CollectionOfPublications {
     // Attributes
     private String _collectionName;
     private Genre _collectionGenre;
-    // TODO: private List<PublicationSample> _collectionOfPublications;
-    private List<Publication> _collectionOfPublications;
+    private List<PublicationSample> _collectionOfPublications;
     private User _owner;
     private boolean _isPrivate;
 
@@ -71,7 +70,7 @@ public class CollectionOfPublications {
      */
 
     // TODO: public List<PublicationSample> getPublications() {
-    public List<Publication> getPublications() {
+    public List<PublicationSample> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }
 
@@ -89,12 +88,12 @@ public class CollectionOfPublications {
      * US018 - Adds a publication to the collection.
      * Duplicates are not allowed.
      *
-     * @param publication Publication to add
+     * @param publication PublicationSample to add
      * @return true if added, false if null or already exists
      */
 
     // TODO: public boolean addPublication(PublicationSample publication) {
-    public boolean addPublication(Publication publication) {
+    public boolean addPublication(PublicationSample publication) {
 
         if (publication == null) return false;
 

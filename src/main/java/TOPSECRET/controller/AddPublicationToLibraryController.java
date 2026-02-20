@@ -3,6 +3,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.repository.PublicationSampleRepository;
 
 import java.util.List;
@@ -20,26 +21,24 @@ public class AddPublicationToLibraryController {
     }
 
     //Call by the UI and response
- /*   public List<Publication> getListOfOtherPublications(){
-        //Get publications in user library
-        List<Publication> listOfPublicationsInLibrary = library.getAllPublications(); //Get all Publications
+//    public List<Publication> getListOfOtherPublications(){
+//        //Get publications in user library
+//        List<Publication> listOfPublicationsInLibrary = library.getAllPublications(); //Get all Publications
+//
+//        //Get publications not in library
+//        List<Publication> listOfDifferentPublications = publicationRepository.getListOfDifferentPublications(listOfPublicationsInLibrary);
+//        //Vai buscar o méto.do que está no PublicationRepository
+//
+//        //Return to the UI
+//        return listOfDifferentPublications;
+//    }
 
-        //Get publications not in library
-        List<Publication> listOfDifferentPublications = publicationRepository.getListOfDifferentPublications(listOfPublicationsInLibrary);
-        //Vai buscar o méto.do que está no PublicationRepository
-
-        //Return to the UI
-        return listOfDifferentPublications;
-    }
-
-  */
-
-    //Method for adding a publication to the Library
-    public boolean addPublicationToLib(Publication publication){
-        if (publication == null)
-            throw new IllegalArgumentException("Publication cannot be null");
-        return library.addPublication(publication); //The value is "true" if the publication is added
-    } //Está a perguntar à Library se conseguiu adicionar e devolve a mesma resposta
+//    //Method for adding a publication to the Library
+//    public boolean addPublicationToLib(Publication publication){
+//        if (publication == null)
+//            throw new IllegalArgumentException("Publication cannot be null");
+//        return library.addPublication(publication); //The value is "true" if the publication is added
+//    } //Está a perguntar à Library se conseguiu adicionar e devolve a mesma resposta
 }
 
 

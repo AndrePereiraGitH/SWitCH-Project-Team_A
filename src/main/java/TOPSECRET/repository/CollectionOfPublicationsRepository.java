@@ -31,19 +31,16 @@ public class CollectionOfPublicationsRepository {
      *
      * @param user Owner of the collection
      * @param collection Collection to add publication to
-     * @param publication Publication to add
+     * @param publication PublicationSample to add
      * @return true if added successfully, false if validation fails
      */
 
-    public boolean addPublicationToCollection(User user,
-                                              Library userLibrary,
-                                              CollectionOfPublications collection,
-                                              Publication publication) {
 
-// TODO: public boolean addPublicationToCollection(User user,
-//                                           Library userLibrary,
-//                                           CollectionOfPublications collection,
-//                                           PublicationSample publication) {
+
+ public boolean addPublicationToCollection(User user,
+                                           Library userLibrary,
+                                           CollectionOfPublications collection,
+                                           PublicationSample publication) {
 
 
         if (user == null || userLibrary == null || collection == null || publication == null) {

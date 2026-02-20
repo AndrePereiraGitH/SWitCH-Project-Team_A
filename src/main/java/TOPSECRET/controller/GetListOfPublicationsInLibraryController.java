@@ -21,18 +21,16 @@ public class GetListOfPublicationsInLibraryController {
         this._libraryRepo = libraryRepo;
     }
 
-  /*  public List<PublicationDetailsDTO> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
-
-        Library userLib = getUserLibrary(username);
-
-        List<Publication> publications = userLib.getAllPublications();
-
-        List<PublicationDetailsDTO> listOfPublicationsDTO = PublicationDetailsMapper.toDTOs(publications);
-
-        return listOfPublicationsDTO;
-    }
-
-   */
+//    public List<PublicationDetailsDTO> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
+//
+//        Library userLib = getUserLibrary(username);
+//
+//        List<Publication> publications = userLib.getAllPublications();
+//
+//        List<PublicationDetailsDTO> listOfPublicationsDTO = PublicationDetailsMapper.toDTOs(publications);
+//
+//        return listOfPublicationsDTO;
+//    }
 
     public Library getUserLibrary(String userName) throws InstanceNotFoundException {
 

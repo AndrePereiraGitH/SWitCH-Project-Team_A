@@ -36,19 +36,19 @@ public class US016ToPutPublicationInAuctionController {
     }
 
 
-    public List<Publication> getAllPublicationsInUserLibrary(String username) throws InstanceNotFoundException {
-        if (username == null) {
-            throw new IllegalArgumentException("username cannot be null");
-        }
-
-        Library userLibrary = getUserLibrary(username);
-
-        if (userLibrary.getAllPublications().isEmpty()) {
-            throw new EmptyStackException();
-        }
-
-        return userLibrary.getAllPublications();
-    }
+//    public List<Publication> getAllPublicationsInUserLibrary(String username) throws InstanceNotFoundException {
+//        if (username == null) {
+//            throw new IllegalArgumentException("username cannot be null");
+//        }
+//
+//        Library userLibrary = getUserLibrary(username);
+//
+//        if (userLibrary.getAllPublications().isEmpty()) {
+//            throw new EmptyStackException();
+//        }
+//
+//        return userLibrary.getAllPublications();
+//    }
 
 //    public boolean putPublicationForAuction(Publication pub1, Price listingPrice, String shortDescription, String listingTitle, User seller, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 //

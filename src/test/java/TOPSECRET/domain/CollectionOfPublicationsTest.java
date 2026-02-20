@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
@@ -31,8 +32,8 @@ class CollectionOfPublicationsTest {
     }
 
 
-    // Creates a valid Publication
-    private Publication createValidPublication()
+    // Creates a valid PublicationSample
+    private PublicationSample createValidPublication()
     {
         // Create Bibliographical data for publication
         Country country = new Country("PORTUGAL");
@@ -86,14 +87,20 @@ class CollectionOfPublicationsTest {
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-        // Create publication
-        return new Publication(
+
+        // Create condition
+        Condition condition1 = Condition.NEW;
+        Condition condition2 = Condition.LIKE_NEW;
+        Condition condition3 = Condition.VERY_GOOD;
+
+
+        // Create publicationSample
+        return new PublicationSample(
                 bibliographicalData,
-                publicationType,
                 user,
                 publicationStatus,
                 edition,
-                code
+                condition1
         );
     }
 
@@ -126,7 +133,7 @@ class CollectionOfPublicationsTest {
         // ARRANGE
         CollectionOfPublications expected = createBaseCollection();
         CollectionOfPublications result   = createBaseCollection();
-        Publication publication = createValidPublication();
+        PublicationSample publication = createValidPublication();
 
         // ACT
         expected.addPublication(publication);
@@ -143,7 +150,7 @@ class CollectionOfPublicationsTest {
     {
         CollectionOfPublications expected = createBaseCollection();
         CollectionOfPublications result   = createBaseCollection();
-        Publication publication = createValidPublication();
+        PublicationSample publication = createValidPublication();
 
         expected.addPublication(publication);
         result.addPublication(publication);

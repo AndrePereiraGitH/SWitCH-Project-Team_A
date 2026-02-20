@@ -33,10 +33,10 @@ public class ToPutPublicationInDirectSaleController {
         this.itemRepo = itemRepo;
     }
 
-    public List<LibraryPublicationDTO_US015> getAllPublications() {
-        List<Publication> publications = library.getAllPublications();
-        return LibraryPublicationMapper_US015.toDTO(publications);
-    }
+//    public List<LibraryPublicationDTO_US015> getAllPublications() {
+//        List<Publication> publications = library.getAllPublications();
+//        return LibraryPublicationMapper_US015.toDTO(publications);
+//    }
 
     public Item createAndAddItem(Condition condition, double weight, Dimensions dimensions, Publication publication) throws InstanceAlreadyExistsException {
         return itemRepo.createAndAddItem(condition, weight, dimensions, publication);
