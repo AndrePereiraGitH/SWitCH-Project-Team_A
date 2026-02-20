@@ -93,7 +93,7 @@ class CartTest {
                 bibliographicalData,
                 publicationType,
                 seller,
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READING,
 //                "1st edition",
                 edition,
                 code
@@ -109,33 +109,40 @@ class CartTest {
                 LocalDate.of(2020, 1, 1));
 
         //PublicationSample
-        PublicationSample item = new PublicationSample(
+        PublicationSample item1 = new PublicationSample(
                 bibliographicalData,
                 seller,
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READ,
                 edition1,
                 Condition.LIKE_NEW);
 
+        PublicationSample item2 = new PublicationSample(
+                bibliographicalData,
+                seller,
+                PublicationStatus.READ,
+                edition1,
+                Condition.POOR);
 
-        final List<PublicationSample> Item = new ArrayList<>(List.of(item));
+
+        final List<PublicationSample> items1 = new ArrayList<>(List.of(item1));
+        final List<PublicationSample> items2 = new ArrayList<>(List.of(item2));
+
 
         listing1 = new Listing(
                 "Listing Title 1",
-                Item,
+                items1,
                 SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("50.00")),
                 "Short description 1",
-                new User("Seller1", null, null, UserRole.NORMAL_USER),
                 pictures
         );
 
         listing2 = new Listing(
                 "Listing Title 2",
-                Item,
+                items2,
                 SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("50.00")),
                 "Short description 2",
-                new User("Seller2", null, null, UserRole.NORMAL_USER),
                 pictures
         );
     }

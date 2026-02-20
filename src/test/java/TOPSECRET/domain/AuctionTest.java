@@ -806,7 +806,6 @@ class AuctionTest {
                 SaleType.AUCTION,
                 price,
                 "short description",
-                instantiateUser("Joseph"),
                 instantiatePictures()
         );
     }
@@ -872,7 +871,7 @@ class AuctionTest {
                 bd,
                 publicationType,
                 user,
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READING,
 //                "1st edition",
                 edition,
                 code
@@ -904,7 +903,7 @@ class AuctionTest {
                 bd,
                 publicationType,
                 user,
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READ,
 //                "1st edition",
                 edition,
                 code
@@ -916,7 +915,7 @@ class AuctionTest {
         return new PublicationSample(
                 bd,
                 instantiateUser("Johny123"),
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READING,
                 instantiateEdition(),
                 Condition.LIKE_NEW
         );

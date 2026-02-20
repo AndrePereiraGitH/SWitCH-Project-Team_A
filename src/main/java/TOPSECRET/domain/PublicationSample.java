@@ -22,7 +22,7 @@ public class PublicationSample {
 
     private final User _owner;
 
-    private final PublicationStatus _publicationStatus;
+    private PublicationStatus _publicationStatus;
 
     private final Edition _edition;
 
@@ -58,6 +58,10 @@ public class PublicationSample {
 
     public Edition getEdition() {
         return _edition;
+    }
+
+    public void changeStatusToForSale(){
+        _publicationStatus = PublicationStatus.FOR_SALE;
     }
 
     public Condition getCondition() {

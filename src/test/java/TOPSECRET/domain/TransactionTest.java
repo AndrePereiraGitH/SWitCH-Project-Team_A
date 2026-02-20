@@ -356,7 +356,7 @@ class TransactionTest {
                 bd,
                 createValidPublicationType(),
                 seller,
-                PublicationStatus.FOR_SALE,  // adjust if needed
+                PublicationStatus.READ,  // adjust if needed
 //                "1st Edition",
                 edition,
                 code
@@ -375,7 +375,7 @@ class TransactionTest {
         return new PublicationSample(
                 bd,
                 seller,
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READ,
                 edition1,
                 Condition.LIKE_NEW
         );
@@ -388,7 +388,6 @@ class TransactionTest {
                 SaleType.DIRECT_SALE,
                 new Price (new BigDecimal("19.00")),
                 "ShortDescription",
-                createValidUser("Seller"),
                 List.of(new Picture("Pic1"))
         );
     }

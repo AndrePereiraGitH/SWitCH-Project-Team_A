@@ -108,7 +108,7 @@ class DirectSaleTest {
                 createBibliographicalData1(),
                 createPublicationType(),
                 createSeller(),
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READ,
 //                "1st Edition",
                 createEdition(),
                 createCode()
@@ -120,7 +120,7 @@ class DirectSaleTest {
                 createBibliographicalData2(),
                 createPublicationType(),
                 createSeller(),
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READING,
 //                "1st Edition",
                 createEdition(),
                 createCode()
@@ -141,7 +141,7 @@ class DirectSaleTest {
         PublicationSample item = new PublicationSample(
                 createBibliographicalData1(),
                 createSeller(),
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READ,
                 edition1,
                 Condition.LIKE_NEW);
 
@@ -162,7 +162,7 @@ class DirectSaleTest {
         PublicationSample item2 = new PublicationSample(
                 createBibliographicalData2(),
                 createSeller(),
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READING,
                 edition2,
                 Condition.LIKE_NEW);
 
@@ -230,7 +230,6 @@ class DirectSaleTest {
                 SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("19.99")),
                 "Short Description",
-                createSeller(),
                 List.of(new Picture("pic"))
         );
     }
@@ -242,7 +241,6 @@ class DirectSaleTest {
                 SaleType.DIRECT_SALE,
                 new Price(new BigDecimal("9.99")),
                 "Short Description",
-                createSeller(),
                 List.of(new Picture("pic"))
         );
     }

@@ -282,7 +282,6 @@ class AuctionRepositoryTest {
                 SaleType.AUCTION,
                 new Price(new BigDecimal("10.00")),
                 "Short desc",
-                seller,
                 List.of()
         );
 
