@@ -60,6 +60,10 @@ public class PublicationSample {
         return _edition;
     }
 
+    public Condition getCondition() {
+        return _condition;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

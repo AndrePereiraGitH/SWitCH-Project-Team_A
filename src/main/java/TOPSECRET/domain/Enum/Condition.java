@@ -14,4 +14,7 @@ public enum Condition {
         this._description = description;
     }
 
+    public String getDescription() {
+        return _description;
+    }
 }
