@@ -1,104 +1,93 @@
 @startuml
+
 title US004 - Register Appraisal Entity (Class Diagram)
 
 ' =========================
-' UI
+' Controller Layer
 ' =========================
-class ":UI004" {
+
+class US004ToRegisterAppraisalEntityController {
+
+    +getAllGenres() : List<GenreDTO>
+    +getAllPublicationTypes() : List<PublicationTypeDTO>
+    +registerAppraisalEntity() : AppraisalEntity
 }
 
 ' =========================
-' Controller
+' Repository Layer
 ' =========================
-class ":US004ToRegisterAppraisalEntityController" {
-    +getAllGenres()
-    +getAllPublicationTypes()
-    +registerAppraisalEntity()
+
+class GenreRepository {
+    +getAllGenres() : List<Genre>
 }
 
-' =========================
-' Genre
-' =========================
-class ":GenreRepository" {
-    -listOfGenre : List<Genre>
-    +getAllGenres()
+class PublicationTypeRepository {
+    +getAllPublicationTypes() : List<PublicationType>
 }
 
-class ":GenreMapper" {
-    -listOfGenreDTO : List<GenreDTO>
-    +toDTO(allGenreList)
+class AppraisalEntityRepository {
+    -appraisalEntities : List<AppraisalEntity>
+
+    +createAndAddAppraisalEntity(name : String, contact : Contact, genres : List<Genre>, publicationTypes : List<PublicationType>) : AppraisalEntity
 }
-
-class ":Genre" {
-    +getTitle()
-}
-
-' class "GenreDetailsDTO" {
-' }
-
-' class "GenreDTO" {
-' }
 
 ' =========================
-' Publication Type
+' Mapper / DTO Layer
 ' =========================
-class ":PublicationTypeRepository" {
-    -listOfPublicationType : List<PublicationType>
-    +getAllPublicationTypes()
+
+class GenreDTO {
+    +genreToDTO(genres : List<Genre>) : List<GenreDetailsDTO>
+    +dtoToGenre(dto : GenreDetailsDTO) : Genre
 }
 
-class ":PublicationTypeMapper" {
-    -listOfPubTypeDTO : List<PubTypeDTO>
-    +toDTO(List<PublicationType>)
+class PublicationTypeDTO {
+    +publicationTypeToDTO(types : List<PublicationType>) : List<PubTypeDTO>
+    +dtoToPublicationType(dto : PubTypeDTO) : PublicationType
 }
-
-class ":PublicationType" {
-    +getDetails(listOfPubTypeDTO)
-}
-
-' class "PubTypeDTO" {
-' }
-
-' class "PubTypeDetailsDTO" {
-' }
 
 ' =========================
-' Appraisal Entity
+' Domain Layer
 ' =========================
-class ":AppraisalEntityRepository" {
-    -lisOfAppraisalEntity: List<AppraisalEntity>
-    +createAndAddAppraisalEntity()
-}
 
-class "AppraisalEntity" {
+class AppraisalEntity {
     -name : String
     -contact : Contact
-    -selectedGenres : List<Genre>
-    -selectedPublicationType : List<PublicationType>
+    -genres : List<Genre>
+    -publicationTypes : List<PublicationType>
 }
 
+class Genre {
+    -title : String
+    +getTitle() : String
+}
+
+class PublicationType {
+    -typeOfBinding : String
+    -details : String
+    +getTypeOfBinding() : String
+    +getDetails() : String
+}
 
 ' =========================
 ' Relationships
 ' =========================
-":UI004" ..> ":US004ToRegisterAppraisalEntityController" : delegates to
 
-":US004ToRegisterAppraisalEntityController" "1" ---> "1  " ":GenreRepository" : requests a list of
-":US004ToRegisterAppraisalEntityController" "1      " ....> "1  " ":GenreMapper" : invokes
+' Controller dependencies
+US004ToRegisterAppraisalEntityController ..> GenreRepository
+US004ToRegisterAppraisalEntityController ..> PublicationTypeRepository
+US004ToRegisterAppraisalEntityController ..> AppraisalEntityRepository
+US004ToRegisterAppraisalEntityController ..> GenreDTO
+US004ToRegisterAppraisalEntityController ..> PublicationTypeDTO
 
-":GenreMapper" "1    " ..> "1..*  " ":Genre" : converts
-' ":GenreMapper" --> "GenreDetailsDTO"
-":GenreMapper" "1  " ..> "1..*  " "GenreDTO" : produces
+' Repository to Domain
+GenreRepository "1 " --> " * " Genre
+PublicationTypeRepository "1        " --> " * " PublicationType
 
-":US004ToRegisterAppraisalEntityController" "1 " ---> "1 " ":PublicationTypeRepository" : requests a list of
-":US004ToRegisterAppraisalEntityController" "1 " ....> "1  " ":PublicationTypeMapper" : invokes
+AppraisalEntityRepository "1 " --> " * " AppraisalEntity
 
-":PublicationTypeMapper" "  1      " ..> "1..* " ":PublicationType" : converts
-' ":PublicationTypeMapper" ..> "PubTypeDTO" : produces
-":PublicationTypeMapper" "1 " ..> "1..*   " "PubTypeDetailsDTO" : produces
-
-":US004ToRegisterAppraisalEntityController" "1 " ---> "1      " ":AppraisalEntityRepository" : requests registration to
-
-":AppraisalEntityRepository" "1 " ..> " *   " "AppraisalEntity" : can create
+' AppraisalEntity composition
+AppraisalEntity "  1     " *-- "1..*" Genre
+AppraisalEntity "1 " *-- "1..*    " PublicationType
 
 @enduml
+

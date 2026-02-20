@@ -9,7 +9,7 @@ participant ":UI004" as UI
 participant ":US004ToRegisterAppraisalEntityController" as Controller
 
 participant ":GenreRepository" as GenreRepo
-participant ":GenreMapper" as GenreMapper
+participant ":GenreDTO" as GenreMapper
 participant "allGenreList: List<Genre>"
 
 participant "listOfGenreDTO: List<GenreDTO>" as GenreDTO
@@ -17,7 +17,7 @@ participant ":Genre" as Genre
 participant "genreDTO: GenreDetailsDTO" as GDTO
 
 participant ":PublicationTypeRepository" as PubTypeRepo
-participant ":PublicationTypeMapper" as PubTypeMapper
+participant ":PublicationTypeDTO" as PubTypeMapper
 
 participant "listOfPublicationTypDTO:List<PubTypeDTO>" as PubTypeDTO
 participant ":PublicationType" as PublicationType
@@ -42,7 +42,7 @@ GenreRepo -->> "allGenreList: List<Genre>" **: create()
 GenreRepo --> Controller : allGenreList
 deactivate GenreRepo
 
-Controller -> GenreMapper : toDTO(allGenreList)
+Controller -> GenreMapper : genreToDTO(allGenreList)
 activate GenreMapper
 
 ' ----- Loop ----
@@ -51,10 +51,10 @@ GenreMapper --> GenreDTO** : create()
     loop for each genre in the list
         GenreMapper -> Genre: getTitle()
         activate Genre
-        Genre --> GenreMapper: titles
+        Genre --> GenreMapper: title
         deactivate Genre
-        GenreMapper -> GDTO **: createDTO(titles)
 
+        GenreMapper -> GDTO **: createDTO(title)
 
         GenreMapper -> GenreMapper: listOfGenreDTO.add(genreDTO)
     end
@@ -83,21 +83,26 @@ activate PubTypeRepo
 PubTypeRepo --> Controller : List<PublicationType>
 deactivate PubTypeRepo
 
-Controller -> PubTypeMapper : toDTO(List<PublicationType>)
+Controller -> PubTypeMapper : publicationTypeToDTO(List<PublicationType>)
 activate PubTypeMapper
 
 ' ----- Loop ----
 PubTypeMapper -->> PubTypeDTO** : create()
 
     loop for each publicationType in the list
-        PubTypeMapper -> PublicationType: getDetails(listOfPubTypeDTO)
+        PubTypeMapper -> PublicationType: getTypeOfBinding()
         activate PublicationType
-        PublicationType --> PubTypeMapper: PubTypeDetailsDTO
+        PublicationType --> PubTypeMapper: typeOfBinding
         deactivate PublicationType
-        PubTypeMapper -> PDTO **: createDTO(PubTypeDetailsDTO)
 
+        PubTypeMapper -> PublicationType: getDetails()
+        activate PublicationType
+        PublicationType --> PubTypeMapper: details
+        deactivate PublicationType
 
-        PubTypeMapper -> PubTypeMapper: listOfPubTypeDTO.add(PubTypeDetailsDTO)
+        PubTypeMapper -> PDTO **: createDTO(typeOfBinding, details)
+
+        PubTypeMapper -> PubTypeMapper: listOfPubTypeDTO.add(PublicationTypeDTO)
     end
 
 ' ----- End loop ----
@@ -119,23 +124,31 @@ activate UI
 UI -> Controller : registerAppraisalEntity(name, contact, selectedGenresDTO, selectedPublicationTypesDTO)
 activate Controller
 
-' Convert DTO -> Domain
-' Controller -> GenreMapper : toDomain(selectedGenresDTO)
-' activate GenreMapper
-' GenreMapper --> Controller : List<Genre>
+' --- Validate selections ---
+Controller -> Controller : validate selectedGenresDTO not empty
+Controller -> Controller : validate selectedPublicationTypesDTO not empty
 
-' deactivate GenreMapper
+' --- Convert selectedGenresDTO ---
+    loop for each genreDTO in selectedGenresDTO
+        Controller -> GenreMapper : dtoToGenre(genreDTO)
+        activate GenreMapper
+        GenreMapper --> Controller : Genre
+        deactivate
+    end
 
-' Controller -> PubTypeMapper : toDomain(selectedPublicationTypeDTO)
-' activate PubTypeMapper
-' PubTypeMapper --> Controller : List<PublicationType>
-' deactivate PubTypeMapper
+' --- Convert selectedPublicationTypesDTO ---
+    loop for each PubTypeDTO in selectedPublicationTypesDTO
+        Controller -> PubTypeMapper : dtoToPublicationType(PubTypeDTO)
+        activate PubTypeMapper
+        PubTypeMapper --> Controller : PublicationType
+        deactivate
+    end
 
-Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, selectedGenresDTO, selectedPublicationTypesDTO)
+Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, genres, publicationTypes)
 activate AppraisalRepo
 
 create "apEn : AppraisalEntity" as AppraisalEntity
-AppraisalRepo --> AppraisalEntity : create(name, contact, selectedGenresDTO, selectedPublicationTypesDTO)
+AppraisalRepo --> AppraisalEntity : create(name, contact, genres, publicationType)
 
 AppraisalRepo -> AppraisalList : exists(apEn)
 activate AppraisalList
@@ -153,7 +166,9 @@ deactivate AppraisalRepo
 Controller --> UI : Success
 deactivate Controller
 
-UI --> Administrator : Success
+UI ---> Administrator : Success
 deactivate UI
+
+
 
 @enduml
