@@ -1,11 +1,11 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.MediaFormat;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.repository.PublicationRepository;
+import TOPSECRET.repository.PublicationSampleRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ class US010ToRegisterNewPublicationCtrlTest {
 
     @Test
     void shouldAddPublication() {
-        PublicationRepository publicationRepository1 = new PublicationRepository();
+        PublicationSampleRepository publicationRepository1 = new PublicationSampleRepository();
 
         US010ToRegisterNewPublicationCtrl pubCtrl1 = new US010ToRegisterNewPublicationCtrl(publicationRepository1);
 
@@ -65,6 +65,7 @@ class US010ToRegisterNewPublicationCtrlTest {
         );
 
         Code code1 = Code.fromIsbn10("1234567890");
+        Condition condition = Condition.LIKE_NEW;
 
         Country country3 = new Country("Italy");
 
@@ -88,7 +89,7 @@ class US010ToRegisterNewPublicationCtrlTest {
 
         //Act is here
         boolean publicationAdded1 = pubCtrl1.createAndAddPublication(bibliographicalData1,
-                publicationType1, user1, pubStatus1, edition1, code1);
+                publicationType1, user1, pubStatus1, edition1, condition);
 
 
         //Assert is here

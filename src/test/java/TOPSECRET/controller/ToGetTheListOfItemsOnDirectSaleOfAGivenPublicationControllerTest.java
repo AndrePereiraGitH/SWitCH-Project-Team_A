@@ -2,23 +2,16 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
-import TOPSECRET.dto.DirectSaleDTO_US023;
 import TOPSECRET.dto.DirectSaleMapper_US023;
-import TOPSECRET.dto.PublicationDTO_US023;
 import TOPSECRET.dto.PublicationMapper_US023;
-import TOPSECRET.repository.DirectSaleRepository;
-import TOPSECRET.repository.PublicationRepository;
+import TOPSECRET.repository.PublicationSampleRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
@@ -215,7 +208,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 //        DirectSale ds1 = new DirectSale(List.of(listing1), validBuyer, false);
 //        DirectSale ds2 = new DirectSale(List.of(listing2), validBuyer, false);
 
-        PublicationRepository pubRepo = new PublicationRepository(List.of());
+        PublicationSampleRepository pubRepo = new PublicationSampleRepository(List.of());
         PublicationMapper_US023 pubMapper = new PublicationMapper_US023();
 //        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds1, ds2));
         DirectSaleMapper_US023 dsMapper = new DirectSaleMapper_US023();

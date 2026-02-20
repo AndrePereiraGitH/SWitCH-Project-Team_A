@@ -1,14 +1,15 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.repository.PublicationRepository;
+import TOPSECRET.repository.PublicationSampleRepository;
 
 public class US010ToRegisterNewPublicationCtrl {
 
-    private final PublicationRepository _publicationRepository;
+    private final PublicationSampleRepository _publicationRepository;
 
-    public US010ToRegisterNewPublicationCtrl(PublicationRepository publicationRepository) {
+    public US010ToRegisterNewPublicationCtrl(PublicationSampleRepository publicationRepository) {
 
         if (publicationRepository == null) {
             throw new IllegalArgumentException("PublicationRepository cannot be left blank");
@@ -22,11 +23,11 @@ public class US010ToRegisterNewPublicationCtrl {
 
     public boolean createAndAddPublication(
             BibliographicalData bibliographicalData1, PublicationType publicationType1,
-            User user1, PublicationStatus publicationStatus1, Edition _edition, Code _code
+            User user1, PublicationStatus publicationStatus1, Edition _edition, Condition condition
     ) {
 
         return _publicationRepository.createAndAdd(bibliographicalData1, publicationType1,
-                user1, publicationStatus1, _edition, _code);
+                user1, publicationStatus1, _edition, condition);
 
     }
 

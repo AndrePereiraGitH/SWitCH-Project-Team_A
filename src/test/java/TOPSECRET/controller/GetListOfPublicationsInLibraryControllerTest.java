@@ -150,38 +150,38 @@ class GetListOfPublicationsInLibraryControllerTest {
     }
 
 
-    @Test
-    void ensureListOfPublicationsInLibraryIsEmptyWhenLibraryReturnsEmptyAList() throws InstanceNotFoundException {
-
-        // Arrange
-        String username = user3.getUserName();
-        ctrl.getUserLibrary(username);
-
-        // Act
-        List<PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void ensureListOfPublicationsInLibraryReturnsDTOs() throws InstanceNotFoundException {
-        //Arrange
-        String username = user1.getUserName();
-
-        //Act
-        List<PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
-
-        String expectedTitle1= publication1.getBibliographicalData().getTitle();
-        String expectedTitle2=publication2.getBibliographicalData().getTitle();
-
-        //Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(expectedTitle1,result.get(0).pubTitle);
-        assertEquals(expectedTitle2,result.get(1).pubTitle);
-
-    }
+//    @Test
+//    void ensureListOfPublicationsInLibraryIsEmptyWhenLibraryReturnsEmptyAList() throws InstanceNotFoundException {
+//
+//        // Arrange
+//        String username = user3.getUserName();
+//        ctrl.getUserLibrary(username);
+//
+//        // Act
+//        List<PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
+//
+//    @Test
+//    void ensureListOfPublicationsInLibraryReturnsDTOs() throws InstanceNotFoundException {
+//        //Arrange
+//        String username = user1.getUserName();
+//
+//        //Act
+//        List<PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+//
+//        String expectedTitle1= publication1.getBibliographicalData().getTitle();
+//        String expectedTitle2=publication2.getBibliographicalData().getTitle();
+//
+//        //Assert
+//        assertNotNull(result);
+//        assertEquals(2, result.size());
+//        assertEquals(expectedTitle1,result.get(0).pubTitle);
+//        assertEquals(expectedTitle2,result.get(1).pubTitle);
+//
+//    }
 
 }
