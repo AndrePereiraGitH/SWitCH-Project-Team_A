@@ -16,15 +16,15 @@ class PublicationTypeTest {
         PublicationType pt1 = new PublicationType(typeOfBinding, details);
 
         assertNotNull(pt1);
-        assertEquals(pt1.getTypeOfBinding(), typeOfBinding);
-        assertEquals(pt1.getDetails(), details);
+        assertEquals(typeOfBinding, pt1.getTypeOfBinding());
+        assertEquals(details, pt1.getDetails());
 
     }
 
     @Test
     void shouldReturnFalseWhenComparedWithNull() {
         PublicationType pt = new PublicationType(TypeOfBinding.HARDBACK, "A");
-        assertFalse(pt.equals(null));
+        assertNotEquals(null, pt);
     }
 
     @Test

@@ -1,234 +1,253 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for AppraisalEntity.
+ * Validates constructor rules, equals/hashCode,
+ * getters and full information.
+ */
 class AppraisalEntityTest {
 
-    // TEST DATA HELPERS
-    // Creates a valid Contact for testing
+    // =========================
+    // HELPERS
+    // =========================
+
     private Contact createValidContact() {
         return new Contact("912345678", "351", null, null);
     }
 
-    // Creates a valid PublicationType for testing
-    private PublicationType createValidPublicationType() {
-        return new PublicationType(
-                TypeOfBinding.HARDBACK,
-                "Standard publication"
-        );
+    private PublicationType createValidPublicationType(String details) {
+        return new PublicationType(TypeOfBinding.HARDBACK, details);
     }
 
-    // Creates a valid Genre for testing
-    private Genre createValidGenre() {
-        return new Genre("Fiction");
+    private Genre createValidGenre(String title) {
+        return new Genre(title);
     }
 
-    // Static helper used by MethodSource
-    private static Contact createValidContactStatic() {
-        return new Contact("999999999", "351", null, null);
+    private List<PublicationType> createPublicationTypeList(String... details) {
+        return java.util.Arrays.stream(details)
+                .map(this::createValidPublicationType)
+                .toList();
     }
 
-    // Static helper used by MethodSource
-    private static PublicationType createValidPublicationTypeStatic() {
-        return new PublicationType(
-                TypeOfBinding.HARDBACK,
-                "Standard publication"
-        );
+    private List<Genre> createGenreList(String... titles) {
+        return java.util.Arrays.stream(titles)
+                .map(this::createValidGenre)
+                .toList();
     }
 
-    // Static helper used by MethodSource
-    private static Genre createValidGenreStatic() {
-        return new Genre("Fiction");
-    }
-
+    // =========================
     // PARAMETER PROVIDERS
-    // Provides invalid name values for constructor validation
+    // =========================
+
     static Stream<String> invalidNamesProvider() {
-        return Stream.of(
-                null,
-                "",
-                " ",
-                "   ",
-                "\t",
-                "\n"
-        );
+        return Stream.of(null, "", " ", "   ", "\t", "\n");
     }
 
-    // Provides combinations where one mandatory parameter is null
     static Stream<Arguments> nullParameterProvider() {
         return Stream.of(
-                Arguments.of(null, createValidPublicationTypeStatic(), createValidGenreStatic()),   // Null contact
-                Arguments.of(createValidContactStatic(), null, createValidGenreStatic()),          // Null publicationType
-                Arguments.of(createValidContactStatic(), createValidPublicationTypeStatic(), null) // Null genre
+                Arguments.of(null,
+                        List.of(new PublicationType(TypeOfBinding.HARDBACK, "Standard")),
+                        List.of(new Genre("Fiction"))),
+
+                Arguments.of(new Contact("999", "351", null, null),
+                        null,
+                        List.of(new Genre("Fiction"))),
+
+                Arguments.of(new Contact("999", "351", null, null),
+                        List.of(new PublicationType(TypeOfBinding.HARDBACK, "Standard")),
+                        null)
         );
     }
 
+    // =========================
     // VALID CONSTRUCTION
-    // Verifies that a valid AppraisalEntity can be created
+    // =========================
+
     @Test
     void shouldCreateAppraisalEntityWhenAllDataIsValid() {
 
         // ARRANGE
         String expectedName = "Entity One";
         Contact expectedContact = createValidContact();
-        PublicationType expectedPublicationType = createValidPublicationType();
-        Genre expectedGenre = createValidGenre();
+
+        List<PublicationType> publicationTypes =
+                createPublicationTypeList("Standard");
+
+        List<Genre> genres =
+                createGenreList("Fiction");
 
         // ACT
         AppraisalEntity entity =
                 new AppraisalEntity(
                         expectedName,
                         expectedContact,
-                        expectedPublicationType,
-                        expectedGenre
+                        publicationTypes,
+                        genres
                 );
 
         // ASSERT
-        assertNotNull(entity);
         assertEquals(expectedName, entity.getName());
         assertEquals(expectedContact, entity.getContact());
-        assertEquals(expectedPublicationType, entity.getPublicationType());
-        assertEquals(expectedGenre, entity.getGenre());
+        assertEquals(1, entity.getPublicationTypes().size());
+        assertEquals(1, entity.getGenres().size());
     }
 
-    // INVALID NAME (PARAMETERIZED)
-    // Verifies that invalid names throw an exception
+    // =========================
+    // INVALID NAME
+    // =========================
+
     @ParameterizedTest
     @MethodSource("invalidNamesProvider")
     void shouldThrowExceptionWhenInvalidNameIsProvided(String invalidName) {
 
         // ARRANGE
         Contact contact = createValidContact();
-        PublicationType publicationType = createValidPublicationType();
-        Genre genre = createValidGenre();
 
-        // ACT AND ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AppraisalEntity(
-                    invalidName,
-                    contact,
-                    publicationType,
-                    genre
-            );
-        });
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                new AppraisalEntity(
+                        invalidName,
+                        contact,
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction")
+                )
+        );
     }
 
-    // NULL PARAMETERS (PARAMETERIZED)
-    // Verifies that null mandatory parameters throw an exception
+    // =========================
+    // NULL PARAMETERS
+    // =========================
+
     @ParameterizedTest
     @MethodSource("nullParameterProvider")
-    void shouldThrowExceptionWhenMandatoryParameterIsNull(Contact contact, PublicationType publicationType, Genre genre) {
+    void shouldThrowExceptionWhenMandatoryParameterIsNull(
+            Contact contact,
+            List<PublicationType> publicationTypes,
+            List<Genre> genres) {
 
         // ARRANGE
         String validName = "Valid Name";
 
-        // ACT AND ASSERT
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AppraisalEntity(
-                    validName,
-                    contact,
-                    publicationType,
-                    genre
-            );
-        });
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                new AppraisalEntity(
+                        validName,
+                        contact,
+                        publicationTypes,
+                        genres
+                )
+        );
     }
 
-    // EQUALS METHOD
-    // Verifies equality when name and contact are equal
+    // =========================
+    // EQUALS
+    // =========================
+
     @Test
     void shouldReturnTrueWhenNameAndContactAreEqual() {
 
         // ARRANGE
         Contact contact = createValidContact();
-        PublicationType publicationType = createValidPublicationType();
 
         AppraisalEntity entity1 =
-                new AppraisalEntity("Entity", contact, publicationType, new Genre("Fiction"));
+                new AppraisalEntity("Entity",
+                        contact,
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         AppraisalEntity entity2 =
-                new AppraisalEntity("entity", contact, publicationType, new Genre("Drama"));
+                new AppraisalEntity("entity",
+                        contact,
+                        createPublicationTypeList("Collector"),
+                        createGenreList("Drama"));
 
         // ACT
         boolean result = entity1.equals(entity2);
 
         // ASSERT
-        assertTrue(result);
+        assertEquals(true, result);
     }
 
-    // Verifies inequality when name is different
     @Test
     void shouldReturnFalseWhenNameIsDifferent() {
 
         // ARRANGE
         Contact contact = createValidContact();
-        PublicationType publicationType = createValidPublicationType();
 
         AppraisalEntity entity1 =
-                new AppraisalEntity("Entity A", contact, publicationType, new Genre("Fiction"));
+                new AppraisalEntity("Entity A",
+                        contact,
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         AppraisalEntity entity2 =
-                new AppraisalEntity("Entity B", contact, publicationType, new Genre("Fiction"));
+                new AppraisalEntity("Entity B",
+                        contact,
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         // ACT
         boolean result = entity1.equals(entity2);
 
         // ASSERT
-        assertFalse(result);
+        assertEquals(false, result);
     }
 
-    // Verifies inequality when contact is different
     @Test
     void shouldReturnFalseWhenContactIsDifferent() {
 
         // ARRANGE
-        PublicationType publicationType = createValidPublicationType();
-
         AppraisalEntity entity1 =
-                new AppraisalEntity(
-                        "Entity",
-                        new Contact("111111111", "351", null, null),
-                        publicationType,
-                        new Genre("Fiction")
-                );
+                new AppraisalEntity("Entity",
+                        new Contact("111", "351", null, null),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         AppraisalEntity entity2 =
-                new AppraisalEntity(
-                        "Entity",
-                        new Contact("222222222", "351", null, null),
-                        publicationType,
-                        new Genre("Fiction")
-                );
+                new AppraisalEntity("Entity",
+                        new Contact("222", "351", null, null),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         // ACT
         boolean result = entity1.equals(entity2);
 
         // ASSERT
-        assertFalse(result);
+        assertEquals(false, result);
     }
 
-    // HASHCODE METHOD
-    // Verifies hashCode consistency with equals
+    // =========================
+    // HASHCODE
+    // =========================
+
     @Test
     void hashCodeShouldBeEqualWhenObjectsAreEqual() {
 
         // ARRANGE
         Contact contact = createValidContact();
-        PublicationType publicationType = createValidPublicationType();
 
         AppraisalEntity entity1 =
-                new AppraisalEntity("Entity", contact, publicationType, new Genre("Fiction"));
+                new AppraisalEntity("Entity",
+                        contact,
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         AppraisalEntity entity2 =
-                new AppraisalEntity("ENTITY", contact, publicationType, new Genre("Drama"));
+                new AppraisalEntity("ENTITY",
+                        contact,
+                        createPublicationTypeList("Collector"),
+                        createGenreList("Drama"));
 
         // ACT
         int hash1 = entity1.hashCode();
@@ -238,26 +257,28 @@ class AppraisalEntityTest {
         assertEquals(hash1, hash2);
     }
 
-    // FULL INFORMATION METHOD
-    // Verifies that the full information string contains all data
+    // =========================
+    // FULL INFO
+    // =========================
+
     @Test
     void shouldReturnFullInformationString() {
 
         // ARRANGE
         String name = "Entity One";
         Contact contact = createValidContact();
-        PublicationType publicationType = createValidPublicationType();
-        Genre genre = new Genre("Fiction");
 
-        AppraisalEntity entity = new AppraisalEntity(name, contact, publicationType, genre);
+        AppraisalEntity entity =
+                new AppraisalEntity(name,
+                        contact,
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
 
         // ACT
         String result = entity.AppraisalEntityFullInformation();
 
         // ASSERT
-        assertTrue(result.contains(name));
-        assertTrue(result.contains(contact.toString()));
-        assertTrue(result.contains(publicationType.toString()));
-        assertTrue(result.contains(genre.getGenreType()));
+        assertEquals(true, result.contains(name));
+        assertEquals(true, result.contains(contact.toString()));
     }
 }

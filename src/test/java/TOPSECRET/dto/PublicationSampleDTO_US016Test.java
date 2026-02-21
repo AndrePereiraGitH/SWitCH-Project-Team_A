@@ -44,7 +44,7 @@ class PublicationSampleDTO_US016Test {
         PublicationSample publicationSample = createPublicationSample();
         List<String> expectedAuthorsNames = publicationSample.getBibliographicalData().getAuthors().stream().map(a -> a.getProfile().getName()).toList();
 
-        List<String> expectedGenres = publicationSample.getBibliographicalData().getGenres().stream().map(g -> g.getGenreType()).toList();
+        List<String> expectedGenres = publicationSample.getBibliographicalData().getGenres().stream().map(g -> g.getTitle()).toList();
 
         // act
         PublicationSampleDTO_US016 result = PublicationSampleDTO_US016.toDTO(publicationSample);

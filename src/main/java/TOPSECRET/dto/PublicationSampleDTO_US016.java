@@ -44,7 +44,7 @@ public class PublicationSampleDTO_US016 {
                         .toList(),
                 publicationSample.getBibliographicalData().getOriginalLanguage(),
                 publicationSample.getBibliographicalData().getGenres().stream()
-                        .map(Genre::getGenreType)
+                        .map(Genre::getTitle)
                         .toList(),
                 publicationSample.getOwner().getUserName(),
                 publicationSample.getCondition().getDescription()

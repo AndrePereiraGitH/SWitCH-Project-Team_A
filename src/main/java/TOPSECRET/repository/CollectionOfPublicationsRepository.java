@@ -204,7 +204,7 @@ public class CollectionOfPublicationsRepository {
         Optional<CollectionOfPublications> collectionFound = _collectionOfPublicationsList.stream()
                 .filter(c ->
                         Objects.equals(c.getCollectionName(), collectionDTO.get_name()) &&
-                        Objects.equals(c.getCollectionGenre().getGenreType(), collectionDTO.get_genreName()) &&
+                        Objects.equals(c.getCollectionGenre().getTitle(), collectionDTO.get_genreName()) &&
                         Objects.equals(c.getOwner().getUserName(), collectionDTO.getOwnerName().getUserName())
                 )
                 .findFirst();

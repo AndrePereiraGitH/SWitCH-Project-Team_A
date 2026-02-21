@@ -91,7 +91,7 @@ class GenreMapper_US013Test {
         List<GenreDTO_US013> result = mapper.toDTO(genres);
 
         // Assert
-        assertEquals(genre.getGenreType(), result.get(0).genreName);
+        assertEquals(genre.getTitle(), result.get(0).genreName);
     }
 
     @Test

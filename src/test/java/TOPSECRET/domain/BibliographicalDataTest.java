@@ -80,7 +80,7 @@ class BibliographicalDataTest {
 
         assertEquals(LocalDate.of(2022, 8, 4), bibliographicalData.getPublishDate());
 
-        assertEquals("Fantasy", bibliographicalData.getGenres().get(0).getGenreType());
+        assertEquals("Fantasy", bibliographicalData.getGenres().get(0).getTitle());
 
 //        assertEquals(272, bibliographicalData.getNumberOfPages());
 

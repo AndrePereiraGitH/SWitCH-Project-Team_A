@@ -1,16 +1,38 @@
 package TOPSECRET.domain;
 
+import java.util.List;
 
+/**
+ * Domain entity representing an Appraisal Entity.
+ * An AppraisalEntity contains:
+ * - A name
+ * - Contact information
+ * - A list of supported PublicationTypes (1..*)
+ * - A list of supported Genres (1..*)
+ * Two AppraisalEntity objects are considered equal if they share
+ * the same name and contact information.
+ */
 
 public class AppraisalEntity {
 
     private String _name;
     private Contact _contact;
-    private PublicationType _publicationType;  // ToDo change to PublicationType
-    private Genre _genre;
+    private List<PublicationType> _publicationTypes;
+    private List<Genre> _genres;
 
-    // Constructor
-    public AppraisalEntity(String name, Contact contact, PublicationType publicationType, Genre genre) {
+    /**
+     * Creates a new AppraisalEntity.
+     * Validates that:
+     * - Name is not null or blank
+     * - Contact is not null
+     * - At least one PublicationType exists
+     * - At least one Genre exists
+     * @param name Name of the Appraisal Entity
+     * @param contact Contact information
+     * @param publicationTypes List of supported PublicationTypes (1..*)
+     * @param genres List of supported Genres (1..*)
+     */
+    public AppraisalEntity(String name, Contact contact, List<PublicationType> publicationTypes, List<Genre> genres) {
 
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("AppraisalEntity name can't be null or empty.");
@@ -20,52 +42,78 @@ public class AppraisalEntity {
             throw new IllegalArgumentException("Contact can't be null.");
         }
 
-
-        if (publicationType == null) {
-            throw new IllegalArgumentException("PublicationType can't be null.");
+        if (publicationTypes == null || publicationTypes.isEmpty()) {
+            throw new IllegalArgumentException("At least one PublicationType is required.");
         }
 
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre can't be null.");
+        if (genres == null || genres.isEmpty()) {
+            throw new IllegalArgumentException("At least one Genre is required.");
         }
 
         this._name = name;
         this._contact = contact;
-        this._publicationType = publicationType;
-        this._genre = genre;
+        this._publicationTypes = publicationTypes;
+        this._genres = genres;
     }
 
     // Getters
+    /**
+     * Returns the name of the Appraisal Entity.
+     * @return AppraisalEntity name
+     */
     public String getName() {
         return _name;
     }
 
+    /**
+     * Returns the contact information of the Appraisal Entity.
+     * @return Contact object
+     */
     public Contact getContact() {
         return _contact;
     }
 
-    public PublicationType getPublicationType() {
-        return _publicationType;
+    /**
+     * Returns the list of supported PublicationTypes.
+     * @return List of PublicationType
+     */
+    public List<PublicationType> getPublicationTypes() {
+        return _publicationTypes;
     }
 
-    public Genre getGenre() {
-        return _genre;
+    /**
+     * Returns the list of supported Genres.
+     * @return List of Genre
+     */
+    public List<Genre> getGenres() {
+        return _genres;
     }
 
+
+    /**
+     * Returns a formatted String containing the full information
+     * of the AppraisalEntity.
+     * @return Formatted String representation
+     */
     public String AppraisalEntityFullInformation () {
 
         return "AppraisalEntity{" +
                 "name:'" + _name + '\'' +
                 ", contact:" + _contact +
-                ", publicationType:" + _publicationType +
-                ", genre:" + _genre.getGenreType() +
+                ", publicationType:" + _publicationTypes +
+                ", genre:" + _genres +
                 '}';
     }
 
 
-    //  This method overrides Object.equals(Object obj).
-    //  The parameter type must be Object (not AppraisalEntity), otherwise the method would not
-    //  correctly override the original equals() method.
+    /**
+     * Compares two AppraisalEntity objects.
+     * Two entities are considered equal if:
+     * - They have the same name (case-insensitive)
+     * - They have the same contact
+     * @param obj Object to compare
+     * @return true if equal, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -79,9 +127,10 @@ public class AppraisalEntity {
                 _contact.equals(newObj._contact);
     }
 
-    // This method generates a hash code consistent with equals().
-    // If two objects are considered equal, they must return the same hash code.
-    // This is required for correct behavior in hash-based collections.
+    /**
+     * Generates a hash code consistent with equals().
+     * @return hash code value
+     */
     @Override
     public int hashCode() {
         return (_name.toLowerCase() + _contact.hashCode()).hashCode();

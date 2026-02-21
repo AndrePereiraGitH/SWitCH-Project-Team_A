@@ -27,7 +27,7 @@ class GenreDTO_US013Test {
         GenreDTO_US013 dto = new GenreDTO_US013(genre);
 
         // Assert
-        assertEquals(genre.getGenreType(), dto.genreName);
+        assertEquals(genre.getTitle(), dto.genreName);
     }
 
 }

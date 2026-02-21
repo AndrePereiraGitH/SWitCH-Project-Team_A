@@ -10,38 +10,51 @@ import java.util.List;
 
 public class AppraisalEntityRepository {
 
-    private List<AppraisalEntity> _appraisalEntityList;
+    private List<AppraisalEntity> _appraisalEntities;
 
-    // Constructor
+    /**
+     * Constructor
+     */
     public AppraisalEntityRepository() {
-        this._appraisalEntityList = new ArrayList<>();
+        this._appraisalEntities = new ArrayList<>();
     }
 
-    // CREATE
-    // Creates and adds a new AppraisalEntity to the lis, only if it is valid and unique
-    public AppraisalEntity createAndAddToAppraisalEntityList (String name, Contact contact, PublicationType publicationType, Genre genre) {
+    /**
+     * US004
+     * Creates and stores a new AppraisalEntity if it does not already exist.
+     */
+    public AppraisalEntity createAndAddAppraisalEntity(String name, Contact contact, List<PublicationType> publicationTypes, List<Genre> genres) {
 
-        // Create AppraisalEntity
-        AppraisalEntity apEn  = new AppraisalEntity(name, contact, publicationType, genre);
-
-        // checking if the new entity is unique in the list
-        if (!existAppraisalEntity(apEn)) {
-            // adding to the list
-            this._appraisalEntityList.add(apEn);
-            return apEn;
+        if (existsByNameAndContact(name, contact)) {
+            throw new IllegalArgumentException(
+                    "Appraisal Entity with same name and contact already exists.");
         }
-        throw new IllegalArgumentException("AppraisalEntity already exists");
 
+        AppraisalEntity entity = new AppraisalEntity(name, contact, publicationTypes, genres);
+
+        _appraisalEntities.add(entity);
+
+        return entity;
     }
 
-    // Ensures no duplicates exist in the list.
-    private boolean existAppraisalEntity (AppraisalEntity apEn) {
+    /**
+     * US004
+     * Verifies if an AppraisalEntity already exists with the same name and contact.
+     *
+     * @param name Name to verify.
+     * @param contact Contact to verify.
+     * @return true if entity already exists, false otherwise.
+     */
+    private boolean existsByNameAndContact(String name, Contact contact) {
 
-        for (AppraisalEntity newApEntity : this._appraisalEntityList) {
-            if (apEn.equals(newApEntity)) {
-                return true;   // Entity already exists in the list
+        for (AppraisalEntity entity : _appraisalEntities) {
+
+            if (entity.getName().equalsIgnoreCase(name)
+                    && entity.getContact().equals(contact)) {
+                return true;
             }
         }
-            return false;    // Entity does not exist in the list
+
+        return false;
     }
 }

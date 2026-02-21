@@ -11,7 +11,7 @@ class GenreTest {
     void shouldCreateWithValidGenre() {
         Genre genre = new Genre("Romance");
 
-        assertEquals("Romance", genre.getGenreType());
+        assertEquals("Romance", genre.getTitle());
     }
 
     @Test

@@ -7,6 +7,6 @@ public class GenreDTO_US022 {
     public String name;
 
     public GenreDTO_US022(Genre genre) {
-        this.name = genre.getGenreType();
+        this.name = genre.getTitle();
     }
 }

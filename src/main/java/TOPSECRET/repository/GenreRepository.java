@@ -17,6 +17,7 @@ public class GenreRepository {
         this._genres = genres;
     }
 
+
     public Genre createAndAddGenre(String genre1) {
         Genre genre = new Genre(genre1);
         if (!exists(genre)) {
@@ -25,6 +26,16 @@ public class GenreRepository {
         }
         throw new IllegalArgumentException("Genre already exists");
     }
+
+    // ----------------------------- US004 starts -------------------------------
+    /**
+     * Adds a Genre to the repository.
+     * @param genre Genre to add
+     */
+    public void addGenre(Genre genre) {
+        _genres.add(genre);
+    }
+    // ----------------------------- US004 ends -------------------------------
 
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes

@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class Genre {
 
     // Attributes
@@ -13,31 +15,37 @@ public class Genre {
         this._genreType = genreType;
     }
 
-    // Getter
-    public String getGenreType() {
+
+    // --------------------------------- US004 starts ---------------------------------
+    /**
+     * Returns the genre title.
+     * @return Genre title.
+     */
+    public String getTitle() {
         return _genreType;
     }
 
-    // US004
-    // Necessary methods to compare the objects
-    // Allows Genre objects to be compared by value instead of reference.
+    /**
+     * Compares two Genre objects based on their title.
+     */
     @Override
-    public boolean equals(Object obj) {
-
-        if (this == obj) return true;
-        if (!(obj instanceof Genre)) return false;
-
-        Genre other = (Genre) obj;
-
-        return _genreType.equalsIgnoreCase(other._genreType);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Genre)) return false;
+        Genre genre = (Genre) o;
+        return _genreType.equalsIgnoreCase(genre._genreType);
     }
 
-    // US004
-    // Ensures consistency with equals().
+    /**
+     * Generates hash code based on genre title.
+     */
     @Override
     public int hashCode() {
-        return _genreType.toLowerCase().hashCode();
+        return Objects.hash(_genreType.toLowerCase());
     }
+
+    // --------------------------------- US004 ends ---------------------------------
+
 }
 
 

@@ -4,6 +4,8 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 
 import java.util.Objects;
 
+//import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyles.details;
+
 public class PublicationType {
 
     private TypeOfBinding _typeOfBinding;
@@ -24,6 +26,27 @@ public class PublicationType {
         this._details = details;
     }
 
+    // --------------------------------- US004 starts ---------------------------------
+
+    /**
+     * Returns the type of binding.
+     * @return Type of binding.
+     */
+    public TypeOfBinding getTypeOfBinding() {
+        return _typeOfBinding;
+    }
+
+
+    /**
+     * Returns the publication type details.
+     * @return Publication details.
+     */
+    public String getDetails() {
+        return _details;
+    }
+
+    // --------------------------------- US004 ends ---------------------------------
+
     @Override
     public boolean equals(Object obj)
     {
@@ -39,7 +62,4 @@ public class PublicationType {
     {
         return Objects.hash(_typeOfBinding, _details);
     }
-
-    public TypeOfBinding getTypeOfBinding() { return _typeOfBinding; }
-    public String getDetails() { return _details; }
 }

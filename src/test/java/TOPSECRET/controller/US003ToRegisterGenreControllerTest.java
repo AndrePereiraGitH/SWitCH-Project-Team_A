@@ -24,7 +24,7 @@ class US003ToRegisterGenreControllerTest {
 
         // assert
         assertNotNull(genre);
-        assertEquals("Drama", genre.getGenreType());
+        assertEquals("Drama", genre.getTitle());
     }
 
     @Test
