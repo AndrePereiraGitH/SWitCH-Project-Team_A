@@ -5,6 +5,7 @@ import TOPSECRET.domain.PublicationSample;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Data Transfer Object (DTO) for User Story US016.
@@ -73,5 +74,17 @@ public class PublicationSampleDTO_US016 {
 
     public String getCondition() {
         return condition;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PublicationSampleDTO_US016 that = (PublicationSampleDTO_US016) o;
+        return Objects.equals(title, that.title) && Objects.equals(authorName, that.authorName) && Objects.equals(language, that.language) && Objects.equals(genreType, that.genreType) && Objects.equals(ownerName, that.ownerName) && Objects.equals(condition, that.condition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, authorName, language, genreType, ownerName, condition);
     }
 }

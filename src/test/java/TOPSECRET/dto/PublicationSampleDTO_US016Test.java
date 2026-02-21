@@ -59,6 +59,151 @@ class PublicationSampleDTO_US016Test {
     }
 
     /**
+     * Tests for equals and hash code
+     */
+
+    @Test
+    void equals_shouldReturnTrue_forSameReference() {
+        PublicationSampleDTO_US016 dto = createPublicationSampleDTO();
+
+        assertEquals(dto, dto);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenComparedWithNull() {
+        PublicationSampleDTO_US016 dto = createPublicationSampleDTO();
+
+        assertNotEquals(dto, null);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenComparedWithDifferentClass() {
+        PublicationSampleDTO_US016 dto = createPublicationSampleDTO();
+
+        assertNotEquals(dto, "not a dto");
+    }
+
+    @Test
+    void equals_shouldReturnTrue_forDifferentInstancesWithSameValues() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = createPublicationSampleDTO();
+
+        assertEquals(dto1, dto2);
+        assertEquals(dto2, dto1);
+    }
+
+    @Test
+    void hashCode_shouldBeEqual_whenObjectsAreEqual() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = createPublicationSampleDTO();
+
+        assertEquals(dto1, dto2);
+        assertEquals(dto1.hashCode(), dto2.hashCode());
+    }
+
+    @Test
+    void hashCode_shouldBeConsistent() {
+        PublicationSampleDTO_US016 dto = createPublicationSampleDTO();
+
+        int first = dto.hashCode();
+        int second = dto.hashCode();
+
+        assertEquals(first, second);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenTitleIsDifferent() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = new PublicationSampleDTO_US016(
+                "Different title",
+                dto1.getAuthorName(),
+                dto1.getLanguage(),
+                dto1.getGenreType(),
+                dto1.getOwnerName(),
+                dto1.getCondition()
+        );
+
+        assertNotEquals(dto1, dto2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenAuthorNameIsDifferent() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = new PublicationSampleDTO_US016(
+                dto1.getTitle(),
+                new ArrayList<>(List.of("another author")),
+                dto1.getLanguage(),
+                dto1.getGenreType(),
+                dto1.getOwnerName(),
+                dto1.getCondition()
+        );
+
+        assertNotEquals(dto1, dto2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenLanguageIsDifferent() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = new PublicationSampleDTO_US016(
+                dto1.getTitle(),
+                dto1.getAuthorName(),
+                Locale.FRENCH,
+                dto1.getGenreType(),
+                dto1.getOwnerName(),
+                dto1.getCondition()
+        );
+
+        assertNotEquals(dto1, dto2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenGenreTypeIsDifferent() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = new PublicationSampleDTO_US016(
+                dto1.getTitle(),
+                dto1.getAuthorName(),
+                dto1.getLanguage(),
+                new ArrayList<>(List.of("Non-fiction")),
+                dto1.getOwnerName(),
+                dto1.getCondition()
+        );
+
+        assertNotEquals(dto1, dto2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenOwnerNameIsDifferent() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = new PublicationSampleDTO_US016(
+                dto1.getTitle(),
+                dto1.getAuthorName(),
+                dto1.getLanguage(),
+                dto1.getGenreType(),
+                "different owner",
+                dto1.getCondition()
+        );
+
+        assertNotEquals(dto1, dto2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenConditionIsDifferent() {
+        PublicationSampleDTO_US016 dto1 = createPublicationSampleDTO();
+        PublicationSampleDTO_US016 dto2 = new PublicationSampleDTO_US016(
+                dto1.getTitle(),
+                dto1.getAuthorName(),
+                dto1.getLanguage(),
+                dto1.getGenreType(),
+                dto1.getOwnerName(),
+                "POOR"
+        );
+
+        assertNotEquals(dto1, dto2);
+    }
+
+
+
+    /**
      * Creates a minimal {@link PublicationSampleDTO_US016} instance to test the constructor.
      *
      * @return a DTO instance with sample values
