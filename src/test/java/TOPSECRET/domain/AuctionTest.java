@@ -17,38 +17,75 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Auction}.
+ * <p>
+ * This test suite validates:
+ * <ul>
+ *   <li>Constructor validation rules (with and without explicit {@link Clock})</li>
+ *   <li>Initial auction status transitions (scheduled/active)</li>
+ *   <li>Bid acceptance rules and buyout behavior</li>
+ *   <li>Expiration handling and terminal states</li>
+ *   <li>Status refresh behavior</li>
+ *   <li>{@code equals()} and {@code hashCode()} contracts</li>
+ * </ul>
+ */
 class AuctionTest {
 
-    // ============================================================
-    // ========================= Test Clock =======================
-    // ============================================================
-
+    /**
+     * Fixed test zone used to make time-dependent tests deterministic.
+     */
     private static final ZoneId ZONE = ZoneId.of("UTC");
+
+    /**
+     * Fixed instant used as the reference "now" in tests.
+     */
     private static final Instant FIXED_INSTANT = Instant.parse("2030-01-01T10:00:00Z");
+
+    /**
+     * Fixed clock used to control time in constructor and bidding tests.
+     */
     private static final Clock FIXED_CLOCK = Clock.fixed(FIXED_INSTANT, ZONE);
 
+    /**
+     * Returns the fixed current date-time used in tests.
+     *
+     * @return deterministic "now" based on {@link #FIXED_INSTANT} and {@link #ZONE}
+     */
     private static LocalDateTime fixedNow() {
         return LocalDateTime.ofInstant(FIXED_INSTANT, ZONE);
     }
 
-    // ============================================================
-    // ============================ Helpers =======================
-    // ============================================================
-
+    /**
+     * Creates a {@link Price} from a numeric string.
+     *
+     * @param value numeric value as string
+     * @return a price instance
+     */
     private static Price price(String value) {
         return new Price(new BigDecimal(value));
     }
 
+    /**
+     * Creates a valid scheduled auction (start date in the future) using the fixed clock.
+     *
+     * @return a scheduled auction ready for testing
+     */
     private static Auction createValidScheduledAuction() {
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
 
-        LocalDateTime initialDate = now.plusMinutes(5); // future => SCHEDULED
+        LocalDateTime initialDate = now.plusMinutes(5);
         LocalDateTime finalDate = now.plusDays(2);
 
         return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
     }
 
+    /**
+     * Creates a valid active auction (start date equals "now") using the fixed clock.
+     *
+     * @return an active auction ready for testing
+     */
     private static Auction createValidActiveAuction() {
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
@@ -59,6 +96,13 @@ class AuctionTest {
         return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
     }
 
+    /**
+     * Sets a private field via reflection for controlled test setup.
+     *
+     * @param target object whose field will be updated
+     * @param fieldName private field name
+     * @param value value to assign
+     */
     private static void setPrivateField(Object target, String fieldName, Object value) {
         try {
             var f = target.getClass().getDeclaredField(fieldName);
@@ -69,6 +113,15 @@ class AuctionTest {
         }
     }
 
+    /**
+     * Reads a private field via reflection for state assertions.
+     *
+     * @param target object whose field will be read
+     * @param fieldName private field name
+     * @param type expected field type
+     * @param <T> generic field type
+     * @return field value cast to the requested type
+     */
     @SuppressWarnings("unchecked")
     private static <T> T getPrivateField(Object target, String fieldName, Class<T> type) {
         try {
@@ -81,6 +134,12 @@ class AuctionTest {
         }
     }
 
+    /**
+     * Invokes the private {@code closeIfExpired()} method via reflection.
+     *
+     * @param auction auction instance under test
+     * @return the boolean result returned by {@code closeIfExpired()}
+     */
     private static boolean invokeCloseIfExpired(Auction auction) {
         try {
             var m = Auction.class.getDeclaredMethod("closeIfExpired");
@@ -92,24 +151,23 @@ class AuctionTest {
         }
     }
 
-
-
-    // ============================================================
-    // ====================== Basic constructor ===================
-    // ============================================================
-
+    /**
+     * Verifies that the no-args constructor creates a non-null auction instance.
+     */
     @Test
     void testEmptyConstructor() {
-        // arrange + act
         Auction auction = new Auction();
-        // assert
         assertNotNull(auction);
     }
 
-    // ============================================================
-    // ====================== Constructor validations =============
-    // ============================================================
-
+    /**
+     * Provides invalid constructor scenarios for {@link Auction} when a fixed clock is supplied.
+     * <p>
+     * Each case includes invalid input and the expected exception message.
+     * </p>
+     *
+     * @return a stream of invalid constructor test cases
+     */
     static Stream<Arguments> invalidAuctionConstructorCases_withClock() {
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
@@ -161,6 +219,17 @@ class AuctionTest {
         );
     }
 
+    /**
+     * Verifies that invalid constructor inputs (with explicit clock) throw
+     * {@link IllegalArgumentException} with the expected message.
+     *
+     * @param name test case description
+     * @param listing listing input
+     * @param initialDate start date input
+     * @param finalDate end date input
+     * @param buyOutPrice buyout price input
+     * @param expectedMessage expected exception message
+     */
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidAuctionConstructorCases_withClock")
     void testConstructorInvalidCases_throwAndMessage(
@@ -171,25 +240,22 @@ class AuctionTest {
             Price buyOutPrice,
             String expectedMessage
     ) {
-        // arrange + act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new Auction(listing, initialDate, finalDate, buyOutPrice, FIXED_CLOCK)
         );
 
-        // assert
         assertEquals(expectedMessage, ex.getMessage());
     }
 
-
-
+    /**
+     * Verifies that providing a null clock to the constructor throws an exception.
+     */
     @Test
     void testConstructor_nullClock_throws() {
-        // arrange
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
 
-        // act + assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new Auction(listing, now.plusMinutes(1), now.plusDays(1), price("150.00"), null)
@@ -198,21 +264,22 @@ class AuctionTest {
         assertEquals("Clock cannot be null", ex.getMessage());
     }
 
+    /**
+     * Verifies that a valid auction constructor initializes an empty bid history.
+     */
     @Test
     void testValidConstructor_initializesEmptyBidHistory() {
-
-        // arrange
         Auction auction = createValidScheduledAuction();
 
-        // act + assert
         assertNotNull(auction.get_bidHistory());
         assertTrue(auction.get_bidHistory().isEmpty());
     }
 
-    // ============================================================
-    // ====================== AuctionStatus (Clock) ===============
-    // ============================================================
-
+    /**
+     * Provides constructor scenarios to validate the initial auction status when using a fixed clock.
+     *
+     * @return a stream of start/end date combinations and expected status
+     */
     static Stream<Arguments> auctionStatusClockCases() {
         LocalDateTime now = fixedNow();
 
@@ -222,7 +289,14 @@ class AuctionTest {
         );
     }
 
-    // ------- Initial Auction Status - Active/Scheduled
+    /**
+     * Verifies the initial status assigned by the constructor when a clock is provided.
+     *
+     * @param name case description
+     * @param initialDate start date
+     * @param finalDate end date
+     * @param expectedStatus expected initial status
+     */
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("auctionStatusClockCases")
     void testAuctionStatus_withClock(
@@ -231,29 +305,26 @@ class AuctionTest {
             LocalDateTime finalDate,
             AuctionStatus expectedStatus
     ) {
-        // arrange
         Listing listing = instantiateListing();
-
-        // act
         Auction auction = new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
-
-        // assert
         assertEquals(expectedStatus, auction.getAuctionStatus());
     }
 
+    /**
+     * Verifies that an auction becomes active when the start date equals the current time.
+     */
     @Test
     void testConstructor_withClock_setsStatusActive_whenInitialDateEqualsNow() {
-        // arrange
         Auction auction = createValidActiveAuction();
-
-        // act + assert
         assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
     }
 
+    /**
+     * Verifies that the constructor without explicit clock creates a scheduled auction
+     * when the start date is in the future.
+     */
     @Test
     void testConstructor_withoutClock_setsStatusScheduled_whenInitialDateInFuture() {
-
-        // arrange
         Listing listing = instantiateListing();
         LocalDateTime now = LocalDateTime.now();
 
@@ -264,16 +335,14 @@ class AuctionTest {
                 price("150.00")
         );
 
-        // act + assert
         assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
     }
 
-    //-------------------------------------------------------------------
-
+    /**
+     * Verifies that the constructor without explicit clock initializes an empty bid history.
+     */
     @Test
     void testConstructor_withoutClock_valid_createsEmptyBidHistory() {
-
-       // arrange
         Listing listing = instantiateListing();
         LocalDateTime now = LocalDateTime.now();
 
@@ -284,13 +353,15 @@ class AuctionTest {
                 price("150.00")
         );
 
-        // act + assert
         assertNotNull(auction.get_bidHistory());
         assertTrue(auction.get_bidHistory().isEmpty());
     }
 
-
-
+    /**
+     * Provides invalid constructor scenarios for {@link Auction} when no clock is supplied.
+     *
+     * @return a stream of invalid input combinations and expected messages
+     */
     static Stream<Arguments> invalidAuctionConstructorCases_withoutClock() {
         Listing listing = instantiateListing();
         LocalDateTime now = LocalDateTime.now();
@@ -319,6 +390,18 @@ class AuctionTest {
         );
     }
 
+    /**
+     * Verifies that invalid constructor inputs (without explicit clock) throw
+     * {@link IllegalArgumentException} with the expected message.
+     *
+     * @param name case description
+     * @param listing listing input
+     * @param initialDate start date input
+     * @param finalDate end date input
+     * @param initialPrice initial price test value (kept for case readability)
+     * @param buyOutPrice buyout price input
+     * @param expectedMessage expected exception message
+     */
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidAuctionConstructorCases_withoutClock")
     void testConstructor_withoutClock_invalidCases_throwAndMessage(
@@ -330,7 +413,6 @@ class AuctionTest {
             Price buyOutPrice,
             String expectedMessage
     ) {
-        // act + assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new Auction(listing, initialDate, finalDate, buyOutPrice)
@@ -339,13 +421,11 @@ class AuctionTest {
         assertEquals(expectedMessage, ex.getMessage());
     }
 
-
-
-
-    // ============================================================
-    // ======================= acceptBid tests ====================
-    // ============================================================
-
+    /**
+     * Provides invalid bid acceptance scenarios and expected exception assertions.
+     *
+     * @return a stream of executable test cases and expected messages
+     */
     static Stream<Arguments> invalidAcceptBidCases() {
         return Stream.of(
                 Arguments.of(
@@ -361,7 +441,7 @@ class AuctionTest {
                         "bid equal to initial price must throw (<=)",
                         (Executable) () -> {
                             Auction auction = createValidActiveAuction();
-                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.00"))); // == initial
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("35.00")));
                         },
                         "Bid value must be greater than initial Price.",
                         true
@@ -370,7 +450,7 @@ class AuctionTest {
                         "bid below initial price must throw",
                         (Executable) () -> {
                             Auction auction = createValidActiveAuction();
-                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("34.00"))); // < initial
+                            auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("34.00")));
                         },
                         "Bid value must be greater than initial Price.",
                         true
@@ -380,7 +460,7 @@ class AuctionTest {
                         (Executable) () -> {
                             Auction auction = createValidActiveAuction();
                             auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
-                            auction.acceptBid(new Bid(instantiateUser("Albert"), price("40.00"))); // == last
+                            auction.acceptBid(new Bid(instantiateUser("Albert"), price("40.00")));
                         },
                         "Bid value must be greater than last bid value:",
                         false
@@ -390,7 +470,7 @@ class AuctionTest {
                         (Executable) () -> {
                             Auction auction = createValidActiveAuction();
                             auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
-                            auction.acceptBid(new Bid(instantiateUser("Albert"), price("39.00"))); // < last
+                            auction.acceptBid(new Bid(instantiateUser("Albert"), price("39.00")));
                         },
                         "Bid value must be greater than last bid value:",
                         false
@@ -398,6 +478,14 @@ class AuctionTest {
         );
     }
 
+    /**
+     * Verifies invalid bid acceptance cases and validates thrown exception messages.
+     *
+     * @param name case description
+     * @param executable action under test
+     * @param expectedMessage expected exception message or prefix
+     * @param exactMatch whether to use exact message match or prefix match
+     */
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidAcceptBidCases")
     void testAcceptBid_invalidCases_throwAndMessage(
@@ -406,7 +494,6 @@ class AuctionTest {
             String expectedMessage,
             boolean exactMatch
     ) {
-        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, executable);
 
         if (exactMatch) {
@@ -416,8 +503,11 @@ class AuctionTest {
         }
     }
 
-
-
+    /**
+     * Provides valid bid sequences and expected bid history sizes.
+     *
+     * @return a stream of valid bidding scenarios
+     */
     static Stream<Arguments> validAcceptBidCases() {
         return Stream.of(
                 Arguments.of("first bid just above initial", List.of("35.51"), 1),
@@ -425,6 +515,13 @@ class AuctionTest {
         );
     }
 
+    /**
+     * Verifies that valid bids are accepted and added to the bid history.
+     *
+     * @param name case description
+     * @param bidValues bid values to submit in order
+     * @param expectedSize expected final size of bid history
+     */
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("validAcceptBidCases")
     void testAcceptBid_validCases_returnsTrue_andAddsToHistory(
@@ -432,10 +529,8 @@ class AuctionTest {
             List<String> bidValues,
             int expectedSize
     ) {
-        // arrange
         Auction auction = createValidActiveAuction();
 
-        //act + assert
         int i = 0;
         for (String v : bidValues) {
             boolean result = auction.acceptBid(new Bid(instantiateUser("Bidder" + (++i)), price(v)));
@@ -445,13 +540,13 @@ class AuctionTest {
         assertEquals(expectedSize, auction.get_bidHistory().size());
     }
 
+    /**
+     * Verifies that a failed bid attempt does not change the existing bid history.
+     */
     @Test
     void testAcceptBid_whenThrows_doesNotChangeBidHistory() {
-
-        // arrange
         Auction auction = createValidActiveAuction();
 
-        // act + assert
         assertTrue(auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00"))));
         int sizeBefore = auction.get_bidHistory().size();
 
@@ -461,55 +556,59 @@ class AuctionTest {
         assertEquals(sizeBefore, auction.get_bidHistory().size());
     }
 
+    /**
+     * Verifies that bids cannot be accepted while the auction is still scheduled.
+     */
     @Test
     void testAcceptBid_whenScheduled_throwsException_andDoesNotBid() {
-        // arrange
         Auction auction = createValidScheduledAuction();
         Bid bid = new Bid(instantiateUser("Rodolph"), price("40.00"));
 
-        // act + assert
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> auction.acceptBid(bid));
         assertEquals("Auction is not active", exception.getMessage());
-
     }
 
+    /**
+     * Verifies that a bid equal to the buyout price closes the auction as BOUGHT_OUT.
+     */
     @Test
     void testAcceptBid_whenBidEqualsBuyOutPrice_colsesAsBoughtOut() {
-
-        // arrange
         Auction auction = createValidActiveAuction();
         Bid buyOutBid = new Bid(instantiateUser("Rodolph"), price("150.00"));
 
         boolean result = auction.acceptBid(buyOutBid);
 
         assertTrue(result);
-
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
         assertEquals(1, auction.get_bidHistory().size());
-
     }
 
-    // ------ Bid value biggest than buyOutPrice, auction status still Active
-
+    /**
+     * Verifies current behavior when a bid is greater than the buyout price.
+     * <p>
+     * The auction remains ACTIVE because the implementation closes only when the bid
+     * value is exactly equal to the buyout price.
+     * </p>
+     */
     @Test
     void testAcceptBid_bidGreaterThanBuyOut_doesNotCloseBecauseEqualsIsUsed() {
-
-        // arrange
         Auction auction = createValidActiveAuction();
         Bid bid = new Bid(instantiateUser("Rodolph"), price("150.01"));
 
-        // act + assert
         assertTrue(auction.acceptBid(bid));
         assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
         assertEquals(1, auction.get_bidHistory().size());
     }
 
+    /**
+     * Verifies that {@link Auction#acceptBid(Bid)} can accept bids after the scheduled start time
+     * is reached, because it internally refreshes the auction status.
+     */
     @Test
     void testAcceptBid_scheduledButStartTimeReached_requiresRefreshStatus_toAcceptBid() {
         LocalDateTime now = fixedNow();
         Listing listing = instantiateListing();
 
-        // starts in 5 minutes => SCHEDULED at creation time
         Auction auction = new Auction(
                 listing,
                 now.plusMinutes(5),
@@ -520,16 +619,18 @@ class AuctionTest {
 
         assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
 
-        // move time forward to after initialDate but before finalDate
         Clock afterStart = Clock.fixed(FIXED_INSTANT.plusSeconds(6 * 60L), ZONE);
         setPrivateField(auction, "_clock", afterStart);
 
-        // now a bid should be accepted (because refreshStatus should flip to ACTIVE)
         assertTrue(auction.acceptBid(new Bid(instantiateUser("ROdolph"), price("40.00"))));
         assertEquals(1, auction.get_bidHistory().size());
         assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
     }
 
+    /**
+     * Verifies that once the auction is bought out, additional bids are rejected
+     * and no bid is added to the history.
+     */
     @Test
     void testAcceptBid_afterBoughtOut_throws_andDoesNotAdd() {
         Auction auction = createValidActiveAuction();
@@ -546,22 +647,25 @@ class AuctionTest {
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
     }
 
-    // ----- Test AcceptsBid Expired Auctions ---------
+    /**
+     * Verifies that attempting to bid on an expired auction with no bids:
+     * <ul>
+     *   <li>throws an exception because the auction is not active</li>
+     *   <li>marks the auction as ended without bids</li>
+     *   <li>keeps winning bid and final price as {@code null}</li>
+     * </ul>
+     */
     @Test
     void testExpiry_withoutBids_shouldThrow_auctionStatusEndedWithoutBids_bidHistoryIsEmpty() {
-
-        // arrange
         Auction auction = createValidActiveAuction();
         Clock afterEnd = Clock.fixed(FIXED_INSTANT.plus(Duration.ofDays(3)), ZONE);
         setPrivateField(auction, "_clock", afterEnd);
         Bid bid = new Bid(instantiateUser("Rodolph"), price("40.00"));
 
-        // act + assert
         assertThrows(IllegalStateException.class, () -> auction.acceptBid(bid));
         assertEquals(AuctionStatus.ENDED_WITHOUT_BIDS, auction.getAuctionStatus());
         assertTrue(auction.get_bidHistory().isEmpty());
 
-        // when it closes without bids, winingBid and finalPrice are null
         LocalDateTime closedAt = getPrivateField(auction, "_closedAt", LocalDateTime.class);
 
         assertNotNull(closedAt);
@@ -569,10 +673,12 @@ class AuctionTest {
         assertNull(getPrivateField(auction, "_finalPrice", Price.class));
     }
 
+    /**
+     * Verifies that an expired auction with bids is closed with winner status and preserves
+     * the last accepted bid as the winning bid.
+     */
     @Test
     void testExpiry_withBids_setsEndedWithWinner_andKeepsLastBidAsWinner() {
-
-        // arrange
         Auction auction = createValidActiveAuction();
 
         Bid bid1 = new Bid(instantiateUser("Rodolph"), price("40.00"));
@@ -586,11 +692,9 @@ class AuctionTest {
         Clock afterEnd = Clock.fixed(FIXED_INSTANT.plusSeconds(60L * 60L * 24L * 3), ZONE);
         setPrivateField(auction, "_clock", afterEnd);
 
-        // act
         Bid lateBid = new Bid(instantiateUser("ROn Weasley"), price("50.00"));
         assertThrows(IllegalStateException.class, () -> auction.acceptBid(lateBid));
 
-        // assert
         assertEquals(AuctionStatus.ENDED_WITH_WINNER, auction.getAuctionStatus());
         assertEquals(sizeBefore, auction.get_bidHistory().size());
 
@@ -602,64 +706,56 @@ class AuctionTest {
         assertNotNull(finalPrice);
         assertNotNull(closedAt);
 
-        assertEquals(auction.get_bidHistory().get(auction.get_bidHistory().size() -1), winningBid);
+        assertEquals(auction.get_bidHistory().get(auction.get_bidHistory().size() - 1), winningBid);
         assertEquals(winningBid.getValue(), finalPrice);
-
     }
 
-    // ============================================================
-    // ======================= RefreshStatus tests ====================
-    // ============================================================
-
+    /**
+     * Verifies that refreshing the status does not change a terminal auction status.
+     */
     @Test
     void testRefreshStatus_doesNotChangeTerminalStatus() {
-
         Auction auction = createValidActiveAuction();
 
-        // force BOUGHT_OUT through real behavior
         auction.acceptBid(new Bid(instantiateUser("Buyer"), price("150.00")));
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
 
-        // advance time a 1 year and call refreshStatus
-        Clock farFuture = Clock.fixed(FIXED_INSTANT.plusSeconds(60L * 60L * 24L * 365L), ZONE); // +1 year
+        Clock farFuture = Clock.fixed(FIXED_INSTANT.plusSeconds(60L * 60L * 24L * 365L), ZONE);
         setPrivateField(auction, "_clock", farFuture);
 
         auction.refreshStatus();
 
-        // must remain terminal
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
     }
 
+    /**
+     * Verifies that a terminal BOUGHT_OUT status remains unchanged even if the current
+     * time is within the auction active window.
+     */
     @Test
     void testRefreshStatus_terminalBoughtOut_mustNotChangeToActive() {
-
-        // arrange
         Auction auction = createValidActiveAuction();
 
-        // Make it terminal: BOUGHT_OUT
         assertTrue(auction.acceptBid(new Bid(instantiateUser("Buyer"), price("150.00"))));
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
 
-        // Set clock to a time that is between initialDate and finalDate
-        // If refreshStatus did not return early, it would set status to ACTIVE.
-        Clock withinWindow = Clock.fixed(FIXED_INSTANT.plusSeconds(60L), ZONE); // +1 minute
+        Clock withinWindow = Clock.fixed(FIXED_INSTANT.plusSeconds(60L), ZONE);
         setPrivateField(auction, "_clock", withinWindow);
 
         auction.refreshStatus();
 
-        // Must remain terminal
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
     }
 
-    // ============================================================
-    // ================== CloseIfExpired tests ====================
-    // ============================================================
-
+    /**
+     * Verifies that invoking {@code closeIfExpired()} on a terminal auction returns {@code false}
+     * and preserves the terminal status.
+     */
     @Test
     void testCloseIfExpired_whenTerminalStatus_returnsFalse() {
         Auction auction = createValidActiveAuction();
 
-        assertTrue(auction.acceptBid( new Bid(instantiateUser("Rodolph"), price("150.00"))));
+        assertTrue(auction.acceptBid(new Bid(instantiateUser("Rodolph"), price("150.00"))));
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
 
         boolean result = invokeCloseIfExpired(auction);
@@ -668,9 +764,12 @@ class AuctionTest {
         assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
     }
 
+    /**
+     * Verifies that invoking {@code closeIfExpired()} before the end date returns {@code false}
+     * and does not change the status.
+     */
     @Test
     void testCloseIfExpired_whenNotExpired_returnsFalse() {
-
         Auction auction = createValidActiveAuction();
         assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
 
@@ -680,6 +779,10 @@ class AuctionTest {
         assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
     }
 
+    /**
+     * Verifies that invoking {@code closeIfExpired()} after the end date closes the auction
+     * and returns {@code true}.
+     */
     @Test
     void testCloseIfExpired_whenExpired_returnsTrue_andClosesAuction() {
         Auction auction = createValidActiveAuction();
@@ -693,76 +796,79 @@ class AuctionTest {
         assertEquals(AuctionStatus.ENDED_WITHOUT_BIDS, auction.getAuctionStatus());
     }
 
-
-
-    // ============================================================
-    // ===================== equals & hashCode tests ==============
-    // ============================================================
-
+    /**
+     * Verifies the reflexive property of {@link Auction#equals(Object)}.
+     */
     @Test
     void testEquals_reflexive() {
         Auction auction = createValidScheduledAuction();
         assertEquals(auction, auction);
     }
 
+    /**
+     * Verifies that an auction is not equal to {@code null} or an object of another type.
+     */
     @Test
     void testEquals_null_andDifferentClass() {
-        // arrange + act
         Auction auction = createValidScheduledAuction();
 
-        // assert
         assertNotEquals(null, auction);
         assertNotEquals("not an auction", auction);
     }
 
+    /**
+     * Verifies that auctions with the same significant constructor data are equal
+     * and produce the same hash code.
+     */
     @Test
     void testEquals_sameData_true_andHashCodeSame() {
-
-       // arrange
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
         LocalDateTime initial = now.plusMinutes(5);
         LocalDateTime fin = now.plusDays(2);
 
-        // act
         Auction a1 = new Auction(listing, initial, fin, price("150.00"), FIXED_CLOCK);
         Auction a2 = new Auction(listing, initial, fin, price("150.00"), FIXED_CLOCK);
 
-        // assert
         assertEquals(a1, a2);
         assertEquals(a1.hashCode(), a2.hashCode());
     }
 
+    /**
+     * Verifies that auctions with different end dates are not equal.
+     */
     @Test
     void testEquals_differentFinalDate_false() {
-
-        // arrange
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
         LocalDateTime initial = now.plusMinutes(5);
 
-        // act
         Auction a1 = new Auction(listing, initial, initial.plusDays(1), price("150.00"), FIXED_CLOCK);
         Auction a2 = new Auction(listing, initial, initial.plusDays(2), price("150.00"), FIXED_CLOCK);
 
-        // assert
         assertNotEquals(a1, a2);
     }
 
+    /**
+     * Verifies current equality behavior when bid history differs.
+     * <p>
+     * This test documents the current behavior of the implementation and may reveal
+     * whether bid history is part of equality semantics.
+     * </p>
+     */
     @Test
     void testEquals_differentBidHistory_false() {
-
-        // arrange
         Auction a1 = createValidActiveAuction();
         Auction a2 = createValidActiveAuction();
 
-        // act
         a1.acceptBid(new Bid(instantiateUser("Rodolph"), price("40.00")));
 
-        // assert
         assertNotEquals(a1, a2);
     }
 
+    /**
+     * Additional equality checks against {@code null} and different classes.
+     */
     @Test
     void testEquals_withNullAndDifferentClass() {
         Auction auction = createValidActiveAuction();
@@ -771,6 +877,9 @@ class AuctionTest {
         assertFalse(auction.equals("not an auction"));
     }
 
+    /**
+     * Verifies that different auctions produce different hash codes in this scenario.
+     */
     @Test
     void testHashCode_differentAuctions_shouldDiffer() {
         Listing listing = instantiateListing();
@@ -781,13 +890,13 @@ class AuctionTest {
 
         assertNotEquals(auction1, auction2);
         assertNotEquals(auction1.hashCode(), auction2.hashCode());
-
     }
 
-    // ============================================================
-    // ======= Auxiliary methods to instantiate Objects ===========
-    // ============================================================
-
+    /**
+     * Creates a minimal picture list to build listings in tests.
+     *
+     * @return a list containing one picture
+     */
     private static List<Picture> instantiatePictures() {
         Picture pic = new Picture("picture_url");
         List<Picture> pictures = new ArrayList<>();
@@ -795,6 +904,11 @@ class AuctionTest {
         return pictures;
     }
 
+    /**
+     * Creates a valid listing configured for auction tests.
+     *
+     * @return a listing instance with one publication sample and auction sale type
+     */
     private static Listing instantiateListing() {
         List<Picture> pictures = instantiatePictures();
         PublicationSample bookItem = instantiateItem(instantiateBibliographicalData());
@@ -810,6 +924,12 @@ class AuctionTest {
         );
     }
 
+    /**
+     * Creates a valid user for bidding and ownership scenarios.
+     *
+     * @param name username to assign
+     * @return a user instance
+     */
     private static User instantiateUser(String name) {
         Email email = new Email("switcher", "example.com");
         Address add = new Address("Rua x", "12B", "4444-111", new Country("PORTUGAL"));
@@ -817,9 +937,14 @@ class AuctionTest {
         LocalDate birthday = LocalDate.of(1982, 12, 3);
         Profile profile = new Profile("Albert Trump", new Country("EL_SALVADOR"), birthday);
         UserRole userRole = UserRole.NORMAL_USER;
-        return new User(name, contact, profile,userRole);
+        return new User(name, contact, profile, userRole);
     }
 
+    /**
+     * Creates bibliographical data used by publication and publication sample helpers.
+     *
+     * @return bibliographical data instance
+     */
     private static BibliographicalData instantiateBibliographicalData() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
         Author author = new Author(authorProfile, "valid bio");
@@ -827,10 +952,9 @@ class AuctionTest {
         List<Author> authors = new ArrayList<>();
         authors.add(author);
 
-
         List<Genre> genres = new ArrayList<>();
-        genres.add(new Genre ("Fantasy"));
-        genres.add(new Genre ("Mister"));
+        genres.add(new Genre("Fantasy"));
+        genres.add(new Genre("Mister"));
 
         String chunkOfText =
                 "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, " +
@@ -842,76 +966,82 @@ class AuctionTest {
                 authors,
                 Locale.ENGLISH,
                 LocalDate.of(1991, 11, 1),
-                List.of(new Genre ("Fantasy")),
+                List.of(new Genre("Fantasy")),
                 chunkOfText
         );
     }
 
+    /**
+     * Creates a valid {@link Publication} instance for helper scenarios.
+     *
+     * @param bd bibliographical data
+     * @return a valid publication
+     */
     private static Publication createValidPublication(BibliographicalData bd) {
-        // PublicationType
         PublicationType publicationType = new PublicationType(
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
 
-        // User (seller/owner of the publication)
         User user = instantiateUser("maria1");
 
-        // Code
         Code code = Code.fromIsbn13("9781234567890");
 
-        // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new Publication(
                 bd,
                 publicationType,
                 user,
                 PublicationStatus.READING,
-//                "1st edition",
                 edition,
                 code
         );
     }
 
+    /**
+     * Creates a publication with a pseudo-unique ISBN for helper scenarios.
+     *
+     * @param bd bibliographical data
+     * @return a publication instance with a unique code
+     */
     private static Publication createUniquePublication(BibliographicalData bd) {
-        // PublicationType
         PublicationType publicationType = new PublicationType(
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
 
-        // User (seller/owner of the publication)
         User user = instantiateUser("maria1");
 
-        // Code
-       // Code code = Code.fromIsbn13("978" + System.nanoTime());
         Code code = Code.fromIsbn13("978000000000" + (System.nanoTime() % 10));
 
-        // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new Publication(
                 bd,
                 publicationType,
                 user,
                 PublicationStatus.READ,
-//                "1st edition",
                 edition,
                 code
         );
     }
 
+    /**
+     * Creates a {@link PublicationSample} used in listing creation helpers.
+     *
+     * @param bd bibliographical data
+     * @return a publication sample instance
+     */
     private static PublicationSample instantiateItem(BibliographicalData bd) {
-
         return new PublicationSample(
                 bd,
                 instantiateUser("Johny123"),
@@ -921,8 +1051,13 @@ class AuctionTest {
         );
     }
 
-    private static Edition instantiateEdition(){
-        Code code = Code.fromIsbn13 ("9783161484123");
+    /**
+     * Creates a valid edition helper object.
+     *
+     * @return an edition instance
+     */
+    private static Edition instantiateEdition() {
+        Code code = Code.fromIsbn13("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
