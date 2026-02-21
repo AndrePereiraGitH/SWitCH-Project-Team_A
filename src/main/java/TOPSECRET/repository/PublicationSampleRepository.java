@@ -3,10 +3,12 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.dto.PublicationSampleDTO_US016;
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PublicationSampleRepository {
 
@@ -67,4 +69,47 @@ public class PublicationSampleRepository {
             allPublicationsInSystem.add(p);
         }
     }
+
+    /**
+     * US016
+     * @return
+     */
+    public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
+
+        if (pubsDto == null || pubsDto.isEmpty()) {
+            throw new IllegalArgumentException("list of PublicationSampleDTO cannot be null or empty");
+        }
+
+        List<PublicationSample> matched = allPublicationsInSystem.stream()
+                .filter(ps -> pubsDto.stream().anyMatch(dto -> matches(ps, dto)))
+                .toList();
+
+        return matched;
+    }
+
+    /**
+     *
+     * @param ps
+     * @param dto
+     * @return
+     */
+    private static boolean matches(PublicationSample ps, PublicationSampleDTO_US016 dto) {
+        BibliographicalData bd = ps.getBibliographicalData();
+
+        List<String> authorNames = bd.getAuthors().stream()
+                .map(a -> a.getProfile().getName())
+                .toList();
+
+        List<String> genreTypes = bd.getGenres().stream()
+                .map(Genre::getTitle)
+                .toList();
+
+        return Objects.equals(bd.getTitle(), dto.getTitle())
+                && Objects.equals(authorNames, dto.getAuthorName())
+                && Objects.equals(bd.getOriginalLanguage(), dto.getLanguage())
+                && Objects.equals(genreTypes, dto.getGenreType())
+                && Objects.equals(ps.getOwner().getUserName(), dto.getOwnerName())
+                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
+    }
+
 }

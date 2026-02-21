@@ -1,14 +1,17 @@
 package TOPSECRET.repository;
 
 
+import TOPSECRET.controller.US016ToPutPublicationInAuctionController;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.dto.PublicationSampleDTO_US016;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -287,4 +290,70 @@ class PublicationRepositoryTest {
     }
 
      */
+
+    /**
+     * US016
+     */
+    @Test
+    void getPublicationsByDTO_shouldReturn_listOfPublicationSampleDTO() {
+
+        // Arrange
+        List<PublicationSample> list = new ArrayList<>();
+        list.add(publication1);
+
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+
+        List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
+        pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
+
+        // act
+        List<PublicationSample> result = pr1.getPublicationsByDTO(pubsDto);
+
+        // assert
+        assertEquals(1, result.size());
+    }
+
+    /**
+     * US016
+     */
+    @Test
+    void getPublicationsByDTO_shouldReturn_listOfPublicationSampleDTO_andPublicationOwner_shouldMatchDtoOwner() {
+
+        // Arrange
+        List<PublicationSample> list = new ArrayList<>();
+        list.add(publication1);
+
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+
+        List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
+        pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
+
+        // act
+        List<PublicationSample> result = pr1.getPublicationsByDTO(pubsDto);
+
+        // assert
+        assertEquals(publication1.getOwner().getUserName(), result.get(0).getOwner().getUserName());
+    }
+
+    @Test
+    void getPublicationsByDTO_shouldThrows_ifPublicationsDto_is_Empty() {
+
+        // Arrange
+        List<PublicationSample> list = new ArrayList<>();
+        //list.add(publication1);
+
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+
+        List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
+       // pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
+
+        // act + assert
+        assertThrows(IllegalArgumentException.class, () ->pr1.getPublicationsByDTO(pubsDto));
+    }
+
+
+
+
+
+
 }
