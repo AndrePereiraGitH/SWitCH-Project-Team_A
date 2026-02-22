@@ -3,8 +3,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Publication;
 import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.dto.PublicationDetailsDTO;
-import TOPSECRET.dto.PublicationDetailsMapper;
 import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.PublicationSampleRepository;
 
