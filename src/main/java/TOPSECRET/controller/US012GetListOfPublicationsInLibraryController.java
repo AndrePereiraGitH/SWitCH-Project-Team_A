@@ -2,45 +2,58 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 
+import TOPSECRET.dto.PublicationDetailsDTO_US012;
 import TOPSECRET.repository.LibraryRepository;
 
 
 import javax.management.InstanceNotFoundException;
+import java.util.List;
 
-
-public class GetListOfPublicationsInLibraryController {
+/**
+ * Controller for User Story 012: Get List of Publications in Library.
+ * <p>
+ * This controller handles the retrieval of all publications from a user's library
+ * and converts them to DTOs for presentation purposes.
+ * </p>
+ *
+ * @see PublicationDetailsDTO_US012
+ * @see LibraryRepository
+ */
+public class US012GetListOfPublicationsInLibraryController {
 
     private final LibraryRepository _libraryRepo;
 
-
-    public GetListOfPublicationsInLibraryController(LibraryRepository libraryRepo) {
+    /**
+     * Constructs a new controller with the specified library repository.
+     *
+     * @param libraryRepo the repository for accessing library data
+     */
+    public US012GetListOfPublicationsInLibraryController(LibraryRepository libraryRepo) {
         this._libraryRepo = libraryRepo;
     }
 
-    public List<PublicationDetailsDTO> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
+    /**
+     * Retrieves all publications from a user's library as DTOs.
+     * <p>
+     * This method fetches all publications associated with the specified user's library
+     * and converts them to PublicationDetailsDTO_US012 objects for presentation.
+     * </p>
+     *
+     * @param username the username of the library owner
+     * @return a list of PublicationDetailsDTO_US012 objects representing all publications in the user's library
+     * @throws IllegalArgumentException if the username is empty
+     * @throws InstanceNotFoundException if the user's library cannot be found
+     */
+    public List<PublicationDetailsDTO_US012> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
 
-        Library userLib = getUserLibrary(username);
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException("Username can not be empty");
+        }
 
-        List<Publication> publications = userLib.getAllPublications();
+        List<PublicationSample> listOfAllPublications = _libraryRepo.getAllPublicationsFromUserLibrary(username);
 
-        List<PublicationDetailsDTO> listOfPublicationsDTO = PublicationDetailsMapper.toDTOs(publications);
+        List<PublicationDetailsDTO_US012> listOfPublicationsDTO = PublicationDetailsDTO_US012.toDTOs(listOfAllPublications);
 
         return listOfPublicationsDTO;
     }
-
-    public Library getUserLibrary(String userName) throws InstanceNotFoundException {
-
-        if(userName==null){
-            throw new IllegalArgumentException("Username can not be null");
-        }
-
-        if(userName.isEmpty()){
-            throw new IllegalArgumentException("Name can not be empty");
-        }
-
-        Library userLibrary = _libraryRepo.getLibraryOfUser(userName);
-
-        return userLibrary;
-    }
-
 }
