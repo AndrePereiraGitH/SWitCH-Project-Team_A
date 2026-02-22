@@ -1,14 +1,19 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -21,10 +26,40 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LibraryRepositoryTest {
 
+    // BibliographicalData
+    Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
+    Author author = new Author(profile, "valio bio");
+    Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
+    Email email = new Email("Maria1", "gmail.com");
+    Contact contact = new Contact("915945695", "+351", email, address);
+    BibliographicalData bibliographicalData = new BibliographicalData(
+            "Childhood, Youth, Dependency: The Copenhagen Trilogy",
+            List.of(author),
+            Locale.ENGLISH,
+            LocalDate.of(2020, 1, 1),
+            List.of(new Genre("Fiction")),
+            "Some text"
+    );
 
-    Profile profile = new Profile("profile name", new Country("Portugal"), LocalDate.now());
-    User user = new User("user name", new Contact(), profile, UserRole.NORMAL_USER);
+    // User
+    User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
 
+    // Edition
+    Code code = Code.fromIsbn13("9783161484123");
+    PhysicalAttributes physicalAttributes = new PhysicalAttributes(new Dimensions(10.0, 0.2, 5.2), 400.0, 250);
+    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+    Edition edition1 = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition2 = new Edition("2nd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition3 = new Edition("3rd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+    // PublicationSample
+    PublicationSample validItem1 = new PublicationSample(bibliographicalData, user, PublicationStatus.READING, edition1, Condition.LIKE_NEW);
+    PublicationSample validItem2 = new PublicationSample(bibliographicalData, user, PublicationStatus.READ, edition2, Condition.LIKE_NEW);
+    PublicationSample validItem3 = new PublicationSample(bibliographicalData, user, PublicationStatus.READING, edition3, Condition.LIKE_NEW);
+
+
+    // System Under Test
     Map<String, Library> libraries = new HashMap<>();
     LibraryRepository libraryRepository = new LibraryRepository(libraries);
 
@@ -43,19 +78,18 @@ class LibraryRepositoryTest {
      *
      * @throws InstanceAlreadyExistsException if the user already has a library
      */
-
     @Test
     void shouldCreateAndAddLibrarySuccessfully() throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
 
         // Act
-        Library newLibrary = libraryRepository.createAndAdd(libraryName,user);
+        Library newLibrary = libraryRepository.createAndAdd(libraryName, user);
 
         // Assert
         assertNotNull(newLibrary);
         assertEquals(libraryName, newLibrary.getLibraryName());
-        assertEquals("user name", user.getUserName());
+        assertEquals(user.getUserName(), newLibrary.getUser().getUserName());
     }
 
     /**
@@ -65,15 +99,13 @@ class LibraryRepositoryTest {
      * Validates that library names must contain at least one character.
      * </p>
      */
-
     @Test
     void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty(){
         //Arrange
         String libraryName = "";
 
-
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> libraryRepository.createAndAdd(libraryName,user));
+        assertThrows(IllegalArgumentException.class, () -> libraryRepository.createAndAdd(libraryName, user));
     }
 
     /**
@@ -83,15 +115,13 @@ class LibraryRepositoryTest {
      * Validates that a valid user must be provided as the library owner.
      * </p>
      */
-
     @Test
     void shouldReturnAnExceptionWhenTheUserIsNull(){
         //Arrange
         String libraryName = "mylib";
 
-
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> libraryRepository.createAndAdd(libraryName,null));
+        assertThrows(IllegalArgumentException.class, () -> libraryRepository.createAndAdd(libraryName, null));
     }
 
     /**
@@ -100,18 +130,19 @@ class LibraryRepositoryTest {
      * <p>
      * Validates the business rule that users can only have one library.
      * </p>
+     *
+     * @throws InstanceAlreadyExistsException if the initial library creation fails
      */
-
     @Test
     void shouldReturnAnExceptionWhenTheUserAlreadyHasALibrary() throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
 
         //Act
-        libraryRepository.createAndAdd(libraryName,user);
+        libraryRepository.createAndAdd(libraryName, user);
 
         // Act & Assert
-        assertThrows(InstanceAlreadyExistsException.class, () -> libraryRepository.createAndAdd(libraryName,user));
+        assertThrows(InstanceAlreadyExistsException.class, () -> libraryRepository.createAndAdd(libraryName, user));
     }
 
     /**
@@ -123,19 +154,17 @@ class LibraryRepositoryTest {
      *
      * @throws InstanceAlreadyExistsException if library creation fails
      */
-
     @Test
     void returnTrueWhenUserAlreadyHasALibrary() throws InstanceAlreadyExistsException{
         // Arrange
         String libraryName = "My Library";
-        libraryRepository.createAndAdd(libraryName,user);
+        libraryRepository.createAndAdd(libraryName, user);
 
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(user);
 
         //Assert
         assertTrue(result);
-
     }
 
     /**
@@ -145,7 +174,6 @@ class LibraryRepositoryTest {
      * Verifies the correct detection when a user has no library ownership.
      * </p>
      */
-
     @Test
     void returnFalseWhenUserDoesNotHaveALibrary() {
         // Arrange
@@ -155,10 +183,35 @@ class LibraryRepositoryTest {
 
         //Assert
         assertFalse(result);
-
     }
 
+    /**
+     * Tests that all publications from a user's library are correctly retrieved.
+     * <p>
+     * Verifies that:
+     * <ul>
+     *   <li>Multiple publications can be added to a library</li>
+     *   <li>The repository returns all publications associated with the user's library</li>
+     *   <li>The returned list matches the expected publications</li>
+     * </ul>
+     * </p>
+     *
+     * @throws InstanceAlreadyExistsException if the user already has a library
+     * @throws InstanceNotFoundException if the user's library cannot be found
+     */
+    @Test
+    void shouldReturnAllPublicationsFromUserLibrary() throws InstanceAlreadyExistsException, InstanceNotFoundException {
+        //Arrange
+        Library lib1 = libraryRepository.createAndAdd("lib1", user);
+        lib1.addPublication(validItem1);
+        lib1.addPublication(validItem2);
+        lib1.addPublication(validItem3);
 
+        //Act
+        List<PublicationSample> expectedPublications = List.of(validItem1, validItem2, validItem3);
+        List<PublicationSample> realPublications = libraryRepository.getAllPublicationsFromUserLibrary(user.getUserName());
 
-
+        //Assert
+        assertEquals(expectedPublications, realPublications);
+    }
 }

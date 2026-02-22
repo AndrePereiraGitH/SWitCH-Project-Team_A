@@ -51,6 +51,15 @@ public class Edition {
         this._editionDate = editionDate;
     }
 
+
+    public PublicationType getPublicationType() {
+        return _publicationType;
+    }
+
+    public Code getCode() {
+        return _code;
+    }
+
     /**
      * Compares this edition with another object for equality.
      * <p>

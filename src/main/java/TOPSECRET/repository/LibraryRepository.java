@@ -1,11 +1,13 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Library;
+import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.domain.User;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LibraryRepository {
@@ -79,6 +81,24 @@ public class LibraryRepository {
         }
 
         return false;
+    }
+
+    /**
+     * Retrieves all publications from the library associated with the given username.
+     *
+     * @param username the username of the user whose library publications are to be retrieved
+     * @return a list of {@link PublicationSample} objects representing all publications
+     *         in the user's library
+     * @throws InstanceNotFoundException if no library is found for the specified username
+     */
+    public List<PublicationSample> getAllPublicationsFromUserLibrary(String username) throws InstanceNotFoundException {
+
+        Library userLibrary = getLibraryOfUser(username);
+
+        List<PublicationSample> listOfAllPublications = userLibrary.getAllPublications();
+
+        return listOfAllPublications;
+
     }
 
 }
