@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationDetailsDTOTest {
+class PublicationDetailsDTOUS012Test {
 
     @Test
     void ensureConstructorShouldSetFieldsCorrectly() {
@@ -18,7 +18,7 @@ class PublicationDetailsDTOTest {
         String expectedType = "BOOK";
 
         // Act
-        PublicationDetailsDTO dto = new PublicationDetailsDTO(expectedTitle, expectedAuthors, expectedCode, expectedType);
+        PublicationDetailsDTO_US012 dto = new PublicationDetailsDTO_US012(expectedTitle, expectedAuthors, expectedCode, expectedType);
 
         // Assert
         assertEquals(expectedTitle, dto.pubTitle);

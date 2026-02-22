@@ -9,60 +9,78 @@ participant ":UI012" as UI
 
 
 
-participant ":GetListOfPublicationsInLibraryController" as Ctrl
+participant ":US012GetListOfPublicationsInLibraryController" as Ctrl
 
-
-
-participant ":PublicationDetailsMapper" as Mapper
-participant "pubDTO:PublicationDetailsDTO" as DTO
-
+participant ":LibraryRepository" as libraryRepo
 
 
 participant ":Library" as LibDomain
 
+participant "listOfPublications:List<PublicationSample>" as ListPubs
+
+participant ":PublicationDetailsDTO_US012" as DTO
+
 participant "listOfPublicationsDTO:List<PublicationDetailsDTO>" as ListDTO
 
-participant "listOfPublications:List<Publication>" as ListPubs
+participant ":PublicationSample" as PubDomain
 
-participant ":Publication" as PubDomain
-
-
+participant "pubDTO:PublicationDetailsDTO" as pubDTO
 
 
 
-User -> UI : asks to see a list of publications in library
+
+
+
+
+User -> UI : I want to see a list of the publications in my library
+activate UI
+UI -> User : Enter your username
+deactivate UI
+User -> UI: username
+
 activate UI
 
-UI -> Ctrl: getListOfPublicationsInLibraryDTO()
+UI -> Ctrl: getListOfPublicationsInLibraryDTO(username)
 activate Ctrl
-Ctrl -> LibDomain: getAllPublications()
+Ctrl -> libraryRepo: getAllPublicationsFromUserLibrary(username)
+
+activate libraryRepo
+
+libraryRepo -> LibDomain : getAllPublications()
+
 activate LibDomain
 
 LibDomain -> ListPubs **: create()
 
-LibDomain --> Ctrl: listOfPublications
+LibDomain -> libraryRepo : listOfAllPublications
+
 deactivate LibDomain
 
 
-Ctrl -> Mapper: toDTOs(listOfPublications)
+libraryRepo -> Ctrl: listOfAllPublications
 
-activate Mapper
-Mapper -> ListDTO **: create()
+deactivate libraryRepo
 
 
-    loop for each publication in list
-        Mapper -> PubDomain: getDetails()
+Ctrl -> DTO: toDTOs(listOfPublications)
+
+activate DTO
+DTO -> ListDTO **: create()
+
+
+    loop for each publication in listOfPublications
+        DTO -> PubDomain: getDetails()
         activate PubDomain
-        PubDomain --> Mapper: details
+        PubDomain --> DTO: details
         deactivate PubDomain
 
-        Mapper -> DTO ** : createDTO(details)
-       
-        Mapper -> Mapper: listOfPublicationsDTO.add(pubDTO)
+        DTO -> pubDTO** : createDTO(details)
+
+        DTO -> DTO: listOfPublicationsDTO.add(pubDTO)
     end
 
-Mapper --> Ctrl: listOfPublicationsDTO
-deactivate Mapper
+DTO --> Ctrl: listOfPublicationsDTO
+deactivate DTO
 
 Ctrl --> UI: listOfPublicationsDTO
 deactivate Ctrl

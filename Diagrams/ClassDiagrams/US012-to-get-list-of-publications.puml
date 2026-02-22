@@ -1,37 +1,59 @@
 @startuml
-title US012 - Get the list of publications in my library (Class Diagram)
+title US012 - As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
 
-class UI012 {
-}
 
-class GetListOfPublicationsInLibraryController {
-    +getListOfPublicationsInLibraryDTO(String username)
-}
+    class UI012 {
+    }
 
-class Library {
-    +getListOfPublicationsInLibrary()
-}
 
-class Publication {
-}
 
-class PublicationDetailsDTO {
-}
+    class US012GetListOfPublicationsInLibraryController {
+        - libraryRepository : LibraryRepository
+        + getListOfPublicationsInLibraryDTO(username)
+    }
 
-class PublicationDetailsMapper {
-    +toDTOs(List<Publication> publications)
-}
 
-' ---------------- Relationships ----------------
 
-UI012 ..> GetListOfPublicationsInLibraryController : delegates to
+    class PublicationDetailsDTO_US012 {
+        - detailsDTO : String
+        + toDTOs(listOfPublications : List<PublicationSample>) : List<PublicationDetailsDTO>
+        + createDTO(details) : PublicationDetailsDTO
+    }
 
-GetListOfPublicationsInLibraryController "1" --> Library : retrieves publications from
-GetListOfPublicationsInLibraryController "1" ..> "1" PublicationDetailsMapper : invokes
 
-Library "1" --> "*" Publication : contains
+    class Library {
+        - publications : List<PublicationSample>
+        + getAllPublications() : List<PublicationSample>
+    }
 
-PublicationDetailsMapper "1" ..> "1..*" Publication : converts
-PublicationDetailsMapper "1" ..> "1..*" PublicationDetailsDTO : produces
+    class PublicationSample {
+        - details: Details
+        + getDetails()
+    }
+
+
+
+    class LibraryRepository {
+        + getAllPublicationsFromUserLibrary(username)
+    }
+
+
+
+
+
+
+
+' Relationships
+UI012 ..> US012GetListOfPublicationsInLibraryController : uses
+US012GetListOfPublicationsInLibraryController ..> LibraryRepository : uses
+US012GetListOfPublicationsInLibraryController ..> PublicationDetailsDTO_US012 : creates
+
+
+PublicationDetailsDTO_US012 ..> PublicationSample : converts from
+
+Library "1" --> "0..*" PublicationSample : contains
+
+LibraryRepository "1" --> "*" Library : manages
+
 
 @enduml
