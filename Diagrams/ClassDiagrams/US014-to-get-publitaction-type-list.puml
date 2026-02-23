@@ -12,25 +12,20 @@ class PublicationTypeRepository {
     +getAllPublicationTypes() : List<PublicationType>
 }
 
-class PublicationTypeMapper {
-    +toDTO(list : List<PublicationTypeDTO>)
-}
-
 class PublicationTypeDTO {
-    +mediaFormat : String
     +typeOfBinding : String
     +details : String
+
+    +fromDomainList(list : List<PublicationTypeDTO>)
 }
 
 class PublicationType {
-    -mediaFormat : MediaFormat
     -typeOfBinding : TypeOfBinding
     -details : String
 }
 
 UI014 "1" -.-> "1" ToGetPublicationTypeController : uses
 ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses
-ToGetPublicationTypeController "1" -.-> "1" PublicationTypeMapper : uses
-PublicationTypeMapper "1" -.> "1" PublicationTypeDTO : maps
+ToGetPublicationTypeController "1" -.> "1" PublicationTypeDTO : uses
 PublicationTypeRepository "1" --> "1..*" PublicationType : contains
 @enduml

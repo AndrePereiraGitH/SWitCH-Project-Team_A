@@ -1,52 +1,49 @@
 @startuml
 autonumber
 hide footbox
-title US0014 - To get publication types list
+title US0014 - Get Publication Types List (without Mapper)
 
 actor User
+
 participant ":UI014" as UI
-participant ":ToGetPublicationTypeController" as C
+participant ":GetPublicationTypeListController" as C
 participant ":PublicationTypeRepository" as PTR
-participant ":PublicationTypeMapper_US014" as PTM
+participant ":PublicationTypeDTO_US014" as DTO
 
 User -> UI : I want to get a list of all publication types
 activate UI
 
-UI -> C : getListOfPublicationType()
+UI -> C : getAllPublicationTypes()
 activate C
 
-C -> PTR : getListOfPublicationType()
+C -> PTR : getAllPublicationTypes()
 activate PTR
-create "listOfPublicationType:\nList<PublicationType>" as LOPT
-PTR -> LOPT
 
 PTR --> C : listOfPublicationType
 deactivate PTR
 
-C -> PTM : toDTO(listOfPublicationType)
-activate PTM
+C -> DTO : fromDomainList(listOfPublicationType)
+activate DTO
 
-create "ListOfPublicationTypesDTO:\nList<publicationTypeDTO>" as listDTO
-PTM -> listDTO : create()
-    loop for each PublicationType
-        PTM -> "PublicationType" : getDetails()
-        activate PublicationType
-        PublicationType --> PTM : publicationType
-        deactivate PublicationType
-        create "PublicationTypeDTO\n:PublicationTypeDTO_US014" as PTDTO
-        PTM -> PTDTO : createDTO(publicationType)
-        PTDTO --> PTM : publicationTypeDTO
-        PTM -> listDTO : add(publicationTypeDTO)
-    end
+create "listOfPublicationTypesDTO:\nList<PublicationTypeDTO_US014>" as listDTO
+DTO -> listDTO : create()
 
-PTM --> C :listOfPublicationTypesDTO
-deactivate PTM
+loop for each PublicationType
+    DTO -> "PublicationType" : getDetails()
+    activate PublicationType
+    PublicationType --> DTO : publicationType
+    deactivate PublicationType
+    DTO -> DTO : createDTO(publicationType)
+    DTO -> listDTO : add(publicationTypeDTO)
+end
+
+DTO --> C : listOfPublicationTypesDTO
+deactivate DTO
 
 C --> UI : listOfPublicationTypesDTO
 deactivate C
 
-UI --> User : Show List of Publication Types
+UI --> User : Show list of publication types
 deactivate UI
-
 
 @enduml
