@@ -4,67 +4,85 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationTypeDTO_US014;
-import TOPSECRET.dto.PublicationTypeMapper_US014;
 import TOPSECRET.repository.PublicationTypeRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Unit tests for GetPublicationTypeListController.
+ *
+ * <p>This test class verifies that the controller correctly retrieves
+ * domain objects from the repository and converts them into DTOs.</p>
+ *
+ * <p>The tests focus on:</p>
+ * <ul>
+ *     <li>Correct list size</li>
+ *     <li>Correct data mapping</li>
+ *     <li>Empty list behavior</li>
+ * </ul>
+ */
 class GetPublicationTypeListControllerTest {
 
     @Test
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
+        // Arrange
         PublicationTypeRepository repository = new PublicationTypeRepository();
-        PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repository, mapper);
+                new GetPublicationTypeListController(repository);
 
+        // Act
         List<PublicationTypeDTO_US014> result = controller.getAllPublicationTypes();
 
+        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
     void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
+        // Arrange
         PublicationTypeRepository repository = new PublicationTypeRepository();
-        PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         PublicationType type =
                 repository.createPublicationType(
+                        MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
         repository.addToList(type);
 
         GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repository, mapper);
+                new GetPublicationTypeListController(repository);
 
+        // Act
         List<PublicationTypeDTO_US014> result =
                 controller.getAllPublicationTypes();
 
+        // Assert
         assertEquals(1, result.size());
 
         PublicationTypeDTO_US014 dto = result.get(0);
+        assertEquals("BOOK", dto._mediaFormat);
         assertEquals("HARDBACK", dto._typeOfBinding);
         assertEquals("Hardback", dto._details);
     }
 
     @Test
-    void getAllPublicationTypesTwoPublicationTypesReturnsTwoDTOs() {
+    void getAllPublicationTypesMultiplePublicationTypesReturnsListDTOs() {
         PublicationTypeRepository repository = new PublicationTypeRepository();
-        PublicationTypeMapper_US014 mapper = new PublicationTypeMapper_US014();
 
         PublicationType t1 =
                 repository.createPublicationType(
+                        MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
         PublicationType t2 =
                 repository.createPublicationType(
+                        MediaFormat.BOOK,
                         TypeOfBinding.PAPERBACK,
                         "Paperback");
 
@@ -72,7 +90,7 @@ class GetPublicationTypeListControllerTest {
         repository.addToList(t2);
 
         GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repository, mapper);
+                new GetPublicationTypeListController(repository);
 
         List<PublicationTypeDTO_US014> result =
                 controller.getAllPublicationTypes();
