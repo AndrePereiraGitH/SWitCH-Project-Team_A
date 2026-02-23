@@ -1,5 +1,6 @@
 package TOPSECRET.repository;
 
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import java.util.List;
 public class PublicationTypeRepositoryTest {
 
     // Publication type sample
-    // mediaFormat removed
+    MediaFormat mediaFormat = MediaFormat.BOOK;
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
     String details = "Book with gold engravings";
 
@@ -22,11 +23,12 @@ public class PublicationTypeRepositoryTest {
 
         PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
 
-        pubType = pubTypeRepo.createPublicationType(typeOfBinding, details);
+        pubType = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pubType);
 
         assertNotNull(pubTypeRepo);
         assertEquals(pubType, pubTypeRepo.getAllPublicationTypes().get(0));
+        assertEquals(mediaFormat, pubType.getMediaFormat());
         assertEquals(typeOfBinding, pubType.getTypeOfBinding());
         assertEquals(details, pubType.getDetails());
     }
@@ -40,10 +42,10 @@ public class PublicationTypeRepositoryTest {
         PublicationType pt1;
         PublicationType pt2;
 
-        pt1 = pubTypeRepo.createPublicationType(typeOfBinding, details);
+        pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pt1);
 
-        pt2 = pubTypeRepo.createPublicationType(typeOfBinding, "different book");
+        pt2 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, "different book");
         pubTypeRepo.addToList(pt2);
 
 
@@ -76,7 +78,7 @@ public class PublicationTypeRepositoryTest {
         PublicationType pt1;
         PublicationType pt2;
 
-        pt1 = pubTypeRepo.createPublicationType(typeOfBinding, details);
+        pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pt1);
 
         pt2 = pt1;
@@ -99,7 +101,7 @@ public class PublicationTypeRepositoryTest {
 
         PublicationTypeRepository repo = new PublicationTypeRepository();
 
-        PublicationType pubType = repo.createPublicationType(typeOfBinding, details);
+        PublicationType pubType = repo.createPublicationType(mediaFormat, typeOfBinding, details);
 
         PublicationType returned = repo.addToList(pubType);
 
