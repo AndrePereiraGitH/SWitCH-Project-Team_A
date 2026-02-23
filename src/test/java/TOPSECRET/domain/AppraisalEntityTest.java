@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,15 +27,33 @@ class AppraisalEntityTest {
         return new Contact("912345678", "351", null, null);
     }
 
+    // Creates a valid PublicationType for testing
     private PublicationType createValidPublicationType(String details) {
-        return new PublicationType(TypeOfBinding.HARDBACK, details);
+        return new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard publication"
+        );
+    }
+
+    // Creates a valid Genre for testing
+    private Genre createValidGenre() {
+        return new Genre("Fiction");
     }
 
     private Genre createValidGenre(String title) {
         return new Genre(title);
     }
 
-    private List<PublicationType> createPublicationTypeList(String... details) {
+    // Static helper used by MethodSource
+    private static PublicationType createValidPublicationTypeStatic() {
+        return new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard publication"
+        );
+    }
+    private List<PublicationType> createPublicationTypeList (String... details) {
         return java.util.Arrays.stream(details)
                 .map(this::createValidPublicationType)
                 .toList();
@@ -57,7 +76,7 @@ class AppraisalEntityTest {
     static Stream<Arguments> nullParameterProvider() {
         return Stream.of(
                 Arguments.of(null,
-                        List.of(new PublicationType(TypeOfBinding.HARDBACK, "Standard")),
+                        List.of(new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard")),
                         List.of(new Genre("Fiction"))),
 
                 Arguments.of(new Contact("999", "351", null, null),
@@ -65,7 +84,7 @@ class AppraisalEntityTest {
                         List.of(new Genre("Fiction"))),
 
                 Arguments.of(new Contact("999", "351", null, null),
-                        List.of(new PublicationType(TypeOfBinding.HARDBACK, "Standard")),
+                        List.of(new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard")),
                         null)
         );
     }

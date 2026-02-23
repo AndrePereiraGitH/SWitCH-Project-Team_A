@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
@@ -32,8 +33,8 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
     private PublicationTypeRepository createPublicationTypeRepository() {
         PublicationTypeRepository repo = new PublicationTypeRepository();
-        repo.addToList(new PublicationType(TypeOfBinding.HARDBACK, "Standard"));
-        repo.addToList(new PublicationType(TypeOfBinding.PAPERBACK, "Pocket"));
+        repo.addToList(new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard"));
+        repo.addToList(new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Pocket"));
         return repo;
     }
 
@@ -41,13 +42,20 @@ class US004ToRegisterAppraisalEntityControllerTest {
         return new Contact("912345678", "351", null, null);
     }
 
+    // Helper to create a valid PublicationType
+    private PublicationType createValidPublicationType() {
+        return new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard publication");}
+
     private US004ToRegisterAppraisalEntityController createController() {
         return new US004ToRegisterAppraisalEntityController(
                 createGenreRepository(),
                 createPublicationTypeRepository(),
                 new AppraisalEntityRepository(),
                 new GenreDetailsDTO_US004("temp"),
-                new PublicationTypeDTO_US004(TypeOfBinding.HARDBACK, "temp")
+                new PublicationTypeDTO_US004(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "temp")
         );
     }
 
@@ -93,7 +101,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         var controller = createController();
 
         var genreDTO = new GenreDetailsDTO_US004("Fantasy");
-        var pubDTO = new PublicationTypeDTO_US004(TypeOfBinding.HARDBACK, "Standard");
+        var pubDTO = new PublicationTypeDTO_US004(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard");
 
         // Act
         AppraisalEntity entity = controller.registerAppraisalEntity(
@@ -124,7 +132,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                         "Entity",
                         createContact(),
                         List.of(),
-                        List.of(new PublicationTypeDTO_US004(TypeOfBinding.HARDBACK, "Standard"))
+                        List.of(new PublicationTypeDTO_US004(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard"))
                 )
         );
 

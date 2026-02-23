@@ -258,6 +258,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
     private static PublicationType createPublicationType(){
         return new PublicationType(
+                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Details"
         );

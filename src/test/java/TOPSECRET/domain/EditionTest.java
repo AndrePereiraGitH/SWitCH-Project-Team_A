@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
@@ -44,11 +45,11 @@ class EditionTest {
     }
 
     private PublicationType validPublicationType() {
-        return new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        return new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
     }
 
     private PublicationType differentPublicationType() {
-        return new PublicationType(TypeOfBinding.PAPERBACK, "Other details");
+        return new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Other details");
     }
 
     private Publisher validPublisher() {

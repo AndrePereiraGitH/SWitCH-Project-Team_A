@@ -65,6 +65,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         );
 
         PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );
@@ -73,7 +74,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         Code code = Code.fromIsbn13 ("978316148412");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher1 = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition(
                 "1st",

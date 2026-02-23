@@ -40,7 +40,7 @@ class LibraryTest {
 
 
         //PublicationType
-        PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "HardCover");
+        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "HardCover");
 
         //Country
         Country country1 = new Country("Portugal");
@@ -92,7 +92,7 @@ class LibraryTest {
         Code code = Code.fromIsbn13("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 

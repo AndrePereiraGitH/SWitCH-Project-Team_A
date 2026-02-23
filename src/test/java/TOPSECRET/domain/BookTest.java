@@ -57,14 +57,14 @@ class BookTest {
 //        String edition = "Sample Edition";
         Code code1 = Code.fromIsbn13 ("9783161484123");
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code1, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         BibliographicalData information = sampleInformation();
 
         PublicationType publicationType =
-                new PublicationType(TypeOfBinding.HARDBACK, "Hardback");
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Hardback");
 
         // --- minimal User created here ---
 

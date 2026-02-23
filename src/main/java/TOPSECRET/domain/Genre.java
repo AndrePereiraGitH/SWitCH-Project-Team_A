@@ -25,6 +25,10 @@ public class Genre {
         return _genreType;
     }
 
+    public String getGenreType() {
+        return _genreType;
+    }
+
     /**
      * Compares two Genre objects based on their title.
      */

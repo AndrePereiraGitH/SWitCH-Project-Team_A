@@ -92,7 +92,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
                 "Some text"
         );
 
-        publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
+        publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
         user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
         publicationStatus = PublicationStatus.FOR_SALE;
 
@@ -104,7 +104,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         Code code = Code.fromIsbn13 ("978316148412");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
         Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
@@ -175,7 +175,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 //        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
 //        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 //
-////        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
+    ////        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
 //        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1);
 //
 //        PublicationRepository pubRepo = new PublicationRepository(List.of(pub));
@@ -197,8 +197,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
 //    @Test
 //    void getListOfItemsOnDirectSaleReturnsMappedDTOs() {
-        // arrange
-        Publication targetPublication = validItem1.getPublication();
+    // arrange
+    Publication targetPublication = validItem1.getPublication();
 
 //        Listing listing1 = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
 //        Listing listing2 = new Listing(validTitle, List.of(validItem1), SaleType.DIRECT_SALE, validPrice, validDescription, validSeller, validPictures);
@@ -208,18 +208,18 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 //        DirectSale ds1 = new DirectSale(List.of(listing1), validBuyer, false);
 //        DirectSale ds2 = new DirectSale(List.of(listing2), validBuyer, false);
 
-        PublicationSampleRepository pubRepo = new PublicationSampleRepository(List.of());
-        PublicationMapper_US023 pubMapper = new PublicationMapper_US023();
-//        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds1, ds2));
-        DirectSaleMapper_US023 dsMapper = new DirectSaleMapper_US023();
+    PublicationSampleRepository pubRepo = new PublicationSampleRepository(List.of());
+    PublicationMapper_US023 pubMapper = new PublicationMapper_US023();
+    //        DirectSaleRepository dsRepo = new DirectSaleRepository(List.of(ds1, ds2));
+    DirectSaleMapper_US023 dsMapper = new DirectSaleMapper_US023();
 
 //        ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
 //                new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(pubRepo, pubMapper,dsRepo, dsMapper);
 
-        // act
+    // act
 //        List<DirectSaleDTO_US023> result = controller.getListOfItemsOnDirectSale(targetPublication);
 
-        // assert
+    // assert
 //        assertEquals(2, result.size());
 //        DirectSaleDTO_US023 dto = result.get(0);
 //        assertAll(

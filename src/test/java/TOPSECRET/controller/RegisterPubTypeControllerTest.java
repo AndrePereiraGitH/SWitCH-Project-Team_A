@@ -19,6 +19,7 @@ class RegisterPubTypeControllerTest {
     void createAndAddPublicationTypesToRepository()
     {
         PublicationType pt1 = controller.RegisterPubType(
+                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Book with gold engravings"
         );
@@ -31,7 +32,7 @@ class RegisterPubTypeControllerTest {
     @Test
     void shouldThrowExceptionAndNotAddToRepository()
     {
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(TypeOfBinding.HARDBACK, ""));
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, ""));
         assertEquals(0, repo.getAllPublicationTypes().size());
     }
 }

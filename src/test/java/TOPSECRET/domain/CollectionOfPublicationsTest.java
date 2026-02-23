@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
@@ -64,6 +65,7 @@ class CollectionOfPublicationsTest {
 
         // Create a publication type
         PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard publication"
         );
@@ -84,7 +86,7 @@ class CollectionOfPublicationsTest {
 //        String edition = "First Edition";
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
 

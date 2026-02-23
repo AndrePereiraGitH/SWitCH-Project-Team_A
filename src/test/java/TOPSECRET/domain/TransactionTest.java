@@ -181,7 +181,7 @@ class TransactionTest {
     }
 
     @Test
-    void cartTransactionConstructorIsValid() {
+    void directSaleTransactionConstructorIsValid() {
         // Arrange
         User buyer = createValidUser("Buyer");
 
@@ -189,7 +189,7 @@ class TransactionTest {
         Transaction transaction = new Transaction(
                 buyer,
                 new Price(new BigDecimal("19.99")),
-                createValidCart(buyer),
+                createValidDirectSale(buyer),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 List.of(createValidUser("Seller"))
@@ -200,7 +200,7 @@ class TransactionTest {
     }
 
     @Test
-    void cartConstructorNullCart() {
+    void directSaleConstructorNullCart() {
         // Act & Assert
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
@@ -216,13 +216,13 @@ class TransactionTest {
     }
 
     @Test
-    void cartConstructorNullBuyer() {
+    void directSaleConstructorNullBuyer() {
         // Act & Assert
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         null,
                         new Price(new BigDecimal("10.00")),
-                        createValidCart(createValidUser("Buyer")),
+                        createValidDirectSale(createValidUser("Buyer")),
                         LocalDateTime.now(),
                         LocalDateTime.now(),
                         List.of(createValidUser("Seller"))
@@ -232,13 +232,13 @@ class TransactionTest {
     }
 
     @Test
-    void cartConstructorNullPrice() {
+    void directSaleConstructorNullPrice() {
         // Act & Assert
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         null,
-                        createValidCart(createValidUser("Buyer")),
+                        createValidDirectSale(createValidUser("Buyer")),
                         LocalDateTime.now(),
                         LocalDateTime.now(),
                         List.of(createValidUser("Seller"))
@@ -248,13 +248,13 @@ class TransactionTest {
     }
 
     @Test
-    void cartConstructorNullTransactionDate() {
+    void directSaleConstructorNullTransactionDate() {
         // Act & Assert
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
-                        createValidCart(createValidUser("Buyer")),
+                        createValidDirectSale(createValidUser("Buyer")),
                         null,
                         LocalDateTime.now(),
                         List.of(createValidUser("Seller"))
@@ -264,13 +264,13 @@ class TransactionTest {
     }
 
     @Test
-    void cartConstructorNullPaymentDate() {
+    void directSaleConstructorNullPaymentDate() {
         // Act & Assert
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
-                        createValidCart(createValidUser("Buyer")),
+                        createValidDirectSale(createValidUser("Buyer")),
                         LocalDateTime.now(),
                         null,
                         List.of(createValidUser("Seller"))
@@ -280,13 +280,13 @@ class TransactionTest {
     }
 
     @Test
-    void cartConstructorNullSellers() {
+    void directSaleConstructorNullSellers() {
         // Act & Asser
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
                         createValidUser("Buyer"),
                         new Price(new BigDecimal("10.00")),
-                        createValidCart(createValidUser("Buyer")),
+                        createValidDirectSale(createValidUser("Buyer")),
                         LocalDateTime.now(),
                         LocalDateTime.now(),
                         null
@@ -320,25 +320,15 @@ class TransactionTest {
                 "O Senhor do Anéis: A irmandade do Anel",
                 authors,
                 new Locale("pt","PT"),
-//                new Publisher(
-//                        "PortoEditora",
-//                        "123456748",
-//                        new Contact(
-//                                "918475648",
-//                                "+351",
-//                                new Email("asa", "example.com"),
-//                                new Address("Rua Antónia Pinto", "123", "5503-231", new Country("Portugal"))
-//                        )
-//                ),
                 LocalDate.of(2020,1,10),
                 List.of(new Genre ("Fiction")),
-//                200,
                 "Text Description"
                 );
     }
 
     private static PublicationType createValidPublicationType() {
         return new PublicationType(
+                MediaFormat.MAGAZINE,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
@@ -348,7 +338,7 @@ class TransactionTest {
         Code code = Code.fromIsbn13("9781234567890");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
@@ -368,7 +358,7 @@ class TransactionTest {
         BibliographicalData bd = createValidBibliographicalData();
         Code code = Code.fromIsbn13 ("9783161484123");
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(new Dimensions(45,15,20), 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
@@ -402,10 +392,10 @@ class TransactionTest {
         );
     }
 
-    private static Cart createValidCart(User buyer){
-        Cart cart = new Cart(buyer);
-        cart.addListing(createValidListing());
-        return cart;
+    private static DirectSale createValidDirectSale(User buyer){
+        DirectSale directSale = new DirectSale();
+        directSale.getListings();
+        return directSale;
     }
 
 

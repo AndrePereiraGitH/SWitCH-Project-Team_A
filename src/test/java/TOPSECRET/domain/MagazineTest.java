@@ -57,7 +57,7 @@ class MagazineTest {
                 "Text"
         );
         // PublicationType
-        PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
+        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
 
         // User
         User user = new User("user01", contact, profile, UserRole.NORMAL_USER);
@@ -68,7 +68,7 @@ class MagazineTest {
         // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         // Publication

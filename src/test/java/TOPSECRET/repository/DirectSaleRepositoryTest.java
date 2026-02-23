@@ -17,13 +17,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class DirectSaleRepositoryTest {
 
 
-    //============================================================================================================
-    // HELPERS
+    // Dimensions
+    Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+
+    // User
+    LocalDate validBirthday = LocalDate.of(2000, 1, 1);
+    Profile validProfile = new Profile("John",new Country("PORTUGAL"),validBirthday);
+    Email validEmail = new Email("john.doe", "example.com");
+    Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
+    Contact validContact = new Contact("123456789","+351",validEmail,validAddress);
+    User validSeller = new User("Seller1",validContact,validProfile, UserRole.NORMAL_USER);
+    Genre validGenre = new Genre("Fiction");
+
 
     // BibliographicalData
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
     Author author = new Author(profile, "valio bio");
-    Genre validGenre = new Genre("Fiction");
+    Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
+    Email email = new Email("Maria1", "gmail.com");
+    Contact contact = new Contact("915945695", "+351", email, address);
+    Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
     BibliographicalData bibliographicalData = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author),
@@ -33,26 +46,17 @@ class DirectSaleRepositoryTest {
             "Some text"
     );
 
-    // PublicationType
-    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
 
-    // Seller
-    LocalDate validBirthday = LocalDate.of(2000, 1, 1);
-    Profile validProfile = new Profile("John", new Country("PORTUGAL"), validBirthday);
-    Email validEmail = new Email("john.doe", "example.com");
-    Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
-    Contact validContact = new Contact("123456789", "+351", validEmail, validAddress);
-    User validSeller = new User("Seller1", validContact, validProfile, UserRole.NORMAL_USER);
+    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"
+    );
 
     // PublicationStatus
     PublicationStatus publicationStatus = PublicationStatus.READING;
-
+    User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
     // Edition
     Code code = Code.fromIsbn13("9783161484121");
-    Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
-    Publisher publisher = new Publisher("Some Publisher", "PT123456789", null);
+    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
 
     Edition edition1 = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     Edition edition2 = new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));

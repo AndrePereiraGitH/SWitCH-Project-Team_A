@@ -1,10 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -57,7 +54,7 @@ class PublicationDetailsDTO_US012Test {
     // Edition components
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType publicationType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
 
     // Editions

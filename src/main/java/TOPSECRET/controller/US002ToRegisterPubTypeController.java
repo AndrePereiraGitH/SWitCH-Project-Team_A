@@ -16,9 +16,9 @@ public class US002ToRegisterPubTypeController {
     }
 
     //Register Publication Type in Repository
-    public PublicationType RegisterPubType(TypeOfBinding typeOfBinding, String details)
+    public PublicationType RegisterPubType(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
-        PublicationType pubType = _pubTypeRepo.createPublicationType(typeOfBinding, details);
+        PublicationType pubType = _pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
         _pubTypeRepo.addToList(pubType);
 
         return pubType;

@@ -1,5 +1,6 @@
 package TOPSECRET.dto;
 
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class PublicationTypeDTO_US004 {
 
+    private MediaFormat _mediaFormat;
     private TypeOfBinding _typeOfBinding;
     private String _details;
 
@@ -25,9 +27,18 @@ public class PublicationTypeDTO_US004 {
      * @param _typeOfBinding Type of binding.
      * @param details Additional details.
      */
-    public PublicationTypeDTO_US004(TypeOfBinding _typeOfBinding, String details) {
+    public PublicationTypeDTO_US004(MediaFormat mediaFormat, TypeOfBinding _typeOfBinding, String details) {
+        this._mediaFormat = mediaFormat;
         this._typeOfBinding = _typeOfBinding;
         this._details = details;
+    }
+
+    /**
+     * Returns the media format.
+     * @return MediaFormat
+     */
+    public MediaFormat getMediaFormat() {
+        return _mediaFormat;
     }
 
     /**
@@ -54,6 +65,7 @@ public class PublicationTypeDTO_US004 {
     public static PublicationTypeDTO_US004 publicationTypeToDTO(PublicationType type) {
 
         return new PublicationTypeDTO_US004(
+                type.getMediaFormat(),
                 type.getTypeOfBinding(),
                 type.getDetails()
         );
@@ -82,6 +94,7 @@ public class PublicationTypeDTO_US004 {
      */
     public PublicationType dtoToPublicationType() {
         return new PublicationType(
+                this._mediaFormat,
                 this._typeOfBinding,
                 this._details
         );

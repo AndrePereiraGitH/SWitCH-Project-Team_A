@@ -7,21 +7,21 @@ import java.util.List;
 /**
  * Represents a financial transaction in the system.
  *
- * A Transaction records the result of a sale or auction, including:
+ * <p>A Transaction records the result of a sale or auction, including:
  * - the buyer
  * - the seller
  * - the final price
  * - the date when the transaction occurred
  * - the listing that was sold
  *
- * This class belongs to the domain layer and contains business data
+ * <p>This class belongs to the domain layer and contains business data
  * related to a completed sale.
  */
 public class Transaction {
 
     private User _buyer;
     private Auction _auction;
-    private Cart _cart;
+    private DirectSale _directSale;
     private Price _price;
     private LocalDateTime _transactionDate;
     private LocalDateTime _paymentDate;
@@ -69,10 +69,10 @@ public class Transaction {
 
 
     // ====================================
-    // Constructor for Cart (direct sale)
-    public Transaction(User buyer, Price price, Cart cart, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers){
+    // Constructor for direct sale
+    public Transaction(User buyer, Price price, DirectSale directSale, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers){
 
-        if (cart == null){
+        if (directSale == null){
             throw new IllegalArgumentException("Cart cannot be null");
         }
         if (buyer == null){
@@ -92,7 +92,7 @@ public class Transaction {
         }
 
         this._buyer = buyer;
-        this._cart = cart;
+        this._directSale = directSale;
         this._price = price;
         this._transactionDate = transactionDate;
         this._paymentDate = paymentDate;

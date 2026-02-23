@@ -279,7 +279,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         Code code = Code.fromIsbn10("123456789X");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition = new Edition(
                 "1st",
@@ -301,7 +301,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         Code code = Code.fromIsbn10("12345678" + (System.nanoTime() % 10) + "X");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
 
         Edition edition = new Edition(
@@ -318,7 +318,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     }
 
     private PublicationType publicationType() {
-        return new PublicationType(TypeOfBinding.HARDBACK, "some details");
+        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "some details");
     }
 
     private void addPublicationToLibrary(Library lib, PublicationSample p) {

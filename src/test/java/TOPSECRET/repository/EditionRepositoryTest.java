@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ class EditionRepositoryTest {
     private PhysicalAttributes validPhysicalAttributes() { return new PhysicalAttributes(validDimensions(), 300.2, 200);
     }
 
-    private PublicationType validPublicationType() { return new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    private PublicationType validPublicationType() { return new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     }
 
     private Publisher validPublisher() { return new Publisher("Porto Editora", "PT123456789", null);

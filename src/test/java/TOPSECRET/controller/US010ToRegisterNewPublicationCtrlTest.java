@@ -1,10 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Enum.*;
 import TOPSECRET.repository.PublicationSampleRepository;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +49,7 @@ class US010ToRegisterNewPublicationCtrlTest {
         Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition1= new Edition(
                 "1st",
@@ -84,7 +81,7 @@ class US010ToRegisterNewPublicationCtrlTest {
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
         PublicationStatus pubStatus1 = PublicationStatus.READING;
-        PublicationType publicationType1 = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
+        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
 
 
         //Act is here

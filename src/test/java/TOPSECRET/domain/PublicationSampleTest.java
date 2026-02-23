@@ -1,9 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -72,7 +69,7 @@ class PublicationSampleTest {
     Code code1 = Code.fromIsbn13("0123456789012");
     Dimensions dimensions1 = new Dimensions(4.5, 5.4, 2.3);
     PhysicalAttributes physicalAttributes1 = new PhysicalAttributes(dimensions1, 0.8, 250);
-    PublicationType pubType1 = new PublicationType(TypeOfBinding.HARDBACK, "Cool cover");
+    PublicationType pubType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Cool cover");
     Address address2 = new Address("Not Main Street", "11", "12346", new Country("SPAIN"));
     Email email2 = new Email("test.user2", "example2.com");
     Contact contact2 = new Contact("987438239", "351", email2, address2);

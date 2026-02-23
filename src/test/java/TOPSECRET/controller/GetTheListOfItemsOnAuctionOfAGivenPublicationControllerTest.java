@@ -21,7 +21,7 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     Email email = new Email("maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
 //    Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
-    PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
 
     BibliographicalData bd = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
@@ -42,7 +42,7 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     // Edition
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
     Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));

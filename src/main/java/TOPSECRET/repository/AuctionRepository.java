@@ -38,30 +38,29 @@ public class AuctionRepository {
         return true;
     }
 
-//    public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
-//
-//        if (genre == null) {
-//            throw new IllegalArgumentException("genre cannot be null");
-//        }
-//
-//        List<Auction> result = new ArrayList<>();
-//        // will iterate over all auctions in the repository
-//        for (Auction auction : auctionsList) {
-//           // for each auction, will iterate over all items that are in Listing
-//            for(Item item : auction.getListing().getItems()) {
-//                //this condition means that we are getting throw all the information necessary to get the final list of genres
-//                if(item.getPublication()
-//                        .getBibliographicalData()
-//                        .getGenres().contains(genre)) {
-//                    result.add(auction);
-//                   // break when finds one, prevents the duplication
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
+    public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
+
+        if (genre == null) {
+            throw new IllegalArgumentException("genre cannot be null");
+        }
+
+        List<Auction> result = new ArrayList<>();
+        // will iterate over all auctions in the repository
+        for (Auction auction : auctionsList) {
+           // for each auction, will iterate over all items that are in Listing
+            for(PublicationSample publicationSample : auction.getListing().getItems()) {
+                //this condition means that we are getting throw all the information necessary to get the final list of genres
+                if(publicationSample.getBibliographicalData()
+                        .getGenres().contains(genre)) {
+                    result.add(auction);
+                   // break when finds one, prevents the duplication
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
 
 
 //    public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {

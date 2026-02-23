@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +29,7 @@ class AppraisalEntityRepositoryTest {
      * @return valid PublicationType
      */
     private PublicationType createValidPublicationType(String details) {
-        return new PublicationType(TypeOfBinding.HARDBACK, details);
+        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, details);
     }
 
     /**
@@ -46,8 +47,7 @@ class AppraisalEntityRepositoryTest {
      * @return List of Genre
      */
     private List<Genre> createGenreList(String... titles) {
-        return java.util.Arrays.stream(titles).map(this::createValidGenre).toList();
-    }
+        return java.util.Arrays.stream(titles).map(this::createValidGenre).toList();}
 
     /**
      * Helper method to create a valid list of PublicationTypes with variable size.

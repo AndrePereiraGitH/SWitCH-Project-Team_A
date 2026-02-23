@@ -52,7 +52,7 @@ class ListingTest {
     // Edition
     Code code = Code.fromIsbn13("9783161484123");
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
     Edition edition1 = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     Edition edition2 = new Edition("2nd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));

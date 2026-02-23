@@ -39,7 +39,7 @@ class PublicationTest {
     Code code = Code.fromIsbn13 ("9783161484123");
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
     Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     Code anyCode = Code.fromIsbn10("1234567890");
@@ -61,7 +61,7 @@ class PublicationTest {
     UserRole userRole1 = UserRole.ADMIN;
     User anyUser = new User("coolGuy", contact2, profile2, userRole1);
     PublicationStatus anyPubStatus = PublicationStatus.READING;
-    PublicationType anyPubType = new PublicationType(TypeOfBinding.PAPERBACK, "Paperback");
+    PublicationType anyPubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Paperback");
 
 
     Publication anyPublication = new Publication(anyBiblioData, anyPubType, anyUser, anyPubStatus, edition, anyCode);
@@ -111,7 +111,7 @@ class PublicationTest {
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
         PublicationStatus pubStatus1 = PublicationStatus.READING;
-        PublicationType publicationType = new PublicationType(TypeOfBinding.PAPERBACK,
+        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK,
                 "Paperback");
 
         //Act
@@ -141,7 +141,7 @@ class PublicationTest {
         Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
         Code code1 = Code.fromIsbn10("1234567890");
@@ -162,7 +162,7 @@ class PublicationTest {
 
         UserRole userRole1 = UserRole.ADMIN;
         User user1 = new User("coolGuy", contact2, profile2, userRole1);
-        PublicationType publicationType1 = new PublicationType(TypeOfBinding.PAPERBACK,
+        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK,
                 "Paperback");
         PublicationStatus pubStatus1 = PublicationStatus.READING;
 
@@ -186,7 +186,7 @@ class PublicationTest {
         Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition expectedEdition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
@@ -203,7 +203,7 @@ class PublicationTest {
     void shouldReturnPublicationType() {
 
         //Reusing instance here, again, just changing the PublicationType
-        PublicationType expectedPubType = new PublicationType(TypeOfBinding.HARDBACK,
+        PublicationType expectedPubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.HARDBACK,
                 "Cool binding");
 
         //Act and assert
@@ -292,7 +292,7 @@ class PublicationTest {
         Code code = Code.fromIsbn13 ("9783161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition goldEdition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
         Edition silverEdition= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));

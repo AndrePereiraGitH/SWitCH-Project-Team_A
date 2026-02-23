@@ -254,13 +254,13 @@ class AuctionRepositoryTest {
         Code code = Code.fromIsbn13 ("978316148412");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         Publication publication = new Publication(
                 bd,
-                new PublicationType(TypeOfBinding.PAPERBACK, "Paperback"),
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"),
                 seller,
                 PublicationStatus.FOR_SALE,
 //                "1st",
@@ -310,7 +310,7 @@ class AuctionRepositoryTest {
         Code code = Code.fromIsbn13 ("978316148412");
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         return new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     }
@@ -383,6 +383,7 @@ class AuctionRepositoryTest {
     private static Publication createValidPublication(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
@@ -396,7 +397,7 @@ class AuctionRepositoryTest {
         // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
@@ -414,6 +415,7 @@ class AuctionRepositoryTest {
     private static Publication createValidPublication2(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
+                MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
@@ -427,7 +429,7 @@ class AuctionRepositoryTest {
         // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 

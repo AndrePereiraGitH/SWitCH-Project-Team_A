@@ -131,7 +131,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         "ChunksOfText"
                 );
 
-        PublicationType publicationType = new PublicationType(TypeOfBinding.HARDBACK, "details");
+        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details");
         Address address = new Address("street", "number", "zipCode", country);
         Email email = new Email("userName", "domain.com");
         Contact contact = new Contact("915945695", "+351", email, address);
@@ -141,7 +141,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Edition
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Edition edition= new Edition(
                 "1st",
                 code,
