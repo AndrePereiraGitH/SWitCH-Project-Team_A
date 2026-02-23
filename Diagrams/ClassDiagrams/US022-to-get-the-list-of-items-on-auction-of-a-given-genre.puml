@@ -1,70 +1,56 @@
 @startuml
-title US022 - To get the list of items on auction of a given genre
+title Class Diagram - US022 Get List Of Items On Auction Of Given Genre
 
 class UI022 {
-
+    +getAllGenres()
+    +getListOfItemsOnAuction(genreType)
 }
 
-class ToGetTheListOfItemsOnAuctionOfAGivenGenreController {
-  +getAllGenres()
-  +getListOfItemsOnAuction(genre)
+class GetListOfItemsOnAuctionOfGivenGenreController {
+    +getAllGenres()
+    +getListOfItemsOnAuction(genreType)
+}
+
+class GenreRepository {
+    +getAllGenres() : List<Genre>
 }
 
 class AuctionRepository {
-  +getListOfItemsOnAuction(genre)
+    +getListOfItemsOnAuctionGivenGenre(genreType) : List<Auction>
 }
 
-/'
+class GenreDTO_US022 {
+    -genreType
+    +GenreDTO_US022(genreType)
+    +fromDomainList(List<Genre>) : List<GenreDTO_US022>
+}
+
+class AuctionDTO_US022 {
+    -auctionDetails
+    +AuctionDTO_US022(auctionDetails)
+    +fromDomainList(List<Auction>) : List<AuctionDTO_US022>
+}
+
+class Genre {
+    -genreType
+    +getGenreType()
+}
+
 class Auction {
-  - listing: Listing
+    -auctionDetails
     +getDetails()
 }
-'/
 
-class GenreRepository {
-  +getAllGenres()
-}
+UI022 "1" -.-> "1" GetListOfItemsOnAuctionOfGivenGenreController : uses
+GetListOfItemsOnAuctionOfGivenGenreController "1"-.-> "1"GenreRepository : uses
+GetListOfItemsOnAuctionOfGivenGenreController "1" -.-> "1"AuctionRepository : uses
+GetListOfItemsOnAuctionOfGivenGenreController "1"-.-> "1"GenreDTO_US022 : uses
+GetListOfItemsOnAuctionOfGivenGenreController "1"-.-> "1"AuctionDTO_US022 : uses
 
-'tirei
-'class GenreDTO_US022 {}
+GenreRepository "1" -.-> "1" Genre : contains
+AuctionRepository "1" -.-> "1"Auction : contains
 
-'tirei
-'class GenreMapper_US022 {
-   '+toDTO(listOfAllGenres: List<Genre)}
-
-'tirei
-'class AuctionMapper_US022 {
-  '+toDTO(listOfAuctions)}
-
-'tirei
-'class AuctionDTO_US022 {}
-
-
-' --- Interactions ---
-
-UI022 ..> ToGetTheListOfItemsOnAuctionOfAGivenGenreController : uses
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionRepository : uses
-ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreRepository : uses
-'GenreRepository ..> GenreDTO_US022 : maps to
-
-'tirei
-'ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> AuctionMapper_US022 : uses
-'AuctionMapper_US022 ..> AuctionDTO_US022 : maps to
-
-
-'AuctionMapper_US022 ..> Auction : uses
-'AuctionRepository "1" --> "*" Auction : contains
-
-'tirei
-'ToGetTheListOfItemsOnAuctionOfAGivenGenreController ..> GenreMapper_US022 : uses
-
-
-'tirei
-'GenreMapper_US022 ..> GenreDTO_US022 : maps to
-
-
-
+GenreDTO_US022 "1"..> "1"Genre : uses
+AuctionDTO_US022 "1"..> "1"Auction : uses
 
 @enduml
-
-

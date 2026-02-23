@@ -1,95 +1,74 @@
 @startuml
 autonumber
 hide footbox
-title US022 - Get the list of items on auction of a given genre
+title US022 - Get List Of Items On Auction Of Given Genre
 
 actor Buyer
 
-' Participants
 participant ":UI022" as UI
-participant ":ToGetTheListOfItemsOnAuction\nOfAGivenGenreController" as Ctrl
+participant ":GetListOfItemsOnAuctionOfGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
-'participant ":GenreMapper_US022" as GenreMapper_US022
-'participant "genreDTO:\nGenreDTO_US022" as GenreDTO
-'participant ":AuctionMapper_US022" as Mapper
+participant ":GenreDTO_US022" as GenreDTO
 participant ":AuctionRepository" as AuctionRepo
-participant "listOfAuctions:\nList<Auction>" as ListAuc
-'participant ":Auction" as AuctionDomain
-'participant "auctionDTO:\nAuctionDTO_US022" as DTO
-'participant "listOfAuctionsDTO:\nList<AuctionDTO_US022>" as ListDTO
+participant ":AuctionDTO_US022" as AuctionDTO
 
-' Interactions
-Buyer -> UI : I want to get the list of items\n on auction of a given genre
+
+Buyer -> UI : I want to get a list of items\n on auction of a given genre
 activate UI
-
-
 UI -> Ctrl : getAllGenres()
 activate Ctrl
-
 Ctrl -> GenreRepo : getAllGenres()
 activate GenreRepo
-create "listOfAllGenres:\n List<Genre>" as LG
-GenreRepo -> LG
-GenreRepo --> Ctrl : copylistOfAllGenres
+GenreRepo --> Ctrl : List<Genre>
 deactivate GenreRepo
 
-/'Ctrl -> GenreMapper_US022: toDTO(listOfAllGenre)
-activate GenreMapper_US022
-GenreMapper_US022 -> GenreDTO **
-GenreMapper_US022 --> Ctrl: listOfAllGenreDTO
-deactivate GenreMapper_US022'/
+Ctrl -> GenreDTO : fromDomainList(List<Genre>)
 
-Ctrl --> UI : copylistOfAllGenres
+activate GenreDTO
+create "listOfGenreDTO:\nList<GenreDTO_US022>" as listDTO
+GenreDTO -> listDTO : create()
+loop for each Genre
+    GenreDTO -> Genre : getGenreType()
+    activate Genre
+    Genre --> GenreDTO : genreType
+    deactivate Genre
+    GenreDTO -> GenreDTO : create GenreDTO_US022(genreType)
+    GenreDTO -> listDTO : add(genreTypeDTO)
+end
+GenreDTO --> Ctrl : List<GenreDTO_US022>
+deactivate GenreDTO
+
+Ctrl --> UI : List<GenreDTO_US022>
 deactivate Ctrl
-
-UI --> Buyer : Which genre? Choose!
+UI --> Buyer : Show genres! Choose
 deactivate UI
 
-Buyer -> UI : selectedgenre
+Buyer -> UI : Select genre: genreA
 activate UI
-
-UI -> Ctrl : getListOfItemsOnAuction(selectedgenre)
+UI -> Ctrl : getListOfItemsOnAuction(genreA)
 activate Ctrl
-
-Ctrl -> AuctionRepo : getListOfItemsOnAuction(selectedgenre)
+Ctrl -> AuctionRepo : getListOfItemsOnAuctionGivenGenre(genreA)
 activate AuctionRepo
-
-
-'*loop for each auction
-'    AuctionRepo -> AuctionRepo : checkAuctionGenre(genre)
-'end
-
-AuctionRepo -> ListAuc ** : create()
-loop for each auction
-    AuctionRepo -> AuctionRepo : isAuctionFromGenre(selectedgenre)
-    AuctionRepo -> ListAuc : add(auction)
-end
-
-AuctionRepo --> Ctrl : listOfAuctions
+AuctionRepo --> Ctrl : List<Auction>
 deactivate AuctionRepo
 
-'Ctrl -> Mapper : toDTO(listOfAuctions)
-'activate Mapper
+Ctrl -> AuctionDTO : fromDomainList(List<Auction>)
 
-'Mapper -> ListDTO ** :
+activate AuctionDTO
+create "listOfAuctionOfGivenGenreDTO:\nList<AuctionDTO_US022>" as listADTO
+AuctionDTO -> listADTO : create()
+loop for each Auction
+    AuctionDTO -> Auction : getDetails()
+    Auction --> AuctionDTO : auctionDetails
+        AuctionDTO -> AuctionDTO : create AuctionDTO_US022
+        AuctionDTO -> listADTO : add(AuctionDTO_US022)
+end
+AuctionDTO --> Ctrl : List<AuctionDTO_US022>
+deactivate AuctionDTO
 
-   ' loop for each auction
-
-    '    Mapper -> DTO **
-
-     '   Mapper -> Mapper : listOfAuctionsDTO.add(auctionDTO)
-    'end
-
-/'Mapper --> Ctrl : listOfAuctionsDTO
-deactivate Mapper
-
-Ctrl --> UI : listOfAuctionsDTO
-deactivate Ctrl'/
-
-Ctrl --> UI : listOfAuction
+Ctrl --> UI : List<AuctionDTO_US022>
 deactivate Ctrl
-
-UI --> Buyer : Shows the list of items on auction
+UI --> Buyer : Show List requested!
 deactivate UI
 
 @enduml
