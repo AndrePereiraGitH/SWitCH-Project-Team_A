@@ -234,8 +234,8 @@ class US016ToPutPublicationInAuctionControllerTest {
         Picture pic1 = new Picture("picURL");
         pics.add(pic1);
 
-        LocalDateTime initial = LocalDateTime.of(2026, 2, 23, 10, 0);
-        LocalDateTime fin = LocalDateTime.of(2026, 2, 28, 10, 0);
+        LocalDateTime initial = LocalDateTime.of(2027, 2, 23, 10, 0);
+        LocalDateTime fin = LocalDateTime.of(2027, 2, 28, 10, 0);
 
         assertTrue(controller.createAuctionListing("title", pubsDto, listingPrice, "short description", pics, initial, fin, buyOutPrice));
 
