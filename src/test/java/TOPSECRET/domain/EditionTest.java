@@ -204,6 +204,48 @@ class EditionTest {
     }
 
     // -------------------------
+    // getters
+    // -------------------------
+
+    /**
+     * Tests that the correct publication type is returned from an edition.
+     * <p>
+     * Verifies that the {@link Edition#getPublicationType()} method returns
+     * the publication type that was set during edition creation.
+     * </p>
+     */
+    @Test
+    void shouldReturnPublicationType(){
+        //Arrange
+        PublicationType expectedPubType = validPublicationType();
+
+        //Act
+        PublicationType realPubType = validEdition().getPublicationType();
+
+        //Assert
+        assertEquals(expectedPubType,realPubType);
+    }
+
+    /**
+     * Tests that the correct code is returned from an edition.
+     * <p>
+     * Verifies that the {@link Edition#getCode()} method returns
+     * the code (ISBN or other identifier) that was set during edition creation.
+     * </p>
+     */
+    @Test
+    void shouldReturnCode(){
+        //Arrange
+        Code expectedCode = validCode();
+
+        //Act
+        Code realCode = validEdition().getCode();
+
+        //Assert
+        assertEquals(expectedCode, realCode);
+    }
+
+    // -------------------------
     // equals
     // -------------------------
 
