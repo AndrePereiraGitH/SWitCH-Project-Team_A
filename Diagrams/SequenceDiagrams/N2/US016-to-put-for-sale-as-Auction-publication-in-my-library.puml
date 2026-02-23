@@ -8,11 +8,17 @@ box #whitesmoke
     participant ":UI" as UI
 end box
 
-participant ":ToPutPublicationInAuctionController" as ctrl
+participant ":US016ToPutPublicationInAuctionController" as ctrl
+
+participant ":LibraryRepository" as LibRepo
 
 participant ":Library" as Lib
-
 participant ":PublicationSampleDTO_US016" as pubDto
+participant "listOfPublications List<PublicationSample>" as listPub
+
+participant "listOfPublicationsDTO : List<PublicationSampleDTO" as listPubDTO
+
+
 
 participant ":PublicationSampleRepository" as pubRepo
 
@@ -29,18 +35,24 @@ User -> UI : I want to sell a publication of my library as an auction"
 activate UI
 
 /' ====== GET LIST OF PUBLICATIONS IN LIBRARY ========= '/
-UI -> ctrl : getAllPublicationsInUserLibrary(username)
+UI -> ctrl : getUserLibraryPublications(username)
 activate ctrl
+ctrl -> LibRepo : getLibraryOfUser(username)
+activate LibRepo
+LibRepo --> ctrl : userLibrary
+deactivate LibRepo
+
 ctrl -> Lib : getAllPublications()
+
 activate Lib
-create "listOfPublications:List<Publication>" as listPub
-Lib -> listPub : getPublications()
+'create "listOfPublications:List<Publication>" as listPub
+Lib -> listPub **: getAllPublications()
 
 Lib --> ctrl : listOfPublications
 deactivate Lib
 
-create "listOfPublicationsDTO : List<PublicationSampleDTO" as pubDtoList
-ctrl -> pubDtoList : create()
+'create "listOfPublicationsDTO : List<PublicationSampleDTO" as pubDtoList
+ctrl -> listPubDTO ** : create()
 
 loop for each PublicationAmple in Library
     ctrl -> pubDto : toDTO(publication)
@@ -65,13 +77,13 @@ UI --> User : Please, insert listingPrice, shortDescription, listingTitle, selle
 deactivate UI
 User -> UI : provide data
 activate UI
-UI -> ctrl : putPublicationForAuction(List<PublicationSampleDTO_US016> pubDtoList, price, shortDescription,\n listingTitle, seller, initialDate, finalDate, initialPrice, buyOutPrice)
+UI -> ctrl : createAuctionListing(listingTitle, publicationsDtoList, price, shortDescription,\n pictures, initialDate, finalDate, buyOutPrice)
 activate ctrl
 
-ctrl -> pubRepo : getPublicationByDto(List<PublicationSampleDTO_US016> pubDtoList)
+ctrl -> pubRepo : getPublicationByDto(publicationsDtoList)
 activate pubRepo
 
-create ":listOfPublicationSamples : List<PublicationSample>" as listPubSelected
+create "listOfPublicationSamples : List<PublicationSample>" as listPubSelected
 pubRepo -> listPubSelected : create()
 
 loop for each PublicationSampleDTO in pubDtoList
@@ -84,7 +96,7 @@ deactivate pubRepo
 
 /' ====== ===== LISTING ========= '/
 
-ctrl -> ListingRepo : createAuctionListing(listing_title, price, listOfPublicationSamples)
+ctrl -> ListingRepo : createAndAdd ( listing_title, listOfPublicationSamples, SaleType.AUCTION, price, shortDescription, pictures )
 activate ListingRepo
 create "listing :Listing" as listing
 ListingRepo -> listing : create()
