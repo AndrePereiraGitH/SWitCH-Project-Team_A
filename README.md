@@ -55,6 +55,30 @@ Additional criteria may be added as needed to ensure completeness.__
 
 <br>
 
+## Main issue: Creation of Factory Class
+
+- **sub-issue:** - Refactor SD & CD diagrams to include X Factory in the design
+
+  **Description:**
+    - Acceptance Criteria:
+        - SD is updated to reflect the Factory's role in object creation.
+        - CD includes the Factory class and its relationships with relevant classes.
+        - Diagrams are reviewed and approved by the team (at least one team member).
+
+
+- **sub-issue:** - Implement Factory Class methods & tests
+
+  **Description:**
+    - Acceptance Criteria:
+        - Factory class follows OOD best practices and the chosen design pattern.
+        - All factory methods are correctly implemented and delegate object creation appropriately.
+        - All edge cases are covered by unit tests.
+        - Test coverage ≥ 95%.
+        - Code is documented with JavaDoc.
+        - Code reviewed and approved by the team (at least one team member).
+
+<br>
+
 ## Refinement Issue if needed
 
 
