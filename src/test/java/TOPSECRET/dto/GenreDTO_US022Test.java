@@ -8,16 +8,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GenreMapper_US022Test {
+class GenreDTO_US022Test {
 
     @Test
-    void toDTOGetListOfItemsOnAuctionOfGivenGenreEmptyList(){
+    void fromDomainListGetListOfItemsOnAuctionOfGivenGenreEmptyList(){
         // Arrange
-        GenreMapper_US022 genreMapper = new GenreMapper_US022();
         List<Genre> genres = new ArrayList<>();
 
         // Act
-        List<GenreDTO_US022> result = genreMapper.toDTO(genres);
+        List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
 
         // Assert
         assertNotNull(result);
@@ -26,16 +25,15 @@ class GenreMapper_US022Test {
     }
 
     @Test
-    void toDTOGetListOfItemsOnAuctionOfGivenGenreOneElement() {
+    void fromDomainListGetListOfItemsOnAuctionOfGivenGenreOneElement() {
         // Arrange
-        GenreMapper_US022 genreMapper = new GenreMapper_US022();
         Genre genre = new Genre("Comedy");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genre);
 
         // Act
-        List<GenreDTO_US022> result = genreMapper.toDTO(genres);
+        List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
 
         // Assert
         assertEquals(1, result.size());
@@ -43,9 +41,8 @@ class GenreMapper_US022Test {
     }
 
     @Test
-    void toDTOGetListOfItemsOnAuctionOfGivenGenreTwoElement() {
+    void fromDomainListGetListOfItemsOnAuctionOfGivenGenreTwoElement() {
         // Arrange
-        GenreMapper_US022 genreMapper = new GenreMapper_US022();
         Genre genre1 = new Genre("Fantasy");
         Genre genre2 = new Genre("Romance");
 
@@ -54,7 +51,7 @@ class GenreMapper_US022Test {
         genres.add(genre2);
 
         // Act
-        List<GenreDTO_US022> result = genreMapper.toDTO(genres);
+        List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
 
         // Assert
         assertEquals(2, result.size());
@@ -63,16 +60,15 @@ class GenreMapper_US022Test {
     }
 
     @Test
-    void toDTOGetListOfItemsOnAuctionOfGivenGenreInvalid() {
+    void fromDomainListGetListOfItemsOnAuctionOfGivenGenreInvalid() {
         // Arrange
-        GenreMapper_US022 genreMapper = new GenreMapper_US022();
         Genre genre1 = new Genre("Fantasy");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genre1);
 
         // Act
-        List<GenreDTO_US022> result = genreMapper.toDTO(genres);
+        List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
 
         // Assert
         assertNotSame(result, result.get(0));
