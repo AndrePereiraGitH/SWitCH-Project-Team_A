@@ -85,8 +85,7 @@ class US010ToRegisterNewPublicationCtrlTest {
 
 
         //Act is here
-        boolean publicationAdded1 = pubCtrl1.createAndAddPublication(bibliographicalData1,
-                publicationType1, user1, pubStatus1, edition1, condition);
+        boolean publicationAdded1 = pubCtrl1.createAndAddPublication(bibliographicalData1, user1, pubStatus1, edition1, condition);
 
 
         //Assert is here

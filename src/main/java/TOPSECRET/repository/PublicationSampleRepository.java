@@ -29,7 +29,7 @@ public class PublicationSampleRepository {
 
 //    public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
 //                                PublicationStatus publicationStatus, String edition, Code code){
-    public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
+    public boolean createAndAdd(BibliographicalData bibliographicalData, User username,
                             PublicationStatus publicationStatus, Edition edition, Condition condition){
 
         PublicationSample publication = new PublicationSample(bibliographicalData, username, publicationStatus,edition, condition);

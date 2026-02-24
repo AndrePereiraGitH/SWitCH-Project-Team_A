@@ -22,11 +22,11 @@ public class US010ToRegisterNewPublicationCtrl {
     //User is part of Publication's attributes and any User can register a Publication (i.e., no need to be Admin)
 
     public boolean createAndAddPublication(
-            BibliographicalData bibliographicalData1, PublicationType publicationType1,
+            BibliographicalData bibliographicalData1,
             User user1, PublicationStatus publicationStatus1, Edition _edition, Condition condition
     ) {
 
-        return _publicationRepository.createAndAdd(bibliographicalData1, publicationType1,
+        return _publicationRepository.createAndAdd(bibliographicalData1,
                 user1, publicationStatus1, _edition, condition);
 
     }

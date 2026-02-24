@@ -1,7 +1,6 @@
 package TOPSECRET.repository;
 
 
-import TOPSECRET.controller.US016ToPutPublicationInAuctionController;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
@@ -11,13 +10,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 
-class PublicationRepositoryTest {
+class PublicationSampleRepositoryTest {
 
     // BibliographicalData
     Country country1 = new Country("Denmark");
@@ -122,7 +120,7 @@ class PublicationRepositoryTest {
         PublicationSampleRepository pr1 = new PublicationSampleRepository(emptyList);
 
         //Act
-        boolean realResult = pr1.createAndAdd(bibliographicalData1, publicationType, user1,
+        boolean realResult = pr1.createAndAdd(bibliographicalData1, user1,
                 pubStatus1, edition1, condition1);
 
         // Assert
@@ -138,7 +136,7 @@ class PublicationRepositoryTest {
         PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
 
         //Act
-        boolean realResult=pr1.createAndAdd(bibliographicalData1, publicationType, user1,
+        boolean realResult=pr1.createAndAdd(bibliographicalData1, user1,
                 pubStatus1, edition1, condition1);
 
         // Assert
