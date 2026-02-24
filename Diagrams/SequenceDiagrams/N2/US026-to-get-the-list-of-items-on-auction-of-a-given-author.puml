@@ -9,15 +9,22 @@ actor Buyer
 ' Participants
 participant ":UI026" as UI026
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
+
 participant ":AuthorRepository" as AuthorRepository
-participant ":AuthorMapper_US026" as AuthorMapper
+participant ":AuthorDTO_US026" as AuthorDTO_US026
+
+participant ":AuctionDTO_US016" as AuctionDTO
+participant ":auctionDTO: AuctionDTO_US026" as aucDTO
 participant ":authorDTO:AuthorDTO_US026" as AuthorDTO
-participant ":AuctionMapper_US026" as Mapper
-participant ":AuctionRepository" as AuctionRepository
-participant "listOfAuction:\nList<Auction>" as ListAuc
-participant "auctionDTO:\nAuctionDTO_US026" as DTO
+
 participant "listOfAuctionDTO:\nList<AuctionDTO_US026>" as ListDTO
-participant ":Auction" as AU
+
+participant "List<AuthorDTO>" as authorsListDto
+
+participant ":AuctionRepository" as AuctionRepository
+participant "listOfAuctions:List<Auction>" as ListAuc
+
+
 
 
 ' Interactions
@@ -30,50 +37,54 @@ activate AuthorRepository
 AuthorRepository --> Ctrl: listOfAllAuthors
 deactivate AuthorRepository
 
-Ctrl -> AuthorMapper: toDTO(listOfAllAuthors)
-activate AuthorMapper
-AuthorMapper -> AuthorDTO **
-AuthorMapper --> Ctrl: listOfAllAuthorsDTO
-deactivate AuthorMapper
+Ctrl -> authorsListDto **: create()
 
-Ctrl --> UI026 : listOfAllAuthors
+loop "For each Author in list"
+    Ctrl -> AuthorDTO_US026: toDTO(author)
+    activate AuthorDTO_US026
+    AuthorDTO_US026 -> AuthorDTO **
+    AuthorDTO_US026 --> Ctrl: authorDTO
+    deactivate AuthorDTO_US026
+    Ctrl -> Ctrl : listOfAuthorDTO.add(authorDTO)
+end
+
+Ctrl --> UI026 : listOfAllAuthorsDTO
 deactivate Ctrl
 Buyer <-- UI026 : Which author? Choose!
 deactivate UI026
 Buyer -> UI026 : author
 activate UI026
 
-UI026 -> Ctrl : getListOfItemsOnAuction(author)
+UI026 -> Ctrl : getListOfItemsOnAuctionByAuthor(authorDTO)
 activate Ctrl
 
-Ctrl -> AuctionRepository : getListOfItemsOnAuction(author)
+Ctrl -> AuctionRepository : getListOfItemsOnAuctionByAuthor(authorDTO)
 activate AuctionRepository
 
-loop for each auction
-    AuctionRepository -> AuctionRepository : checkAuctionAuthor(author))
+AuctionRepository -> ListAuc ** : create ()
+
+loop for each auction in AuctionRepository
+    AuctionRepository -> AuctionRepository : verifyIfAuctionItemAuthorMatchesAuthorDto(authorDtoName))
+    AuctionRepository -> AuctionRepository : listOfAuctions.add(auction)
 end
 
-AuctionRepository -> ListAuc ** : create ()
-AuctionRepository --> Ctrl : listOfAuction
+
+AuctionRepository --> Ctrl : listOfAuctions
 deactivate AuctionRepository
 
-Ctrl -> Mapper : toDTO(listOfAuction)
-activate Mapper
-Mapper -> ListDTO ** : create ()
+Ctrl -> ListDTO ** : create ()
 
-loop for each auction
-    Mapper -> AU: getDetails(auction)
-        activate AU
-        AU --> Mapper: auctionDetails
-        deactivate AU
+loop for each auction in listOfAuctions
+    Ctrl -> AuctionDTO: toDTO(auction)
+        activate AuctionDTO
 
-    Mapper -> DTO ** : createDTO(auctionDetails)
-    DTO --> Mapper: auctionDTO
-    Mapper -> ListDTO : add(auctionDTO)
+        AuctionDTO -> aucDTO **
+        AuctionDTO --> Ctrl: auctionDTO
+        deactivate
+        Ctrl -> Ctrl : listOfAuctionDTO.add(auctionDTO)
+
 end
 
-Mapper --> Ctrl : listOfAuctionsDTO
-deactivate Mapper
 
 Ctrl --> UI026 : listOfAuctionsDTO
 deactivate Ctrl
