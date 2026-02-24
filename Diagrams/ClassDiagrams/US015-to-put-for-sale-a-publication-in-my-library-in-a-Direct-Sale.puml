@@ -1,82 +1,75 @@
 @startuml
-title US015 - Put a publication for sale in Direct Sale
+title US015 - To put for a sale a publication in my library in a direct sale
+
+' -----CLASSES------
 
 class UI015 {}
 
 class ToPutPublicationInDirectSaleController {
-    + getAllPublications()
-    + createAndAddItem(condition, weight, dimensions, publication) : Item
-    + createAndAddDirectSale(items, price, shortDescription, listingTitle, seller, pictures) : boolean
+    + getAllPublications(): List<PublicationSample>
+    + createListing(title, selectedPublications, saleType, price, shortDescription, seller, pictures) : Listing
 }
 class Library {
-    - publications : List<Publication>
-    + getAllPublications() : List<Publication>
+    - publications: List<PublicationSample>
+    - libraryName: String
+    - user: User
+    + getAllPublications(): List<PublicationSample>
 }
 
-class Publication {
-    - bibliographicalData : BibliographicalData
-    - publicationType : PublicationType
-    - edition : String
-    - code : Code
+class LibraryDTO_US015 {
+    + toDTO(listOfAvailablePublications) : List<PublicationSampleDTO>
 }
 
-class LibraryPublicationDTO {
-+ pubTitle : String
-+ authorName : List<String>
-+ code : String
-+ publicationType : String
+class PublicationSample {
+    - bibliographicalData: BibliographicalData
+    - owner: User
+    - publicationStatus: PublicationStatus
+    - edition: Edition
+    - condition: Condition
+    + getPublicationStatus(): PublicationStatus
+    + getDetails() : PublicationSample
 }
 
-class LibraryPublicationMapper {
-    + toDTO(publications : List<Publication>)
+class FactoryListing {
+    + create(title, selectedPublications, saleType, price, shortDescription, seller, pictures) : Listing
 }
 
-class Item {
-    - publication : Publication
-    - condition : Condition
-    - weight : weight
-    - dimensions : dimensions
+class ListingRepository {
+    - listings: List<Listing>
+    + add(listing): boolean
 }
 
 class Listing {
-    - item : List<Item>
-    - price : Price
-    - shortDescription : String
-    - listingTitle : String
-    - seller : User
-    - List<pictures>: Pictures
-}
-class DirectSale {
-    - listing : Listing
+    - listingTitle: String
+    - items: List<PublicationSample>
+    - saleType: SaleType
+    - price: Price
+    - shortDescription: String
+    - seller: User
+    - pictures: List<Picture>
 }
 
-class ItemRepository {
-    - items : List<Item>
-}
+' ------ RELATIONSHIPS -----
 
-class DirectSaleRepository {
-    - directSales : List<DirectSale>
-}
+' --- UI ---
+UI015 "1" -.> "1" ToPutPublicationInDirectSaleController : communicates with
 
-' --- UI flow ---
-UI015 "1" -.> "1" ToPutPublicationInDirectSaleController : uses
-
-' --- Use relationships ---
+' --- Controller ---
 ToPutPublicationInDirectSaleController "1" -.> "1" Library : uses
-ToPutPublicationInDirectSaleController "1"-.> "1" LibraryPublicationMapper : uses
-ToPutPublicationInDirectSaleController "1"-.> "1"ItemRepository : uses
-ToPutPublicationInDirectSaleController "1"-.> "1" DirectSaleRepository : uses
+ToPutPublicationInDirectSaleController "1"-.> "1" LibraryDTO_US015 : uses
+ToPutPublicationInDirectSaleController "1"-.> "1" FactoryListing : uses
+ToPutPublicationInDirectSaleController "1"-.> "1" ListingRepository : uses
 
-' --- Core domain relationships ---
-Library "1" --> "*" Publication : owns
-Publication "1" -> "0..1" Item : may create
-Listing "1   " --> "1..*" Item : sells
-DirectSale "0..1" --> "1" Listing : has
+' --- Library ---
+Library "0..1" --> "*" PublicationSample: owns
 
-ItemRepository "1" --> "*" Item : stores
-DirectSaleRepository "1" --> "*" DirectSale : stores
+' --- LibraryDTO_US015 ---
+LibraryDTO_US015 "1" -.> "1" PublicationSample : request from
 
-LibraryPublicationMapper "0..1" -.> "1" Publication : request for
-LibraryPublicationMapper "1" -.> " *   " LibraryPublicationDTO : maps to
+' --- ListingRepository ---
+ListingRepository "1" --> "*" Listing : stores
+
+' --- Domain Classes ---
+Listing "0..1" --> "1..*" PublicationSample : sells
 
 @enduml

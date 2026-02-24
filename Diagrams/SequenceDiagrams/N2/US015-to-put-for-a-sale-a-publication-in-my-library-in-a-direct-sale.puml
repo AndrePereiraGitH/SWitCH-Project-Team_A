@@ -3,91 +3,84 @@ autonumber
 hide footbox
 title US015 - To put for sale a publication in my library in a direct sale
 
-
+box #whitesmoke
 actor User
 participant ":UI015" as UI
+end box
 
-participant ":ToPutPublicationInDirectSaleController" as C
-participant ":ItemRepository" as I
-participant ":DirectSaleRepository" as S
+participant ":ToPutPublicationInDirectSaleController" as Ctrl
 participant ":Library" as Lib
-participant ":LibraryPublicationMapper_US015" as Mapper
+participant ":LibraryDTO_US015" as DTO
+participant ":PublicationSample" as Pub
+participant ":FactoryListing" as LFactory
+participant ":ListingRepository" as LRepo
 
-User -> UI : I want to sell a publication in my library in Direct Sale
+User -> UI : I want to put for sale a publication in my library in a direct sale
 activate UI
-UI -> C : getAllPublications()
-activate C
-C -> Lib : getAllPublications()
+UI -> Ctrl: getAllPublications()
+activate Ctrl
+Ctrl-> Lib : getAllPublications()
 activate Lib
-
-create "listOfPublications: List<Publication>" as LP
-Lib -> LP
-Lib --> C : listOfPublications
+create "listOfAvailablePublications:\n List<PublicationSample>" as LP
+Lib -> LP : create()
+    loop for each PublicationSample
+        Lib -> Pub : getPublicationStatus()
+        activate Pub
+        Pub --> Lib : status
+        deactivate Pub
+        alt status != SOLD and status != FOR_SALE
+            Lib -> LP : add(pub)
+        end
+    end
+Lib --> Ctrl: listOfAvailablePublications
 deactivate Lib
 
-C -> Mapper : toDTO(listOfPublications)
-activate Mapper
+Ctrl-> DTO : toDTO(listOfAvailablePublications)
+activate DTO
 
-create "ListOfLibraryPublicationsDTO:\nList<publicationDTO>" as listDTO
-Mapper -> listDTO : create()
-    loop for each Publication
-        Mapper -> "Publication" : getDetails()
-        activate Publication
-        "Publication" --> Mapper : publicationDetails
-        deactivate Publication
-        Mapper -> "LibraryPublicationDTO\n:LibraryPublicationDTO_US015" ** : CreateDTO(publicationDetails)
-        "LibraryPublicationDTO\n:LibraryPublicationDTO_US015" --> Mapper : publicationDTO
-        Mapper -> listDTO : add(publicationDTO)
+create "listOfLibraryPublicationsDTO:\nList<PublicationSampleDTO>" as listDTO
+DTO -> listDTO : create()
+    loop for each PublicationSample
+        DTO -> Pub : getDetails()
+        activate Pub
+        Pub --> DTO : publicationSampleDetails
+        deactivate Pub
+        DTO -> listDTO : add(publicationSampleDetails)
     end
-Mapper --> C : listOfLibraryPublicationsDTO
-deactivate Mapper
-C --> UI : Success
-deactivate C
+DTO --> Ctrl: listOfLibraryPublicationsDTO
+deactivate DTO
+Ctrl--> UI : listOfLibraryPublicationsDTO
+deactivate Ctrl
 
-UI --> User : Choose publication from the List
+UI --> User : Which publication(s)? Choose from the list!
 deactivate UI
-User -> UI : Selected publication and insert information for Item
+
+User -> UI : Selected publication(s)
+activate UI
+UI --> User : Specify the title, price, short description and pictures for the listing
+deactivate UI
+
+User -> UI : Title, price, short description, pictures
 activate UI
 
-UI -> C : createAndAddItem(condition,weight,\n dimensions, publication)
-activate C
-C -> I : createAndAddItem(condition,weight,\n dimensions, publication)
-activate I
+UI -> Ctrl: createListing(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+activate Ctrl
+Ctrl-> LFactory : create(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+activate LFactory
 
-create "item1:Item" as item1
-I -> item1 : create(publication, condition,\n dimensions, weight)
-I -> I : validateItemExists(item1)
-I -> I : addToList(item1)
-I --> C : item1
-deactivate I
-C --> UI: Success
-deactivate C
+create "listing: Listing" as listing
+LFactory -> listing : create (title, selectedPublications, saleType, price, shortDescription, seller, pictures)
+LFactory --> Ctrl : listing
+deactivate LFactory
+Ctrl -> LRepo: add(listing)
+activate LRepo
+LRepo --> Ctrl: true
+deactivate LRepo
 
+Ctrl--> UI: true
+deactivate Ctrl
 
-UI --> User : Insert Information for Direct Sale
+UI --> User : Publication(s) put for direct sale with success
 deactivate UI
-User -> UI : Information about Direct Sale
-activate UI
 
-UI -> C : createAndAddDirectSale(items, price, shortDescription,\n listingTitle, seller, pictures)
-activate C
-
-C -> S : createAndAddDirectSale(items, price, shortDescription,\n listingTitle, seller, pictures)
-activate S
-create "listing1:Listing" as listing1
-S -> listing1 : create(items, price, shortDescription,\n listingTitle, seller, pictures)
-
-
-
-create "directSale1:DirectSale" as directSale1
-S -> directSale1 : create(listing1, LocalDateTime)
-S -> S : validateDirectSaleExists(directSale1)
-S -> S : addToList(directSale1)
-S --> C : true
-deactivate S
-
-C --> UI : success
-deactivate C
-UI --> User : Direct Sale successfully created
-deactivate UI
 @enduml

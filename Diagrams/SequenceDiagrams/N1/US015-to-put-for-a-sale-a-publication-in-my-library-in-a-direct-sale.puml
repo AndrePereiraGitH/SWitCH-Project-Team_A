@@ -2,20 +2,20 @@
 
 autonumber
 hide footbox
-title SSD: US015 - To put for a sale a publication in my library in a Direct Sale
+title US015 - To put for a sale a publication in my library in a direct sale
 
 actor "User" as User
 participant ":System" as System
 
 activate User
 
-   User -> System : Request "I want to sell a publication in my Library in a Direct Sale
+   User -> System : I want to put for sale a publication in my library in a direct sale
    activate System
-   System --> User : Choose a publication!
-   User -> System : Selected Publication and information for Item
-   System --> User : Insert information for Direct Sale
-   User -> System : Information about Direct Sale
-   System --> User : Direct Sale successfully created!
+   System --> User : Which publication(s)? Choose from the list!
+   User -> System : Selected publication(s)
+   System --> User : Specify the title, price, short description and pictures for the listing
+   User -> System : Title, price, short description, pictures
+   System --> User : Publication put for direct sale with success
    deactivate System
 
 deactivate User
