@@ -7,11 +7,9 @@ title US009 - To create a library
 actor User
 participant ":UI009" as UI
 
-
-
 participant ":US009ToCreateLibraryCtrl" as Ctrl
 participant ":LibraryRepository" as LibraryRepo
-
+participant ":LibraryFactory" as factory
 
 
 User -> UI : I want to create a library.
@@ -26,13 +24,16 @@ activate Ctrl
 Ctrl -> LibraryRepo : createAndAdd(libraryName,user)
 activate LibraryRepo
 
-create "Map<String, Library> libraries" as list
-LibraryRepo -> list : create()
+
 
 LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary()
 
+LibraryRepo -> factory: create(libraryName,user)
+activate factory
 create "lib1:Library" as Library
-LibraryRepo -> Library : create(libraryName,user)
+factory -> Library : create()
+factory -> LibraryRepo: lib1
+deactivate factory
 
 
 LibraryRepo -> LibraryRepo : libraries.put(user,lib1)

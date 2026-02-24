@@ -1,33 +1,45 @@
 @startuml
 title US009 - To create a library - Class Diagram
 
+
 class UI009 {
 }
 
+
 class US009ToCreateLibraryCtrl {
     - libraryRepository: LibraryRepository
-    + createAndAddLibrary(libraryName: String, user: User): boolean
+    + createAndAddLibrary(libraryName, user): boolean
 }
+
+
 
 class LibraryRepository {
-    - libraries: Map<String, Library>
-    + createAndAdd(libraryName: String, user: User): Library
-    + verifyIfUserHasALibraryAlready(user: User): boolean
+    - libraries: Map<User, Library>
+    + createAndAdd(libraryName,user)
+    - verifyIfUserHasALibrary()
 }
 
+
+class LibraryFactory {
+    + create(libraryName,user)
+}
+
+
+
 class Library {
-    - libraryName: String
-    - user: User
-    + Library(libraryName: String, user: User)
+
 }
 
 class User {
-    - username: String
 }
 
-UI009 "1" ..> "1" US009ToCreateLibraryCtrl : uses
-US009ToCreateLibraryCtrl "1" ..> "1" LibraryRepository : uses
-LibraryRepository "1" --> "*" Library : manages
-Library "*" --> "1" User : belongs to
+
+' Relationships
+UI009 ..> US009ToCreateLibraryCtrl: uses
+US009ToCreateLibraryCtrl ..> LibraryRepository: uses
+LibraryRepository "1" --> "1" LibraryFactory: uses
+LibraryRepository "1" --> "*" Library: manages
+Library "1" --> "1" User: owned by
+LibraryFactory "1" --> "*" Library: creates
 
 @enduml
