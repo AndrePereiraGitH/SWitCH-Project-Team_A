@@ -17,7 +17,7 @@ class GenreRepository {
 class FactoryGenre  <<Factory>> {
 }
 
-class FactoryDirectSale <<Factory>> {
+class FactoryListing <<Factory>> {
 }
 
 
@@ -26,7 +26,7 @@ class Genre {
     +getDetails()
 }
 
-class DirectSaleRepository {
+class ListingRepository {
   +getListOfItemsOnDirectSale(genre: Genre)
   -isDirectSaleFromGenre(genre)
 }
@@ -46,15 +46,15 @@ class Item{
 
 ' Interactions
 UI021 "1 " ..>  ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> DirectSaleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> ListingRepository : uses
 ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> GenreRepository : uses
 
 GenreRepository ..>  FactoryGenre : uses
 GenreRepository "1 " --> "                   *" Genre : stores
 
-DirectSaleRepository ..> FactoryDirectSale : uses
+ListingRepository ..> FactoryListing : uses
 
-DirectSaleRepository "1 " --> "*" DirectSale : stores
+ListingRepository "1 " --> "*" DirectSale : stores
 Genre "1 " --> "1 " Item : categorizes
 DirectSale "1 " -->  "1 " Item : has
 @enduml

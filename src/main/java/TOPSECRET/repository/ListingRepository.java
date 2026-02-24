@@ -32,4 +32,26 @@ public class ListingRepository {
         return listings.contains(listing);
     }
 
+  // US021
+    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
+
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+
+        List<PublicationSample> listOfItems = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            if (listing.getSaleType() == SaleType.DIRECT_SALE) {
+                for (PublicationSample item : listing.getItems()) {
+                    if (item.hasGenre(genre)) {
+                        listOfItems.add(item);
+                    }
+                }
+            }
+        }
+
+        return listOfItems;
+    }
+
 }

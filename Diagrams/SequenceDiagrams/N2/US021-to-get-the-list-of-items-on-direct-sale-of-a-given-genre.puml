@@ -11,9 +11,7 @@ participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
 participant ":FactoryGenre" as FactoryGenre
 participant "listOfAllGenres:\nList<Genre>" as LG
-participant ":DirectSaleRepository" as DirectSaleRepo
-participant ":FactoryDirectSale" as FactoryDirectSale
-
+participant ":ListingRepository" as ListingRepository
 
 ' Interactions
 
@@ -51,24 +49,17 @@ activate UI
 UI -> Ctrl : 11 getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate Ctrl
 
-Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
-activate DirectSaleRepo
+Ctrl -> ListingRepository : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
+activate ListingRepository
 
-DirectSaleRepo -> FactoryDirectSale : create()
-activate FactoryDirectSale
-
-FactoryDirectSale -> "listOfDirectSale:\nList<DirectSale>" ** : create()
-
-FactoryDirectSale --> DirectSaleRepo : listOfDirectSale
-deactivate FactoryDirectSale
-
-loop for each direct sale
-    DirectSaleRepo -> DirectSaleRepo : isDirectSaleFromGenre(selectedgenre)
-    DirectSaleRepo -> "listOfDirectSale:\nList<DirectSale>" : add(Item)
+loop for each listing
+    ListingRepository -> ListingRepository: isDirectSale()
+    ListingRepository -> ListingRepository: isOfGenre(selectedgenre)
+    ListingRepository -> ListingRepository: add(item)
 end
 
-DirectSaleRepo --> Ctrl : listOfItems
-deactivate DirectSaleRepo
+ListingRepository --> Ctrl : listOfItems
+deactivate ListingRepository
 
 Ctrl --> UI : listOfItems
 deactivate Ctrl
