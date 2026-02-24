@@ -14,6 +14,13 @@ class GenreRepository {
   +getAllGenres()
 }
 
+class FactoryGenre  <<Factory>> {
+}
+
+class FactoryDirectSale <<Factory>> {
+}
+
+
 class Genre {
     -genreType: String
     +getDetails()
@@ -38,11 +45,16 @@ class Item{
 }
 
 ' Interactions
-UI021 --> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController --> DirectSaleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController --> GenreRepository : uses
-GenreRepository --> Genre : stores
-DirectSaleRepository --> DirectSale : stores
-Genre --> Item : categorizes
-DirectSale --> Item : has
+UI021 "1 " ..>  ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> DirectSaleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> GenreRepository : uses
+
+GenreRepository ..>  FactoryGenre : uses
+GenreRepository "1 " --> "                   *" Genre : stores
+
+DirectSaleRepository ..> FactoryDirectSale : uses
+
+DirectSaleRepository "1 " --> "*" DirectSale : stores
+Genre "1 " --> "1 " Item : categorizes
+DirectSale "1 " -->  "1 " Item : has
 @enduml

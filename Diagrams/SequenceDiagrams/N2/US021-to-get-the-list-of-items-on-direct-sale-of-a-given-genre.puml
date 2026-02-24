@@ -9,46 +9,70 @@ actor Buyer
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
-participant "listOfAllGenres:\n List<Genre>" as ListGenre
+participant ":FactoryGenre" as FactoryGenre
+participant "listOfAllGenres:\nList<Genre>" as LG
 participant ":DirectSaleRepository" as DirectSaleRepo
-participant "listOfDirectSale:\nList<DirectSale>" as ListDS
+participant ":FactoryDirectSale" as FactoryDirectSale
+
 
 ' Interactions
 
 ' Section 1 - Get all genres
-Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
+Buyer -> UI : I want to get the list of items on direct sale of a given genre
 activate UI
+
 UI -> Ctrl : getAllGenres()
 activate Ctrl
-Ctrl -> GenreRepo: getAllGenres()
+
+Ctrl -> GenreRepo : getAllGenres()
 activate GenreRepo
-GenreRepo -> ListGenre ** : create()
-GenreRepo --> Ctrl: List<Genre> copyGenres
+
+GenreRepo -> FactoryGenre : create()
+activate FactoryGenre
+
+FactoryGenre -> LG ** : create()
+
+FactoryGenre --> GenreRepo : List<Genre> copyGenres
+deactivate FactoryGenre
+
+GenreRepo --> Ctrl : List<Genre> copyGenres
 deactivate GenreRepo
 
 Ctrl --> UI : List<Genre> copyGenres
 deactivate Ctrl
-Buyer <-- UI : Which genre? Choose!
+
+UI --> Buyer : Which genre? Choose!
 deactivate UI
 
 ' Section 2 - Get list of direct sales with the genre chosen
 Buyer -> UI : selectedgenre
 activate UI
-UI -> Ctrl : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
+
+UI -> Ctrl : 11 getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate Ctrl
+
 Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate DirectSaleRepo
-DirectSaleRepo -> ListDS ** : create()
+
+DirectSaleRepo -> FactoryDirectSale : create()
+activate FactoryDirectSale
+
+FactoryDirectSale -> "listOfDirectSale:\nList<DirectSale>" ** : create()
+
+FactoryDirectSale --> DirectSaleRepo : listOfDirectSale
+deactivate FactoryDirectSale
 
 loop for each direct sale
     DirectSaleRepo -> DirectSaleRepo : isDirectSaleFromGenre(selectedgenre)
-    DirectSaleRepo -> ListDS: add(Item)
+    DirectSaleRepo -> "listOfDirectSale:\nList<DirectSale>" : add(Item)
 end
 
 DirectSaleRepo --> Ctrl : listOfItems
 deactivate DirectSaleRepo
+
 Ctrl --> UI : listOfItems
 deactivate Ctrl
+
 UI --> Buyer : Shows the list of items on direct sale
 deactivate UI
 
