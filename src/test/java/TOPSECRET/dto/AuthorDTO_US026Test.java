@@ -32,7 +32,7 @@ class AuthorMapper_US026Test {
         );
 
         // act
-        AuthorDTO_US026 dto = AuthorMapper_US026.fromAuthor(author);
+        AuthorDTO_US026 dto = AuthorDTO_US026.fromAuthor(author);
 
         // assert
         assertNotNull(dto);
@@ -50,7 +50,7 @@ class AuthorMapper_US026Test {
         );
 
         // act
-        AuthorDTO_US026 dto = AuthorMapper_US026.fromAuthor(author);
+        AuthorDTO_US026 dto = AuthorDTO_US026.fromAuthor(author);
 
         // assert
         assertNotNull(dto);
@@ -59,7 +59,7 @@ class AuthorMapper_US026Test {
 
     @Test
     void fromAuthor_whenAuthorIsNull_shouldThrowIllegalArgException() {
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> AuthorMapper_US026.fromAuthor(null));
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> AuthorDTO_US026.fromAuthor(null));
         assertEquals("auhtor cannot be null", e.getMessage());
     }
 
