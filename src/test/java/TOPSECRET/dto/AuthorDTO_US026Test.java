@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AuthorMapper_US026Test {
+class AuthorDTO_US026Test {
 
     private AuthorRepository authorRepo;
 
