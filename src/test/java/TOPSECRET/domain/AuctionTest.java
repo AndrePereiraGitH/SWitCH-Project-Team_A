@@ -216,6 +216,7 @@ class AuctionTest {
                         listing, future1, future2, price("10.00"),
                         "Buy out price must be greater than Initial price."
                 )
+
         );
     }
 
@@ -386,7 +387,9 @@ class AuctionTest {
                 Arguments.of("buyout <= initial",
                         listing, now.plusDays(1), now.plusDays(2), price("35.00"), price("35.00"),
                         "Buy out price must be greater than Initial price."
-                )
+                ),
+                Arguments.of("SaleType == DIRECT_SALE", instantiateDIRECTSALE_Listing(), now.plusMinutes(1), now.plusDays(5), price("35.50"), price("150.00"), "This listing is not an auction. SaleType must be AUCTION." )
+
         );
     }
 
@@ -918,6 +921,26 @@ class AuctionTest {
                 "This is our first listing",
                 items,
                 SaleType.AUCTION,
+                price,
+                "short description",
+                instantiatePictures()
+        );
+    }
+
+    /**
+     * Creates a valid listing configured for auction tests.
+     *
+     * @return a listing instance with one publication sample and auction sale type
+     */
+    private static Listing instantiateDIRECTSALE_Listing() {
+        List<Picture> pictures = instantiatePictures();
+        PublicationSample bookItem = instantiateItem(instantiateBibliographicalData());
+        Price price = new Price(new BigDecimal("35.00"));
+        final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
+        return new Listing(
+                "This is our first listing",
+                items,
+                SaleType.DIRECT_SALE,
                 price,
                 "short description",
                 instantiatePictures()

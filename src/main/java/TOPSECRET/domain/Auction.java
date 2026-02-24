@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.AuctionStatus;
+import TOPSECRET.domain.Enum.SaleType;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -78,7 +79,8 @@ public class Auction {
 
         if (listing == null)
             throw new IllegalArgumentException("Listing cannot be null.");
-
+        if (!listing.getSaleType().equals(SaleType.AUCTION))
+            throw new IllegalArgumentException("This listing is not an auction. SaleType must be AUCTION.");
         if (auctionStartDateTime == null || auctionStartDateTime.isBefore(now))
             throw new IllegalArgumentException("Initial date must not be before the current date.");
         if (auctionEndDateTime == null || auctionEndDateTime.isBefore(auctionStartDateTime) || auctionEndDateTime.isEqual(auctionStartDateTime))

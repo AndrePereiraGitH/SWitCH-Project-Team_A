@@ -382,10 +382,21 @@ class TransactionTest {
         );
     }
 
+    private static Listing createAuctionListing(){
+        return new Listing(
+                "Invalid Title",
+                List.of(createValidItem()),
+                SaleType.AUCTION,
+                new Price (new BigDecimal("19.00")),
+                "ShortDescription",
+                List.of(new Picture("Pic1"))
+        );
+    }
+
     private static Auction createValidAuction(){
         LocalDateTime now = LocalDateTime.now().plusMinutes(1);
         return new Auction(
-                createValidListing(),
+                createAuctionListing(),
                 now,
                 now.plusDays(1),
                 new Price(new BigDecimal("19.99"))
