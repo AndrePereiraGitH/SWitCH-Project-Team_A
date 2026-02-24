@@ -69,7 +69,6 @@ public class CollectionOfPublications {
      * Modifications to the returned list will not affect the collection.
      */
 
-    // TODO: public List<PublicationSample> getPublications() {
     public List<PublicationSample> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }
@@ -92,7 +91,6 @@ public class CollectionOfPublications {
      * @return true if added, false if null or already exists
      */
 
-    // TODO: public boolean addPublication(PublicationSample publication) {
     public boolean addPublication(PublicationSample publication) {
 
         if (publication == null) return false;
@@ -112,8 +110,7 @@ public class CollectionOfPublications {
      * @return true if exists, false otherwise
      */
 
-    // TODO: public boolean containsPublication(PublicationSample publication) {
-    public boolean containsPublication(Publication publication) {
+    public boolean containsPublication(PublicationSample publication) {
         return _collectionOfPublications.contains(publication);
     }
 
