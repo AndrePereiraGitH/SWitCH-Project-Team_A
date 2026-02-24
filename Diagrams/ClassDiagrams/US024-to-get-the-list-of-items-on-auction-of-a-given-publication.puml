@@ -1,57 +1,60 @@
 @startuml
+
 title US024 - To get the list of items on auction of a given publication
 
+' UI Layer
 class UI024 {
-
 }
 
-class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
-  +getAllPublications()
-  +getListOfItemsOnAuctionDTO(Publication publication)
+' Controller
+class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
+  +getAllPublicationBD(): List<BibliographicalDataDTO_US024>
+  +getListOfItemsOnAuctionByGivenPublicationDTO(bdPublication: BibliographicalDataDTO_US024): List<AuctionItemDTO_US024>
 }
 
-class PublicationRepository{
-    -listOfAllPublications:List<Publication
-    +getAllPublications()
-}
-
-class PublicationDetailsDTO {
-}
-
-class Publication {
-    +getDetails()
-}
-
-class PublicationDetailsMapper {
-  +toDTOs(List<Publication> publications)
+' Repositories
+class BibliographicalDataRepository {
+  +getAllPublicationBD(): List<BibliographicalData>
 }
 
 class AuctionRepository {
-  -listOfItemsOnAuctionByPublication:List<Item>
-  +getListOfItemsOnAuction(publication)
-  -verifyIfAuctionHasItemsOfThatPublication(publication)
+  +getListOfItemsOnAuctionByGivenPublication(bdPublicationDTO: BibliographicalData): List<PublicationSample>
+  -verifyIfAuctionHasItemsOfThatPublication(bdPublicationDTO: BibliographicalData): boolean
+}
+
+' Domain
+class BibliographicalData {
+  +getBibliographicalDataDetails(): BibliographicalDataDetails
+}
+
+class PublicationSample {
+  +getAuctionItemDetails(): AuctionItemDetails
 }
 
 
-
-class ItemDetailsDTO {
-- listOfAuctionsDTO:List<ItemDetailsDTO>
-+ getListOfItemsAuctionDTO()
+class BibliographicalDataDTO_US024 {
+  +toDTOs(listOfAllPublicationBD: List<BibliographicalData>): List<BibliographicalDataDTO_US024>
+  +createDTO(bibliographicalDataDetails: BibliographicalDataDetails): BibliographicalDataDTO_US024
 }
 
+class AuctionItemDTO_US024 {
+  +toDTOs(listOfItemsOnAuctionByPublication: List<PublicationSample>): List<AuctionItemDTO_US024>
+  +createDTO(auctionItemDetails: AuctionItemDetails): AuctionItemDTO_US024
+}
 
-' Interactions
+' Relationships
+UI024 --> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
 
-UI024 ..> "1" ToGetTheListOfItemsOnAuctionOfAGivenPublicationController: delegates request to
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationRepository : retrieves publications from
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" PublicationDetailsMapper : calls for conversion
-PublicationDetailsMapper "1" ..> "1..*" Publication: reads data from
-PublicationDetailsMapper "1" ..> "1..*" PublicationDetailsDTO : instantiates
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1"AuctionRepository : queries items in
-ToGetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "0..*" ItemDetailsDTO : produces list of
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> BibliographicalDataRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> AuctionRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> BibliographicalDataDTO_US024 : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> AuctionItemDTO_US024 : uses
 
-
+BibliographicalDataRepository "1" --> "*" BibliographicalData : manages
 
 
+
+BibliographicalDataDTO_US024 ..> BibliographicalData : maps from
+AuctionItemDTO_US024 ..> PublicationSample : maps from
 
 @enduml
