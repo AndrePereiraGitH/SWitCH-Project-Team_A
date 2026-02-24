@@ -1,428 +1,201 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
-//import static TOPSECRET.controller.US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest.createBibliographicalData;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class DirectSaleTest {
 
-    //==============================================================================================================
-    // HELPERS - Private Methods to Help Instantiate
-
-    private static Country createCountry(){
-        return new Country(
-                "Portugal"
-        );
-    }
-
-    private static Profile createProfile(){
-        return new Profile(
-                "Freida",
-                createCountry(),
-                LocalDate.of(1968, 10, 12)
-        );
-    }
-
-    private static Author createAuthor(){
-        return new Author(
-                createProfile(),
-                "valid bio"
-        );
-    }
-
-    private static BibliographicalData createBibliographicalData1(){
-        return new BibliographicalData(
-                "Harry Potter: Pedra Filosofal",
-                List.of(createAuthor()),
-                new Locale("pt", "PT"),
-//                new Publisher("PortoEditora", "192394938", new Contact("917485647", "+351", new Email("asa", "example.com"),new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry()))),
-                LocalDate.of(2020, 1, 30),
-                List.of(new Genre("FANTASY")),
-//                504,
-                "Text Description"
-        );
-    }
-    private static BibliographicalData createBibliographicalData2(){
-        return new BibliographicalData(
-                "Harry Potter: Cálice de Fogo",
-                List.of(createAuthor()),
-                new Locale("pt", "PT"),
-//                new Publisher("PortoEditora", "192394938", new Contact("917485647", "+351", new Email("asa", "example.com"),new Address("Rua Dr. Angelo Miranda", "182", "4540-340", createCountry()))),
-                LocalDate.of(2020, 1, 30),
-                List.of(new Genre("FANTASY")),
-//                504,
-                "Text Description"
-        );
-    }
-
-    private static PublicationType createPublicationType(){
-        return new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.HARDBACK,
-                "Details"
-        );
-    }
-
-    private static Code createCode(){
-        return Code.fromIsbn10(
-                "1928375849"
-        );
-    }
-
-    private static PhysicalAttributes createPhysicalAttributes(){
-        return new PhysicalAttributes(
-                new Dimensions(123, 242, 124),
-                100,
-                230
-        );
-    }
-
-    private static Publisher createPublisher(){
-        return new Publisher(
-                "John Snow",
-                "UK198067290",
-                null
-        );
-    }
-
-    private static Edition createEdition(){
-        return new Edition(
-                "1st",
-                createCode(),
-                createPhysicalAttributes(),
-                createPublicationType(),
-                createPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2025,10, 12)
-        );
-    }
-
-    private static Publication createPublication1(){
-        return new Publication(
-                createBibliographicalData1(),
-                createPublicationType(),
-                createSeller(),
-                PublicationStatus.READ,
-//                "1st Edition",
-                createEdition(),
-                createCode()
-        );
-    }
-
-    private static Publication createPublication2(){
-        return new Publication(
-                createBibliographicalData2(),
-                createPublicationType(),
-                createSeller(),
-                PublicationStatus.READING,
-//                "1st Edition",
-                createEdition(),
-                createCode()
-        );
-    }
-
-    private static PublicationSample createItem1(){
-        // Edition
-        Edition edition1= new Edition("1st",
-                createCode(),
-                createPhysicalAttributes(),
-                createPublicationType(),
-                createPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1));
-
-        //PublicationSample
-        PublicationSample item = new PublicationSample(
-                createBibliographicalData1(),
-                createSeller(),
-                PublicationStatus.READ,
-                edition1,
-                Condition.LIKE_NEW);
-
-        return item;
-    }
-
-    private static PublicationSample createItem2(){
-        // Edition
-        Edition edition2= new Edition("2st",
-                createCode(),
-                createPhysicalAttributes(),
-                createPublicationType(),
-                createPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1));
-
-        //PublicationSample
-        PublicationSample item2 = new PublicationSample(
-                createBibliographicalData2(),
-                createSeller(),
-                PublicationStatus.READING,
-                edition2,
-                Condition.LIKE_NEW);
-
-        return item2;
-    }
-
-//    private static User createUser(){
-//        return new User(
-//                "Seller",
-//                new Contact(
-//                        "918374628",
-//                        "+351",
-//                        new Email("user", "example.com"),
-//                        new Address("Avenida da Liberdade", "25", "3470-302", createCountry())
-//                ),
-//                new Profile(
-//                        "Seller",
-//                        createCountry(),
-//                        LocalDate.of(1993, 9, 19)
-//                ),
-//                UserRole.NORMAL_USER
-//        );
-//    }
-
-    private static User createSeller(){
-        return new User(
-                "Seller",
-                new Contact(
-                        "918374628",
-                        "+351",
-                        new Email("user", "example.com"),
-                        new Address("Avenida da Liberdade", "25", "3470-302", createCountry())
-                ),
-                new Profile(
-                        "Seller",
-                        createCountry(),
-                        LocalDate.of(1993, 9, 19)
-                ),
-                UserRole.NORMAL_USER
-        );
-    }
-
-    private static User createBuyer(){
-        return new User(
-                "Seller",
-                new Contact(
-                        "918374628",
-                        "+351",
-                        new Email("user", "example.com"),
-                        new Address("Avenida da Liberdade", "25", "3470-302", createCountry())
-                ),
-                new Profile(
-                        "Seller",
-                        createCountry(),
-                        LocalDate.of(1993, 9, 19)
-                ),
-                UserRole.NORMAL_USER
-        );
-    }
-
-    private static Listing createListing1(){
-        return new Listing(
-                "Listing Title",
-                List.of(createItem1()),
-                SaleType.DIRECT_SALE,
-                new Price(new BigDecimal("19.99")),
-                "Short Description",
-                List.of(new Picture("pic"))
-        );
-    }
-
-    private static Listing createListing2(){
-        return new Listing(
-                "Listing Title",
-                List.of(createItem2()),
-                SaleType.DIRECT_SALE,
-                new Price(new BigDecimal("9.99")),
-                "Short Description",
-                List.of(new Picture("pic"))
-        );
-    }
-
-    //=====================================================================================================
-    // TESTS
-
+    // Tests to constructor --------------------------------------------------------------------------------------------
     @Test
-    void DirectSaleEmptyConstructor(){
-        DirectSale directSale = new DirectSale();
+    void emptyConstructor_createsInstance() {
+        DirectSale ds = new DirectSale();
+        assertNotNull(ds);
     }
 
     @Test
-    void DirectSaleValidConstructor(){
-//        DirectSale directSale = new DirectSale(createListing(), LocalDateTime.now());
-        DirectSale directSale = new DirectSale(List.of(createListing1(), createListing2()), createBuyer(), false);
-    }
+    void validConstructor_createsInstance() {
+        // Arrange
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
+        User buyerDouble = mock(User.class);
 
-    @Test
-    void DirectSaleWithListingNull(){
         // Act
-//        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-//                new DirectSale(null,LocalDateTime.now()));
+        DirectSale ds = new DirectSale(List.of(listing1Double, listing2Double), buyerDouble, false);
 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new DirectSale(null, createBuyer(), false));
+        // Assert
+        assertNotNull(ds);
+    }
+
+    @Test
+    void validConstructor_withNullListingsThrowsException() {
+        // Arrange
+        User buyerDouble = mock(User.class);
+
+        // Act
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSale(null, buyerDouble, false)
+        );
 
         // Assert
         assertEquals("List of listings cannot be null", e.getMessage());
     }
 
-//    @Test
-//    void DirectSaleNullBuyDateConstructor(){
-//        // Act
-//        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-//                new DirectSale(createListing(),null));
-//
-//        // Assert
-//        assertEquals("BuyDate cannot be null", e.getMessage());
-//    }
-
     @Test
-    void DirectSaleWithBuyerNull(){
+    void validconstructor_withNullBuyerThrowsException() {
+        // Arrange
+        Listing listingDouble = mock(Listing.class);
+
         // Act
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new DirectSale(List.of(createListing1()), null, false));
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSale(List.of(listingDouble), null, false)
+        );
 
         // Assert
         assertEquals("Buyer cannot be empty", e.getMessage());
     }
 
+    // Method equals ---------------------------------------------------------------------------------------------------
     @Test
-    void ensureEqualsWithNullReturnsFalse() {
+    void equals_withNullReturnsFalse() {
         // Arrange
-//        DirectSale directSale = new DirectSale(createListing(), LocalDateTime.now());
-        DirectSale directSale = new DirectSale(List.of(createListing1(), createListing2()), createBuyer(), false);
+        Listing listingDouble = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+        DirectSale ds = new DirectSale(List.of(listingDouble), buyerDouble, false);
 
         // Act
-        boolean result = directSale.equals(null);
+        boolean result = ds.equals(null);
 
         // Assert
         assertFalse(result);
     }
 
-
     @Test
-    void ensureDifferentObjectsReturnsFalse(){
-        //Arrange
-//        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
-//        DirectSale dsale2 = new DirectSale(createListing(), LocalDateTime.of(2026,1,21,10,0));
-        DirectSale dsale1 = new DirectSale(List.of(createListing1()),createBuyer(), false);
-        DirectSale dsale2 = new DirectSale(List.of(createListing2()),createBuyer(), true);
-
-        //Act
-        boolean expectedResult = dsale1.equals(dsale2);
-
-        //Assert
-        assertFalse(expectedResult);
-    }
-
-    @Test
-    void ensureSameObjectsReturnTrue(){
-        //Arrange
-//        Listing sameListing = createListing();
-//        DirectSale dsale1 = new DirectSale(sameListing,LocalDateTime.of(2026,1,21,10,0));
-//        DirectSale dsale2 = new DirectSale(sameListing, LocalDateTime.of(2026,1,21,10,0));
-        Listing sameListing = createListing1();
-        User sameBuyer = createBuyer();
-        DirectSale dsale1 = new DirectSale(List.of(sameListing), sameBuyer, false);
-        DirectSale dsale2 = new DirectSale(List.of(sameListing), sameBuyer, false);
-
-        //Act
-        boolean expectedResult = dsale1.equals(dsale2);
-
-        //Assert
-        assertTrue(expectedResult);
-    }
-
-    @Test
-    void sameObjectHasToHaveTheSameHashcode(){
-        //Arrange
-//        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
-        DirectSale dsale1 = new DirectSale(List.of(createListing1()), createBuyer(),false);
-
-        //Act & Assert
-        assertEquals(dsale1.hashCode(), dsale1.hashCode());
-    }
-
-    @Test
-    void difObjectHasToHaveTheDifHashcode(){
-        //Arrange
-//        DirectSale dsale1 = new DirectSale(createListing(),LocalDateTime.now());
-//        DirectSale dsale2 = new DirectSale(createListing(),LocalDateTime.now());
-        DirectSale dsale1 = new DirectSale(List.of(createListing1()), createBuyer(),false);
-        DirectSale dsale2 = new DirectSale(List.of(createListing1()), createBuyer(),false);
-
-        //Act & Assert
-        assertNotEquals(dsale1.hashCode(), dsale2.hashCode());
-    }
-
-    @Test
-    void getListing_shouldReturnListing() {
+    void equals_withDifferentObjectsReturnsFalse() {
         // Arrange
-//        Listing listing = createListing();
-//        DirectSale directSale = new DirectSale(listing, LocalDateTime.now());
-        List<Listing> listings = List.of(createListing1());
-        DirectSale directSale = new DirectSale(listings, createBuyer(),false);
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+
+        DirectSale ds1 = new DirectSale(List.of(listing1Double), buyerDouble, false);
+        DirectSale ds2 = new DirectSale(List.of(listing2Double), buyerDouble, true);
 
         // Act
-//        Listing result = directSale.getListing();
-        List<Listing> result = directSale.getListings();
+        boolean result = ds1.equals(ds2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void equals_withSameListingsAndBuyerReturnsTrue() {
+        // Arrange
+        Listing listingDouble = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+
+        DirectSale ds1 = new DirectSale(List.of(listingDouble), buyerDouble, false);
+        DirectSale ds2 = new DirectSale(List.of(listingDouble), buyerDouble, false);
+
+        // Act
+        boolean result = ds1.equals(ds2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    // Method hasCode --------------------------------------------------------------------------------------------------
+    @Test
+    void hashCode_sameObjectReturnsSameHash() {
+        // Arrange
+        Listing listingDouble = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+        DirectSale ds = new DirectSale(List.of(listingDouble), buyerDouble, false);
+
+        // Act and Assert
+        assertEquals(ds.hashCode(), ds.hashCode());
+    }
+
+    @Test
+    void hashCode_differentObjectsReturnsDifferentHash() {
+        // Arrange
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+
+        DirectSale ds1 = new DirectSale(List.of(listing1Double), buyerDouble, false);
+        DirectSale ds2 = new DirectSale(List.of(listing2Double), buyerDouble, false);
+
+        // Act and Assert
+        assertNotEquals(ds1.hashCode(), ds2.hashCode());
+    }
+
+    // Method getListings ----------------------------------------------------------------------------------------------
+    @Test
+    void getListings_returnsSameList() {
+        // Arrange
+        Listing listingDouble = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+        List<Listing> listings = List.of(listingDouble);
+
+        DirectSale ds = new DirectSale(listings, buyerDouble, false);
+
+        // Act
+        List<Listing> result = ds.getListings();
 
         // Assert
         assertSame(listings, result);
     }
 
+    // Method getDetails -----------------------------------------------------------------------------------------------
     @Test
-    void getDetails_shouldReturnRecordWithCorrectValues() {
+    void getDetails_returnsCorrectValues() {
         // Arrange
-//        Listing listing = createListing();
-//        LocalDateTime date = LocalDateTime.of(2025, 5, 10, 14, 30);
-//        DirectSale directSale = new DirectSale(listing, date);
-        List<Listing> listings = List.of(createListing1(), createListing2());
-        User buyer = createBuyer();
-        DirectSale directSale = new DirectSale(listings, buyer,false);
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+
+        List<Listing> listings = List.of(listing1Double, listing2Double);
+        DirectSale ds = new DirectSale(listings, buyerDouble, false);
 
         // Act
-        DirectSale.DirectSaleDetails details = directSale.getDetails();
+        DirectSale.DirectSaleDetails details = ds.getDetails();
 
         // Assert
         assertNotNull(details);
         assertSame(listings, details.listings());
-        assertSame(buyer, details.buyer());
-//        assertEquals(date, details.directSaleDate());
+        assertSame(buyerDouble, details.buyer());
+        assertFalse(details.isFinished());
     }
 
+    // Method directSaleDetails (record) -------------------------------------------------------------------------------
     @Test
-    void directSaleDetailsRecord_shouldStoreValuesCorrectly() {
+    void directSaleDetails_recordStoresValuesCorrectly() {
         // Arrange
-//        Listing listing = createListing();
-//        LocalDateTime date = LocalDateTime.of(2024, 12, 1, 9, 0);
-        List<Listing> listings = List.of(createListing1(), createListing2());
-        User buyer = createBuyer();
+        Listing listingDouble = mock(Listing.class);
+        User buyerDouble = mock(User.class);
+        List<Listing> listings = List.of(listingDouble);
 
         // Act
-        DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(listings, buyer,false);
+        DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(listings, buyerDouble, true);
 
         // Assert
         assertSame(listings, details.listings());
-        assertSame(buyer, details.buyer());
-//        assertEquals(date, details.directSaleDate());
+        assertSame(buyerDouble, details.buyer());
+        assertTrue(details.isFinished());
     }
 
     @Test
-    void directSaleDetailsRecord_shouldAllowNullValues() {
+    void directSaleDetails_allowsNullValues() {
         // Act
         DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(null, null, false);
 
         // Assert
         assertNull(details.listings());
         assertNull(details.buyer());
-//        assertNull(details.directSaleDate());
     }
 }
