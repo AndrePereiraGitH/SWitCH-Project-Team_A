@@ -57,9 +57,98 @@ class LibraryRepositoryTest {
 
 
     // System Under Test
+    LibraryFactory factory = new LibraryFactory();
     Map<String, Library> libraries = new HashMap<>();
-    LibraryRepository libraryRepository = new LibraryRepository(libraries);
+    LibraryRepository libraryRepository = new LibraryRepository(libraries,factory);
 
+
+    // ============ Constructor Tests ============
+
+    /**
+     * Should throw an {@link IllegalArgumentException} when the factory parameter is null.
+     * <p>
+     * This test verifies that the LibraryRepository constructor properly validates
+     * its dependencies and rejects null factory instances.
+     * </p>
+     */
+    @Test
+    void shouldThrowAnExceptionWhenFactoryIsNull() {
+        //Arrange
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new LibraryRepository(libraries,null));
+    }
+
+
+    // ============ getLibraryOfUser Tests ============
+
+    /**
+     * Tests that getLibraryOfUser successfully retrieves a library for a valid username.
+     * <p>
+     * This test verifies that when a valid username is provided, the correct library
+     * that was previously created is returned from the repository.
+     * </p>
+     *
+     * @throws InstanceAlreadyExistsException if the user already has a library
+     * @throws InstanceNotFoundException if no library is found for the specified username
+     */
+    @Test
+    void ensureGetLibraryOfUserSuccessfully() throws InstanceAlreadyExistsException, InstanceNotFoundException {
+        // Arrange
+        String libraryName = "lib1";
+        Library expectedLib = libraryRepository.createAndAdd(libraryName, user);
+
+        // Act
+        Library realLib = libraryRepository.getLibraryOfUser(user.getUserName());
+
+        // Assert
+        assertEquals(expectedLib, realLib);
+    }
+
+    /**
+     * Tests that getLibraryOfUser throws NullPointerException when username is null.
+     * <p>
+     * This test verifies that the method properly validates and rejects null username
+     * input by throwing the appropriate exception.
+     * </p>
+     */
+    @Test
+    void throwExceptionWhenUsernameIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> libraryRepository.getLibraryOfUser(null));
+    }
+
+    /**
+     * Tests that getLibraryOfUser throws IllegalArgumentException when username is empty.
+     * <p>
+     * This test verifies that the method properly validates and rejects empty string
+     * username input by throwing the appropriate exception.
+     * </p>
+     */
+    @Test
+    void throwExceptionWhenUsernameIsEmpty() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> libraryRepository.getLibraryOfUser(""));
+    }
+
+    /**
+     * Tests that getLibraryOfUser throws InstanceNotFoundException when no library exists for the user.
+     * <p>
+     * This test verifies that the method throws the appropriate exception when attempting
+     * to retrieve a library that does not exist in the repository (null library entry).
+     * </p>
+     */
+    @Test
+    void throwExceptionWhenLibraryIsNull() {
+        // Arrange
+        String libUser = user.getUserName();
+        libraries.put(libUser, null);
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () -> libraryRepository.getLibraryOfUser(libUser));
+    }
+
+    // ============ create Tests ============
 
     /**
      * Tests that a library is successfully created and added to the repository
@@ -97,11 +186,11 @@ class LibraryRepositoryTest {
      * </p>
      */
     @Test
-    void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty(){
-        //Arrange
+    void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty() {
+        // Arrange
         String libraryName = "";
 
-        //Act & Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> libraryRepository.createAndAdd(libraryName, user));
     }
 
@@ -113,11 +202,11 @@ class LibraryRepositoryTest {
      * </p>
      */
     @Test
-    void shouldReturnAnExceptionWhenTheUserIsNull(){
-        //Arrange
+    void shouldReturnAnExceptionWhenTheUserIsNull() {
+        // Arrange
         String libraryName = "mylib";
 
-        //Act & Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> libraryRepository.createAndAdd(libraryName, null));
     }
 
@@ -135,12 +224,14 @@ class LibraryRepositoryTest {
         // Arrange
         String libraryName = "My Library";
 
-        //Act
+        // Act
         libraryRepository.createAndAdd(libraryName, user);
 
-        // Act & Assert
+        // Assert
         assertThrows(InstanceAlreadyExistsException.class, () -> libraryRepository.createAndAdd(libraryName, user));
     }
+
+    // ============ verifyIfUserHasALibrary Tests ============
 
     /**
      * Tests that the verification method returns {@code true} when checking
@@ -152,7 +243,7 @@ class LibraryRepositoryTest {
      * @throws InstanceAlreadyExistsException if library creation fails
      */
     @Test
-    void returnTrueWhenUserAlreadyHasALibrary() throws InstanceAlreadyExistsException{
+    void returnTrueWhenUserAlreadyHasALibrary() throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
         libraryRepository.createAndAdd(libraryName, user);
@@ -160,7 +251,7 @@ class LibraryRepositoryTest {
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(user);
 
-        //Assert
+        // Assert
         assertTrue(result);
     }
 
@@ -173,14 +264,14 @@ class LibraryRepositoryTest {
      */
     @Test
     void returnFalseWhenUserDoesNotHaveALibrary() {
-        // Arrange
-
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(user);
 
-        //Assert
+        // Assert
         assertFalse(result);
     }
+
+    // ============ getAllPublicationsFromUserLibrary Tests ============
 
     /**
      * Tests that all publications from a user's library are correctly retrieved.
@@ -198,17 +289,17 @@ class LibraryRepositoryTest {
      */
     @Test
     void shouldReturnAllPublicationsFromUserLibrary() throws InstanceAlreadyExistsException, InstanceNotFoundException {
-        //Arrange
+        // Arrange
         Library lib1 = libraryRepository.createAndAdd("lib1", user);
         lib1.addPublication(validItem1);
         lib1.addPublication(validItem2);
         lib1.addPublication(validItem3);
 
-        //Act
+        // Act
         List<PublicationSample> expectedPublications = List.of(validItem1, validItem2, validItem3);
         List<PublicationSample> realPublications = libraryRepository.getAllPublicationsFromUserLibrary(user.getUserName());
 
-        //Assert
+        // Assert
         assertEquals(expectedPublications, realPublications);
     }
 }

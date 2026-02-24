@@ -73,7 +73,7 @@ class AuctionRepositoryTest {
 //        LocalDateTime now = fixedNow();
 //        LocalDateTime initialDate = now;
 //        LocalDateTime finalDate = now.plusDays(2);
-//        auctionRepository.createAndAdd(listing,initialDate,finalDate,price("150.50"));
+//        auctionRepository.create(listing,initialDate,finalDate,price("150.50"));
 //        Publication publication= listing.getItems().get(0).getPublication();
 //        String expectedPublicationTitle= publication.getBibliographicalData().getTitle();
 //
@@ -98,7 +98,7 @@ class AuctionRepositoryTest {
 //        LocalDateTime now = fixedNow();
 //        LocalDateTime initialDate = now;
 //        LocalDateTime finalDate = now.plusDays(2);
-//        auctionRepository.createAndAdd(listing,initialDate,finalDate,price("150.50"));
+//        auctionRepository.create(listing,initialDate,finalDate,price("150.50"));
 //
 //
 //        Publication publication2 = createValidPublication2(instantiateBibliographicalData());

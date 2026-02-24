@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class US016ToPutPublicationInAuctionControllerTest {
 
-    private final LibraryRepository libRepo = new LibraryRepository(new HashMap<>());
+    LibraryFactory factory = new LibraryFactory();
+    private final LibraryRepository libRepo = new LibraryRepository(new HashMap<>(),factory);
+
 
 
     // --------------------------------------
@@ -181,7 +183,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository();
-        LibraryRepository libraryRepo = new LibraryRepository(Map.of());
+        LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
 
         US016ToPutPublicationInAuctionController controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, pr1);
 
@@ -214,7 +216,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         // arrange
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository();
-        LibraryRepository libraryRepo = new LibraryRepository(Map.of());
+        LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
 
         PublicationSample pub = publication(user("owner1"));
         List<PublicationSample> list = new ArrayList<>();
@@ -254,7 +256,7 @@ class US016ToPutPublicationInAuctionControllerTest {
 
 
     private US016ToPutPublicationInAuctionController newControllerWithLibraries(Map<String, Library> libs) {
-        LibraryRepository libraryRepo = new LibraryRepository(libs);
+        LibraryRepository libraryRepo = new LibraryRepository(libs,factory);
         ItemRepository itemRepo = new ItemRepository();
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository();

@@ -74,12 +74,13 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     Library emptyLibrary = new Library(List.of(), "emptyLib", user3);
 
     // Repository with test data
+    LibraryFactory factory = new LibraryFactory();
     LibraryRepository userLib = new LibraryRepository(
             Map.of(
                     user1.getUserName(), lib1,
                     user2.getUserName(), lib2,
                     user3.getUserName(), emptyLibrary
-            )
+            ),factory
     );
 
     // System Under Test

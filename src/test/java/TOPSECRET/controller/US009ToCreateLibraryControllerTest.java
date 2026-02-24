@@ -39,7 +39,8 @@ class US009ToCreateLibraryControllerTest {
     UserRepository userRepository = new UserRepository();
 
     Map<String, Library> libraries = new HashMap<>();
-    LibraryRepository libraryRepository = new LibraryRepository(libraries);
+    LibraryFactory factory = new LibraryFactory();
+    LibraryRepository libraryRepository = new LibraryRepository(libraries,factory);
 
     US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(libraryRepository,userRepository);
 
@@ -53,7 +54,7 @@ class US009ToCreateLibraryControllerTest {
     void shouldCreateControllerWithValidRepositories() {
         //Arrange
         Map<String, Library> libraries = new HashMap<>();
-        LibraryRepository libraryRepository = new LibraryRepository(libraries);
+        LibraryRepository libraryRepository = new LibraryRepository(libraries,factory);
 
         // Act & Assert
         assertDoesNotThrow(() -> new US009ToCreateLibraryController(libraryRepository,userRepository));
