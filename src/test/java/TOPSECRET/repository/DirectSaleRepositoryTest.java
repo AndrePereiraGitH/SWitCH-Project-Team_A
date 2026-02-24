@@ -2,243 +2,229 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 
-import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 class DirectSaleRepositoryTest {
 
-
-    // Dimensions
-    Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
-
-    // User
-    LocalDate validBirthday = LocalDate.of(2000, 1, 1);
-    Profile validProfile = new Profile("John",new Country("PORTUGAL"),validBirthday);
-    Email validEmail = new Email("john.doe", "example.com");
-    Address validAddress = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
-    Contact validContact = new Contact("123456789","+351",validEmail,validAddress);
-    User validSeller = new User("Seller1",validContact,validProfile, UserRole.NORMAL_USER);
-    Genre validGenre = new Genre("Fiction");
-
-
-    // BibliographicalData
-    Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
-    Author author = new Author(profile, "valio bio");
-    Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
-    Email email = new Email("Maria1", "gmail.com");
-    Contact contact = new Contact("915945695", "+351", email, address);
-    Publisher publisher = new Publisher("Some Publisher", "PT123456789", contact);
-    BibliographicalData bibliographicalData = new BibliographicalData(
-            "Childhood, Youth, Dependency: The Copenhagen Trilogy",
-            List.of(author),
-            Locale.ENGLISH,
-            LocalDate.of(2020, 1, 1),
-            List.of(validGenre),
-            "Some text"
-    );
-
-
-    PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"
-    );
-
-    // PublicationStatus
-    PublicationStatus publicationStatus = PublicationStatus.READING;
-    User user = new User("maria1", contact, profile, UserRole.NORMAL_USER);
-    // Edition
-    Code code = Code.fromIsbn13("9783161484121");
-    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-
-    Edition edition1 = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition2 = new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition3 = new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition4 = new Edition("4st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-
-    // Code
-    Code code1 = Code.fromIsbn13("9781234567890");
-    Code code2 = Code.fromIsbn13("9781234567891");
-    Code code3 = Code.fromIsbn13("9781234567892");
-
-    // Items (create 3 items, referring to the same bibliographicalData, but different editions)
-    PublicationSample validItem1 = new PublicationSample(bibliographicalData, validSeller, publicationStatus, edition1, Condition.LIKE_NEW);
-    PublicationSample validItem2 = new PublicationSample(bibliographicalData, validSeller, publicationStatus, edition2, Condition.LIKE_NEW);
-    PublicationSample validItem3 = new PublicationSample(bibliographicalData, validSeller, publicationStatus, edition3, Condition.LIKE_NEW);
-    PublicationSample validItem4 = new PublicationSample(bibliographicalData, validSeller, publicationStatus, edition4, Condition.LIKE_NEW);
-
-    private final List<PublicationSample> severalItemList = new ArrayList<>(List.of(validItem1, validItem2));
-
-    // Listing
-    Price validPrice = new Price(BigDecimal.valueOf(50.99));
-    private final String validDescription = "Valid Description";
-    private final String validTitle = "PS5 Pro";
-    List<Picture> validPictures = List.of(new Picture("path/to/pic.jpg"));
-
-    Listing validListing = new Listing(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validPictures);
-
-    // DirectSale
-    // Buyer
-    LocalDate validBirthday_buyer = LocalDate.of(1999, 1, 1);
-    Profile validProfile_buyer = new Profile("Ross", new Country("PORTUGAL"), validBirthday);
-    Email validEmail_buyer = new Email("ross.doe", "example.com");
-    Address validAddress_buyer = new Address("dummyStreet", "dummyNumber", "dummyZipCode", new Country("PORTUGAL"));
-    Contact validContact_buyer = new Contact("123456789", "+351", validEmail, validAddress);
-    User validBuyer = new User("Ross Geller", validContact, validProfile, UserRole.NORMAL_USER);
-
-    DirectSale validDirectSale = new DirectSale(List.of(validListing), validBuyer, false);
-
-
-    // Private Methods for Tests With Genre
-    private BibliographicalData createBibliographicalDataWithGenre(String genreName) {
-        return new BibliographicalData(
-                "Different Title",
-                bibliographicalData.getAuthors(),
-                bibliographicalData.getOriginalLanguage(),
-                bibliographicalData.getPublishDate(),
-                List.of(new Genre(genreName)),
-                bibliographicalData.getChunksOfText()
-        );
-    }
-
-    private PublicationSample createItemWithGenre(String genreName) {
-        PublicationSample pub = new PublicationSample(
-                createBibliographicalDataWithGenre(genreName),
-                validSeller,
-                publicationStatus,
-                edition1,
-                Condition.POOR
-        );
-        return pub;
-    }
-
-
-    private Listing createListingWithGenre(String genreName) {
-        return new Listing(
-                validTitle,
-                List.of(createItemWithGenre(genreName)),
-                SaleType.DIRECT_SALE,
-                validPrice,
-                validDescription,
-                validPictures
-        );
-    }
-
-    //============================================================================================================
-    // TESTS
-
-    // Method createAndAddDirectSale ----------------------------------------------------------------------------
-    @Test
-    void createAndAddDirectSale_ensureANewDirectSaleIsCreatedAndAdded() {
-        // Arrange
-        List<DirectSale> list = new ArrayList<>();
-        DirectSaleRepository repo = new DirectSaleRepository(list);
-
-        //Act
-        boolean result = repo.createAndAddDirectSale(List.of(validListing), validBuyer, false);
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void createAndAddDirectSale_ensureADuplicateDirectSaleIsNotCreatedAndAdded() {
-        // Arrange
-        List<DirectSale> list = new ArrayList<>();
-        list.add(validDirectSale);
-        DirectSaleRepository repo = new DirectSaleRepository(list);
-
-        //Act
-        boolean result = repo.createAndAddDirectSale(List.of(validListing), validBuyer, false);
-
-        //Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void createAndAddDirectSale_ReturnShouldThrowErrorWhenDuplicate() {
-        DirectSaleRepository repo = new DirectSaleRepository(List.of(validDirectSale));
-
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAddDirectSaleReturn(List.of(validListing), validBuyer, false));
-    }
-
-    @Test
-    void createAndAddDirectSale_ReturnShouldThrowWhenDuplicate() {
-        // Arrange
-        DirectSaleRepository repo = new DirectSaleRepository(List.of(validDirectSale));
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAddDirectSaleReturn(List.of(validListing), validBuyer, false)
-        );
-    }
-
-    @Test
-    void createAndAddDirectSale_ReturnShouldReturnCreatedDirectSaleAndAddItToRepository() {
-        // Arrange
-        List<DirectSale> list = new ArrayList<>();
-        DirectSaleRepository repo = new DirectSaleRepository(list);
-
-        // Act
-        DirectSale result = repo.createAndAddDirectSaleReturn(List.of(validListing), validBuyer, false);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(repo.ifDirectSaleExists(result));
-    }
-
-
     //Method ifDirectSaleExists ----------------------------------------------------------------------------
     @Test
-    void ifDirectSaleExists_ensureIffDirectSaleExistsReturnsTrue() {
+    void ifDirectSaleExists_returnsTrue_withProfessorLogic() {
         // Arrange
-        List<DirectSale> list = new ArrayList<>();
-        list.add(validDirectSale);
-        DirectSaleRepository repo = new DirectSaleRepository(list);
+        DirectSale dsDouble = mock(DirectSale.class);
 
-        //Act
-        boolean result = repo.ifDirectSaleExists(validDirectSale);
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
 
-        //Assert
+        List<Listing> listingListDouble = List.of(listing1Double, listing2Double);
+        when(dsDouble.getListings()).thenReturn(listingListDouble);
+
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>(List.of(dsDouble)));
+
+        // Act
+        boolean result = repo.ifDirectSaleExists(dsDouble);
+
+        // Assert
         assertTrue(result);
     }
 
     @Test
-    void ifDirectSaleExists_ensureIfDirectSaleDoesNotExistReturnsFalse() {
+    void ifDirectSaleExists_returnsFalse() {
         // Arrange
-        List<DirectSale> list = new ArrayList<>();
-        DirectSaleRepository repo = new DirectSaleRepository(list);
+        DirectSale dsDouble = mock(DirectSale.class);
 
-        //Act
-        boolean result = repo.ifDirectSaleExists(validDirectSale);
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
 
-        //Assert
+        List<Listing> listingListDouble = List.of(listing1Double, listing2Double);
+        when(dsDouble.getListings()).thenReturn(listingListDouble);
+
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>());        // Repo doesn't contain any ds
+
+        // Act
+        boolean result = repo.ifDirectSaleExists(dsDouble);
+
+        // Assert
         assertFalse(result);
-
     }
 
     @Test
-    void ifDirectSaleExists_ensureConstructorCopiesListNotOriginalReferences() {
+    void ifDirectSaleExists_constructorCopiesListNotOriginalReferences() {
         // Arrange
-        List<DirectSale> list = new ArrayList<>();
-        DirectSaleRepository repo = new DirectSaleRepository(list);
-        list.add(validDirectSale);
+        DirectSale dsDouble = mock(DirectSale.class);
+
+        Listing listingDouble = mock(Listing.class);
+
+        List<Listing> listingListDouble = List.of(listingDouble);
+        when(dsDouble.getListings()).thenReturn(listingListDouble);
+
+        List<DirectSale> externalList = new ArrayList<>();                    // Creates an empty external list of DirectSale
+
+        DirectSaleRepository repo = new DirectSaleRepository(externalList);   // Creates the repository using the external list
+
+        externalList.add(dsDouble);                                           // Modifies the external list after the repository was created
 
         // Act
-        boolean expectedResult = repo.ifDirectSaleExists(validDirectSale);
+        boolean result = repo.ifDirectSaleExists(dsDouble);
 
-        //Assert
-        assertFalse(expectedResult);
+        // Assert
+        assertFalse(result);                                                  // The repository must NOT have the change in the external list
     }
 
+
+    //Method addDirectSale ---------------------------------------------------------------------------------------------
+    @Test
+    void addDirectSale_addsWhenNotExists() {
+        // Arrange
+        DirectSale dsDouble = mock(DirectSale.class);
+        when(dsDouble.getListings()).thenReturn(List.of(mock(Listing.class)));
+
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>());
+
+        // Act
+        boolean result = repo.addDirectSale(dsDouble);
+
+        // Assert
+        assertTrue(result);
+        assertTrue(repo.ifDirectSaleExists(dsDouble));
+    }
+
+    @Test
+    void addDirectSale_returnsFalseWhenExists() {
+        // Arrange
+        DirectSale dsDouble = mock(DirectSale.class);
+        when(dsDouble.getListings()).thenReturn(List.of(mock(Listing.class)));
+
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>(List.of(dsDouble)));
+
+        // Act
+        boolean result = repo.addDirectSale(dsDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void addDirectSale_throwsWhenNull() {
+        // Arrange
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>());
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.addDirectSale(null));
+    }
+
+
+    //Method addDirectSaleorThrow --------------------------------------------------------------------------------------
+    @Test
+    void addDirectSaleOrThrow_addsWhenNotExists() {
+        // Arrange
+        DirectSale dsDouble = mock(DirectSale.class);
+        when(dsDouble.getListings()).thenReturn(List.of(mock(Listing.class)));
+
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>());
+
+        // Act
+        repo.addDirectSaleOrThrow(dsDouble);
+
+        // Assert
+        assertTrue(repo.ifDirectSaleExists(dsDouble));
+    }
+
+    @Test
+    void addDirectSaleOrThrow_throwsWhenExists() {
+        // Arrange
+        DirectSale dsDouble = mock(DirectSale.class);
+        when(dsDouble.getListings()).thenReturn(List.of(mock(Listing.class)));
+
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>(List.of(dsDouble)));
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.addDirectSaleOrThrow(dsDouble));
+    }
+
+    @Test
+    void addDirectSaleOrThrow_throwsWhenNull() {
+        // Arrange
+        DirectSaleRepository repo = new DirectSaleRepository(new ArrayList<>());
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.addDirectSaleOrThrow(null));
+    }
+
+
+    // TODO - passar os testes deste método para a factory
+    // Method createAndAddDirectSale -----------------------------------------------------------------------------------
+//    @Test
+//    void createAndAddDirectSale_ensureANewDirectSaleIsCreatedAndAdded() {
+//        // Arrange
+//        List<DirectSale> list = new ArrayList<>();
+//        DirectSaleRepository repo = new DirectSaleRepository(list);
+//
+//        //Act
+//        boolean result = repo.createAndAddDirectSale(List.of(validListing), validBuyer, false);
+//
+//        //Assert
+//        assertTrue(result);
+//    }
+//
+//    @Test
+//    void createAndAddDirectSale_ensureADuplicateDirectSaleIsNotCreatedAndAdded() {
+//        // Arrange
+//        List<DirectSale> list = new ArrayList<>();
+//        list.add(validDirectSale);
+//        DirectSaleRepository repo = new DirectSaleRepository(list);
+//
+//        //Act
+//        boolean result = repo.createAndAddDirectSale(List.of(validListing), validBuyer, false);
+//
+//        //Assert
+//        assertFalse(result);
+//    }
+//
+//    @Test
+//    void createAndAddDirectSale_ReturnShouldThrowErrorWhenDuplicate() {
+//        DirectSaleRepository repo = new DirectSaleRepository(List.of(validDirectSale));
+//
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.createAndAddDirectSaleReturn(List.of(validListing), validBuyer, false));
+//    }
+//
+//    @Test
+//    void createAndAddDirectSale_ReturnShouldThrowWhenDuplicate() {
+//        // Arrange
+//        DirectSaleRepository repo = new DirectSaleRepository(List.of(validDirectSale));
+//
+//        // Act + Assert
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.createAndAddDirectSaleReturn(List.of(validListing), validBuyer, false)
+//        );
+//    }
+//
+//    @Test
+//    void createAndAddDirectSale_ReturnShouldReturnCreatedDirectSaleAndAddItToRepository() {
+//        // Arrange
+//        List<DirectSale> list = new ArrayList<>();
+//        DirectSaleRepository repo = new DirectSaleRepository(list);
+//
+//        // Act
+//        DirectSale result = repo.createAndAddDirectSaleReturn(List.of(validListing), validBuyer, false);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(repo.ifDirectSaleExists(result));
+//    }
+
+
+    // TODO - os metodos seguintes devem ser movidos para a classe ListingRepository
+    /*
     //Method getListOfItemsOnDirectSaleOfAGivenGenre--------------------------------------------------
     @Test
     public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldThrownErrorWhenGenreIsNull() {
@@ -267,95 +253,95 @@ class DirectSaleRepositoryTest {
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListIfNoMatchingGenre() {
-        // Arrange
-        List<DirectSale> directSales = new ArrayList<>();
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-
-        // Add a DirectSale with "Science" genre
-        Listing listing = createListingWithGenre("Science");
-        directSaleRepository.createAndAddDirectSale(List.of(listing), validBuyer, false);
-
-        Genre genre = new Genre("Fiction");                     // looking for Fiction, but only Science exists
-
-        // Act
-        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());                                     // should return nothing
-    }
-
-    @Test
-    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithOneMatch() {
-        // Arrange
-        List<DirectSale> directSales = new ArrayList<>();
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-
-        Listing listing = createListingWithGenre("Fiction");
-        directSaleRepository.createAndAddDirectSale(List.of(listing), validBuyer, false);
-
-        Genre genre = new Genre("Fiction");
-
-        // Act
-        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithMultipleMatches() {
-        // Arrange
-        List<DirectSale> directSales = new ArrayList<>();
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-
-        // Two different listings both with Fiction items
-        directSaleRepository.createAndAddDirectSale(List.of(createListingWithGenre("Fiction")), validBuyer, false);
-        directSaleRepository.createAndAddDirectSale(List.of(createListingWithGenre("Fiction")), validBuyer, false);
-
-        Genre genre = new Genre("Fiction");
-
-        // Act
-        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnItemsWithCorrectGenre() {
-        // Arrange
-        List<DirectSale> directSales = new ArrayList<>();
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-        directSaleRepository.createAndAddDirectSale(List.of(validListing), validBuyer, false);
-
-        // Act
-        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(validGenre);
-
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.get(0).hasGenre(validGenre));
-    }
-
-    @Test
-    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListWhenNoItemMatchesGenre() {
-        // Arrange
-        List<DirectSale> directSales = new ArrayList<>();
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-        directSaleRepository.createAndAddDirectSale(List.of(validListing), validBuyer, false);
-
-        Genre genre = new Genre("Suspense");                                // genre doesn't exit
-
-        // Act
-        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
+//    @Test
+//    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListIfNoMatchingGenre() {
+//        // Arrange
+//        List<DirectSale> directSales = new ArrayList<>();
+//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+//
+//        // Add a DirectSale with "Science" genre
+//        Listing listing = createListingWithGenre("Science");
+//        directSaleRepository.createAndAddDirectSale(List.of(listing), validBuyer, false);
+//
+//        Genre genre = new Genre("Fiction");                     // looking for Fiction, but only Science exists
+//
+//        // Act
+//        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());                                     // should return nothing
+//    }
+//
+//    @Test
+//    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithOneMatch() {
+//        // Arrange
+//        List<DirectSale> directSales = new ArrayList<>();
+//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+//
+//        Listing listing = createListingWithGenre("Fiction");
+//        directSaleRepository.createAndAddDirectSale(List.of(listing), validBuyer, false);
+//
+//        Genre genre = new Genre("Fiction");
+//
+//        // Act
+//        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(1, result.size());
+//    }
+//
+//    @Test
+//    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithMultipleMatches() {
+//        // Arrange
+//        List<DirectSale> directSales = new ArrayList<>();
+//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+//
+//        // Two different listings both with Fiction items
+//        directSaleRepository.createAndAddDirectSale(List.of(createListingWithGenre("Fiction")), validBuyer, false);
+//        directSaleRepository.createAndAddDirectSale(List.of(createListingWithGenre("Fiction")), validBuyer, false);
+//
+//        Genre genre = new Genre("Fiction");
+//
+//        // Act
+//        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(2, result.size());
+//    }
+//
+//    @Test
+//    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnItemsWithCorrectGenre() {
+//        // Arrange
+//        List<DirectSale> directSales = new ArrayList<>();
+//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+//        directSaleRepository.createAndAddDirectSale(List.of(validListing), validBuyer, false);
+//
+//        // Act
+//        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(validGenre);
+//
+//        // Assert
+//        assertEquals(2, result.size());
+//        assertTrue(result.get(0).hasGenre(validGenre));
+//    }
+//
+//    @Test
+//    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListWhenNoItemMatchesGenre() {
+//        // Arrange
+//        List<DirectSale> directSales = new ArrayList<>();
+//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+//        directSaleRepository.createAndAddDirectSale(List.of(validListing), validBuyer, false);
+//
+//        Genre genre = new Genre("Suspense");                                // genre doesn't exit
+//
+//        // Act
+//        List<PublicationSample> result = directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+//
+//        // Assert
+//        assertTrue(result.isEmpty());
+//    }
 
 
     //Method getListOfItemsOnDirectSale ----------------------------------------------------------------------------
@@ -506,8 +492,8 @@ class DirectSaleRepositoryTest {
 //        assertEquals(1, result.size());
 //        assertSame(ds, result.get(0));
 //    }
-
-    //Verifies if publication is not null
+//
+//    Verifies if publication is not null
 //    @Test
 //    void getListOfItemsOnDirectSale_shouldThrowErrorWhenPublicationIsNull() {
 //        // Arrange
@@ -522,8 +508,8 @@ class DirectSaleRepositoryTest {
 //        // Assert
 //        assertEquals("Publication cannot be null", e.getMessage());
 //    }
-
-
+//
+//
 //    @Test
 //    void getListOfItemsOnDirectSale_shouldNotDuplicateWhenMultipleListingsMatch() {
 //        Publication target = validItem1.getPublication();
@@ -539,4 +525,6 @@ class DirectSaleRepositoryTest {
 //
 //        assertEquals(1, result.size());
 //    }
+
+     */
 }

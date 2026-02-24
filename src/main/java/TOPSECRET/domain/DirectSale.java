@@ -3,26 +3,23 @@ package TOPSECRET.domain;
 import java.util.List;
 import java.util.Objects;
 /**
- * Represents a Direct Sale in the system.
- *
- * A DirectSale is a type of sale where a listing is sold immediately
- * for a fixed price, without bidding.
- *
- * This class links a Listing with the date when the direct sale
- * was created.
+ * Represents a direct sale composed of a list of listings (with saleType Direct Sale), a buyer and a flag
+ * indicating whether the sale has been completed. It represents a buyer's cart.
  */
+
 public class DirectSale {
 
     private List<Listing> _listings;
     private User _buyer;
     private boolean _isFinished;
 
-//    private Listing _listing;
-//    private LocalDateTime _directSaleDate;
-
-
-    //============================================================================================================
+    //==================================================================================================================
     // Constructor for DirectSale
+
+    /**
+     * Default constructor for DirectSale.
+     * Creates an empty instance with no initialized fields.
+     */
 
     public DirectSale() {}
 
@@ -40,21 +37,17 @@ public class DirectSale {
         this._isFinished = _isFinished;
     }
 
-//    public DirectSale(Listing listing, LocalDateTime directSaleDate) {
-//
-//        if(listing == null){
-//            throw new IllegalArgumentException("Listing cannot be null");
-//        }
-//        if(directSaleDate == null){
-//            throw new IllegalArgumentException("BuyDate cannot be null");
-//        }
-//
-//        this._listing = listing;
-//        this._directSaleDate = directSaleDate;
-//
-//    }
+    //==================================================================================================================
 
-    // It's the same directSale if it has the same list of listings and buyer
+    /**
+     * Determines whether this DirectSale is equal to another object.
+     * Two DirectSale instances are considered equal if they contain the same listings
+     * and the same buyer. The finished state is not considered for equality.
+     *
+     * @param o the object to compare with
+     * @return true if the given object is a DirectSale with the same listings and buyer; false otherwise
+     */
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -62,51 +55,50 @@ public class DirectSale {
         return Objects.equals(_listings, that._listings) && Objects.equals(_buyer, that._buyer);
     }
 
+    /**
+     * Computes the hash code for this DirectSale.
+     * The hash is based on the listings and buyer.
+     *
+     * @return the hash code value
+     */
+
     @Override
     public int hashCode() {
         return Objects.hash(_listings, _buyer);
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (o == null || getClass() != o.getClass()) return false;
-//        DirectSale that = (DirectSale) o;
-//        return Objects.equals(_listing, that._listing);
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(_listing, _directSaleDate);
-//    }
-
-
-    //============================================================================================================
+    /**
+     * Returns the list of listings associated with this sale.
+     *
+     * @return the list of listings
+     */
 
     public List<Listing> getListings() {
         return _listings;
     }
 
+    /**
+     * Returns a snapshot of the details of this DirectSale.
+     * The returned record is immutable.
+     *
+     * @return a DirectSaleDetails record containing listings, buyer and finished state
+     */
+
     public DirectSaleDetails getDetails() {
         return new DirectSaleDetails(_listings, _buyer, _isFinished);
     }
+
+    /**
+     * Immutable record representing the details of a DirectSale.
+     *
+     * @param listings   the listings included in the sale
+     * @param buyer      the buyer involved
+     * @param isFinished whether the sale is completed
+     */
 
     public record DirectSaleDetails(
             List<Listing> listings,
             User buyer,
             boolean isFinished
     ) {}
-
-//    public Listing getListing() {
-//        return _listing;
-//    }
-
-//    public DirectSaleDetails getDetails() {
-//        return new DirectSaleDetails(_listing, _directSaleDate);
-//    }
-//
-//    public record DirectSaleDetails(
-//            Listing listing,
-//            LocalDateTime directSaleDate
-//    ) {}
-
 }

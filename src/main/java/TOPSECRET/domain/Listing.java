@@ -164,4 +164,13 @@ public class Listing {
         return _seller;
     }
 
+    /**
+     * Returns the sale type (direct sale or auction) of this listing.
+     *
+     * @return the sale type (direct sale or auction) of a listing.
+     */
+
+    public SaleType getSaleType() {
+        return _saleType;
+    }
 }
