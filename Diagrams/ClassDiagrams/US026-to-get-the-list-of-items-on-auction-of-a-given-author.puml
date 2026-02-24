@@ -1,9 +1,8 @@
 @startuml
+hide circle
 title US026 - To get the list of items on auction of a given author
 
-' UI Layer
-class UI026 {
-}
+
 
 ' Controller
 class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
@@ -21,19 +20,14 @@ class AuctionRepository {
   -checkAuctionAuthor(author)
 }
 
-' DTOs
-class AuthorDTO_US026 {
-}
 
-class AuctionDTO_US026 {
-}
 
 ' Mappers
-class AuthorMapper_US026 {
+class AuthorDTO_US026 {
   +toDTO(listOfAllAuthors)
 }
 
-class AuctionMapper_US026 {
+class AuctionDTO_US026 {
   +toDTO(listOfAuction)
 }
 
@@ -45,13 +39,10 @@ class Auction {
 }
 
 ' Interactions
-UI026 ..> ToGetTheListOfItemsOnAuctionOfAGivenAuthorController : uses
 ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionRepository : uses
 ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorRepository : uses
-AuthorMapper_US026 ..> AuthorDTO_US026 : maps to
-AuctionMapper_US026 ..> AuctionDTO_US026 : maps to
-ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorMapper_US026 : uses
-ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionMapper_US026 : uses
-AuctionMapper_US026 ..> Auction : communicates with
+ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuthorDTO_US026 : uses
+ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> AuctionDTO_US026 : uses
+AuctionDTO_US026 ..> Auction : communicates with
 
 @enduml
