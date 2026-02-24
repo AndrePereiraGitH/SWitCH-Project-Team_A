@@ -138,7 +138,7 @@ class PublicationTest {
         BibliographicalData nullBiblioData = null;
 
 //        String edition1 = "2nd Edition";
-        Code code = Code.fromIsbn13 ("9783161484123");
+        Code code = Code.fromIssn ("97831614");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");

@@ -21,7 +21,7 @@ public class Item {
         if (condition == null)
             throw new IllegalArgumentException("Condition cannot be null");
         if (weight <= 0.0)
-            throw new IllegalArgumentException("Weight must be greater than 0.");
+            throw new IllegalArgumentException("Weight must be greater than 0");
         if (dimension == null)
             throw new IllegalArgumentException("Dimensions cannot be null");
         if (publication == null)

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -18,190 +19,227 @@ import static org.junit.jupiter.api.Assertions.*;
  *     <li>Correct behaviour of the {@code equals} method</li>
  * </ul>
  */
+
 class EditionTest {
 
-    // -------------------------
+    // ─────────────────────────────────────────────────────────────
     // Helpers
-    // -------------------------
+    // ─────────────────────────────────────────────────────────────
 
-    private Code validCode() {
-        return Code.fromIsbn13("9783161484100");
-    }
-
-    private Code differentCode() {
-        return Code.fromIsbn13("9783161484101");
-    }
-
-    private Dimensions validDimensions() {
-        return new Dimensions(10.0, 2.0, 5.0);
-    }
-
-    private PhysicalAttributes validPhysicalAttributes() {
-        return new PhysicalAttributes(validDimensions(), 300.2, 200);
-    }
-
-    private PhysicalAttributes differentPhysicalAttributes() {
-        return new PhysicalAttributes(validDimensions(), 400.0, 250);
+    private Edition validEdition() {
+        return new Edition("1st", validCode(), validPhysicalAttributes(),
+                validPublicationType(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
     }
 
     private PublicationType validPublicationType() {
-        return new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
+        return publicationTypeBook();
     }
 
-    private PublicationType differentPublicationType() {
-        return new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Other details");
+    private Code validCode() {
+        return codeWithIsbn13();
+    }
+
+    private Dimensions validDimensions() {
+        return new Dimensions(20.0, 15.0, 3.0);
+    }
+
+    private PhysicalAttributes validPhysicalAttributes() {
+        return new PhysicalAttributes(validDimensions(), 0.5, 200);
+    }
+
+    private Contact validContact() {
+        return new Contact("912345678", "351", null, null);
     }
 
     private Publisher validPublisher() {
-        return new Publisher("Porto Editora", "PT123456789", null);
+        return new Publisher("Editora Exemplo", "123456789", validContact());
     }
 
-    private Publisher differentPublisher() {
-        return new Publisher("Outra Editora", "PT987654321", null);
-    }
-    private Locale validEditionLanguage() {
-        return Locale.ENGLISH;
+    private PublicationType publicationTypeBook() {
+        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Hardcover edition");
     }
 
-
-    private LocalDate validEditionDate() {
-        return LocalDate.of(2020, 1, 3);
+    private PublicationType publicationTypeMagazine() {
+        return new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.PAPERBACK, "Monthly magazine");
     }
 
-    private Edition validEdition() {
-        return new Edition(
-                "1st",
-                validCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
+    private Code codeWithIsbn13() {
+        return Code.fromIsbn13("978-3-16-148410-0");
     }
 
-    // -------------------------
-    // Constructor
-    // -------------------------
+    private Code codeWithIsbn10() {
+        return Code.fromIsbn10("0-306-40615-2");
+    }
+
+    private Code codeWithIssn() {
+        return Code.fromIssn("0378-5955");
+    }
+
+    private Code emptyCode() {
+        return new Code(null, null, null);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Construtor
+    // ─────────────────────────────────────────────────────────────
+
     @Test
-    void constructor_shouldThrow_whenEditionNumberIsNull() {
+    void constructor_throwsWhenEditionNumberIsNull() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition(null, codeWithIsbn13(), validPhysicalAttributes(),
+                        publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(2010, 1, 1)));
+        assertTrue(ex.getMessage().contains("Edition Number cannot be blank"));
+    }
+
+    @Test
+    void constructor_throwsWhenEditionNumberIsBlank() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition("   ", codeWithIsbn13(), validPhysicalAttributes(),
+                        publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(2010, 1, 1)));
+        assertTrue(ex.getMessage().contains("Edition Number cannot be blank"));
+    }
+
+    @Test
+    void constructor_throwsWhenPhysicalAttributesIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Edition(null,
-                        validCode(),
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        validPublisher(),
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+                new Edition("1", codeWithIsbn13(), null,
+                        publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(2010, 1, 1)));
     }
 
     @Test
-    void constructor_shouldThrow_whenEditionNumberIsBlank() {
+    void constructor_throwsWhenPublicationTypeIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Edition("   ",
-                        validCode(),
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        validPublisher(),
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+                new Edition("1", codeWithIsbn13(), validPhysicalAttributes(),
+                        null, validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(2010, 1, 1)));
     }
 
     @Test
-    void constructor_shouldThrow_whenCodeIsNull() {
+    void constructor_throwsWhenPublisherIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Edition("1st",
-                        null,
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        validPublisher(),
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+                new Edition("1", codeWithIsbn13(), validPhysicalAttributes(),
+                        publicationTypeBook(), null, Locale.ENGLISH,
+                        LocalDate.of(2010, 1, 1)));
     }
 
     @Test
-    void constructor_shouldThrow_whenPhysicalAttributesIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Edition("1st",
-                        validCode(),
-                        null,
-                        validPublicationType(),
-                        validPublisher(),
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+    void constructor_throwsWhenEditionLanguageIsNull() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition("1", codeWithIsbn13(), validPhysicalAttributes(),
+                        publicationTypeBook(), validPublisher(), null,
+                        LocalDate.of(2010, 1, 1)));
+        assertTrue(ex.getMessage().contains("Edition language cannot be null"));
     }
 
     @Test
-    void constructor_shouldThrow_whenPublicationTypeIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Edition("1st",
-                        validCode(),
-                        validPhysicalAttributes(),
-                        null,
-                        validPublisher(),
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+    void constructor_throwsWhenEditionDateIsNull() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition("1", codeWithIsbn13(), validPhysicalAttributes(),
+                        publicationTypeBook(), validPublisher(), Locale.ENGLISH, null));
+        assertTrue(ex.getMessage().contains("Edition date cannot be null"));
     }
 
     @Test
-    void constructor_shouldThrow_whenPublisherIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Edition("1st",
-                        validCode(),
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        null,
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+    void constructor_book_exactlyIn2007_withIsbn13_succeeds() {
+        assertNotNull(new Edition("1st", codeWithIsbn13(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2007, 1, 1)));
     }
 
     @Test
-    void constructor_shouldThrow_whenEditionLanguageIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Edition("1st",
-                        validCode(),
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        validPublisher(),
-                        null,
-                        validEditionDate())
-        );
+    void constructor_book_after2007_withIsbn13_succeeds() {
+        assertNotNull(new Edition("1st", codeWithIsbn13(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2020, 6, 15)));
     }
 
     @Test
-    void constructor_shouldThrow_whenEditionDateIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Edition("1st",
-                        validCode(),
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        validPublisher(),
-                        validEditionLanguage(),
-                        null)
-        );
+    void constructor_book_after2007_missingIsbn13_throws() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition("1st", emptyCode(), validPhysicalAttributes(),
+                        publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(2020, 1, 1)));
+        assertTrue(ex.getMessage().contains("ISBN-13"));
     }
 
-    // -------------------------
-    // Happy path
-    // -------------------------
+    // ─────────────────────────────────────────────────────────────
+    // validateCode — BOOK 1970–2006 (ISBN-10 mandatory)
+    // ─────────────────────────────────────────────────────────────
 
     @Test
-    void constructor_shouldNotThrow_whenAllFieldsValid() {
-        assertDoesNotThrow(() ->
-                new Edition("1st",
-                        validCode(),
-                        validPhysicalAttributes(),
-                        validPublicationType(),
-                        validPublisher(),
-                        validEditionLanguage(),
-                        validEditionDate())
-        );
+    void constructor_book_exactlyIn1970_withIsbn10_succeeds() {
+        assertNotNull(new Edition("1st", codeWithIsbn10(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(1970, 1, 1)));
+    }
+
+    @Test
+    void constructor_book_between1970and2006_withIsbn10_succeeds() {
+        assertNotNull(new Edition("1st", codeWithIsbn10(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(1990, 1, 1)));
+    }
+
+    @Test
+    void constructor_book_between1970and2006_missingIsbn10_throws() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition("1st", emptyCode(), validPhysicalAttributes(),
+                        publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(1985, 1, 1)));
+        assertTrue(ex.getMessage().contains("ISBN-10"));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // validateCode — BOOK < 1970 (no mandatory code)
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    void constructor_book_before1970_noCodeRequired_succeeds() {
+        assertNotNull(new Edition("1st", emptyCode(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(1950, 1, 1)));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // validateCode — MAGAZINE >= 1976 (ISSN mandatory)
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    void constructor_magazine_exactlyIn1976_withIssn_succeeds() {
+        assertNotNull(new Edition("1st", codeWithIssn(), validPhysicalAttributes(),
+                publicationTypeMagazine(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(1976, 1, 1)));
+    }
+
+    @Test
+    void constructor_magazine_after1976_withIssn_succeeds() {
+        assertNotNull(new Edition("1st", codeWithIssn(), validPhysicalAttributes(),
+                publicationTypeMagazine(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2000, 1, 1)));
+    }
+
+    @Test
+    void constructor_magazine_after1976_missingIssn_throws() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new Edition("1st", emptyCode(), validPhysicalAttributes(),
+                        publicationTypeMagazine(), validPublisher(), Locale.ENGLISH,
+                        LocalDate.of(2000, 1, 1)));
+        assertTrue(ex.getMessage().contains("ISSN"));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // validateCode — MAGAZINE < 1976 (no code is mandatory)
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    void constructor_magazine_before1976_noCodeRequired_succeeds() {
+        assertNotNull(new Edition("1st", emptyCode(), validPhysicalAttributes(),
+                publicationTypeMagazine(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(1970, 1, 1)));
     }
 
     // -------------------------
@@ -216,7 +254,7 @@ class EditionTest {
      * </p>
      */
     @Test
-    void shouldReturnPublicationType(){
+    void shouldReturnPublicationType() {
         //Arrange
         PublicationType expectedPubType = validPublicationType();
 
@@ -224,7 +262,7 @@ class EditionTest {
         PublicationType realPubType = validEdition().getPublicationType();
 
         //Assert
-        assertEquals(expectedPubType,realPubType);
+        assertEquals(expectedPubType, realPubType);
     }
 
     /**
@@ -235,7 +273,7 @@ class EditionTest {
      * </p>
      */
     @Test
-    void shouldReturnCode(){
+    void shouldReturnCode() {
         //Arrange
         Code expectedCode = validCode();
 
@@ -246,138 +284,95 @@ class EditionTest {
         assertEquals(expectedCode, realCode);
     }
 
-    // -------------------------
+    @Test
+    void getPublisher_returnsThePublisherPassedInConstructor() {
+        Publisher publisher = validPublisher();
+        Edition e = new Edition("1st", codeWithIsbn13(), validPhysicalAttributes(),
+                publicationTypeBook(), publisher, Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+        assertEquals(publisher, e.getPublisher());
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // equals
-    // -------------------------
+    // ─────────────────────────────────────────────────────────────
 
     @Test
-    void equals_shouldBeFalse_whenComparedWithNull() {
-        Edition edition = validEdition();
-        assertNotEquals(null, edition);
+    void equals_sameReference_returnsTrue() {
+        Edition e = new Edition("1st", codeWithIsbn13(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+        assertEquals(e, e);
     }
 
     @Test
-    void equals_shouldBeFalse_whenDifferentClass() {
-        Edition edition = validEdition();
-        assertNotEquals("not an edition", edition);
-    }
-
-    @Test
-    void equals_shouldBeTrue_whenAllFieldsEqual() {
-        Edition a = validEdition();
-        Edition b = validEdition();
-
-        assertEquals(a, b);
-        assertEquals(b, a); // symmetry
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenEditionNumberDiffers() {
-        Edition a = validEdition();
-        Edition b = new Edition(
-                "2nd",
-                validCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenCodeDiffers() {
-        Edition a = validEdition();
-        Edition b = new Edition(
-                "1st",
-                differentCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenPhysicalAttributesDiffer() {
-        Edition a = validEdition();
-        Edition b = new Edition(
-                "1st",
-                validCode(),
-                differentPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenPublicationTypeDiffers() {
-        Edition a = validEdition();
-        Edition b = new Edition(
-                "1st",
-                validCode(),
-                validPhysicalAttributes(),
-                differentPublicationType(),
-                validPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenPublisherDiffers() {
-        Edition a = validEdition();
-        Edition b = new Edition(
-                "1st",
-                validCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                differentPublisher(),
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenLanguageDiffers() {
-        Edition a = validEdition();
-        Edition b = new Edition(
-                "1st",
-                validCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
-                Locale.FRENCH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldBeFalse_whenDateDiffers() {
-        Code code = validCode();
-        PhysicalAttributes pa = validPhysicalAttributes();
-        PublicationType pt = validPublicationType();
+    void equals_twoIdenticalEditions_returnsTrue() {
+        PhysicalAttributes pa = new PhysicalAttributes(validDimensions(), 0.5, 200);
         Publisher pub = validPublisher();
-        Locale lang = validEditionLanguage();
+        Code code = codeWithIsbn13();
+        PublicationType type = publicationTypeBook();
+        LocalDate date = LocalDate.of(2020, 1, 1);
 
-        Edition a = new Edition("1st", code, pa, pt, pub, lang, LocalDate.of(2020, 1, 1));
-        Edition b = new Edition("1st", code, pa, pt, pub, lang, LocalDate.of(2020, 1, 3));
+        Edition e1 = new Edition("1st", code, pa, type, pub, Locale.ENGLISH, date);
+        Edition e2 = new Edition("1st", code, pa, type, pub, Locale.ENGLISH, date);
 
-        assertNotEquals(a, b);
+        assertEquals(e1, e2);
+    }
+
+    @Test
+    void equals_differentEditionNumber_returnsFalse() {
+        PhysicalAttributes pa = new PhysicalAttributes(validDimensions(), 0.5, 200);
+        Publisher pub = validPublisher();
+        Code code = codeWithIsbn13();
+        PublicationType type = publicationTypeBook();
+        LocalDate date = LocalDate.of(2020, 1, 1);
+
+        Edition e1 = new Edition("1st", code, pa, type, pub, Locale.ENGLISH, date);
+        Edition e2 = new Edition("2nd", code, pa, type, pub, Locale.ENGLISH, date);
+
+        assertNotEquals(e1, e2);
+    }
+
+    @Test
+    void equals_differentDate_returnsFalse() {
+        PhysicalAttributes pa = new PhysicalAttributes(validDimensions(), 0.5, 200);
+        Publisher pub = validPublisher();
+        Code code = codeWithIsbn13();
+        PublicationType type = publicationTypeBook();
+
+        Edition e1 = new Edition("1st", code, pa, type, pub, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition e2 = new Edition("1st", code, pa, type, pub, Locale.ENGLISH, LocalDate.of(2021, 1, 1));
+
+        assertNotEquals(e1, e2);
+    }
+
+    @Test
+    void equals_differentLocale_returnsFalse() {
+        PhysicalAttributes pa = new PhysicalAttributes(validDimensions(), 0.5, 200);
+        Publisher pub = validPublisher();
+        Code code = codeWithIsbn13();
+        PublicationType type = publicationTypeBook();
+        LocalDate date = LocalDate.of(2020, 1, 1);
+
+        Edition e1 = new Edition("1st", code, pa, type, pub, Locale.ENGLISH, date);
+        Edition e2 = new Edition("1st", code, pa, type, pub, Locale.FRENCH, date);
+
+        assertNotEquals(e1, e2);
+    }
+
+    @Test
+    void equals_nullObject_returnsFalse() {
+        Edition e = new Edition("1st", codeWithIsbn13(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+        assertNotEquals(null, e);
+    }
+
+    @Test
+    void equals_differentClass_returnsFalse() {
+        Edition e = new Edition("1st", codeWithIsbn13(), validPhysicalAttributes(),
+                publicationTypeBook(), validPublisher(), Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1));
+        assertNotEquals("uma string qualquer", e);
     }
 }

@@ -48,8 +48,8 @@ class PublicationDetailsDTO_US012Test {
     User user1 = new User("coolGuy", contact1, profile2, UserRole.ADMIN);
 
     // Codes
-    Code code1 = Code.fromIsbn10("1234567890");
-    Code code2 = Code.fromIsbn10("1234567899");
+    Code code1 = Code.fromIsbn13("1234567890111");
+    Code code2 = Code.fromIsbn13("1234567899111");
 
     // Edition components
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);

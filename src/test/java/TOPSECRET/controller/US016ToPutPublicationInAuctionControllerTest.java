@@ -276,7 +276,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         BibliographicalData bd = bibliographicalData();
         PublicationType type = publicationType();
         PublicationStatus status = PublicationStatus.READING;
-        Code code = Code.fromIsbn10("123456789X");
+        Code code = Code.fromIsbn13("1234567890007");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
@@ -311,7 +311,7 @@ class US016ToPutPublicationInAuctionControllerTest {
                 pubType,
                 publisher,
                 Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
+                LocalDate.of(2000, 1, 1)
         );
 
         return new PublicationSample(bd, owner, status, edition, Condition.LIKE_NEW);
