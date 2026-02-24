@@ -27,41 +27,41 @@ class AuctionRepositoryTest {
         assertEquals(0, auctionsList.size());
     }
 
-//    @Test
-//    void create_and_add_should_return_true_if_new_auction_is_added_to_list() throws InstanceAlreadyExistsException {
-//
-//        // arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
-//
-//        Listing listing = instantiateListing();
-//        LocalDateTime now = fixedNow();
-//        LocalDateTime initialDate = now;
-//        LocalDateTime finalDate = now.plusDays(2);
-//
-//        // act
-//        boolean result = auctionRepository.createAndAdd(listing, initialDate, finalDate, new Price(new BigDecimal(150.50)));
-//
-//        // assert
-//        assertTrue(result);
-//        assertEquals(1, auctionRepository.getAllAuctions().size());
-//    }
+    @Test
+    void create_and_add_should_return_true_if_new_auction_is_added_to_list() throws InstanceAlreadyExistsException {
 
-//    @Test
-//    void create_and_add_should_return_FALSE_if_new_auction_already_exists_in_auctionsList() throws InstanceAlreadyExistsException {
-//        // arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
-//
-//        Listing listing = instantiateListing();
-//        LocalDateTime now = fixedNow();
-//        LocalDateTime initialDate = now;
-//        LocalDateTime finalDate = now.plusDays(2);
-//
-//        assertTrue(auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
-//        assertEquals(1, auctionRepository.getAllAuctions().size());
-//
-//        assertFalse(auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
-//        assertEquals(1, auctionRepository.getAllAuctions().size());
-//    }
+        // arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+
+        // act
+        boolean result = auctionRepository.createAndAdd(listing, initialDate, finalDate, new Price(new BigDecimal(150.50)));
+
+        // assert
+        assertTrue(result);
+        assertEquals(1, auctionRepository.getAllAuctions().size());
+    }
+
+    @Test
+    void create_and_add_should_return_FALSE_if_new_auction_already_exists_in_auctionsList() throws InstanceAlreadyExistsException {
+        // arrange
+        AuctionRepository auctionRepository = new AuctionRepository();
+
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+
+        assertTrue(auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
+        assertEquals(1, auctionRepository.getAllAuctions().size());
+
+        assertFalse(auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
+        assertEquals(1, auctionRepository.getAllAuctions().size());
+    }
 
 //    @Test
 //    void getItemWhenAuctionHasThePublication(){
@@ -189,27 +189,27 @@ class AuctionRepositoryTest {
 //        assertTrue(genres.contains(fantasy));
 //    }
 
-//    @Test
-//    void getListOfItemsOnAuctionGivenAuthor_shouldThrow_ifAuthorNull() {
-//        // arrange
-//        AuctionRepository auctionRepo = new AuctionRepository();
-//
-//
-//        Listing listing = instantiateListing();
-//        Listing listing2 = instantiateListing();
-//        LocalDateTime now = fixedNow();
-//        LocalDateTime initialDate = now;
-//        LocalDateTime finalDate = now.plusDays(2);
-//        LocalDateTime date2 = now.plusDays(4);
-//
-//
-//        auctionRepo.createAndAdd(listing, initialDate, finalDate, price("150.50"));
-//        auctionRepo.createAndAdd(listing2, finalDate, date2, price("200.00"));
-//
-//        assertEquals(2, auctionRepo.getAllAuctions().size());
-//
-//
-//    }
+    @Test
+    void getListOfItemsOnAuctionGivenAuthor_shouldThrow_ifAuthorNull() {
+        // arrange
+        AuctionRepository auctionRepo = new AuctionRepository();
+
+
+        Listing listing = instantiateListing();
+        Listing listing2 = instantiateListing();
+        LocalDateTime now = fixedNow();
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+        LocalDateTime date2 = now.plusDays(4);
+
+
+        auctionRepo.createAndAdd(listing, initialDate, finalDate, price("150.50"));
+        auctionRepo.createAndAdd(listing2, finalDate, date2, price("200.00"));
+
+        assertEquals(2, auctionRepo.getAllAuctions().size());
+
+
+    }
 
 
     // ============================================================
@@ -315,20 +315,20 @@ class AuctionRepositoryTest {
         return new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     }
 
-//    private static Listing instantiateListing() {
-//        Item bookItem = instantiateItem(instantiateBibliographicalData(), new Dimensions(12, 10, 2));
-//        Price price = new Price(new BigDecimal("35.00"));
-//        final List<Item> items = new ArrayList<>(List.of(bookItem));
-//        return new Listing(
-//                "This is our first listing",
-//                items,
-//                SaleType.AUCTION,
-//                price,
-//                "short description",
-//                instantiateUser("Joseph"),
-//                instantiatePictures()
-//        );
-//    }
+    private static Listing instantiateListing() {
+        PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
+                //instantiateItem(instantiateBibliographicalData(), new Dimensions(12, 10, 2));
+        Price price = new Price(new BigDecimal("35.00"));
+        final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
+        return new Listing(
+                "This is our first listing",
+                items,
+                SaleType.AUCTION,
+                price,
+                "short description",
+                instantiatePictures()
+        );
+    }
 
     private static BibliographicalData instantiateBibliographicalData() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
@@ -369,18 +369,18 @@ class AuctionRepositoryTest {
         return pictures;
     }
 
-    private static Item instantiateItem(BibliographicalData bd, Dimensions dimensions) {
-        Publication publication = createValidPublication(bd);
+//    private static Item instantiateItem(BibliographicalData bd, Dimensions dimensions) {
+//        Publication publication = createValidPublication(bd);
+//
+//        return new Item(
+//                Condition.LIKE_NEW,
+//                1.2,
+//                dimensions,
+//                publication
+//        );
+//    }
 
-        return new Item(
-                Condition.LIKE_NEW,
-                1.2,
-                dimensions,
-                publication
-        );
-    }
-
-    private static Publication createValidPublication(BibliographicalData bd) {
+    private static PublicationSample createValidPublication(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
                 MediaFormat.BOOK,
@@ -401,14 +401,12 @@ class AuctionRepositoryTest {
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-        return new Publication(
+        return new PublicationSample(
                 bd,
-                publicationType,
                 user,
-                PublicationStatus.FOR_SALE,
-//                "1st edition",
+                PublicationStatus.READING,
                 edition,
-                code
+                Condition.LIKE_NEW
         );
     }
 

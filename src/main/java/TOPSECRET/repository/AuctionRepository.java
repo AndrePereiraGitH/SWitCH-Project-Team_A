@@ -21,10 +21,20 @@ public class AuctionRepository {
         this.auctionsList = auctionsList;
     }
 
+
     public List<Auction> getAllAuctions() {
         return auctionsList;
     }
 
+    /**
+     * Creates a new auction and adds it to the repository if it does not already exist.
+     *
+     * @param listing the listing associated with the auction
+     * @param initialDate the auction start date and time
+     * @param finalDate the auction end date and time
+     * @param buyOutPrice the buyout price of the auction
+     * @return {@code true} if the auction was created and added, {@code false} if it already exists
+     */
     public boolean createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) {
 
         Auction auction = new Auction(listing, initialDate, finalDate, buyOutPrice);
@@ -38,6 +48,14 @@ public class AuctionRepository {
         return true;
     }
 
+    /**
+     * Returns the list of auctions containing at least one item whose publication
+     * belongs to the given genre.
+     *
+     * @param genre the genre used to filter auctions
+     * @return a list of auctions that contain at least one item with the given genre
+     * @throws IllegalArgumentException if {@code genre} is {@code null}
+     */
     public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
 
         if (genre == null) {
@@ -63,23 +81,30 @@ public class AuctionRepository {
     }
 
 
-//    public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {
-//
-//        if (author == null || author.name().isBlank())
-//            throw new IllegalArgumentException("Author cannot be null or blank");
-//
-//        List<Auction> authorAuctions = auctionsList.stream().filter(auction -> auction.getListing().getItems()
-//                .stream()
-//                .anyMatch( item ->
-//                        item.getPublication()
-//                                .getBibliographicalData()
-//                                .getAuthors().stream()
-//                                .anyMatch(a -> a.getProfile().getName().equals(author.name()))
-//                )
-//        ).toList();
-//
-//        return authorAuctions;
-//    }
+    /**
+     * Returns the list of auctions containing at least one item whose publication
+     * is associated with the given author.
+     *
+     * @param author the author DTO used to filter auctions
+     * @return a list of auctions that contain at least one item by the given author
+     * @throws IllegalArgumentException if {@code author} is {@code null} or its name is blank
+     */
+    public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {
+
+        if (author == null || author.name().isBlank())
+            throw new IllegalArgumentException("Author cannot be null or blank");
+
+        List<Auction> authorAuctions = auctionsList.stream().filter(auction -> auction.getListing().getItems()
+                .stream()
+                .anyMatch( item ->
+                        item.getBibliographicalData()
+                                .getAuthors().stream()
+                                .anyMatch(a -> a.getProfile().getName().equals(author.name()))
+                )
+        ).toList();
+
+        return authorAuctions;
+    }
 
 
     private boolean isExistent(Auction auction) {
