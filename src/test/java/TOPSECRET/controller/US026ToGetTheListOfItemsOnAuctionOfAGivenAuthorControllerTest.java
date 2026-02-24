@@ -17,6 +17,18 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+/**
+ * Unit tests for {@link US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController}.
+ *
+ * <p>This test class verifies:
+ * <ul>
+ *   <li>controller instantiation</li>
+ *   <li>retrieval of all authors</li>
+ *   <li>retrieval of auction items for a given author</li>
+ * </ul>
+ * </p>
+ */
 class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     // Instantiate repos
@@ -32,11 +44,17 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     }
 
+    /**
+     * Verifies that the controller is correctly instantiated.
+     */
     @Test
     void testConstructor() {
         assertNotNull(ctrl);
     }
 
+    /**
+     * Verifies that when no authors exist, the controller returns an empty list.
+     */
     @Test
     void getAllAuthors_whenNoAuthors_shouldReturnEmptyList() {
         assertNotNull(ctrl.getAllAuthors());
@@ -44,6 +62,10 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     }
 
+    /**
+     * Verifies that when authors exist, the controller returns a DTO list
+     * with the same number of elements.
+     */
     @Test
     void getAllAuthors_whenAuthorsExist_shouldReturnMapperDtoListWithSameSize() {
 
@@ -60,22 +82,30 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     }
 
-//    @Test
-//    void  getListOfItemsOnAuctionByAuthor_whenNoAuctionsByAuthor_shouldReturn_EmptyList() {
-//        // arrange
-//        Author author1 = authorRepo.createAndAddAuthor("Ken Follett", new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");
-//
-//        AuthorDTO_US026 authorDto = ctrl.getAllAuthors().get(0);
-//
-//        // act
-//        List<AuctionDTO_US026> result = ctrl.getListOfItemsOnAuctionByAuthor(authorDto);
-//
-//        // assert
-//        assertNotNull(result);
-//        assertEquals(0, result.size());
-//
-//    }
+    /**
+     * Verifies that when the selected author has no auction items,
+     * the controller returns an empty list.
+     */
+    @Test
+    void  getListOfItemsOnAuctionByAuthor_whenNoAuctionsByAuthor_shouldReturn_EmptyList() {
+        // arrange
+        Author author1 = authorRepo.createAndAddAuthor("Ken Follett", new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");
 
+        AuthorDTO_US026 authorDto = ctrl.getAllAuthors().get(0);
+
+        // act
+        List<AuctionDTO_US026> result = ctrl.getListOfItemsOnAuctionByAuthor(authorDto);
+
+        // assert
+        assertNotNull(result);
+        assertEquals(0, result.size());
+
+    }
+
+    /**
+     * Verifies that when auction items exist for the selected author,
+     * the controller returns a DTO list with the same number of auctions.
+     */
     @Test
     void getListOfItemsOnAuctionByAuthor_whenAuctionsExist_shouldReturnDtoListWithSameSize() {
         // arrange
@@ -89,26 +119,19 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         assertFalse(allAuthorsDto.isEmpty());
 
 
-        // AuthorDTO_US026 authorDto = ctrl.getAllAuthors().get(0);
-
-        AuthorDTO_US026 authorDto =
-                allAuthorsDto.stream()
-                        .filter(a -> "Ken Follett".equals(a.name()))
-                        .findFirst()
-                        .orElseThrow(() -> new AssertionError("Não foi encontrado o DTO do autor criado no arrange"));
-
+        AuthorDTO_US026 authorDto = ctrl.getAllAuthors().get(0);
 
         User user = instantiateUser("Rodolph");
-        Item item1 = instanciateItem(authors, user);
-        List<Item> items = new ArrayList<>();
+        PublicationSample item1 = instanciatePublication(authors, user);
+        List<PublicationSample> items = new ArrayList<>();
         items.add(item1);
 
-        Item item2 = instanciateItem(authors, user);
-        List<Item> items2 = new ArrayList<>();
+        PublicationSample item2 = instanciatePublication(authors, user);
+        List<PublicationSample> items2 = new ArrayList<>();
         items2.add(item2);
 
-//        Listing listing = new Listing("Book Pillars of the earth",items, SaleType.AUCTION, price("35.50"), "short description", user, List.of(new Picture("pic1")));
-//        Listing listing2 = new Listing("Book Pillars of the earth", items2, SaleType.AUCTION, price("35.50"), "short description", user, List.of(new Picture("pic1")));
+        Listing listing = new Listing("Book Pillars of the earth",items, SaleType.AUCTION, price("35.50"), "short description", List.of(new Picture("pic1")));
+        Listing listing2 = new Listing("Book Pillars of the earth", items2, SaleType.AUCTION, price("35.50"), "short description", List.of(new Picture("pic1")));
 
 
         LocalDateTime now = fixedNow();
@@ -116,14 +139,14 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         LocalDateTime initialDate = now.plusMinutes(5); // future => SCHEDULED
         LocalDateTime finalDate = now.plusDays(2);
 
-//        boolean auction = auctionRepo.createAndAdd(listing, initialDate, finalDate, price("150.00"));
-//        boolean auction2 = auctionRepo.createAndAdd(listing2, initialDate, finalDate, price("200.00"));
+        auctionRepo.createAndAdd(listing, initialDate, finalDate, price("150.00"));
+        auctionRepo.createAndAdd(listing2, initialDate, finalDate, price("200.00"));
 
         // act
-//        List<AuctionDTO_US026> result = ctrl.getListOfItemsOnAuctionByAuthor(authorDto);
+        List<AuctionDTO_US026> result = ctrl.getListOfItemsOnAuctionByAuthor(authorDto);
 
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
+        assertNotNull(result);
+        assertEquals(2, result.size());
 
     }
 
@@ -148,14 +171,6 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         return new Price(new BigDecimal(value));
     }
 
-    private Item instanciateItem(List<Author> authors, User user) {
-        return new Item(
-                Condition.LIKE_NEW,
-                2.3,
-                new Dimensions(10,10,10),
-                instanciatePublication(authors, user)
-                );
-    }
 
     private static Auction createValidScheduledAuction(Listing listing) {
 
@@ -167,27 +182,26 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
     }
 
-    private Publication instanciatePublication( List<Author> authors, User user) {
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "some details" );
+    private PublicationSample instanciatePublication( List<Author> authors, User user) {
         BibliographicalData bd = createBibliographicalData("Pillars Of the Earth", authors);
         // Edition
-        Code code = Code.fromIsbn13 ("9783161484123");
+        Code code = Code.fromIsbn13 ("9793161484123");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-        return new Publication(
+        return new PublicationSample(
                 bd,
-                publicationType,
                 user,
-                PublicationStatus.FOR_SALE,
+                PublicationStatus.READING,
 //                "2nd",
                 edition,
-                Code.fromIsbn10("123456789X")
+                Condition.LIKE_NEW
         );
     }
+
 
     private BibliographicalData createBibliographicalData(String title, List<Author> authors) {
 
@@ -198,18 +212,8 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
                 title,
                 authors,
                 Locale.ENGLISH,
-//                new Publisher("Bertrand",
-//                        "1111111111",
-//                        new Contact(
-//                                "9111111111",
-//                                "321",
-//                                new Email("example", "example.com"),
-//                                new Address("street xxxx", "1234", "1223-212", new Country("united_kingdom"))
-//                        )
-//                ),
                 LocalDate.of(1989, 3, 1),
                 genres,
-//                432,
                 "chunks chunks chunks"
         );
 
