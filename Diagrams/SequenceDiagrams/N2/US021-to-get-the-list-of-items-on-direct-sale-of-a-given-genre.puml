@@ -12,6 +12,7 @@ participant ":GenreRepository" as GenreRepo
 participant ":FactoryGenre" as FactoryGenre
 participant "listOfAllGenres:\nList<Genre>" as LG
 participant ":ListingRepository" as ListingRepository
+participant "listOfAllGenres:\nList<DirectSale>" as LDirectSale
 
 ' Interactions
 
@@ -46,25 +47,27 @@ deactivate UI
 Buyer -> UI : selectedgenre
 activate UI
 
-UI -> Ctrl : 11 getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
+UI -> Ctrl : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate Ctrl
 
 Ctrl -> ListingRepository : getListOfItemsOnDirectSaleOfAGivenGenre(selectedgenre)
 activate ListingRepository
 
+ListingRepository -> LDirectSale ** : create()
+
 loop for each listing
     ListingRepository -> ListingRepository: isDirectSale()
     ListingRepository -> ListingRepository: isOfGenre(selectedgenre)
-    ListingRepository -> ListingRepository: add(item)
+    ListingRepository -> ListingRepository: add(PublicationSample)
 end
 
-ListingRepository --> Ctrl : listOfItems
+ListingRepository --> Ctrl : listOfPublicationSamples
 deactivate ListingRepository
 
-Ctrl --> UI : listOfItems
+Ctrl --> UI : listOfPublicationSamples
 deactivate Ctrl
 
-UI --> Buyer : Shows the list of items on direct sale
+UI --> Buyer : Shows the list of PublicationSample on direct sale
 deactivate UI
 
 @enduml

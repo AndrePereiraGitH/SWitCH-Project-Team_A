@@ -39,19 +39,19 @@ public class ListingRepository {
             throw new IllegalArgumentException("Genre cannot be null");
         }
 
-        List<PublicationSample> listOfItems = new ArrayList<>();
+        List<PublicationSample> listOfPublicationSample = new ArrayList<>();
 
         for (Listing listing : listings) {
             if (listing.getSaleType() == SaleType.DIRECT_SALE) {
-                for (PublicationSample item : listing.getItems()) {
-                    if (item.hasGenre(genre)) {
-                        listOfItems.add(item);
+                for (PublicationSample PublicationSample : listing.getItems()) {
+                    if (PublicationSample.hasGenre(genre)) {
+                        listOfPublicationSample.add(PublicationSample);
                     }
                 }
             }
         }
 
-        return listOfItems;
+        return listOfPublicationSample;
     }
 
 }
