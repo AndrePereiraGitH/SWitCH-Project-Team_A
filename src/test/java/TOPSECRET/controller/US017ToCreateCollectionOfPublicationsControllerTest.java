@@ -96,4 +96,58 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
             controller.createCollection("My Favorites", genre, user);
         });
     }
+    @Test
+    void shouldThrowWhenUserIsNull() {
+        GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
+        CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository();
+        US017ToCreateCollectionOfPublicationsController controller =
+                new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
+
+        Genre genre = new Genre("Fiction");
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createCollection("MyCollection", genre, null)
+        );
+
+        assertEquals("Invalid arguments", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenGenreIsNull() {
+        GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
+        CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository();
+        US017ToCreateCollectionOfPublicationsController controller =
+                new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
+
+        User user = createValidUser();
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createCollection("MyCollection", null, user)
+        );
+
+        assertEquals("Invalid arguments", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenGenreRepositoryIsNull() {
+        CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new US017ToCreateCollectionOfPublicationsController(null, collectionRepo)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenCollectionRepositoryIsNull() {
+        GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new US017ToCreateCollectionOfPublicationsController(genreRepo, null)
+        );
+    }
+
 }
