@@ -3,79 +3,114 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Library { //Define a classe Library (biblioteca de publicações, pertencente a um User
+/**
+ * Represents a library that belongs to a user and contains a collection of publications.
+ * <p>
+ * A library is uniquely associated with a single user and manages a collection of
+ * publication samples. The library name must not be null or blank, and the associated
+ * user must not be null. Publications can be added to the library, and duplicate
+ * publications are not allowed.
+ * </p>
+ *
+ * @author TOPSECRET
+ * @version 1.0
+ */
+public class Library {
 
-    private List<PublicationSample> myPublications; //private para encapsulamento, cria uma List<Publication> chamada myPublications
-    private final String libraryName; //private final para ser privado e imutável, de um String intitulado libraryName
-    private final User user; //private final para ser privado e imutável, do tipo User (classe User) chamada "user"
+    private final String _libraryName;
+    private final User _user;
+    private List<PublicationSample> _myPublications;
 
-    //Constructor
-    public Library(String libraryName, User user) { //Construtor de Library, como atributos tem um String (os acima indicados) e um User (o acima indicado)
-        this(List.of(), libraryName, user); //Vai chamar o construtor principal com o "this"
-    } //List.of() é um méto.do do Java para criar uma lista imutável vazia, resulta em List<Publications> myPublications = []
-    //Resumindo, este construtor cria uma biblioteca nova com nome = libraryName, user = user, lista de publicações inicialmente vazia
-
-    public Library(List<PublicationSample> myPublications, String libraryName, User user){ //Construtor completo, quando temos a lista inicial de publications
-
-        if (libraryName == null || libraryName.isBlank()){ //Casos de libraryName ser null ou vazia
+    /**
+     * Constructs a Library with the specified name and user.
+     * <p>
+     * Initializes an empty library with the given name and user. The library name
+     * must not be null or blank, and the user must not be null.
+     * </p>
+     *
+     * @param libraryName the name of the library
+     * @param user the user who owns this library
+     * @throws IllegalArgumentException if libraryName is null or blank
+     * @throws IllegalArgumentException if user is null
+     */
+    public Library(String libraryName, User user) {
+        if (libraryName == null || libraryName.isBlank()) {
             throw new IllegalArgumentException("Library Name cannot be null or blank");
         }
-        if (user == null){ //Casos de user ser null
+        if (user == null) {
             throw new IllegalArgumentException("User cannot be Null");
         }
-        this.libraryName = libraryName;
-        this.user = user;
-        // ✅ garante sempre lista mutável
-        this.myPublications = new ArrayList<>(myPublications == null ? List.of() : myPublications);
-    } //Estes vão atribuir valores fornecidos aos atributos da classe.
 
-    //Get publications in the Library
-    public List<PublicationSample> getAllPublications(){ //Um getter
-        return List.copyOf(myPublications); //Vai retornar uma cópia da lista myPublications, de modo a ser imutável, não se pode alterar (Read-Only)
+        _libraryName = libraryName;
+        _user = user;
+        _myPublications = new ArrayList<>();
     }
 
-    public String getLibraryName(){ //Um getter
-        return libraryName; //retorna o nome da library
+    /**
+     * Returns the name of this library.
+     *
+     * @return the library name
+     */
+    public String getLibraryName() {
+        return _libraryName;
     }
 
-    public User getUser(){ //Um getter
-        return user; //retorna o nome do user (dono da library)
+    /**
+     * Returns the user who owns this library.
+     *
+     * @return the owner user of this library
+     */
+    public User getUser() {
+        return _user;
     }
 
-    //Add publication
-    public boolean addPublication(PublicationSample publicationSample){ //Este é um méto.do, do tipo boolean, que vai verificar se a publicação já existe na library e se não existir, adiciona e retorna True
-        if (!myPublications.contains(publicationSample)){ //Se na myPublications NÃO estiver a "publication" fornecida, irá executar a linha 47
-            myPublications.add(publicationSample); //dá add à publication à myPublications
-            return true; //Publication was added
-        }
-        return false; //Publication was not added (already exists)
+    /**
+     * Returns an unmodifiable list of all publications in this library.
+     * <p>
+     * The returned list is a defensive copy and cannot be modified. To add or
+     * remove publications, use the {@link #addPublication(PublicationSample)} method.
+     * </p>
+     *
+     * @return an unmodifiable list of publications in this library
+     */
+    public List<PublicationSample> getAllPublications() {
+        return List.copyOf(_myPublications);
     }
 
-
-
-    // US0018
+    /**
+     * Checks whether the specified publication exists in this library.
+     *
+     * @param publication the publication to check for
+     * @return true if the publication is in this library, false otherwise
+     */
     public boolean containsPublication(PublicationSample publication) {
-        return myPublications.contains(publication);
+        return _myPublications.contains(publication);
     }
 
-    // Necessary methods to compare the objects
-    // Allows Library objects to be compared by content instead of reference.
-    @Override
-    public boolean equals(Object obj) {
+    /**
+     * Adds a publication to this library.
+     * <p>
+     * The publication must not be null and must not already exist in the library.
+     * If the publication is successfully added, it is returned. If the publication
+     * already exists, an exception is thrown.
+     * </p>
+     *
+     * @param publicationSample the publication sample to add
+     * @return the added publication sample
+     * @throws NullPointerException if publicationSample is null
+     * @throws IllegalArgumentException if the publication already exists in this library
+     */
+    public PublicationSample addPublication(PublicationSample publicationSample) {
+        if (publicationSample == null) {
+            throw new NullPointerException("PublicationSample can not be null");
+        }
 
-        if (this == obj) return true;
-        if (!(obj instanceof Library)) return false;
+        if (_myPublications.contains(publicationSample)) {
+            throw new IllegalArgumentException("This publication is already in the library");
+        }
 
-        Library other = (Library) obj;
-
-        return this.getAllPublications().equals(other.getAllPublications());
+        _myPublications.add(publicationSample);
+        return publicationSample;
     }
-
-    // Ensures consistency with equals().
-    @Override
-    public int hashCode() {
-        return getAllPublications().hashCode();
-    }
-
 
 }

@@ -9,37 +9,34 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Unit tests for the {@link Library} class.
+ * <p>
+ * This test class verifies the behavior of the Library class including construction,
+ * publication management, and getter methods.
+ * </p>
+ */
 class LibraryTest {
-    //should test adding publications to the library
-    //should test getting all publications present in the library
-    //should test checking if a specific publication in is the library
 
     private User user1;
-
     private Library library;
 
     private PublicationSample sample1;
     private PublicationSample sample2;
     private PublicationSample sample3;
-    //Atributos do teste
+
 
     @BeforeEach
-        //O que estiver neste BeforeEach será feito antes de cada teste
     void preparation() {
         Country country = new Country("Portugal");
         Profile profile = new Profile("profile1", country, LocalDate.of(1990, 1, 1));
         Contact contact = new Contact();
         user1 = new User("user1", contact, profile, UserRole.NORMAL_USER);
 
-        library = new Library(new ArrayList<>(), "Test Library", user1);
-
-
-        //PublicationType
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "HardCover");
+        library = new Library( "Test Library", user1);
 
         //Country
         Country country1 = new Country("Portugal");
@@ -112,12 +109,15 @@ class LibraryTest {
         sample3 = new PublicationSample(data3, user3, pubStatus3, edition, condition3);
     }
 
-    //Now that we have the preparation setup, we begin the Tests
 
+    // ============ Constructor Tests ============
 
+    /**
+     * Tests that an {@link IllegalArgumentException} is thrown when library name is null or empty.
+     */
     @ParameterizedTest
     @NullAndEmptySource
-    void constructor_shouldThrowExceptionWhenInvalidName(String libraryName) {
+    void shouldThrowExceptionWhenLibraryNameIsInvalid(String libraryName) {
         // Arrange
         Profile profile = new Profile("name", new Country("Portugal"), LocalDate.now());
         User user = new User("valid name", new Contact(), profile, UserRole.NORMAL_USER);
@@ -126,8 +126,11 @@ class LibraryTest {
         assertThrows(IllegalArgumentException.class, () -> new Library(libraryName, user));
     }
 
+    /**
+     * Tests that an {@link IllegalArgumentException} is thrown when user is null.
+     */
     @Test
-    void constructor_shouldThrowExceptionWhenInvalidUser() {
+    void shouldThrowExceptionWhenUserIsNull() {
         // Arrange
         String libraryName = "Some valid name";
 
@@ -135,8 +138,11 @@ class LibraryTest {
         assertThrows(IllegalArgumentException.class, () -> new Library(libraryName, null));
     }
 
+    /**
+     * Tests that a Library instance is properly initialized with valid parameters.
+     */
     @Test
-    void constructor_initializesInstanceWhenValidParameters() {
+    void shouldInitializeInstanceWhenValidParameters() {
         // Arrange
         String libraryName = "Library name";
         Profile profile = new Profile("name", new Country("Portugal"), LocalDate.now());
@@ -146,11 +152,15 @@ class LibraryTest {
         Library result = new Library(libraryName, user);
 
         // Assert
-        assertEquals(libraryName, result.getLibraryName());
-        assertEquals(user, result.getUser());
-        assertEquals(0, result.getAllPublications().size());
+        assertNotNull(result);
     }
 
+
+    // ============ Getter Tests ============
+
+    /**
+     * Tests that {@link Library#getLibraryName()} returns the correct library name.
+     */
     @Test
     void getLibraryName_shouldReturnLibraryName() {
         // Act
@@ -160,6 +170,9 @@ class LibraryTest {
         assertEquals("Test Library", result);
     }
 
+    /**
+     * Tests that {@link Library#getUser()} returns the correct user.
+     */
     @Test
     void getUser_shouldReturnUser() {
         // Act
@@ -169,65 +182,110 @@ class LibraryTest {
         assertEquals(user1, result);
     }
 
-    //    @Test //This test sees if the publication1 gets added to the library using the method in Library
-    void addPublicationToTheLibrary_shouldAddPublication() {
-        library.addPublication(sample1);
 
+    // ============ Add Publication Tests ============
+
+    /**
+     * Tests that a publication is successfully added to the library and returned.
+     */
+    @Test
+    void addPublicationToTheLibrary_shouldReturnPublication() {
+        // Act
+        PublicationSample pub = library.addPublication(sample1);
+
+        // Assert
         assertEquals(1, library.getAllPublications().size());
         assertTrue(library.containsPublication(sample1));
+        assertEquals(pub, sample1);
     }
 
+    /**
+     * Tests that a {@link NullPointerException} is thrown when attempting to add a null publication.
+     */
     @Test
-        //This test sees if adding the same publication more than one time doesn't create duplicates
-    void addPublicationToTheLibrary_shouldNotAddIfDuplicate() {
-        library.addPublication(sample1);
-        library.addPublication(sample1);
-
-        assertEquals(1, library.getAllPublications().size());
+    void addPublicationToTheLibrary_shouldThrowAnExceptionWhenPublicationIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> library.addPublication(null));
     }
 
+    /**
+     * Tests that an {@link IllegalArgumentException} is thrown when attempting to add a duplicate publication.
+     */
     @Test
-        //This test sees if, by asking to getAllPublications, we get an empty list, since no publication was added
+    void addPublicationToTheLibrary_shouldThrowAnExceptionWhenPublicationIsDuplicate() {
+        // Arrange
+        library.addPublication(sample1);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> library.addPublication(sample1));
+    }
+
+
+    // ============ Get All Publications Tests ============
+
+    /**
+     * Tests that {@link Library#getAllPublications()} returns an empty list when no publications are added.
+     */
+    @Test
     void getAllPublications_shouldReturnEmptyListIfLibraryEmpty() {
+        // Act & Assert
         assertTrue(library.getAllPublications().isEmpty());
     }
 
+    /**
+     * Tests that {@link Library#getAllPublications()} returns a list with all added publications.
+     */
     @Test
-        //This test sees if, by asking to getAllPublications, we get a list with the added publications
     void getAllPublications_shouldReturnListWithAddedPublications() {
+        // Act
         library.addPublication(sample1);
         library.addPublication(sample2);
-
         List<PublicationSample> listWithPublications = library.getAllPublications();
 
+        // Assert
         assertEquals(2, listWithPublications.size());
         assertTrue(listWithPublications.contains(sample1));
         assertTrue(listWithPublications.contains(sample2));
     }
 
+    /**
+     * Tests that {@link Library#getAllPublications()} returns an unmodifiable list.
+     */
     @Test
-        //This test sees if the list that is provided by the getAllPublications is a copyOf, meaning its unmodifiable
     void getAllPublications_shouldReturnUnmodifiableList() {
+        // Act
         library.addPublication(sample1);
-
         List<PublicationSample> listOfPublications = library.getAllPublications();
 
-        assertThrows(UnsupportedOperationException.class, () -> listOfPublications.add(sample2), "Provided list can't be modified");
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> listOfPublications.add(sample2));
     }
 
+
+    // ============ Contains Publication Tests ============
+
+    /**
+     * Tests that {@link Library#containsPublication(PublicationSample)} returns true when publication exists.
+     */
     @Test
-        //This test sees if the library contains a publication
     void containsPublication_shouldReturnTrueIfPublicationExists() {
+        // Act
         library.addPublication(sample3);
 
+        // Assert
         assertTrue(library.containsPublication(sample3));
     }
 
+    /**
+     * Tests that {@link Library#containsPublication(PublicationSample)} returns false when publication does not exist.
+     */
     @Test
-        //This test sees if the library has a publication (intended to respond false)
     void containsPublication_shouldReturnFalseIfPublicationDoesntExist() {
+        // Act
         library.addPublication(sample3);
 
+        // Assert
         assertFalse(library.containsPublication(sample1));
     }
+
 }

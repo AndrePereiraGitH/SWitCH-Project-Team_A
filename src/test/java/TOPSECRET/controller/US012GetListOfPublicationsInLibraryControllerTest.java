@@ -6,9 +6,11 @@ import TOPSECRET.domain.Enum.*;
 
 import TOPSECRET.dto.PublicationDetailsDTO_US012;
 import TOPSECRET.repository.LibraryRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * </p>
  */
 class US012GetListOfPublicationsInLibraryControllerTest {
+
+    private US012GetListOfPublicationsInLibraryController _ctrl;
 
     // Countries
     Country country1 = new Country("Denmark");
@@ -68,24 +72,44 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     PublicationSample publication1 = new PublicationSample(bibliographicalData1, user1, PublicationStatus.READING, edition1, Condition.POOR);
     PublicationSample publication2 = new PublicationSample(bibliographicalData1, user1, PublicationStatus.READING, edition1, Condition.LIKE_NEW);
 
-    // Libraries
-    Library lib1 = new Library(List.of(publication1, publication2), "mylib1", user1);
-    Library lib2 = new Library(List.of(publication1), "mylib2", user2);
-    Library emptyLibrary = new Library(List.of(), "emptyLib", user3);
 
-    // Repository with test data
-    LibraryFactory factory = new LibraryFactory();
-    LibraryRepository userLib = new LibraryRepository(
-            Map.of(
-                    user1.getUserName(), lib1,
-                    user2.getUserName(), lib2,
-                    user3.getUserName(), emptyLibrary
-            ),factory
-    );
+    /**
+     * Sets up the test fixtures before each test method.
+     * <p>
+     * Initializes test data including countries, authors, contacts, bibliographical data,
+     * users, editions, and publication samples. Creates three libraries with different
+     * publication configurations and initializes the system under test (controller).
+     * </p>
+     *
+     */
+    @BeforeEach
+    void setup() {
+        //Libraries
+        Library lib1 = new Library("mylib1", user1);
+        lib1.addPublication(publication1);
+        lib1.addPublication(publication2);
 
-    // System Under Test
-    US012GetListOfPublicationsInLibraryController ctrl = new US012GetListOfPublicationsInLibraryController(userLib);
+        Library lib2 = new Library( "mylib2", user2);
+        lib2.addPublication(publication1);
 
+        Library emptyLibrary = new Library( "emptyLib", user3);
+
+        // Repository with test data
+        LibraryFactory factory = new LibraryFactory();
+        LibraryRepository userLib = new LibraryRepository(
+                Map.of(
+                        user1.getUserName(), lib1,
+                        user2.getUserName(), lib2,
+                        user3.getUserName(), emptyLibrary
+                ),factory
+        );
+
+        // System Under Test
+        _ctrl = new US012GetListOfPublicationsInLibraryController(userLib);
+
+    }
+
+    // ============ Tests ============
 
     /**
      * Tests that an {@link IllegalArgumentException} is thrown when the username is empty.
@@ -99,7 +123,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         String emptyUser = "";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibraryDTO(emptyUser));
+        assertThrows(IllegalArgumentException.class, () -> _ctrl.getListOfPublicationsInLibraryDTO(emptyUser));
     }
 
     /**
@@ -120,7 +144,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         String username = user3.getUserName();
 
         // Act
-        List<PublicationDetailsDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<PublicationDetailsDTO_US012> result = _ctrl.getListOfPublicationsInLibraryDTO(username);
 
         // Assert
         assertNotNull(result);
@@ -163,7 +187,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
                 .toList();
 
         // Act
-        List<PublicationDetailsDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<PublicationDetailsDTO_US012> result = _ctrl.getListOfPublicationsInLibraryDTO(username);
 
         // Assert
         assertNotNull(result);
