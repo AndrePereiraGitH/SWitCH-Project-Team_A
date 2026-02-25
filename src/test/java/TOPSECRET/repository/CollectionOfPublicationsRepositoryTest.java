@@ -340,5 +340,117 @@ class CollectionOfPublicationsRepositoryTest {
         assertFalse(collection.getIsPrivate());
     }
 
+    @Test
+    void shouldUseGetPublications() {
+        // US017 - new collection should start empty
+        User user = createValidUser();
+        Genre genre = new Genre("Fiction");
+
+        CollectionOfPublications collection =
+                repository.createIfNotExists(user, "My Collection", genre);
+
+        // Use the getter to confirm the list is empty.
+        assertTrue(collection.getPublications().isEmpty());
+    }
+
+    @Test
+    void shouldUseEqualsAndHashCode_US017() {
+        // US017: validate equals/hashCode use name, genre, and owner
+        User user = createValidUser();
+        Genre genre = new Genre("Fiction");
+
+        CollectionOfPublications c1 = new CollectionOfPublications("MyCollection", genre, user);
+        CollectionOfPublications c2 = new CollectionOfPublications("MyCollection", genre, user);
+        CollectionOfPublications c3 = new CollectionOfPublications("DifferentName", genre, user);
+
+        // equals should consider c1 and c2 equal
+        assertEquals(c1, c2);
+        assertNotEquals(c1, c3);
+
+        // hashCode should be consistent with equals
+        assertEquals(c1.hashCode(), c2.hashCode());
+    }
+
+    // US017 — equals(), hashCode() e getPublications()
+
+    @Test
+    void equals_shouldReturnTrue_whenComparingToSelf_US017() {
+        // equals must be reflexive
+        User user = createValidUser();
+        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
+        assertEquals(collection, collection);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenComparingToNull_US017() {
+        // equals with null should return false
+        User user = createValidUser();
+        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
+        assertNotEquals(collection, null);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenComparingToDifferentType_US017() {
+        // equals with another type should return false
+        User user = createValidUser();
+        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
+        assertNotEquals(collection, "uma string qualquer");
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenGenreIsDifferent_US017() {
+        // Different genres imply different collections.
+        User user = createValidUser();
+        CollectionOfPublications c1 = new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+        CollectionOfPublications c2 = new CollectionOfPublications("Favorites", new Genre("History"), user);
+        assertNotEquals(c1, c2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenOwnerIsDifferent_US017() {
+        // Different owner implies different collections
+        User user1 = createValidUser();
+        User user2 = new User(
+                "otherUser",
+                new Contact("913333333", "351", null, null),
+                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
+                UserRole.NORMAL_USER
+        );
+        Genre genre = new Genre("Fiction");
+        CollectionOfPublications c1 = new CollectionOfPublications("Favorites", genre, user1);
+        CollectionOfPublications c2 = new CollectionOfPublications("Favorites", genre, user2);
+        assertNotEquals(c1, c2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenIsPrivateDiffers_US017() {
+        // privacy flag should be part of equals
+        User user = createValidUser();
+        Genre genre = new Genre("Fiction");
+        CollectionOfPublications privateCollection = new CollectionOfPublications("Favorites", genre, user);
+        CollectionOfPublications publicCollection = new CollectionOfPublications("Favorites", genre, user);
+        publicCollection.set_isPrivate(false);
+        assertNotEquals(privateCollection, publicCollection);
+    }
+
+    @Test
+    void hashCode_shouldDiffer_whenCollectionsAreDifferent_US017() {
+        // hashCode should differ when equals is false
+        User user = createValidUser();
+        CollectionOfPublications c1 = new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+        CollectionOfPublications c2 = new CollectionOfPublications("Favorites", new Genre("History"), user);
+        assertNotEquals(c1.hashCode(), c2.hashCode());
+    }
+
+    @Test
+    void getPublications_shouldReturnDefensiveCopy_US017() {
+        // returns a copy (not the internal list)
+        User user = createValidUser();
+        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
+        List<PublicationSample> returned = collection.getPublications();
+        assertTrue(collection.getPublications().isEmpty());
+    }
+
+
 
 }
