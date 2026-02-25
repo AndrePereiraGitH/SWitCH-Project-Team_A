@@ -192,4 +192,46 @@ class CodeTest {
 
         assertNotEquals(a, b);
     }
+
+    @Test
+    void toString_shouldReturnIsbn10_whenIsbn10Exists() {
+        Code code = Code.fromIsbn10("1234567890");
+        assertEquals("1234567890", code.toString());
+    }
+
+    @Test
+    void toString_shouldReturnIsbn13_whenIsbn13Exists() {
+        Code code = Code.fromIsbn13("9783161484100");
+        assertEquals("9783161484100", code.toString());
+    }
+
+    @Test
+    void toString_shouldReturnIssn_whenIssnExists() {
+        Code code = Code.fromIssn("20493630");
+        assertEquals("20493630", code.toString());
+    }
+
+    @Test
+    void shouldAcceptIssnEndingWithX() {
+        Code code = Code.fromIssn("2049363X");
+        assertEquals("2049363X", code.getIssn());
+    }
+
+    @Test
+    void shouldAcceptIssnWithExactly8Chars() {
+        Code code = Code.fromIssn("12345678");
+        assertEquals("12345678", code.getIssn());
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenDifferentIssn() {
+        Code a = Code.fromIssn("20493630");
+        Code b = Code.fromIssn("20493631");
+        assertNotEquals(a, b);
+    }
+
+
+
+
+
 }

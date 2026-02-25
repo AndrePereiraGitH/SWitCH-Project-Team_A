@@ -104,29 +104,7 @@ public class DirectSaleRepository {
 
     // TODO - os metodos seguintes devem ser movidos para a classe ListingRepository
     /*
-    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
-
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
-
-        List<PublicationSample> listOfItems = new ArrayList<>();
-
-        for (DirectSale directSale : _directSaleList) {
-            for (Listing listing : directSale.getListings()) {
-                for (PublicationSample item : listing.getItems()) {
-                    if (item.hasGenre(genre)) {
-                        listOfItems.add(item);
-                    }
-                }
-            }
-        }
-
-        return listOfItems;
-    }
-
-
-    public List<DirectSale> getListOfItemsOnDirectSale(PublicationSample publication) {
+       public List<DirectSale> getListOfItemsOnDirectSale(PublicationSample publication) {
 
         if (publication == null) {
             throw new IllegalArgumentException("Publication cannot be null");

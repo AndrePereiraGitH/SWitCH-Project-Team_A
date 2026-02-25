@@ -69,7 +69,6 @@ public class CollectionOfPublications {
      * Modifications to the returned list will not affect the collection.
      */
 
-    // TODO: public List<PublicationSample> getPublications() {
     public List<PublicationSample> getPublications() {
         return new ArrayList<>(_collectionOfPublications);
     }
@@ -92,7 +91,6 @@ public class CollectionOfPublications {
      * @return true if added, false if null or already exists
      */
 
-    // TODO: public boolean addPublication(PublicationSample publication) {
     public boolean addPublication(PublicationSample publication) {
 
         if (publication == null) return false;
@@ -112,8 +110,7 @@ public class CollectionOfPublications {
      * @return true if exists, false otherwise
      */
 
-    // TODO: public boolean containsPublication(PublicationSample publication) {
-    public boolean containsPublication(Publication publication) {
+    public boolean containsPublication(PublicationSample publication) {
         return _collectionOfPublications.contains(publication);
     }
 
@@ -139,12 +136,22 @@ public class CollectionOfPublications {
 
     // This method generates a hash code consistent with equals().
     // If two objects are considered equal by equals(), they must return the same hash code.
+//    @Override
+//    public int hashCode() {
+//        return (_collectionName.toLowerCase()
+//                + _collectionGenre.hashCode()
+//                + _isPrivate
+//                + _collectionOfPublications.hashCode()).hashCode();
+//    }
     @Override
     public int hashCode() {
-        return (_collectionName.toLowerCase()
-                + _collectionGenre.hashCode()
-                + _isPrivate
-                + _collectionOfPublications.hashCode()).hashCode();
+        return Objects.hash(
+                _collectionName.toLowerCase(),
+                _collectionGenre,
+                _owner,
+                _isPrivate,
+                _collectionOfPublications
+        );
     }
 
 }

@@ -49,4 +49,24 @@ class ProfileTest {
             new Profile("Valid Name", new Country("Germany"), null);
         });
     }
+
+    @Test
+    void equals_shouldBeFalse_whenNull() {
+        Profile p = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        assertFalse(p.equals(null));
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenDifferentClass() {
+        Profile p = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        assertFalse(p.equals("not a profile"));
+    }
+
+    @Test
+    void equals_shouldBeTrue_whenSameData() {
+        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        assertEquals(a, b);
+    }
+
 }

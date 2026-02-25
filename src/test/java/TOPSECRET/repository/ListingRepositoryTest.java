@@ -60,12 +60,12 @@ class ListingRepositoryTest {
 //    }
 
     // Edition
-    Code code = Code.fromIsbn13 ("9783161484123");
+    Code code = Code.fromIsbn13("9783161484123");
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     private Publication instaciatePublication() {
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "some details");
@@ -84,8 +84,8 @@ class ListingRepositoryTest {
 
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(new Genre ("Fantasy"));
-        genres.add(new Genre ("Mister"));
+        genres.add(new Genre("Fantasy"));
+        genres.add(new Genre("Mister"));
 
         String chunkOfText =
                 "Continuing the story begun in The Hobbit, all three parts of the epic masterpiece, " +
@@ -101,7 +101,7 @@ class ListingRepositoryTest {
                 Locale.ENGLISH,
 //                publisher,
                 LocalDate.of(1991, 11, 1),
-                List.of(new Genre ("Fantasy")),
+                List.of(new Genre("Fantasy")),
 //                700,
                 chunkOfText
         );
@@ -114,11 +114,262 @@ class ListingRepositoryTest {
         LocalDate birthday = LocalDate.of(1982, 12, 3);
         Profile profile = new Profile("Albert Trump", new Country("EL_SALVADOR"), birthday);
         UserRole userRole = UserRole.NORMAL_USER;
-        return new User(name, contact, profile,userRole);
+        return new User(name, contact, profile, userRole);
     }
 
     private static Price price(String value) {
         return new Price(new BigDecimal(value));
     }
+
+
+    // US021 - START ------------------------------------------------------------------------------------
+    //Method getListOfItemsOnDirectSaleOfAGivenGenre--------------------------------------------------
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldThrownErrorWhenGenreIsNull() {
+        // Arrange
+        ListingRepository ListingRepository = new ListingRepository();
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            ListingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(null);
+        });
+        assertEquals("Genre cannot be null", exception.getMessage());
+    }
+
+    Genre validGenre = new Genre("Fantasy");
+
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyList() {
+        // Arrange
+        ListingRepository ListingRepository = new ListingRepository();
+
+        // Act
+        List<PublicationSample> result = ListingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(validGenre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListIfNoMatchingGenre() throws InstanceAlreadyExistsException {
+        // Arrange
+        ListingRepository listingRepository = new ListingRepository();
+
+        // Criar edition local para este teste
+        Code code = Code.fromIsbn13("9783161484190");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.1);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Some information");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654329", null);
+        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ITALY, LocalDate.of(2019, 7, 14));
+
+
+        PublicationSample item = new PublicationSample(
+                instantiateBibliographicalData(),  // tem genre "Fantasy"
+                instantiateUser("Owner"),
+                PublicationStatus.READ,
+                edition,
+                Condition.LIKE_NEW
+        );
+
+        listingRepository.createAndAdd(
+                "Title",
+                List.of(item),
+                SaleType.DIRECT_SALE,
+                price("10.00"),
+                "description",
+                List.of(new Picture("pic1"))
+        );
+
+        Genre otherGenre = new Genre("Science"); // género que não existe
+
+        // Act
+        List<PublicationSample> result = listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(otherGenre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithOneMatch() throws InstanceAlreadyExistsException {
+        // Arrange
+        ListingRepository listingRepository = new ListingRepository();
+
+        // Criar edition local para este teste
+        Code code = Code.fromIsbn13("9783161484100");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
+        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+        PublicationSample item = new PublicationSample(
+                instantiateBibliographicalData(),  // tem genre "Fantasy"
+                instantiateUser("Owner"),
+                PublicationStatus.READING,
+                edition,
+                Condition.LIKE_NEW
+        );
+
+        listingRepository.createAndAdd(
+                "Title",
+                List.of(item),
+                SaleType.DIRECT_SALE,
+                price("10.00"),
+                "description",
+                List.of(new Picture("pic1"))
+        );
+
+        Genre genre = new Genre("Fantasy");
+
+        // Act
+        List<PublicationSample> result = listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithMultipleMatches() throws InstanceAlreadyExistsException {
+        // Arrange
+        ListingRepository listingRepository = new ListingRepository();
+
+        // Criar edition local para este teste
+        Code code = Code.fromIsbn13("9783161484150");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Here are some details");
+        Publisher publisher = new Publisher(" Areal Editores", "PT987654321", null);
+        Edition localEdition = new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+
+        PublicationSample item1 = new PublicationSample(
+                instantiateBibliographicalData(),  // tem genre "Fantasy"
+                instantiateUser("Owner1"),
+                PublicationStatus.READ,
+                edition,
+                Condition.LIKE_NEW
+        );
+
+        PublicationSample item2 = new PublicationSample(
+                instantiateBibliographicalData(),  // tem genre "Fantasy"
+                instantiateUser("Owner2"),
+                PublicationStatus.READ,
+                edition,
+                Condition.GOOD
+        );
+
+        listingRepository.createAndAdd(
+                "Title 1",
+                List.of(item1),
+                SaleType.DIRECT_SALE,
+                price("10.00"),
+                "description",
+                List.of(new Picture("pic1"))
+        );
+
+        listingRepository.createAndAdd(
+                "Title 2",
+                List.of(item2),
+                SaleType.DIRECT_SALE,
+                price("15.00"),
+                "description",
+                List.of(new Picture("pic2"))
+        );
+
+        Genre genre = new Genre("Fantasy");
+
+        // Act
+        List<PublicationSample> result = listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnItemsWithCorrectGenre() throws InstanceAlreadyExistsException {
+        // Arrange
+        ListingRepository listingRepository = new ListingRepository();
+
+        // Criar edition local para este teste
+        Code code = Code.fromIsbn13("9883161484190");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.1);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.SADDLE_STICHING, "Detailed information");
+        Publisher publisher = new Publisher(" Areal Editores", "PT987654329", null);
+        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2010, 1, 1));
+
+        PublicationSample item = new PublicationSample(
+                instantiateBibliographicalData(),  // tem genre "Fantasy"
+                instantiateUser("Owner"),
+                PublicationStatus.READ,
+                edition,
+                Condition.LIKE_NEW
+        );
+
+        listingRepository.createAndAdd(
+                "Title",
+                List.of(item),
+                SaleType.DIRECT_SALE,
+                price("10.00"),
+                "description",
+                List.of(new Picture("pic1"))
+        );
+
+        Genre genre = new Genre("Fantasy");
+
+        // Act
+        List<PublicationSample> result = listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).hasGenre(genre));
+    }
+
+    @Test
+    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListWhenNoItemMatchesGenre() throws InstanceAlreadyExistsException {
+        // Arrange
+        ListingRepository listingRepository = new ListingRepository();
+
+        // Criar edition local para este teste
+        Code code = Code.fromIsbn13("9783161484190");
+        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.1);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Some information");
+        Publisher publisher = new Publisher(" Areal Editores", "PT987654329", null);
+        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.JAPANESE, LocalDate.of(2010, 7, 14));
+
+
+        PublicationSample item = new PublicationSample(
+                instantiateBibliographicalData(),  // tem genre "Fantasy"
+                instantiateUser("Owner"),
+                PublicationStatus.READING,
+                edition,
+                Condition.ACCEPTABLE
+        );
+
+        listingRepository.createAndAdd(
+                "Title",
+                List.of(item),
+                SaleType.DIRECT_SALE,
+                price("10.00"),
+                "description",
+                List.of(new Picture("pic1"))
+        );
+
+        Genre genre = new Genre("Suspense"); // género que não existe
+
+        // Act
+        List<PublicationSample> result = listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+   // US021 - END ------------------------------------------------------------------------------------------------
+
 
 }
