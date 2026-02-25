@@ -54,16 +54,6 @@ class LibraryTest {
         Genre genre2 = new Genre("Adventure");
         Genre genre3 = new Genre("Mystery");
 
-        //Contact - used for Publisher
-        Contact contact1 = new Contact();
-        Contact contact2 = new Contact();
-        Contact contact3 = new Contact();
-
-        //Publisher - used for Bibliographical Data
-        Publisher publisher1 = new Publisher("Publisher1", "VAT001", contact1);
-        Publisher publisher2 = new Publisher("Publisher2", "VAT002", contact2);
-        Publisher publisher3 = new Publisher("Publisher3", "VAT003", contact3);
-
         //BibliographicalData
         BibliographicalData data1 = new BibliographicalData(
                 "Title1", List.of(author1), Locale.ENGLISH,
