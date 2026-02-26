@@ -17,25 +17,25 @@ participant ":List<User>"
 ' Human contact between Administrator and UI
 Administrator -> UI : I want to register a user in the system
 activate UI
-UI -->> Administrator :  Provide username, contact and profile information for the user
+UI -->> Administrator :  Provide username, role, contact and profile information for the user
 deactivate UI
 
-Administrator -> UI :  Here's the username, contact and profile information
+Administrator -> UI :  Here's the username, role, contact and profile information
 
 activate UI
 ' First contact between UI and the System
-UI -->> RegisterUserController : RegisterUser(username, contact, profile)
+UI -->> RegisterUserController : RegisterUser(username, role, contact, profile)
 activate RegisterUserController
 
-RegisterUserController -> UserRepository : createAndAddUser(username, contact, profile)
+RegisterUserController -> UserRepository : createAndAddUser(username, role, contact, profile)
 
 activate UserRepository
 ' Creation of u1 instance from User class
 create "userTest: User" as User
 
 ' Creation, validation and addition
-UserRepository -->> User : create(username, contact, profile)
-UserRepository -> ":List<User>"  : validateUser(userTest)
+UserRepository -->> User : create(username, role, contact, profile)
+UserRepository -> ":List<User>"  : exists(userTest)
 activate ":List<User>"
 ":List<User>" -->> UserRepository : false
 deactivate ":List<User>"
