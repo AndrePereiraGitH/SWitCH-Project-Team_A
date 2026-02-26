@@ -3,85 +3,109 @@ hide footbox
 autonumber
 title US023 - To get the list of items on direct sale of a given publication
 
+box #whitesmoke
 actor Buyer
-
-' Participants
 participant ":UI023" as UI
-participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
-participant ":PublicationRepository" as PubRepo
-participant "listOfAllPublications:\n List<Publication>" as ListPub
-participant ":PublicationMapper_US023" as PubMapper
-participant "publicationDTO:\nPublicationDTO_US023" as PubDTO
-participant ":Publication" as Pub
-participant "listOfAllPublicationsDTO:\nList<PublicationDTO>" as ListPubDTO
-participant ":DirectSaleMapper_US023" as DSMapper
-participant ":DirectSaleRepository" as DirectSaleRepo
-participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-participant "directSaleDTO:\nDirectSaleDTO_US023" as DSDTO
-participant ":DirectSale" as DS
-participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US023>" as ListDSDTO
+end box
 
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
+participant ":BibliographicalDataRepository" as BDRepo
+participant "listOfAllPublicationsBD:\n List<BibliographicalData>" as ListPub
+participant ":BibliographicalDataDTO_US023" as BDDTO_C
+participant "bibliographicalDataDTO:\nBibliographicalDataDTO_US023" as BDDTO
+participant ":BibliographicalData" as BD
+participant "listOfAllBibiographicalDataDTO:\nList<BibliographicalDataDTO_US023>" as ListBDDTO
+participant ":ListingRepository" as ListingRepo
+participant "listOfListing:\nList<Listing>" as ListListings
+participant ":PublicationSampleRepository" as PubSampleRepo
+participant "listOfPublicationSample:\nList<PublicationSamples>" as ListItems
+participant ":PublicationSampleDTO_US023" as ItemDTO_C
+participant "publicationSampleDTO:\nPublicationSampleDTO_US023" as ItemDTO
+participant "listOfItemsDTO:\nList<PublicationSampleDTO_US023>" as ListItemsDTO
+participant ":PublicationSample" as PubSample
 
 ' Interactions
 
 ' Section 1 - Get all publications
 Buyer -> UI : I want to get the list of items\n on direct sale of a given publication
 activate UI
-UI -> Ctrl : getAllPublications()
+UI -> Ctrl : getAllPublicationBD()
 activate Ctrl
-Ctrl -> PubRepo: getAllPublications()
-activate PubRepo
-PubRepo -> ListPub **
-PubRepo --> Ctrl: listOfAllPublications
-deactivate PubRepo
-Ctrl -> PubMapper: toDTO(listOfAllPublications)
-activate PubMapper
-PubMapper -> ListPubDTO ** : create()
-loop for each publication
-    PubMapper -> Pub: getDetails(publication)
-    activate Pub
-    Pub --> PubMapper: publicationDetails
-    deactivate Pub
-        PubMapper -> PubDTO ** : createDTO(publicationDetails)
-    PubDTO --> PubMapper: publicationDTO
-    PubMapper --> ListPubDTO: add(publicationDTO)
+Ctrl -> BDRepo: getAllPublicationBD()
+activate BDRepo
+BDRepo -> ListPub ** : create()
+BDRepo --> Ctrl: listOfAllPublicationsBD
+deactivate BDRepo
+Ctrl -> BDDTO_C: toDTO(listOfAllPublicationsBD)
+activate BDDTO_C
+BDDTO_C -> ListBDDTO ** : create()
+loop for each bibliographicalData
+    BDDTO_C -> BD: getBibliographicalDataDetails()
+    activate BD
+    BD --> BDDTO_C: bibliographicalDataDetails
+    deactivate BD
+    BDDTO_C -> BDDTO **: createDTO(bibliographicalDataDetails)
+    BDDTO_C --> ListBDDTO: add(bibliographicalDataDTO)
 end    
-PubMapper --> Ctrl: listOfAllPublicationsDTO
-deactivate PubMapper
-Ctrl --> UI : listOfAllPublicationsDTO
+BDDTO_C --> Ctrl: listOfAllBibiographicalDataDTO
+deactivate BDDTO_C
+Ctrl --> UI : listOfAllBibiographicalDataDTO
 deactivate Ctrl
 Buyer <-- UI : Which publication? Choose!
 deactivate UI
 
-' Section 2 - Get list of direct sales with the publication chosen
+' Section 2 - Get list of listings for direct sale
 Buyer -> UI : publication
 activate UI
 UI -> Ctrl : getListOfItemsOnDirectSale(publication)
 activate Ctrl
-Ctrl -> DirectSaleRepo : getListOfItemsOnDirectSale(publication)
-activate DirectSaleRepo
-DirectSaleRepo -> ListDS ** : create()
-loop for each direct sale
-    DirectSaleRepo -> DirectSaleRepo : isDirectSaleFromPublication(publication)
-    DirectSaleRepo -> ListDS: add(directSale)
+'Ctrl -> ListingRepo : getListOfListingsOnDirectSale()
+Ctrl -> ListingRepo : findDirectSaleListings()
+activate ListingRepo
+ListingRepo -> ListListings ** : create()
+
+/'
+loop for each listing
+    alt saleType == DIRECT_SALE
+    ListingRepo -> ListListings: add(listing)
+    end
 end
-DirectSaleRepo --> Ctrl : listOfDirectSale
-deactivate DirectSaleRepo
-Ctrl -> DSMapper : toDTO(listOfDirectSale)
-activate DSMapper
-DSMapper -> ListDSDTO ** : create()
-loop for each direct sale
-    DSMapper -> DS: getDetails(directSale)
-    activate DS
-    DS --> DSMapper: directSaleDetails
-    deactivate DS
-    DSMapper -> DSDTO **: createDTO(directSaleDetails)
-    DSDTO --> DSMapper: directSaleDTO
-    DSMapper -> ListDSDTO : add(directSaleDTO)
+'/
+ListingRepo --> Ctrl : listOfListing
+deactivate ListingRepo
+
+' Section 3 - Get list of publication samples for the previous listings
+'Ctrl -> PubSampleRepo : getListOfPublicationSamples()
+Ctrl -> PubSampleRepo : findPublicationSamplesByListing(listOfListings, publication)
+activate PubSampleRepo
+PubSampleRepo -> ListItems ** : create()
+/'
+    loop for each listing
+        loop for each publicationSample 
+            alt publicationSample == publication
+            PubSampleRepo -> ListItems: add(publicationSample)
+            end
+        end
+    end
+ '/
+PubSampleRepo --> Ctrl : listOfItems
+deactivate PubSampleRepo
+
+' Section 4 - create DTO for items
+Ctrl -> ItemDTO_C : toDTO(listOfItems)
+activate ItemDTO_C
+ItemDTO_C -> ListItemsDTO ** : create()
+loop for each publicationSample
+    ItemDTO_C -> PubSample: getPublicationSampleDetails()
+    activate PubSample
+    PubSample --> ItemDTO_C: publicationSampleDetails
+    deactivate PubSample
+    ItemDTO_C -> ItemDTO ** : createDTO(publicationSampleDetails)
+    ItemDTO_C -> ListItemsDTO : add(publicationSampleDTO)
 end
-DSMapper --> Ctrl : listOfDirectSaleDTO
-deactivate DSMapper
-Ctrl --> UI : listOfDirectSaleDTO
+ItemDTO_C --> Ctrl : listOfPublicationSampleDTO
+deactivate ItemDTO_C
+Ctrl --> UI : listOfPublicationSampleDTO
 deactivate Ctrl
 UI --> Buyer : Shows the list of items on direct sale
 deactivate UI

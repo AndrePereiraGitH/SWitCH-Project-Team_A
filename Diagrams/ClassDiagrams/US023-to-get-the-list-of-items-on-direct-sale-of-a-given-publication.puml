@@ -5,63 +5,90 @@ class UI023{
 }
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
-  +getAllPublications()
+  +getAllPublicationsBD()
   +getListOfItemsOnDirectSale(publication)
 }
 
-class PublicationRepository{
-    +getAllPublications()
+class BibliographicalDataRepository{
+    +getAllPublicationsBD()
 }
 
-class PublicationDTO_US023 {
+class BibliographicalDataDTO_US023 {
+  +toDTO(listOfAllPublicationsBD)
 }
 
-class PublicationMapper_US023 {
-  +toDTO(listOfPublication)
+class BibliographicalData {
+    - title: String
+    - author: List<Author>
+    - originalLanguage: Locale
+    - publishDate: LocalDate
+    - genre: List<Genre>
+    - chunksOfText: String
+    + getBibliographicalDataDetails()
 }
 
-class Publication {
-    - bibliographicalData: BibliographicalData;
-    - publicationType: PublicationType;
-    - userName: User;
-    - publicationStatus: PublicationStatus;
-    - edition: String;
-    - code: Code;
-    +getDetails()
+class ListingRepository  {
+    - listings: List<Listing>
+    + findDirectSaleListings()
 }
 
-class DirectSaleRepository {
-  +getListOfItemsOnDirectSale(publication)
-  -isDirectSaleFromPublication(publication)
+class PublicationSampleRepository {
+    - allPublicationsInTheSystem: List<PublicationSample>
+    + findPublicationSamplesByListing(listOfListings, publication)
 }
 
-
-class DirectSale {
-  - listing: Listing
-  - directSaleDate: LocalDateTime
-  +getDetails()
+class PublicationSampleDTO_US023 {
+    +toDTO(listOfItems)
 }
 
-class DirectSaleMapper_US023 {
-  +toDTO(listOfDirectSale)
+class PublicationSample {
+    - bibliographicalData: BibliographicalData
+    - publicationType: PublicationType
+    - userName: User
+    - publicationStatus: PublicationStatus
+    - edition: String
+    - code: Code
+    + getPublicationSampleDetails()
 }
 
-class DirectSaleDTO_US023 {
+class Listing {
+    - listingTitle: String
+    - items: List<PublicationSample>
+    - saleType: SaleType
+    - price: Price
+    - shortDescription: String
+    - seller: User
+    - pictures: List<Picture>
+}
+
+enum SaleType {
+    DIRECT_SALE
+    AUCTION
 }
 
 ' Interactions
 
-UI023 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
+UI023 "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationRepository: uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> DirectSaleMapper_US023 : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> PublicationMapper_US023 : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataRepository: uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataDTO_US023 : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" ListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleDTO_US023 : uses
 
-PublicationMapper_US023 ..> PublicationDTO_US023 : maps to
-PublicationMapper_US023 ..> Publication : communicates with
+BibliographicalDataRepository "1" ..> "*" BibliographicalData : communicates with
 
-DirectSaleMapper_US023 ..> DirectSaleDTO_US023 : maps to
-DirectSaleMapper_US023 ..> DirectSale : communicates\n with
+BibliographicalDataDTO_US023 "1" ..> "1" BibliographicalData : transfers
+
+ListingRepository "1" ..> "*" Listing: communicates with
+
+PublicationSampleRepository "1" ..> "*" PublicationSample: communicates with
+
+PublicationSampleDTO_US023 ..> PublicationSample : transfers
+
+' Domain classes interactions
+
+Listing "1" -> "1..*" PublicationSample: contains
+Listing "1" -> "1" SaleType: for sale on
 
 @enduml
