@@ -1,7 +1,7 @@
 @startuml
 skinparam classAttributeIconSize 0
 
-title US020 - Public Lists by Genre (using DTOs)
+title US020 - Get list of public lists by a given genre
 
 class US020_PublicListByGenreController {
   - _genreRepository : GenreRepository
@@ -30,12 +30,12 @@ class CollectionOfPublications {
   - _collectionName : String
   - _isPrivate : boolean
   - _collectionGenre : Genre
-  - _ownerUserName : String
+  - _owner : User
   - _collectionOfPublications : List<Publication>
   + getCollectionGenre() : Genre
   + getCollectionName() : String
   + getIsPrivate() : boolean
-  + getOwner() : String
+  + getOwner() : User
 }
 
 class CollectionOfPublicationsDTO {
@@ -43,15 +43,14 @@ class CollectionOfPublicationsDTO {
   - ownerUsername : String
 }
 
-US020_PublicListByGenreController --> GenreRepository : queries
-US020_PublicListByGenreController --> CollectionOfPublicationsRepository : queries
+US020_PublicListByGenreController ..> GenreRepository : uses
+US020_PublicListByGenreController ..> CollectionOfPublicationsRepository : uses
 
-CollectionOfPublicationsRepository --> CollectionOfPublications : reads
-CollectionOfPublicationsRepository --> CollectionOfPublicationsDTO : creates
+CollectionOfPublicationsRepository "1" --> "0..*" CollectionOfPublications : has
 
-CollectionOfPublications "0..*" --> "1" Genre : has
-CollectionOfPublications "0..*" --> "1" User : owned by
+CollectionOfPublications "0..*" --> "1" Genre : genre
+CollectionOfPublications "0..*" --> "1" User : owner
 
-US020_PublicListByGenreController ..> CollectionOfPublicationsDTO : returns
+CollectionOfPublicationsRepository ..> CollectionOfPublicationsDTO : returns
 
 @enduml

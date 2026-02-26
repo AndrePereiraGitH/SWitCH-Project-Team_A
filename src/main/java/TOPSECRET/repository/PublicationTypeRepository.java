@@ -2,8 +2,11 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.Factory.FactoryPublicationType;
 import TOPSECRET.domain.PublicationType;
+import org.apache.commons.collections.Factory;
 
+import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +14,17 @@ public class PublicationTypeRepository {
 
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
 
-    public PublicationTypeRepository() {} //Constructor
+    // Empty constructor
+    public PublicationTypeRepository() {}
 
-    // Instantiates a publication type domain entity
-
-    public PublicationType createPublicationType(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
+    public PublicationType create(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
-        PublicationType pubType = new PublicationType(mediaFormat, typeOfBinding, details);
-        return pubType;
+        FactoryPublicationType factory = new FactoryPublicationType();
+        PublicationType p1 = factory.create(mediaFormat, typeOfBinding, details);
+        return p1;
     }
 
-    //Validates if the instantiated publication type is either null or duplicated
+    // Validates if the instantiated publication type is either null or duplicated
     private boolean validatePublicationType(PublicationType pubType)
     {
         if (pubType == null) {
@@ -31,7 +34,7 @@ public class PublicationTypeRepository {
     }
 
 
-    //Adds a publication type to the list if it passes validation
+    // Adds a publication type to the list if it passes validation
     public PublicationType addToList(PublicationType pubType)
     {
         if (!validatePublicationType(pubType)) { // if validation returns false

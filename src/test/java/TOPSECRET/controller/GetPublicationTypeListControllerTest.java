@@ -47,7 +47,7 @@ class GetPublicationTypeListControllerTest {
         PublicationTypeRepository repository = new PublicationTypeRepository();
 
         PublicationType type =
-                repository.createPublicationType(
+                repository.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Hardback");
@@ -75,13 +75,13 @@ class GetPublicationTypeListControllerTest {
         PublicationTypeRepository repository = new PublicationTypeRepository();
 
         PublicationType t1 =
-                repository.createPublicationType(
+                repository.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
         PublicationType t2 =
-                repository.createPublicationType(
+                repository.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.PAPERBACK,
                         "Paperback");

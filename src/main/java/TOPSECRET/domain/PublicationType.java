@@ -76,7 +76,4 @@ public class PublicationType {
         return Objects.hash(_typeOfBinding, _details);
     }
 
- //   public MediaFormat getMediaFormat() {return _mediaFormat;}
- //   public TypeOfBinding getTypeOfBinding() { return _typeOfBinding; }
- //   public String getDetails() { return _details; }
 }

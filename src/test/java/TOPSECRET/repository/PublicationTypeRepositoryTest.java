@@ -23,7 +23,7 @@ public class PublicationTypeRepositoryTest {
 
         PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
 
-        pubType = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pubType = pubTypeRepo.create(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pubType);
 
         assertNotNull(pubTypeRepo);
@@ -42,10 +42,10 @@ public class PublicationTypeRepositoryTest {
         PublicationType pt1;
         PublicationType pt2;
 
-        pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pt1 = pubTypeRepo.create(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pt1);
 
-        pt2 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, "different book");
+        pt2 = pubTypeRepo.create(mediaFormat, typeOfBinding, "different book");
         pubTypeRepo.addToList(pt2);
 
 
@@ -78,7 +78,7 @@ public class PublicationTypeRepositoryTest {
         PublicationType pt1;
         PublicationType pt2;
 
-        pt1 = pubTypeRepo.createPublicationType(mediaFormat, typeOfBinding, details);
+        pt1 = pubTypeRepo.create(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pt1);
 
         pt2 = pt1;
@@ -101,7 +101,7 @@ public class PublicationTypeRepositoryTest {
 
         PublicationTypeRepository repo = new PublicationTypeRepository();
 
-        PublicationType pubType = repo.createPublicationType(mediaFormat, typeOfBinding, details);
+        PublicationType pubType = repo.create(mediaFormat, typeOfBinding, details);
 
         PublicationType returned = repo.addToList(pubType);
 
