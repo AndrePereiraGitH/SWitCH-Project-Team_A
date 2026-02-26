@@ -6,73 +6,187 @@ title US018 - Add Publication to Collection Of Publication
 
 actor "User" as User
 participant ":UI018" as UI
+
 participant ":AddCollectionOfPublicationsController" as Controller
+
 participant ":CollectionOfPublicationsRepository" as CollectionRepo
+participant ":FactoryCollectionOfPublication" as FactoryCollectionOfPublication
+participant "userCollections : List<CollectionOfPublications>"
+
+participant ":CollectionOfPublicationsDTO" as DTO
+participant "listOfCollectionsDTO: List<CollectionOfPublicationDTO>" as listOfCollectionsDTO
+participant ":CollectionOfPublications" as CP
+participant "userCollectionSelected: CollectionOfPublication" as CPDomain
+participant "collectionNameDTO: CollectionOfPublicationDTO" as CollectionDTO
+
 participant ":LibraryRepository" as LibraryRepo
 participant ":Library" as Library
-participant "cp : CollectionOfPublications" as cp
+participant "userCollectionsAvailable: List<PublicationSample>" as userCollectionsAvailable
 
+
+' --- Start ---
 User -> UI : I want to add one of my publications to one of my collections
 activate UI
 
+' =========================
+' Get CollectionOfPublication
+' =========================
 UI -> Controller : getUserCollections(user)
 activate Controller
 
 Controller -> CollectionRepo : getUserCollections(user)
 activate CollectionRepo
 
-create "userCollections : List<CollectionOfPublications>" as UserCollections
-CollectionRepo -> UserCollections : create
+CollectionRepo -> CollectionRepo : isFromUser()
+CollectionRepo --> FactoryCollectionOfPublication : create()
+activate FactoryCollectionOfPublication
 
-loop for each cp : CollectionOfPublications
-    CollectionRepo -> cp : isFromUser(user)
-    activate cp
-
-     cp --> CollectionRepo : boolean
-        deactivate cp
-
-    alt [true]
-        CollectionRepo -> CollectionRepo : userCollection.add(cp)
-    end
-end
+FactoryCollectionOfPublication --> "userCollections : List<CollectionOfPublications>" **: create()
+FactoryCollectionOfPublication --> CollectionRepo : userCollections
+deactivate
 
 CollectionRepo --> Controller : userCollections
 deactivate CollectionRepo
 
-Controller --> UI : userCollections
+Controller -> DTO : collectionOfPublicationToDTO(userCollections)
+
+
+activate DTO
+DTO -->> listOfCollectionsDTO **: create()
+
+' ----- Loop ----
+    loop for each CollectionOfPublications in the list
+        DTO -> CP : getCollectionName()
+        activate CP
+
+        CP --> DTO : collectionName
+        deactivate CP
+
+        DTO --> CollectionDTO **: createDTO(collectionName)
+
+        DTO -> DTO : listOfCollectionsDTO.add(collectionNameDTO)
+    end
+' ----- End loop ----
+
+DTO --> Controller : listOfCollectionsDTO
+deactivate DTO
+
+Controller --> UI : listOfCollectionsDTO
+deactivate Controller
 
 UI --> User : Which collection? Select one!
+deactivate UI
 
-User -> UI : Selected collection
+User -> UI : Selected collection!
+activate UI
 
-UI -> Controller : getPublicationsForCollection(user, collection)
+UI -> Controller : getPublicationsForCollection(user, selectedCollection)
+activate Controller
+
+' =====================================================
+' CONVERT DTO -> DOMAIN
+' =====================================================
+
+Controller -> DTO : dtoToDomain(selectedCollection)
+activate DTO
+DTO --> CPDomain ** : create()
+DTO --> Controller : userCollectionSelected
+deactivate DTO
+
+' =====================================================
+' GET USER LIBRARY
+' =====================================================
 
 Controller -> LibraryRepo : getLibrary(user)
 activate LibraryRepo
-LibraryRepo --> Controller : library
+LibraryRepo --> Controller : userLibrary
 deactivate LibraryRepo
 
-Controller -> Library : getPublications
+Controller -> Library : getAllPublications(userLibrary)
 activate Library
-Library --> Controller : allPublications
+Library --> Controller : allUserPublications
 deactivate Library
 
-Controller -> cp : getPublications(collection)
-activate cp
-cp --> Controller : publicationsInCollection
-deactivate cp
+' =====================================================
+' GET PUBLICATIONS ALREADY IN COLLECTION
+' =====================================================
 
-Controller -> Controller : p = diff(allPublications, publicationsInCollection)
+Controller -> CP : getPublications(userCollectionSelected)
+activate CP
+CP --> Controller : publicationsInCollection
+deactivate CP
 
-Controller --> UI : Available publications
+' =====================================================
+' CALCULATE DIFFERENCE
+' =====================================================
 
-UI --> User : Which publication? Select one!
+Controller -> Controller : publicationAvailable = diff(allUserPublications, publicationsInCollection)
 
-User -> UI : selected publication
 
-UI -> Controller : addPublicationToCollection(collection, selectedPublication)
+' =====================================================
+' CONVERT RESULT TO DTO
+' =====================================================
 
-Controller -> CollectionRepo : addPublicationToCollection(collection, selectedPublication)
+Controller -> PublicationDTO : publicationToDTO(publicationAvailable)
+activate PublicationDTO
+PublicationDTO --> "listOfPublicationDTO: List<PublicationSample>" ** : create()
+
+'------ loop -------
+    loop for each PublicationSample in publicationAvailable
+        PublicationDTO -> PublicationSample : getBibliographicalData()
+        activate PublicationSample
+
+        PublicationSample --> PublicationDTO : bibliographicalData
+        deactivate PublicationSample
+
+        PublicationDTO --> "bibliographicalDataDTO: BibliographicalData" **: create()
+
+        PublicationDTO -> PublicationDTO : listOfPublicationDTO.add(bibliographicalDataDTO)
+    end
+'------ end -------
+
+PublicationDTO --> Controller : listOfPublicationDTO
+deactivate PublicationDTO
+
+Controller --> UI : listOfPublicationDTO
+deactivate Controller
+
+UI --> User : Which publication? Select 1..* publication!
+deactivate UI
+
+' =====================================================
+' USER SELECTS PUBLICATION(S)
+' =====================================================
+
+User -> UI : selectedPublicationDTO
+activate UI
+
+UI -> Controller : addPublicationToCollection(collectionSelected, selectedPublication)
+activate Controller
+
+
+' =====================================================
+' CONVERT DTO -> DOMAIN
+' =====================================================
+
+Controller -> CollectionDTO : CollectionDTOToDomain(selectedCollection)
+CollectionDTO --> Controller : userCollection
+
+'----- loop -----
+    loop for each selected publicationSample
+        Controller -> PublicationDTO : PublicationSampleDtoToDomain(selectedPublicationDTO)
+        activate PublicationDTO
+
+        PublicationDTO --> Controller : PublicationSample
+        deactivate PublicationDTO
+    end
+' ----- end -----
+
+' =====================================================
+' ADD TO COLLECTION
+' =====================================================
+
+Controller -> CollectionRepo : addPublicationToCollection(user, collectionSelected, selectedPublication)
 activate CollectionRepo
 CollectionRepo --> Controller : true
 deactivate CollectionRepo
