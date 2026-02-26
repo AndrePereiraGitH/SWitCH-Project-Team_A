@@ -9,8 +9,7 @@ actor Buyer
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
 participant ":GenreRepository" as GenreRepo
-participant ":FactoryGenre" as FactoryGenre
-participant "listOfAllGenres:\nList<Genre>" as LG
+participant "CopylistOfAllGenres:\nList<Genre>" as LG
 participant ":ListingRepository" as ListingRepository
 participant "listOfAllGenres:\nList<DirectSale>" as LDirectSale
 
@@ -26,18 +25,13 @@ activate Ctrl
 Ctrl -> GenreRepo : getAllGenres()
 activate GenreRepo
 
-GenreRepo -> FactoryGenre : create()
-activate FactoryGenre
 
-FactoryGenre -> LG ** : create()
+GenreRepo -> LG ** : create()
 
-FactoryGenre --> GenreRepo : List<Genre> copyGenres
-deactivate FactoryGenre
-
-GenreRepo --> Ctrl : List<Genre> copyGenres
+GenreRepo --> Ctrl : CopylistOfAllGenres
 deactivate GenreRepo
 
-Ctrl --> UI : List<Genre> copyGenres
+Ctrl --> UI : CopylistOfAllGenres
 deactivate Ctrl
 
 UI --> Buyer : Which genre? Choose!
