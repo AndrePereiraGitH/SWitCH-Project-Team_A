@@ -10,7 +10,8 @@ end box
 
 participant ":ToPutPublicationInDirectSaleController" as Ctrl
 participant ":Library" as Lib
-participant ":LibraryDTO_US015" as DTO
+participant ":PublicationSampleDTO_US015" as DTO
+participant "publicationSampleDTO:\nPublicationSampleDTO_US015" as DTO_O
 participant ":PublicationSample" as Pub
 participant ":FactoryListing" as LFactory
 participant ":ListingRepository" as LRepo
@@ -38,18 +39,19 @@ deactivate Lib
 Ctrl-> DTO : toDTO(listOfAvailablePublications)
 activate DTO
 
-create "listOfLibraryPublicationsDTO:\nList<PublicationSampleDTO>" as listDTO
+create "listOfPublicationSampleDTO:\nList<PublicationSampleDTO>" as listDTO
 DTO -> listDTO : create()
     loop for each PublicationSample
-        DTO -> Pub : getDetails()
+        DTO -> Pub : getPublicationSampleDetails()
         activate Pub
         Pub --> DTO : publicationSampleDetails
         deactivate Pub
-        DTO -> listDTO : add(publicationSampleDetails)
+        DTO -> DTO_O ** : createDTO(publicationSampleDetails)
+        DTO -> listDTO : add(publicationSampleDTO)
     end
-DTO --> Ctrl: listOfLibraryPublicationsDTO
+DTO --> Ctrl: listOfPublicationSampleDTO
 deactivate DTO
-Ctrl--> UI : listOfLibraryPublicationsDTO
+Ctrl--> UI : listOfPublicationSampleDTO
 deactivate Ctrl
 
 UI --> User : Which publication(s)? Choose from the list!
