@@ -4,6 +4,8 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.repository.DirectSaleRepository;
 import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.ListingRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -16,180 +18,324 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
-    // Constructor tests
-    @Test
-    public void testConstructor_Success() {
-        //Arrange
-        List<Genre> genres = new ArrayList<>();
-        List<DirectSale> directSales = new ArrayList<>();
-        GenreRepository genreRepository = new GenreRepository(genres);
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-        US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
-                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, directSaleRepository);
+    private GenreRepository genreRepository;
+    private ListingRepository listingRepository;
+    private US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller;
 
+
+    /**
+     * Executed before each test to guarantee isolation between tests.
+     * Initialises fresh instances of the repositories and controller.
+     */
+    //It is executed before each test, guarantees isolation between tests
+    @BeforeEach
+    void setUp() {
+        genreRepository = new GenreRepository(new ArrayList<>());
+        listingRepository = new ListingRepository();
+        controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                genreRepository, listingRepository);
+    }
+
+    // Constructor tests
+
+    /**
+     * Ensures the controller is successfully created with valid repositories.
+     */
+    @Test
+    void ensureControllerIsCreatedSuccessfully() {
         assertNotNull(controller);
     }
 
+
+    /**
+     * Ensures an {@link IllegalArgumentException} is thrown when the GenreRepository is null.
+     */
     @Test
-    public void testConstructor_NullGenreRepository() {
-        List<DirectSale> directSales = new ArrayList<>();
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
+    void ensureThrowsExceptionWhenGenreRepositoryIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, listingRepository));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, directSaleRepository);
-        });
-
-        assertEquals("GenreRepository and directSaleRepository cannot be null", exception.getMessage());
+        assertEquals("GenreRepository and listingRepository cannot be null", exception.getMessage());
     }
 
+
+    /**
+     * Ensures an {@link IllegalArgumentException} is thrown when the ListingRepository is null.
+     */
     @Test
-    public void testConstructor_NullDirectSaleRepository() {
-        List<Genre> genres = new ArrayList<>();
-        GenreRepository genreRepository = new GenreRepository(genres);
+    void ensureThrowsExceptionWhenListingRepositoryIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, null));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, null);
-        });
-
-        assertEquals("GenreRepository and directSaleRepository cannot be null", exception.getMessage());
+        assertEquals("GenreRepository and listingRepository cannot be null", exception.getMessage());
     }
 
-    @Test
-    public void testConstructor_BothNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, null);
-        });
 
-        assertEquals("GenreRepository and directSaleRepository cannot be null", exception.getMessage());
+    /**
+     * Ensures an {@link IllegalArgumentException} is thrown when both repositories are null.
+     */
+    @Test
+    void ensureThrowsExceptionWhenBothRepositoriesAreNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, null));
+
+        assertEquals("GenreRepository and listingRepository cannot be null", exception.getMessage());
     }
 
-    // getAllGenres tests
+    //getAllGenres tests
+
+
+    /**
+     * Ensures {@code getAllGenres()} returns an empty list when no genres exist in the repository.
+     */
     @Test
-    public void testGetAllGenres_EmptyList() {
-        //Arrange
-        List<Genre> genres = new ArrayList<>();
-        List<DirectSale> directSales = new ArrayList<>();
-        GenreRepository genreRepository = new GenreRepository(genres);
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-        US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
-                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, directSaleRepository);
-
-
-        //Act
+    void ensureGetAllGenresReturnsEmptyList() {
+        // Act
         List<Genre> result = controller.getAllGenres();
 
-        //Assert
-        assertNotNull(result); // Confirma que a lista existe
-        assertTrue(result.isEmpty()); // Verifica que a lista está vazia
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
-    @Test
-    public void testGetAllGenres_WithGenres() {
-        //Arrange
-        List<Genre> genres = new ArrayList<>();
-        List<DirectSale> directSales = new ArrayList<>();
-        GenreRepository genreRepository = new GenreRepository(genres);
-        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-        US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
-                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, directSaleRepository);
 
+    /**
+     * Ensures {@code getAllGenres()} returns the correct list of genres when genres exist.
+     */
+    @Test
+    void ensureGetAllGenresReturnsCorrectList() {
+        // Arrange
         genreRepository.createAndAddGenre("Fiction");
         genreRepository.createAndAddGenre("Science");
 
-        //Act
+        // Act
         List<Genre> result = controller.getAllGenres();
 
-        //Assert
+        // Assert
         assertNotNull(result);
-        assertEquals(2, result.size()); // Valida que existe e tem os 2 géneros acrescentados
+        assertEquals(2, result.size());
     }
 
-    // getListOfItemsOnDirectSale tests
-//    @Test
-//    public void testGetListOfItemsOnDirectSale_NullGenre() {
-//        //Arrange
-//        List<Genre> genres = new ArrayList<>();
-//        List<DirectSale> directSales = new ArrayList<>();
-//        GenreRepository genreRepository = new GenreRepository(genres);
-//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-//        US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
-//                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, directSaleRepository);
-//
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-//            controller.getListOfItemsOnDirectSaleOfAGivenGenre(null);
-//        });
-//
-//        assertEquals("Genre cannot be null", exception.getMessage());
-//    }
 
-//    @Test
-//    public void testGetEmptyListOfItemsOnDirectSale_ValidGenre() {
-//        // Cria o controller
-//        List<Genre> genres = new ArrayList<>();
-//        List<DirectSale> directSales = new ArrayList<>();
-//        GenreRepository genreRepository = new GenreRepository(genres);
-//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-//        US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
-//                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, directSaleRepository);
-//
-//        Genre genre = genreRepository.createAndAddGenre("Fiction");
-//
-//        List<Item> result = controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
-//
-//        assertNotNull(result);
-//        assertTrue(result.isEmpty());
-//    }
+    // getListOfItemsOnDirectSaleOfAGivenGenre tests
 
-//    @Test
-//    public void testGetListOfItemsOnDirectSale_ValidGenre() {
-//        // Cria repositórios
-//        List<Genre> genres = new ArrayList<>();
-//        List<DirectSale> directSales = new ArrayList<>();
-//        GenreRepository genreRepository = new GenreRepository(genres);
-//        DirectSaleRepository directSaleRepository = new DirectSaleRepository(directSales);
-//
-//        // Cria o controller com os mesmos repositórios
-//        US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
-//                new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, directSaleRepository);
-//
-//        // Cria o género
-//        Genre genre = genreRepository.createAndAddGenre("Fiction");
-//
-//        // Cria um listing com item do género "Fiction"
-//        Listing listing = createListing();
-////        LocalDateTime date = LocalDateTime.of(2024, 12, 1, 9, 0);
-//
-//        // Adiciona o DirectSale ao repositório
-////        directSaleRepository.createAndAddDirectSale(listing, date);
-//        directSaleRepository.createAndAddDirectSale(List.of(listing), createBuyer(), false);
-//
-//        // Testa
-//        List<Item> result = controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
-//
-//        assertNotNull(result);
-//        assertEquals(1, result.size());
-//    }
-//
-//
-//    private static Listing createListing(){
-//        return new Listing(
-//                "Listing Title",
-//                List.of(createItem()),
-//                SaleType.DIRECT_SALE,
-//                new Price(new BigDecimal("19.99")),
-//                "Short Description",
-//                createSeller(),
-//                List.of(new Picture("pic"))
-//        );
-//    }
+    /**
+     * Ensures an {@link IllegalArgumentException} is thrown when the selected genre is null.
+     */
+    @Test
+    void ensureThrowsExceptionWhenGenreIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                controller.getListOfItemsOnDirectSaleOfAGivenGenre(null));
 
-    private static Item createItem(){
-        return new Item(
-                Condition.LIKE_NEW,
-                230.30,
-                new Dimensions(123, 242, 124),
-                createPublication()
+        assertEquals("Genre cannot be null", exception.getMessage());
+    }
+
+
+    /**
+     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns an empty list
+     * when no items on direct sale match the given genre.
+     */
+    @Test
+    void ensureReturnsEmptyListWhenNoItemsMatchGenre() {
+        // Arrange
+        Genre genre = genreRepository.createAndAddGenre("Fiction");
+
+        // Act
+        List<PublicationSample> result =
+                controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
+    /**
+     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns the correct list
+     * when there is one item on direct sale matching the given genre.
+     */
+    @Test
+    void ensureReturnsListWithOneItemWhenOneMatchesGenre() throws Exception {
+        // Arrange
+        Genre genre = genreRepository.createAndAddGenre("Fiction");
+
+        PublicationSample sample = new PublicationSample(
+                createBibliographicalData(),
+                createSeller(),
+                PublicationStatus.READ,
+                createEdition(),
+                Condition.LIKE_NEW
+        );
+
+        listingRepository.createAndAdd(
+                "Valid Title",
+                List.of(sample),
+                SaleType.DIRECT_SALE,
+                new Price(new BigDecimal("19.99")),
+                "Short Description Here",
+                List.of(new Picture("pic"))
+        );
+
+        // Act
+        List<PublicationSample> result =
+                controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+    }
+
+    /**
+     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns an empty list
+     * when listings exist but none match the given genre.
+     */
+    @Test
+    void ensureReturnsEmptyListWhenNoListingsMatchGenre() throws Exception {
+        // Arrange
+        Genre fictionGenre = genreRepository.createAndAddGenre("Fiction");
+        genreRepository.createAndAddGenre("Science");
+
+        PublicationSample sample = new PublicationSample(
+                createBibliographicalData(), // uses "Fiction"
+                createSeller(),
+                PublicationStatus.READ,
+                createEdition(),
+                Condition.LIKE_NEW
+        );
+
+        listingRepository.createAndAdd(
+                "Valid Title",
+                List.of(sample),
+                SaleType.DIRECT_SALE,
+                new Price(new BigDecimal("19.99")),
+                "Short Description Here",
+                List.of(new Picture("pic"))
+        );
+
+        Genre scienceGenre = new Genre("Science");
+
+        // Act
+        List<PublicationSample> result =
+                controller.getListOfItemsOnDirectSaleOfAGivenGenre(scienceGenre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns an empty list
+     * when listings exist but are not of type DIRECT_SALE.
+     */
+    @Test
+    void ensureReturnsEmptyListWhenListingIsNotDirectSale() throws Exception {
+        // Arrange
+        Genre genre = genreRepository.createAndAddGenre("Fiction");
+
+        PublicationSample sample = new PublicationSample(
+                createBibliographicalData(),
+                createSeller(),
+                PublicationStatus.READ,
+                createEdition(),
+                Condition.LIKE_NEW
+        );
+
+        listingRepository.createAndAdd(
+                "Valid Title",
+                List.of(sample),
+                SaleType.AUCTION,       // Not a direct sale!
+                new Price(new BigDecimal("19.99")),
+                "Short Description Here",
+                List.of(new Picture("pic"))
+        );
+
+        // Act
+        List<PublicationSample> result =
+                controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
+    private static Edition createEdition() {
+        return new Edition(
+                "1st Edition",
+                createCode(),
+                createPhysicalAttributes(),
+                createPublicationType(),
+                createPublisher(),
+                Locale.ENGLISH,
+                LocalDate.of(2011,1,1)
+        );
+    }
+
+    private static Code createCode() {
+        return Code.fromIsbn13("9780747532743");
+    }
+
+
+    private static PhysicalAttributes createPhysicalAttributes() {
+        return new PhysicalAttributes(
+                new Dimensions(10.0, 20.0, 5.0),  // dimensions
+                1.5,                               // weight: double
+                300                                // numberOfPages: int
+        );
+    }
+
+    private static Publisher createPublisher() {
+        return new Publisher(
+                "Publisher Name",  // name: String
+                "123456789",       // vatNumber: String
+                createContact()    // contact: Contact
+        );
+    }
+
+    private static PublicationType createPublicationType(){
+        return new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Details"
+        );
+    }
+
+    private static Contact createContact() {
+        return new Contact("912345678", "123", createEmail(), createAddress());
+    }
+
+    private static Email createEmail() {
+        return new Email("test", "test.com");
+    }
+
+    private static Address createAddress() {
+        return new Address("Rua Test", "1", "4000-000", createCountry());
+    }
+
+    private static BibliographicalData createBibliographicalData(){
+        return new BibliographicalData(
+                "Harry Potter: Pedra Filosofal",
+                List.of(createAuthor()),
+                new Locale("pt", "PT"),
+                LocalDate.of(2020, 1, 30),
+                List.of(new Genre("Fiction")),
+                "Text Description"
+        );
+    }
+
+    private static Author createAuthor(){
+        return new Author(
+                createProfile(),
+                "valid bio"
+        );
+    }
+
+    private static Profile createProfile(){
+        return new Profile(
+                "Freida",
+                createCountry(),
+                LocalDate.of(1968, 10, 12)
         );
     }
 
@@ -211,118 +357,8 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         );
     }
 
-    private static User createBuyer(){
-        return new User(
-                "Buyer",
-                new Contact(
-                        "919999999",
-                        "+351",
-                        new Email("buyer", "example.com"),
-                        new Address("Avenida da Republica", "25", "3470-302", createCountry())
-                ),
-                new Profile(
-                        "Buyer_username",
-                        createCountry(),
-                        LocalDate.of(1993, 9, 19)
-                ),
-                UserRole.NORMAL_USER
-        );
-    }
-
-
-    private static Profile createProfile(){
-        return new Profile(
-                "Freida",
-                createCountry(),
-                LocalDate.of(1968, 10, 12)
-        );
-    }
-
-    private static Author createAuthor(){
-        return new Author(
-                createProfile(),
-                "valid bio"
-        );
-    }
-
-    private static BibliographicalData createBibliographicalData(){
-        return new BibliographicalData(
-                "Harry Potter: Pedra Filosofal",
-                List.of(createAuthor()),
-                new Locale("pt", "PT"),
-                LocalDate.of(2020, 1, 30),
-                List.of(new Genre("Fiction")),
-                "Text Description"
-        );
-    }
-
-    private static PublicationType createPublicationType(){
-        return new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.HARDBACK,
-                "Details"
-        );
-    }
-
-    private static Code createCode(){
-        return Code.fromIsbn10(
-                "1928375849"
-        );
-    }
-
     private static Country createCountry() {
         return new Country("PORTUGAL");       // match your Countries enum value
-    }
-
-    private static Email createEmail() {
-        return new Email("test", "test.com");
-    }
-
-    private static Address createAddress() {
-        return new Address("Rua Test", "1", "4000-000", createCountry());
-    }
-
-    private static Contact createContact() {
-        return new Contact("912345678", "123", createEmail(), createAddress());
-    }
-
-    private static Publisher createPublisher() {
-        return new Publisher(
-                "Publisher Name",  // name: String
-                "123456789",       // vatNumber: String
-                createContact()    // contact: Contact
-        );
-    }
-
-    private static Edition createEdition() {
-        return new Edition(
-                "1st Edition",
-                createCode(),
-                createPhysicalAttributes(),
-                createPublicationType(),
-                createPublisher(),
-                Locale.ENGLISH,
-                LocalDate.now()
-        );
-    }
-
-    private static PhysicalAttributes createPhysicalAttributes() {
-        return new PhysicalAttributes(
-                new Dimensions(10.0, 20.0, 5.0),  // dimensions
-                1.5,                               // weight: double
-                300                                // numberOfPages: int
-        );
-    }
-
-    private static Publication createPublication() {
-        return new Publication(
-                createBibliographicalData(),
-                createPublicationType(),
-                createSeller(),
-                PublicationStatus.FOR_SALE,
-                createEdition(),
-                createCode()
-        );
     }
 
 }

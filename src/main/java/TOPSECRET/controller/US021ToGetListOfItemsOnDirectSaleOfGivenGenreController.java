@@ -1,11 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Item;
-import TOPSECRET.repository.DirectSaleRepository;
+import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.repository.GenreRepository;
-
+import TOPSECRET.repository.ListingRepository;
 import java.util.List;
 
 /**
@@ -13,21 +11,21 @@ import java.util.List;
  */
 public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
     private GenreRepository genreRepository;
-    private DirectSaleRepository directSaleRepository;
+    private ListingRepository listingRepository;
 
     /**
      * Constructor.
      *
      * @param genreRepository genre repository
-     * @param directSaleRepository direct sale repository
+     * @param listingRepository direct sale repository
      */
-    public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController (GenreRepository genreRepository,  DirectSaleRepository directSaleRepository) {
-        if (genreRepository == null || directSaleRepository == null) {
-            throw new IllegalArgumentException("GenreRepository and directSaleRepository cannot be null");
+    public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController (GenreRepository genreRepository,  ListingRepository listingRepository) {
+        if (genreRepository == null || listingRepository == null) {
+            throw new IllegalArgumentException("GenreRepository and listingRepository cannot be null");
         }
 
         this.genreRepository = genreRepository;
-        this.directSaleRepository = directSaleRepository;
+        this.listingRepository = listingRepository;
     }
 
     /**
@@ -46,10 +44,10 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * @param selectedGenre genre selected by the buyer
      * @return list of items matching the given genre
      */
-//    public List<Item> getListOfItemsOnDirectSaleOfAGivenGenre(Genre selectedGenre) {
-//        if (selectedGenre == null) {
-//            throw new IllegalArgumentException("Genre cannot be null");
-//        }
-//        return directSaleRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedGenre);
-//    }
+    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre selectedGenre) {
+        if (selectedGenre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+        return listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedGenre);
+    }
   }

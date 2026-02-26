@@ -10,19 +10,18 @@ participant ":UI018" as UI
 participant ":AddCollectionOfPublicationsController" as Controller
 
 participant ":CollectionOfPublicationsRepository" as CollectionRepo
-participant ":FactoryCollectionOfPublication" as FactoryCollectionOfPublication
 participant "userCollections : List<CollectionOfPublications>"
 
 participant ":CollectionOfPublicationsDTO" as DTO
 participant "listOfCollectionsDTO: List<CollectionOfPublicationDTO>" as listOfCollectionsDTO
 participant ":CollectionOfPublications" as CP
-participant "userCollectionSelected: CollectionOfPublication" as CPDomain
 participant "collectionNameDTO: CollectionOfPublicationDTO" as CollectionDTO
+participant "userCollectionSelected: CollectionOfPublication" as CPDomain
 
 participant ":LibraryRepository" as LibraryRepo
 participant ":Library" as Library
-participant "userCollectionsAvailable: List<PublicationSample>" as userCollectionsAvailable
-
+participant ":PublicationSampleDTO" as PublicationDTO
+participant ":PublicationSample" as PublicationSample
 
 ' --- Start ---
 User -> UI : I want to add one of my publications to one of my collections
@@ -38,13 +37,7 @@ Controller -> CollectionRepo : getUserCollections(user)
 activate CollectionRepo
 
 CollectionRepo -> CollectionRepo : isFromUser()
-CollectionRepo --> FactoryCollectionOfPublication : create()
-activate FactoryCollectionOfPublication
-
-FactoryCollectionOfPublication --> "userCollections : List<CollectionOfPublications>" **: create()
-FactoryCollectionOfPublication --> CollectionRepo : userCollections
-deactivate
-
+CollectionRepo --> "userCollections : List<CollectionOfPublications>" **: create()
 CollectionRepo --> Controller : userCollections
 deactivate CollectionRepo
 
@@ -80,7 +73,7 @@ deactivate UI
 User -> UI : Selected collection!
 activate UI
 
-UI -> Controller : getPublicationsForCollection(user, selectedCollection)
+UI -> Controller : getPublicationsForCollection(selectedCollection)
 activate Controller
 
 ' =====================================================
@@ -129,7 +122,7 @@ Controller -> Controller : publicationAvailable = diff(allUserPublications, publ
 
 Controller -> PublicationDTO : publicationToDTO(publicationAvailable)
 activate PublicationDTO
-PublicationDTO --> "listOfPublicationDTO: List<PublicationSample>" ** : create()
+PublicationDTO --> "listOfAvailablePublicationDTO: List<PublicationSample>" ** : create()
 
 '------ loop -------
     loop for each PublicationSample in publicationAvailable
@@ -141,17 +134,17 @@ PublicationDTO --> "listOfPublicationDTO: List<PublicationSample>" ** : create()
 
         PublicationDTO --> "bibliographicalDataDTO: BibliographicalData" **: create()
 
-        PublicationDTO -> PublicationDTO : listOfPublicationDTO.add(bibliographicalDataDTO)
+        PublicationDTO -> PublicationDTO : listOfAvailablePublicationDTO.add(bibliographicalDataDTO)
     end
 '------ end -------
 
-PublicationDTO --> Controller : listOfPublicationDTO
+PublicationDTO --> Controller : listOfAvailablePublicationDTO
 deactivate PublicationDTO
 
-Controller --> UI : listOfPublicationDTO
+Controller --> UI : listOfAvailablePublicationDTO
 deactivate Controller
 
-UI --> User : Which publication? Select 1..* publication!
+UI --> User : Which publication? Select one or more publication!
 deactivate UI
 
 ' =====================================================
@@ -170,7 +163,9 @@ activate Controller
 ' =====================================================
 
 Controller -> CollectionDTO : CollectionDTOToDomain(selectedCollection)
+activate CollectionDTO
 CollectionDTO --> Controller : userCollection
+deactivate CollectionDTO
 
 '----- loop -----
     loop for each selected publicationSample
@@ -186,7 +181,7 @@ CollectionDTO --> Controller : userCollection
 ' ADD TO COLLECTION
 ' =====================================================
 
-Controller -> CollectionRepo : addPublicationToCollection(user, collectionSelected, selectedPublication)
+Controller -> CollectionRepo : addPublicationToCollection(user, userCollection, publicationSample)
 activate CollectionRepo
 CollectionRepo --> Controller : true
 deactivate CollectionRepo
