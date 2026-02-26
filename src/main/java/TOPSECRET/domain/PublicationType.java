@@ -7,6 +7,15 @@ import java.util.Objects;
 
 public class PublicationType {
 
+    /**
+     Represents the publication type of an item.
+     It contains parameters like media format, type of binding and details
+     @param mediaFormat identifies the type of item, such as book or magazine
+     @param typeOfBinding identifies how the item was binded. (e.g., paperback, hardback)
+     @param details a small description necessary to describe the publication type
+     All parameters are necessary for the creation of a publication type, and will be validated.
+     */
+
     private MediaFormat _mediaFormat;
     private TypeOfBinding _typeOfBinding;
     private String _details;

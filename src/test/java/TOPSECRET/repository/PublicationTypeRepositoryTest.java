@@ -8,14 +8,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+/**
+ * Unit tests for {@link PublicationTypeRepository}.
+ * <p>
+ * This test class verifies:
+ * <ul>
+ *     <li>Creation of publication types</li>
+ *     <li>Successful addition of valid publication types</li>
+ *     <li>Prevention of duplicate publication types</li>
+ *     <li>Prevention of null publication types</li>
+ *     <li>Correct retrieval of stored publication types</li>
+ * </ul>
+ */
+
 public class PublicationTypeRepositoryTest {
 
-    // Publication type sample
+    /**
+     * Publication type sample parameters to be used for tests
+     */
     MediaFormat mediaFormat = MediaFormat.BOOK;
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
     String details = "Book with gold engravings";
 
 
+    /**
+     * Verifies that a {@link PublicationTypeRepository} can be created,
+     * a {@link PublicationType} can be added successfully,
+     * and its attributes are correctly stored.
+     */
     @Test
     void createPublicationTypeRepositoryAndAddPublicationTest()
     {
@@ -34,6 +54,10 @@ public class PublicationTypeRepositoryTest {
     }
 
 
+    /**
+     * Verifies that all added publication types are returned correctly
+     * and that the repository size matches the number of inserted elements.
+     */
     @Test
     void shouldReturnAllPublicationTypes()
     {
@@ -57,6 +81,10 @@ public class PublicationTypeRepositoryTest {
     }
 
 
+    /**
+     * Verifies that an empty repository returns a non-null,
+     * but empty, list of publication types.
+     */
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist()
     {
@@ -70,6 +98,11 @@ public class PublicationTypeRepositoryTest {
     }
 
 
+    /**
+     * Verifies that adding a duplicate {@link PublicationType}
+     * results in an {@link IllegalArgumentException}
+     * and does not increase the repository size.
+     */
     @Test
     void shouldReturnExceptionWhenAddingDuplicatePublicationType()
     {
@@ -81,13 +114,17 @@ public class PublicationTypeRepositoryTest {
         pt1 = pubTypeRepo.create(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pt1);
 
-        pt2 = pt1;
+        pt2 = pubTypeRepo.create(mediaFormat, typeOfBinding, details);
 
         assertThrows(IllegalArgumentException.class, () -> pubTypeRepo.addToList(pt2));
         assertEquals(1, pubTypeRepo.getAllPublicationTypes().size());
     }
 
 
+    /**
+     * Verifies that attempting to add a null publication type
+     * throws an {@link IllegalArgumentException}.
+     */
     @Test
     void shouldThrowWhenAddingNullPubType() {
         PublicationTypeRepository repo = new PublicationTypeRepository();
@@ -96,6 +133,10 @@ public class PublicationTypeRepositoryTest {
     }
 
 
+    /**
+     * Verifies that the {@code addToList} method returns
+     * the same {@link PublicationType} instance that was added.
+     */
     @Test
     void shouldReturnTheAddedPublicationTypeWhenAddingToList() {
 
