@@ -4,46 +4,111 @@ hide footbox
 autonumber
 title US027 - To get the list of items on direct sale of a given publisher
 
-
+box #whitesmoke
 actor Buyer
-participant ":UI027" as UI027
+participant ":UI027" as UI
+end box
 
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
+participant ":PublisherRepository" as PublisherRepo
+participant "listOfAllPublishers:\nList<Publisher>" as ListPublishers
+participant ":PublisherDTO_US027" as PublisherDTO
+participant "publisherDTO:\nPublisherDTO_US027" as PublisherDTO_O
+participant ":Publisher" as Publisher
+participant "listOfAllPublishersDTO:\nList<PublisherDTO_US027>" as ListPublisherDTO
+participant ":ListingRepository" as ListingRepo
+participant "listOfListing:\nList<Listing>" as ListListings
+participant ":PublicationSampleRepository" as PubSampleRepo
+participant "listOfPublicationSample:\nList<PublicationSamples>" as ListPubSamples
+participant ":PublicationSampleDTO_US027" as PubSampleDTO
+participant "publicationSampleDTO:\nPublicationSampleDTO_US027" as PubSampleDTO_O
+participant "listOfPublicationSampleDTO:\nList<PublicationSampleDTO_US027>" as ListPubSamplesDTO
+participant ":PublicationSample" as PubSample
 
+' Interactions
 
-participant ":ToGetListOfItemsOnDirectSaleOf\nGivenPublisherController" as Controller
+' Section 1 - Get all publishers
+Buyer -> UI : I want to get the list of items\n on direct sale of a given publisher
+activate UI
+UI -> Ctrl : getAllPublishers()
+activate Ctrl
+Ctrl -> PublisherRepo: getAllPublishers()
+activate PublisherRepo
+PublisherRepo -> ListPublishers ** : create()
+PublisherRepo --> Ctrl: listOfAllPublishers
+deactivate PublisherRepo
+Ctrl -> PublisherDTO: toDTO(listOfAllPublishers)
+activate PublisherDTO
+PublisherDTO -> ListPublisherDTO ** : create()
+loop for each publisher
+    PublisherDTO -> Publisher: getPublisherDetails()
+    activate Publisher
+    Publisher --> PublisherDTO: publisherDetails
+    deactivate Publisher
+    PublisherDTO -> PublisherDTO_O **: createDTO(publisherDetails)
+    PublisherDTO --> ListPublisherDTO: add(publisherDTO)
+end
+PublisherDTO --> Ctrl: listOfAllPublishersDTO
+deactivate PublisherDTO
+Ctrl --> UI : listOfAllPublishersDTO
+deactivate Ctrl
+Buyer <-- UI : Which publisher? Choose!
+deactivate UI
 
+' Section 2 - Get list of listings for direct sale
+Buyer -> UI : publisher
+activate UI
+UI -> Ctrl : getListOfItemsOnDirectSale(publisher)
+activate Ctrl
+'Ctrl -> ListingRepo : getListOfListingsOnDirectSale()
+Ctrl -> ListingRepo : findDirectSaleListings()
+activate ListingRepo
+ListingRepo -> ListListings ** : create()
 
+/'
+loop for each listing
+    alt saleType == DIRECT_SALE
+    ListingRepo -> ListListings: add(listing)
+    end
+end
+'/
+ListingRepo --> Ctrl : listOfListing
+deactivate ListingRepo
 
-participant ":ListingRepository" as Repository
+' Section 3 - Get list of publication samples for the previous listings
+'Ctrl -> PubSampleRepo : getListOfPublicationSamples()
+Ctrl -> PubSampleRepo : findPublicationSamplesByListing(listOfListings, publisher)
+activate PubSampleRepo
+PubSampleRepo -> ListPubSamples ** : create()
+/'
+    loop for each listing
+        loop for each publicationSample
+            alt publicationSample == publication
+            PubSampleRepo -> ListPubSamples: add(publicationSample)
+            end
+        end
+    end
+ '/
+PubSampleRepo --> Ctrl : listOfItems
+deactivate PubSampleRepo
 
-
-Buyer -> UI027 : I want to get the list of items on direct sale of a given publisher
-activate UI027
-Buyer <-- UI027 : Which publisher?
-Buyer -> UI027 : publisher
-
-UI027 -> Controller : getItemsOnDirectSaleByPublisher(publisher)
-activate Controller
-
-Controller -> Repository : getListingsOnDirectSale()
-activate Repository
-
-
-
-
-create "data: List<Listing>" as Listing
-Repository -> Listing
-
-
-Repository --> Controller : data
-deactivate Repository
-
-Controller -> Controller : extract items of given\n publisher into new list\n**res: List<Item>**
-
-Controller --> UI027 : res
-deactivate Controller
-
-UI027 --> Buyer : Display items on direct sale of given publisher
-deactivate UI027
+' Section 4 - create DTO for items
+Ctrl -> PubSampleDTO : toDTO(listOfItems)
+activate PubSampleDTO
+PubSampleDTO -> ListPubSamplesDTO ** : create()
+loop for each publicationSample
+    PubSampleDTO -> PubSample: getPublicationSampleDetails()
+    activate PubSample
+    PubSample --> PubSampleDTO: publicationSampleDetails
+    deactivate PubSample
+    PubSampleDTO -> PubSampleDTO_O ** : createDTO(publicationSampleDetails)
+    PubSampleDTO -> ListPubSamplesDTO : add(publicationSampleDTO)
+end
+PubSampleDTO --> Ctrl : listOfPublicationSampleDTO
+deactivate PubSampleDTO
+Ctrl --> UI : listOfPublicationSampleDTO
+deactivate Ctrl
+UI --> Buyer : Shows the list of items on direct sale for the publisher
+deactivate UI
 
 @enduml

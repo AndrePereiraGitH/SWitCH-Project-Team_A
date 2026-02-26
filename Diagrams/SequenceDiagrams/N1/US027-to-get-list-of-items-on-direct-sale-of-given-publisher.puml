@@ -8,9 +8,12 @@ actor Buyer
 participant ":System" as System
 
 Buyer -> System : **1** I want to get a list of items on direct sale of a given publisher
-Buyer <-- System : **2** Which publisher?
+activate System
+Buyer <-- System : **2** Which publisher? Choose!
+deactivate System
 Buyer -> System : **3** publisher
-
-System --> Buyer : **4** List of items on direct sale of given publisher
+activate System
+System --> Buyer : **4** Shows the list of items on direct sale for the publisher
+deactivate System
 
 @enduml

@@ -1,17 +1,62 @@
 @startuml
 title US027 - To get the list of items on direct sale of a given publisher
 
-class ToGetListOfItemsOnDirectSaleOf\nGivenPublisherController {
-  +getItemsOnDirectSaleByPublisher(publisher)
+class UI027 {
+}
+
+class ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController {
+    + getAllPublishers(): List<PublisherDTO_US027>
+    + getListOfItemsOnDirectSale(publisher): List<PublicationSampleDTO_US027>
+}
+
+class PublisherRepository {
+    - publishers: List<Publisher>
+    + getAllPublishers: List<Publisher>
+}
+
+class PublisherDTO_US027 {
+    + toDTO(listOfAllPublishers): List<PublisherDTO_US027>
+}
+
+class Publisher {
+    - name: String
+    - vatNumber: String
+    - contact: Contact
+    + getPublisherDetails(): Publisher
 }
 
 class ListingRepository {
-  +getListingsOnDirectSale()
+    - listings: List<Listing>
+    + findDirectSaleListings() : List<Listing>
+}
+
+class PublicationSampleRepository {
+    - publicationSamples: List<PublicationSample>
+    + findPublicationSamplesByListing(listOfListings, publisher): List<PublicationSample>
+}
+
+class PublicationSampleDTO_US027 {
+    + toDTO(lisOfItems): List<PublicationSampleDTO_US027>
+}
+
+class PublicationSample {
+    - bibliographicalData: BibliographicalData
+    - publicationType: PublicationType
+    - userName: User
+    - publicationStatus: PublicationStatus
+    - edition: String
+    - code: Code
+    + getPublicationSampleDetails()
 }
 
 class Listing {
-  - _item: Item
-  - _saleType: SaleType
+    - listingTitle: String
+    - items: List<PublicationSample>
+    - saleType: SaleType
+    - price: Price
+    - shortDescription: String
+    - seller: User
+    - pictures: List<Picture>
 }
 
 enum SaleType {
@@ -19,20 +64,37 @@ enum SaleType {
     AUCTION
 }
 
-class Item {
-    - bibliographicalData: BibliographicalData
-}
-
-class BibliographicalData {
+class Edition {
     - publisher: Publisher
-    }
+}
 
 ' Interactions
 
-ToGetListOfItemsOnDirectSaleOf\nGivenPublisherController  "1 " -- "1 " ListingRepository : uses >
-ListingRepository "1 " -- " * " Listing : retrieves >
-Listing "                                *" --> "1 " SaleType : can be\nsold by >
-Listing "1"--> "1    " Item : lists an >
-Item "*" -- "1 " BibliographicalData: has >
+' Interactions
+
+UI027 "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController : uses
+
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherRepository: uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherDTO_US027 : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" ListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleDTO_US027 : uses
+
+PublisherRepository "1" ..> "*" Publisher : communicates with
+
+PublisherDTO_US027 "1" ..> "1" Publisher : transfers
+
+ListingRepository "1" ..> "*" Listing: communicates with
+
+PublicationSampleRepository "1" ..> "*" PublicationSample: communicates with
+
+PublicationSampleDTO_US027 "1" ..> "1" PublicationSample : transfers
+
+' Domain classes interactions
+
+Listing "1" -> "1..*" PublicationSample: contains
+PublicationSample "*" -> "1" Edition: has
+Edition "*" -> "1" Publisher: published by
+Listing "1" -> "1" SaleType: for sale on
 
 @enduml
