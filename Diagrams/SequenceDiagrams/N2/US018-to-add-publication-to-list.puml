@@ -13,15 +13,15 @@ participant ":CollectionOfPublicationsRepository" as CollectionRepo
 participant "userCollections : List<CollectionOfPublications>"
 
 participant ":CollectionOfPublicationsDTO" as DTO
-participant "listOfCollectionsDTO: List<CollectionOfPublicationDTO>" as listOfCollectionsDTO
+participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
 participant ":CollectionOfPublications" as CP
-participant "collectionNameDTO: CollectionOfPublicationDTO" as CollectionDTO
-participant "userCollectionSelected: CollectionOfPublication" as CPDomain
+participant "collectionNameDTO: CollectionOfPublicationsDTO" as CollectionDTO
 
-participant ":LibraryRepository" as LibraryRepo
 participant ":Library" as Library
+participant ":PublicationSampleRepository" as PublicationSampleRepo
 participant ":PublicationSampleDTO" as PublicationDTO
 participant ":PublicationSample" as PublicationSample
+
 
 ' --- Start ---
 User -> UI : I want to add one of my publications to one of my collections
@@ -73,29 +73,23 @@ deactivate UI
 User -> UI : Selected collection!
 activate UI
 
-UI -> Controller : getPublicationsForCollection(selectedCollection)
+UI -> Controller : getPublicationsForCollection(selectedCollectionDTO)
 activate Controller
 
 ' =====================================================
 ' CONVERT DTO -> DOMAIN
 ' =====================================================
 
-Controller -> DTO : dtoToDomain(selectedCollection)
-activate DTO
-DTO --> CPDomain ** : create()
-DTO --> Controller : userCollectionSelected
-deactivate DTO
+Controller -> CollectionRepo : collectionDTOToDomain(selectedCollectionDTO)
+activate CollectionRepo
+CollectionRepo --> Controller : userCollectionSelected
+deactivate CollectionRepo
 
 ' =====================================================
 ' GET USER LIBRARY
 ' =====================================================
 
-Controller -> LibraryRepo : getLibrary(user)
-activate LibraryRepo
-LibraryRepo --> Controller : userLibrary
-deactivate LibraryRepo
-
-Controller -> Library : getAllPublications(userLibrary)
+Controller -> Library : getAllPublications(user)
 activate Library
 Library --> Controller : allUserPublications
 deactivate Library
@@ -144,17 +138,17 @@ deactivate PublicationDTO
 Controller --> UI : listOfAvailablePublicationDTO
 deactivate Controller
 
-UI --> User : Which publication? Select one or more publication!
+UI --> User : Which publication? Select one or more publications!
 deactivate UI
 
 ' =====================================================
 ' USER SELECTS PUBLICATION(S)
 ' =====================================================
 
-User -> UI : selectedPublicationDTO
+User -> UI : Selected publications
 activate UI
 
-UI -> Controller : addPublicationToCollection(collectionSelected, selectedPublication)
+UI -> Controller : addPublicationToCollection(collectionSelectedDTO, selectedPublicationDTO)
 activate Controller
 
 
@@ -162,26 +156,26 @@ activate Controller
 ' CONVERT DTO -> DOMAIN
 ' =====================================================
 
-Controller -> CollectionDTO : CollectionDTOToDomain(selectedCollection)
-activate CollectionDTO
-CollectionDTO --> Controller : userCollection
-deactivate CollectionDTO
+Controller -> CollectionRepo : CollectionDTOToDomain(selectedCollectionDTO)
+activate CollectionRepo
+CollectionRepo --> Controller : userCollection
+deactivate CollectionRepo
 
 '----- loop -----
-    loop for each selected publicationSample
-        Controller -> PublicationDTO : PublicationSampleDtoToDomain(selectedPublicationDTO)
-        activate PublicationDTO
+loop for each selected publicationSample
+    Controller -> PublicationSampleRepo : PublicationSampleDtoToDomain(userLibrary, selectedPublicationDTO)
+    activate PublicationSampleRepo
 
-        PublicationDTO --> Controller : PublicationSample
-        deactivate PublicationDTO
-    end
+    PublicationSampleRepo --> Controller : publicationSample
+    deactivate PublicationSampleRepo
+end
 ' ----- end -----
 
 ' =====================================================
 ' ADD TO COLLECTION
 ' =====================================================
 
-Controller -> CollectionRepo : addPublicationToCollection(user, userCollection, publicationSample)
+Controller -> CollectionRepo : addPublicationToCollection(userCollection, publicationSample)
 activate CollectionRepo
 CollectionRepo --> Controller : true
 deactivate CollectionRepo
