@@ -15,7 +15,10 @@ class ItemDetailsDTOTest {
 
 
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
-    Author author = new Author(profile, "valid bio" );
+
+    AuthorFactory authorFactory = new AuthorFactory();
+
+    Author author = authorFactory.createAuthorWithExistingProfile(profile, "valid bio" );
     Address address = new Address("R Maria", "12", "156-5", new Country("PORTUGAL"));
     Email email = new Email("maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
@@ -39,12 +42,13 @@ class ItemDetailsDTOTest {
     Code code = Code.fromIsbn13("9781234567890");
 
     // Edition
+    EditionFactory editionFactory = new EditionFactory();
     Code code1 = Code.fromIsbn13 ("9783161484123");
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher1 = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition= new Edition(
+    Edition edition= editionFactory.create(
             "1st",
             code1,
             physicalAttributes,
