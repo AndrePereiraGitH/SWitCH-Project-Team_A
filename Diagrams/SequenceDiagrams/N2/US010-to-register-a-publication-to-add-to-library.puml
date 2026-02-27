@@ -1,49 +1,52 @@
 @startuml
 hide footbox
 autonumber
-title US010 - To register a new pub1 in MiteLovers
+title US010 - To register a new publication in MiteLovers
 
 ' As a User, I want to register a new publication
 ' in the system, so that I can add the
 ' publication to my library.
 
-
 actor User
 participant ":UI010" as UI
-
-
-
 participant ":ToRegisterNewPublicationCtrl" as Ctrl
-
-participant ":PublicationRepository" as SystemRepo
-
-
-' Publication is to be treated the same as "Item", supposedly
+participant ":PublicationSampleRepository" as SystemRepo
+participant ":FactoryPublicationSample" as Factory
 
 User -> UI : I want to add a publication to MiteLovers
 activate UI
+
 UI --> User : What publication?
 deactivate UI
-User -> UI : pub1
+
+User -> UI : Here are the details \n(BibliographicalData, User, PublicationStatus, Edition, Condition)
 activate UI
-UI -> Ctrl : createAndAddPublication(publication)
+
+UI -> Ctrl : createAndAddPublication(bd, owner, status, edition, condition)
 activate Ctrl
-Ctrl -> SystemRepo : createAndAddPublicationToSystem(publication)
+
+Ctrl -> SystemRepo : createAndAddPublicationToSystem(bd, owner, status, edition, condition)
 activate SystemRepo
-create "p1:Publication" as pub1
-SystemRepo -> pub1: create(publication)
 
+SystemRepo -> Factory : create(bd, owner, status, edition, condition)
+activate Factory
 
-SystemRepo -> SystemRepo : validate(p1)
-SystemRepo -> SystemRepo : add(p1)
+create "p1 : PublicationSample" as pub1
+Factory -> pub1 : create(bd, owner, status, edition, condition)
 
-SystemRepo --> Ctrl : true
+Factory --> SystemRepo : pub1
+deactivate Factory
+
+SystemRepo -> SystemRepo : validate(pub1)
+SystemRepo -> SystemRepo : add(pub1)
+
+SystemRepo --> Ctrl : success(pub1)
 deactivate SystemRepo
-Ctrl --> UI : Success
+
+Ctrl --> UI : Success(pub1)
 deactivate Ctrl
-UI --> User : pub1 was added
+
+UI --> User : p1 was added
 deactivate UI
-
-
 
 @enduml
