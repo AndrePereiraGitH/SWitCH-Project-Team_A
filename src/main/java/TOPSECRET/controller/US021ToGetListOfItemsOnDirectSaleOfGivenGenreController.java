@@ -21,7 +21,7 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      */
     public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController (GenreRepository genreRepository,  ListingRepository listingRepository) {
         if (genreRepository == null || listingRepository == null) {
-            throw new IllegalArgumentException("GenreRepository and listingRepository cannot be null");
+            throw new IllegalArgumentException("GenreRepository and ListingRepository cannot be null");
         }
 
         this.genreRepository = genreRepository;
