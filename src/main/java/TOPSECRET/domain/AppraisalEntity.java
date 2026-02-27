@@ -32,7 +32,7 @@ public class AppraisalEntity {
      * @param publicationTypes List of supported PublicationTypes (1..*)
      * @param genres List of supported Genres (1..*)
      */
-    public AppraisalEntity(String name, Contact contact, List<PublicationType> publicationTypes, List<Genre> genres) {
+    protected AppraisalEntity(String name, Contact contact, List<PublicationType> publicationTypes, List<Genre> genres) {
 
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("AppraisalEntity name can't be null or empty.");

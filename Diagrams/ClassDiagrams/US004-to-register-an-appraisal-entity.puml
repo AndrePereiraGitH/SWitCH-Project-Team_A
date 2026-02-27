@@ -7,10 +7,11 @@ title US004 - Register Appraisal Entity (Class Diagram)
 ' =========================
 
 class US004ToRegisterAppraisalEntityController {
-
-    +getAllGenres() : List<GenreDTO>
-    +getAllPublicationTypes() : List<PublicationTypeDTO>
-    +registerAppraisalEntity() : AppraisalEntity
+    +getAllGenres()
+    +getAllPublicationTypes()
+    +registerAppraisalEntity(name: String, contact: Contact, selectedGenresDTO: List<GenreDetailsDTO>, selectedPublicationTypesDTO: List<PublicationTypeDTO>)
+    -validateSelectedGenresDTO()
+    -validateSelectedPublicationTypesDTO()
 }
 
 ' =========================
@@ -18,31 +19,39 @@ class US004ToRegisterAppraisalEntityController {
 ' =========================
 
 class GenreRepository {
-    +getAllGenres() : List<Genre>
+    +getAllGenres()
+    +dtoToGenre(selectedGenresDTO)
 }
 
+
 class PublicationTypeRepository {
-    +getAllPublicationTypes() : List<PublicationType>
+    +getAllPublicationTypes()
+    +dtoToPublicationType(selectedPublicationTypesDTO: List<PublicationTypeDTO>)
 }
 
 class AppraisalEntityRepository {
-    -appraisalEntities : List<AppraisalEntity>
+    +createAndAddAppraisalEntity(name: String, contact: Contact, selectedGenresDTO: List<GenreDetailsDTO>, selectedPublicationTypesDTO: List<PublicationTypeDTO>)
+    -exists(apEn)
+    -add(apEn)
+}
+' =========================
+' Factory Layer
+' =========================
 
-    +createAndAddAppraisalEntity(name : String, contact : Contact, genres : List<Genre>, publicationTypes : List<PublicationType>) : AppraisalEntity
+class FactoryAppraisalEntity {
+    +create(name: String, contact: Contact, selectedGenresDTO: List<GenreDetailsDTO>, selectedPublicationTypesDTO: List<PublicationTypeDTO>)
 }
 
 ' =========================
-' Mapper / DTO Layer
+' DTO Layer
 ' =========================
 
 class GenreDTO {
     +genreToDTO(genres : List<Genre>) : List<GenreDetailsDTO>
-    +dtoToGenre(dto : GenreDetailsDTO) : Genre
 }
 
 class PublicationTypeDTO {
     +publicationTypeToDTO(types : List<PublicationType>) : List<PubTypeDTO>
-    +dtoToPublicationType(dto : PubTypeDTO) : PublicationType
 }
 
 ' =========================
@@ -69,7 +78,7 @@ class PublicationType {
 }
 
 ' =========================
-' Relationships
+' Associations
 ' =========================
 
 ' Controller dependencies
@@ -83,9 +92,17 @@ US004ToRegisterAppraisalEntityController ..> PublicationTypeDTO
 GenreRepository "1 " --> " * " Genre
 PublicationTypeRepository "1        " --> " * " PublicationType
 
+' DTO
+GenreDTO --> Genre
+PublicationTypeDTO --> PublicationType
+
+
 AppraisalEntityRepository "1 " --> " * " AppraisalEntity
 
 ' AppraisalEntity composition
+AppraisalEntityRepository --> FactoryAppraisalEntity
+FactoryAppraisalEntity --> AppraisalEntity
+
 AppraisalEntity "  1     " *-- "1..*" Genre
 AppraisalEntity "1 " *-- "1..*    " PublicationType
 

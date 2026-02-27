@@ -2,7 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.AppraisalEntity;
 import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Factory.FactoryAppraisalEntity;
+import TOPSECRET.domain.AppraisalEntityFactory;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
@@ -106,7 +106,7 @@ public class AppraisalEntityRepository {
         }
 
         AppraisalEntity apEn =
-                FactoryAppraisalEntity.create(name, contact, genres, publicationTypes);
+                AppraisalEntityFactory.create(name, contact, genres, publicationTypes);
 
         _appraisalEntities.add(apEn);
         return apEn;

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * Verifies that Factory correctly creates AppraisalEntity.
  */
-class FactoryAppraisalEntityTest {
+class AppraisalEntityFactoryTest {
 
     /**
      * Verifies that factory creates a valid AppraisalEntity.
@@ -37,7 +37,7 @@ class FactoryAppraisalEntityTest {
 
         // ACT
         AppraisalEntity result =
-                FactoryAppraisalEntity.create(
+                AppraisalEntityFactory.create(
                         "Entity",
                         contact,
                         genres,

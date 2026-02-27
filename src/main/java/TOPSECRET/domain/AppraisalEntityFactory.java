@@ -1,9 +1,4 @@
-package TOPSECRET.domain.Factory;
-
-import TOPSECRET.domain.AppraisalEntity;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.PublicationType;
+package TOPSECRET.domain;
 
 import java.util.List;
 
@@ -12,7 +7,7 @@ import java.util.List;
  * Factory responsible for creating AppraisalEntity instances.
  * Isolates instantiation logic from repository layer.
  */
-public class FactoryAppraisalEntity {
+public class AppraisalEntityFactory {
 
     /**
      * US004
