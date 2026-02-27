@@ -40,40 +40,72 @@ public class US004ToRegisterAppraisalEntityController {
     private GenreRepository _genreRepository;
     private PublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityRepository _appraisalEntityRepository;
-    private GenreDetailsDTO_US004 _genreDTO;
-    private PublicationTypeDTO_US004 _publicationTypeDTO;
 
+    /**
+     * Constructor.
+     *
+     * @param genreRepository Repository of Genre.
+     * @param publicationTypeRepository Repository of PublicationType.
+     * @param appraisalEntityRepository Repository of AppraisalEntity.
+     */
     public US004ToRegisterAppraisalEntityController(
             GenreRepository genreRepository,
             PublicationTypeRepository publicationTypeRepository,
-            AppraisalEntityRepository appraisalEntityRepository,
-            GenreDetailsDTO_US004 genreDTO,
-            PublicationTypeDTO_US004 publicationTypeDTO) {
+            AppraisalEntityRepository appraisalEntityRepository) {
+
+        if (genreRepository == null) {
+            throw new IllegalArgumentException("GenreRepository cannot be null.");
+        }
+
+        if (publicationTypeRepository == null) {
+            throw new IllegalArgumentException("PublicationTypeRepository cannot be null.");
+        }
+
+        if (appraisalEntityRepository == null) {
+            throw new IllegalArgumentException("AppraisalEntityRepository cannot be null.");
+        }
 
         this._genreRepository = genreRepository;
         this._publicationTypeRepository = publicationTypeRepository;
         this._appraisalEntityRepository = appraisalEntityRepository;
-        this._genreDTO = genreDTO;
-        this._publicationTypeDTO = publicationTypeDTO;
     }
 
     /**
-     * Retrieves all available genres and converts them to DTO objects.
-     * @return List of GenreDetailsDTO to be displayed to the Administrator.
+     * Retrieves all available Genres and converts them to DTO objects.
+     * @return List of GenreDetailsDTO_US004 for UI display.
      */
     public List<GenreDetailsDTO_US004> getAllGenres() {
+
         List<Genre> genres = _genreRepository.getAllGenres();
-        return _genreDTO.genreListToDTO(genres);
+        List<GenreDetailsDTO_US004> result = new ArrayList<>();
+
+        for (Genre genre : genres) {
+            result.add(new GenreDetailsDTO_US004(genre.getTitle()));
+        }
+        return result;
     }
 
     /**
-     * Retrieves all available publication types and converts them to DTO objects.
-     *
-     * @return List of PubTypeDTO to be displayed to the Administrator.
+     * Retrieves all available PublicationTypes and converts them to DTO objects.
+     * @return List of PublicationTypeDTO_US004 for UI display.
      */
     public List<PublicationTypeDTO_US004> getAllPublicationTypes() {
-        List<PublicationType> types = _publicationTypeRepository.getAllPublicationTypes();
-        return _publicationTypeDTO.publicationTypeListToDTO(types);
+
+        List<PublicationType> types =
+                _publicationTypeRepository.getAllPublicationTypes();
+
+        List<PublicationTypeDTO_US004> result = new ArrayList<>();
+
+        for (PublicationType type : types) {
+            result.add(
+                    new PublicationTypeDTO_US004(
+                            type.getMediaFormat(),
+                            type.getTypeOfBinding(),
+                            type.getDetails()
+                    )
+            );
+        }
+        return result;
     }
 
     /**
@@ -100,18 +132,13 @@ public class US004ToRegisterAppraisalEntityController {
             throw new IllegalArgumentException("At least one PublicationType must be selected.");
         }
 
-        List<Genre> genres = new ArrayList<>();
-        for (GenreDetailsDTO_US004 dto : selectedGenresDTO) {
-            genres.add(dto.dtoToGenre());
-        }
-
-        List<PublicationType> publicationTypes = new ArrayList<>();
-        for (PublicationTypeDTO_US004 dto : selectedPublicationTypesDTO) {
-            publicationTypes.add(dto.dtoToPublicationType());
-        }
 
         return _appraisalEntityRepository.createAndAddAppraisalEntity(
-                name, contact, publicationTypes, genres);
+                name,
+                contact,
+                selectedGenresDTO,
+                selectedPublicationTypesDTO
+        );
     }
 
 }

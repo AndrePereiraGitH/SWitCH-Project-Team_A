@@ -149,4 +149,139 @@ public class PublicationTypeRepositoryTest {
         assertNotNull(returned);
         assertSame(pubType, returned);
     }
+
+    // US004 starts -------------
+
+    /**
+     * Verifies that findByAttributes returns correct PublicationType.
+     */
+    @Test
+    void shouldReturnPublicationTypeWhenExists() {
+
+        // ARRANGE
+        PublicationTypeRepository repository =
+                new PublicationTypeRepository();
+
+        PublicationType type =
+                new PublicationType(
+                        MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        "Standard"
+                );
+
+        repository.addToList(type);
+
+        // ACT
+        PublicationType result =
+                repository.findByAttributes(
+                        MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        "Standard"
+                );
+
+        // ASSERT
+        assertEquals(type, result);
+    }
+
+    /**
+     * Verifies that findByAttributes throws exception when not found.
+     */
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeNotFound() {
+
+        // ARRANGE
+        PublicationTypeRepository repository =
+                new PublicationTypeRepository();
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findByAttributes(
+                        MediaFormat.MAGAZINE,
+                        TypeOfBinding.PAPERBACK,
+                        "Unknown"
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when mediaFormat is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenMediaFormatIsNull() {
+
+        // ARRANGE
+        PublicationTypeRepository repository =
+                new PublicationTypeRepository();
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findByAttributes(
+                        null,
+                        TypeOfBinding.HARDBACK,
+                        "Standard"
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when typeOfBinding is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenTypeOfBindingIsNull() {
+
+        // ARRANGE
+        PublicationTypeRepository repository =
+                new PublicationTypeRepository();
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findByAttributes(
+                        MediaFormat.BOOK,
+                        null,
+                        "Standard"
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when details is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenDetailsIsNull() {
+
+        // ARRANGE
+        PublicationTypeRepository repository =
+                new PublicationTypeRepository();
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findByAttributes(
+                        MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        null
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when details is blank.
+     */
+    @Test
+    void shouldThrowExceptionWhenDetailsIsBlank() {
+
+        // ARRANGE
+        PublicationTypeRepository repository =
+                new PublicationTypeRepository();
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findByAttributes(
+                        MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        "   "
+                )
+        );
+    }
+
+    // ends ---------------------
 }

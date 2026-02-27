@@ -9,56 +9,50 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for GenreDetailsDTO_US004.
+ *
+ * Validates:
+ * - Successful creation
+ * - Getter behavior
+ * - Validation of null and blank values
  */
 class GenreDetailsDTO_US004Test {
 
     /**
-     * Verifies conversion from domain to DTO.
+     * Verifies successful creation with valid title.
      */
     @Test
-    void shouldConvertGenreToDTO() {
+    void shouldCreateDTOWithValidTitle() {
 
-        // Arrange
-        Genre genre = new Genre("Fantasy");
-        GenreDetailsDTO_US004 dto = new GenreDetailsDTO_US004("temp");
+        // ARRANGE
+        String expectedTitle = "Fantasy";
 
-        // Act
-        GenreDetailsDTO_US004 result = dto.genreToDTO(genre);
+        // ACT
+        GenreDetailsDTO_US004 dto =
+                new GenreDetailsDTO_US004(expectedTitle);
 
-        // Assert
-        assertEquals("Fantasy", result.getTitle());
+        // ASSERT
+        assertEquals(expectedTitle, dto.getTitle());
     }
 
     /**
-     * Verifies list conversion.
+     * Verifies exception when title is null.
      */
     @Test
-    void shouldConvertGenreListToDTO() {
+    void shouldThrowExceptionWhenTitleIsNull() {
 
-        // Arrange
-        GenreDetailsDTO_US004 dto = new GenreDetailsDTO_US004("temp");
-
-        // Act
-        List<GenreDetailsDTO_US004> result =
-                dto.genreListToDTO(List.of(new Genre("A"), new Genre("B")));
-
-        // Assert
-        assertEquals(2, result.size());
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new GenreDetailsDTO_US004(null));
     }
 
     /**
-     * Verifies conversion from DTO to domain.
+     * Verifies exception when title is blank.
      */
     @Test
-    void shouldConvertDTOToGenre() {
+    void shouldThrowExceptionWhenTitleIsBlank() {
 
-        // Arrange
-        GenreDetailsDTO_US004 dto = new GenreDetailsDTO_US004("Fantasy");
-
-        // Act
-        Genre genre = dto.dtoToGenre();
-
-        // Assert
-        assertEquals("Fantasy", genre.getTitle());
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new GenreDetailsDTO_US004(" "));
     }
 }
