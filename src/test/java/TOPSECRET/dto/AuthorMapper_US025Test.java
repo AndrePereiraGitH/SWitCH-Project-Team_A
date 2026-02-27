@@ -1,7 +1,9 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author;
+import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
+import TOPSECRET.domain.EditionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthorMapper_US025Test {
 
     private AuthorMapper_US025 mapper;
+    private AuthorFactory authorFactory = new AuthorFactory();
 
     @BeforeEach
     void setUp() {
@@ -23,8 +26,8 @@ class AuthorMapper_US025Test {
     void toDTO_shouldMapSingleAuthorCorrectly() {
 
         Country country = new Country("PORTUGAL");
-        Author author1 = new Author("José Saramago", country, LocalDate.of(2000, 11, 25), "bio");
-        Author author2 = new Author("João Silva", country, LocalDate.of(2000, 11, 25), "bio");
+        Author author1 = authorFactory.createAuthor("José Saramago", country, LocalDate.of(2000, 11, 25), "bio");
+        Author author2 =authorFactory.createAuthor("João Silva", country, LocalDate.of(2000, 11, 25), "bio");
 
         var dtos = mapper.toDTO(List.of(author1,author2));
 

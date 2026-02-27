@@ -186,9 +186,11 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
 //        return new Auction(listing, start, end, new Price(new BigDecimal("20.00")));
 //    }
     private BibliographicalData createBibliographicalDataWithGenre(Genre genre) {
+        AuthorFactory authorFactory = new AuthorFactory();
+
         return new BibliographicalData(
                 "Book",
-                List.of(new Author(new Profile("Freida", new Country("Spain"), LocalDate.of(1975, 4, 25)), "Valid Bio")),
+                List.of(authorFactory.createAuthorWithExistingProfile( new Profile("Freida", new Country("Spain"), LocalDate.of(1975, 4, 25)), "Valid Bio")),
                 new Locale("pt","PT"),
 //                new Publisher("Pub","123",null),
                 LocalDate.now(),
@@ -203,7 +205,9 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    EditionFactory editionFactory = new EditionFactory();
+
+    Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     private Publication createPublication(BibliographicalData bd, User seller) {
         return new Publication(

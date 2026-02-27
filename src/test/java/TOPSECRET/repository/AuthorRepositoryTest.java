@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Author;
+import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
 import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
@@ -11,10 +12,27 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Unit tests for the {@link AuthorRepository}.
+ * <p>
+ * This test suite validates:
+ * <ul>
+ *     <li>Repository construction and constructor validation (null list handling).</li>
+ *     <li>Creation and addition of {@link Author} instances through repository operations.</li>
+ *     <li>Duplicate prevention according to the repository's uniqueness rules.</li>
+ *     <li>Acceptance of authors with the same name when other identifying data differs.</li>
+ *     <li>Validation of invalid input data (null fields) delegated to domain constraints.</li>
+ *     <li>Correct retrieval of all stored authors.</li>
+ *     <li>Encapsulation by returning an unmodifiable and/or defensive copy of the internal collection.</li>
+ * </ul>
+ * <p>
+ * The goal is to ensure that {@code AuthorRepository} preserves consistency,
+ * enforces domain rules, and protects its internal state from external modification.
+ */
 public class AuthorRepositoryTest {
 
-    private final AuthorRepository authorRepository = new AuthorRepository(new ArrayList<>());
+    private final AuthorRepository authorRepository = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
+    AuthorFactory authorFactory = new AuthorFactory();
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -31,7 +49,7 @@ public class AuthorRepositoryTest {
     void shouldThrowExceptionWhenListIsNull() {
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> new AuthorRepository(null)
+                IllegalArgumentException.class, () -> new AuthorRepository(null, authorFactory)
         );
         assertEquals("Author cannot be null", exception.getMessage());
     }
@@ -40,10 +58,10 @@ public class AuthorRepositoryTest {
     void shouldCreateRepositoryWithExistingAuthors() {
         // Arrange
         List<Author> existingAuthors = new ArrayList<>();
-        existingAuthors.add(new Author("Name", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"));
+        existingAuthors.add(authorFactory.createAuthor("Name", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"));
 
         // Act
-        AuthorRepository repository = new AuthorRepository(existingAuthors);
+        AuthorRepository repository = new AuthorRepository(existingAuthors, authorFactory);
 
         // Assert
         assertEquals(1, repository.getAllAuthors().size());
@@ -57,7 +75,7 @@ public class AuthorRepositoryTest {
     void shouldCreateAuthor() {
         //  Arrange
         Profile expectedProfile = new Profile("João", new Country("Portugal"), LocalDate.of(1978, 5, 12));
-        Author expected = new Author(expectedProfile, "valid bio");
+        Author expected = authorFactory.createAuthorWithExistingProfile(expectedProfile, "valid bio");
 
         // Act
         Author result = authorRepository.createAndAddAuthor("João", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
@@ -161,7 +179,7 @@ public class AuthorRepositoryTest {
 
         // Assert - trying to modify should throw exception
         assertThrows(UnsupportedOperationException.class,
-                () -> result.add(new Author("Hacker", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"))
+                () -> result.add(authorFactory.createAuthor("Hacker", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"))
         );
     }
 

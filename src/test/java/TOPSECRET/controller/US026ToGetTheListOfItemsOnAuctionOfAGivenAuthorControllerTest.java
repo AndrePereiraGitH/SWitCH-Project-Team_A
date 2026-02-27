@@ -36,11 +36,12 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     AuthorRepository authorRepo;
     AuctionRepository auctionRepo;
     US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ctrl;
+    AuthorFactory authorFactory = new AuthorFactory();
 
     @BeforeEach
     void setup() {
         AuctionFactory auctionFactory = new AuctionFactory();
-        authorRepo = new AuthorRepository(new ArrayList<>());
+        authorRepo = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
         auctionRepo = new AuctionRepository(auctionFactory);
         ctrl = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepo, auctionRepo);
 
@@ -192,7 +193,10 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+
+        EditionFactory editionFactory = new EditionFactory();
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new PublicationSample(
                 bd,

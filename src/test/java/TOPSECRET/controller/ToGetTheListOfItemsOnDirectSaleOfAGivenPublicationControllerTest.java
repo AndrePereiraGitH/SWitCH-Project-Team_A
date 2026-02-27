@@ -76,7 +76,9 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         // Bibliographical data
         profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
-        author = new Author(profile, "valio bio");
+        
+        AuthorFactory authorFactory = new AuthorFactory();
+        author = authorFactory.createAuthorWithExistingProfile(profile, "valio bio");
 //        address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
 //        email = new Email("Maria1", "gmail.com");
 //        contact = new Contact("915945695", "+351", email, address);
@@ -101,14 +103,15 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         code3 = Code.fromIsbn13("9781234567892");
 
         // Edition
+        EditionFactory editionFactory = new EditionFactory();
         Code code = Code.fromIsbn13 ("978316148412");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-        Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-        Edition edition3= new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition1= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition2= editionFactory.create("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition3= editionFactory.create("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         // Items referencing different publication editions
         validItem1 = new Item(Condition.LIKE_NEW, 1.2, dimensions,
@@ -141,8 +144,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 //        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
 //        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
 //        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-//        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-//        Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+//        Edition edition1= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+//        Edition edition2= editionFactory.create("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 //
 //        Publication pub1 = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1);
 //        Publication pub2 = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition2, code2);
@@ -173,7 +176,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 //        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
 //        PublicationType pubType = new PublicationType(TypeOfBinding.CASE_BINDING, "Some details");
 //        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-//        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+//        Edition edition1= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 //
     ////        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, "1st edition", code1);
 //        Publication pub = new Publication(bibliographicalData, publicationType, user, publicationStatus, edition1, code1);
