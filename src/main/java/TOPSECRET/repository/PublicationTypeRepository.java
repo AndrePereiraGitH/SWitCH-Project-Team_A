@@ -2,11 +2,9 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Factory.FactoryPublicationType;
+import TOPSECRET.domain.FactoryPublicationType;
 import TOPSECRET.domain.PublicationType;
-import org.apache.commons.collections.Factory;
 
-import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
 

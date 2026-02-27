@@ -1,8 +1,6 @@
 @startuml
 title US002 - To add a publication type in the system
 
-'Need to create class
-
 class RegisterPubTypeController {
   -_pubTypeRepo: PublicationTypeRepository
     +RegisterPubType(mediaFormat: Media Format, typeOfBinding: TypeOfBinding, details: String): PublicationType
@@ -10,8 +8,8 @@ class RegisterPubTypeController {
 
 class PublicationTypeRepository {
   -_publicationTypes: List<PublicationType>
-  +createPublicationType(mediaFormat: Media Format, typeOfBinding: TypeOfBinding, details: String): PublicationType
-  +validatePublicationType(pubType: PublicationType): boolean
+  +create(mediaFormat: Media Format, typeOfBinding: TypeOfBinding, details: String): PublicationType
+  -validatePublicationType(pubType: PublicationType): boolean
   +addToList(pubType: PublicationType): PublicationType
 }
 
@@ -24,9 +22,14 @@ class PublicationType {
   +getDetails() : String
 }
 
+class FactoryPublicationType {
+  +create(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details):PublicationType
+}
+
 ' Interactions
 
 RegisterPubTypeController "1 " -- "1 " PublicationTypeRepository : requests registration to >
 PublicationTypeRepository "1 " -- " * " PublicationType : manages / stores >
+PublicationTypeRepository -- FactoryPublicationType : uses >
 
 @enduml

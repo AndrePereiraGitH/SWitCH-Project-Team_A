@@ -1,8 +1,7 @@
-package TOPSECRET.domain.Factory;
+package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationType;
 
 public class FactoryPublicationType {
 
