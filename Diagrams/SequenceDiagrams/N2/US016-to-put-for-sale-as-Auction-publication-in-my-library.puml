@@ -24,8 +24,11 @@ participant ":PublicationSampleRepository" as pubRepo
 
 participant ":ListingRepository" as ListingRepo
 
+participant ":ListingFactory" as ListingFactory
+
 
 participant ":AuctionRepository" as AucRepo
+participant ":AuctionFactory" as AuctionFactory
 
 
 
@@ -35,7 +38,7 @@ User -> UI : I want to sell a publication of my library as an auction"
 activate UI
 
 /' ====== GET LIST OF PUBLICATIONS IN LIBRARY ========= '/
-UI -> ctrl : getUserLibraryPublications(username)
+UI -> ctrl : getAllPublicationsInUserLibrary(username)
 activate ctrl
 ctrl -> LibRepo : getLibraryOfUser(username)
 activate LibRepo
@@ -98,8 +101,13 @@ deactivate pubRepo
 
 ctrl -> ListingRepo : createAndAdd ( listing_title, listOfPublicationSamples, SaleType.AUCTION, price, shortDescription, pictures )
 activate ListingRepo
+
+ListingRepo -> ListingFactory : create(listing_title, listOfPublicationSamples, SaleType.AUCTION, price, shortDescription, pictures)
+activate ListingFactory
 create "listing :Listing" as listing
-ListingRepo -> listing : create()
+ListingFactory -> listing : create()
+ListingFactory --> ListingRepo : listing
+deactivate ListingFactory
 ListingRepo -> ListingRepo : isExistent(l1)
 ListingRepo -> ListingRepo : add(l1)
 ListingRepo --> ctrl : listing
@@ -108,8 +116,13 @@ deactivate ListingRepo
 /' ====== ===== AUCTION ========= '/
 ctrl -> AucRepo : createAndAdd(listing, initialDate, finalDate, buyOutPrice)
 activate AucRepo
+
+AucRepo -> AuctionFactory : create(listing, initialDate, finalDate, buyOutPrice)
+activate AuctionFactory
 create "auction1:Auction" as a1
-AucRepo -> a1 : create()
+AuctionFactory -> a1 : create()
+AuctionFactory --> AucRepo : auction1
+deactivate AuctionFactory
 
 AucRepo -> AucRepo : validateAuction(auction1)
 AucRepo -> AucRepo : addAuction(auction1)

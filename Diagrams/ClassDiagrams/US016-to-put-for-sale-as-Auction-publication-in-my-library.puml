@@ -5,73 +5,75 @@ title US016 - Put a publication from my library for sale in an auction
 
 
 
-class ToPutPublicationInAuctionController <<controller>> {
+class ToPutPublicationInAuctionController {
   +getAllPublicationsInUserLibrary(username: String): List<Publication>
-  +putPublicationForAuction(
-    /'-pub: Publication,
-    -listingPrice: Price,
-    -shortDescription: String,
-    -listingTitle: String,
-    -seller: String,
-    -initialDate: DateTime,
-    -finalDate: DateTime,
-    -initialPrice: Price,
-    -buyOutPrice: Price'/
-  ): boolean
+  +createAuctionListing(String listingTitle, List<PublicationSampleDTO_US016> publicationDTOs, Price listingPrice, shortDescription: String, List<Picture> pictures, DateTime initialDate, DateTime finalDate, Price buyOutPrice): boolean
 }
 
 class Library  {
-  +getAllPublications(): List<Publication>
+  +getAllPublications(): List<PublicationSample>
 }
 
-class Publication
-class Item
 class Listing
 class Auction
 
-class ItemRepository <<repository>> {
-  +createAndAddItem(condition: Condition, weight: Weight, dimensions: Dimensions, pub: Publication): List<Item>
-  -verifyIfExists(): void
-  -add(): void
+class LibraryRepository {
+    +getLibraryOfUser(username: String)
 }
 
-class ListingRepository <<repository>> {
-  +create(): Listing
+class PublicationSampleDTO_US016 {
+    +toDTO(publication : PublicationSample)
+}
+
+class PublicationSampleRepository {
+    +getPublicationByDTO(dto :PublicationSampleDTO_US016) : PublicationSample
+}
+
+class ListingRepository {
+  +createAndAdd(listing_title :String, listOfPublicationSamples: List<PublicationSample>, SaleType.AUCTION :SaleType, price :Price, shortDescription :String, pictures :List<Pictures> ): Listing
   -isExistent(listing: Listing): boolean
   -add(listing: Listing): void
 }
 
-class AuctionRepository <<repository>> {
+class ListingFactory {
+    +create(listing_title :String, listOfPublicationSamples: List<PublicationSample>, SaleType.AUCTION :SaleType, price :Price, shortDescription :String, pictures :List<Pictures>)
+}
+
+class AuctionRepository {
   +createAndAdd(listing: Listing, initialDate: DateTime, finalDate: DateTime, initialPrice: Price, buyOutPrice: Price): Auction
   -validateAuction(auction: Auction): void
   -addAuction(auction: Auction): void
 }
 
+class AuctionFactory {
+    +create(listing: Listing, initialDate: DateTime, finalDate: DateTime, initialPrice: Price, buyOutPrice: Price)
+}
+
 '======================
 ' Controller uses
 '======================
-ToPutPublicationInAuctionController --> Library : retrieves publications from
-ToPutPublicationInAuctionController --> ItemRepository
-ToPutPublicationInAuctionController --> ListingRepository
-ToPutPublicationInAuctionController --> AuctionRepository
+ToPutPublicationInAuctionController ..> Library : retrieves publications from
+ToPutPublicationInAuctionController ..> LibraryRepository : invokes
+ToPutPublicationInAuctionController ..> PublicationSampleDTO_US016 : converts
+ToPutPublicationInAuctionController ..> PublicationSampleRepository : matches DTO
+ToPutPublicationInAuctionController .....> ListingRepository : invokes
+ToPutPublicationInAuctionController ....> AuctionRepository : invokes
 
 '======================
 ' Repositories handles with
 '======================
-ItemRepository ..> Item : creates/adds
-ItemRepository ..> Publication : uses pub
 
-ListingRepository ..> Listing : creates/adds
+ListingRepository --> ListingFactory
+ListingFactory ..> Listing : creates
 
-AuctionRepository ..> Auction : creates/adds
-AuctionRepository ..> Listing : uses l1
+AuctionRepository --> AuctionFactory
+AuctionFactory ..> Auction : creates
 
 '======================
 ' Domain interactions
 '======================
-Library "1" -- "*" Publication : contains
-Item "0..*" --> "1" Publication : publication
-Listing "1" o-- "1..*" Item : items
-Auction "1" --> "1" Listing : listing
+Library "1" -- "*" PublicationSample : contains
+Listing "1" o-- "1..*" PublicationSample : contains
+Auction "1" --> "1" Listing : contains
 
 @enduml
