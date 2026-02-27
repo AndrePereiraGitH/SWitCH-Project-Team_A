@@ -28,13 +28,18 @@ activate C
 C -> R :  createAndAddAuthor(name, \n country, birthday, biography)
 activate R
 
-
+participant ":AuthorFactory" as F
+R -> F :  createAuthor(name, \n country, birthday, biography)
+activate F
 
  create participant "author1:Author" as A
- R -> A ++ : create(name, country, birthday, biography)
+ F-> A ++ : create(name, country, birthday, biography)
 
  create "profile1:Profile" as P
  A -> P : create(name, country, birthday)
+
+ A --> F : author1
+ F --> R : author1
 
  R -> R : exists(author1)
  deactivate A
