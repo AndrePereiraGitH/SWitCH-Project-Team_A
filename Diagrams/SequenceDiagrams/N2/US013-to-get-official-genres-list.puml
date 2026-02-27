@@ -1,57 +1,46 @@
 @startuml
 autonumber
-
 hide footbox
-title US0013 - To get official genres list
+title US013 - To get official genres list
 
 actor User
 participant ":UI" as UI
-
-participant ":ListAllGenresGenreController" as AddGenreCtrl
-
-participant ":GenreRepository" as GenreRepository
-
-participant ":GenreMapper" as mapper
-
+participant ":ToGetListOfGenreController" as Ctrl
+participant ":GenreRepository" as Repo
+participant "GenreDTO_US013" as DTOClass
 participant ":Genre" as genre
-
-participant "genreDTO:GenreDTO" as DTO
 
 User -> UI : I want to get a list of official genres in the system
 activate UI
-UI -> AddGenreCtrl : getGenresList()
-activate AddGenreCtrl
 
-AddGenreCtrl -> GenreRepository : findAllGenres()
-activate GenreRepository
+UI -> Ctrl : getGenresList()
+activate Ctrl
 
-create "_genres:List<Genre>" as listGenres
-GenreRepository -> listGenres : create()
+Ctrl -> Repo : getAllGenres()
+activate Repo
 
-GenreRepository --> AddGenreCtrl : _genres
+Repo --> Ctrl : _genres
+deactivate Repo
 
-deactivate GenreRepository
-AddGenreCtrl -> mapper : toDTO(_genres)
-activate mapper
+create "_genresDTO : List<GenreDTO_US013>" as listDTO
+Ctrl -> listDTO : create()
 
-create "_genresDTO : List<genresDTO>" as genDTO
-mapper -> genDTO :create()
+loop for each Genre in _genres
+    Ctrl -> DTOClass : toDTO(genre)
+    activate DTOClass
 
-loop for each Genre in list
-        mapper -> genre : getGenreType()
-        activate genre
-        genre --> mapper : genreType
-        deactivate genre
-        mapper -> DTO ** : createDTO(genreType)
-        mapper -> mapper : addToGenresDTO()
 
-    end
 
-mapper --> AddGenreCtrl : _genresDTO
-deactivate mapper
 
-AddGenreCtrl --> UI : _genresDTO
-deactivate AddGenreCtrl
+
+    DTOClass --> Ctrl : dto
+    deactivate DTOClass
+
+    Ctrl -> listDTO : add(dto)
+end
+
+Ctrl --> UI : _genresDTO
+deactivate Ctrl
 
 UI --> User : Official List of Genres
 deactivate UI

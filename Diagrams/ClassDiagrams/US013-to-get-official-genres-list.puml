@@ -7,11 +7,8 @@ class ToGetListOfGenreController {
   +getGenresList() : List<GenreDTO_US013>
 }
 
-class GenreMapperUS013 {
-    toDTO(List<Genre>) : List<GenreDTO>
-}
-
 class GenreDTO_US013 {
+toDTO(Genre) : GenreDTO_US013
 }
 
 class GenreRepository {
@@ -23,10 +20,8 @@ class Genre {
 }
 
 ' Interactions
-ToGetListOfGenreController "1"..> "1" GenreMapperUS013 : Invokes to convert into DTO
+ToGetListOfGenreController "1"..> "1" GenreDTO_US013 : Invokes to convert into DTO
 ToGetListOfGenreController "1"--> "1" GenreRepository : requests list to
-GenreMapperUS013 "1"..> "1..*" GenreDTO_US013 : produces
-GenreMapperUS013 "1"..> "1..*" Genre : converts
 GenreRepository "1"-----> "   * _genres" Genre : stores
 
 @enduml
