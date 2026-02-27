@@ -15,10 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionRepositoryTest {
 
+    private final AuctionFactory auctionFactory = new AuctionFactory();
+    private final AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+
     @Test
     void empty_constructor_should_create_empty_auctionList() {
         // arrange + act
-        AuctionRepository auctionRepo = new AuctionRepository();
+        AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
 
         List<Auction> auctionsList = auctionRepo.getAllAuctions();
 
@@ -28,10 +31,10 @@ class AuctionRepositoryTest {
     }
 
     @Test
-    void create_and_add_should_return_true_if_new_auction_is_added_to_list() throws InstanceAlreadyExistsException {
+    void create_and_add_shouldAddActionToRepository_ifNewAuctionIsValid() throws InstanceAlreadyExistsException {
 
         // arrange
-        AuctionRepository auctionRepository = new AuctionRepository();
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
@@ -39,27 +42,28 @@ class AuctionRepositoryTest {
         LocalDateTime finalDate = now.plusDays(2);
 
         // act
-        boolean result = auctionRepository.createAndAdd(listing, initialDate, finalDate, new Price(new BigDecimal(150.50)));
+        Auction result = auctionRepository.createAndAdd(listing, initialDate, finalDate, new Price(new BigDecimal(150.50)));
 
-        // assert
-        assertTrue(result);
+        //assert
         assertEquals(1, auctionRepository.getAllAuctions().size());
     }
 
     @Test
-    void create_and_add_should_return_FALSE_if_new_auction_already_exists_in_auctionsList() throws InstanceAlreadyExistsException {
+    void create_and_add_shouldNotAddToRepository_ifNewAuctionAlreadyExistsInAuctionsList() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepository = new AuctionRepository();
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
         LocalDateTime initialDate = now;
         LocalDateTime finalDate = now.plusDays(2);
 
-        assertTrue(auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
+        auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50"));
         assertEquals(1, auctionRepository.getAllAuctions().size());
 
-        assertFalse(auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
+        // act + assert
+        assertThrows(InstanceAlreadyExistsException.class, () -> auctionRepository.createAndAdd(listing, initialDate, finalDate, price("150.50")));
+
         assertEquals(1, auctionRepository.getAllAuctions().size());
     }
 
@@ -93,12 +97,12 @@ class AuctionRepositoryTest {
 //    void shouldReturnAnEmptyListWhenAuctionDoesNotHaveThePublication(){
 //
 //        //Arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
+//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 //        Listing listing = instantiateListing();
 //        LocalDateTime now = fixedNow();
 //        LocalDateTime initialDate = now;
 //        LocalDateTime finalDate = now.plusDays(2);
-//        auctionRepository.create(listing,initialDate,finalDate,price("150.50"));
+//        auctionRepository.createAndAdd(listing,initialDate,finalDate,price("150.50"));
 //
 //
 //        Publication publication2 = createValidPublication2(instantiateBibliographicalData());
@@ -113,33 +117,33 @@ class AuctionRepositoryTest {
 //        assertTrue(listOfItemsOnAuction.isEmpty());
 //    }
 
-//    @Test
-//    void getListOfItemsOnAuctionOfGivenGenreNullGenre(){
-//        // Arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () -> auctionRepository.getListOfItemsOnAuctionGivenGenre(null));
-//
-//    }
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreNullGenre(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> auctionRepository.getListOfItemsOnAuctionGivenGenre(null));
 
-//    @Test
-//    void getListOfItemsOnAuctionOfGivenGenreEmptyList(){
-//        // Arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
-//        Genre fantasy = new Genre("Fantasy");
-//
-//        // Act
-//        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
-//
-//        // Assert
-//        assertNotNull(result);
-//        assertTrue(result.isEmpty());
-//    }
+    }
+
+    @Test
+    void getListOfItemsOnAuctionOfGivenGenreEmptyList(){
+        // Arrange
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+        Genre fantasy = new Genre("Fantasy");
+
+        // Act
+        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 
 //    @Test
 //    void getListOfItemsOnAuctionOfGivenGenreOneMatchGenre(){
 //        // Arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
+//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 //        Genre fantasy = new Genre("Fantasy");
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
 //
@@ -154,7 +158,7 @@ class AuctionRepositoryTest {
 //    @Test
 //    void getListOfItemsOnAuctionOfGivenGenreFilterByGenre(){
 //        // Arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
+//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 //        Genre fantasy = new Genre("Fantasy");
 //        Genre romance = new Genre("Romance");
 //
@@ -172,7 +176,7 @@ class AuctionRepositoryTest {
 //    @Test
 //    void getListOfItemsOnAuctionOfGivenGenreMultipleMatchingGenre(){
 //        // Arrange
-//        AuctionRepository auctionRepository = new AuctionRepository();
+//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 //        Genre fantasy = new Genre("Fantasy");
 //        Genre romance = new Genre("Romance");
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
@@ -182,7 +186,7 @@ class AuctionRepositoryTest {
 //        List<Auction> result =  auctionRepository.getListOfItemsOnAuctionGivenGenre(fantasy);
 //
 //        Auction auction = result.get(0);
-//        List<Genre> genres = auction.getListing().getItems().get(0).getPublication().getBibliographicalData().getGenres();
+//        List<Genre> genres = auction.getListing().getItems().get(0).getBibliographicalData().getGenres();
 //
 //        // Assert
 //        assertEquals(2,result.size());
@@ -190,9 +194,9 @@ class AuctionRepositoryTest {
 //    }
 
     @Test
-    void getListOfItemsOnAuctionGivenAuthor_shouldThrow_ifAuthorNull() {
+    void getListOfItemsOnAuctionGivenAuthor_shouldThrow_ifAuthorNull() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepo = new AuctionRepository();
+        AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
 
 
         Listing listing = instantiateListing();
@@ -233,7 +237,7 @@ class AuctionRepositoryTest {
         return new Price(new BigDecimal(value));
     }
 
-    private Auction createAuctionWithGenre(Genre genre){
+    private Auction createAuctionWithGenre(Genre genre) throws InstanceAlreadyExistsException {
         BibliographicalData bd = new BibliographicalData(
                 "Book",
                 List.of(new Author(
@@ -251,7 +255,7 @@ class AuctionRepositoryTest {
         User seller = instantiateUser("Seller");
 
         // Edition
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484122");
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
@@ -270,7 +274,7 @@ class AuctionRepositoryTest {
 
         PublicationSample item = new PublicationSample(
                 instantiateBibliographicalData(),
-                instantiateUser("John"),
+                instantiateUser("Johny"),
                 PublicationStatus.FOR_SALE,
                 instantiateEdition(),
                 Condition.LIKE_NEW
@@ -288,7 +292,7 @@ class AuctionRepositoryTest {
         LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
         LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
 
-        return new Auction(
+        return  auctionRepository.createAndAdd(
                 listing,
                 start,
                 end,
@@ -296,18 +300,18 @@ class AuctionRepositoryTest {
         );
     }
 
-//    private static Auction createValidActiveAuction() {
-//        Listing listing = instantiateListing();
-//        LocalDateTime now = fixedNow();
-//
-//        LocalDateTime initialDate = now;
-//        LocalDateTime finalDate = now.plusDays(2);
-//
-//        return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
-//    }
+    private static Auction createValidActiveAuction() {
+        Listing listing = instantiateListing();
+        LocalDateTime now = fixedNow();
+
+        LocalDateTime initialDate = now;
+        LocalDateTime finalDate = now.plusDays(2);
+
+        return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
+    }
 
     private static Edition instantiateEdition(){
-        Code code = Code.fromIsbn13 ("978316148412");
+        Code code = Code.fromIsbn13 ("9783161484122");
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
@@ -317,7 +321,20 @@ class AuctionRepositoryTest {
 
     private static Listing instantiateListing() {
         PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
-                //instantiateItem(instantiateBibliographicalData(), new Dimensions(12, 10, 2));
+        Price price = new Price(new BigDecimal("35.00"));
+        final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
+        return new Listing(
+                "This is our first listing",
+                items,
+                SaleType.AUCTION,
+                price,
+                "short description",
+                instantiatePictures()
+        );
+    }
+
+    private static Listing instantiateListing2() {
+        PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
         Price price = new Price(new BigDecimal("35.00"));
         final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
         return new Listing(
@@ -381,12 +398,6 @@ class AuctionRepositoryTest {
 //    }
 
     private static PublicationSample createValidPublication(BibliographicalData bd) {
-        // PublicationType
-        PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.PAPERBACK,
-                "Paperback"
-        );
 
         // User (seller/owner of the publication)
         User user = instantiateUser("maria1");

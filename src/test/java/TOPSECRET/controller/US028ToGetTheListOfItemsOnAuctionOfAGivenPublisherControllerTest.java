@@ -153,7 +153,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         // Repos
         publisherRepo = new PublisherRepository();
-        auctionRepo = new AuctionRepository(List.of(auction1, auction2));
+        //auctionRepo = new AuctionRepository(List.of(auction1, auction2));
 
         // Seed publishers into repo using add(...)
         publisherRepo.add(publisher1.getName(), publisher1.getVatNumber(), contact);

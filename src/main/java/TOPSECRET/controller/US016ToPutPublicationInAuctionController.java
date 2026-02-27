@@ -54,7 +54,7 @@ public class US016ToPutPublicationInAuctionController {
      * @throws InstanceNotFoundException if the user's library does not exist
      * @throws EmptyStackException if the user's library contains no publications
      */
-    public List<PublicationSampleDTO_US016> getUserLibraryPublications(String username) throws InstanceNotFoundException {
+    public List<PublicationSampleDTO_US016> getAllPublicationsInUserLibrary(String username) throws InstanceNotFoundException {
         if (username == null) {
             throw new IllegalArgumentException("username cannot be null");
         }

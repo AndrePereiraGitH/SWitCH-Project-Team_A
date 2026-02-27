@@ -9,6 +9,7 @@ import TOPSECRET.repository.AuthorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
@@ -38,8 +39,9 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     @BeforeEach
     void setup() {
+        AuctionFactory auctionFactory = new AuctionFactory();
         authorRepo = new AuthorRepository(new ArrayList<>());
-        auctionRepo = new AuctionRepository();
+        auctionRepo = new AuctionRepository(auctionFactory);
         ctrl = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepo, auctionRepo);
 
     }
@@ -107,7 +109,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
      * the controller returns a DTO list with the same number of auctions.
      */
     @Test
-    void getListOfItemsOnAuctionByAuthor_whenAuctionsExist_shouldReturnDtoListWithSameSize() {
+    void getListOfItemsOnAuctionByAuthor_whenAuctionsExist_shouldReturnDtoListWithSameSize() throws InstanceAlreadyExistsException {
         // arrange
 
         Author author1 = authorRepo.createAndAddAuthor("Ken Follett", new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");
