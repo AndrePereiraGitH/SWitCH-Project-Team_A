@@ -23,7 +23,6 @@ participant ":PublicationTypeDTO" as PubTypeMapper
 
 participant "listOfPublicationTypDTO:List<PubTypeDTO>" as PubTypeDTO
 participant ":PublicationType" as PublicationType
-participant "allPublicationTypeType: List<PublicationType>"
 participant "PublicationType: PubTypeDTO" as PDTO
 
 participant ":AppraisalEntityRepository" as AppraisalRepo

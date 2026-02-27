@@ -7,12 +7,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for GenreRepository.
+ *
+ * Verifies:
+ * - Successful creation and addition of Genre
+ * - Duplicate prevention
+ * - Retrieval using findByTitle
+ */
+
 class GenreRepositoryTest {
 
 
-    // ========================================
-    // CONSTRUCTOR TESTS
-    // ========================================
 
     @Test
     void shouldCreateRepositoryWithEmptyList() {
@@ -154,4 +160,62 @@ class GenreRepositoryTest {
         assertNotSame(originalList, result);
         assertEquals(originalList.size(), result.size());
     }
+
+    // US004 starts -----------
+    /**
+     * Verifies that findByTitle returns the correct Genre.
+     */
+    @Test
+    void shouldReturnGenreWhenTitleExists() {
+
+        // ARRANGE
+        GenreRepository repository =
+                new GenreRepository(new ArrayList<>());
+
+        repository.addGenre(new Genre("Fantasy"));
+
+        // ACT
+        Genre result = repository.findByTitle("Fantasy");
+
+        // ASSERT
+        assertEquals("Fantasy", result.getTitle());
+    }
+
+    /**
+     * Verifies that findByTitle throws exception when not found.
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreNotFound() {
+
+        // ARRANGE
+        GenreRepository repository =
+                new GenreRepository(new ArrayList<>());
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findByTitle("Unknown")
+        );
+    }
+
+    /**
+     * Verifies that findByTitle throws exception when title is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenTitleIsNull() {
+        GenreRepository repo = new GenreRepository(new ArrayList<>());
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findByTitle(null));
+    }
+
+    /**
+     * Verifies that findByTitle throws exception when title is blank.
+     */
+    @Test
+    void shouldThrowExceptionWhenTitleIsBlank() {
+        GenreRepository repo = new GenreRepository(new ArrayList<>());
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findByTitle(" "));
+    }
+    // ends ---------------------
+
 }

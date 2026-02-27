@@ -1,6 +1,8 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public class GenreRepository {
         if (genres == null) {
             throw new IllegalArgumentException("Genre List cannot be null");
         }
-        this._genres = genres;
+        this._genres = new ArrayList<>(genres);
     }
 
 
@@ -33,7 +35,35 @@ public class GenreRepository {
      * @param genre Genre to add
      */
     public void addGenre(Genre genre) {
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+        if (exists(genre)) {
+            throw new IllegalArgumentException("Genre already exists");
+        }
+
         _genres.add(genre);
+    }
+
+    /**
+     * US004
+     * Finds a Genre by title.
+     * @param title Genre title to search.
+     * @return Existing Genre domain object.
+     * @throws IllegalArgumentException if title is null, blank or not found.
+     */
+    public Genre findByTitle(String title) {
+
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Genre title can't be null or blank.");
+        }
+
+        for (Genre genre : _genres) {
+            if (genre.getTitle().equalsIgnoreCase(title)) {
+                return genre;
+            }
+        }
+        throw new IllegalArgumentException("Genre not found.");
     }
     // ----------------------------- US004 ends -------------------------------
 
@@ -49,5 +79,7 @@ public class GenreRepository {
         }
         return false;
     }
+
+
 }
 

@@ -53,7 +53,63 @@
 __All acceptance criteria must be reviewed and adjusted to fit each US. 
 Additional criteria may be added as needed to ensure completeness.__
 
+---
+
+
+
+## Main issue: Mock implementation related to US...
+
+**Description:**
+
 <br>
+
+**sub-issue:** US[NUMBER] - Implement mocking to domain class tests.
+
+**Description:**
+- Acceptance Criteria:
+    - All critical business logic paths are validated with unit tests, including boundary conditions and error scenarios.
+    - Test coverage ≥ 95%.
+    - All public methods include JavaDoc.
+    - All mocks are properly configured.
+    - Code reviewed and approved by at least one team member with no unresolved comments.
+    - All tests execute successfully and pass.
+
+<br>
+
+- **sub-issue:** US[NUMBER] - Implement mocking to repository class tests.
+
+
+  **Description:**
+- Acceptance Criteria:
+    - Mock database responses cover both success paths and exception handling.
+    - Test coverage ≥ 95%.
+    - All public methods include JavaDoc.
+    - Code reviewed and approved by at least one team member with no unresolved comments.
+    - All tests execute successfully and pass.
+
+<br>
+
+- **sub-issue:** US[NUMBER] - Implement mocking to controller class tests.
+
+
+  **Description:**
+- Acceptance Criteria:
+    - Mock service dependencies return realistic responses covering success, validation errors, and system failures.
+    - Test coverage ≥ 95%.
+    - All public methods include JavaDoc.
+    - Code reviewed and approved by at least one team member with no unresolved comments.
+    - All tests execute successfully.
+
+__All acceptance criteria must be reviewed and adjusted to fit each US context.__
+__Additional criteria may be added as needed to ensure completeness and quality standards.__
+
+
+
+
+
+
+
+---
 
 ## Main issue: Creation of Factory Class
 
@@ -78,6 +134,8 @@ Additional criteria may be added as needed to ensure completeness.__
         - Code reviewed and approved by the team (at least one team member).
 
 <br>
+
+---
 
 ## Refinement Issue if needed
 
@@ -111,9 +169,9 @@ Additional criteria may be added as needed to ensure completeness.__
 - Changes are reviewed and approved by the team (at least one team member).
 
 
-<br>
+---
 
-### Commit template
+## Commit template
 
 Design implementation/creation:
 
@@ -148,7 +206,8 @@ Working on #Issue, updated (SSD/SD/CD) to reflect new design
 - When working with someone else, you should reference that person in the commit message (@Github_Username)
 
 
-<br>
+
+---
 
 ## Definition of Done
 

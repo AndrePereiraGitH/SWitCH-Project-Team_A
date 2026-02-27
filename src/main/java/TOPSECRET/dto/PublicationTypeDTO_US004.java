@@ -24,12 +24,25 @@ public class PublicationTypeDTO_US004 {
 // --------------------------------- US004 starts ---------------------------------
     /**
      * Creates a PublicationTypeDTO.
-     * @param _typeOfBinding Type of binding.
+     * @param typeOfBinding Type of binding.
      * @param details Additional details.
      */
-    public PublicationTypeDTO_US004(MediaFormat mediaFormat, TypeOfBinding _typeOfBinding, String details) {
+    public PublicationTypeDTO_US004(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details) {
+
+        if (mediaFormat == null) {
+            throw new IllegalArgumentException("MediaFormat cannot be null.");
+        }
+
+        if (typeOfBinding == null) {
+            throw new IllegalArgumentException("TypeOfBinding cannot be null.");
+        }
+
+        if (details == null || details.isBlank()) {
+            throw new IllegalArgumentException("Details cannot be null or blank.");
+        }
+
         this._mediaFormat = mediaFormat;
-        this._typeOfBinding = _typeOfBinding;
+        this._typeOfBinding = typeOfBinding;
         this._details = details;
     }
 
@@ -55,49 +68,6 @@ public class PublicationTypeDTO_US004 {
      */
     public String getDetails() {
         return _details;
-    }
-
-    /**
-     * Converts a PublicationType domain object into a DTO.
-     * @param type PublicationType domain object.
-     * @return PublicationTypeDTO object.
-     */
-    public static PublicationTypeDTO_US004 publicationTypeToDTO(PublicationType type) {
-
-        return new PublicationTypeDTO_US004(
-                type.getMediaFormat(),
-                type.getTypeOfBinding(),
-                type.getDetails()
-        );
-    }
-
-    /**
-     * Converts a list of PublicationType domain objects into DTOs.
-     * @param types List of PublicationType.
-     * @return List of PublicationTypeDTO.
-     */
-    public List<PublicationTypeDTO_US004> publicationTypeListToDTO(List<PublicationType> types) {
-
-        List<PublicationTypeDTO_US004> result = new ArrayList<>();
-
-        for (PublicationType type : types) {
-            result.add(publicationTypeToDTO(type));
-        }
-
-        return result;
-    }
-
-    /**
-     * Converts this DTO into a PublicationType domain object.
-     *
-     * @return PublicationType domain object.
-     */
-    public PublicationType dtoToPublicationType() {
-        return new PublicationType(
-                this._mediaFormat,
-                this._typeOfBinding,
-                this._details
-        );
     }
     // --------------------------------- US004 ends ---------------------------------
 }

@@ -13,12 +13,16 @@ public class GenreDetailsDTO_US004 {
 
     private String title;
 
-// --------------------------------- US004 starts ---------------------------------
     /**
      * Creates a GenreDTO with the provided title.
      * @param title Genre title.
      */
     public GenreDetailsDTO_US004 (String title) {
+
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Genre title cannot be null or blank.");
+        }
+
         this.title = title;
     }
 
@@ -29,40 +33,6 @@ public class GenreDetailsDTO_US004 {
     public String getTitle() {
         return title;
     }
-
-    /**
-     * Converts a Genre domain object into a GenreDTO.
-     * @param genre Genre domain object.
-     * @return GenreDTO object.
-     */
-    public GenreDetailsDTO_US004 genreToDTO (Genre genre) {
-        return new GenreDetailsDTO_US004(genre.getTitle());
-    }
-
-    /**
-     * Converts a list of Genre domain objects into DTOs.
-     * @param genres List of Genre.
-     * @return List of GenreDTO.
-     */
-    public List<GenreDetailsDTO_US004> genreListToDTO (List<Genre> genres) {
-
-        List<GenreDetailsDTO_US004> result = new ArrayList<>();
-
-        for (Genre genre : genres) {
-            result.add(genreToDTO(genre));
-        }
-
-        return result;
-    }
-
-    /**
-     * Converts this DTO into a Genre domain object.
-     * @return Genre domain object.
-     */
-    public Genre dtoToGenre () {
-        return new Genre(this.title);
-    }
-// --------------------------------- US004 ends ---------------------------------
 
 }
 

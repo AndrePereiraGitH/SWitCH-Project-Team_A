@@ -3,15 +3,26 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.dto.GenreDetailsDTO_US004;
+import TOPSECRET.dto.PublicationTypeDTO_US004;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for AppraisalEntityRepository.
- * Validates creation, storage, and duplicate prevention using name + contact.
+ *
+ * This test class verifies:
+ * - Successful creation of AppraisalEntity.
+ * - Prevention of duplicate entities (same name + contact).
+ * - Exception when Genre does not exist in repository.
+ * - Exception when PublicationType does not exist in repository.
+ *
+ * The tests follow AAA structure and reuse helpers
+ * to reduce duplication.
  */
 class AppraisalEntityRepositoryTest {
 
@@ -24,38 +35,50 @@ class AppraisalEntityRepositoryTest {
     }
 
     /**
-     * Helper method to create a valid PublicationType.
-     * @param details publication type details
-     * @return valid PublicationType
+     * Creates a GenreRepository containing one valid Genre.
+     * @return GenreRepository instance.
      */
-    private PublicationType createValidPublicationType(String details) {
-        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, details);
+    private GenreRepository createGenreRepository() {
+        GenreRepository repo = new GenreRepository(new ArrayList<>());
+        repo.addGenre(new Genre("Fantasy"));
+        return repo;
     }
 
     /**
-     * Helper method to create a valid Genre.
-     * @param title genre title
-     * @return valid Genre
+     * Creates a PublicationTypeRepository containing one valid PublicationType.
+     * @return PublicationTypeRepository instance.
      */
-    private Genre createValidGenre(String title) {
-        return new Genre(title);
+    private PublicationTypeRepository createPublicationTypeRepository() {
+        PublicationTypeRepository repo = new PublicationTypeRepository();
+        repo.addToList(new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard"
+        ));
+        return repo;
     }
 
     /**
-     * Helper method to create a valid list of Genres with variable size.
-     * @param titles genre titles
-     * @return List of Genre
+     * Creates a valid list of Genre DTOs.
+     *
+     * @return List containing one valid GenreDetailsDTO_US004.
      */
-    private List<Genre> createGenreList(String... titles) {
-        return java.util.Arrays.stream(titles).map(this::createValidGenre).toList();}
+    private List<GenreDetailsDTO_US004> createValidGenreDTOList() {
+        return List.of(new GenreDetailsDTO_US004("Fantasy"));
+    }
 
     /**
-     * Helper method to create a valid list of PublicationTypes with variable size.
-     * @param details list of details
-     * @return List of PublicationType
+     * Creates a valid list of PublicationType DTOs.
+     * @return List containing one valid PublicationTypeDTO_US004.
      */
-    private List<PublicationType> createPublicationTypeList(String... details) {
-        return java.util.Arrays.stream(details).map(this::createValidPublicationType).toList();
+    private List<PublicationTypeDTO_US004> createValidPublicationTypeDTOList() {
+        return List.of(
+                new PublicationTypeDTO_US004(
+                        MediaFormat.BOOK,
+                        TypeOfBinding.HARDBACK,
+                        "Standard"
+                )
+        );
     }
 
     /**
@@ -65,23 +88,28 @@ class AppraisalEntityRepositoryTest {
     void shouldCreateAndAddAppraisalEntitySuccessfully() {
 
         // ARRANGE
-        AppraisalEntityRepository repository = new AppraisalEntityRepository();
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+        AppraisalEntityRepository repository =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
 
         String name = "Entity One";
         Contact contact = createValidContact();
 
-        List<Genre> genres = createGenreList("Fiction");
-        List<PublicationType> publicationTypes = createPublicationTypeList("Standard publication");
-
-        AppraisalEntity expected =
-                new AppraisalEntity(name, contact, publicationTypes, genres);
-
         // ACT
         AppraisalEntity result =
-                repository.createAndAddAppraisalEntity(name, contact, publicationTypes, genres);
+                repository.createAndAddAppraisalEntity(
+                        name,
+                        contact,
+                        createValidGenreDTOList(),
+                        createValidPublicationTypeDTOList()
+                );
 
         // ASSERT
-        assertEquals(expected, result);
+        assertEquals(name, result.getName());
+        assertEquals(contact, result.getContact());
+        assertEquals(1, result.getGenres().size());
+        assertEquals(1, result.getPublicationTypes().size());
     }
 
     /**
@@ -92,50 +120,181 @@ class AppraisalEntityRepositoryTest {
     void shouldThrowExceptionWhenAppraisalEntityAlreadyExists() {
 
         // ARRANGE
-        AppraisalEntityRepository repository = new AppraisalEntityRepository();
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+        AppraisalEntityRepository repository =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
 
         String name = "Entity One";
         Contact contact = createValidContact();
 
-        List<Genre> genres = createGenreList("Fiction", "History");
-        List<PublicationType> publicationTypes = createPublicationTypeList("Standard", "Collector");
-
-        repository.createAndAddAppraisalEntity(name, contact, publicationTypes, genres);
-
-        // ACT + ASSERT
-        Exception ex = assertThrows(IllegalArgumentException.class, () ->
-                repository.createAndAddAppraisalEntity(name, contact, publicationTypes, genres)
+        repository.createAndAddAppraisalEntity(
+                name,
+                contact,
+                createValidGenreDTOList(),
+                createValidPublicationTypeDTOList()
         );
 
-        assertEquals("Appraisal Entity with same name and contact already exists.", ex.getMessage());
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        name,
+                        contact,
+                        createValidGenreDTOList(),
+                        createValidPublicationTypeDTOList()
+                )
+        );
+
     }
 
     /**
-     * Verifies duplicate detection ignores differences in lists (Genres/PublicationTypes)
-     * and checks only name + contact.
+     * Verifies that an exception is thrown
+     * when the selected Genre does not exist
+     * in the GenreRepository.
      */
     @Test
-    void shouldThrowExceptionWhenSameNameAndContactButDifferentLists() {
+    void shouldThrowExceptionWhenGenreDoesNotExist() {
 
         // ARRANGE
-        AppraisalEntityRepository repository = new AppraisalEntityRepository();
+        GenreRepository emptyGenreRepo = new GenreRepository(new ArrayList<>());
 
-        String name = "Entity One";
-        Contact contact = createValidContact();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
 
-        List<Genre> genres1 = createGenreList("Fiction");
-        List<PublicationType> publicationTypes1 = createPublicationTypeList("Standard");
+        AppraisalEntityRepository repository = new AppraisalEntityRepository(emptyGenreRepo, pubRepo);
 
-        List<Genre> genres2 = createGenreList("History", "Fantasy");
-        List<PublicationType> publicationTypes2 = createPublicationTypeList("Collector", "Pocket");
+        List<GenreDetailsDTO_US004> invalidGenre = List.of(new GenreDetailsDTO_US004("NonExisting"));
 
-        repository.createAndAddAppraisalEntity(name, contact, publicationTypes1, genres1);
-
-        // ACT + ASSERT
-        Exception ex = assertThrows(IllegalArgumentException.class, () ->
-                repository.createAndAddAppraisalEntity(name, contact, publicationTypes2, genres2)
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        "Entity",
+                        createValidContact(),
+                        invalidGenre,
+                        createValidPublicationTypeDTOList()
+                )
         );
+    }
 
-        assertEquals("Appraisal Entity with same name and contact already exists.", ex.getMessage());
+    /**
+     * Verifies that an exception is thrown
+     * when the selected PublicationType does not exist
+     * in the PublicationTypeRepository.
+     */
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeDoesNotExist() {
+
+        // ARRANGE
+        GenreRepository genreRepo = createGenreRepository();
+
+        PublicationTypeRepository emptyPubRepo = new PublicationTypeRepository();
+
+        AppraisalEntityRepository repository = new AppraisalEntityRepository(genreRepo, emptyPubRepo);
+
+        List<PublicationTypeDTO_US004> invalidType =
+                List.of(
+                        new PublicationTypeDTO_US004(
+                                MediaFormat.MAGAZINE,
+                                TypeOfBinding.PAPERBACK,
+                                "Invalid"
+                        )
+                );
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        "Entity",
+                        createValidContact(),
+                        createValidGenreDTOList(),
+                        invalidType
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when Genre list is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreListIsNull() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+
+        AppraisalEntityRepository repository =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        "Entity",
+                        createValidContact(),
+                        null,
+                        createValidPublicationTypeDTOList()
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when Genre list is empty.
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreListIsEmpty() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+
+        AppraisalEntityRepository repository =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        "Entity",
+                        createValidContact(),
+                        List.of(),
+                        createValidPublicationTypeDTOList()
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when PublicationType list is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeListIsNull() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+
+        AppraisalEntityRepository repository =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        "Entity",
+                        createValidContact(),
+                        createValidGenreDTOList(),
+                        null
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when PublicationType list is empty.
+     */
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeListIsEmpty() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+
+        AppraisalEntityRepository repository =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.createAndAddAppraisalEntity(
+                        "Entity",
+                        createValidContact(),
+                        createValidGenreDTOList(),
+                        List.of()
+                )
+        );
     }
 }

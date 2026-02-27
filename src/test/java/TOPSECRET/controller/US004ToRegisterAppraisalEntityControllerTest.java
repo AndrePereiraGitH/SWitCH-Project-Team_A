@@ -18,12 +18,18 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for US004ToRegisterAppraisalEntityController.
  * Validates:
- * - Retrieval of Genres and PublicationTypes
- * - Registration flow
- * - Validation rules
+ * - Retrieval of Genres and PublicationTypes as DTOs.
+ * - Successful registration flow.
+ * - Validation rules for empty selections.
+ * - Duplicate AppraisalEntity prevention.
+ * - Exception when Genre does not exist.
+ * - Exception when PublicationType does not exist.
  */
 class US004ToRegisterAppraisalEntityControllerTest {
 
+    /**
+     * Creates a GenreRepository with predefined Genres.
+     */
     private GenreRepository createGenreRepository() {
         GenreRepository repo = new GenreRepository(new ArrayList<>());
         repo.addGenre(new Genre("Fantasy"));
@@ -31,6 +37,9 @@ class US004ToRegisterAppraisalEntityControllerTest {
         return repo;
     }
 
+    /**
+     * Creates a PublicationTypeRepository with predefined PublicationTypes.
+     */
     private PublicationTypeRepository createPublicationTypeRepository() {
         PublicationTypeRepository repo = new PublicationTypeRepository();
         repo.addToList(new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard"));
@@ -38,24 +47,28 @@ class US004ToRegisterAppraisalEntityControllerTest {
         return repo;
     }
 
+    /**
+     * Creates a valid Contact object.
+     */
     private Contact createContact() {
         return new Contact("912345678", "351", null, null);
     }
 
-    // Helper to create a valid PublicationType
-    private PublicationType createValidPublicationType() {
-        return new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.HARDBACK,
-                "Standard publication");}
-
+    /**
+     * Creates the controller with repositories.
+     */
     private US004ToRegisterAppraisalEntityController createController() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+
+        AppraisalEntityRepository appraisalRepo =
+                new AppraisalEntityRepository(genreRepo, pubRepo);
+
         return new US004ToRegisterAppraisalEntityController(
-                createGenreRepository(),
-                createPublicationTypeRepository(),
-                new AppraisalEntityRepository(),
-                new GenreDetailsDTO_US004("temp"),
-                new PublicationTypeDTO_US004(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "temp")
+                genreRepo,
+                pubRepo,
+                appraisalRepo
         );
     }
 
@@ -65,14 +78,16 @@ class US004ToRegisterAppraisalEntityControllerTest {
     @Test
     void shouldReturnAllGenresAsDTO() {
 
-        // Arrange
+        // ARRANGE
         var controller = createController();
 
-        // Act
+        // ACT
         List<GenreDetailsDTO_US004> result = controller.getAllGenres();
 
-        // Assert
+        // ASSERT
         assertEquals(2, result.size());
+        assertEquals("Fantasy", result.get(0).getTitle());
+        assertEquals("History", result.get(1).getTitle());
     }
 
     /**
@@ -81,14 +96,16 @@ class US004ToRegisterAppraisalEntityControllerTest {
     @Test
     void shouldReturnAllPublicationTypesAsDTO() {
 
-        // Arrange
+        // ARRANGE
         var controller = createController();
 
-        // Act
+        // ACT
         List<PublicationTypeDTO_US004> result = controller.getAllPublicationTypes();
 
-        // Assert
+        // ASSERT
         assertEquals(2, result.size());
+        assertEquals(TypeOfBinding.HARDBACK, result.get(0).getTypeOfBinding());
+        assertEquals(TypeOfBinding.PAPERBACK, result.get(1).getTypeOfBinding());
     }
 
     /**
@@ -97,13 +114,13 @@ class US004ToRegisterAppraisalEntityControllerTest {
     @Test
     void shouldRegisterAppraisalEntitySuccessfully() {
 
-        // Arrange
+        // ARRANGE
         var controller = createController();
 
         var genreDTO = new GenreDetailsDTO_US004("Fantasy");
         var pubDTO = new PublicationTypeDTO_US004(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard");
 
-        // Act
+        // ACT
         AppraisalEntity entity = controller.registerAppraisalEntity(
                 "Entity1",
                 createContact(),
@@ -111,7 +128,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 List.of(pubDTO)
         );
 
-        // Assert
+        // ASSERT
         assertEquals("Entity1", entity.getName());
         assertEquals(1, entity.getGenres().size());
         assertEquals(1, entity.getPublicationTypes().size());
@@ -123,10 +140,10 @@ class US004ToRegisterAppraisalEntityControllerTest {
     @Test
     void shouldThrowExceptionWhenGenresAreEmpty() {
 
-        // Arrange
+        // ARRANGE
         var controller = createController();
 
-        // Act + Assert
+        // ACT + ASSERT
         Exception ex = assertThrows(IllegalArgumentException.class, () ->
                 controller.registerAppraisalEntity(
                         "Entity",
@@ -145,10 +162,10 @@ class US004ToRegisterAppraisalEntityControllerTest {
     @Test
     void shouldThrowExceptionWhenPublicationTypesAreEmpty() {
 
-        // Arrange
+        // ARRANGE
         var controller = createController();
 
-        // Act + Assert
+        // ACT + ASSERT
         Exception ex = assertThrows(IllegalArgumentException.class, () ->
                 controller.registerAppraisalEntity(
                         "Entity",
@@ -159,6 +176,96 @@ class US004ToRegisterAppraisalEntityControllerTest {
         );
 
         assertEquals("At least one PublicationType must be selected.", ex.getMessage());
+    }
+
+    /**
+     * Verifies that duplicate AppraisalEntity registration is not allowed.
+     */
+    @Test
+    void shouldThrowExceptionWhenDuplicateEntityIsRegistered() {
+
+        // ARRANGE
+        var controller = createController();
+
+        var contact = createContact();
+
+        var genreDTO = new GenreDetailsDTO_US004("Fantasy");
+        var pubDTO = new PublicationTypeDTO_US004(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard"
+        );
+
+        controller.registerAppraisalEntity(
+                "Entity1",
+                createContact(),
+                List.of(genreDTO),
+                List.of(pubDTO)
+        );
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.registerAppraisalEntity(
+                        "Entity1",
+                        contact,
+                        List.of(genreDTO),
+                        List.of(pubDTO)
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when a selected Genre does not exist in the repository.
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreDoesNotExist() {
+
+        // ARRANGE
+        var controller = createController();
+
+        var genreDTO = new GenreDetailsDTO_US004("NonExisting");
+        var pubDTO = new PublicationTypeDTO_US004(
+                MediaFormat.BOOK,
+                TypeOfBinding.HARDBACK,
+                "Standard"
+        );
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.registerAppraisalEntity(
+                        "Entity",
+                        createContact(),
+                        List.of(genreDTO),
+                        List.of(pubDTO)
+                )
+        );
+    }
+
+    /**
+     * Verifies exception when a selected PublicationType does not exist.
+     */
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeDoesNotExist() {
+
+        // ARRANGE
+        var controller = createController();
+
+        var genreDTO = new GenreDetailsDTO_US004("Fantasy");
+        var pubDTO = new PublicationTypeDTO_US004(
+                MediaFormat.MAGAZINE,
+                TypeOfBinding.HARDBACK,
+                "NonExisting"
+        );
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.registerAppraisalEntity(
+                        "Entity",
+                        createContact(),
+                        List.of(genreDTO),
+                        List.of(pubDTO)
+                )
+        );
     }
 }
 

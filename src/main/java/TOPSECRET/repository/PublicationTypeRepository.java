@@ -98,4 +98,47 @@ public class PublicationTypeRepository {
      */
     public List<PublicationType> getAllPublicationTypes() { return List.copyOf(_publicationTypes); }
 
+    // ------------------------ US004 starts ------------------------
+
+    /**
+     * US004
+     * Finds an existing PublicationType by its attributes.
+     *
+     * @param mediaFormat   Media format of the publication.
+     * @param typeOfBinding Type of binding.
+     * @param details       Additional details describing the publication type.
+     * @return Existing PublicationType domain object.
+     * @throws IllegalArgumentException if attributes are invalid or not found.
+     */
+    public PublicationType findByAttributes(MediaFormat mediaFormat,
+                                                   TypeOfBinding typeOfBinding,
+                                                   String details) {
+
+        // Validate input parameters
+        if (mediaFormat == null) {
+            throw new IllegalArgumentException("MediaFormat cannot be null.");
+        }
+
+        if (typeOfBinding == null) {
+            throw new IllegalArgumentException("TypeOfBinding cannot be null.");
+        }
+
+        if (details == null || details.isBlank()) {
+            throw new IllegalArgumentException("Details cannot be null or blank.");
+        }
+
+
+        for (PublicationType pt : _publicationTypes) {
+            if (pt.getMediaFormat() == mediaFormat &&
+                    pt.getTypeOfBinding() == typeOfBinding &&
+                    pt.getDetails().equalsIgnoreCase(details)) {
+                return pt;
+            }
+        }
+
+        throw new IllegalArgumentException("PublicationType not found.");
+    }
+
+    // ------------------------ ends ------------------------
+
 }

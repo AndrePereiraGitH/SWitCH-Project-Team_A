@@ -57,4 +57,67 @@ public class Contact {
                 ", address: " + _location;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Contact)) return false;
+
+        Contact other = (Contact) obj;
+
+        if (_phoneNum == null) {
+            if (other._phoneNum != null) return false;
+        } else if (!_phoneNum.equals(other._phoneNum)) return false;
+
+        if (_extension == null) {
+            if (other._extension != null) return false;
+        } else if (!_extension.equals(other._extension)) return false;
+
+        if (_email == null) {
+            if (other._email != null) return false;
+        } else if (!_email.equals(other._email)) return false;
+
+        if (_location == null) {
+            return other._location == null;
+        } else return _location.equals(other._location);
+    }
+
+    /**
+     * Generates a hash code based on all Contact attributes.
+     *
+     * This implementation follows the standard Java pattern for hashCode:
+     *
+     * - Starts with a non-zero prime number (17) as an initial value.
+     * - For each attribute, multiplies the current result by 31
+     *   (another prime number) and adds the attribute's hash code.
+     *
+     * Why 17 and 31?
+     * - 17 is an arbitrary non-zero prime used as a starting seed.
+     * - 31 is commonly used because:
+     *   • It is a prime number (reduces hash collisions)
+     *   • It produces good distribution
+     *   • It is computationally efficient in Java
+     *
+     * The formula:
+     *
+     *     result = 31 * result + fieldHash
+     *
+     * Combines all attributes into a single integer value.
+     *
+     * Important rule:
+     * If two Contact objects are equal according to equals(),
+     * they MUST return the same hashCode.
+     *
+     * @return integer hash code representing this Contact.
+     */
+    @Override
+    public int hashCode() {
+        int result = 17;
+
+        result = 31 * result + (_phoneNum != null ? _phoneNum.hashCode() : 0);
+        result = 31 * result + (_extension != null ? _extension.hashCode() : 0);
+        result = 31 * result + (_email != null ? _email.hashCode() : 0);
+        result = 31 * result + (_location != null ? _location.hashCode() : 0);
+
+        return result;
+    }
 }

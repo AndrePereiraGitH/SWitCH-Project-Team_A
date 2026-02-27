@@ -1,9 +1,6 @@
-package TOPSECRET.domain.Factory;
+package TOPSECRET.domain;
 
-import TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
