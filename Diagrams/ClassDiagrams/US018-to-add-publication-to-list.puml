@@ -2,6 +2,47 @@
 title US018 - Add Publication to Collection Of Publications
 
 ' ======================
+' Controller
+' ======================
+
+class AddCollectionOfPublicationsController {
+    +getUserCollections(user)
+    +getPublicationsForCollection(selectedCollectionDTO)
+    +addPublicationToCollection(collectionSelectedDTO, selectedPublicationDTO)
+    -diff(allUserPublications, publicationsInCollection)
+}
+
+' ======================
+' Repository
+' ======================
+
+class CollectionOfPublicationsRepository {
+    +getUserCollections(user)
+    +collectionDTOToDomain(selectedCollectionDTO)
+    +CollectionDTOToDomain(selectedCollectionDTO)
+    +addPublicationToCollection(userCollection, publicationSample)
+    -isFromUser()
+}
+
+class PublicationSampleRepository {
+    +PublicationSampleDtoToDomain(userLibrary, selectedPublicationDTO)
+}
+
+
+' ======================
+' DTO
+' ======================
+
+class CollectionOfPublicationsDTO {
+    +createDTO(collectionName)
+    +collectionOfPublicationToDTO(userCollections)
+}
+
+class PublicationSampleDTO {
+    +publicationToDTO(publicationAvailable)
+}
+
+' ======================
 ' Domain
 ' ======================
 
@@ -13,59 +54,49 @@ class User {
   + getCollections() : List<CollectionOfPublications>
 }
 
-class Publication {
-  - id : String
-  - title : String
-
-}
 
 class CollectionOfPublications {
   - name : String
   - publications : List<Publication>
 
-  + getPublications() : List<Publication>
-  + addPublication(publication : Publication) : boolean
-
+    +getCollectionName()
+    +getPublications(userCollectionSelected)
 }
 
 class Library {
-- publications : List<Publication>
-+ getPublications() : List<Publication>
+  - publicationSample : List<PublicationSample>
+    + getLibrary (user)
+    + getPublications(userLibrary) : List<PublicationSample>
 
 }
 
-User "1" --> "*" CollectionOfPublications : owns
-CollectionOfPublications "1" --> "*" Publication : contains
-User "1" --> "0...1 " Library : owns
-
-' ======================
-
-class AddCollectionOfPublicationsController {
- + getUserCollections(user : User) : List<CollectionOfPublications>
- + getPublicationsForCollection(user : User, collection : CollectionOfPublications) : List<Publication>
- + addPublicationToCollection(collection : CollectionOfPublications, publication : Publication) : boolean
-
+class PublicationSample {
+    +getBibliographicalData()
 }
 
-' ======================
-' Persistence
-' ======================
+class BibliographicalData
 
-class CollectionOfPublicationsRepository {
-  + getUserCollections(user : User) : List<CollectionOfPublications>
-  + addPublicationToCollection(collection : CollectionOfPublications, publication : Publication) : boolean
-}
-
-class LibraryRepository {
-  + getLibrary(user : User) : Library
-}
 
 ' ======================
-' Dependencies
+' Associations
 ' ======================
 
-AddCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
-AddCollectionOfPublicationsController ..> LibraryRepository : uses
-CollectionOfPublicationsRepository ..> CollectionOfPublications : uses
+AddCollectionOfPublicationsController ..> CollectionOfPublicationsRepository
+AddCollectionOfPublicationsController ..> CollectionOfPublicationsDTO
+AddCollectionOfPublicationsController ..> PublicationSampleDTO
+AddCollectionOfPublicationsController ..> PublicationSampleRepository
+AddCollectionOfPublicationsController ..> Library
+AddCollectionOfPublicationsController ..> CollectionOfPublications
+
+CollectionOfPublicationsRepository "1" --> "*" CollectionOfPublications
+
+CollectionOfPublicationsDTO ..> CollectionOfPublications
+
+CollectionOfPublications "1" ..> "*" PublicationSample
+
+Library "1" --> "*" PublicationSample
+
+PublicationSampleDTO --> PublicationSample
+PublicationSample "1" --> "1" BibliographicalData
 
 @enduml
