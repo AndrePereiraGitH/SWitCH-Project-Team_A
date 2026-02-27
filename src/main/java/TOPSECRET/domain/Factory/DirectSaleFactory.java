@@ -12,7 +12,7 @@ import java.util.List;
  * ensuring that all listings are of sale type DIRECT_SALE.
  */
 
-public class FactoryDirectSale {
+public class DirectSaleFactory {
 
     /**
      * Creates a DirectSale after validating that all listings

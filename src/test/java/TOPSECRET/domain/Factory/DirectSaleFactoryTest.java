@@ -13,16 +13,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class FactoryDirectSaleTest {
+class DirectSaleFactoryTest {
 
-    private FactoryDirectSale factory;
+    private DirectSaleFactory factory;
     private Listing listing1Double;
     private Listing listing2Double;
     private User buyerDouble;
 
     @BeforeEach
     void setUp() {
-        factory = new FactoryDirectSale();
+        factory = new DirectSaleFactory();
 
         listing1Double = mock(Listing.class);
         listing2Double = mock(Listing.class);
