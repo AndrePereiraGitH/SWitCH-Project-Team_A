@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.GenreFactory;
 import TOPSECRET.dto.GenreDTO_US013;
 import TOPSECRET.dto.GenreMapper_US013;
 import TOPSECRET.repository.GenreRepository;
@@ -19,7 +20,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldCreateControllerWithValidRepositoryAndMapper() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>());
+        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         GenreMapper_US013 mapper = new GenreMapper_US013();
 
         // Act
@@ -44,7 +45,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenMapperIsNull() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>());
+        GenreRepository repository = new GenreRepository(new ArrayList<>(),  new GenreFactory());
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -60,7 +61,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldReturnEmptyListWhenNoGenres() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>());
+        GenreRepository repository = new GenreRepository(new ArrayList<>(),  new GenreFactory());
         GenreMapper_US013 mapper = new GenreMapper_US013();
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repository, mapper);
 
@@ -75,7 +76,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldReturnGenreDTOsFromRepository() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>());
+        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         repository.createAndAddGenre("Romance");
         repository.createAndAddGenre("Horror");
 
@@ -94,7 +95,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldReturnDTOsWithSameContentAsRepository() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>());
+        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         repository.createAndAddGenre("Mystery");
         repository.createAndAddGenre("Thriller");
 
@@ -114,7 +115,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldMapGenresToDTOsCorrectly() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>());
+        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         repository.createAndAddGenre("Action");
         repository.createAndAddGenre("Comedy");
         repository.createAndAddGenre("Drama");

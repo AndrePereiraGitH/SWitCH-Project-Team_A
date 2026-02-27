@@ -5,21 +5,26 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FactoryGenreTest {
-    private GenreFactory factory;
+/**
+ * Unit tests for {@link GenreFactory}.
+ * Verifies that the factory correctly creates Genre instances
+ * and throws exceptions for invalid inputs.
+ */
+class GenreFactoryTest {
+    private GenreFactory genreFactory;
 
     @BeforeEach
     void setUp() {
-        factory = new GenreFactory();
+        genreFactory = new GenreFactory();
     }
 
     @Test
     void ensureFactoryCreatesGenreSuccessfully() {
         // Arrange
-        String genreType = "Rock";
+        String genreType = "Ergodic literature";
 
         // Act
-        Genre genre = factory.newGenre(genreType);
+        Genre genre = genreFactory.createGenre(genreType);
 
         // Assert
         assertNotNull(genre);
@@ -29,10 +34,10 @@ class FactoryGenreTest {
     @Test
     void ensureFactoryCreatesGenreWithCorrectType() {
         // Arrange
-        String genreType = "Rock";
+        String genreType = "Ergodic literature";
 
         // Act
-        Genre genre = factory.newGenre(genreType);
+        Genre genre = genreFactory.createGenre(genreType);
 
         // Assert
         assertEquals(genreType, genre.getGenreType());
@@ -41,13 +46,13 @@ class FactoryGenreTest {
     @Test
     void ensureFactoryThrowsExceptionWithNullGenreType() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> factory.newGenre(null));
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.createGenre(null));
     }
 
     @Test
     void ensureFactoryThrowsExceptionWithBlankGenreType() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> factory.newGenre("   "));
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.createGenre("   "));
     }
 
 }

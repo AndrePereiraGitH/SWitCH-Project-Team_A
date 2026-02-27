@@ -23,7 +23,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getAllGenresReturnsAllGenresFromRepository() {
         // Arrange
-        GenreRepository genreRepository = new GenreRepository(new ArrayList<>());
+        GenreRepository genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         genreRepository.createAndAddGenre("Fantasy");
         genreRepository.createAndAddGenre("Romance");
 
@@ -48,7 +48,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(auctionFactory),
-                        new GenreRepository(new ArrayList<>())
+                        new GenreRepository(new ArrayList<>(), new GenreFactory())
                 );
 
         // Act & Assert
@@ -65,7 +65,7 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         GetListOfItemsOnAuctionOfGivenGenreController controller =
                 new GetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(auctionFactory),
-                        new GenreRepository(new ArrayList<>())
+                        new GenreRepository(new ArrayList<>(), new GenreFactory())
                 );
 
         // Act

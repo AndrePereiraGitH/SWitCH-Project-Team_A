@@ -31,7 +31,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
      * Creates a GenreRepository with predefined Genres.
      */
     private GenreRepository createGenreRepository() {
-        GenreRepository repo = new GenreRepository(new ArrayList<>());
+        GenreRepository repo = new GenreRepository(new ArrayList<>(), new GenreFactory());
         repo.addGenre(new Genre("Fantasy"));
         repo.addGenre(new Genre("History"));
         return repo;
