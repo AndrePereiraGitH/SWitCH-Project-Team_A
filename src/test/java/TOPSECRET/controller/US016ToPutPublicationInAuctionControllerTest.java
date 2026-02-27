@@ -30,6 +30,9 @@ class US016ToPutPublicationInAuctionControllerTest {
 
     LibraryFactory factory = new LibraryFactory();
     private final LibraryRepository libRepo = new LibraryRepository(new HashMap<>(),factory);
+    EditionFactory editionFactory = new EditionFactory();
+    AuthorFactory authorFactory = new AuthorFactory();
+
 
 
 
@@ -284,7 +287,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition = new Edition(
+        Edition edition = editionFactory.create(
                 "1st",
                 code,
                 physicalAttributes,
@@ -307,7 +310,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
 
-        Edition edition = new Edition(
+        Edition edition = editionFactory.create(
                 "2st",
                 code,
                 physicalAttributes,
@@ -343,7 +346,7 @@ class US016ToPutPublicationInAuctionControllerTest {
 
     private BibliographicalData bibliographicalData() {
 
-        Author author = new Author(profile(), "valid bio");
+        Author author = authorFactory.createAuthorWithExistingProfile(profile(), "valid bio");
 
         List<Author> authors = new ArrayList<>();
         authors.add(author);

@@ -11,6 +11,8 @@ import java.util.Locale;
 class US018ToAddPublicationToAListOfMineControllerTest {
 
     private US018ToAddPublicationToAListOfMineController controller;
+    private AuthorFactory authorFactory = new AuthorFactory();
+    private EditionFactory editionFactory = new EditionFactory();
 
     @BeforeEach
     void setup() {
@@ -42,7 +44,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                 LocalDate.of(1980, 1, 1)
         );
 
-        Author author = new Author(
+        Author author = authorFactory.createAuthorWithExistingProfile(
                 authorProfile,
                 "Short biography"
         );
@@ -76,7 +78,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher1 = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition(
+        Edition edition= editionFactory.create(
                 "1st",
                 code,
                 physicalAttributes,

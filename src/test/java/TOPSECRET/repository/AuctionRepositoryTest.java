@@ -17,6 +17,9 @@ class AuctionRepositoryTest {
 
     private final AuctionFactory auctionFactory = new AuctionFactory();
     private final AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+    AuthorFactory authorFactory = new AuthorFactory();
+    EditionFactory editionFactory = new EditionFactory();
+
 
     @Test
     void empty_constructor_should_create_empty_auctionList() {
@@ -240,7 +243,7 @@ class AuctionRepositoryTest {
     private Auction createAuctionWithGenre(Genre genre) throws InstanceAlreadyExistsException {
         BibliographicalData bd = new BibliographicalData(
                 "Book",
-                List.of(new Author(
+                List.of(authorFactory.createAuthorWithExistingProfile(
                         new Profile("Author", new Country("Portugal"), LocalDate.of(1980, 1, 1)),
                         "bio"
                 )),
@@ -260,7 +263,7 @@ class AuctionRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         Publication publication = new Publication(
                 bd,
@@ -300,7 +303,7 @@ class AuctionRepositoryTest {
         );
     }
 
-    private static Auction createValidActiveAuction() {
+    private Auction createValidActiveAuction() {
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
 
@@ -310,16 +313,16 @@ class AuctionRepositoryTest {
         return new Auction(listing, initialDate, finalDate, price("150.00"), FIXED_CLOCK);
     }
 
-    private static Edition instantiateEdition(){
+    private  Edition instantiateEdition(){
         Code code = Code.fromIsbn13 ("9783161484122");
         Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        return new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        return editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     }
 
-    private static Listing instantiateListing() {
+    private  Listing instantiateListing() {
         PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
         Price price = new Price(new BigDecimal("35.00"));
         final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
@@ -333,7 +336,7 @@ class AuctionRepositoryTest {
         );
     }
 
-    private static Listing instantiateListing2() {
+    private  Listing instantiateListing2() {
         PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
         Price price = new Price(new BigDecimal("35.00"));
         final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
@@ -347,9 +350,9 @@ class AuctionRepositoryTest {
         );
     }
 
-    private static BibliographicalData instantiateBibliographicalData() {
+    private BibliographicalData instantiateBibliographicalData() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
-        Author author = new Author(authorProfile, "valid bio");
+        Author author = authorFactory.createAuthorWithExistingProfile(authorProfile, "valid bio");
 
         List<Author> authors = new ArrayList<>();
         authors.add(author);
@@ -397,7 +400,7 @@ class AuctionRepositoryTest {
 //        );
 //    }
 
-    private static PublicationSample createValidPublication(BibliographicalData bd) {
+    private PublicationSample createValidPublication(BibliographicalData bd) {
 
         // User (seller/owner of the publication)
         User user = instantiateUser("maria1");
@@ -410,7 +413,7 @@ class AuctionRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new PublicationSample(
                 bd,
@@ -421,7 +424,7 @@ class AuctionRepositoryTest {
         );
     }
 
-    private static Publication createValidPublication2(BibliographicalData bd) {
+    private Publication createValidPublication2(BibliographicalData bd) {
         // PublicationType
         PublicationType publicationType = new PublicationType(
                 MediaFormat.BOOK,
@@ -440,7 +443,7 @@ class AuctionRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher2 = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new Publication(
                 bd,
@@ -482,22 +485,20 @@ class AuctionRepositoryTest {
         return new Profile(name, new Country("PORTUGAL"), LocalDate.of(12, 3, 1977));
     }
 
-    private static Author author(String name) {
-        return new Author(profile(name), "This is the Biography of " + name);
+    private  Author author(String name) {
+        return authorFactory.createAuthorWithExistingProfile(profile(name), "This is the Biography of " + name);
     }
 
-    private static BibliographicalData instantiateBibliographicalDataAuthor(List<String> authorsNameList) {
+    private  BibliographicalData instantiateBibliographicalDataAuthor(List<String> authorsNameList) {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
         //Author author = new Author(authorProfile, "valid bio");
         List<Author> authors = new ArrayList<>();
 
         for (int i = 0; i < authorsNameList.size(); i++) {
 
-            authors.add(
-                    new Author(
+            authors.add(authorFactory.createAuthorWithExistingProfile(
                             profile(authorsNameList.get(i)),
                             "this is my biography!"
-
                             ));
 
         }

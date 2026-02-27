@@ -195,7 +195,9 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     // --- Helper methods ---
 
     private static Edition createEdition() {
-        return new Edition(
+
+        EditionFactory editionFactory = new EditionFactory();
+        return editionFactory.create(
                 "1st Edition",
                 createCode(),
                 createPhysicalAttributes(),
@@ -258,10 +260,10 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     }
 
     private static Author createAuthor() {
-        return new Author(
+        AuthorFactory authorFactory = new AuthorFactory();
+        return authorFactory.createAuthorWithExistingProfile(
                 createProfile(),
-                "valid bio"
-        );
+                "valid bio");
     }
 
     private static Profile createProfile() {

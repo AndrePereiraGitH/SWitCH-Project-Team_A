@@ -28,10 +28,10 @@ class DirectSaleMapper_US023Test {
         return new Profile(name, country(), LocalDate.of(1990, 1, 1));
     }
 
-    private Author author(String name) {
-        return new Author(profile(name), "bio");
-    }
-
+//    private Author author(String name) {
+//        return new Author(profile(name), "bio");
+//    }
+    EditionFactory editionFactory = new EditionFactory();
     private BibliographicalData bd (String title, Author author) {
         return new BibliographicalData(
                 title,
@@ -51,7 +51,7 @@ class DirectSaleMapper_US023Test {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     private Publication publication(String title, Author author) {
         return new Publication(
@@ -65,14 +65,14 @@ class DirectSaleMapper_US023Test {
         );
     }
 
-    private Item item(String title, String authorName) {
-        return new Item(
-                Condition.LIKE_NEW,
-                10.0,
-                new Dimensions(10, 10, 10),
-                publication(title, author(authorName))
-        );
-    }
+//    private Item item(String title, String authorName) {
+//        return new Item(
+//                Condition.LIKE_NEW,
+//                10.0,
+//                new Dimensions(10, 10, 10),
+//                publication(title, author(authorName))
+//        );
+//    }
 
 //    private Listing listingWithItems(Item... items) {
 //        return new Listing(

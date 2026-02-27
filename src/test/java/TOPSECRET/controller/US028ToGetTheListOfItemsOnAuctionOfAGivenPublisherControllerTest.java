@@ -25,6 +25,9 @@ import org.junit.jupiter.api.Test;
  * - the list of items on auction for a given publisher
  */
 class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
+    AuthorFactory authorFactory = new AuthorFactory();
+    EditionFactory editionFactory = new EditionFactory();
+
 
     // Test publishers
     private Publisher publisher1;
@@ -58,7 +61,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         publisher2 = new Publisher("Other Books", "PT987654321", contact);
 
         // Bibliographical data
-        Author author = new Author(profile, "Author bio");
+        Author author = authorFactory.createAuthorWithExistingProfile(profile, "Author bio");
 
         // Book published by publisher1
         BibliographicalData data1 = new BibliographicalData(
@@ -101,8 +104,8 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
 //        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition1= new Edition("1st", code1, physicalAttributes, pubType, publisher1, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-        Edition edition2= new Edition("1st", code2, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition1= editionFactory.create("1st", code1, physicalAttributes, pubType, publisher1, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition2= editionFactory.create("1st", code2, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         // -------- Publications --------
         Publication pub1 = new Publication(

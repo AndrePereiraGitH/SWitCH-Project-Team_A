@@ -17,11 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuctionDTO_US026Test {
 
     private AuthorRepository authorRepo;
+    AuthorFactory authorFactory = new AuthorFactory();
+    EditionFactory editionFactory = new EditionFactory();
 
 
    @BeforeEach
     void setup() {
-        authorRepo = new AuthorRepository(new ArrayList<>());
+        authorRepo = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
     }
 
     // ============================================================
@@ -93,7 +95,7 @@ class AuctionDTO_US026Test {
     }
 
     private Author instantiateAuthor(String name) {
-        return authorRepo.createAndAddAuthor(name, new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");
+        return authorRepo.createAndAddAuthor(name, new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography", authorFactory);
     }
 
     private PublicationSample instantiatePublication(List<Author> authors, User user) {
@@ -106,7 +108,7 @@ class AuctionDTO_US026Test {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new PublicationSample(
                 bd,

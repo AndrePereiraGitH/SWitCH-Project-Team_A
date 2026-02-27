@@ -3,7 +3,6 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.GenreFactory;
 import TOPSECRET.dto.GenreDTO_US013;
-import TOPSECRET.dto.GenreMapper_US013;
 import TOPSECRET.repository.GenreRepository;
 import org.junit.jupiter.api.Test;
 
@@ -18,13 +17,11 @@ class ToGetListOfGenreControllerTest {
     // ========================================
 
     @Test
-    void shouldCreateControllerWithValidRepositoryAndMapper() {
+    void shouldCreateControllerWithValidRepository() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        GenreMapper_US013 mapper = new GenreMapper_US013();
-
         // Act
-        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository, mapper);
+        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
         // Assert
         assertNotNull(controller);
@@ -32,26 +29,12 @@ class ToGetListOfGenreControllerTest {
 
     @Test
     void shouldThrowExceptionWhenRepositoryIsNull() {
-        // Arrange
-        GenreMapper_US013 mapper = new GenreMapper_US013();
-
+        
         // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new ToGetListOfGenreController(null, mapper)
+                () -> new ToGetListOfGenreController(null)
         );
         assertEquals("Genre Repository can't be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenMapperIsNull() {
-        // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(),  new GenreFactory());
-
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new ToGetListOfGenreController(repository, null)
-        );
-        assertEquals("Genre Mapper can't be null", exception.getMessage());
     }
 
     // ========================================
@@ -62,8 +45,7 @@ class ToGetListOfGenreControllerTest {
     void shouldReturnEmptyListWhenNoGenres() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(),  new GenreFactory());
-        GenreMapper_US013 mapper = new GenreMapper_US013();
-        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository, mapper);
+        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
         // Act
         List<GenreDTO_US013> result = controller.getGenresList();
@@ -80,8 +62,7 @@ class ToGetListOfGenreControllerTest {
         repository.createAndAddGenre("Romance");
         repository.createAndAddGenre("Horror");
 
-        GenreMapper_US013 mapper = new GenreMapper_US013();
-        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository, mapper);
+        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
         // Act
         List<GenreDTO_US013> result = controller.getGenresList();
@@ -99,8 +80,7 @@ class ToGetListOfGenreControllerTest {
         repository.createAndAddGenre("Mystery");
         repository.createAndAddGenre("Thriller");
 
-        GenreMapper_US013 mapper = new GenreMapper_US013();
-        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository, mapper);
+        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
         // Act
         List<GenreDTO_US013> controllerResult = controller.getGenresList();
@@ -120,8 +100,7 @@ class ToGetListOfGenreControllerTest {
         repository.createAndAddGenre("Comedy");
         repository.createAndAddGenre("Drama");
 
-        GenreMapper_US013 mapper = new GenreMapper_US013();
-        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository, mapper);
+        ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
         // Act
         List<GenreDTO_US013> result = controller.getGenresList();

@@ -16,7 +16,8 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     //Publication
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
-    Author author = new Author(profile, "valid bio" );
+    AuthorFactory authorFactory = new AuthorFactory();
+    Author author = authorFactory.createAuthorWithExistingProfile(profile, "valid bio");
     Address address = new Address("R Maria", "12", "156-5", new Country("PORTUGAL"));
     Email email = new Email("maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
@@ -44,8 +45,9 @@ class GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition2= new Edition("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    EditionFactory editionFactory = new EditionFactory();
+    Edition edition1= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition2= editionFactory.create("2st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
 //    Publication pub1 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, "1st edition", code);
     Publication pub1 = new Publication(bd, publicationType, user, PublicationStatus.FOR_SALE, edition1, code);

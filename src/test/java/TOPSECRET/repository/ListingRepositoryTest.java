@@ -15,8 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ListingRepositoryTest {
 
-    ListingRepository listingRepo = new ListingRepository();
-    ItemRepository itemRepo = new ItemRepository();
+    private ListingRepository listingRepo = new ListingRepository();
+    private ItemRepository itemRepo = new ItemRepository();
+    private EditionFactory editionFactory = new EditionFactory();
+
 
     @Test
     void testConstructor_shouldCreateEmptyList() {
@@ -65,7 +67,7 @@ class ListingRepositoryTest {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     private Publication instaciatePublication() {
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "some details");
@@ -77,7 +79,8 @@ class ListingRepositoryTest {
 
     private static BibliographicalData instantiateBibliographicalData() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
-        Author author = new Author(authorProfile, "valid bio");
+        AuthorFactory authorFactory = new AuthorFactory();
+        Author author = authorFactory.createAuthorWithExistingProfile(authorProfile, "valid bio");
 
         List<Author> authors = new ArrayList<>();
         authors.add(author);
@@ -162,7 +165,8 @@ class ListingRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Some information");
         Publisher publisher = new Publisher("Porto Editora", "PT987654329", null);
-        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ITALY, LocalDate.of(2019, 7, 14));
+
+        Edition localEdition = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ITALY, LocalDate.of(2019, 7, 14));
 
 
         PublicationSample item = new PublicationSample(
@@ -203,7 +207,7 @@ class ListingRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition localEdition = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         PublicationSample item = new PublicationSample(
                 instantiateBibliographicalData(),  // tem genre "Fantasy"
@@ -243,7 +247,7 @@ class ListingRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Here are some details");
         Publisher publisher = new Publisher(" Areal Editores", "PT987654321", null);
-        Edition localEdition = new Edition("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition localEdition = editionFactory.create("3st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
 
         PublicationSample item1 = new PublicationSample(
@@ -301,7 +305,7 @@ class ListingRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.SADDLE_STICHING, "Detailed information");
         Publisher publisher = new Publisher(" Areal Editores", "PT987654329", null);
-        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2010, 1, 1));
+        Edition localEdition = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2010, 1, 1));
 
         PublicationSample item = new PublicationSample(
                 instantiateBibliographicalData(),  // tem genre "Fantasy"
@@ -341,7 +345,7 @@ class ListingRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Some information");
         Publisher publisher = new Publisher(" Areal Editores", "PT987654329", null);
-        Edition localEdition = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.JAPANESE, LocalDate.of(2010, 7, 14));
+        Edition localEdition = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.JAPANESE, LocalDate.of(2010, 7, 14));
 
 
         PublicationSample item = new PublicationSample(
