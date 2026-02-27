@@ -1,37 +1,34 @@
 @startuml
 
 footbox off
-
 title Sequence Diagram - US008 Register a new city in the System
-
 
 actor Administrator
 participant ":UI" as UI
-
-
 participant ":US008_toRegisterACityCtrl" as CityController
 participant ":CountryRepository" as CountryRepository
-participant ":CityRepository" as AddressRepository
+participant ":CityRepository" as CityRepository
+participant ":CityFactory" as CityFactory
 
 Administrator -> UI : **1** I want to register a new city
 activate UI
+
 UI --> Administrator : **2** From which country is the city?
 deactivate UI
+
 Administrator -> UI : **3** The city is from the country <countryName>
 activate UI
 
-
-UI -> CityController : **4** getCountryName
+UI -> CityController : **4** getCountryName(countryName)
 activate CityController
-CityController -> CountryRepository : **5** getCountryName
+
+CityController -> CountryRepository : **5** exists(countryName)
 activate CountryRepository
-CountryRepository -> CountryRepository : **6** validate (countryName)
-
-
-CountryRepository --> CityController : **7** <countryName> exists
+CountryRepository -> CountryRepository : **6** validate(countryName)
+CountryRepository --> CityController : **7** true
 deactivate CountryRepository
 
-CityController --> UI : **8** <countryName> exists
+CityController --> UI : **8** country exists
 deactivate CityController
 
 UI --> Administrator : **9** What is the name of the city?
@@ -39,27 +36,32 @@ deactivate UI
 
 Administrator -> UI : **10** The city's name is <cityName>
 activate UI
-UI -> CityController : **11** registerNewCity (cityName, countryName)
 
+UI -> CityController : **11** registerNewCity(cityName, countryName)
 activate CityController
 
-CityController -> AddressRepository : **12** createAndAddNewCity (cityName, countryName)
-activate AddressRepository
+CityController -> CityRepository : **12** createAndAdd(cityName, countryName)
+activate CityRepository
 
+CityRepository -> CityFactory : **13** create(cityName, countryName)
+activate CityFactory
 
-create "newCity1: City" as City
-AddressRepository -> City : **13** createCity(cityName, countryName)
+create "newCity : City" as City
+CityFactory -> City : **14** create(cityName, countryName)
 
+CityFactory --> CityRepository : **15** newCity
+deactivate CityFactory
 
-AddressRepository -> AddressRepository : **14** validate (newCity1)
-AddressRepository -> AddressRepository : **15** Add (newCity1)
+CityRepository -> CityRepository : **16** validate(newCity)
+CityRepository -> CityRepository : **17** add(newCity)
 
-AddressRepository --> CityController : **16** true (newCity1)
-deactivate AddressRepository
+CityRepository --> CityController : **18** success(newCity)
+deactivate CityRepository
 
-CityController --> UI : **17** success (newCity1)
+CityController --> UI : **19** success(newCity)
 deactivate CityController
 
-UI --> Administrator : **18** <newCity1> has been registered successfully!
+UI --> Administrator : **20** <newCity> has been registered successfully!
 deactivate UI
+
 @enduml

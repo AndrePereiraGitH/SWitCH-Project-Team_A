@@ -1,49 +1,42 @@
+
 @startuml
 hide circle
-/' class User {
-  -username: String
-  -contact: Contact
-  -profile: Profile
-  +User(username: String, contact: Contact, profile: Profile)
-}
-'/
+title US008 - Register New City (Class Diagram)
 
 class City {
--cityName: String
--country: Country
-}
-
-class "List<Country>" {
-    +getCountryName (countryName : Country)
+  -cityName: String
+  -country: Country
 }
 
 class Country {
--country: Country
+  -name: String
+}
+
+class FactoryCity {
+  +create(cityName: String, country: Country) : City
 }
 
 class CityRepository {
-    +createAndAddNewCity (cityName: String,
-    country: Country)
-    }
-
-class US008RegisterNewCityController{
-    +getCountryName (countryName)
-  + registerNewCity(cityName : String,
-  countryName: String)
-}
-class CountryRepository{
-    +getCountryName (countryName)
-}
-class "List<City>"{
+  +createAndAdd(cityName: String, countryName: String) : City
+  -validate(city: City)
+  -add(city: City)
 }
 
-' Interactions
-US008RegisterNewCityController "1" .--> "1" CityRepository : request registering city
-US008RegisterNewCityController "1" .--> "1" CountryRepository : asks verification
-CityRepository "1" --> "1" "List<City>" : contains
-"List<City>" "1" --> "*" City : stores
-CityRepository "1" .--> "*" City : creates/manages
-"List<Country>" "1" --> "*" Country : contains
-CountryRepository "1" --> "1" "List<Country>" : has a
-City "*" --> "1" Country : is in a
+class CountryRepository {
+  +exists(countryName: String) : boolean
+  +findByName(countryName: String) : Country
+}
+
+class US008RegisterNewCityController {
+  +getCountryName(countryName: String) : boolean
+  +registerNewCity(cityName: String, countryName: String) : City
+}
+
+' Interactions / Dependencies
+US008RegisterNewCityController "1" ..> "1" CityRepository : uses
+US008RegisterNewCityController "1" ..> "1" CountryRepository : verifies country
+CityRepository "1" ..> "1" FactoryCity : creates via
+CityRepository "1" --> "*" City : stores
+City "*" --> "1" Country : is in
+
 @enduml

@@ -1,5 +1,5 @@
 @startuml
-title US010 - To register a new publication in MiteLovers to add to library
+title US010 - Register a new publication in MiteLovers (Class Diagram)
 
 hide circle
 
@@ -7,24 +7,25 @@ class UI010 {
 }
 
 class RegisterNewPublicationCtrl {
-+createAndAddPublication(pub1)
+  +createAndAddPublication(bd, owner, status, edition, condition)
 }
 
-class PublicationRepository{
-
--validate (pub1)
-+createAndAddPublicationToSystem(pub1)
+class PublicationSampleRepository {
+  +createAndAddPublicationToSystem(bd, owner, status, edition, condition)
+  -validate(pub1 : PublicationSample)
+  -add(pub1 : PublicationSample)
 }
 
-class Publication {
-+createAndAddPublication(pub1)
+class FactoryPublicationSample {
+  +create(bd, owner, status, edition, condition) : PublicationSample
 }
 
-' interactions
+class PublicationSample {
+}
+
 UI010 "1" ..> "1" RegisterNewPublicationCtrl : contacts
-RegisterNewPublicationCtrl "1" ..> "1" PublicationRepository : uses
-PublicationRepository "1" -> "*" Publication : owns
-
-'missing cardinalities
+RegisterNewPublicationCtrl "1" ..> "1" PublicationSampleRepository : uses
+PublicationSampleRepository "1" ..> "1" FactoryPublicationSample : uses
+PublicationSampleRepository "1" -> "*" PublicationSample : owns
 
 @enduml
