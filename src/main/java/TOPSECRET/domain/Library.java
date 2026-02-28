@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.PublicationStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,4 +115,22 @@ public class Library {
         return publicationSample;
     }
 
+    /**
+     * Returns an unmodifiable list of all publications in this library available for sale.
+     * <p>
+     * The returned list is a defensive copy and cannot be modified. To add or
+     * remove publications, use the {@link #addPublication(PublicationSample)} method.
+     * </p>
+     *
+     * @return an unmodifiable list of publications in this library available for sale.
+     */
+    public List<PublicationSample> findLibraryPublicationsAvailableForSale() {
+        List<PublicationSample> availablePublicationsForSale = new ArrayList<>();
+        for (PublicationSample pubSample : _myPublications) {
+            if (pubSample.getPublicationStatus() != PublicationStatus.SOLD && pubSample.getPublicationStatus() != PublicationStatus.FOR_SALE) {
+                availablePublicationsForSale.add(pubSample);
+            }
+        }
+        return List.copyOf(availablePublicationsForSale);
+    }
 }

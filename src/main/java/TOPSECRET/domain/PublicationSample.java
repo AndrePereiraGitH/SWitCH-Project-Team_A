@@ -102,15 +102,11 @@ public class PublicationSample {
 
     public record PublicationDetails(
             BibliographicalData bibliographicalData,
-//            PublicationType publicationType,
             User owner,
             PublicationStatus publicationStatus,
-//            String edition,
             Edition edition,
             Condition condition
-//            Code code
     ) {}
 
     // US023 End ----------------------------------------------------------------------------------------------------
-
 }

@@ -27,7 +27,7 @@ public class Edition {
     private final Locale _editionLanguage;
     private final LocalDate _editionDate;
 
-    protected Edition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType, Publisher publisher, Locale editionLanguage, LocalDate editionDate) {
+    public Edition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType, Publisher publisher, Locale editionLanguage, LocalDate editionDate) {
         if (editionNumber == null || editionNumber.isBlank()) {
             throw new IllegalArgumentException("Edition Number cannot be blank");
         }
@@ -52,16 +52,7 @@ public class Edition {
         this._editionDate = editionDate;
     }
 
-    /**
-     * Validates the identification code according to publication type and year.
-     *
-     * @param code            the code to validate
-     * @param publicationType the publication type
-     * @param date            the publication date
-     * @throws IllegalArgumentException if the required code
-     *                                  (ISBN-10, ISBN-13 or ISSN) is missing according to the defined rules
-     */
-    private void validateCode(Code code, PublicationType publicationType, LocalDate date) {
+    private static void validateCode(Code code, PublicationType publicationType, LocalDate date) {
         int year = date.getYear();
 
         if (publicationType.getMediaFormat() == MediaFormat.BOOK) {
@@ -70,51 +61,60 @@ public class Edition {
                     throw new IllegalArgumentException(
                             "Books published in 2007 or later must have an ISBN-13 code.");
                 }
-
             } else if (year >= 1970) {
                 if (code.getIsbn10() == null || code.getIsbn10().isBlank()) {
                     throw new IllegalArgumentException(
                             "Books published between 1970 and 2006 must have an ISBN-10 code.");
                 }
             }
-        }
+            // Before 1970: no code required, nothing to validate
 
-        // Before 1970: no code required, nothing to validate
-        else if (publicationType.getMediaFormat() == MediaFormat.MAGAZINE) {
+        } else if (publicationType.getMediaFormat() == MediaFormat.MAGAZINE) {
             if (year >= 1976) {
                 if (code.getIssn() == null || code.getIssn().isBlank()) {
-                    throw new IllegalArgumentException("Magazines published in 1976 or later must have an ISSN code.");
+                    throw new IllegalArgumentException(
+                            "Magazines published in 1976 or later must have an ISSN code.");
                 }
             }
             // Before 1976: no code required
         }
     }
 
-    public String getEditionNumber() {
-        return _editionNumber;
+
+    public PublicationType getPublicationType() {
+        return _publicationType;
     }
 
     public Code getCode() {
         return _code;
     }
-    public PhysicalAttributes getPhysicalAttributes() {
-        return _physicalAttributes;
-    }
 
-    public PublicationType getPublicationType() {
-        return _publicationType;
-    }
     public Publisher getPublisher() {
         return _publisher;
     }
-    public  Locale getEditionLanguage(){
+
+    public String getEditionNumber() {
+        return _editionNumber;
+    }
+
+    public Locale getEditionLanguage() {
         return _editionLanguage;
     }
 
-    public  LocalDate getEditionDate(){
+    public LocalDate getEditionDate() {
         return _editionDate;
     }
 
+    /**
+     * Compares this edition with another object for equality.
+     * <p>
+     * Two {@code Edition} objects are considered equal if all their
+     * fields are equal.
+     *
+     * @param o the object to compare with
+     * @return {@code true} if the objects are of the same class and
+     * all fields are equal; {@code false} otherwise
+     */
 
     @Override
     public boolean equals(Object o) {
