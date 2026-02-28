@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.dto.AuthorDTO_US026;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -17,8 +18,9 @@ class AuctionRepositoryTest {
 
     private final AuctionFactory auctionFactory = new AuctionFactory();
     private final AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
-    AuthorFactory authorFactory = new AuthorFactory();
-    EditionFactory editionFactory = new EditionFactory();
+    static AuthorFactory authorFactory = new AuthorFactory();
+    static EditionFactory editionFactory = new EditionFactory();
+    private static final ListingRepository listingRepository = new ListingRepository();
 
 
     @Test
@@ -37,18 +39,19 @@ class AuctionRepositoryTest {
     void create_and_add_shouldAddActionToRepository_ifNewAuctionIsValid() throws InstanceAlreadyExistsException {
 
         // arrange
-        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
-
+        AuctionFactory auctionFactory = new AuctionFactory();
+        AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
         LocalDateTime initialDate = now;
         LocalDateTime finalDate = now.plusDays(2);
 
         // act
-        Auction result = auctionRepository.createAndAdd(listing, initialDate, finalDate, new Price(new BigDecimal(150.50)));
+        assertEquals(0, auctionRepo.getAllAuctions().size());
+        auctionRepo.createAndAdd(listing, initialDate, finalDate, new Price(new BigDecimal(150.50)));
 
         //assert
-        assertEquals(1, auctionRepository.getAllAuctions().size());
+        assertEquals(1, auctionRepo.getAllAuctions().size());
     }
 
     @Test
@@ -218,6 +221,54 @@ class AuctionRepositoryTest {
 
     }
 
+    @Test
+    void getListOfItemsOnAuctionGivenAuthor_shouldReturnEmptyList_ifDoesNotExistAuctionsOfThisAuthor() {
+        // arrange
+        AuthorDTO_US026 authorDTO = new AuthorDTO_US026("Ken Follett");
+        // act
+        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenAuthor(authorDTO);
+
+        // assert
+        assertEquals(0, result.size());
+
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenAuthor_shouldReturnListSizedOne_ifThereIsAnAuctionOfThisAuthor() throws InstanceAlreadyExistsException {
+        // arrange
+        List<Author> authors = new ArrayList<>();
+        Author author = instanciateAuthor();
+        authors.add(author);
+        AuthorDTO_US026 authorDto = AuthorDTO_US026.fromAuthor(author);
+        Listing listing = instantiateListingAuthors(authors);
+
+        auctionRepository.createAndAdd(listing, LocalDateTime.now().plusMinutes(5), LocalDateTime.now().plusDays(5), price("100"));
+
+        // act
+        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenAuthor(authorDto);
+
+        // assert
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenAuthor_shouldReturnListWithMatchingAuction_ifThereIsAnAuctionOfThisAuthor() throws InstanceAlreadyExistsException {
+        // arrange
+        List<Author> authors = new ArrayList<>();
+        Author author = instanciateAuthor();
+        authors.add(author);
+        AuthorDTO_US026 authorDto = AuthorDTO_US026.fromAuthor(author);
+        Listing listing = instantiateListingAuthors(authors);
+
+        Auction auction = auctionRepository.createAndAdd(listing, LocalDateTime.now().plusMinutes(5), LocalDateTime.now().plusDays(5), price("100"));
+
+        // act
+        List<Auction> result = auctionRepository.getListOfItemsOnAuctionGivenAuthor(authorDto);
+
+        // assert
+        assertEquals(auction, result.get(0));
+    }
+
 
     // ============================================================
     // ========================= Test Clock =======================
@@ -243,7 +294,7 @@ class AuctionRepositoryTest {
     private Auction createAuctionWithGenre(Genre genre) throws InstanceAlreadyExistsException {
         BibliographicalData bd = new BibliographicalData(
                 "Book",
-                List.of(authorFactory.createAuthorWithExistingProfile(
+                List.of( authorFactory.createAuthorWithExistingProfile(
                         new Profile("Author", new Country("Portugal"), LocalDate.of(1980, 1, 1)),
                         "bio"
                 )),
@@ -283,7 +334,7 @@ class AuctionRepositoryTest {
                 Condition.LIKE_NEW
         );
 
-        Listing listing = new Listing(
+        Listing listing = listingRepository.createAndAdd(
                 "Title",
                 List.of(item),
                 SaleType.AUCTION,
@@ -303,7 +354,7 @@ class AuctionRepositoryTest {
         );
     }
 
-    private Auction createValidActiveAuction() {
+    private static Auction createValidActiveAuction() throws InstanceAlreadyExistsException {
         Listing listing = instantiateListing();
         LocalDateTime now = fixedNow();
 
@@ -322,11 +373,11 @@ class AuctionRepositoryTest {
         return editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
     }
 
-    private  Listing instantiateListing() {
+    private static Listing instantiateListing() throws InstanceAlreadyExistsException {
         PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
         Price price = new Price(new BigDecimal("35.00"));
         final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
-        return new Listing(
+        return listingRepository.createAndAdd(
                 "This is our first listing",
                 items,
                 SaleType.AUCTION,
@@ -336,11 +387,11 @@ class AuctionRepositoryTest {
         );
     }
 
-    private  Listing instantiateListing2() {
+    private static Listing instantiateListing2() throws InstanceAlreadyExistsException {
         PublicationSample bookItem = createValidPublication( instantiateBibliographicalData());
         Price price = new Price(new BigDecimal("35.00"));
         final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
-        return new Listing(
+        return listingRepository.createAndAdd(
                 "This is our first listing",
                 items,
                 SaleType.AUCTION,
@@ -350,13 +401,16 @@ class AuctionRepositoryTest {
         );
     }
 
-    private BibliographicalData instantiateBibliographicalData() {
+    private static Author instanciateAuthor() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
-        Author author = authorFactory.createAuthorWithExistingProfile(authorProfile, "valid bio");
+        return authorFactory.createAuthorWithExistingProfile(authorProfile, "valid bio");
+
+    }
+
+    private static BibliographicalData instantiateBibliographicalData() {
 
         List<Author> authors = new ArrayList<>();
-        authors.add(author);
-
+        authors.add(instanciateAuthor());
 
         List<Genre> genres = new ArrayList<>();
         genres.add(new Genre ("Fantasy"));
@@ -389,18 +443,7 @@ class AuctionRepositoryTest {
         return pictures;
     }
 
-//    private static Item instantiateItem(BibliographicalData bd, Dimensions dimensions) {
-//        Publication publication = createValidPublication(bd);
-//
-//        return new Item(
-//                Condition.LIKE_NEW,
-//                1.2,
-//                dimensions,
-//                publication
-//        );
-//    }
-
-    private PublicationSample createValidPublication(BibliographicalData bd) {
+    private static PublicationSample createValidPublication(BibliographicalData bd) {
 
         // User (seller/owner of the publication)
         User user = instantiateUser("maria1");
@@ -466,20 +509,19 @@ class AuctionRepositoryTest {
         return new User(name, contact, profile,userRole);
     }
 
-//    private static Listing instantiateListingAuthors(List<String> authors) {
-//        Item bookItem = instantiateItem(instantiateBibliographicalDataAuthor(authors), new Dimensions(12, 10, 2));
-//        Price price = new Price(new BigDecimal("35.00"));
-//        final List<Item> items = new ArrayList<>(List.of(bookItem));
-//        return new Listing(
-//                "This is our first listing",
-//                items,
-//                SaleType.AUCTION,
-//                price,
-//                "short description",
-//                instantiateUser("Joseph"),
-//                instantiatePictures()
-//        );
-//    }
+    private static Listing instantiateListingAuthors(List<Author> authors) throws InstanceAlreadyExistsException {
+        PublicationSample bookItem = createValidPublication(instantiateBibliographicalDataAuthor(authors));
+        Price price = new Price(new BigDecimal("35.00"));
+        final List<PublicationSample> items = new ArrayList<>(List.of(bookItem));
+        return listingRepository.createAndAdd(
+                "This is our first listing",
+                items,
+                SaleType.AUCTION,
+                price,
+                "short description",
+                instantiatePictures()
+        );
+    }
 
     private static  Profile profile(String name) {
         return new Profile(name, new Country("PORTUGAL"), LocalDate.of(12, 3, 1977));
@@ -489,19 +531,21 @@ class AuctionRepositoryTest {
         return authorFactory.createAuthorWithExistingProfile(profile(name), "This is the Biography of " + name);
     }
 
-    private  BibliographicalData instantiateBibliographicalDataAuthor(List<String> authorsNameList) {
+    private static BibliographicalData instantiateBibliographicalDataAuthor(List<Author> authors) {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
         //Author author = new Author(authorProfile, "valid bio");
-        List<Author> authors = new ArrayList<>();
+       // List<Author> authors = new ArrayList<>();
 
-        for (int i = 0; i < authorsNameList.size(); i++) {
-
-            authors.add(authorFactory.createAuthorWithExistingProfile(
-                            profile(authorsNameList.get(i)),
-                            "this is my biography!"
-                            ));
-
-        }
+//        for (int i = 0; i < authorsNameList.size(); i++) {
+//
+//            authors.add(
+//                    new Author(
+//                            profile(authorsNameList.get(i)),
+//                            "this is my biography!"
+//
+//                            ));
+//
+//        }
 
         List<Genre> genres = new ArrayList<>();
         genres.add(new Genre ("Fantasy"));
@@ -512,8 +556,6 @@ class AuctionRepositoryTest {
                         "The Lord of the Rings, in one paperback. Features the definitive edition of the text, " +
                         "fold-out flaps with the original two-colour maps, and a revised and expanded index.";
 
-        Contact contact = new Contact();
-//        Publisher publisher = new Publisher("HarperCollins Publishers", "1111111111", contact);
 
         return new BibliographicalData(
                 "The Lord Of The Rings",

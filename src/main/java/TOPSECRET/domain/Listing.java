@@ -38,7 +38,7 @@ public class Listing {
      * @throws IllegalArgumentException if any item is already in a listing (status is FOR_SALE)
      * @throws IllegalArgumentException if any item is already sold (status is SOLD)
      */
-    public Listing(String listingTitle, List<PublicationSample> items, SaleType saleType,
+    protected Listing(String listingTitle, List<PublicationSample> items, SaleType saleType,
                    Price price, String shortDescription, List<Picture> pictures) {
 
         if (listingTitle == null || listingTitle.length() < 5) {

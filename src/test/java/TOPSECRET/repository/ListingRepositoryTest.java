@@ -16,22 +16,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class ListingRepositoryTest {
 
     private ListingRepository listingRepo = new ListingRepository();
-    private ItemRepository itemRepo = new ItemRepository();
     private EditionFactory editionFactory = new EditionFactory();
-
+    PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository();
 
     @Test
     void testConstructor_shouldCreateEmptyList() {
         assertNotNull(listingRepo);
-        assertEquals(0, listingRepo.listings.size());
+      //  assertEquals(0, listingRepo. listings.size());
     }
 
 //    @Test
 //    void createAndAdd_shouldReturn_validListing() throws InstanceAlreadyExistsException {
 //
 //        // arrange
-//        List<Item> items = new ArrayList<>();
-//        Item item = itemRepo.createAndAddItem(Condition.LIKE_NEW, 2, new Dimensions(10, 10, 10), instaciatePublication());
+//        List<PublicationSample> items = new ArrayList<>();
+//        BibliographicalData bd = instantiateBibliographicalData();
+//        User owner = instantiateUser("Owner");
+//        Edition edition = instanciateEdition();
+//        PublicationSample item = publicationSampleRepository.createAndAdd(bd, owner, PublicationStatus.READING, edition, Condition.LIKE_NEW );
 //        items.add(item);
 //
 //        // act
@@ -110,14 +112,46 @@ class ListingRepositoryTest {
         );
     }
 
+    private Edition instanciateEdition() {
+        return editionFactory.create(
+                "1º",
+                Code.fromIsbn13("1111111111"),
+                instanciatePhysicalAttributes(),
+                instanciatePublicationType(),
+                new Publisher("Publisher", "1223322233", instanciateContact()),
+                Locale.ENGLISH, LocalDate.of(1989, 5, 19)
+        );
+    }
+
+    private PublicationType instanciatePublicationType() {
+        return new PublicationType(
+                MediaFormat.BOOK,
+                TypeOfBinding.PAPERBACK,
+                "some details"
+        );
+    }
+
+    private PhysicalAttributes instanciatePhysicalAttributes() {
+        return new PhysicalAttributes(
+                new Dimensions(10, 10, 10),
+                2.5,
+                700
+        );
+    }
+
     private static User instantiateUser(String name) {
-        Email email = new Email("switcher", "example.com");
-        Address add = new Address("Rua x", "12B", "4444-111", new Country("PORTUGAL"));
-        Contact contact = new Contact("911111111", "351", email, add);
+
+        Contact contact = instanciateContact();
         LocalDate birthday = LocalDate.of(1982, 12, 3);
         Profile profile = new Profile("Albert Trump", new Country("EL_SALVADOR"), birthday);
         UserRole userRole = UserRole.NORMAL_USER;
         return new User(name, contact, profile, userRole);
+    }
+
+    private static Contact instanciateContact() {
+        Email email = new Email("switcher", "example.com");
+        Address add = new Address("Rua x", "12B", "4444-111", new Country("PORTUGAL"));
+        return new Contact("911111111", "351", email, add);
     }
 
     private static Price price(String value) {

@@ -6,6 +6,7 @@ import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
 import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.ListingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     // Instantiate repos
     AuthorRepository authorRepo;
     AuctionRepository auctionRepo;
+    ListingRepository listingRepository;
     US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ctrl;
     AuthorFactory authorFactory = new AuthorFactory();
 
@@ -43,6 +45,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         AuctionFactory auctionFactory = new AuctionFactory();
         authorRepo = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
         auctionRepo = new AuctionRepository(auctionFactory);
+        listingRepository = new ListingRepository();
         ctrl = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepo, auctionRepo);
 
     }
@@ -133,8 +136,8 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<PublicationSample> items2 = new ArrayList<>();
         items2.add(item2);
 
-        Listing listing = new Listing("Book Pillars of the earth",items, SaleType.AUCTION, price("35.50"), "short description", List.of(new Picture("pic1")));
-        Listing listing2 = new Listing("Book Pillars of the earth", items2, SaleType.AUCTION, price("35.50"), "short description", List.of(new Picture("pic1")));
+        Listing listing = listingRepository.createAndAdd("Book Pillars of the earth",items, SaleType.AUCTION, price("35.50"), "short description", List.of(new Picture("pic1")));
+        Listing listing2 = listingRepository.createAndAdd("Book Pillars of the earth", items2, SaleType.AUCTION, price("35.50"), "short description", List.of(new Picture("pic1")));
 
 
         LocalDateTime now = fixedNow();

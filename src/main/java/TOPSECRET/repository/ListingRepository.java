@@ -9,16 +9,24 @@ import java.util.List;
 
 public class ListingRepository {
 
-    List<Listing> listings;
+    private List<Listing> listings;
+    private ListingFactory listingFactory;
 
     public ListingRepository() {
         this.listings = new ArrayList<>();
+        this.listingFactory = new ListingFactory();
     }
 
-    public Listing createAndAdd(String listingTitle, List<PublicationSample> items, SaleType saleType,
-                                Price price, String shortDescription, List<Picture> pictures) throws InstanceAlreadyExistsException {
+    public Listing createAndAdd(
+            String listingTitle,
+            List<PublicationSample> items,
+            SaleType saleType,
+            Price price,
+            String shortDescription,
+            List<Picture> pictures
+    ) throws InstanceAlreadyExistsException {
 
-        Listing newListing = new Listing(listingTitle, items, saleType, price, shortDescription, pictures);
+        Listing newListing = listingFactory.create(listingTitle, items, saleType, price, shortDescription, pictures);
 
         if (isExistent(newListing))
             throw new InstanceAlreadyExistsException("Listing already exists.");
