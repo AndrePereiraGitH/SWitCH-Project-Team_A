@@ -1,0 +1,163 @@
+@startuml
+
+title Mite Lovers - AOO Level 1
+skinparam title {
+  FontSize 24
+}
+
+skinparam ArrowColor #333
+skinparam ClassBackgroundColor #DDDDFF
+skinparam ClassBorderColor #0000FF
+skinparam Shadowing false
+skinparam componentStyle rectangle
+skinparam componentBorderColor DarkBlue
+skinparam component<<highlight>> {
+    BackgroundColor LightBlue
+}
+skinparam legend {
+  BackgroundColor LightBlue
+  FontSize 14
+}
+
+
+
+/' ===== Listing ===== '/
+Listing "1" --- "              0..1" Auction : > can be an
+Listing "  1   " --- "  0..1 " DirectSale : > can be a
+Listing "1..*" -- "       1" Seller : > is created by
+Listing "1" -- "   1..*" PublicationSample : > announces
+
+note as L
+    Represents a sale ad (direct sale or auction)
+    end note
+
+Listing -> L
+
+
+/' ===== PublicationSample ===== '/
+PublicationSample "1" -- "1" BibliographicalData : > has
+PublicationSample "1" -- "1" Edition : > has
+PublicationSample "*" -- "1" User : > owned by
+
+note as S
+    Stock
+    Represents a specific physical copy of a publication,
+    with its condition, edition details and ownership.
+    end note
+
+PublicationSample - S
+
+
+/' ===== BibliographicalData ===== '/
+BibliographicalData "1" -- "1..*" Author : > has
+BibliographicalData "1" -- "1..*" Genre : > has
+
+note as N
+    Catalog
+    Refers to the bibliographical information of a publication
+    (title, authors, genres, original language, date of publication).
+    end note
+
+BibliographicalData --> N
+
+
+/' ===== Edition ===== '/
+Edition "1" -- "1" PublicationType : > has
+Edition "1" -- "1" Publisher : > published by
+
+
+/' ===== PublicationType ===== '/
+PublicationType "1" -- "1" MediaFormat : > has a
+
+
+/' ===== Commerce ===== '/
+Buyer "1  " ----- "  1..* " DirectSale : > buys through
+DirectSale "0..1" --- "0..1" Transaction : > can result in
+
+Auction "   1  " -- "*" Bid : > may have
+Auction "0..1" -- "0..1" Transaction : > can result in
+Bid "*" -- "                  1" Bidder : > offered by
+
+Transaction "1" -- "1 " LogisticsServices : > shipped by
+Transaction "1" -- "0..1" SupportService : > managed by
+
+Listing "  1 " --------- "0..1" SupportService : > is regulated by
+
+
+/' ===== User ===== '/
+User -- Community
+Bidder "0..1" -- "1" User : > is a
+Seller "0..1 " -- "1" User : > is a
+Buyer "0..1" - "1" User : > is a
+User "1" ---- " *     " SupportService : > can request
+
+
+/' ===== Library & Collections ===== '/
+Library "0..1" -- "           *" PublicationSample : > contains
+User "1" --- "0..1" Library : > may own
+User "1" -- "*" CollectionOfPublications : > may have
+User "1" -- "0..1" Administrator : > can be an
+
+CollectionOfPublications "1" -- "*" PublicationSample : > contains
+CollectionOfPublications "1" -- "1" Genre : > has
+
+
+/' ===== AppraisalEntity ===== '/
+Administrator "1" -- "*" AppraisalEntity : > can register
+AppraisalEntity "1" -- "1..*" Genre : > accepts
+AppraisalEntity "1" -- "1..*" PublicationType : > accepts
+
+
+/' ===== Components ===== '/
+
+component Administrator {
+}
+component AppraisalEntity {
+}
+component CollectionOfPublications {
+}
+component Library {
+}
+component MediaFormat {
+}
+component PublicationType {
+}
+component Edition {
+}
+component Publisher {
+}
+component Author {
+}
+component Genre {
+}
+component Listing {
+}
+component PublicationSample {
+}
+component BibliographicalData {
+}
+component Seller {
+}
+component Buyer {
+}
+component Bidder {
+}
+component Bid {
+}
+component DirectSale {
+}
+component Transaction {
+}
+component Auction {
+}
+component User {
+}
+
+component LogisticsServices #LightBlue {
+}
+component SupportService #LightBlue {
+}
+component Community #LightBlue {
+}
+
+@enduml

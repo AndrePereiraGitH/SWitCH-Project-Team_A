@@ -29,6 +29,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class US012GetListOfPublicationsInLibraryControllerTest {
 
     private US012GetListOfPublicationsInLibraryController _ctrl;
+    private AuthorFactory authorFactory = new AuthorFactory();
+    private EditionFactory editionFactory = new EditionFactory();
+
 
     // Countries
     Country country1 = new Country("Denmark");
@@ -37,7 +40,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
 
     // Profile and Author
     Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-    Author author1 = new Author(profileAuthor1, "valid bio1");
+    Author author1 = authorFactory.createAuthorWithExistingProfile(profileAuthor1, "valid bio1");
 
     // Contact information
     Address address1 = new Address("R Maria", "12", "156-5", country2);
@@ -66,7 +69,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition1 = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition1 = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     // PublicationSamples
     PublicationSample publication1 = new PublicationSample(bibliographicalData1, user1, PublicationStatus.READING, edition1, Condition.POOR);
@@ -89,10 +92,10 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         lib1.addPublication(publication1);
         lib1.addPublication(publication2);
 
-        Library lib2 = new Library( "mylib2", user2);
+        Library lib2 = new Library("mylib2", user2);
         lib2.addPublication(publication1);
 
-        Library emptyLibrary = new Library( "emptyLib", user3);
+        Library emptyLibrary = new Library("emptyLib", user3);
 
         // Repository with test data
         LibraryFactory factory = new LibraryFactory();
@@ -101,7 +104,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
                         user1.getUserName(), lib1,
                         user2.getUserName(), lib2,
                         user3.getUserName(), emptyLibrary
-                ),factory
+                ), factory
         );
 
         // System Under Test

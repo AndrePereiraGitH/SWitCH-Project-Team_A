@@ -12,7 +12,7 @@ class GenreDTO_US013Test {
         Genre genre = new Genre("Adventure");
 
         // Act
-        GenreDTO_US013 dto = new GenreDTO_US013(genre);
+        GenreDTO_US013 dto = new GenreDTO_US013(genre.getGenreType());
 
         // Assert
         assertEquals("Adventure", dto.genreName);
@@ -24,7 +24,7 @@ class GenreDTO_US013Test {
         Genre genre = new Genre("Fantasy");
 
         // Act
-        GenreDTO_US013 dto = new GenreDTO_US013(genre);
+        GenreDTO_US013 dto = new GenreDTO_US013(genre.getGenreType());
 
         // Assert
         assertEquals(genre.getTitle(), dto.genreName);

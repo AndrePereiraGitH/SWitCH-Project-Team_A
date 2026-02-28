@@ -35,7 +35,6 @@ public class Auction {
     public Auction() {
     }
 
-
     /**
      * Creates a new auction using the system default clock.
      *
@@ -44,7 +43,7 @@ public class Auction {
      * @param finalDate the date and time when the auction ends
      * @param buyOutPrice the buyout price of the auction
      */
-    public Auction(Listing listing, LocalDateTime auctionStartDateTime, LocalDateTime finalDate, Price buyOutPrice) {
+    protected Auction(Listing listing, LocalDateTime auctionStartDateTime, LocalDateTime finalDate, Price buyOutPrice) {
         this(listing, auctionStartDateTime, finalDate, buyOutPrice, Clock.systemDefaultZone());
     }
 

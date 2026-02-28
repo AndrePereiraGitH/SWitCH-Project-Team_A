@@ -26,7 +26,8 @@ class PublicationDetailsDTO_US012Test {
 
     // Profile and Author
     Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-    Author author1 = new Author(profileAuthor1, "valid bio1");
+    AuthorFactory factory = new AuthorFactory();
+    Author author1 = factory.createAuthorWithExistingProfile(profileAuthor1, "valid bio1");
 
     // Contact information
     Address address1 = new Address("R Maria", "12", "156-5", country2);
@@ -58,8 +59,9 @@ class PublicationDetailsDTO_US012Test {
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
 
     // Editions
-    Edition edition1 = new Edition("1st", code1, physicalAttributes, publicationType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition2 = new Edition("1st", code2, physicalAttributes, publicationType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    EditionFactory editionFactory = new EditionFactory();
+    Edition edition1 = editionFactory.create("1st", code1, physicalAttributes, publicationType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition2 = editionFactory.create("1st", code2, physicalAttributes, publicationType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     // PublicationSamples
     PublicationSample publication1 = new PublicationSample(bibliographicalData1, user1, PublicationStatus.READING, edition1, Condition.POOR);

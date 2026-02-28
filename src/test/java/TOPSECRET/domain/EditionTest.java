@@ -53,7 +53,7 @@ class EditionTest {
     }
 
     private Publisher validPublisher() {
-        return new Publisher("Editora Exemplo", "123456789", validContact());
+        return new Publisher("Porto Editora", "123456789", validContact());
     }
 
     private PublicationType publicationTypeBook() {

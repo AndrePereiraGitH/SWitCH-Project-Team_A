@@ -26,18 +26,18 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     private Publisher publisherA;
     private Publisher publisherB;
 
-    @BeforeEach
-    void setUp() {
-
-        publisherA = new Publisher("Publisher A", "VAT-A", null);
-        publisherB = new Publisher("Publisher B", "VAT-B", null);
-
-        Publication publicationA = publicationWithPublisher(publisherA);
-        Publication publicationB = publicationWithPublisher(publisherB);
-
-        Item itemA1 = item(publicationA);
-        Item itemA2 = item(publicationA);
-        Item itemB = item(publicationB);
+//    @BeforeEach
+//    void setUp() {
+//
+//        publisherA = new Publisher("Publisher A", "VAT-A", null);
+//        publisherB = new Publisher("Publisher B", "VAT-B", null);
+//
+//        Publication publicationA = publicationWithPublisher(publisherA);
+//        Publication publicationB = publicationWithPublisher(publisherB);
+//
+//        Item itemA1 = item(publicationA);
+//        Item itemA2 = item(publicationA);
+//        Item itemB = item(publicationB);
 
 //        Listing listing1 = listingWithItems(itemA1, itemB);
 //        Listing listing2 = listingWithItems(itemA2);
@@ -55,8 +55,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 //        DirectSale ds2 = new DirectSale(List.of(listing2), buyer, false);
 
 //        repository = new DirectSaleRepository(List.of(ds1, ds2));
-        controller = new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(repository);
-    }
+//        controller = new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(repository);
+//    }
 
 //    @Test
 //    void constructor_shouldThrowExceptionWhenNullDirectSaleRepository() {
@@ -113,56 +113,56 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 //                                .getPublisher()));
 //    }
 
-    private static Publication publicationWithPublisher(Publisher publisher) {
-        Country country = new Country("Portugal");
-        Profile profile = new Profile("Profile", country, LocalDate.now());
-        Author author = new Author(profile, "bio");
-        Genre genre = new Genre("Genre");
-
-        BibliographicalData data =
-                new BibliographicalData(
-                        "Title",
-                        List.of(author),
-                        Locale.getDefault(),
-//                        publisher,
-                        LocalDate.now(),
-                        List.of(genre),
-//                        100,
-                        "ChunksOfText"
-                );
-
-        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details");
-        Address address = new Address("street", "number", "zipCode", country);
-        Email email = new Email("userName", "domain.com");
-        Contact contact = new Contact("915945695", "+351", email, address);
-        User user = new User("userName", contact, profile, UserRole.NORMAL_USER);
-        Code code = Code.fromIsbn13("isbn13");
-
-        // Edition
-        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-        Edition edition= new Edition(
-                "1st",
-                code,
-                physicalAttributes,
-                pubType,
-                publisher,
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-//        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, "edition", code);
-        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, edition, code);
-    }
-
-    private static Item item(Publication publication) {
-        return new Item(
-                Condition.NEW,
-                1.0,
-                new Dimensions(10, 10, 10),
-                publication
-        );
-    }
+//    private static Publication publicationWithPublisher(Publisher publisher) {
+//        Country country = new Country("Portugal");
+//        Profile profile = new Profile("Profile", country, LocalDate.now());
+//        Author author = new Author(profile, "bio");
+//        Genre genre = new Genre("Genre");
+//
+//        BibliographicalData data =
+//                new BibliographicalData(
+//                        "Title",
+//                        List.of(author),
+//                        Locale.getDefault(),
+////                        publisher,
+//                        LocalDate.now(),
+//                        List.of(genre),
+////                        100,
+//                        "ChunksOfText"
+//                );
+//
+//        PublicationType publicationType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details");
+//        Address address = new Address("street", "number", "zipCode", country);
+//        Email email = new Email("userName", "domain.com");
+//        Contact contact = new Contact("915945695", "+351", email, address);
+//        User user = new User("userName", contact, profile, UserRole.NORMAL_USER);
+//        Code code = Code.fromIsbn13("isbn13");
+//
+//        // Edition
+//        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
+//        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
+//        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
+//        Edition edition= new Edition(
+//                "1st",
+//                code,
+//                physicalAttributes,
+//                pubType,
+//                publisher,
+//                Locale.ENGLISH,
+//                LocalDate.of(2020, 1, 1)
+//        );
+////        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, "edition", code);
+//        return new Publication(data, publicationType, user, PublicationStatus.FOR_SALE, edition, code);
+//    }
+//
+//    private static Item item(Publication publication) {
+//        return new Item(
+//                Condition.NEW,
+//                1.0,
+//                new Dimensions(10, 10, 10),
+//                publication
+//        );
+//    }
 
 //    private static Listing listingWithItems(Item... items) {
 //        Price price = new Price(new BigDecimal(10));

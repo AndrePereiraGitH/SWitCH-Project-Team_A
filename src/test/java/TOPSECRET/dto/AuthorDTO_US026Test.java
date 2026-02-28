@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author;
+import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
 import TOPSECRET.repository.AuthorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthorDTO_US026Test {
 
     private AuthorRepository authorRepo;
+    private AuthorFactory authorFactory = new AuthorFactory();
 
     @BeforeEach
     void setup() {
-        authorRepo = new AuthorRepository(new ArrayList<>());
+        authorRepo = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
     }
 
 
@@ -28,8 +30,7 @@ class AuthorDTO_US026Test {
                 "Ken Follett",
                 new Country("United_kingdom"),
                 LocalDate.of(1949, 6, 5),
-                "bio"
-        );
+                "bio");
 
         // act
         AuthorDTO_US026 dto = AuthorDTO_US026.fromAuthor(author);
@@ -46,8 +47,7 @@ class AuthorDTO_US026Test {
                 "Dan Brown",
                 new Country("United_kingdom"),
                 LocalDate.of(1964, 6, 5),
-                "bio"
-        );
+                "bio");
 
         // act
         AuthorDTO_US026 dto = AuthorDTO_US026.fromAuthor(author);

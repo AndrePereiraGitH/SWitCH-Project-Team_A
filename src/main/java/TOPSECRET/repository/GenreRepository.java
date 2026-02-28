@@ -7,21 +7,33 @@ import java.util.List;
 
 /**
  * Repository responsible for creating and storing Genre objects.
+ * Delegates the creation of Genre instances to {@link GenreFactory}.
  * NOTE: Returns an unmodifiable copy of the internal list.
  */
 public class GenreRepository {
     private final List<Genre> _genres;
+    private final GenreFactory _genreFactory;
 
-    public GenreRepository(List<Genre> genres) {
+    public GenreRepository(List<Genre> genres, GenreFactory genreFactory) {
         if (genres == null) {
             throw new IllegalArgumentException("Genre List cannot be null");
         }
-        this._genres = new ArrayList<>(genres);
+        if (genreFactory == null) {
+            throw new IllegalArgumentException("GenreFactory cannot be null");
+        }
+        this._genres = genres;
+        this._genreFactory = genreFactory;
     }
 
-
-    public Genre createAndAddGenre(String genre1) {
-        Genre genre = new Genre(genre1);
+    /**
+     * Creates a new Genre using the factory and adds it to the repository.
+     *
+     * @param genreType the type of genre to create
+     * @return the created Genre
+     * @throws IllegalArgumentException if the genre already exists
+     */
+    public Genre createAndAddGenre(String genreType) {
+        Genre genre = _genreFactory.createGenre(genreType);
         if (!exists(genre)) {
             this._genres.add(genre);  // Add the genre that was passed in
             return genre;

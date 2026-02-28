@@ -18,21 +18,23 @@ class PublicationMapperTest_US023 {
     // BibliographicalData
     Country country1 = new Country("Denmark");
     Country country2 = new Country("Germany");
+    private AuthorFactory authorFactory = new AuthorFactory();
+    private EditionFactory editionFactory = new EditionFactory();
 
 
     Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-    Author author1 = new Author(profileAuthor1, "valid bio1");
+    Author author1 = authorFactory.createAuthorWithExistingProfile(profileAuthor1, "valid bio1");
     Address address1 = new Address("R Maria", "12", "156-5", country2);
     Email email1 = new Email("Maria1", "gmail.com");
     Contact contact1 = new Contact("915945695", "+351", email1, address1);
-//    Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
+    //    Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
     BibliographicalData bibliographicalData1 = new BibliographicalData(
             "Childhood, Youth, Dependency: The Copenhagen Trilogy",
             List.of(author1),
             Locale.ENGLISH,
 //            publisher1,
             LocalDate.of(2020, 1, 1),
-            List.of(new Genre ("Fiction")),
+            List.of(new Genre("Fiction")),
 //            200,
             "Some text");
 
@@ -53,12 +55,12 @@ class PublicationMapperTest_US023 {
 
     //Edition
 //    String edition1 = "2nd Edition";
-    Code code = Code.fromIsbn13 ("9783161484123");
+    Code code = Code.fromIsbn13("9783161484123");
     Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition1 = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     //Code
     Code code1 = Code.fromIsbn10("1234567890");
@@ -69,8 +71,7 @@ class PublicationMapperTest_US023 {
 
     Publication publication1 = new Publication(bibliographicalData1, publicationType, user1, pubStatus1, edition1, code1);
 
-    Publication publication2= new Publication(bibliographicalData1, publicationType, user1, pubStatus1, edition1, code2);
-
+    Publication publication2 = new Publication(bibliographicalData1, publicationType, user1, pubStatus1, edition1, code2);
 
 
     @Test

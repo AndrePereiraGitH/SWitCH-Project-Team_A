@@ -29,7 +29,8 @@ class US010ToRegisterNewPublicationCtrlTest {
 
 
         Profile profile1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-        Author author1 = new Author(profile1, "valid bio");
+        AuthorFactory authorFactory = new AuthorFactory();
+        Author author1 = authorFactory.createAuthorWithExistingProfile(profile1, "valid bio");
         Address address1 = new Address("R Maria", "12", "156-5", country2);
         Email email1 = new Email("Maria1", "gmail.com");
         Contact contact1 = new Contact("915945695", "+351", email1, address1);
@@ -51,7 +52,8 @@ class US010ToRegisterNewPublicationCtrlTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition1= new Edition(
+        EditionFactory editionFactory = new EditionFactory();
+        Edition edition1= editionFactory.create(
                 "1st",
                 code,
                 physicalAttributes,

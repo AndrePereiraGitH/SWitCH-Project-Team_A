@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 
 import TOPSECRET.domain.Author;
+import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
 import TOPSECRET.domain.Profile;
 import TOPSECRET.repository.AuthorRepository;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ToRegisterAuthorControllerTest {
 
-    private final AuthorRepository authorRepository = new AuthorRepository(new ArrayList<>());
+    private final AuthorRepository authorRepository = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
     // ========================================
     // CONSTRUCTOR TESTS
     // ========================================
@@ -46,10 +47,11 @@ class ToRegisterAuthorControllerTest {
         ToRegisterAuthorController controller = new ToRegisterAuthorController(authorRepository);
 
         Profile expectedProfile = new Profile("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12));
-        Author expected = new Author(expectedProfile, "valid bio");
+        AuthorFactory factory = new AuthorFactory();
+        Author expected = factory.createAuthorWithExistingProfile(expectedProfile, "bio");
 
         // Act
-        Author result = controller.registerAuthor("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
+        Author result = controller.registerAuthor("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "bio");
 
         // Assert
         assertNotNull(result);
@@ -93,7 +95,7 @@ class ToRegisterAuthorControllerTest {
     @Test
     void shouldRegisterMultipleDifferentAuthors() {
         // Arrange
-        AuthorRepository repository = new AuthorRepository(new ArrayList<>());
+        AuthorRepository repository = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
         ToRegisterAuthorController controller = new ToRegisterAuthorController(repository);
 
         // Act

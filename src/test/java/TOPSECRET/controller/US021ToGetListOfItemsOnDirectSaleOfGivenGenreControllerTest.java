@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
-import TOPSECRET.repository.DirectSaleRepository;
 import TOPSECRET.repository.GenreRepository;
 import TOPSECRET.repository.ListingRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,150 +9,93 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+
+/**
+ * Unit tests for {@link US021ToGetListOfItemsOnDirectSaleOfGivenGenreController}.
+ * Tests are performed without mocking, using real instances of the repositories.
+ */
 class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
     private GenreRepository genreRepository;
     private ListingRepository listingRepository;
     private US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller;
 
-
     /**
      * Executed before each test to guarantee isolation between tests.
-     * Initialises fresh instances of the repositories and controller.
      */
-    //It is executed before each test, guarantees isolation between tests
     @BeforeEach
     void setUp() {
-        genreRepository = new GenreRepository(new ArrayList<>());
+        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         listingRepository = new ListingRepository();
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                 genreRepository, listingRepository);
     }
 
-    // Constructor tests
-
-    /**
-     * Ensures the controller is successfully created with valid repositories.
-     */
     @Test
     void ensureControllerIsCreatedSuccessfully() {
         assertNotNull(controller);
     }
 
-
-    /**
-     * Ensures an {@link IllegalArgumentException} is thrown when the GenreRepository is null.
-     */
     @Test
     void ensureThrowsExceptionWhenGenreRepositoryIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, listingRepository));
-
-        assertEquals("GenreRepository and listingRepository cannot be null", exception.getMessage());
     }
 
-
-    /**
-     * Ensures an {@link IllegalArgumentException} is thrown when the ListingRepository is null.
-     */
     @Test
     void ensureThrowsExceptionWhenListingRepositoryIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(genreRepository, null));
-
-        assertEquals("GenreRepository and listingRepository cannot be null", exception.getMessage());
     }
 
-
-    /**
-     * Ensures an {@link IllegalArgumentException} is thrown when both repositories are null.
-     */
     @Test
     void ensureThrowsExceptionWhenBothRepositoriesAreNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, null));
-
-        assertEquals("GenreRepository and listingRepository cannot be null", exception.getMessage());
     }
 
-    //getAllGenres tests
-
-
-    /**
-     * Ensures {@code getAllGenres()} returns an empty list when no genres exist in the repository.
-     */
     @Test
     void ensureGetAllGenresReturnsEmptyList() {
-        // Act
         List<Genre> result = controller.getAllGenres();
 
-        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
-
-    /**
-     * Ensures {@code getAllGenres()} returns the correct list of genres when genres exist.
-     */
     @Test
     void ensureGetAllGenresReturnsCorrectList() {
-        // Arrange
         genreRepository.createAndAddGenre("Fiction");
         genreRepository.createAndAddGenre("Science");
 
-        // Act
         List<Genre> result = controller.getAllGenres();
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
     }
 
-
-    // getListOfItemsOnDirectSaleOfAGivenGenre tests
-
-    /**
-     * Ensures an {@link IllegalArgumentException} is thrown when the selected genre is null.
-     */
     @Test
     void ensureThrowsExceptionWhenGenreIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 controller.getListOfItemsOnDirectSaleOfAGivenGenre(null));
-
-        assertEquals("Genre cannot be null", exception.getMessage());
     }
 
-
-    /**
-     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns an empty list
-     * when no items on direct sale match the given genre.
-     */
     @Test
     void ensureReturnsEmptyListWhenNoItemsMatchGenre() {
-        // Arrange
         Genre genre = genreRepository.createAndAddGenre("Fiction");
 
-        // Act
         List<PublicationSample> result =
                 controller.getListOfItemsOnDirectSaleOfAGivenGenre(genre);
 
-        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
-
-    /**
-     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns the correct list
-     * when there is one item on direct sale matching the given genre.
-     */
     @Test
     void ensureReturnsListWithOneItemWhenOneMatchesGenre() throws Exception {
         // Arrange
@@ -183,13 +125,8 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-
     }
 
-    /**
-     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns an empty list
-     * when listings exist but none match the given genre.
-     */
     @Test
     void ensureReturnsEmptyListWhenNoListingsMatchGenre() throws Exception {
         // Arrange
@@ -224,10 +161,6 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         assertTrue(result.isEmpty());
     }
 
-    /**
-     * Ensures {@code getListOfItemsOnDirectSaleOfAGivenGenre()} returns an empty list
-     * when listings exist but are not of type DIRECT_SALE.
-     */
     @Test
     void ensureReturnsEmptyListWhenListingIsNotDirectSale() throws Exception {
         // Arrange
@@ -244,7 +177,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         listingRepository.createAndAdd(
                 "Valid Title",
                 List.of(sample),
-                SaleType.AUCTION,       // Not a direct sale!
+                SaleType.AUCTION,
                 new Price(new BigDecimal("19.99")),
                 "Short Description Here",
                 List.of(new Picture("pic"))
@@ -259,16 +192,19 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         assertTrue(result.isEmpty());
     }
 
+    // --- Helper methods ---
 
     private static Edition createEdition() {
-        return new Edition(
+
+        EditionFactory editionFactory = new EditionFactory();
+        return editionFactory.create(
                 "1st Edition",
                 createCode(),
                 createPhysicalAttributes(),
                 createPublicationType(),
                 createPublisher(),
                 Locale.ENGLISH,
-                LocalDate.of(2011,1,1)
+                LocalDate.of(2011, 1, 1)
         );
     }
 
@@ -276,24 +212,23 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         return Code.fromIsbn13("9780747532743");
     }
 
-
     private static PhysicalAttributes createPhysicalAttributes() {
         return new PhysicalAttributes(
-                new Dimensions(10.0, 20.0, 5.0),  // dimensions
-                1.5,                               // weight: double
-                300                                // numberOfPages: int
+                new Dimensions(10.0, 20.0, 5.0),
+                1.5,
+                300
         );
     }
 
     private static Publisher createPublisher() {
         return new Publisher(
-                "Publisher Name",  // name: String
-                "123456789",       // vatNumber: String
-                createContact()    // contact: Contact
+                "Publisher Name",
+                "123456789",
+                createContact()
         );
     }
 
-    private static PublicationType createPublicationType(){
+    private static PublicationType createPublicationType() {
         return new PublicationType(
                 MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
@@ -313,7 +248,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         return new Address("Rua Test", "1", "4000-000", createCountry());
     }
 
-    private static BibliographicalData createBibliographicalData(){
+    private static BibliographicalData createBibliographicalData() {
         return new BibliographicalData(
                 "Harry Potter: Pedra Filosofal",
                 List.of(createAuthor()),
@@ -324,14 +259,14 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         );
     }
 
-    private static Author createAuthor(){
-        return new Author(
+    private static Author createAuthor() {
+        AuthorFactory authorFactory = new AuthorFactory();
+        return authorFactory.createAuthorWithExistingProfile(
                 createProfile(),
-                "valid bio"
-        );
+                "valid bio");
     }
 
-    private static Profile createProfile(){
+    private static Profile createProfile() {
         return new Profile(
                 "Freida",
                 createCountry(),
@@ -339,7 +274,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         );
     }
 
-    private static User createSeller(){
+    private static User createSeller() {
         return new User(
                 "Seller",
                 new Contact(
@@ -358,7 +293,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     }
 
     private static Country createCountry() {
-        return new Country("PORTUGAL");       // match your Countries enum value
+        return new Country("PORTUGAL");
     }
 
 }

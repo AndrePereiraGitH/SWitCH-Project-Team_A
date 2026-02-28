@@ -66,7 +66,7 @@ loop for each auction in AuctionRepository
 end
 AuctionRepo --> Ctrl : listOfItemsOnAuctionByPublication
 deactivate AuctionRepo
-Ctrl -> aucDTO : toDTOs()
+Ctrl -> aucDTO : toDTOs(listOfItemsOnAuctionByPublication)
 activate aucDTO
 aucDTO -> ListAucDTO ** : create()
 loop for each item in listOfItemsOnAuctionByPublication

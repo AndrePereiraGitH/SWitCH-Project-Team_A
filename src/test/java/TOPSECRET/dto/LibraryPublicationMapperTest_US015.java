@@ -18,10 +18,14 @@ class LibraryPublicationMapperTest_US015 {
     // BibliographicalData
     Country country1 = new Country("Denmark");
     Country country2 = new Country("Germany");
+    AuthorFactory authorFactory = new AuthorFactory();
+    EditionFactory editionFactory = new EditionFactory();
+
+
 
 
     Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-    Author author1 = new Author(profileAuthor1, "valid bio1");
+    Author author1 = authorFactory.createAuthorWithExistingProfile(profileAuthor1, "valid bio1");
     Address address1 = new Address("R Maria", "12", "156-5", country2);
     Email email1 = new Email("Maria1", "gmail.com");
     Contact contact1 = new Contact("915945695", "+351", email1, address1);
@@ -59,7 +63,7 @@ class LibraryPublicationMapperTest_US015 {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition1= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     //Code
     Code code1 = Code.fromIsbn10("1234567890");

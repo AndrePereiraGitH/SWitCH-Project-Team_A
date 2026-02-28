@@ -2,32 +2,41 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.dto.GenreDTO_US013;
-import TOPSECRET.dto.GenreMapper_US013;
 import TOPSECRET.repository.GenreRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller that retrieves the list of genres stored in the {@link GenreRepository}.
- * NOTE: This controller only delegates the request to the repository (it does not create or change genres).
+ * Application controller responsible for retrieving the list of genres.
+ * <p>
+ * This controller coordinates access to the {@link GenreRepository}
+ * and transforms {@link Genre} domain objects into
+ * {@link GenreDTO_US013} instances.
+ * <p>
+ * It does not contain business logic and does not modify the domain state.
+ * Its responsibility is limited to delegation and data transformation,
+ * preserving separation of concerns between the domain and presentation layers.
  */
 public class ToGetListOfGenreController {
     private final GenreRepository _genreRepository;
-    private final GenreMapper_US013 _genreMapper;
 
-    public ToGetListOfGenreController(GenreRepository genreRepository, GenreMapper_US013 genreMapper) {
+    public ToGetListOfGenreController(GenreRepository genreRepository) {
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre Repository can't be null");
         }
-        if (genreMapper == null) {
-            throw new IllegalArgumentException("Genre Mapper can't be null");
-        }
+
         this._genreRepository = genreRepository;
-        this._genreMapper = genreMapper;
     }
 
     public List<GenreDTO_US013> getGenresList() {
-        List<Genre> allGenre = _genreRepository.getAllGenres();
-        return _genreMapper.toDTO(allGenre);
+
+        List<GenreDTO_US013> genresDTO = new ArrayList<>();
+
+        for (Genre genre : _genreRepository.getAllGenres()) {
+            genresDTO.add(GenreDTO_US013.toDTO(genre));
+        }
+
+        return genresDTO;
     }
 }

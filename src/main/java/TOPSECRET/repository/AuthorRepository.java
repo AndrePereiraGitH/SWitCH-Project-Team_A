@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Author;
+import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
 
 import java.time.LocalDate;
@@ -15,18 +16,22 @@ import java.util.List;
  */
 public class AuthorRepository {
     private final List<Author> _authors;
+    private final AuthorFactory _authorFactory;
 
-    public AuthorRepository(List<Author> authors) {
+    public AuthorRepository(List<Author> authors, AuthorFactory authorFactory) {
         if (authors == null) {
             throw new IllegalArgumentException("Author cannot be null");
         }
+        if (authorFactory == null) {
+            throw new IllegalArgumentException("AuthorFactory cannot be null");
+        }
         this._authors = authors;
+        this._authorFactory = authorFactory;
     }
 
     public Author createAndAddAuthor(String name, Country country, LocalDate dateOfBirth, String biography) {
         // Creates Author
-        Author author = new Author(name, country, dateOfBirth, biography);
-
+        Author author = _authorFactory.createAuthor(name, country, dateOfBirth, biography);
         if (!exists(author)) {
             this._authors.add(author);  // Add the author that was passed in
             return author;

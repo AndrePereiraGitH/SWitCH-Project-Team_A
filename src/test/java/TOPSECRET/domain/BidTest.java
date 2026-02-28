@@ -1,6 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +10,11 @@ import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Bid}.
+ * Verifies that the Bid class correctly creates instances,
+ * validates inputs, and handles edge cases.
+ */
 class BidTest {
 
     //Not an author profile
@@ -131,7 +135,7 @@ class BidTest {
         Profile userProfile = new Profile(
                 "Pedro Garcia",
                 new Country("AUSTRALIA"),
-                LocalDate.of(1995, Month.NOVEMBER, 03)
+                LocalDate.of(1995, Month.NOVEMBER, 3)
         );
 
 

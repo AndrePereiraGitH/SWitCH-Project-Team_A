@@ -26,9 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * </ul>
  */
 class US016ToPutPublicationInAuctionControllerTest {
+    AuctionFactory auctionFactory = new AuctionFactory();
 
     LibraryFactory factory = new LibraryFactory();
     private final LibraryRepository libRepo = new LibraryRepository(new HashMap<>(),factory);
+    EditionFactory editionFactory = new EditionFactory();
+    AuthorFactory authorFactory = new AuthorFactory();
+
 
 
 
@@ -41,7 +45,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         US016ToPutPublicationInAuctionController controller = newControllerWithLibraries(Map.of());
 
         assertThrows(IllegalArgumentException.class,
-                () -> controller.getUserLibraryPublications(null));
+                () -> controller.getAllPublicationsInUserLibrary(null));
     }
 
     @Test
@@ -49,7 +53,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         US016ToPutPublicationInAuctionController controller = newControllerWithLibraries(Map.of());
 
         assertThrows(InstanceNotFoundException.class,
-                () -> controller.getUserLibraryPublications("user1x"));
+                () -> controller.getAllPublicationsInUserLibrary("user1x"));
     }
 
     @Test
@@ -65,7 +69,7 @@ class US016ToPutPublicationInAuctionControllerTest {
 
         // act + assert
         assertThrows(EmptyStackException.class,
-                () -> controller.getUserLibraryPublications(user.getUserName()));
+                () -> controller.getAllPublicationsInUserLibrary(user.getUserName()));
     }
 
     @Test
@@ -86,7 +90,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         US016ToPutPublicationInAuctionController controller = newControllerWithLibraries(libs);
 
         // act
-        List<PublicationSampleDTO_US016> result = controller.getUserLibraryPublications(user.getUserName());
+        List<PublicationSampleDTO_US016> result = controller.getAllPublicationsInUserLibrary(user.getUserName());
 
         // assert
         assertEquals(2, result.size());
@@ -110,7 +114,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         US016ToPutPublicationInAuctionController controller = newControllerWithLibraries(libs);
 
         // act
-        List<PublicationSampleDTO_US016> result = controller.getUserLibraryPublications(user.getUserName());
+        List<PublicationSampleDTO_US016> result = controller.getAllPublicationsInUserLibrary(user.getUserName());
 
         // assert
         assertEquals(expectedList, result);
@@ -182,7 +186,7 @@ class US016ToPutPublicationInAuctionControllerTest {
 
         PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
         ListingRepository listingRepo = new ListingRepository();
-        AuctionRepository auctionRepo = new AuctionRepository();
+        AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
         LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
 
         US016ToPutPublicationInAuctionController controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, pr1);
@@ -215,7 +219,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     void putPublicationForAuction_shouldThrowInstanceAlreadyExists_ifDuplicatedListing() throws Exception {
         // arrange
         ListingRepository listingRepo = new ListingRepository();
-        AuctionRepository auctionRepo = new AuctionRepository();
+        AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
         LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
 
         PublicationSample pub = publication(user("owner1"));
@@ -259,7 +263,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         LibraryRepository libraryRepo = new LibraryRepository(libs,factory);
         ItemRepository itemRepo = new ItemRepository();
         ListingRepository listingRepo = new ListingRepository();
-        AuctionRepository auctionRepo = new AuctionRepository();
+        AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
         PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository();
         return new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, publicationSampleRepository);
     }
@@ -283,7 +287,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition = new Edition(
+        Edition edition = editionFactory.create(
                 "1st",
                 code,
                 physicalAttributes,
@@ -306,7 +310,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
 
-        Edition edition = new Edition(
+        Edition edition = editionFactory.create(
                 "2st",
                 code,
                 physicalAttributes,
@@ -342,7 +346,7 @@ class US016ToPutPublicationInAuctionControllerTest {
 
     private BibliographicalData bibliographicalData() {
 
-        Author author = new Author(profile(), "valid bio");
+        Author author = authorFactory.createAuthorWithExistingProfile(profile(), "valid bio");
 
         List<Author> authors = new ArrayList<>();
         authors.add(author);

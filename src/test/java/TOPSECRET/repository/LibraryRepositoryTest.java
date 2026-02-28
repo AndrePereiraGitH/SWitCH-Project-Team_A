@@ -25,7 +25,8 @@ class LibraryRepositoryTest {
 
     // BibliographicalData
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
-    Author author = new Author(profile, "valio bio");
+    AuthorFactory authorFactory = new AuthorFactory();
+    Author author = authorFactory.createAuthorWithExistingProfile(profile, "valio bio");
     Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
     Email email = new Email("Maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);
@@ -46,9 +47,10 @@ class LibraryRepositoryTest {
     PhysicalAttributes physicalAttributes = new PhysicalAttributes(new Dimensions(10.0, 0.2, 5.2), 400.0, 250);
     PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition1 = new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition2 = new Edition("2nd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-    Edition edition3 = new Edition("3rd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    EditionFactory editionFactory = new EditionFactory();
+    Edition edition1 = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition2 = editionFactory.create("2nd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+    Edition edition3 = editionFactory.create("3rd", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
     // PublicationSample
     PublicationSample validItem1 = new PublicationSample(bibliographicalData, user, PublicationStatus.READING, edition1, Condition.LIKE_NEW);

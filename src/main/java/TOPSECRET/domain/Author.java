@@ -3,15 +3,27 @@ package TOPSECRET.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 /**
- * Represents an Author, defined by a Profile (name, country, date of birth) and a biography.
- * NOTE: The constructor validates inputs to prevent invalid authors from being created.
+ * Represents an Author in the system.
+ * <p>
+ * An Author is defined by:
+ * <ul>
+ *     <li>A {@link Profile} containing identification data (name, country, date of birth)</li>
+ *     <li>A textual biography describing the author</li>
+ * </ul>
+ *
+ * <p><b>Invariant:</b> An Author must always have a valid Profile and a non-blank biography.</p>
+ *
+ * <p>
+ * The constructor performs validation to guarantee that no invalid Author
+ * instances are created, preserving domain integrity.
+ * </p>
  */
-public class Author {
+public class  Author {
 
     private final Profile _authorProfile;
     private final String _biography;
 
-    public Author(Profile profile, String biography) {
+    protected Author(Profile profile, String biography) {
         if (profile == null) {
             throw new IllegalArgumentException("Profile cannot be null");
         }
@@ -22,7 +34,7 @@ public class Author {
         this._biography = biography;
     }
 
-    public Author(String name, Country countries, LocalDate dateOfBirth, String bio) {
+    protected Author(String name, Country countries, LocalDate dateOfBirth, String bio) {
         this(new Profile(name, countries, dateOfBirth), bio);
     }
 

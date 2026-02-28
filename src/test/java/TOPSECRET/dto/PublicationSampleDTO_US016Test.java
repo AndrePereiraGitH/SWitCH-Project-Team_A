@@ -232,9 +232,10 @@ class PublicationSampleDTO_US016Test {
         Profile profile2 = new Profile("Henry A Kissinger", country, LocalDate.of(1923, 05, 27));
         Profile profile3 = new Profile("Eric Schmidt III", country, LocalDate.of(1955, 04, 27));
         Profile profile4 = new Profile("Daniel Huttenlocher", country, LocalDate.of(1959, 01, 01));
-        Author author2 = new Author(profile2, "valid bio2");
-        Author author3 = new Author(profile3, "valid bio3");
-        Author author4 = new Author(profile4, "valid bio4");
+        AuthorFactory authorFactory = new AuthorFactory();
+        Author author2 = authorFactory.createAuthorWithExistingProfile(profile2, "valid bio2");
+        Author author3 = authorFactory.createAuthorWithExistingProfile(profile3, "valid bio3");
+        Author author4 = authorFactory.createAuthorWithExistingProfile(profile4, "valid bio4");
 
 
         List<Author> authors = List.of(author2, author3, author4);
@@ -284,7 +285,8 @@ class PublicationSampleDTO_US016Test {
         Locale editionLanguage1 = Locale.JAPANESE;
         LocalDate editionDate1 = LocalDate.of(2015, 1, 12);
 
-        Edition anyEdition = new Edition(editionNumber1, code1, physicalAttributes1, pubType1, publisher1,
+        EditionFactory editionFactory = new EditionFactory();
+        Edition anyEdition = editionFactory.create(editionNumber1, code1, physicalAttributes1, pubType1, publisher1,
                 editionLanguage1, editionDate1);
 
         //Arrange Condition

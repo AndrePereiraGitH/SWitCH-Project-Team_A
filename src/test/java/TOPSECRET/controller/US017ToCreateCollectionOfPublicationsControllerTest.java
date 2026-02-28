@@ -1,15 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications;
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepository;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Profile;
-import TOPSECRET.domain.Country;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +24,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     @BeforeEach
     void setup() {
         // Cria os repositórios e o controller antes de cada teste
-        genreRepository = new GenreRepository(new ArrayList<>());
+        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
         collectionRepository = new CollectionOfPublicationsRepository();
 
         controller = new US017ToCreateCollectionOfPublicationsController(
@@ -98,7 +93,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     }
     @Test
     void shouldThrowWhenUserIsNull() {
-        GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
+        GenreRepository genreRepo = new GenreRepository(new ArrayList<>(),  new GenreFactory());
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository();
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
@@ -115,7 +110,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
     @Test
     void shouldThrowWhenGenreIsNull() {
-        GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
+        GenreRepository genreRepo = new GenreRepository(new ArrayList<>(), new GenreFactory());
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository();
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
@@ -142,7 +137,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
     @Test
     void shouldThrowWhenCollectionRepositoryIsNull() {
-        GenreRepository genreRepo = new GenreRepository(new ArrayList<>());
+        GenreRepository genreRepo = new GenreRepository(new ArrayList<>(), new GenreFactory());
 
         assertThrows(
                 IllegalArgumentException.class,

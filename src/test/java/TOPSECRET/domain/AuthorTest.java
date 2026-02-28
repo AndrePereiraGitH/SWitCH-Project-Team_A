@@ -7,7 +7,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuthorTest {
 
-
+    /**
+     * Unit tests for the {@link Author} entity.
+     * <p>
+     * This test suite validates:
+     * <ul>
+     *     <li>Correct creation using both primary and secondary constructors.</li>
+     *     <li>Validation of mandatory fields and enforcement of domain invariants.</li>
+     *     <li>Delegation of profile validation to the {@link Profile} value object.</li>
+     *     <li>Correct behavior of getter methods.</li>
+     *     <li>Proper implementation of the {@code equals} method,
+     *     including null comparison, type comparison, and value-based equality.</li>
+     * </ul>
+     * <p>
+     * The tests ensure that {@code Author} maintains consistency,
+     * respects immutability constraints of its composed objects,
+     * and correctly defines equality based on its identity fields.
+     */
     // Helper method to create a valid Profile for tests
     private Profile validProfile() {
         return new Profile("John", new Country("BRAZIL"), LocalDate.of(1984, 12, 3));
@@ -160,5 +176,4 @@ class AuthorTest {
         // Act + Assert
         assertNotEquals(a1, a2);
     }
-
 }

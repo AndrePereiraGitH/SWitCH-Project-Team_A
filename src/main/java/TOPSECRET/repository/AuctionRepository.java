@@ -1,7 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.AuctionStatus;
+import TOPSECRET.domain.AuctionFactory;
 import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -11,19 +11,23 @@ import java.util.List;
 
 public class AuctionRepository {
 
-    private static List<Auction> auctionsList;
+    private static List<Auction> _auctionsList;
+    private final AuctionFactory _factoryAuction;
 
-    public AuctionRepository() {
-        auctionsList = new ArrayList<>();
+
+    public AuctionRepository(AuctionFactory auctionFactory) {
+        _factoryAuction = auctionFactory;
+        _auctionsList = new ArrayList<>();
     }
 
-    public AuctionRepository(List<Auction> auctionsList) {
-        this.auctionsList = auctionsList;
+    public AuctionRepository(List<Auction> auctionsList, AuctionFactory auctionFactory) {
+        this._auctionsList = auctionsList;
+        this._factoryAuction = auctionFactory;
     }
 
 
     public List<Auction> getAllAuctions() {
-        return auctionsList;
+        return _auctionsList;
     }
 
     /**
@@ -35,17 +39,18 @@ public class AuctionRepository {
      * @param buyOutPrice the buyout price of the auction
      * @return {@code true} if the auction was created and added, {@code false} if it already exists
      */
-    public boolean createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) {
+    public Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 
-        Auction auction = new Auction(listing, initialDate, finalDate, buyOutPrice);
+
+        Auction auction = _factoryAuction.create(listing, initialDate, finalDate, buyOutPrice);
 
         if (isExistent(auction)) {
-            return false;
+            throw new InstanceAlreadyExistsException("this auction already exists");
         }
 
-        auctionsList.add(auction);
+        _auctionsList.add(auction);
 
-        return true;
+        return auction;
     }
 
     /**
@@ -64,7 +69,7 @@ public class AuctionRepository {
 
         List<Auction> result = new ArrayList<>();
         // will iterate over all auctions in the repository
-        for (Auction auction : auctionsList) {
+        for (Auction auction : _auctionsList) {
            // for each auction, will iterate over all items that are in Listing
             for(PublicationSample publicationSample : auction.getListing().getItems()) {
                 //this condition means that we are getting throw all the information necessary to get the final list of genres
@@ -94,7 +99,7 @@ public class AuctionRepository {
         if (author == null || author.name().isBlank())
             throw new IllegalArgumentException("Author cannot be null or blank");
 
-        List<Auction> authorAuctions = auctionsList.stream().filter(auction -> auction.getListing().getItems()
+        List<Auction> authorAuctions = _auctionsList.stream().filter(auction -> auction.getListing().getItems()
                 .stream()
                 .anyMatch( item ->
                         item.getBibliographicalData()
@@ -108,29 +113,30 @@ public class AuctionRepository {
 
 
     private boolean isExistent(Auction auction) {
-        return auctionsList.contains(auction);
+        return _auctionsList.contains(auction);
     }
 
-//    public List<Item> getListOfItemsOnAuctionByGivenPublication(Publication publication) {
-//
-//        List<Item> listOfItemsOnAuctionByPublication = new ArrayList<>();
-//
-//        for (Auction auc : auctionsList) {
-//            Listing listing = auc.getListing();
-//
-//            if (listing != null && listing.getItems() != null) {
-//
-//                for (Item item : listing.getItems()) {
-//
-//                    if (item.getPublication() != null && item.getPublication().equals(publication)) {
-//                        listOfItemsOnAuctionByPublication.add(item);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfItemsOnAuctionByPublication;
-//    }
+
+    public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
+
+        List<PublicationSample> listOfItemsOnAuctionByPublication = new ArrayList<>();
+
+        for (Auction auc : _auctionsList) {
+            Listing listing = auc.getListing();
+
+            if (listing != null && listing.getItems() != null) {
+
+                for (PublicationSample pbSample : listing.getItems()) {
+
+                    if (pbSample.getBibliographicalData().getTitle() != null && pbSample.getBibliographicalData().getTitle().equals(publicationDTO)) {
+                        listOfItemsOnAuctionByPublication.add(pbSample);
+                    }
+                }
+            }
+        }
+
+        return listOfItemsOnAuctionByPublication;
+    }
 
     /**
      * Returns all items that are currently on auction

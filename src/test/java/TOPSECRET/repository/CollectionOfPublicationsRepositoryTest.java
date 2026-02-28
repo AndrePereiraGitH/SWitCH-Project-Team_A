@@ -35,8 +35,8 @@ class CollectionOfPublicationsRepositoryTest {
                 new Country("PORTUGAL"),
                 LocalDate.of(1980, 1, 1)
         );
-
-        Author author = new Author(
+        AuthorFactory authorFactory = new AuthorFactory();
+        Author author = authorFactory.createAuthorWithExistingProfile(
                 profile,
                 "Short biography"
         );
@@ -84,7 +84,9 @@ class CollectionOfPublicationsRepositoryTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+        EditionFactory editionFactory = new EditionFactory();
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         return new Publication(
                 bibliographicalData,
