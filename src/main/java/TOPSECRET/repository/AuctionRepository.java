@@ -116,26 +116,27 @@ public class AuctionRepository {
         return _auctionsList.contains(auction);
     }
 
-//    public List<Item> getListOfItemsOnAuctionByGivenPublication(Publication publication) {
-//
-//        List<Item> listOfItemsOnAuctionByPublication = new ArrayList<>();
-//
-//        for (Auction auc : auctionsList) {
-//            Listing listing = auc.getListing();
-//
-//            if (listing != null && listing.getItems() != null) {
-//
-//                for (Item item : listing.getItems()) {
-//
-//                    if (item.getPublication() != null && item.getPublication().equals(publication)) {
-//                        listOfItemsOnAuctionByPublication.add(item);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfItemsOnAuctionByPublication;
-//    }
+
+    public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
+
+        List<PublicationSample> listOfItemsOnAuctionByPublication = new ArrayList<>();
+
+        for (Auction auc : _auctionsList) {
+            Listing listing = auc.getListing();
+
+            if (listing != null && listing.getItems() != null) {
+
+                for (PublicationSample pbSample : listing.getItems()) {
+
+                    if (pbSample.getBibliographicalData().getTitle() != null && pbSample.getBibliographicalData().getTitle().equals(publicationDTO)) {
+                        listOfItemsOnAuctionByPublication.add(pbSample);
+                    }
+                }
+            }
+        }
+
+        return listOfItemsOnAuctionByPublication;
+    }
 
     /**
      * Returns all items that are currently on auction
