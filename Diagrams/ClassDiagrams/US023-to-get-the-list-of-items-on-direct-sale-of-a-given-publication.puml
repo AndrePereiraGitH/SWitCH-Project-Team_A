@@ -4,17 +4,17 @@ title US023 - To get the list of items on direct sale of a given publication
 class UI023{
 }
 
-class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
-  +getAllPublicationsBD()
-  +getListOfItemsOnDirectSale(publication)
+class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
+  +getAllPublicationsBD() : List<BibliographicalDataDTO_US023>
+  +findListOfItemsOnDirectSale(publication): List<PublicationSampleDTO_US023>
 }
 
 class BibliographicalDataRepository{
-    +getAllPublicationsBD()
+    +getAllPublicationsBD(): List<BibliographicalData>
 }
 
 class BibliographicalDataDTO_US023 {
-  +toDTO(listOfAllPublicationsBD)
+  +toDTOs(listOfAllPublicationsBD): List<BibliographicalDataDTO_US023>
 }
 
 class BibliographicalData {
@@ -29,16 +29,16 @@ class BibliographicalData {
 
 class ListingRepository  {
     - listings: List<Listing>
-    + findDirectSaleListings()
+    + findAllDirectSaleListings() : List<Listing>
 }
 
 class PublicationSampleRepository {
     - allPublicationsInTheSystem: List<PublicationSample>
-    + findPublicationSamplesByListing(listOfListings, publication)
+    + findItemsByListingAndPublication(listOfListings, publication): List<PublicationSample>
 }
 
 class PublicationSampleDTO_US023 {
-    +toDTO(listOfItems)
+    +toDTOs(listOfItems)
 }
 
 class PublicationSample {
@@ -48,7 +48,7 @@ class PublicationSample {
     - publicationStatus: PublicationStatus
     - edition: String
     - code: Code
-    + getPublicationSampleDetails()
+    + getDetails() : PublicationSample
 }
 
 class Listing {
@@ -68,13 +68,13 @@ enum SaleType {
 
 ' Interactions
 
-UI023 "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
+UI023 "1" ..> "1" US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataRepository: uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataDTO_US023 : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" ListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleDTO_US023 : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataRepository: uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataDTO_US023 : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" ListingRepository : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleRepository : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleDTO_US023 : uses
 
 BibliographicalDataRepository "1" ..> "*" BibliographicalData : communicates with
 

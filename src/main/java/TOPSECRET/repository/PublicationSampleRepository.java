@@ -112,4 +112,34 @@ public class PublicationSampleRepository {
                 && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
     }
 
+    /**
+     * Returns all publication samples associated with the given list of listings
+     * that correspond to the specified publication.
+     *
+     * <p>This method iterates through each listing in the provided list and inspects
+     * its associated {@link PublicationSample} objects. Only the samples whose
+     * bibliographical data matches the given {@code publication} are included in
+     * the result.</p>
+     *
+     * @param listings the listings whose publication samples should be inspected;
+     *                 must not be {@code null}
+     * @param publication the publication to match against; must not be {@code null}
+     * @return a list of publication samples belonging to the given listings and
+     *         matching the specified publication; never {@code null}, but may be empty
+     */
+
+
+    public List<PublicationSample> findItemsByListingAndPublication (List<Listing> listings, BibliographicalData publication){
+
+        List<PublicationSample> pubSamplesList = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            for  (PublicationSample pubSample : listing.getItems()) {
+                if(pubSample.getBibliographicalData().equals(publication)){
+                    pubSamplesList.add(pubSample);
+                }
+            }
+        }
+        return List.copyOf(pubSamplesList);
+    }
 }

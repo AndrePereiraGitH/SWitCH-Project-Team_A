@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -342,5 +343,211 @@ class BibliographicalDataTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    // ============================================================
+    // ========= Tests for getBibliographicalDataDetails ==========
+    // ============================================================
+
+    @Test
+    void getBibliographicalDataDetails_ShouldNotBeNull() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertNotNull(detail);
+
+    }
+
+    @Test
+    void getBibliographicalDataDetails_ShouldReturnCorrectFields() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertEquals(title, detail.title());
+        assertEquals(authors, detail.authors());
+        assertEquals(language, detail.originalLanguage());
+        assertEquals(pubDate, detail.publicationDate());
+        assertEquals(genres, detail.genres());
+        assertEquals(chunksOfText, detail.chunksOfText());
+    }
+
+    @Test
+    void getBibliographicalDataDetails_ShouldReturnOriginalLanguageNull() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, null, pubDate, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertEquals(title, detail.title());
+        assertEquals(authors, detail.authors());
+        assertEquals(null, detail.originalLanguage());
+        assertEquals(pubDate, detail.publicationDate());
+        assertEquals(genres, detail.genres());
+        assertEquals(chunksOfText, detail.chunksOfText());
+    }
+
+    @Test
+    void getBibliographicalDataDetails_ShouldReturnPublicationDateNull() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, null, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertEquals(title, detail.title());
+        assertEquals(authors, detail.authors());
+        assertEquals(language, detail.originalLanguage());
+        assertEquals(null, detail.publicationDate());
+        assertEquals(genres, detail.genres());
+        assertEquals(chunksOfText, detail.chunksOfText());
+    }
+
+    @Test
+    void getBibliographicalDataDetails_ShouldReturnChunksOfTextNull() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, null);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertEquals(title, detail.title());
+        assertEquals(authors, detail.authors());
+        assertEquals(language, detail.originalLanguage());
+        assertEquals(pubDate, detail.publicationDate());
+        assertEquals(genres, detail.genres());
+        assertEquals(null, detail.chunksOfText());
+    }
+
+    @Test
+    void getBibliographicalDataDetails_ShouldNotReflectChangesInOriginalAuthorsList() {
+        // Arrange
+        List<Author> originalAuthors = new ArrayList<>(authors);
+        BibliographicalData bd = new BibliographicalData(title, originalAuthors, language, pubDate, genres, chunksOfText);
+
+        BibliographicalData.BibliographicalDataDetails details = bd.getBibliographicalDataDetails();
+
+        // New author
+        Author author4Double = mock(Author.class);
+        Profile profile4Double = mock(Profile.class);
+        when(author4Double.getProfile()).thenReturn(profile4Double);
+        when(profile4Double.getName()).thenReturn("John Green");
+
+        // Act
+        originalAuthors.add(author4Double);
+
+        // Assert
+        assertEquals(authors.size(), details.authors().size());
+    }
+
+    @Test
+    void getBibliographicalDataDetails_ShouldNotReflectChangesInOriginalGenresList() {
+        // Arrange
+        List<Genre> originalGenres = new ArrayList<>(genres);
+        BibliographicalData bd = new BibliographicalData(title, authors, language, pubDate, originalGenres, chunksOfText);
+
+        BibliographicalData.BibliographicalDataDetails details = bd.getBibliographicalDataDetails();
+
+        // New Genre
+        Genre genre3Double = mock(Genre.class);
+        when(genre3Double.getTitle()).thenReturn("Young Adult");
+
+        // Act
+        originalGenres.add(genre3Double);
+
+        // Assert
+        assertEquals(genres.size(), details.genres().size());
+    }
+
+    // ================================================================
+    // ========= Tests for BibliographicalDataDetails record ==========
+    // ================================================================
+
+    @Test
+    void bibliographicalDataDetails_ShouldReturnEqualsForTheSameValues() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail1 = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail2 = bd2Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertEquals(detail1, detail2);
+    }
+
+    @Test
+    void bibliographicalDataDetails_ShouldReturnNotEqualsForDifferentValues() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2Double = new BibliographicalData("Different title", authors, language, pubDate, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail1 = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail2 = bd2Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertNotEquals(detail1, detail2);
+    }
+
+    @Test
+    void bibliographicalDataDetails_ShouldReturnImmutableListOfAuthors() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+
+        // New author
+        Author author4Double = mock(Author.class);
+        Profile profile4Double = mock(Profile.class);
+        when(author4Double.getProfile()).thenReturn(profile4Double);
+        when(profile4Double.getName()).thenReturn("John Green");
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> detail.authors().add(author4Double));
+    }
+
+    @Test
+    void bibliographicalDataDetails_ShouldReturnImmutableListOfGenres() {
+        // Arrange
+        BibliographicalData bd1Double = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+
+        // New genre
+        Genre genre3Double = mock(Genre.class);
+        when(genre3Double.getTitle()).thenReturn("Young adult");
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> detail.genres().add(genre3Double));
+    }
+
+    @Test
+    void bibliographicalDataDetails_ShouldReconstructEquivalentObject() {
+        // Arrange
+        BibliographicalData bd1 = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
+
+        // Act
+        BibliographicalData.BibliographicalDataDetails details = bd1.getBibliographicalDataDetails();
+
+        BibliographicalData bd2 = new BibliographicalData(details.title(), details.authors(), details.originalLanguage(),
+                details.publicationDate(), details.genres(), details.chunksOfText());
+
+        // Assert
+        assertEquals(bd1, bd2);
     }
 }

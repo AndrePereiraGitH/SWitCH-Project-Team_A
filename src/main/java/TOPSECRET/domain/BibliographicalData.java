@@ -182,4 +182,24 @@ public class BibliographicalData {
         return _genres.contains(genres);
     }
     //US021 End ========================================================================================================
+
+    public BibliographicalData.BibliographicalDataDetails getBibliographicalDataDetails () {
+        return new BibliographicalData.BibliographicalDataDetails(
+                _title,
+                _authors,
+                _originalLanguage,
+                _publicationDate,
+                _genres,
+                _chunksOfText
+        );
+    }
+
+    public record BibliographicalDataDetails(
+            String title,
+            List<Author> authors,
+            Locale originalLanguage,
+            LocalDate publicationDate,
+            List<Genre> genres,
+            String chunksOfText
+    ) {}
 }

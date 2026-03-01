@@ -173,4 +173,24 @@ public class Listing {
     public SaleType getSaleType() {
         return _saleType;
     }
+
+    /**
+     * Returns the short description of this listing.
+     *
+     * @return the short description of a listing.
+     */
+
+    public String getShortDescription() {
+        return _shortDescription;
+    }
+
+    /**
+     * Returns the pictures of this listing.
+     *
+     * @return the pictures of a listing.
+     */
+
+    public List<Picture> getPictures() {
+        return _pictures;
+    }
 }

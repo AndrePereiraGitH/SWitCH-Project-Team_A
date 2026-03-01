@@ -8,7 +8,7 @@ actor Buyer
 participant ":UI023" as UI
 end box
 
-participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
+participant ":US023ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
 participant ":BibliographicalDataRepository" as BDRepo
 participant "listOfAllPublicationsBD:\n List<BibliographicalData>" as ListPub
 participant ":BibliographicalDataDTO_US023" as BDDTO_C
@@ -36,7 +36,7 @@ activate BDRepo
 BDRepo -> ListPub ** : create()
 BDRepo --> Ctrl: listOfAllPublicationsBD
 deactivate BDRepo
-Ctrl -> BDDTO_C: toDTO(listOfAllPublicationsBD)
+Ctrl -> BDDTO_C: toDTOs(listOfAllPublicationsBD)
 activate BDDTO_C
 BDDTO_C -> ListBDDTO ** : create()
 loop for each bibliographicalData
@@ -57,10 +57,10 @@ deactivate UI
 ' Section 2 - Get list of listings for direct sale
 Buyer -> UI : publication
 activate UI
-UI -> Ctrl : getListOfItemsOnDirectSale(publication)
+UI -> Ctrl : findListOfItemsOnDirectSale(publication)
 activate Ctrl
 'Ctrl -> ListingRepo : getListOfListingsOnDirectSale()
-Ctrl -> ListingRepo : findDirectSaleListings()
+Ctrl -> ListingRepo : findAllDirectSaleListings()
 activate ListingRepo
 ListingRepo -> ListListings ** : create()
 
@@ -76,7 +76,7 @@ deactivate ListingRepo
 
 ' Section 3 - Get list of publication samples for the previous listings
 'Ctrl -> PubSampleRepo : getListOfPublicationSamples()
-Ctrl -> PubSampleRepo : findPublicationSamplesByListing(listOfListings, publication)
+Ctrl -> PubSampleRepo : findItemsByListingAndPublication(listOfListings, publication)
 activate PubSampleRepo
 PubSampleRepo -> ListItems ** : create()
 /'
@@ -92,11 +92,11 @@ PubSampleRepo --> Ctrl : listOfItems
 deactivate PubSampleRepo
 
 ' Section 4 - create DTO for items
-Ctrl -> ItemDTO_C : toDTO(listOfItems)
+Ctrl -> ItemDTO_C : toDTOs(listOfItems)
 activate ItemDTO_C
 ItemDTO_C -> ListItemsDTO ** : create()
 loop for each publicationSample
-    ItemDTO_C -> PubSample: getPublicationSampleDetails()
+    ItemDTO_C -> PubSample: getDetails()
     activate PubSample
     PubSample --> ItemDTO_C: publicationSampleDetails
     deactivate PubSample

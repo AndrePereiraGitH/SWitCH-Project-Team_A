@@ -19,10 +19,13 @@ public class US008ToRegisterACityCtrl {
         this._cityRepository = cityRepository;
     }
 
+    /*
     public City registerNewCity(Country country1, String cityName1) {
 
 
         return _cityRepository.createAndAddNewCity(country1, cityName1);
 
     }
+
+     */
 }
