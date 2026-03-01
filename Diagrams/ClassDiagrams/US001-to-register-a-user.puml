@@ -6,40 +6,38 @@ class RegisterUserController {
 }
 
 class UserRepository {
-  +createAndAddUser(username: String, contact: Contact, profile: Profile, userRole: UserRole)
-' Those methods are part of createAndAddUser
-'  -validateUser(u: User) : boolean
-'  -addUserToUserList(u: User) : void
+  -users : List<User>
+  +exists(userName: String) : boolean
+  +createAndAddUser(username: String, contact: Contact, profile: Profile, userRole: UserRole) : User
+  +getUserCount() : int
 }
 
-class "List<User>" {
-}
+class "List<User>"
 
 class User {
-  -username: String
-  -userRole: UserRole
+  -_userName : String
+  -_contact : Contact
+  -_profile : Profile
+  -_userRole : UserRole
 }
 
 class Contact {
-  -phoneNum: String
-  -extension: String
-  -email: Email
-  -address: Address
+  -phoneNum : String
+  -extension : String
+  -email : Email
+  -address : Address
 }
-
 
 class Profile {
-  -name: String
-  -country: Country
-  -birthday: LocalDate
+  -name : String
+  -country : Country
+  -birthday : LocalDate
 }
 
-' Interaction
+RegisterUserController "1 " --.> "1 " UserRepository : uses
+UserRepository "1 " --> "1 " "List<User>" : has
+"List<User>" "1 " --> "          *" User : stores
+User "1   " --> "1 " Contact : has
+User "1" --> "1  " Profile : has
 
-RegisterUserController "1 " -- "1 " UserRepository : request registration to >
-UserRepository "1 " .--- " * " User : creates / manages >
-UserRepository "1    " -- "1 " "List<User>" : has >
-"List<User>" "1 " -- " *    " User : contains >
-User "1  " -- "1 " Contact : contains >
-User "1" -- "1  " Profile : has >
 @enduml

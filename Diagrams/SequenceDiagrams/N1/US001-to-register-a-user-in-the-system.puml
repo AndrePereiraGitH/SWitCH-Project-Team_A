@@ -13,8 +13,8 @@ activate Administrator
     Administrator -> System : I want to register a user in the system
 
     activate System
-    System -->> Administrator : Provide username, contact and profile information for the User
-    Administrator -> System : For the new user, here's the username, contact and profile information
+    System -->> Administrator : Provide username, contact, profile and role for the new user
+    Administrator -> System : Here's the username, contact, profile and role
     System -->> Administrator : New user has been registered in the system
     deactivate System
 
