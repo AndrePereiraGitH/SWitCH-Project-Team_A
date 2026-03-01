@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
@@ -50,9 +51,12 @@ class PublicationTypeTest {
     {
         PublicationType a = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
         PublicationType b = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
+        PublicationType c = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "C");
 
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
+        assertNotEquals(a, c);
+        assertNotEquals(a.hashCode(), c.hashCode());
     }
 
 }
