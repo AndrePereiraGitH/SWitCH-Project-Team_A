@@ -5,19 +5,32 @@ title US015 - To put for a sale a publication in my library in a direct sale
 
 class UI015 {}
 
-class ToPutPublicationInDirectSaleController {
-    + getAllPublications(): List<PublicationSample>
-    + createListing(title, selectedPublications, saleType, price, shortDescription, seller, pictures) : Listing
+class US015ToPutPublicationInDirectSaleController {
+    - library: Library
+    - listingFactory: ListingFactory
+    + findLibraryPublicationsAvailableForSale(): List<PublicationSampleDTO_US015>
+    + putPublicationForSale(title, selectedPublications, saleType, price, shortDescription, seller, pictures): Listing
 }
 class Library {
     - publications: List<PublicationSample>
     - libraryName: String
     - user: User
-    + getAllPublications(): List<PublicationSample>
+    + findLibraryPublicationsAvailableForSale(): List<PublicationSample>
 }
 
-class LibraryDTO_US015 {
-    + toDTO(listOfAvailablePublications) : List<PublicationSampleDTO>
+class PublicationSampleDTO_US015 {
+    - title: String
+    - authorsName: List<String>
+    - genres: List<String>
+    - ownerUsername: String
+    - pubStatus: String
+    - editionNumber: String
+    - code: String
+    - mediaFormat: String
+    - editionLanguage: String
+    - publisherName: String
+    - condition: String
+    + toDTO(listOfAvailablePublications): List<PublicationSampleDTO_US015>
 }
 
 class PublicationSample {
@@ -27,11 +40,11 @@ class PublicationSample {
     - edition: Edition
     - condition: Condition
     + getPublicationStatus(): PublicationStatus
-    + getDetails() : PublicationSample
+    + getDetails(): PublicationSample
 }
 
-class FactoryListing {
-    + create(title, selectedPublications, saleType, price, shortDescription, seller, pictures) : Listing
+class ListingFactory {
+    + create(title, selectedPublications, saleType, price, shortDescription, seller, pictures): Listing
 }
 
 class ListingRepository {
@@ -52,24 +65,25 @@ class Listing {
 ' ------ RELATIONSHIPS -----
 
 ' --- UI ---
-UI015 "1" -.> "1" ToPutPublicationInDirectSaleController : communicates with
+UI015 -.> US015ToPutPublicationInDirectSaleController : requests operations from
 
 ' --- Controller ---
-ToPutPublicationInDirectSaleController "1" -.> "1" Library : uses
-ToPutPublicationInDirectSaleController "1"-.> "1" LibraryDTO_US015 : uses
-ToPutPublicationInDirectSaleController "1"-.> "1" FactoryListing : uses
-ToPutPublicationInDirectSaleController "1"-.> "1" ListingRepository : uses
+US015ToPutPublicationInDirectSaleController -.> Library : consults
+US015ToPutPublicationInDirectSaleController -.> PublicationSampleDTO_US015 : maps using
+US015ToPutPublicationInDirectSaleController -.> ListingFactory : delegates creation to
+US015ToPutPublicationInDirectSaleController "1" -> "1" ListingRepository : maintains
 
 ' --- Library ---
-Library "0..1" --> "*" PublicationSample: owns
+Library "0..1" -> "*" PublicationSample: contains
 
-' --- LibraryDTO_US015 ---
-LibraryDTO_US015 "1" -.> "1" PublicationSample : request from
+' --- PublicationSampleDTO_US015 ---
+PublicationSampleDTO_US015 ..> PublicationSample : maps from
 
 ' --- ListingRepository ---
-ListingRepository "1" --> "*" Listing : stores
+ListingRepository "1" -> "*" Listing : stores
 
 ' --- Domain Classes ---
-Listing "0..1" --> "1..*" PublicationSample : sells
+Listing "0..1" -> "1..*" PublicationSample : aggregates
+ListingFactory "1" -> "1..*" Listing: creates
 
 @enduml

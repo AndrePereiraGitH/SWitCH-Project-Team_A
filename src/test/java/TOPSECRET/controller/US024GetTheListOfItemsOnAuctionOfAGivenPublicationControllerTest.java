@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
-
 import TOPSECRET.dto.AuctionItemDTO_US024;
 import TOPSECRET.dto.BibliographicalDataDTO_US024;
 import TOPSECRET.repository.AuctionRepository;
@@ -10,21 +9,29 @@ import TOPSECRET.repository.BibliographicalDataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
+/**
+ * Unit tests for {@link US024GetTheListOfItemsOnAuctionOfAGivenPublicationController}.
+ *
+ * <p>All repository dependencies are replaced with Mockito doubles to ensure
+ * tests are isolated from infrastructure concerns and focus solely on
+ * controller behaviour.</p>
+ */
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     private BibliographicalDataRepository bdRepository;
     private AuctionRepository auctionRepository;
     private US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller;
 
-
+    /**
+     * Initialises fresh mock repositories and a new controller instance
+     * before each test to guarantee test isolation.
+     */
     @BeforeEach
     void setUp() {
         bdRepository = mock(BibliographicalDataRepository.class);
@@ -35,6 +42,12 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         );
     }
 
+    /**
+     * Verifies that {@code getAllPublicationBD()} returns a correctly mapped list
+     * of {@link BibliographicalDataDTO_US024} when the repository contains publications.
+     *
+     * <p>Expects two DTOs with titles matching the mocked domain objects.</p>
+     */
     @Test
     void getAllPublicationBD_ShouldReturnListOfDTOsWhenPublicationBDExist() {
         // Arrange
@@ -51,9 +64,12 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         assertEquals(2, result.size());
         assertEquals("Title1", result.get(0)._publicationTitle);
         assertEquals("Title2", result.get(1)._publicationTitle);
-
     }
 
+    /**
+     * Verifies that {@code getAllPublicationBD()} returns an empty list
+     * (rather than {@code null}) when the repository contains no publications.
+     */
     @Test
     void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // Arrange
@@ -61,36 +77,46 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
 
         // Act
-        List <BibliographicalDataDTO_US024> result = controller.getAllPublicationBD();
+        List<BibliographicalDataDTO_US024> result = controller.getAllPublicationBD();
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * Verifies that {@code getListOfItemsOnAuctionByGivenPublicationDTO()} returns
+     * a correctly mapped list of {@link AuctionItemDTO_US024} when auction items
+     * exist for the specified publication.
+     *
+     * <p>Expects two DTOs with the correct title and seller usernames.</p>
+     */
     @Test
     void getListOfItemsOnAuctionByGivenPublicationDTO_ShouldReturnListOfDTOsWhenItemsExist() {
-
         // Arrange
-        PublicationSample sampleDouble1 = createMockPublicationSample("Title1","12345678910","User1");
-        PublicationSample sampleDouble2 = createMockPublicationSample("Title1","12345678910","User2");
+        PublicationSample sampleDouble1 = createMockPublicationSample("Title1", "12345678910", "User1");
+        PublicationSample sampleDouble2 = createMockPublicationSample("Title1", "12345678910", "User2");
 
-        when(auctionRepository.getListOfItemsOnAuctionByGivenPublication("Title1")).thenReturn(List.of(sampleDouble1,sampleDouble2));
+        when(auctionRepository.getListOfItemsOnAuctionByGivenPublication("Title1"))
+                .thenReturn(List.of(sampleDouble1, sampleDouble2));
 
-        //Act
+        // Act
         List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title1");
 
-        //Arrange
+        // Assert
         assertEquals(2, result.size());
         assertEquals("Title1", result.get(0).title);
-        assertEquals("User1",result.get(0).seller);
-        assertEquals("User2",result.get(1).seller);
-
+        assertEquals("User1", result.get(0).seller);
+        assertEquals("User2", result.get(1).seller);
     }
 
+    /**
+     * Verifies that {@code getListOfItemsOnAuctionByGivenPublicationDTO()} returns
+     * an empty list when no auction items match the given publication identifier.
+     */
     @Test
     void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
-        // Arrange
+        // Arrange — auction repository returns null/empty by default for unstubbed calls
 
         // Act
         List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title2");
@@ -100,8 +126,20 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         assertTrue(result.isEmpty());
     }
 
-    private PublicationSample createMockPublicationSample(String title, String code, String seller){
+    // -------------------------------------------------------------------------
+    // Helper / factory methods
+    // -------------------------------------------------------------------------
 
+    /**
+     * Creates a fully mocked {@link PublicationSample} with the supplied
+     * title, edition code, and seller username.
+     *
+     * @param title  the publication title returned by the bibliographical data mock
+     * @param code   the edition code returned by the edition mock
+     * @param seller the username returned by the seller mock
+     * @return a configured {@link PublicationSample} mock
+     */
+    private PublicationSample createMockPublicationSample(String title, String code, String seller) {
         BibliographicalData bdDouble = createMockBibliographicalData(title);
         Edition editionDouble = createMockEdition(code);
         User sellerDouble = createMockSeller(seller);
@@ -116,15 +154,25 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         return pbSampleDouble;
     }
 
-    private BibliographicalData createMockBibliographicalData(String title){
+    /**
+     * Creates a mocked {@link BibliographicalData} that returns the given title.
+     *
+     * @param title the value to be returned by {@code getTitle()}
+     * @return a configured {@link BibliographicalData} mock
+     */
+    private BibliographicalData createMockBibliographicalData(String title) {
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         when(bdDouble.getTitle()).thenReturn(title);
-
         return bdDouble;
     }
 
-    private Edition createMockEdition(String code){
-
+    /**
+     * Creates a mocked {@link Edition} whose {@link Code} returns the given string.
+     *
+     * @param code the value to be returned by {@code getCode().toString()}
+     * @return a configured {@link Edition} mock
+     */
+    private Edition createMockEdition(String code) {
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);
 
@@ -134,16 +182,27 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         return editionDouble;
     }
 
-    private User createMockSeller(String seller){
+    /**
+     * Creates a mocked {@link User} that returns the given username.
+     *
+     * @param seller the value to be returned by {@code getUserName()}
+     * @return a configured {@link User} mock
+     */
+    private User createMockSeller(String seller) {
         User sellerDouble = mock(User.class);
         when(sellerDouble.getUserName()).thenReturn(seller);
         return sellerDouble;
     }
 
-    private Condition createMockCondition(){
+    /**
+     * Creates a mocked {@link Condition} whose description matches
+     * {@link Condition#POOR}.
+     *
+     * @return a configured {@link Condition} mock
+     */
+    private Condition createMockCondition() {
         Condition conditionDouble = mock(Condition.class);
         when(conditionDouble.getDescription()).thenReturn(String.valueOf(Condition.POOR));
         return conditionDouble;
     }
-
 }

@@ -5,7 +5,6 @@ import TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,8 +13,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link BibliographicalDataDTO_US024}.
+ *
+ * <p>Covers constructor field initialization, single-object conversion via
+ * {@link BibliographicalDataDTO_US024#toDTO(BibliographicalData)}, bulk conversion
+ * via {@link BibliographicalDataDTO_US024#toDTOS(List)}, and null-input guarding.
+ * Domain dependencies are replaced with Mockito doubles to isolate DTO mapping logic.</p>
+ */
 class BibliographicalDataDTO_US024Test {
 
+
+    /**
+     * Verifies that the constructor correctly assigns all provided values
+     * to their corresponding public fields.
+     */
     @Test
     void constructorShouldInitializeAllFields() {
         // Arrange
@@ -32,6 +44,18 @@ class BibliographicalDataDTO_US024Test {
         assertEquals(expectedGenres, result._publicationGenre);
     }
 
+    /**
+     * Verifies that {@link BibliographicalDataDTO_US024#toDTO(BibliographicalData)}
+     * correctly maps all fields from a {@link BibliographicalData} domain object
+     * to the corresponding DTO fields.
+     *
+     * <p>Expected mappings:</p>
+     * <ul>
+     *   <li>{@code _publicationTitle} ← {@code getTitle()}</li>
+     *   <li>{@code _authors} ← each author's {@code getProfile().getName()}</li>
+     *   <li>{@code _publicationGenre} ← each genre's {@code getTitle()}</li>
+     * </ul>
+     */
     @Test
     void toDTOShouldConvert() {
         // Arrange
@@ -50,6 +74,11 @@ class BibliographicalDataDTO_US024Test {
         assertEquals(List.of("Science Fiction", "Adventure"), result._publicationGenre);
     }
 
+    /**
+     * Verifies that {@link BibliographicalDataDTO_US024#toDTOS(List)} converts a list
+     * of {@link BibliographicalData} objects into a correctly sized and ordered list
+     * of DTOs, preserving each publication's title at its original index.
+     */
     @Test
     void toDTOS_shouldReturnListOfDTOS() {
         // Arrange
@@ -75,13 +104,30 @@ class BibliographicalDataDTO_US024Test {
         assertEquals("Publication 2", result.get(1)._publicationTitle);
     }
 
+    /**
+     * Verifies that {@link BibliographicalDataDTO_US024#toDTO(BibliographicalData)}
+     * throws a {@link NullPointerException} when passed a {@code null} argument,
+     * as documented in the method contract.
+     */
     @Test
     void toDTOShouldThrowExceptionWhenPublicationIsNull() {
         // Act & Assert
         assertThrows(NullPointerException.class, () -> BibliographicalDataDTO_US024.toDTO(null));
     }
 
+    // -------------------------------------------------------------------------
+    // Helper / factory methods
+    // -------------------------------------------------------------------------
 
+    /**
+     * Creates a mocked {@link BibliographicalData} that returns the given title,
+     * author list, and genre list.
+     *
+     * @param title       the value returned by {@code getTitle()}
+     * @param authorNames the names used to build mocked {@link Author} objects
+     * @param genreNames  the titles used to build mocked {@link Genre} objects
+     * @return a configured {@link BibliographicalData} mock
+     */
     private BibliographicalData createMockBibliographicalData(
             String title,
             List<String> authorNames,
@@ -98,14 +144,24 @@ class BibliographicalDataDTO_US024Test {
         return bibliographicalData;
     }
 
-
+    /**
+     * Creates a list of mocked {@link Author} objects from the given names.
+     *
+     * @param authorNames the names to convert into mocked authors
+     * @return a list of configured {@link Author} mocks
+     */
     private List<Author> createMockAuthors(List<String> authorNames) {
         return authorNames.stream()
                 .map(this::createMockAuthor)
                 .toList();
     }
 
-
+    /**
+     * Creates a mocked {@link Author} whose {@link Profile} returns the given name.
+     *
+     * @param authorName the value returned by {@code getProfile().getName()}
+     * @return a configured {@link Author} mock
+     */
     private Author createMockAuthor(String authorName) {
         Profile profile = createMockProfile(authorName);
 
@@ -115,21 +171,36 @@ class BibliographicalDataDTO_US024Test {
         return author;
     }
 
-
+    /**
+     * Creates a mocked {@link Profile} that returns the given name.
+     *
+     * @param name the value returned by {@code getName()}
+     * @return a configured {@link Profile} mock
+     */
     private Profile createMockProfile(String name) {
         Profile profile = mock(Profile.class);
         when(profile.getName()).thenReturn(name);
         return profile;
     }
 
-
+    /**
+     * Creates a list of mocked {@link Genre} objects from the given titles.
+     *
+     * @param genreTitles the titles to convert into mocked genres
+     * @return a list of configured {@link Genre} mocks
+     */
     private List<Genre> createMockGenres(List<String> genreTitles) {
         return genreTitles.stream()
                 .map(this::createMockGenre)
                 .toList();
     }
 
-
+    /**
+     * Creates a mocked {@link Genre} that returns the given title.
+     *
+     * @param genreTitle the value returned by {@code getTitle()}
+     * @return a configured {@link Genre} mock
+     */
     private Genre createMockGenre(String genreTitle) {
         Genre genre = mock(Genre.class);
         when(genre.getTitle()).thenReturn(genreTitle);

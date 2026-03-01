@@ -278,4 +278,42 @@ class LibraryTest {
         assertFalse(library.containsPublication(sample1));
     }
 
+    // ============ FindLibraryPublicationsAvailableForSale Tests ============
+
+    @Test
+    void findLibraryPublicationsAvailableForSale_ShouldReturnOnlyEligibleSamples() {
+        // Arrange
+        library.addPublication(sample1);                                // publicationStatus = SOLD
+        library.addPublication(sample2);                                // publicationStatus = FOR_SALE
+        library.addPublication(sample3);                                // publicationStatus = READING
+
+        // Act
+        List<PublicationSample> availablePublicationsForSale = library.findLibraryPublicationsAvailableForSale();
+
+        // Assert
+        assertEquals(1, availablePublicationsForSale.size());
+        assertTrue(availablePublicationsForSale.contains(sample3));
+    }
+
+    @Test
+    void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenNoSamplesAreEligible() {
+        // Arrange
+        library.addPublication(sample1);                                // publicationStatus = SOLD
+        library.addPublication(sample2);                                // publicationStatus = FOR_SALE
+
+        // Act
+        List<PublicationSample> availablePublicationsForSale = library.findLibraryPublicationsAvailableForSale();
+
+        // Assert
+        assertTrue(availablePublicationsForSale.isEmpty());
+    }
+
+    @Test
+    void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenLibraryIsEmpty() {
+        // Act
+        List<PublicationSample> availablePublicationsForSale = library.findLibraryPublicationsAvailableForSale();
+
+        // Assert
+        assertTrue(availablePublicationsForSale.isEmpty());
+    }
 }

@@ -9,13 +9,25 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link UserRepository}.
+ *
+ * This class tests the main functionalities of UserRepository including:
+ * <ul>
+ *     <li>Creating and adding users via the factory</li>
+ *     <li>Handling duplicate usernames</li>
+ *     <li>Checking user existence</li>
+ * </ul>
+ */
 class UserRepositoryTest {
 
     private UserRepository userRepository;
+    private UserFactory userFactory;
 
     @BeforeEach
     void setUp() {
-        userRepository = new UserRepository();
+        userFactory = new UserFactory(); // Initialize the factory
+        userRepository = new UserRepository(userFactory); // Inject factory into repository
     }
 
     private final Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
@@ -32,7 +44,10 @@ class UserRepositoryTest {
                 LocalDate.of(1997, 8, 15));
     }
 
-    // To test the happy path
+    /**
+     * Tests creating and adding a user successfully.
+     * Ensures no exception is thrown and the user exists in the repository.
+     */
     @Test
     void testCreateAndAddUser_Success() {
         assertDoesNotThrow(() ->
@@ -45,7 +60,10 @@ class UserRepositoryTest {
         assertTrue(userRepository.exists("TestUser"));
     }
 
-    // To test an already existing username
+    /**
+     * Tests creating a user with a username that already exists.
+     * Expects an IllegalArgumentException and ensures the user count does not increase.
+     */
     @Test
     void testCreateAndAddUser_UserNameAlreadyExists() {
         userRepository.createAndAddUser(
@@ -66,7 +84,10 @@ class UserRepositoryTest {
         assertEquals(1, userRepository.getUserCount());
     }
 
-    // To test the exists method (existing user)
+    /**
+     * Tests the exists method for an existing user.
+     * Expects the method to return true.
+     */
     @Test
     void testExists_ReturnsTrue_WhenUserExists() {
         userRepository.createAndAddUser(
@@ -78,7 +99,10 @@ class UserRepositoryTest {
         assertTrue(userRepository.exists("ExistingUser"));
     }
 
-    // To test the exists method (non-existing user)
+    /**
+     * Tests the exists method for a non-existing user.
+     * Expects the method to return false.
+     */
     @Test
     void testExists_ReturnsFalse_WhenUserDoesNotExist() {
         assertFalse(userRepository.exists("NonExistingUser"));

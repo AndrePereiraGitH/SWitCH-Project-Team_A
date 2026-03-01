@@ -36,8 +36,8 @@ class US009ToCreateLibraryControllerTest {
 
 
     // Repo & Ctrl instantiation
-    UserRepository userRepository = new UserRepository();
-
+    UserFactory userFactory = new UserFactory();
+    UserRepository userRepository = new UserRepository(userFactory);
     Map<String, Library> libraries = new HashMap<>();
     LibraryFactory factory = new LibraryFactory();
     LibraryRepository libraryRepository = new LibraryRepository(libraries,factory);

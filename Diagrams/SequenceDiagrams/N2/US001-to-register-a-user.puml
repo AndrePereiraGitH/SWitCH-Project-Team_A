@@ -6,55 +6,47 @@ autonumber
 title US001 - To register a user in the system
 
 actor Administrator
-participant ":UI001" as UI
+participant UI
+participant RegisterUserController
+participant UserRepository
+participant "users : List<User>" as UserList
+participant User
 
-participant ":RegisterUserController" as RegisterUserController
-
-participant ":UserRepository" as UserRepository
-
-participant ":List<User>"
-
-' Human contact between Administrator and UI
 Administrator -> UI : I want to register a user in the system
 activate UI
-UI -->> Administrator :  Provide username, role, contact and profile information for the user
-deactivate UI
 
-Administrator -> UI :  Here's the username, role, contact and profile information
-
-activate UI
-' First contact between UI and the System
-UI -->> RegisterUserController : RegisterUser(username, role, contact, profile)
+UI -> RegisterUserController : registerUser(username, contact, profile, role)
 activate RegisterUserController
 
-RegisterUserController -> UserRepository : createAndAddUser(username, role, contact, profile)
+RegisterUserController -> UserRepository : createAndAddUser(username, contact, profile, role)
 
 activate UserRepository
-' Creation of u1 instance from User class
-create "userTest: User" as User
 
-' Creation, validation and addition
-UserRepository -->> User : create(username, role, contact, profile)
-UserRepository -> ":List<User>"  : exists(userTest)
-activate ":List<User>"
-":List<User>" -->> UserRepository : false
-deactivate ":List<User>"
+loop for each user in users
 
-UserRepository -> ":List<User>" : add(userTest)
-activate ":List<User>"
-":List<User>" -->> UserRepository : userTest added to the Userlist
-deactivate ":List<User>"
+    UserRepository -> User : getUserName()
+    activate User
+    User --> UserRepository : userName
+    deactivate User
+    UserRepository -> UserRepository : equals(username)
+end
 
-' Return from UserRepository to RegisterUserController
-UserRepository --> RegisterUserController : userTest
+UserRepository -> User : new User(username, contact, profile, role)
+activate User
+User --> UserRepository : success
+deactivate User
+
+UserRepository -> UserList : add(newUser)
+activate UserList
+UserList --> UserRepository : success
+deactivate UserList
+
+UserRepository --> RegisterUserController : success
 deactivate UserRepository
-
-' Return from RegisterUserController to UI
-RegisterUserController --> UI : Success
+RegisterUserController --> UI : success
 deactivate RegisterUserController
 
-' Return from UI to Administrator
-UI --> Administrator : Success
+UI --> Administrator : New user has been registered in the system
 deactivate UI
 
 @enduml

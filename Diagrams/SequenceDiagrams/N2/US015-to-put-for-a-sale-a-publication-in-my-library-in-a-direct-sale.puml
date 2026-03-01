@@ -8,19 +8,19 @@ actor User
 participant ":UI015" as UI
 end box
 
-participant ":ToPutPublicationInDirectSaleController" as Ctrl
+participant ":US015ToPutPublicationInDirectSaleController" as Ctrl
 participant ":Library" as Lib
 participant ":PublicationSampleDTO_US015" as DTO
 participant "publicationSampleDTO:\nPublicationSampleDTO_US015" as DTO_O
 participant ":PublicationSample" as Pub
-participant ":FactoryListing" as LFactory
+participant ":ListingFactory" as LFactory
 participant ":ListingRepository" as LRepo
 
 User -> UI : I want to put for sale a publication in my library in a direct sale
 activate UI
-UI -> Ctrl: getAllPublications()
+UI -> Ctrl: findLibraryPublicationsAvailableForSale()
 activate Ctrl
-Ctrl-> Lib : getAllPublications()
+Ctrl-> Lib : findLibraryPublicationsAvailableForSale()
 activate Lib
 create "listOfAvailablePublications:\n List<PublicationSample>" as LP
 Lib -> LP : create()
@@ -30,7 +30,7 @@ Lib -> LP : create()
         Pub --> Lib : status
         deactivate Pub
         alt status != SOLD and status != FOR_SALE
-            Lib -> LP : add(pub)
+            Lib -> LP : add(publicationSample)
         end
     end
 Lib --> Ctrl: listOfAvailablePublications
@@ -39,10 +39,10 @@ deactivate Lib
 Ctrl-> DTO : toDTO(listOfAvailablePublications)
 activate DTO
 
-create "listOfPublicationSampleDTO:\nList<PublicationSampleDTO>" as listDTO
+create "listOfPublicationSampleDTO:\nList<PublicationSampleDTO_US015>" as listDTO
 DTO -> listDTO : create()
     loop for each PublicationSample
-        DTO -> Pub : getPublicationSampleDetails()
+        DTO -> Pub : getDetails()
         activate Pub
         Pub --> DTO : publicationSampleDetails
         deactivate Pub
@@ -65,7 +65,7 @@ deactivate UI
 User -> UI : Title, price, short description, pictures
 activate UI
 
-UI -> Ctrl: createListing(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+UI -> Ctrl: putPublicationForSale(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
 activate Ctrl
 Ctrl-> LFactory : create(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
 activate LFactory

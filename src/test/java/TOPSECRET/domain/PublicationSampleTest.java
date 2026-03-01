@@ -289,8 +289,47 @@ class PublicationSampleTest {
 
         //Assert
         assertNotEquals(anySample.hashCode(), doeSample.hashCode());
-
-
     }
 
+    @Test
+    void getDetails_ShouldReturnAllFieldsCorrectly() {
+        // Act
+        PublicationSample.PublicationDetails details = anySample.getDetails();
+
+        // Assert
+        assertEquals(anyBd, details.bibliographicalData());
+        assertEquals(anyOwner, details.owner());
+        assertEquals(anyPubStatus, details.publicationStatus());
+        assertEquals(anyEdition, details.edition());
+        assertEquals(anyCondition, details.condition());
+    }
+
+    @Test
+    void getDetails_ShouldReturnSameInstancesNotCopies() {
+        PublicationSample.PublicationDetails details = anySample.getDetails();
+
+        assertSame(anyBd, details.bibliographicalData());
+        assertSame(anyOwner, details.owner());
+        assertSame(anyEdition, details.edition());
+        assertSame(anyCondition, details.condition());
+    }
+
+    @Test
+    void getDetails_ShouldReflectInternalStateChanges() {
+        // Act
+        PublicationSample.PublicationDetails before = anySample.getDetails();
+
+        anySample.changeStatusToForSale();
+
+        PublicationSample.PublicationDetails after = anySample.getDetails();
+
+        // Assert
+        assertEquals(PublicationStatus.FOR_SALE, after.publicationStatus());
+        assertNotEquals(before.publicationStatus(), after.publicationStatus());
+    }
+
+    @Test
+    void getDetails_ShouldNeverReturnNull() {
+        assertNotNull(anySample.getDetails());
+    }
 }
