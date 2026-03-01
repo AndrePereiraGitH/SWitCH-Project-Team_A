@@ -47,6 +47,17 @@ class CityTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCityNameIsEmpty() {
+
+        //Arrange
+        Country country3 = new Country("Australia");
+        String cityName3 = "";
+
+        //Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new City(country3, cityName3));
+    }
+
+    @Test
     void shouldReturnCityName() {
 
         //Arrange

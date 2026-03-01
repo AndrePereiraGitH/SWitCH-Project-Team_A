@@ -10,7 +10,7 @@ public class City {
 
 
     public City(Country country, String cityName) {
-        if (cityName == null) {
+        if (cityName == null || cityName.isBlank()) {
             throw new IllegalArgumentException("A city name cannot be left blank");
         }
 
