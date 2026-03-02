@@ -164,61 +164,32 @@ public class AuctionRepository {
      * @param publisher the publisher to search for
      * @return list of items on auction for that publisher
      */
-//    public List<Item> getItemsOnAuctionGivenPublisher(Publisher publisher) {
-//
-//        // Check that the publisher was provided
-//        if (publisher == null) {
-//            throw new IllegalArgumentException("publisher cannot be null");
-//        }
-//
-//        // List to store the matching items
-//        List<Item> result = new ArrayList<>();
-//
-//        // Go through all auctions in the system
-//        for (Auction auction : auctionsList) {
-//
-//            // Get the listing associated with the auction
-//            Listing listing = auction.getListing();
-//
-//            // If the listing or its items are missing, skip this auction
-//            if (listing == null || listing.getItems() == null) continue;
-//
-//            // Go through each item in the listing
-//            for (Item item : listing.getItems()) {
-//
-//                // Get the publication of the item
-//                Publication pub = item.getPublication();
-//                if (pub == null) continue;
-//
-//                // Get bibliographical data of the publication
-//                BibliographicalData bd = pub.getBibliographicalData();
-//                if (bd == null) continue;
+    public List<PublicationSample> getItemsOnAuctionGivenPublisher(Publisher publisher) {
 
-                // Get the publisher of the publication
-//                Publisher pubPublisher = pub.getEdition().getPublisher();
-//
-//
-//                // If the item's publisher matches the given publisher,
-//                // add the item to the result list
-//                if (publisher.equals(pubPublisher)) {
-//                    result.add(item);   // ✅ add item, not auction
-//                }
-//                Edition edition = pub.getEdition();
-//                if (edition == null) continue;
-//
-//                Publisher pubPublisher = edition.getPublisher();
-//                if (pubPublisher == null) continue;
-//
-//                if (publisher.equals(pubPublisher)) {
-//                    result.add(item);
-//                }
-//
-//            }
-//        }
-//
-//        // Return all matching items
-//        return result;
-//    }
+        if (publisher == null) {
+            throw new IllegalArgumentException("publisher cannot be null");
+        }
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (Auction auction : _auctionsList) {
+            Listing listing = auction.getListing();
+            if (listing == null) continue;
+
+            for (PublicationSample item : listing.getItems()) {
+                Edition edition = item.getEdition();
+                if (edition == null) continue;
+
+                Publisher itemPublisher = edition.getPublisher();
+                if (publisher.equals(itemPublisher)) {
+                    result.add(item);
+                }
+            }
+        }
+
+        return result;
+    }
+
 
 
 }
