@@ -18,7 +18,7 @@ class RegisterUserControllerTest {
     @BeforeEach
     void setUp() {
         UserFactory userFactory = new UserFactory();
-        UserRepository userRepository = new UserRepository(userFactory);
+        userRepository = new UserRepository(userFactory);
         registerUserController = new RegisterUserController(userRepository);
     }
 

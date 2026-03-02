@@ -128,24 +128,6 @@ public class DirectSaleRepository {
         return dsList;
     }
 
-
-    public List<DirectSale> getListOfItemsOnDirectSale(Author author) {
-        List<DirectSale> dsList = new ArrayList<>();
-
-        for (DirectSale ds : _directSaleList) {
-            for (Listing listing : ds.getListings()) {
-                for (PublicationSample item : listing.getItems()) {
-                    if (item.getBibliographicalData().getAuthors().contains(author)) {
-                        dsList.add(ds);
-                        break;
-                    }
-                }
-            }
-        }
-
-        return dsList;
-    }
-
     public List<DirectSale> getListOfItemsOnDirectSale(Publisher publisher) {
         List<DirectSale> dsList = new ArrayList<>();
 
