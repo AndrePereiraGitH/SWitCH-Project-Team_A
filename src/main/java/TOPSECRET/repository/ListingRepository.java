@@ -104,10 +104,6 @@ public class ListingRepository {
         return listOfPublicationSample;
     }
 
-    public Listing[] getListings() {
-        return listings.toArray(new Listing[0]);
-    }
-
     /**
      * Returns the complete list of listings stored in the repository.
      *
