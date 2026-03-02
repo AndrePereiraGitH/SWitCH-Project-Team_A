@@ -23,7 +23,6 @@ import java.util.Map;
 public class LibraryRepository {
 
     private final LibraryFactory _libraryFactory;
-
     private final Map<String, Library> _libraries;
 
     /**

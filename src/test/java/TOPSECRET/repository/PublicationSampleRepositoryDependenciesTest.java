@@ -4,6 +4,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
+import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -353,8 +354,38 @@ class PublicationSampleRepositoryDependenciesTest {
     }
 
 
+// -------------- US018
 
+    /**
+     * US018
+     * Ensures that PublicationSampleDtoToDomain converts
+     * a valid DTO into the correct PublicationSample.
+     */
+    @Test
+    void publicationSampleDtoToDomain_shouldReturnCorrectPublicationSample_US018() {
 
+        // Arrange
+        List<PublicationSample> list = new ArrayList<>();
+        list.add(publication1);
 
+        PublicationSampleRepository repo = new PublicationSampleRepository(list);
+
+        PublicationSampleDTO_US018 dto =
+                new PublicationSampleDTO_US018(
+                        publication1.getBibliographicalData().getTitle(),
+                        publication1.getEdition().getEditionNumber(),
+                        publication1.getOwner().getUserName()
+                );
+
+        Library library = new Library("TestLibrary", publication1.getOwner());
+        library.addPublication(publication1);
+
+        // Act
+        PublicationSample result =
+                repo.PublicationSampleDtoToDomain(library, dto);
+
+        // Assert
+        assertEquals(publication1, result);
+    }
 
 }

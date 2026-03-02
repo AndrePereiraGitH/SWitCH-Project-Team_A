@@ -4,6 +4,7 @@ import TOPSECRET.controller.US019ToPubliclyShareCollectionOfPublicationsControll
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.dto.CollectionOfPublicationsDTO;
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -453,6 +454,93 @@ class CollectionOfPublicationsRepositoryTest {
         assertTrue(collection.getPublications().isEmpty());
     }
 
+    // --------- US018
+
+    /**
+     * US018
+     * Ensures getUserCollections returns only collections
+     * owned by the given user.
+     */
+    @Test
+    void getUserCollections_shouldReturnOnlyCollectionsOfGivenUser_US018() {
+
+        // Arrange
+        User owner1 = createValidUser();
+        User owner2 = new User(
+                "otherUser",
+                new Contact("913333333", "351", null, null),
+                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
+                UserRole.NORMAL_USER
+        );
+
+        CollectionOfPublications c1 =
+                repository.createIfNotExists(owner1, "Favorites", new Genre("Fiction"));
+
+        CollectionOfPublications c2 =
+                repository.createIfNotExists(owner2, "OtherCollection", new Genre("History"));
+
+        repository.addCollectionToRepo(c1);
+        repository.addCollectionToRepo(c2);
+
+        // Act
+        List<CollectionOfPublications> result = repository.getUserCollections(owner1);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Favorites", result.get(0).getCollectionName());
+    }
+
+    /**
+     * US018
+     * Ensures collectionDTOToDomain returns the correct domain object.
+     */
+    @Test
+    void collectionDTOToDomain_shouldReturnMatchingCollection_US018() throws Exception {
+
+        // Arrange
+        User owner = createValidUser();
+        Genre genre = new Genre("Fiction");
+
+        CollectionOfPublications collection =
+                repository.createIfNotExists(owner, "Favorites", genre);
+
+        repository.addCollectionToRepo(collection);
+
+        CollectionOfPublicationsDTO_US018 dto =
+                new CollectionOfPublicationsDTO_US018(
+                        "Favorites",
+                        "Fiction",
+                        owner.getUserName()
+                );
+
+        // Act
+        CollectionOfPublications result =
+                repository.collectionDTOToDomain(dto);
+
+        // Assert
+        assertEquals(collection, result);
+    }
+
+
+    /**
+     * US018
+     * Should throw InstanceNotFoundException if DTO does not match any collection.
+     */
+    @Test
+    void collectionDTOToDomain_shouldThrowWhenNotFound_US018() {
+
+        // Arrange
+        CollectionOfPublicationsDTO_US018 fakeDTO =
+                new CollectionOfPublicationsDTO_US018(
+                        "NonExisting",
+                        "Fiction",
+                        "validUser"
+                );
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> repository.collectionDTOToDomain(fakeDTO));
+    }
 
 
 }

@@ -4,6 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
+import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 
 import java.util.ArrayList;
@@ -142,4 +143,40 @@ public class PublicationSampleRepository {
         }
         return List.copyOf(pubSamplesList);
     }
+
+    // --------------------------------------- US018 stars ----------------------------------------
+
+    /**
+     * Converts a PublicationSampleDTO_US018 into
+     * its corresponding PublicationSample domain object.
+     *
+     * @param userLibrary the user's library
+     * @param dto the selected publication DTO
+     * @return matching PublicationSample
+     * @throws IllegalArgumentException if not found
+     */
+    public PublicationSample PublicationSampleDtoToDomain(
+            Library userLibrary,
+            PublicationSampleDTO_US018 dto) {
+
+        if (userLibrary == null)
+            throw new IllegalArgumentException("Library cannot be null");
+
+        if (dto == null)
+            throw new IllegalArgumentException("DTO cannot be null");
+
+        for (PublicationSample publication : userLibrary.getAllPublications()) {
+
+            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
+                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
+                    && publication.getOwner().getUserName().equals(dto.getOwnerUsername())) {
+
+                return publication;
+            }
+        }
+
+        throw new IllegalArgumentException("Publication not found in user's library");
+    }
+
+    // ------------------------------------------ ends --------------------------------------------
 }

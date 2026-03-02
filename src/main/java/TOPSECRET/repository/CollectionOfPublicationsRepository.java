@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.CollectionOfPublicationsDTO;
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 
 import javax.management.InstanceNotFoundException;
@@ -34,9 +35,6 @@ public class CollectionOfPublicationsRepository {
      * @param publication PublicationSample to add
      * @return true if added successfully, false if validation fails
      */
-
-
-
  public boolean addPublicationToCollection(User user,
                                            Library userLibrary,
                                            CollectionOfPublications collection,
@@ -46,19 +44,12 @@ public class CollectionOfPublicationsRepository {
         if (user == null || userLibrary == null || collection == null || publication == null) {
             return false;
         }
-
-        // ownership
         if (!user.equals(collection.getOwner())) {
             return false;
         }
-
-        // library must belong to user
         if (!user.equals(userLibrary.getUser())) {
             return false;
         }
-
-        // TODO: Library.containsPublication needs to accept PublicationSample
-        // publication must exist in user's library
         if (!userLibrary.containsPublication(publication)) {
             return false;
         }
@@ -243,6 +234,54 @@ public class CollectionOfPublicationsRepository {
         return true;
     }
 
+    // ------------------------------------- US018 starts ------------------------------------------
+    /**
+     * US018 - As a User, I want to add one of my publications to a list of mine
+     * Retrieves all collections that belong to a given user.
+     *
+     * @param user the owner of the collections
+     * @return list of collections owned by the user
+     * @throws IllegalArgumentException if user is null
+     */
+    public List<CollectionOfPublications> getUserCollections(User user) {
+
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        return getAllCollectionOfPublicationsByUser(user);
+    }
+
+    /**
+     * Converts a CollectionOfPublicationsDTO into its corresponding domain object.
+     *
+     * @param dto the selected collection DTO
+     * @return the matching CollectionOfPublications domain object
+     * @throws IllegalArgumentException if dto is null
+     * @throws InstanceNotFoundException if no matching collection exists
+     */
+    public CollectionOfPublications collectionDTOToDomain(
+            CollectionOfPublicationsDTO_US018 dto)
+            throws InstanceNotFoundException {
+
+        if (dto == null) {
+            throw new IllegalArgumentException("DTO cannot be null");
+        }
+
+        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
+
+            if (collection.getCollectionName().equalsIgnoreCase(dto.getName())
+                    && collection.getOwner().getUserName().equals(dto.getOwnerName())) {
+
+                return collection;
+            }
+        }
+        throw new InstanceNotFoundException(
+                "Collection not found for given DTO"
+        );
+    }
+
+    // ------------------------------------- ends ------------------------------------------
 }
 
 

@@ -19,13 +19,9 @@ import java.util.Objects;
 public class PublicationSample {
 
     private final BibliographicalData _bd;
-
     private final User _owner;
-
     private PublicationStatus _publicationStatus;
-
     private final Edition _edition;
-
     private final Condition _condition;
 
     public PublicationSample(BibliographicalData bd, User owner, PublicationStatus publicationStatus, Edition edition,
