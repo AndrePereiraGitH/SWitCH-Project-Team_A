@@ -130,9 +130,16 @@ public class PublicationSampleRepository {
      */
 
 
-    public List<PublicationSample> findItemsByListingAndPublication (List<Listing> listings, BibliographicalData publication){
+    public List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication){
 
         List<PublicationSample> pubSamplesList = new ArrayList<>();
+
+        if (listings == null) {
+            throw new IllegalArgumentException("List of listings cannot be null");
+        }
+        if (publication == null){
+            throw new IllegalArgumentException("Publication cannot be null");
+        }
 
         for (Listing listing : listings) {
             for  (PublicationSample pubSample : listing.getItems()) {
@@ -144,6 +151,7 @@ public class PublicationSampleRepository {
         return List.copyOf(pubSamplesList);
     }
 
+<<<<<<< Updated upstream
     // --------------------------------------- US018 stars ----------------------------------------
 
     /**
@@ -179,4 +187,54 @@ public class PublicationSampleRepository {
     }
 
     // ------------------------------------------ ends --------------------------------------------
+=======
+    /**
+     * Retrieves all {@link PublicationSample} items that belong to the given {@link Publisher}
+     * across a collection of {@link Listing} objects.
+     *
+     * <p>This method iterates through each listing and inspects all publication samples
+     * associated with it. A publication sample is included in the result if the publisher
+     * of its edition matches the publisher provided as argument.</p>
+     *
+     * <p>The returned list is immutable, ensuring that callers cannot modify the internal
+     * collection of results.</p>
+     *
+     * @param listings  the list of listings to search through; must not be {@code null}
+     * @param publisher the publisher whose items should be selected; must not be {@code null}
+     * @return an immutable list containing all publication samples whose edition publisher
+     *         matches the specified publisher
+     * @throws NullPointerException if {@code listings} or {@code publisher} is {@code null}
+     */
+
+
+    public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher){
+
+        List<PublicationSample> pubSamplesList = new ArrayList<>();
+
+        if (listings == null) {
+            throw new IllegalArgumentException("List of listings cannot be null");
+        }
+        if (publisher == null) {
+            throw new IllegalArgumentException("Publisher cannot be null");
+        }
+        for (Listing listing : listings) {
+            if (listing == null)
+                throw new IllegalArgumentException("Listings cannot contain null elements");
+        }
+
+        for (Listing listing : listings) {
+            for  (PublicationSample pubSample : listing.getItems()) {
+
+                if (pubSample == null) {
+                    throw new IllegalArgumentException("Listings must not contain null PublicationSample items");
+                }
+
+                if(pubSample.getEdition().getPublisher().equals(publisher)){
+                    pubSamplesList.add(pubSample);
+                }
+            }
+        }
+        return List.copyOf(pubSamplesList);
+    }
+>>>>>>> Stashed changes
 }

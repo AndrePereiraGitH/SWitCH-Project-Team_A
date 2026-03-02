@@ -35,6 +35,8 @@ class PublicationSampleDTO_US023Test {
         Profile profile = mock(Profile.class);
         Publisher  publisher = mock(Publisher.class);
         PublicationType pubType = mock(PublicationType.class);
+        Code code = mock(Code.class);
+        Genre genre = mock(Genre.class);
 
         pubSample = mock(PublicationSample.class);
         bd = mock(BibliographicalData.class);
@@ -52,10 +54,12 @@ class PublicationSampleDTO_US023Test {
         when(bd.getAuthors()).thenReturn(List.of(author));
         when(author.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Robert C. Martin");
-        when(bd.getGenres()).thenReturn(List.of(new Genre("Programming")));
+        when(genre.getTitle()).thenReturn("Programming");
+        when(bd.getGenres()).thenReturn(List.of(genre));
 
         when(edition.getEditionNumber()).thenReturn("3rd");
-        when(edition.getCode()).thenReturn(Code.fromIsbn13("9780132350884"));
+        when(edition.getCode()).thenReturn(code);
+        when(code.toString()).thenReturn("9780132350884");
         when(edition.getPublicationType()).thenReturn(pubType);
         when(pubType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
         when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);

@@ -1,17 +1,14 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 class PublicationSampleRepositoryTest {
@@ -31,6 +28,8 @@ class PublicationSampleRepositoryTest {
     BibliographicalData bd2Double;
     BibliographicalData bd3Double;
     PublicationSampleRepository repo;
+    Publisher publisher1Double;
+    Publisher publisher2Double;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +55,10 @@ class PublicationSampleRepositoryTest {
         when(listing2Double.getItems()).thenReturn(List.of(pubSample2Double));
         when(listing3Double.getItems()).thenReturn(List.of(pubSample3Double, pubSample4Double));
 
+        when(listing1Double.getItems()).thenReturn(List.of(pubSample1Double));
+        when(listing2Double.getItems()).thenReturn(List.of(pubSample2Double));
+        when(listing3Double.getItems()).thenReturn(List.of(pubSample3Double, pubSample4Double));
+
         // pubSample1
         when(pubSample1Double.getBibliographicalData()).thenReturn(bd1Double);
 
@@ -70,6 +73,18 @@ class PublicationSampleRepositoryTest {
 
         // Repository
         repo = new PublicationSampleRepository();
+
+        // Publisher
+        publisher1Double = mock(Publisher.class);
+        publisher2Double = mock(Publisher.class);
+
+        when(pubSample1Double.getEdition()).thenReturn(edition1Double);
+        when(pubSample2Double.getEdition()).thenReturn(edition2Double);
+        when(pubSample3Double.getEdition()).thenReturn(edition1Double);
+        when(pubSample4Double.getEdition()).thenReturn(edition2Double);
+
+        when(edition1Double.getPublisher()).thenReturn(publisher1Double);
+        when(edition2Double.getPublisher()).thenReturn(publisher2Double);
     }
 
 
@@ -137,5 +152,136 @@ class PublicationSampleRepositoryTest {
 
         assertEquals(1, itemsList.size());
         assertTrue(itemsList.contains(pubSample4Double));
+    }
+
+    // ===========================================================
+    // ===== Tests for  findItemsByListingAndPublisher ===========
+    // ===========================================================
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldReturnOnlySamplesFromGivenPublisher() {
+        // Arrange
+        List<Listing> listings = List.of(listing1Double, listing2Double, listing3Double);
+
+        // Act
+        List<PublicationSample> result = repo.findItemsByListingAndPublisher(listings, publisher1Double);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pubSample1Double));
+        assertTrue(result.contains(pubSample3Double));
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldReturnEmptyListWhenNoSamplesMatchPublisher() {
+        // Arrange
+        Publisher publisherDouble = mock(Publisher.class);                  // new Publisher
+
+        List<Listing> listings = List.of(listing1Double, listing2Double, listing3Double);
+
+        // Act
+        List<PublicationSample> result = repo.findItemsByListingAndPublisher(listings, publisherDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldHandleEmptyListingsList() {
+        // Arrange
+        List<Listing> listings = List.of();
+
+        // Act
+        List<PublicationSample> result =  repo.findItemsByListingAndPublisher(List.of(), publisher1Double);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldReturnImmutableList() {
+        // Arrange
+        List<Listing> listings = List.of(listing1Double);
+
+        // Act
+        List<PublicationSample> result = repo.findItemsByListingAndPublisher(listings, publisher1Double);
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class,
+                () -> result.add(pubSample2Double));
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldCallGetItemsOnEachListing() {
+        // Arrange
+        List<Listing> listings = List.of(listing1Double, listing2Double, listing3Double);
+
+        // Act
+        repo.findItemsByListingAndPublisher(listings, publisher1Double);
+
+        // Assert
+        verify(listing1Double).getItems();
+        verify(listing2Double).getItems();
+        verify(listing3Double).getItems();
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingsIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findItemsByListingAndPublisher(null, publisher1Double));
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldThrowExceptionWhenPublisherIsNull() {
+        // Arrange
+        when(listing1Double.getItems()).thenReturn(List.of());
+        when(listing2Double.getItems()).thenReturn(List.of());
+
+        List<Listing> listings = List.of(listing1Double, listing2Double);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findItemsByListingAndPublisher(listings, null));
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingsContainNull() {
+        // Arrange
+        List<Listing> listings = new ArrayList<>();
+        listings.add(listing1Double);
+        listings.add(null);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findItemsByListingAndPublisher(listings, publisher1Double));
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingItemsIsNull() {
+        // Arrange
+        when(listing1Double.getItems()).thenReturn(null);
+
+        List<Listing> listings = List.of(listing1Double);
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> repo.findItemsByListingAndPublisher(listings, publisher1Double));
+    }
+
+    @Test
+    void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingContainsNullItem() {
+        // Arrange
+        List<PublicationSample> items = new ArrayList<>();
+        items.add(pubSample1Double);
+        items.add(null);
+
+        when(listing1Double.getItems()).thenReturn(items);
+
+        List<Listing> listings = List.of(listing1Double);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findItemsByListingAndPublisher(listings, publisher1Double));
     }
 }

@@ -9,7 +9,7 @@ actor Buyer
 participant ":UI027" as UI
 end box
 
-participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
+participant ":US027ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
 participant ":PublisherRepository" as PublisherRepo
 participant "listOfAllPublishers:\nList<Publisher>" as ListPublishers
 participant ":PublisherDTO_US027" as PublisherDTO
@@ -37,7 +37,7 @@ activate PublisherRepo
 PublisherRepo -> ListPublishers ** : create()
 PublisherRepo --> Ctrl: listOfAllPublishers
 deactivate PublisherRepo
-Ctrl -> PublisherDTO: toDTO(listOfAllPublishers)
+Ctrl -> PublisherDTO: toDTOs(listOfAllPublishers)
 activate PublisherDTO
 PublisherDTO -> ListPublisherDTO ** : create()
 loop for each publisher
@@ -58,10 +58,10 @@ deactivate UI
 ' Section 2 - Get list of listings for direct sale
 Buyer -> UI : publisher
 activate UI
-UI -> Ctrl : getListOfItemsOnDirectSale(publisher)
+UI -> Ctrl : findListOfItemsOnDirectSale(publisher)
 activate Ctrl
 'Ctrl -> ListingRepo : getListOfListingsOnDirectSale()
-Ctrl -> ListingRepo : findDirectSaleListings()
+Ctrl -> ListingRepo : findAllDirectSaleListings()
 activate ListingRepo
 ListingRepo -> ListListings ** : create()
 
@@ -77,7 +77,7 @@ deactivate ListingRepo
 
 ' Section 3 - Get list of publication samples for the previous listings
 'Ctrl -> PubSampleRepo : getListOfPublicationSamples()
-Ctrl -> PubSampleRepo : findPublicationSamplesByListing(listOfListings, publisher)
+Ctrl -> PubSampleRepo : findItemsByListingAndPublisher(listOfListings, publisher)
 activate PubSampleRepo
 PubSampleRepo -> ListPubSamples ** : create()
 /'
@@ -93,11 +93,11 @@ PubSampleRepo --> Ctrl : listOfItems
 deactivate PubSampleRepo
 
 ' Section 4 - create DTO for items
-Ctrl -> PubSampleDTO : toDTO(listOfItems)
+Ctrl -> PubSampleDTO : toDTOs(listOfItems)
 activate PubSampleDTO
 PubSampleDTO -> ListPubSamplesDTO ** : create()
 loop for each publicationSample
-    PubSampleDTO -> PubSample: getPublicationSampleDetails()
+    PubSampleDTO -> PubSample: getDetails()
     activate PubSample
     PubSample --> PubSampleDTO: publicationSampleDetails
     deactivate PubSample

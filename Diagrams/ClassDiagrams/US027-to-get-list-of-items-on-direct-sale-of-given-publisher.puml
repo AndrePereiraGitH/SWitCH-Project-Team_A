@@ -4,9 +4,9 @@ title US027 - To get the list of items on direct sale of a given publisher
 class UI027 {
 }
 
-class ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController {
+class US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController {
     + getAllPublishers(): List<PublisherDTO_US027>
-    + getListOfItemsOnDirectSale(publisher): List<PublicationSampleDTO_US027>
+    + findListOfItemsOnDirectSale(publisher): List<PublicationSampleDTO_US027>
 }
 
 class PublisherRepository {
@@ -15,7 +15,7 @@ class PublisherRepository {
 }
 
 class PublisherDTO_US027 {
-    + toDTO(listOfAllPublishers): List<PublisherDTO_US027>
+    + toDTOs(listOfAllPublishers): List<PublisherDTO_US027>
 }
 
 class Publisher {
@@ -27,16 +27,16 @@ class Publisher {
 
 class ListingRepository {
     - listings: List<Listing>
-    + findDirectSaleListings() : List<Listing>
+    + findAllDirectSaleListings() : List<Listing>
 }
 
 class PublicationSampleRepository {
     - publicationSamples: List<PublicationSample>
-    + findPublicationSamplesByListing(listOfListings, publisher): List<PublicationSample>
+    + findItemsByListingAndPublisher(listOfListings, publisher): List<PublicationSample>
 }
 
 class PublicationSampleDTO_US027 {
-    + toDTO(lisOfItems): List<PublicationSampleDTO_US027>
+    + toDTOs(lisOfItems): List<PublicationSampleDTO_US027>
 }
 
 class PublicationSample {
@@ -46,7 +46,7 @@ class PublicationSample {
     - publicationStatus: PublicationStatus
     - edition: String
     - code: Code
-    + getPublicationSampleDetails()
+    + getDetails(): PublicationSample
 }
 
 class Listing {
@@ -72,13 +72,13 @@ class Edition {
 
 ' Interactions
 
-UI027 "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController : uses
+UI027 "1" ..> "1" US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController : uses
 
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherRepository: uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherDTO_US027 : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" ListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleDTO_US027 : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherRepository: uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherDTO_US027 : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" ListingRepository : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleRepository : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleDTO_US027 : uses
 
 PublisherRepository "1" ..> "*" Publisher : communicates with
 
