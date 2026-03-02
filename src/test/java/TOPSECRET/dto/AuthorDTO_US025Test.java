@@ -99,9 +99,12 @@ class AuthorDTO_US025Test {
     }
 
     @Test
-    void fromAuthors_nullList_shouldReturnEmptyList() {
+    void fromAuthors_nullList_shouldReturnMutableList() {
         var dtos = AuthorDTO_US025.fromAuthors(null);
         assertNotNull(dtos);
         assertTrue(dtos.isEmpty());
+
+        dtos.add(new AuthorDTO_US025("Teste"));
+        assertEquals(1, dtos.size());
     }
 }

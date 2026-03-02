@@ -200,4 +200,45 @@ class ListingRepositoryTest {
 
         assertEquals(1, dsListings2.size());
     }
+
+    @Test
+    void getListOfItemsOnDirectSaleofAGivenAuthor_ShouldFilterCorrectly() {
+
+        Author targetAuthor = mock(Author.class);
+        PublicationSample sampleWithAuthor = mock(PublicationSample.class);
+        PublicationSample sampleWithoutAuthor = mock(PublicationSample.class);
+
+        BibliographicalData bdWithAuthor = mock(BibliographicalData.class);
+        when(bdWithAuthor.getAuthors()).thenReturn(List.of(targetAuthor));
+        when(sampleWithAuthor.getBibliographicalData()).thenReturn(bdWithAuthor);
+
+        BibliographicalData bdWithoutAuthor = mock(BibliographicalData.class);
+        when(bdWithoutAuthor.getAuthors()).thenReturn(List.of(mock(Author.class)));
+        when(sampleWithoutAuthor.getBibliographicalData()).thenReturn(bdWithoutAuthor);
+
+        Listing listingDirectSale = mock(Listing.class);
+        Listing listingAuction = mock(Listing.class);
+
+        when(listingDirectSale.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listingDirectSale.getItems()).thenReturn(List.of(sampleWithAuthor, sampleWithoutAuthor));
+
+        when(listingAuction.getSaleType()).thenReturn(SaleType.AUCTION);
+        when(listingAuction.getItems()).thenReturn(List.of(sampleWithAuthor));
+
+        repo.add(listingDirectSale);
+        repo.add(listingAuction);
+
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleofAGivenAuthor(targetAuthor);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(sampleWithAuthor));
+        assertFalse(result.contains(sampleWithoutAuthor));
+    }
+
+    @Test
+    void getListOfItemsOnDirectSaleofAGivenAuthor_ShouldThrowOnNullAuthor() {
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.getListOfItemsOnDirectSaleofAGivenAuthor(null)
+        );
+    }
 }

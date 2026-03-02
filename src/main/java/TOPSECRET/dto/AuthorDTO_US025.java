@@ -17,7 +17,7 @@ public class AuthorDTO_US025 {
      *
      * @param name The author's name.
      */
-    private AuthorDTO_US025(String name) {
+    AuthorDTO_US025(String name) {
         this.name = name;
     }
 

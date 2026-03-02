@@ -91,7 +91,6 @@ class DirectSaleDTO_US025Test {
 
         assertEquals("Title One", dto.getTitle());
         assertEquals(List.of("author2"), dto.getAuthors());
-        // Total price = 10 + 15 = 25
         assertEquals(new BigDecimal("25.00"), dto.getPrice());
         assertEquals("Pack of 2 listings", dto.getListingTitle());
         assertEquals("Multiple sellers", dto.getSeller());
@@ -118,4 +117,34 @@ class DirectSaleDTO_US025Test {
         assertEquals(List.of("author2"), dto2.getAuthors());
         assertEquals(new BigDecimal("25.00"), dto2.getPrice());
     }
+
+    /*@Test
+    void fromItemAndDirectSale_shouldNotDuplicateSellerNames_sameSeller() {
+
+        User sameSeller = seller1;
+
+        ListingFactory listingFactory = new ListingFactory();
+
+        Listing listingA = listingFactory.create(
+                "Listing A",
+                List.of(sample1),
+                SaleType.DIRECT_SALE,
+                new Price(new BigDecimal("5.00")),
+                "Description A",
+                List.of(new Picture("picA.jpg"))
+        );
+
+        Listing listingB = listingFactory.create(
+                "Listing B",
+                List.of(sample2),
+                SaleType.DIRECT_SALE,
+                new Price(new BigDecimal("7.00")),
+                "Description B",
+                List.of(new Picture("picB.jpg"))
+        );
+
+        DirectSale dsSameSeller = new DirectSale(List.of(listingA, listingB), sameSeller, true);
+        DirectSaleDTO_US025 dto = DirectSaleDTO_US025.fromItemAndDirectSale(sample1, dsSameSeller);
+        assertEquals(sameSeller.getUserName(), dto.getSeller());
+    }*/
 }
