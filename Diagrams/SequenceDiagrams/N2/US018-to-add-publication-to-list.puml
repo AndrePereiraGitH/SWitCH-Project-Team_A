@@ -17,6 +17,7 @@ participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfC
 participant ":CollectionOfPublications" as CP
 participant "collectionNameDTO: CollectionOfPublicationsDTO" as CollectionDTO
 
+participant ":LibraryRepository" as LibraryRepo
 participant ":Library" as Library
 participant ":PublicationSampleRepository" as PublicationSampleRepo
 participant ":PublicationSampleDTO" as PublicationDTO
@@ -89,7 +90,12 @@ deactivate CollectionRepo
 ' GET USER LIBRARY
 ' =====================================================
 
-Controller -> Library : getAllPublications(user)
+Controller -> LibraryRepo : getLibraryOfUser(user)
+activate LibraryRepo
+LibraryRepo --> Controller : userLibrary
+deactivate LibraryRepo
+
+Controller -> Library : getAllPublications()
 activate Library
 Library --> Controller : allUserPublications
 deactivate Library
@@ -156,7 +162,7 @@ activate Controller
 ' CONVERT DTO -> DOMAIN
 ' =====================================================
 
-Controller -> CollectionRepo : CollectionDTOToDomain(selectedCollectionDTO)
+Controller -> CollectionRepo : collectionDTOToDomain(selectedCollectionDTO)
 activate CollectionRepo
 CollectionRepo --> Controller : userCollection
 deactivate CollectionRepo
