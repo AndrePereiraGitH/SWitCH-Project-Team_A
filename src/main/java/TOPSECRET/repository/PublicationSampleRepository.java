@@ -151,7 +151,6 @@ public class PublicationSampleRepository {
         return List.copyOf(pubSamplesList);
     }
 
-<<<<<<< Updated upstream
     // --------------------------------------- US018 stars ----------------------------------------
 
     /**
@@ -187,7 +186,7 @@ public class PublicationSampleRepository {
     }
 
     // ------------------------------------------ ends --------------------------------------------
-=======
+
     /**
      * Retrieves all {@link PublicationSample} items that belong to the given {@link Publisher}
      * across a collection of {@link Listing} objects.
@@ -236,5 +235,4 @@ public class PublicationSampleRepository {
         }
         return List.copyOf(pubSamplesList);
     }
->>>>>>> Stashed changes
 }
