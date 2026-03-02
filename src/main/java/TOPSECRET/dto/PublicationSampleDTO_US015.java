@@ -2,6 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -225,7 +226,7 @@ public class PublicationSampleDTO_US015 {
     }
 
 
-    // toDTO ===========================================================================================================
+    // toDTO(s) ========================================================================================================
 
     /**
      * Converts a {@link PublicationSample} domain object into a {@link PublicationSampleDTO_US015}.
@@ -238,6 +239,11 @@ public class PublicationSampleDTO_US015 {
      */
 
     public static PublicationSampleDTO_US015 toDTO(PublicationSample publicationSample) {
+
+        if  (publicationSample == null) {
+            throw new NullPointerException("Publication sample can not be null");
+        }
+
         return new PublicationSampleDTO_US015(
                 publicationSample.getBibliographicalData().getTitle(),
                 publicationSample.getBibliographicalData().getAuthors().stream()
@@ -255,5 +261,40 @@ public class PublicationSampleDTO_US015 {
                 publicationSample.getEdition().getPublisher().getName(),
                 publicationSample.getCondition().toString()
         );
+    }
+
+    /**
+     * Converts a list of {@link PublicationSample} entities into a list of
+     * {@link PublicationSampleDTO_US015} objects.
+     *
+     * <p>The method accepts an empty list and returns an empty list. However,
+     * it does not allow {@code null} as the input list, nor does it allow
+     * {@code null} elements inside the list. If either occurs, an
+     * {@link IllegalArgumentException} is thrown.</p>
+     *
+     * <p>Each non-null element in the list is converted using
+     * {@link #toDTO(PublicationSample)}, and the order of elements is preserved.</p>
+     *
+     * @param listOfItems the list of publication samples to convert; must not be {@code null}
+     * @return a list of DTOs corresponding to the given publication samples; never {@code null}
+     * @throws IllegalArgumentException if {@code listOfItems} is {@code null} or contains {@code null} elements
+     */
+
+    public static List<PublicationSampleDTO_US015> toDTOs(List<PublicationSample> listOfItems) {
+
+        if  (listOfItems == null) {
+            throw new NullPointerException("List of items can not be null");
+        }
+
+        List<PublicationSampleDTO_US015> listOfPublicationSampleDTO = new ArrayList<>();
+
+        for (PublicationSample pubSample : listOfItems) {
+            if (pubSample == null) {
+                throw new IllegalArgumentException("List of items must not contain null elements");
+            }
+            listOfPublicationSampleDTO.add(toDTO(pubSample));
+        }
+
+        return List.copyOf(listOfPublicationSampleDTO);
     }
 }

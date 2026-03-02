@@ -7,6 +7,7 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -163,7 +164,7 @@ class PublicationSampleDTO_US015Test {
     }
 
 
-    // Tests to toDTO =================================================================================================
+    // Tests to toDTO ==================================================================================================
     @Test
     void toDTO_ShouldMapAllFieldsCorrectly() {
         // Act
@@ -181,5 +182,88 @@ class PublicationSampleDTO_US015Test {
         assertEquals("en", dto.getEditionLanguage());
         assertEquals("Prentice Hall", dto.getPublisherName());
         assertEquals("LIKE_NEW", dto.getCondition());
+    }
+
+    @Test
+    void toDTO_ShouldThrowNullPointerExceptionWhenPublicationSampleIsNull() {
+        // Act + Assert
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> PublicationSampleDTO_US015.toDTO(null)
+        );
+
+        assertEquals("Publication sample can not be null",exception.getMessage());
+    }
+
+    // Tests to toDTOs =================================================================================================
+    @Test
+    void toDTOs_ShouldThrowNullPointerExceptionWhenListIsNull() {
+        // Act + Assert
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> PublicationSampleDTO_US015.toDTOs(null)
+        );
+
+        assertEquals("List of items can not be null", exception.getMessage());
+    }
+
+    @Test
+    void toDTOs_ShouldThrowIllegalArgumentExceptionWhenListContainsNullElement() {
+        // Arrange
+        List<PublicationSample> listWithNull = new ArrayList<>();
+        listWithNull.add(pubSample);
+        listWithNull.add(null);
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> PublicationSampleDTO_US015.toDTOs(listWithNull));
+
+        // Assert
+        assertEquals("List of items must not contain null elements", exception.getMessage());
+    }
+
+    @Test
+    void toDTOs_ShouldReturnEmptyListWhenInputListIsEmpty() {
+        // Act
+        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of());
+
+        // Assert
+        assertNotNull(dtoList);
+        assertTrue(dtoList.isEmpty());
+    }
+
+    @Test
+    void toDTOs_ShouldReturnListWithOneDTOWhenListHasOneElement() {
+        // Act
+        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample));
+
+        // Assert
+        assertNotNull(dtoList);
+        assertEquals(1, dtoList.size());
+    }
+
+    @Test
+    void toDTOs_ShouldReturnListWithSameSizeAsInputList() {
+        // Arrange
+        // New publicationSample
+        PublicationSample anotherSample = mock(PublicationSample.class);
+        when(anotherSample.getBibliographicalData()).thenReturn(bd);
+        when(anotherSample.getEdition()).thenReturn(edition);
+        when(anotherSample.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(anotherSample.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
+        when(anotherSample.getOwner()).thenReturn(owner);
+
+        // Act
+        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample, anotherSample));
+
+        // Assert
+        assertEquals(2, dtoList.size());
+    }
+    @Test
+    void toDTOs_ShouldBeImmutableList() {
+        // Act
+        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample));
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class,
+                () -> dtoList.add(mock(PublicationSampleDTO_US015.class)));
     }
 }
