@@ -1,0 +1,232 @@
+@startuml
+hide circle
+title Mite Lovers - AOO Level 2
+skinparam title {
+  FontSize 24
+}
+
+skinparam ArrowColor #333
+skinparam Shadowing false
+skinparam legend {
+  BackgroundColor LightBlue
+  FontSize 14
+}
+
+
+/' ===== Listing ===== '/
+Listing "1" -- "0..1" Auction : > can be an
+Listing "1   " -- "0..1   " DirectSale : > can be a
+Listing "1..*" -- "       1" Seller : > is created by
+Listing "1" -- "1..*" PublicationSample : > announces
+
+
+/' ===== PublicationSample ===== '/
+together {
+    PublicationSample "1" -- "1" BibliographicalData : > has
+    PublicationSample "1" -- "1" Edition : > has
+    PublicationSample "*" -- "1" User : > owned by
+}
+
+
+/' ===== BibliographicalData ===== '/
+together {
+    Book "0..1" -- "1" BibliographicalData : > is a
+    Magazine "0..1" -- "1" BibliographicalData : > is a
+    BibliographicalData "1" -- "1..*" Author : > written by
+    BibliographicalData "1" -- "1..*" Genre : > categorized by
+}
+
+
+/' ===== Edition ===== '/
+Edition "1" -- "1" PublicationType : > has
+Edition "1" -- "1" Publisher : > published by
+
+
+/' ===== PublicationType ===== '/
+PublicationType "1" -- "1" MediaFormat : > has a
+
+
+/' ===== Commerce ===== '/
+Buyer "1  " -- "1..*" DirectSale : > buys through
+DirectSale "0..1" --- "0..1" Transaction : > can result in
+
+together {
+    Auction "1" -- "*" Bid : > may have
+    Auction "0..1" -- "0..1" Transaction : > auction winner
+    Bid "*" -- "1" Bidder : > offered by
+}
+
+Transaction "1" -- "1" LogisticsServices : > shipped by
+Transaction "1" -- "0..1" SupportService : > managed by
+
+Listing "1" --------- "0..1" SupportService : > is regulated by
+
+
+/' ===== User ===== '/
+together {
+    Bidder "0..1" -- "1" User : > is a
+    Seller "0..1" -- "1" User : > is a
+    Buyer "0..1" -- "1" User : > is a
+}
+
+User -- Community
+User "1" -- "*" SupportService : > can request
+User "1" -- "0..1" Administrator : > can be an
+
+
+/' ===== Library & Collections ===== '/
+Library "0..1" -- "           *" PublicationSample : > contains
+User "1" --- "0..1" Library : > may own
+User "1" -- "*" CollectionOfPublications : > may have
+
+CollectionOfPublications "1" -- "*" PublicationSample : > contains
+CollectionOfPublications "1" -- "1" Genre : > has
+
+
+/' ===== AppraisalEntity ===== '/
+Administrator "1" -- "*" AppraisalEntity : > can register
+AppraisalEntity "1" -- "1..*" Genre : > accepts
+AppraisalEntity "1" -- "1..*" PublicationType : > accepts
+
+
+/' ========== Concepts with Attributes ============= '/
+
+object Listing #FFE4E1 {
+    - listingTitle : String
+    - saleType : SaleType
+    - price : Price
+    - shortDescription : String
+    - pictures : List<Picture>
+}
+
+object Auction #FFDAB9 {
+    - initialDate : DateTime
+    - finalDate : DateTime
+    - initialPrice : Price
+    - buyOutPrice : Price
+}
+
+object Bid #FFDAB9 {
+    - value : Price
+}
+
+rectangle DirectSale #FFE4E1 {
+}
+
+object Transaction {
+    - transactionDate : DateTime
+}
+
+object PublicationSample {
+    - condition : Condition
+    - publicationStatus : PublicationStatus
+}
+
+object BibliographicalData {
+    - title : String
+    - language : Language
+    - publicationDate : Date
+}
+
+object Book {
+    - isbn : String
+}
+
+object Magazine {
+    - issn : String
+}
+
+object Edition {
+    - editionNumber : int
+    - editionYear : int
+    - editionLanguage : Language
+}
+
+object Author {
+    - name : Name
+    - nationality : Country
+}
+
+object Genre {
+    - name : String
+}
+
+object Publisher {
+    - name : String
+}
+
+object PublicationType {
+    - typeName : String
+}
+
+object MediaFormat {
+    - format : String
+}
+
+object User #E6E6FA {
+    - username : String
+    - userRole : UserRole
+    - contact : Contact
+    - profile : Profile
+}
+
+rectangle Seller #E6E6FA {
+}
+
+rectangle Buyer #E6E6FA {
+}
+
+rectangle Bidder #E6E6FA {
+}
+
+rectangle Administrator #E6E6FA {
+}
+
+object Library {
+    - libraryName : String
+}
+
+object CollectionOfPublications {
+    - name : String
+    - isPublic : boolean
+}
+
+object AppraisalEntity {
+    - name : String
+}
+
+rectangle LogisticsServices #LightBlue {
+}
+
+rectangle SupportService #LightBlue {
+}
+
+rectangle Community #LightBlue {
+}
+
+
+/' ========= Notes  ============ '/
+
+note as L
+    Represents a sale ad (direct sale or auction)
+    end note
+
+Listing -> L
+
+note as N
+    Catalog
+    Refers to the bibliographical information of a publication
+    (title, authors, genres, language, date of publication).
+    end note
+
+BibliographicalData --> N
+
+note as S
+    Stock
+    Represents a specific physical copy of a publication,
+    with its condition, edition details and ownership.
+    end note
+
+PublicationSample - S
+
+@enduml

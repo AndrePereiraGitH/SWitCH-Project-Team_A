@@ -1,49 +1,57 @@
 @startuml
 hide footbox
-title US003 - Register Genre to Official Genre List
+autonumber
 
+title US003 - Register Genre to Official Genre List
 
 actor Administrator
 participant ":UI003" as UI
-
-participant ":ToRegisterGenreController" as RegisterGenreController
-
+participant ":US003ToRegisterGenreController" as Controller
 participant ":GenreRepository" as GenreRepository
+participant ":GenreFactory" as GenreFactory
 
-Administrator -> UI : **1** I want to add a new genre to the official list
-
+Administrator -> UI : I want to add a new genre to the official list
 activate UI
 
-UI -->> Administrator : **2** Please enter the genre name
-Administrator -> UI : **3** name("romance")
+UI --> Administrator : Please enter the genre name
+deactivate UI
 
+Administrator -> UI : name("romance")
+activate UI
 
-UI -> RegisterGenreController : **4** registerGenre(genreType)
-activate RegisterGenreController
+UI -> Controller : registerGenre(genreType)
+activate Controller
 
-RegisterGenreController -> GenreRepository : **5** createAndAddGenre(genreType)
+Controller -> GenreRepository : createAndAddGenre(genreType)
 activate GenreRepository
 
-  create "romance:Genre" as Genre
+GenreRepository -> GenreFactory : createGenre(genreType)
+activate GenreFactory
 
-  GenreRepository -> Genre : **6** create(genreType)
-  GenreRepository -> GenreRepository : **7** exists(romance)
-  alt genre already exists
-    GenreRepository -->> RegisterGenreController : Genre already exists
-    RegisterGenreController -->> UI : Genre already exists
-    UI -->> Administrator : Genre already exists
-  else genre does NOT exist
-  GenreRepository -> GenreRepository : **8** addToList(romance)
-  GenreRepository  -->> RegisterGenreController : **9** romance
-  end
+create "romance: Genre"
+GenreFactory -> "romance: Genre" : create ()
+GenreFactory --> GenreRepository : romance
+deactivate GenreFactory
 
+GenreRepository -> GenreRepository : exists(romance)
+
+alt [genre already exists]
+    GenreRepository --> Controller : error: "Genre already exists"
+    Controller --> UI : error: "Genre already exists"
+    UI --> Administrator : Genre already exists
+
+else [genre does NOT exist]
+    GenreRepository -> GenreRepository : _genres.add(romance)
+    GenreRepository --> Controller : romance
+
+end
 
 deactivate GenreRepository
 
-RegisterGenreController -->> UI : **10** success
-deactivate RegisterGenreController
+Controller --> UI : success
+deactivate Controller
 
-UI -->> Administrator : **11**  success
+UI --> Administrator : success
 deactivate UI
 
 @enduml

@@ -2,80 +2,110 @@
 hide footbox
 autonumber
 
-title US017 - Create Private Collection Of Publications with a name and a set a genre
+title US017 - Create Private Collection Of Publications with a name and a genre
 
 actor "User" as User
 participant ":UI017" as UI
-participant ":CreateCollectionOfPublicationsController" as Controller
-participant ":GenreRepository" as GenreRepository
-participant ":CollectionOfPublicationsRepository" as CollectionRepository
+participant ":US017ToCreateCollectionOfPublicationsController" as Controller
 
+participant ":GenreRepository" as GenreRepo
+participant "allGenreList: List<Genre>" as allGenreList
+
+participant ":GenreDTO_US017" as GenreMapper
+
+participant "listOfGenreDTO: List<GenreDTO_US017>" as GenreDTO
+participant ":Genre" as Genre
+participant "genreDTO: GenreDTO_US017" as GDTO
+
+participant ":CollectionOfPublicationsRepository" as CollectionRepository
+participant ":FactoryCollectionOfPublications" as Factory
+
+' --- Start ---
 User -> UI : I want to create a new private collection
 activate UI
 
 UI --> User : Provide collection name
 deactivate UI
+
 User -> UI : collection name provided
 activate UI
 
+' =========================
+' Get Genres (DTO)
+' =========================
 UI -> Controller : getAllGenres()
 activate Controller
 
-Controller -> GenreRepository : getAllGenres()
-activate GenreRepository
-GenreRepository --> Controller : listOfGenres
-deactivate GenreRepository
+Controller -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo -->> allGenreList **: create()
+GenreRepo --> Controller : allGenreList
+deactivate GenreRepo
 
-loop for each genre in listOfGenres
-    create "genreDTO:GenreDTO"
-    Controller -> "genreDTO:GenreDTO" : toDTO(genre)
-    activate "genreDTO:GenreDTO"
-    "genreDTO:GenreDTO" --> Controller : genreDTO
-    deactivate "genreDTO:GenreDTO"
-end
+Controller -> GenreMapper : genreToDTO(allGenreList)
+activate GenreMapper
 
-Controller --> UI : listOfAllGenreDTO
+' ----- Loop ----
+GenreMapper --> GenreDTO** : create()
+
+    loop for each genre in the list
+        GenreMapper -> Genre : getTitle()
+        activate Genre
+        Genre --> GenreMapper : title
+        deactivate Genre
+
+        GenreMapper -> GDTO **: createDTO(title)
+
+        GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+    end
+
+' ----- End loop ----
+
+GenreMapper --> Controller : List<GenreDTO_US017>
+deactivate GenreMapper
+
+Controller --> UI : List<GenreDTO_US017>
 deactivate Controller
 
-UI --> User : Which genres type? Select one!
+UI --> User : Show genres! Select one!
 deactivate UI
 
-User -> UI : Selected genre type
+' =========================
+' Create Private Collection
+' =========================
+User -> UI : Selected genre: genreA
 activate UI
 
-UI -> Controller : createAndAddCollectionOfPublication(name, genreType, user)
+UI -> Controller : createCollection(name, selectedGenre, user)
 activate Controller
 
-Controller -> CollectionRepository : createIfNotExists(user, name, genreType, true)
+Controller -> CollectionRepository : createIfNotExists(user, name, genre)
 activate CollectionRepository
 
-loop for each existing collection of the user
-    CollectionRepository -> CollectionRepository : compare(name, genreType)
+loop for each existing collection
+    CollectionRepository -> CollectionRepository : compare(user, name, genre)
+    alt [duplicate found]
+        CollectionRepository --> Controller : error: "Collection already exists"
+    end
 end
 
-alt collection already exists
-    CollectionRepository --> CollectionRepository : duplicateFound
-    CollectionRepository --> Controller : error (duplicate)
+CollectionRepository -> Factory : create(name, genre, user)
+activate Factory
 
-else collection does not exist
-    create "cp:CollectionOfPublications"
-    CollectionRepository -> "cp:CollectionOfPublications" : create(name, genreType, true)
-    CollectionRepository -> CollectionRepository : addToList(cp)
-    CollectionRepository --> Controller : cp
+create "cp: CollectionOfPublications"
+Factory -> "cp: CollectionOfPublications" : create()
+note right : _isPrivate = true\n(set by constructor)
+Factory --> CollectionRepository : cp
+deactivate Factory
 
-end
-
+CollectionRepository -> CollectionRepository : _collectionOfPublicationsList.add(cp)
+CollectionRepository --> Controller : cp
 deactivate CollectionRepository
 
-Controller --> UI : success
+Controller --> UI : Success
 deactivate Controller
 
 UI --> User : Private collection of publications was created
 deactivate UI
 
 @enduml
-```
-
-A única diferença é que **removi a linha:**
-```
-participant "genreDTO:GenreDTO" as GenreDTO

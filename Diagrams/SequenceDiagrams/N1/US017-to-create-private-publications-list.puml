@@ -2,7 +2,7 @@
 autonumber
 hide footbox
 
-title US017 - Create a private Collection Of Publications with a name and a set a genre
+title US017 - Create Private Collection Of Publications with a name and a genre
 
 actor "User" as User
 participant ":System" as System
