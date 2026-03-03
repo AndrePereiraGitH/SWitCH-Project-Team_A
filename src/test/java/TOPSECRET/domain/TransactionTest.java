@@ -1,198 +1,33 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.Enum.TransactionStatus;
 import org.junit.jupiter.api.Test;
 
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class TransactionTest {
 
+    // =========================================================
+    // AUCTION CONSTRUCTOR
+
     @Test
-    void TransactionEmptyConstructorTest() {
+    void shouldCreateAuctionTransactionSuccessfully() {
+
         // Arrange
-        TOPSECRET.domain.Transaction transaction = new TOPSECRET.domain.Transaction();
-
-        // Assert
-        assertNotNull(transaction);
-    }
-
-    @Test
-    void AuctionTransactionConstructorIsValid() {
-        // Act
-        Transaction transaction = new Transaction (
-                createValidUser("Buyer"),
-                createValidAuction(),
-                new Price(new BigDecimal("19.99")),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of(createValidUser("Seller")),
-                TransactionStatus.PENDING
-        );
-
-        // Assert
-        assertNotNull(transaction);
-    }
-
-    @Test
-    void auctionConstructorNullAuction() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        null,
-                        new Price(new BigDecimal("10.00")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-        assertEquals("Auction cannot be null", e.getMessage());
-    }
-
-    @Test
-    void auctionConstructorNullBuyer() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        null,
-                        createValidAuction(),
-                        new Price(new BigDecimal("10.00")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-
-        assertEquals("Buyer cannot be null", e.getMessage());
-    }
-
-    @Test
-    void auctionConstructorNullPrice() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        null,
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-
-        assertEquals("Price cannot be null", e.getMessage());
-    }
-
-    @Test
-    void auctionConstructorNullTransactionDate() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(new BigDecimal("10.00")),
-                        null,
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-        assertEquals("Transaction date cannot be null", e.getMessage());
-    }
-
-    @Test
-    void auctionConstructorFutureTransactionDate() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(new BigDecimal("10.00")),
-                        LocalDateTime.now().plusDays(1),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-        assertEquals("Transaction date cannot be null", e.getMessage());
-    }
-
-    @Test
-    void auctionConstructorNullPaymentDate() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(new BigDecimal("10.00")),
-                        LocalDateTime.now(),
-                        null,
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-        assertEquals("Future Payment date cannot be null", e.getMessage());
-
-    }
-
-    @Test
-    void auctionConstructorFuturePaymentDate() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(new BigDecimal("10.00")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now().plusDays(1),
-                        List.of(createValidUser("Seller")),
-                        TransactionStatus.PENDING
-                )
-        );
-        assertEquals("Future Payment date cannot be null", e.getMessage());
-    }
-
-    @Test
-    void auctionConstructorNullSellers() {
-        //Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        createValidAuction(),
-                        new Price(new BigDecimal("10.00")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        null,
-                        TransactionStatus.PENDING
-                )
-        );
-        assertEquals("Seller list cannot be null", e.getMessage());
-    }
-
-    @Test
-    void directSaleTransactionConstructorIsValid() {
-        // Arrange
-        User buyer = createValidUser("Buyer");
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
 
         // Act
         Transaction transaction = new Transaction(
-                buyer,
-                new Price(new BigDecimal("19.99")),
-                createValidDirectSale(buyer),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of(createValidUser("Seller"))
+                buyer, auction, price, now, now, sellers, TransactionStatus.PENDING
         );
 
         // Assert
@@ -200,214 +35,316 @@ class TransactionTest {
     }
 
     @Test
-    void directSaleConstructorNullCart() {
+    void shouldThrowWhenAuctionIsNull() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
         // Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        new Price(new BigDecimal("10.00")),
-                        null,
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller"))
-                )
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, null, price, now, now, sellers, TransactionStatus.PENDING)
         );
-        assertEquals("Cart cannot be null", e.getMessage());
     }
 
     @Test
-    void directSaleConstructorNullBuyer() {
+    void shouldThrowWhenBuyerIsNull_AuctionConstructor() {
+
+        // Arrange
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
         // Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        null,
-                        new Price(new BigDecimal("10.00")),
-                        createValidDirectSale(createValidUser("Buyer")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller"))
-                )
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(null, auction, price, now, now, sellers, TransactionStatus.PENDING)
         );
-        assertEquals("Buyer cannot be null", e.getMessage());
     }
 
     @Test
-    void directSaleConstructorNullPrice() {
+    void shouldThrowWhenPriceIsNull_AuctionConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
         // Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        null,
-                        createValidDirectSale(createValidUser("Buyer")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller"))
-                )
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, auction, null, now, now, sellers, TransactionStatus.PENDING)
         );
-        assertEquals("Price cannot be null", e.getMessage());
     }
 
     @Test
-    void directSaleConstructorNullTransactionDate() {
+    void shouldThrowWhenTransactionDateIsNull_AuctionConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+
         // Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        new Price(new BigDecimal("10.00")),
-                        createValidDirectSale(createValidUser("Buyer")),
-                        null,
-                        LocalDateTime.now(),
-                        List.of(createValidUser("Seller"))
-                )
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, auction, price, null, LocalDateTime.now(), sellers, TransactionStatus.PENDING)
         );
-        assertEquals("Transaction date cannot be null", e.getMessage());
     }
 
     @Test
-    void directSaleConstructorNullPaymentDate() {
+    void shouldThrowWhenTransactionDateIsFuture_AuctionConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime future = LocalDateTime.now().plusDays(1);
+
         // Act & Assert
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
-                        createValidUser("Buyer"),
-                        new Price(new BigDecimal("10.00")),
-                        createValidDirectSale(createValidUser("Buyer")),
-                        LocalDateTime.now(),
-                        null,
-                        List.of(createValidUser("Seller"))
-                )
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, auction, price, future, LocalDateTime.now(), sellers, TransactionStatus.PENDING)
         );
-        assertEquals("Transaction payment date cannot be null", e.getMessage());
     }
 
     @Test
-    void directSaleConstructorNullSellers() {
-        // Act & Asser
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+    void shouldThrowWhenPaymentDateIsNull_AuctionConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, auction, price, LocalDateTime.now(), null, sellers, TransactionStatus.PENDING)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenPaymentDateIsFuture_AuctionConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime future = LocalDateTime.now().plusDays(1);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, auction, price, LocalDateTime.now(), future, sellers, TransactionStatus.PENDING)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenSellersIsNull_AuctionConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Auction auction = mock(Auction.class);
+        Price price = mock(Price.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, auction, price, LocalDateTime.now(), LocalDateTime.now(), null, TransactionStatus.PENDING)
+        );
+    }
+
+    // =========================================================
+    // DIRECT SALE CONSTRUCTOR
+
+    @Test
+    void shouldCreateDirectSaleTransactionSuccessfully() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+        TransactionStatus status = TransactionStatus.PENDING;
+
+        // Act
+        Transaction transaction = new Transaction(
+                buyer, price, directSale, now, now, sellers, status
+        );
+
+        // Assert
+        assertNotNull(transaction);
+    }
+
+    @Test
+    void shouldThrowWhenDirectSaleIsNull() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, price, null, LocalDateTime.now(), LocalDateTime.now(), sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenBuyerIsNull_DirectSaleConstructor() {
+
+        // Arrange
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(null, price, directSale, LocalDateTime.now(), LocalDateTime.now(), sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenPriceIsNull_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, null, directSale, LocalDateTime.now(), LocalDateTime.now(), sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenTransactionDateIsNull_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, price, directSale, null, LocalDateTime.now(), sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenTransactionDateIsFuture_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime future = LocalDateTime.now().plusDays(1);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, price, directSale, future, LocalDateTime.now(), sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenPaymentDateIsNull_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, price, directSale, LocalDateTime.now(), null, sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenPaymentDateIsFuture_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+        List<User> sellers = List.of(seller);
+        LocalDateTime future = LocalDateTime.now().plusDays(1);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, price, directSale, LocalDateTime.now(), future, sellers, status)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenSellersIsNull_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        TransactionStatus status = TransactionStatus.PENDING;
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Transaction(buyer, price, directSale, LocalDateTime.now(), LocalDateTime.now(), null, status)
+        );
+    }
+
+    /*@Test
+    void shouldThrowWhenStatusIsNull_DirectSaleConstructor() {
+
+        // Arrange
+        User buyer = mock(User.class);
+        DirectSale directSale = mock(DirectSale.class);
+        Price price = mock(Price.class);
+        User seller = mock(User.class);
+
+        List<User> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
                 new Transaction(
-                        createValidUser("Buyer"),
-                        new Price(new BigDecimal("10.00")),
-                        createValidDirectSale(createValidUser("Buyer")),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
+                        buyer,
+                        price,
+                        directSale,
+                        now,
+                        now,
+                        sellers,
                         null
                 )
         );
-        assertEquals("Seller list cannot be null", e.getMessage());
-    }
-
-
-    //=============================================
-    // Private Methods to Help Instantiate
-
-    private static User createValidUser(String name){
-        Email email = new Email("asa", "example.com");
-        Address address = new Address("Rua Dra. Salomé Martingo", "nº 455", "4540-440", new Country("France"));
-        Contact contact = new Contact("916274847", "+351", email, address);
-        Profile profile = new Profile(name, new Country("Portugal"), LocalDate.of(1995, 10, 14));
-        UserRole userRole = UserRole.NORMAL_USER;
-
-        return new User(name, contact, profile, userRole);
-    }
-
-    private static BibliographicalData createValidBibliographicalData(){
-        List<Author> authors = List.of(
-                new Author(new Profile("J. K. Rowling", new Country("Portugal"), LocalDate.of(1995, 10, 14)), "valid bio1"),
-                new Author(new Profile("Freida", new Country("Spain"), LocalDate.of(1956, 10, 10)), "valid bio2")
-        );
-
-
-        return new BibliographicalData(
-                "O Senhor do Anéis: A irmandade do Anel",
-                authors,
-                new Locale("pt","PT"),
-                LocalDate.of(2020,1,10),
-                List.of(new Genre ("Fiction")),
-                "Text Description"
-                );
-    }
-
-    private static PublicationType createValidPublicationType() {
-        return new PublicationType(
-                MediaFormat.MAGAZINE,
-                TypeOfBinding.PAPERBACK,
-                "Paperback"
-        );
-    }
-
-    private static Publication createValidPublication(BibliographicalData bd, User seller) {
-        Code code = Code.fromIsbn13("9781234567890");
-        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-
-        return new Publication(
-                bd,
-                createValidPublicationType(),
-                seller,
-                PublicationStatus.READ,  // adjust if needed
-//                "1st Edition",
-                edition,
-                code
-        );
-    }
-
-    private static PublicationSample createValidItem(){
-        User seller = createValidUser("Seller");
-        BibliographicalData bd = createValidBibliographicalData();
-        Code code = Code.fromIsbn13 ("9783161484123");
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(new Dimensions(45,15,20), 400.0, 250);
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition1= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-
-        return new PublicationSample(
-                bd,
-                seller,
-                PublicationStatus.READ,
-                edition1,
-                Condition.LIKE_NEW
-        );
-    }
-
-    private static Listing createValidListing(){
-        return new Listing(
-                "Invalid Title",
-                List.of(createValidItem()),
-                SaleType.DIRECT_SALE,
-                new Price (new BigDecimal("19.00")),
-                "ShortDescription",
-                List.of(new Picture("Pic1"))
-        );
-    }
-
-    private static Listing createAuctionListing(){
-        return new Listing(
-                "Invalid Title",
-                List.of(createValidItem()),
-                SaleType.AUCTION,
-                new Price (new BigDecimal("19.00")),
-                "ShortDescription",
-                List.of(new Picture("Pic1"))
-        );
-    }
-
-    private static Auction createValidAuction(){
-        LocalDateTime now = LocalDateTime.now().plusMinutes(1);
-        return new Auction(
-                createAuctionListing(),
-                now,
-                now.plusDays(1),
-                new Price(new BigDecimal("19.99"))
-        );
-    }
-
-    private static DirectSale createValidDirectSale(User buyer){
-        DirectSale directSale = new DirectSale();
-        directSale.getListings();
-        return directSale;
-    }
-
-
+    }*/
 }

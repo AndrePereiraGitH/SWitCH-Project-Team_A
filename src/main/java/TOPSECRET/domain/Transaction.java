@@ -5,17 +5,28 @@ import TOPSECRET.domain.Enum.TransactionStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 /**
- * Represents a financial transaction in the system.
- *
- * <p>A Transaction records the result of a sale or auction, including:
- * - the buyer
- * - the seller
- * - the final price
- * - the date when the transaction occurred
- * - the listing that was sold
- *
- * <p>This class belongs to the domain layer and contains business data
- * related to a completed sale.
+ * Represents a commercial transaction within the system.
+ * <p>
+ * A {@code Transaction} models the financial and ownership exchange
+ * resulting either from an {@link Auction} or a {@link DirectSale}.
+ * <p>
+ * Each transaction records:
+ * <ul>
+ *     <li>The buyer</li>
+ *     <li>The sellers involved</li>
+ *     <li>The agreed price</li>
+ *     <li>The transaction date</li>
+ *     <li>The payment date</li>
+ *     <li>The current transaction status</li>
+ * </ul>
+ * <p>
+ * A transaction can be created through:
+ * <ul>
+ *     <li>An auction-based purchase</li>
+ *     <li>A direct sale purchase</li>
+ * </ul>
+ * <p>
+ * The transaction status is initialized as {@link TransactionStatus#PENDING}.
  */
 public class Transaction {
 
@@ -30,10 +41,35 @@ public class Transaction {
     // private SupportService _supportService;  //TODO WAITING FOR CONFIRMATION
     // private LogisticsServices _logisticsServices;   //TODO WAITING FOR CONFIRMATION
 
+    /**
+     * Default constructor.
+     * <p>
+     * Intended for framework usage or future extensions.
+     */
     public Transaction() {}
 
     // ====================================
-    // Constructor for Auction
+    /**
+     * Constructs a transaction resulting from an auction.
+     *
+     * @param buyer the user who won the auction and initiated the purchase
+     * @param auction the auction associated with this transaction
+     * @param price the final agreed price
+     * @param transactionDate the date and time when the transaction occurred
+     * @param paymentDate the date and time when payment was completed
+     * @param sellers the list of sellers involved in the transaction
+     * @param status the initial transaction status
+     *
+     * @throws IllegalArgumentException if:
+     * <ul>
+     *     <li>{@code auction} is null</li>
+     *     <li>{@code buyer} is null</li>
+     *     <li>{@code price} is null</li>
+     *     <li>{@code transactionDate} is null or in the future</li>
+     *     <li>{@code paymentDate} is null or in the future</li>
+     *     <li>{@code sellers} is null</li>
+     * </ul>
+     */
     public Transaction(User buyer, Auction auction, Price price, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers, TransactionStatus status) {
 
 
@@ -62,15 +98,34 @@ public class Transaction {
         this._transactionDate = transactionDate;
         this._paymentDate = paymentDate;
         this._sellers = sellers;
-        this._status = TransactionStatus.PENDING;
+        this._status = status;
         // this._supportService = supportService;
         // this._logisticsServices = logisticsServices;
     }
 
 
     // ====================================
-    // Constructor for direct sale
-    public Transaction(User buyer, Price price, DirectSale directSale, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers){
+    /**
+     * Constructs a transaction resulting from a direct sale.
+     *
+     * @param buyer the purchasing user
+     * @param price the agreed price of the sale
+     * @param directSale the direct sale instance associated with the transaction
+     * @param transactionDate the date and time when the transaction occurred
+     * @param paymentDate the date and time when payment was completed
+     * @param sellers the list of sellers involved in the transaction
+     *
+     * @throws IllegalArgumentException if:
+     * <ul>
+     *     <li>{@code directSale} is null</li>
+     *     <li>{@code buyer} is null</li>
+     *     <li>{@code price} is null</li>
+     *     <li>{@code transactionDate} is null or in the future</li>
+     *     <li>{@code paymentDate} is null or in the future</li>
+     *     <li>{@code sellers} is null</li>
+     * </ul>
+     */
+    public Transaction(User buyer, Price price, DirectSale directSale, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers, TransactionStatus status){
 
         if (directSale == null){
             throw new IllegalArgumentException("Cart cannot be null");
@@ -97,7 +152,7 @@ public class Transaction {
         this._transactionDate = transactionDate;
         this._paymentDate = paymentDate;
         this._sellers = sellers;
-        this._status = TransactionStatus.PENDING;
+        this._status = status;
         // this._supportService = supportService;
         // this._logisticsServices = logisticsServices;
 
