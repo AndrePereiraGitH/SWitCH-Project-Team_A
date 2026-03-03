@@ -39,7 +39,6 @@ class US018ToAddPublicationToAListOfMineControllerTest {
     // =====================================================
 
     private void createAndRegisterLibraryForUser(String libraryName, User owner) throws InstanceAlreadyExistsException {
-        // uses real API: createAndAdd(...)
         libraryRepo.createAndAdd(libraryName, owner);
     }
 
@@ -207,7 +206,6 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         PublicationSample sample = addOnePublicationSampleToUserLibrary(user, "Test Title", "1st");
         CollectionOfPublications collection = createAndRegisterCollectionForUser("Favorites", "Fiction", user);
 
-        // Put the publication into the collection via repository rule (matches US018 logic)
         Library userLibrary = libraryRepo.getLibraryOfUser(user.getUserName());
         boolean added = collectionRepo.addPublicationToCollection(user, userLibrary, collection, sample);
         assertTrue(added);
@@ -248,7 +246,6 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ASSERT
         assertTrue(result);
 
-        // Mutation/behavioral assertion: now available list should be empty
         List<PublicationSampleDTO_US018> availableAfter = controller.getPublicationsForCollection(collectionDTO);
         assertTrue(availableAfter.isEmpty());
     }
