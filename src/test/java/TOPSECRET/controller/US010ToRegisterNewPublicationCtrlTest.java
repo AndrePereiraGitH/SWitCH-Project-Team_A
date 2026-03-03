@@ -5,6 +5,7 @@ import TOPSECRET.domain.Enum.*;
 import TOPSECRET.repository.PublicationSampleRepository;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -16,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class US010ToRegisterNewPublicationCtrlTest {
 
     @Test
-    void shouldAddPublication() {
-        PublicationSampleRepository publicationRepository1 = new PublicationSampleRepository();
+    void shouldAddPublication() throws InstanceAlreadyExistsException {
+
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository publicationRepository1 = new PublicationSampleRepository(factory);
 
         US010ToRegisterNewPublicationCtrl pubCtrl1 = new US010ToRegisterNewPublicationCtrl(publicationRepository1);
 
@@ -87,11 +90,12 @@ class US010ToRegisterNewPublicationCtrlTest {
 
 
         //Act is here
-        boolean publicationAdded1 = pubCtrl1.createAndAddPublication(bibliographicalData1, user1, pubStatus1, edition1, condition);
+        PublicationSample publicationAdded1 = pubCtrl1.createAndAddPublication(bibliographicalData1, user1, pubStatus1, edition1, condition);
 
 
         //Assert is here
-        assertTrue(publicationAdded1);
+        assertEquals(1, publicationRepository1.getAllPublications().size());
+        assertTrue(publicationRepository1.getAllPublications().contains(publicationAdded1));
 
 
     }

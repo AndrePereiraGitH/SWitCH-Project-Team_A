@@ -7,13 +7,13 @@ import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 
 class PublicationSampleRepositoryDependenciesTest {
@@ -118,45 +118,45 @@ class PublicationSampleRepositoryDependenciesTest {
     // Happy path
 
     @Test
-    void ensureANewPublicationIsCreatedAndAdded() {
+    void ensureANewPublicationIsCreatedAndAdded() throws InstanceAlreadyExistsException {
         //Arrange
-        List<PublicationSample> emptyList = new ArrayList<>();
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(emptyList);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
 
         //Act
-        boolean realResult = pr1.createAndAdd(bibliographicalData1, user1,
+        PublicationSample realResult = pr1.createAndAdd(bibliographicalData1, user1,
                 pubStatus1, edition1, condition1);
 
         // Assert
-        assertTrue(realResult);
-
+        assertNotNull(realResult);
+        assertEquals(1, pr1.getAllPublications().size());
+        assertTrue(pr1.getAllPublications().contains(realResult));
     }
 
     @Test
-    void ensureThatADuplicatePublicationIsNotAdded(){
+    void ensureThatADuplicatePublicationIsNotAdded() throws InstanceAlreadyExistsException {
         //Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(publication1);
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
 
         //Act
-        boolean realResult=pr1.createAndAdd(bibliographicalData1, user1,
+        PublicationSample realResult=pr1.createAndAdd(bibliographicalData1, user1,
                 pubStatus1, edition1, condition1);
 
         // Assert
-        assertFalse(realResult);
-
-
-
+        assertNotNull(realResult);
+        assertEquals(1, pr1.getAllPublications().size());
+        assertTrue(pr1.getAllPublications().contains(realResult));
 
     }
 
     @Test
     void ifPublicationIsExistentShouldReturnTrue() {
         //Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(publication1);
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
+        pr1.addPublication(publication1);
 
         //Act
         boolean realResult = pr1.isExistent(publication1);
@@ -170,8 +170,8 @@ class PublicationSampleRepositoryDependenciesTest {
     void ifPublicationIsNotExistentShouldReturnFalse(){
 
         //Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
 
         //Act
         boolean realResult = pr1.isExistent(publication1);
@@ -185,9 +185,8 @@ class PublicationSampleRepositoryDependenciesTest {
     @Test
     void ensureConstructorCopiesListNotOriginalReferences(){
         // Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
-        list.add(publication1);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
 
         //Act
         boolean realResult=pr1.isExistent(publication1);
@@ -202,8 +201,11 @@ class PublicationSampleRepositoryDependenciesTest {
         // Arrange
         PublicationSample pub1 = publication1;
         PublicationSample pub2 = publication2;
+        PublicationSampleFactory factory = new PublicationSampleFactory();
 
-        PublicationSampleRepository repo = new PublicationSampleRepository(List.of(pub1, pub2));
+        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
+        repo.addPublication(pub1);
+        repo.addPublication(pub2);
 
         // Act
         List<PublicationSample> result = repo.getAllPublications();
@@ -217,7 +219,9 @@ class PublicationSampleRepositoryDependenciesTest {
     @Test //This test is used to test immutability for the "getAllPublications()"
     void getAllPublicationsShouldReturnImmutableList(){
 
-        PublicationSampleRepository publicationRepository = new PublicationSampleRepository(List.of(publication1));
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+
+        PublicationSampleRepository publicationRepository = new PublicationSampleRepository(factory);
 
         List<PublicationSample> resultingList = publicationRepository.getAllPublications();
 
@@ -300,10 +304,9 @@ class PublicationSampleRepositoryDependenciesTest {
     void getPublicationsByDTO_shouldReturn_listOfPublicationSampleDTO() {
 
         // Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(publication1);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
 
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(List.of(publication1), factory);
 
         List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
         pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
@@ -322,10 +325,9 @@ class PublicationSampleRepositoryDependenciesTest {
     void getPublicationsByDTO_shouldReturn_listOfPublicationSampleDTO_andPublicationOwner_shouldMatchDtoOwner() {
 
         // Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(publication1);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
 
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(List.of(publication1), factory);
 
         List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
         pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
@@ -341,10 +343,9 @@ class PublicationSampleRepositoryDependenciesTest {
     void getPublicationsByDTO_shouldThrows_ifPublicationsDto_is_Empty() {
 
         // Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        //list.add(publication1);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
 
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
 
         List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
        // pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
@@ -365,10 +366,9 @@ class PublicationSampleRepositoryDependenciesTest {
     void publicationSampleDtoToDomain_shouldReturnCorrectPublicationSample_US018() {
 
         // Arrange
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(publication1);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
 
-        PublicationSampleRepository repo = new PublicationSampleRepository(list);
+        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
 
         PublicationSampleDTO_US018 dto =
                 new PublicationSampleDTO_US018(
@@ -392,7 +392,8 @@ class PublicationSampleRepositoryDependenciesTest {
     void publicationSampleDtoToDomain_shouldThrowException_whenLibraryIsNull_US018() {
 
         // ARRANGE
-        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>());
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>(), factory);
 
         PublicationSampleDTO_US018 dto =
                 new PublicationSampleDTO_US018("Title", "1", "user");
@@ -407,7 +408,8 @@ class PublicationSampleRepositoryDependenciesTest {
     void publicationSampleDtoToDomain_shouldThrowException_whenDtoIsNull_US018() {
 
         // ARRANGE
-        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>());
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>(), factory);
 
         Library library = new Library("TestLibrary", publication1.getOwner());
 
@@ -424,7 +426,9 @@ class PublicationSampleRepositoryDependenciesTest {
         List<PublicationSample> list = new ArrayList<>();
         list.add(publication1);
 
-        PublicationSampleRepository repo = new PublicationSampleRepository(list);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+
+        PublicationSampleRepository repo = new PublicationSampleRepository(list, factory);
 
         Library library = new Library("TestLibrary", publication1.getOwner());
 

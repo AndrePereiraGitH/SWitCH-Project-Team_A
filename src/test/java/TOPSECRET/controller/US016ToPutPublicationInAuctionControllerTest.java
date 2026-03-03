@@ -181,13 +181,14 @@ class US016ToPutPublicationInAuctionControllerTest {
 
         // arrange
         PublicationSample pub = publication(user("owner1"));
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(pub);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        LibraryFactory factoryLib = new LibraryFactory();
 
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
+        pr1.addPublication(pub);
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
-        LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
+        LibraryRepository libraryRepo = new LibraryRepository(Map.of(), factoryLib);
 
         US016ToPutPublicationInAuctionController controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, pr1);
 
@@ -223,10 +224,9 @@ class US016ToPutPublicationInAuctionControllerTest {
         LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
 
         PublicationSample pub = publication(user("owner1"));
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(pub);
-
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleFactory factory = new PublicationSampleFactory();
+        PublicationSampleRepository pr1 = new PublicationSampleRepository(factory);
+        pr1.addPublication(pub);
 
         US016ToPutPublicationInAuctionController controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, pr1);
 

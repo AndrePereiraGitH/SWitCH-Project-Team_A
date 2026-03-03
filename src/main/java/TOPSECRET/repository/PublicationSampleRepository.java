@@ -3,20 +3,28 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.BibliographicalDataFactory;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 
+import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class PublicationSampleRepository {
 
+    private PublicationSampleFactory _publicationSampleFactory;
     private List<PublicationSample> allPublicationsInSystem = new ArrayList<>();
 
-    public PublicationSampleRepository(List<PublicationSample> publicationList) {
+    public PublicationSampleRepository(PublicationSampleFactory publicationSampleFactory){
+        this._publicationSampleFactory = publicationSampleFactory;
+    }
+
+    public PublicationSampleRepository(List<PublicationSample> publicationList, PublicationSampleFactory publicationSampleFactory) {
         allPublicationsInSystem = new ArrayList<>(publicationList);
+        _publicationSampleFactory = publicationSampleFactory;
     }
 
     public PublicationSampleRepository(){
@@ -30,16 +38,42 @@ public class PublicationSampleRepository {
 
 //    public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
 //                                PublicationStatus publicationStatus, String edition, Code code){
-    public boolean createAndAdd(BibliographicalData bibliographicalData, User username,
-                            PublicationStatus publicationStatus, Edition edition, Condition condition){
 
-        PublicationSample publication = new PublicationSample(bibliographicalData, username, publicationStatus,edition, condition);
+    /**
+     * Creates a new PublicationSample and adds it to the repository.
+     *
+     * @param bibliographicalData the bibliographical data of the publication (must not be null)
+     * @param userName the owner of the publication (must not be null)
+     * @param status the publication status (must not be null)
+     * @param edition the edition of the publication (must not be null)
+     * @param condition the condition of the publication (must not be null)
+     * @return the created PublicationSample
+     * @throws IllegalArgumentException if any required argument is null
+     */
 
-        if(isExistent(publication)){
-            return false;
+    public PublicationSample createAndAdd(BibliographicalData bibliographicalData, User userName, PublicationStatus status, Edition edition, Condition condition) throws InstanceAlreadyExistsException {
+
+        if(bibliographicalData == null){
+            throw new IllegalArgumentException("Bibliographical Data cannot be null");
         }
-        allPublicationsInSystem.add(publication);
-        return true;
+        if(userName == null){
+            throw new IllegalArgumentException("User Name cannot be null");
+        }
+        if(status == null){
+            throw new IllegalArgumentException("Publication Status cannot be null");
+        }
+        if(edition == null){
+            throw new IllegalArgumentException("Edition cannot be null");
+        }
+        if(condition == null){
+            throw new IllegalArgumentException("Condition cannot be null");
+        }
+
+        PublicationSample newPublicationSample = _publicationSampleFactory.create(bibliographicalData, userName, status, edition, condition);
+
+        allPublicationsInSystem.add(newPublicationSample);
+
+        return newPublicationSample;
     }
 
 

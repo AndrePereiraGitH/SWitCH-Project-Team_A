@@ -1,11 +1,15 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import javax.management.InstanceAlreadyExistsException;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -396,4 +400,156 @@ class PublicationSampleRepositoryTest {
     }
 
     // ENDS --------------------------------------------------------------------------
+
+    //============================================================
+    // TESTING CREATE AND ADD WITH FACTORY
+    @Test
+    void shouldReturnValidNewPublicationSampleWithFactory () throws InstanceAlreadyExistsException {
+
+        // Arrange
+        PublicationSample publicationSampleDouble = mock(PublicationSample.class);
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        User ownerDouble = mock(User.class);
+        PublicationStatus status = PublicationStatus.READ;
+        Edition eDouble = mock(Edition.class);
+        Condition condition = Condition.LIKE_NEW;
+
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+        PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository(factory);
+
+
+        when(factory.create(bdDouble, ownerDouble, status, eDouble, condition)).thenReturn(publicationSampleDouble);
+
+        // Act
+        PublicationSample result = publicationSampleRepository.createAndAdd(bdDouble, ownerDouble, status, eDouble, condition);
+
+        // Assert
+        verify(factory).create(bdDouble, ownerDouble, status, eDouble, condition);
+        assertEquals(publicationSampleDouble, result);
+        assertTrue(publicationSampleRepository.getAllPublications().contains(publicationSampleDouble));
+        assertEquals(1, publicationSampleRepository.getAllPublications().size());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenBibliographicalDataIsNull() {
+        // Arrange
+
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+
+        User user = mock(User.class);
+        Edition edition = mock(Edition.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        null,
+                        user,
+                        PublicationStatus.READ,
+                        edition,
+                        Condition.NEW
+                )
+        );
+
+        verify(factory, never()).create(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenUserIsNull() {
+        // Arrange
+
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+
+        BibliographicalData bd = mock(BibliographicalData.class);
+        Edition edition = mock(Edition.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        bd,
+                        null,
+                        PublicationStatus.READ,
+                        edition,
+                        Condition.NEW
+                )
+        );
+
+        verify(factory, never()).create(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenStatusIsNull() {
+        // Arrange
+
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+
+        BibliographicalData bd = mock(BibliographicalData.class);
+        User user = mock(User.class);
+        Edition edition = mock(Edition.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        bd,
+                        user,
+                        null,
+                        edition,
+                        Condition.NEW
+                )
+        );
+
+        verify(factory, never()).create(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenEditionIsNull() {
+        // Arrange
+
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+
+        BibliographicalData bd = mock(BibliographicalData.class);
+        User user = mock(User.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        bd,
+                        user,
+                        PublicationStatus.READ,
+                        null,
+                        Condition.NEW
+                )
+        );
+
+        verify(factory, never()).create(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenConditionIsNull() {
+        // Arrange
+
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+
+        BibliographicalData bd = mock(BibliographicalData.class);
+        User user = mock(User.class);
+        Edition edition = mock(Edition.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        bd,
+                        user,
+                        PublicationStatus.READ,
+                        edition,
+                        null
+                )
+        );
+
+        verify(factory, never()).create(any(), any(), any(), any(), any());
+    }
+
+
+
+
+
+
 }

@@ -1,9 +1,14 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData;
+import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.User;
 import TOPSECRET.repository.PublicationSampleRepository;
+
+import javax.management.InstanceAlreadyExistsException;
 
 public class US010ToRegisterNewPublicationCtrl {
 
@@ -21,10 +26,10 @@ public class US010ToRegisterNewPublicationCtrl {
 
     //User is part of Publication's attributes and any User can register a Publication (i.e., no need to be Admin)
 
-    public boolean createAndAddPublication(
+    public PublicationSample createAndAddPublication(
             BibliographicalData bibliographicalData1,
             User user1, PublicationStatus publicationStatus1, Edition _edition, Condition condition
-    ) {
+    ) throws InstanceAlreadyExistsException {
 
         return _publicationRepository.createAndAdd(bibliographicalData1,
                 user1, publicationStatus1, _edition, condition);
