@@ -3,7 +3,6 @@ package TOPSECRET.repository;
 import TOPSECRET.controller.US019ToPubliclyShareCollectionOfPublicationsController;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
-import TOPSECRET.dto.CollectionOfPublicationsDTO;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class CollectionOfPublicationsRepositoryTest {
+class CollectionOfPublicationsRepositoryDependenciesTest {
 
     private CollectionOfPublicationsRepository repository;
 

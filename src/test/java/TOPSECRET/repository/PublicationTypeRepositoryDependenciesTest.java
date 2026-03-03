@@ -21,7 +21,7 @@ import java.util.List;
  * </ul>
  */
 
-public class PublicationTypeRepositoryTest {
+public class PublicationTypeRepositoryDependenciesTest {
 
     /**
      * Publication type sample parameters to be used for tests

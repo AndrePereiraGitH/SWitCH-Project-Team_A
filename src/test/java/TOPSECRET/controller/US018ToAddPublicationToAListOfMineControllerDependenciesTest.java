@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>AAA (Arrange-Act-Assert) pattern is followed in each test.</li>
  * </ul>
  */
-class US018ToAddPublicationToAListOfMineControllerTest {
+class US018ToAddPublicationToAListOfMineControllerDependenciesTest {
 
     // =====================================================
     // HELPERS (setup only)

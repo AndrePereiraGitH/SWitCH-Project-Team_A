@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -284,4 +285,115 @@ class PublicationSampleRepositoryTest {
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findItemsByListingAndPublisher(listings, publisher1Double));
     }
+
+    // US018 STARTS MOCK TESTS -------------------------------------------------------
+
+    /**
+     * Ensures exception is thrown when library is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenLibraryIsNull() {
+
+        // ARRANGE
+        PublicationSampleRepository sut = new PublicationSampleRepository();
+        PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.PublicationSampleDtoToDomain(null, dto));
+    }
+
+    /**
+     * Ensures exception is thrown when DTO is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenDtoIsNull() {
+
+        // ARRANGE
+        PublicationSampleRepository sut = new PublicationSampleRepository();
+        Library library = mock(Library.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.PublicationSampleDtoToDomain(library, null));
+    }
+
+    /**
+     * Ensures correct PublicationSample is returned
+     * when DTO matches publication in user's library.
+     */
+    @Test
+    void shouldReturnMatchingPublicationSample() {
+
+        // ARRANGE
+        PublicationSampleRepository sut = new PublicationSampleRepository();
+
+        Library library = mock(Library.class);
+        PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
+
+        PublicationSample publication = mock(PublicationSample.class);
+        BibliographicalData bd = mock(BibliographicalData.class);
+        Edition edition = mock(Edition.class);
+        User owner = mock(User.class);
+
+        when(library.getAllPublications()).thenReturn(List.of(publication));
+
+        when(publication.getBibliographicalData()).thenReturn(bd);
+        when(publication.getEdition()).thenReturn(edition);
+        when(publication.getOwner()).thenReturn(owner);
+
+        when(bd.getTitle()).thenReturn("Clean Code");
+        when(edition.getEditionNumber()).thenReturn("1");
+        when(owner.getUserName()).thenReturn("john");
+
+        when(dto.getTitle()).thenReturn("Clean Code");
+        when(dto.getEditionNumber()).thenReturn("1");
+        when(dto.getOwnerUsername()).thenReturn("john");
+
+        // ACT
+        PublicationSample result =
+                sut.PublicationSampleDtoToDomain(library, dto);
+
+        // ASSERT
+        assertEquals(publication, result);
+    }
+
+    /**
+     * Ensures exception is thrown when
+     * publication does not exist in library.
+     */
+    @Test
+    void shouldThrowExceptionWhenPublicationNotFound() {
+
+        // ARRANGE
+        PublicationSampleRepository sut = new PublicationSampleRepository();
+
+        Library library = mock(Library.class);
+        PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
+
+        PublicationSample publication = mock(PublicationSample.class);
+        BibliographicalData bd = mock(BibliographicalData.class);
+        Edition edition = mock(Edition.class);
+        User owner = mock(User.class);
+
+        when(library.getAllPublications()).thenReturn(List.of(publication));
+
+        when(publication.getBibliographicalData()).thenReturn(bd);
+        when(publication.getEdition()).thenReturn(edition);
+        when(publication.getOwner()).thenReturn(owner);
+
+        when(bd.getTitle()).thenReturn("Different");
+        when(edition.getEditionNumber()).thenReturn("2");
+        when(owner.getUserName()).thenReturn("mary");
+
+        when(dto.getTitle()).thenReturn("Clean Code");
+        when(dto.getEditionNumber()).thenReturn("1");
+        when(dto.getOwnerUsername()).thenReturn("john");
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.PublicationSampleDtoToDomain(library, dto));
+    }
+
+    // ENDS --------------------------------------------------------------------------
 }
