@@ -84,7 +84,20 @@ public class PublicationSample {
     }
     //US021 End
 
-    // US023 Start ----------------------------------------------------------------------------------------------------
+    /**
+     * Retrieves the full set of details associated with this publication.
+     *
+     * <p>This method returns a {@link PublicationDetails} record containing
+     * all relevant descriptive and ownership information of the publication,
+     * including its bibliographical data, owner, publication status, edition,
+     * and physical condition. It is typically used when a complete snapshot
+     * of the publication's state is required for display, transfer, or
+     * business logic operations.</p>
+     *
+     * @return a new {@link PublicationDetails} instance populated with this
+     *         publication's bibliographical data, owner, status, edition,
+     *         and condition.
+     */
 
     public PublicationSample.PublicationDetails getDetails() {
         return new PublicationSample.PublicationDetails(
@@ -95,6 +108,22 @@ public class PublicationSample {
                 _condition
         );
     }
+
+    /**
+     * Immutable data structure representing the complete details of a publication.
+     *
+     * <p>This record aggregates all key attributes that describe a publication,
+     * including its bibliographical metadata, the user who owns it, its current
+     * publication status, the edition being referenced, and its physical condition.
+     * It is used as a safe and concise data carrier across the system whenever
+     * publication information needs to be transferred or exposed.</p>
+     *
+     * @param bibliographicalData the bibliographical metadata of the publication
+     * @param owner               the user who owns the publication
+     * @param publicationStatus   the current status of the publication
+     * @param edition             the edition associated with the publication
+     * @param condition           the physical condition of the publication
+     */
 
     public record PublicationDetails(
             BibliographicalData bibliographicalData,
