@@ -267,5 +267,62 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 )
         );
     }
+
+    @Test
+    void shouldThrowWhenGenreRepositoryIsNull() {
+
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+        AppraisalEntityRepository appraisalRepo =
+                new AppraisalEntityRepository(createGenreRepository(), pubRepo);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new US004ToRegisterAppraisalEntityController(
+                        null,
+                        pubRepo,
+                        appraisalRepo
+                )
+        );
+
+        assertEquals("GenreRepository cannot be null.", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenPublicationTypeRepositoryIsNull() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        AppraisalEntityRepository appraisalRepo =
+                new AppraisalEntityRepository(genreRepo, createPublicationTypeRepository());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new US004ToRegisterAppraisalEntityController(
+                        genreRepo,
+                        null,
+                        appraisalRepo
+                )
+        );
+
+        assertEquals("PublicationTypeRepository cannot be null.", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenAppraisalEntityRepositoryIsNull() {
+
+        GenreRepository genreRepo = createGenreRepository();
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new US004ToRegisterAppraisalEntityController(
+                        genreRepo,
+                        pubRepo,
+                        null
+                )
+        );
+
+        assertEquals("AppraisalEntityRepository cannot be null.", ex.getMessage());
+    }
+
 }
 

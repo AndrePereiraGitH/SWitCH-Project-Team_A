@@ -27,7 +27,7 @@ class CollectionOfPublicationsRepositoryTest {
     }
 
     // HELPER
-    private Publication createValidPublication() {
+    private PublicationSample createValidPublication() {
 
         Country country = new Country("PORTUGAL");
 
@@ -89,14 +89,15 @@ class CollectionOfPublicationsRepositoryTest {
         EditionFactory editionFactory = new EditionFactory();
         Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
-        return new Publication(
+        return new PublicationSample(
                 bibliographicalData,
-                publicationType,
                 user,
                 PublicationStatus.READING,
+//                publicationType,
  //               "First Edition",
                 edition,
-                Code.fromIsbn13("9783161484100")
+                Condition.NEW
+//                Code.fromIsbn13("9783161484100")
         );
     }
 
@@ -497,7 +498,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void collectionDTOToDomain_shouldReturnMatchingCollection_US018() throws Exception {
 
-        // Arrange
+        // ARRANGE
         User owner = createValidUser();
         Genre genre = new Genre("Fiction");
 
@@ -513,11 +514,11 @@ class CollectionOfPublicationsRepositoryTest {
                         owner.getUserName()
                 );
 
-        // Act
+        // ACT
         CollectionOfPublications result =
                 repository.collectionDTOToDomain(dto);
 
-        // Assert
+        // ASSERT
         assertEquals(collection, result);
     }
 
@@ -529,7 +530,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void collectionDTOToDomain_shouldThrowWhenNotFound_US018() {
 
-        // Arrange
+        // ARRANGE
         CollectionOfPublicationsDTO_US018 fakeDTO =
                 new CollectionOfPublicationsDTO_US018(
                         "NonExisting",
@@ -537,10 +538,127 @@ class CollectionOfPublicationsRepositoryTest {
                         "validUser"
                 );
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(InstanceNotFoundException.class,
                 () -> repository.collectionDTOToDomain(fakeDTO));
     }
 
+
+    @Test
+    void addPublicationToCollection_shouldReturnFalse_whenUserIsNull_US018() {
+
+        boolean result = repository.addPublicationToCollection(
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    void addPublicationToCollection_shouldReturnFalse_whenUserIsNotOwner_US018() {
+
+        User user = createValidUser();
+        User otherUser = new User(
+                "otherUser",
+                new Contact("913333333", "351", null, null),
+                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
+                UserRole.NORMAL_USER
+        );
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Favorites", new Genre("Fiction"), otherUser);
+
+        Library library = new Library("Test", user);
+
+        PublicationSample publication = createValidPublication();
+        library.addPublication(publication);
+
+        boolean result = repository.addPublicationToCollection(
+                user,
+                library,
+                collection,
+                publication
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    void addPublicationToCollection_shouldReturnFalse_whenLibraryDoesNotBelongToUser_US018() {
+
+        User user = createValidUser();
+        User otherUser = new User(
+                "otherUser",
+                new Contact("913333333", "351", null, null),
+                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
+                UserRole.NORMAL_USER
+        );
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+
+        Library library = new Library("Test", otherUser);
+
+        PublicationSample publication = createValidPublication();
+        library.addPublication(publication);
+
+        boolean result = repository.addPublicationToCollection(
+                user,
+                library,
+                collection,
+                publication
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    void addPublicationToCollection_shouldReturnFalse_whenPublicationNotInLibrary_US018() {
+
+        User user = createValidUser();
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+
+        Library library = new Library("Test", user);
+
+        PublicationSample publication = createValidPublication();
+
+        boolean result = repository.addPublicationToCollection(
+                user,
+                library,
+                collection,
+                publication
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    void addPublicationToCollection_shouldReturnTrue_whenAllValid_US018() {
+
+        User user = createValidUser();
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+
+        Library library = new Library("Test", user);
+
+        PublicationSample publication = createValidPublication();
+        library.addPublication(publication);
+
+        boolean result = repository.addPublicationToCollection(
+                user,
+                library,
+                collection,
+                publication
+        );
+
+        assertTrue(result);
+        assertEquals(1, collection.getPublications().size());
+    }
 
 }

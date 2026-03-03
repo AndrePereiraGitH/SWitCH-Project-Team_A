@@ -177,7 +177,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
 
     @Test
     void shouldThrowWhenGetUserCollectionsUserIsNull() {
-        // ACT + ASSER
+        // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () -> controller.getUserCollections(null));
     }
 
@@ -226,6 +226,8 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () -> controller.getPublicationsForCollection(null));
     }
+
+
 
     // =====================================================
     // addPublicationToCollection(CollectionDTO, List<PublicationDTO>)

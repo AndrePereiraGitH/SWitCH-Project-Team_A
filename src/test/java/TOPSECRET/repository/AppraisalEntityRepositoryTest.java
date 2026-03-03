@@ -214,7 +214,7 @@ class AppraisalEntityRepositoryTest {
      * Verifies exception when Genre list is null.
      */
     @Test
-    void shouldThrowExceptionWhenGenreListIsNull() {
+    void shouldThrowExceptionWhenGenreListIsNull() throws IllegalArgumentException {
 
         GenreRepository genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
@@ -258,7 +258,7 @@ class AppraisalEntityRepositoryTest {
      * Verifies exception when PublicationType list is null.
      */
     @Test
-    void shouldThrowExceptionWhenPublicationTypeListIsNull() {
+    void shouldThrowExceptionWhenPublicationTypeListIsNull() throws IllegalArgumentException  {
 
         GenreRepository genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
@@ -280,7 +280,7 @@ class AppraisalEntityRepositoryTest {
      * Verifies exception when PublicationType list is empty.
      */
     @Test
-    void shouldThrowExceptionWhenPublicationTypeListIsEmpty() {
+    void shouldThrowExceptionWhenPublicationTypeListIsEmpty() throws IllegalArgumentException {
 
         GenreRepository genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Validates constructor rules, equals/hashCode,
  * getters and full information.
  */
-class AppraisalEntityTest {
+class AppraisalEntityDependenciesTest {
 
     // =========================
     // HELPERS
@@ -246,6 +246,48 @@ class AppraisalEntityTest {
         assertEquals(false, result);
     }
 
+    @Test
+    void equalsShouldReturnTrueWhenSameInstance() {
+
+        // ARRANGE
+        AppraisalEntity entity =
+                new AppraisalEntity("Entity",
+                        createValidContact(),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
+
+        // ASSERT
+        assertTrue(entity.equals(entity));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparedWithNull() {
+
+        // ARRANGE
+        AppraisalEntity entity =
+                new AppraisalEntity("Entity",
+                        createValidContact(),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
+
+        // ASSERT
+        assertFalse(entity.equals(null));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparedWithDifferentClass() {
+
+        // ARRANGE
+        AppraisalEntity entity =
+                new AppraisalEntity("Entity",
+                        createValidContact(),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
+
+        // ASSERT
+        assertFalse(entity.equals("NotAnEntity"));
+    }
+
     // =========================
     // HASHCODE
     // =========================
@@ -274,6 +316,43 @@ class AppraisalEntityTest {
 
         // ASSERT
         assertEquals(hash1, hash2);
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentWhenObjectsAreDifferent() {
+
+        // ARRANGE
+        AppraisalEntity entity1 =
+                new AppraisalEntity("Entity A",
+                        createValidContact(),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
+
+        AppraisalEntity entity2 =
+                new AppraisalEntity("Entity B",
+                        createValidContact(),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
+
+        // ASSERT
+        assertNotEquals(entity1.hashCode(), entity2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldBeConsistent() {
+
+        // ARRANGE
+        AppraisalEntity entity =
+                new AppraisalEntity("Entity",
+                        createValidContact(),
+                        createPublicationTypeList("Standard"),
+                        createGenreList("Fiction"));
+
+        int first = entity.hashCode();
+        int second = entity.hashCode();
+
+        // ASSERT
+        assertEquals(first, second);
     }
 
     // =========================

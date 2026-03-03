@@ -388,4 +388,58 @@ class PublicationSampleRepositoryDependenciesTest {
         assertEquals(publication1, result);
     }
 
+    @Test
+    void publicationSampleDtoToDomain_shouldThrowException_whenLibraryIsNull_US018() {
+
+        // ARRANGE
+        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>());
+
+        PublicationSampleDTO_US018 dto =
+                new PublicationSampleDTO_US018("Title", "1", "user");
+
+        // ACT + ARRANGE
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.PublicationSampleDtoToDomain(null, dto)
+        );
+    }
+
+    @Test
+    void publicationSampleDtoToDomain_shouldThrowException_whenDtoIsNull_US018() {
+
+        // ARRANGE
+        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>());
+
+        Library library = new Library("TestLibrary", publication1.getOwner());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.PublicationSampleDtoToDomain(library, null)
+        );
+    }
+
+    @Test
+    void publicationSampleDtoToDomain_shouldThrowException_whenPublicationNotFound_US018() {
+
+        // ARRANGE
+        List<PublicationSample> list = new ArrayList<>();
+        list.add(publication1);
+
+        PublicationSampleRepository repo = new PublicationSampleRepository(list);
+
+        Library library = new Library("TestLibrary", publication1.getOwner());
+
+        PublicationSampleDTO_US018 dto =
+                new PublicationSampleDTO_US018(
+                        publication1.getBibliographicalData().getTitle(),
+                        publication1.getEdition().getEditionNumber(),
+                        publication1.getOwner().getUserName()
+                );
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.PublicationSampleDtoToDomain(library, dto)
+        );
+    }
+
+
 }

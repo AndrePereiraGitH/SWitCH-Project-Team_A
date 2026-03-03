@@ -1,6 +1,5 @@
-package TOPSECRET.domain.Factory;
+package TOPSECRET.domain;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * Verifies that Factory correctly creates AppraisalEntity.
  */
-class AppraisalEntityFactoryTest {
+class AppraisalEntityFactoryDependenciesTest {
 
     /**
      * Verifies that factory creates a valid AppraisalEntity.
