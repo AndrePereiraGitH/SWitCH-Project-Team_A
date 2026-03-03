@@ -1,45 +1,53 @@
 @startuml
-title US017 - Create Private Collection Of Publications with a name and a set a genre
-
+title US017 - Create Private Collection Of Publications with a name and a genre
 
 ' _____________________
 ' DOMAIN
 ' _____________________
 
 class User {
-  - username : String
+  - _userName : String
 }
 
 class Genre {
-  - genreType : String
+  - _genreType : String
+  + getTitle() : String
 }
 
 class CollectionOfPublications {
-  - collectionName : String
-  - genre : Genre
-  - isPrivate : boolean
-  - publications : List<Publication>
+  - _collectionName : String
+  - _collectionGenre : Genre
+  - _owner : User
+  - _isPrivate : boolean
+  - _collectionOfPublications : List<PublicationSample>
+  + CollectionOfPublications(name : String, genre : Genre, user : User)
+  + getCollectionName() : String
+  + getCollectionGenre() : Genre
+  + getOwner() : User
+  + getIsPrivate() : boolean
 }
 
-class Publication {
+class PublicationSample {
 }
 
 User "1" --> "*" CollectionOfPublications : owns
 CollectionOfPublications "1" --> "1" Genre : has
-CollectionOfPublications "1" --> "*" Publication : contains
+CollectionOfPublications "1" --> "*" PublicationSample : contains
 
 ' ______________________
 ' APPLICATION
 ' ______________________
 
-class CreateCollectionOfPublicationsController {
-  + getAllGenres() : List<GenreDTO>
-  + createAndAddCollectionOfPublications(name : String, genre : Genre, user : User) : CollectionOfPublications
+class US017ToCreateCollectionOfPublicationsController {
+  - genreRepository : GenreRepository
+  - collectionRepository : CollectionOfPublicationsRepository
+  + getAllGenres() : List<GenreDTO_US017>
+  + createCollection(name : String, genre : Genre, user : User) : CollectionOfPublications
 }
 
-class GenreDTO {
-  - name : String
-  + {static} toDTO(genre : Genre) : GenreDTO
+class GenreDTO_US017 {
+  + name : String
+  + {static} toDTO(genre : Genre) : GenreDTO_US017
 }
 
 ' ___________________
@@ -51,17 +59,29 @@ class GenreRepository {
 }
 
 class CollectionOfPublicationsRepository {
-  + createIfNotExists(user : User, name : String, genre : Genre,\n isPrivate : boolean) : CollectionOfPublications
+  - _collectionOfPublicationsList : List<CollectionOfPublications>
+  + createIfNotExists(user : User, name : String, genre : Genre) : CollectionOfPublications
+}
+
+' ___________________
+' FACTORY
+' ___________________
+
+class FactoryCollectionOfPublications {
+  + create(name : String, genre : Genre, user : User) : CollectionOfPublications
 }
 
 ' _____________________
 ' DEPENDENCIES
-' ____________________
+' _____________________
 
-CreateCollectionOfPublicationsController ..> GenreRepository : uses
-CreateCollectionOfPublicationsController ..> GenreDTO : uses
-CreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
-CollectionOfPublicationsRepository ..> CollectionOfPublications : uses
-GenreDTO ..> Genre : converts
+US017ToCreateCollectionOfPublicationsController ..> GenreRepository : uses
+US017ToCreateCollectionOfPublicationsController ..> GenreDTO_US017 : uses
+US017ToCreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
+
+CollectionOfPublicationsRepository --> FactoryCollectionOfPublications : has
+FactoryCollectionOfPublications ..> CollectionOfPublications : creates
+
+GenreDTO_US017 ..> Genre : converts
 
 @enduml

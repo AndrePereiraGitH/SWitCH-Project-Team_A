@@ -1,25 +1,50 @@
 @startuml
 title US003 - Register Genre to Official Genre List
 
-class ToRegisterGenreController {
-  +registerGenre(genreType: String): Genre
-}
-
-class GenreRepository {
-
-  +createAndAddGenre(genreType: String): Genre
-  -exists(genre: Genre): boolean
-}
+' _____________________
+' DOMAIN
+' _____________________
 
 class Genre {
-  -_genreType: String
-  +getName(): String
+  - _genreType : String
+  + getTitle() : String
+  + getGenreType() : String
 }
 
+class GenreFactory {
+  + createGenre(genreType : String) : Genre
+}
 
-ToRegisterGenreController "1" -.-> "1" GenreRepository : uses
-GenreRepository "1" --> "_genres *" Genre : stores
-GenreRepository "1" -.-> "*" Genre : creates
+GenreFactory ..> Genre : creates
 
+' ______________________
+' APPLICATION
+' ______________________
+
+class US003ToRegisterGenreController {
+  - _genreRepository : GenreRepository
+  + registerGenre(genreType : String) : Genre
+}
+
+' ___________________
+' PERSISTENCE
+' ___________________
+
+class GenreRepository {
+  - _genres : List<Genre>
+  - _genreFactory : GenreFactory
+  + createAndAddGenre(genreType : String) : Genre
+  + getAllGenres() : List<Genre>
+  - exists(genre : Genre) : boolean
+}
+
+GenreRepository "1" --> "*" Genre : stores
+
+' _____________________
+' DEPENDENCIES
+' _____________________
+
+US003ToRegisterGenreController ..> GenreRepository : uses
+GenreRepository --> GenreFactory : has
 
 @enduml

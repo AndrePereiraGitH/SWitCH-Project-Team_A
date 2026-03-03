@@ -75,7 +75,7 @@ Buyer "1  " ----- "  1..* " DirectSale : > buys through
 DirectSale "0..1" --- "0..1" Transaction : > can result in
 
 Auction "   1  " -- "*" Bid : > may have
-Auction "0..1" -- "0..1" Transaction : > can result in
+Auction "0..1" -- "0..1" Transaction : > auction winner
 Bid "*" -- "                  1" Bidder : > offered by
 
 Transaction "1" -- "1 " LogisticsServices : > shipped by
