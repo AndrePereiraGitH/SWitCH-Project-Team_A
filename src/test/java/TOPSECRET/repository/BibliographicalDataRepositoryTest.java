@@ -1,17 +1,19 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class BibliographicalDataRepositoryTest {
 
@@ -43,8 +45,10 @@ class BibliographicalDataRepositoryTest {
         original.add(bd1Double);
         original.add(bd2Double);
 
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
         // Act
-        BibliographicalDataRepository repo = new BibliographicalDataRepository(original);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory, original);
         original.add(bd3Double);                                                           // Modifies the original list
 
         // Assert
@@ -55,9 +59,10 @@ class BibliographicalDataRepositoryTest {
     void constructor_ThrowsExceptionWhenListIsNull() {
         // Arrange
         List<BibliographicalData> nullList = null;
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> new BibliographicalDataRepository(nullList));
+        assertThrows(NullPointerException.class, () -> new BibliographicalDataRepository(factory, nullList));
 
     }
 
@@ -65,9 +70,10 @@ class BibliographicalDataRepositoryTest {
     void constructor_AllowsEmptyList() {
         // Arrange
         List<BibliographicalData> empty = new ArrayList<>();
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
         // Act
-        BibliographicalDataRepository repo = new BibliographicalDataRepository(empty);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory, empty);
 
         // Assert
         assertTrue(repo.getAllPublicationsBD().isEmpty());
@@ -79,7 +85,8 @@ class BibliographicalDataRepositoryTest {
     void getAllPublicationsBD_ReturnsAllItems() {
         // Arrange
         List<BibliographicalData> original = List.of(bd1Double, bd2Double);
-        BibliographicalDataRepository repo = new BibliographicalDataRepository(original);
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory, original);
 
         // Act
         List<BibliographicalData> result = repo.getAllPublicationsBD();
@@ -94,7 +101,8 @@ class BibliographicalDataRepositoryTest {
     void getAllPublicationsBD_ReturnsUnmodifiableList() {
         // Arrange
         List<BibliographicalData> original = List.of(bd1Double, bd2Double);
-        BibliographicalDataRepository repo = new BibliographicalDataRepository(original);
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory, original);
 
         // Act
         List<BibliographicalData> result = repo.getAllPublicationsBD();
@@ -107,7 +115,8 @@ class BibliographicalDataRepositoryTest {
     void getAllPublicationsBD_ReturnsNewCopyEachTime() {
         // Arrange
         List<BibliographicalData> original = List.of(bd1Double, bd2Double);
-        BibliographicalDataRepository repo = new BibliographicalDataRepository(original);
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory, original);
 
         // Act
         List<BibliographicalData> first = repo.getAllPublicationsBD();
@@ -116,4 +125,140 @@ class BibliographicalDataRepositoryTest {
         // Assert
         assertNotSame(first, second);
     }
+
+    //============================================================
+    // TESTING - CREATE AND ADD WITH FACTORY
+    @Test
+    void shouldReturnValidNewBibliographicalDataWithFactory () throws InstanceAlreadyExistsException {
+
+        // Arrange
+        BibliographicalData BibliographicalDataDouble = mock(BibliographicalData.class);
+        String title = "Senhor do Anéis";
+        Author authorDouble = mock(Author.class);
+        List<Author> authors = new ArrayList<>();
+        authors.add(authorDouble);
+        List<Genre> genres = new ArrayList<>();
+        Genre genreDouble = mock(Genre.class);
+        genres.add(genreDouble);
+        String chunksOfText = "this describes the book or magazine";
+
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository bdRepository = new BibliographicalDataRepository(factory);
+
+
+        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText)).thenReturn(BibliographicalDataDouble);
+
+        // Act
+        BibliographicalData result = bdRepository.createAndAdd(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
+
+        // Assert
+        verify(factory).create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
+        assertEquals(BibliographicalDataDouble, result);
+        assertTrue(bdRepository.getAllPublicationsBD().contains(BibliographicalDataDouble));
+        assertEquals(1, bdRepository.getAllPublicationsBD().size());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenTitleIsNull() {
+
+        // Arrange
+
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory);
+
+        List<Author> authors = List.of(mock(Author.class));
+        List<Genre> genres = List.of(mock(Genre.class));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        null,
+                        authors,
+                        Locale.ENGLISH,
+                        LocalDate.of(2010, 10, 10),
+                        genres,
+                        "Some text"
+                )
+        );
+
+        verify(factory, never())
+                .create(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenAuthorsIsNull() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory);
+
+        List<Genre> genres = List.of(mock(Genre.class));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        "Title",
+                        null,
+                        Locale.ENGLISH,
+                        LocalDate.of(2010, 10, 10),
+                        genres,
+                        "Some text"
+                )
+        );
+
+        verify(factory, never())
+                .create(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenGenresIsNull() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory);
+
+        List<Author> authors = List.of(mock(Author.class));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        "Title",
+                        authors,
+                        Locale.ENGLISH,
+                        LocalDate.of(2010, 10, 10),
+                        null,
+                        "Some text"
+                )
+        );
+
+        verify(factory, never())
+                .create(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenChunksOfTextIsNull() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        BibliographicalDataRepository repo = new BibliographicalDataRepository(factory);
+
+        List<Author> authors = List.of(mock(Author.class));
+        List<Genre> genres = List.of(mock(Genre.class));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(
+                        "Title",
+                        authors,
+                        Locale.ENGLISH,
+                        LocalDate.of(2010, 10, 10),
+                        genres,
+                        null
+                )
+        );
+
+        verify(factory, never())
+                .create(any(), any(), any(), any(), any(), any());
+    }
+
 }
