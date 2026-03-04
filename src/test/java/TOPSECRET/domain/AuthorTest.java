@@ -68,9 +68,9 @@ class AuthorTest {
         assertThrows(IllegalArgumentException.class, () -> new Author(profile, "   "));
     }
 
-// ========================================
-// CONSTRUCTOR TESTS - Secondary Constructor
-// ========================================
+    // ========================================
+    // CONSTRUCTOR TESTS - Secondary Constructor
+    // ========================================
 
     @Test
     void shouldCreateAuthorUsingSecondaryConstructor() {
@@ -104,9 +104,9 @@ class AuthorTest {
         );
     }
 
-// ========================================
-// EQUALS TESTS
-// ========================================
+    // ========================================
+    // EQUALS TESTS
+    // ========================================
 
     @Test
     void shouldBeEquals_whenSameProfileAndBio() {
