@@ -73,7 +73,7 @@ class US002ToRegisterPubTypeControllerTest {
     }
 
     /**
-     *
+     * Registering a duplicate publication type should create, but not add
      */
     @Test
     void registerDuplicatePublicationTypeShouldCreateThenThrowWhenAdding()

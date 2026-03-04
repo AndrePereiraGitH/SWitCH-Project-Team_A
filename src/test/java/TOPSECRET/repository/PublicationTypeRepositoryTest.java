@@ -9,8 +9,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test with mocks for publication type repository
+ * Used mock for FactoryPublicationType
+ */
 class PublicationTypeRepositoryTest {
 
+    /**
+     * Initial setup for tests
+     * Creation of PublicationTypeRepository object
+     * Creation of {@link FactoryPublicationType} mock
+     */
     FactoryPublicationType factory;
     PublicationTypeRepository repo;
 
@@ -21,6 +30,9 @@ class PublicationTypeRepositoryTest {
         repo = new PublicationTypeRepository(factory);
     }
 
+    /**
+     * Creating publication types should delegate creating to factory
+     */
     @Test
     void createPublicationTypeDelegatesToFactory()
     {
@@ -35,8 +47,13 @@ class PublicationTypeRepositoryTest {
         PublicationType actual = repo.create(mediaFormat, typeOfBinding, details);
 
         assertEquals(expected, actual);
+        verify(factory,  times(1)).create(mediaFormat, typeOfBinding, details);
+        verifyNoMoreInteractions(factory);
     }
 
+    /**
+     * Creating an invalid publication type should throw when creating
+     */
     @Test
     void invalidPublicationShouldThrowWhenCreating()
     {
