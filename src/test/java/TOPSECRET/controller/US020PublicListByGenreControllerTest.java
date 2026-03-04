@@ -6,47 +6,61 @@ import TOPSECRET.dto.CollectionOfPublicationsDTO;
 import TOPSECRET.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link US020PublicListByGenreController}.
+ */
+
 class US020PublicListByGenreControllerTest {
 
+    /**
+     * Initial setup for tests
+     * Creates mocks for {@link CollectionOfPublicationsRepository}. and {@link GenreRepository}.
+     */
     CollectionOfPublicationsRepository collectionRepo;
     US020PublicListByGenreController controller;
-    GenreRepository genreRepo = new GenreRepository(new ArrayList<>(), new GenreFactory());
+    GenreRepository genreRepo;
 
     @BeforeEach
     void setup() {
         collectionRepo = mock(CollectionOfPublicationsRepository.class);
+        genreRepo = mock(GenreRepository.class);
         controller = new US020PublicListByGenreController(genreRepo, collectionRepo);
     }
 
+    /**
+     * Ensures genre repo returns all genres
+     */
     @Test
-    void shouldReturnAllGenresFromGenreRepository()
-    {
-        Genre genre1 = genreRepo.createAndAddGenre("Sci-Fi");
-        Genre genre2 = genreRepo.createAndAddGenre("Action");
-        Genre genre3 = genreRepo.createAndAddGenre("History");
+    void getAllGenresDelegatesToGenreRepoAndReturnsResult() {
 
-        List<Genre> genreList = controller.getGenres();
+        List<Genre> expected = List.of(new Genre("Action"), new Genre("Drama"));
 
-        assertNotNull(genreList);
-        assertEquals(3, genreList.size());
-        assertEquals(genre1, genreList.get(0));
-        assertEquals(genre2, genreList.get(1));
-        assertEquals(genre3, genreList.get(2));
+        when(genreRepo.getAllGenres()).thenReturn(expected);
+
+        List<Genre> result = controller.getGenres();
+
+        assertSame(expected, result);
+        verify(genreRepo).getAllGenres();
     }
 
+    /**
+     * If genre is null, controller should throw exception
+     */
     @Test
-    void shouldThrownWhenGenreIsNull()
+    void shouldThrowWhenGenreIsNull()
     {
         assertThrows(IllegalArgumentException.class, () -> controller.getPublicListsByGenre(null)); // Checks if exception is thrown when genre is null
     }
 
+    /**
+     * Controller delegates to collection repo, and should return list
+     */
     @Test
-    void getPublicListsByGenre_delegatesToCollectionRepo_andReturnsResult()
+    void getPublicListsByGenreDelegatesToCollectionRepoAndReturnsResult()
     {
         Genre desiredGenre = new Genre("Action");
 
@@ -58,6 +72,21 @@ class US020PublicListByGenreControllerTest {
         List<CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(desiredGenre);
 
         assertEquals(expected, result);
+    }
+
+    /**
+     * Should return empty list when no public lists exist in collection repo
+     */
+    @Test
+    void shouldReturnEmptyListWhenNoListsExist()
+    {
+        Genre desiredGenre = new Genre("Sci-Fi");
+
+        when(collectionRepo.findPublicByGenre(desiredGenre)).thenReturn(List.of());
+
+        List<CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(desiredGenre);
+
+        assertTrue(result.isEmpty());
     }
 
 }

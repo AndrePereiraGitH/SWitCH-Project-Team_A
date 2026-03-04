@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.controller.US019ToPubliclyShareCollectionOfPublicationsController;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.dto.CollectionOfPublicationsDTO;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import org.junit.jupiter.api.BeforeEach;
@@ -764,6 +765,16 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         repository.addCollectionToRepo(c4);
 
         assertEquals(2, repository.findPublicByGenre(desiredGenre).size()); // checks if the function correctly found the 2 public lists of the desired genre
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNoPublicListsExist() {
+
+        Genre desiredGenre = new Genre("Action");
+
+        List<CollectionOfPublicationsDTO> result = repository.findPublicByGenre(desiredGenre);
+
+        assertTrue(result.isEmpty());
     }
 
 
