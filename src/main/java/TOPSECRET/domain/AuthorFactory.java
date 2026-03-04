@@ -13,7 +13,7 @@ public class AuthorFactory {
      * Currently, it trims the {@code name} and {@code biography} fields
      * if they are not {@code null}.
      */
-    public Author createAuthor(String name, Country country, LocalDate dateOfBirth, String biography) {
+    public Author create(String name, Country country, LocalDate dateOfBirth, String biography) {
         return new Author(name == null ? null : name.trim(), country, dateOfBirth, biography == null ? null : biography.trim());
     }
     public Author createAuthorWithExistingProfile(Profile profile, String biography) {
