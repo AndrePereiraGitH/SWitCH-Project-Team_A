@@ -8,7 +8,6 @@ import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.GenreRepository;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
+class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
     private AuctionFactory auctionFactory;
 
@@ -29,8 +28,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         genreRepository.createAndAddGenre("Fantasy");
         genreRepository.createAndAddGenre("Romance");
 
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(auctionFactory),
                         genreRepository
                 );
@@ -47,8 +46,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void getListOfItemsOnAuctionNullGenreThrowsException() {
         // Arrange
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(auctionFactory),
                         new GenreRepository(new ArrayList<>(), new GenreFactory())
                 );
@@ -64,8 +63,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         // Arrange
         Genre fantasy = new Genre("Fantasy");
 
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
                         new AuctionRepository(auctionFactory),
                         new GenreRepository(new ArrayList<>(), new GenreFactory())
                 );
@@ -86,8 +85,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
         GenreRepository genreRepoMock = mock(GenreRepository.class);
 
-        GetListOfItemsOnAuctionOfGivenGenreController controller =
-                new GetListOfItemsOnAuctionOfGivenGenreController(
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
                         auctionRepoMock,
                         genreRepoMock
                 );
@@ -127,8 +126,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
 //        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
 //
-//        GetListOfItemsOnAuctionOfGivenGenreController controller =
-//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
 //                        auctionRepository,
 //                        new GenreRepository(new ArrayList<>())
 //                );
@@ -152,8 +151,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(romance));
 //
-//        GetListOfItemsOnAuctionOfGivenGenreController controller =
-//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
 //                        auctionRepository,
 //                        new GenreRepository(new ArrayList<>())
 //                );
@@ -177,8 +176,8 @@ class GetListOfItemsOnAuctionOfGivenGenreControllerTest {
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
 //        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
 //
-//        GetListOfItemsOnAuctionOfGivenGenreController controller =
-//                new GetListOfItemsOnAuctionOfGivenGenreController(
+//        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+//                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
 //                        auctionRepository,
 //                        new GenreRepository(new ArrayList<>())
 //                );
