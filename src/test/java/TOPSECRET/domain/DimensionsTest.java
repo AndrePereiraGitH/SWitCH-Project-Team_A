@@ -8,11 +8,25 @@ import org.junit.jupiter.params.provider.Arguments;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Unit tests for the {@link Dimensions} value object.
+ * <p>
+ * This test suite validates:
+ * <ul>
+ *     <li>Successful creation of {@code Dimensions} when all values are strictly positive.</li>
+ *     <li>Rejection of zero or negative values through {@link IllegalArgumentException}.</li>
+ *     <li>Correct behavior of getter methods.</li>
+ *     <li>Correct implementation of the {@code equals} method,
+ *     including reflexivity, symmetry, null comparison and value comparison.</li>
+ * </ul>
+ * <p>
+ * Parameterized tests are used to validate multiple boundary and invalid cases,
+ * ensuring robustness and compliance with domain invariants.
+ */
 class DimensionsTest {
 
     private final Dimensions validDimensions = new Dimensions(10.0, 0.2, 5.2);
-    
+
     static Stream<Arguments> validDimensionsProvider() {
         return Stream.of(
                 // normal positive values
@@ -94,9 +108,9 @@ class DimensionsTest {
     }
 
 
-// -------------------------
-// equals
-// -------------------------
+    // -------------------------
+    // equals
+    // -------------------------
 
     @Test
     void equals_shouldReturnTrue_whenSameReference() {
