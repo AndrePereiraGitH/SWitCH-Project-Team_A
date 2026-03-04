@@ -26,11 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class US014ToGetPublicationTypeListControllerDependenciesTest {
 
+    FactoryPublicationType factory = new FactoryPublicationType();
+
     @Test
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
         // Arrange
 
-        PublicationTypeRepository repository = new PublicationTypeRepository();
+        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
 
         US014ToGetPublicationTypeListController controller =
                 new US014ToGetPublicationTypeListController(repository);
@@ -46,7 +48,7 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
     @Test
     void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
         // Arrange
-        PublicationTypeRepository repository = new PublicationTypeRepository();
+        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
 
         PublicationType type =
                 repository.create(
@@ -74,7 +76,7 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
 
     @Test
     void getAllPublicationTypesMultiplePublicationTypesReturnsListDTOs() {
-        PublicationTypeRepository repository = new PublicationTypeRepository();
+        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
 
         PublicationType t1 =
                 repository.create(

@@ -29,11 +29,14 @@ public class PublicationTypeRepository {
      * Internal list that stores all created publication types.
      */
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
+    FactoryPublicationType _factory;
 
     /**
      * Constructs an empty {@code PublicationTypeRepository}.
      */
-    public PublicationTypeRepository() {}
+    public PublicationTypeRepository(FactoryPublicationType factory) {
+        this._factory = factory;
+    }
 
     /**
      * Creates a new {@link PublicationType} using {@link FactoryPublicationType}.
@@ -45,8 +48,7 @@ public class PublicationTypeRepository {
      */
     public PublicationType create(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
-        FactoryPublicationType factory = new FactoryPublicationType();
-        PublicationType p1 = factory.create(mediaFormat, typeOfBinding, details);
+        PublicationType p1 = _factory.create(mediaFormat, typeOfBinding, details);
         return p1;
     }
 
@@ -83,7 +85,7 @@ public class PublicationTypeRepository {
     public PublicationType addToList(PublicationType pubType)
     {
         if (!validatePublicationType(pubType)) { // if validation returns false
-            throw new IllegalArgumentException("PublicationType already exists or is null");
+            throw new IllegalArgumentException("Publication type already exists or is null");
         }
 
         _publicationTypes.add(pubType); // if it returns true, adds publication type to the list

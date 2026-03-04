@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.FactoryPublicationType;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     MediaFormat mediaFormat = MediaFormat.BOOK;
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
     String details = "Book with gold engravings";
+    FactoryPublicationType factory = new FactoryPublicationType();
 
 
     /**
@@ -41,7 +43,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     {
         PublicationType pubType;
 
-        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
+        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository(factory);
 
         pubType = pubTypeRepo.create(mediaFormat, typeOfBinding, details);
         pubTypeRepo.addToList(pubType);
@@ -61,7 +63,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     @Test
     void shouldReturnAllPublicationTypes()
     {
-        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
+        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository(factory);
 
         PublicationType pt1;
         PublicationType pt2;
@@ -88,7 +90,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist()
     {
-        PublicationTypeRepository repo = new PublicationTypeRepository();
+        PublicationTypeRepository repo = new PublicationTypeRepository(factory);
 
         List<PublicationType> result = repo.getAllPublicationTypes();
 
@@ -106,7 +108,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     @Test
     void shouldReturnExceptionWhenAddingDuplicatePublicationType()
     {
-        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository();
+        PublicationTypeRepository pubTypeRepo = new PublicationTypeRepository(factory);
 
         PublicationType pt1;
         PublicationType pt2;
@@ -127,7 +129,7 @@ public class PublicationTypeRepositoryDependenciesTest {
      */
     @Test
     void shouldThrowWhenAddingNullPubType() {
-        PublicationTypeRepository repo = new PublicationTypeRepository();
+        PublicationTypeRepository repo = new PublicationTypeRepository(factory);
 
         assertThrows(IllegalArgumentException.class, () -> repo.addToList(null));
     }
@@ -140,7 +142,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     @Test
     void shouldReturnTheAddedPublicationTypeWhenAddingToList() {
 
-        PublicationTypeRepository repo = new PublicationTypeRepository();
+        PublicationTypeRepository repo = new PublicationTypeRepository(factory);
 
         PublicationType pubType = repo.create(mediaFormat, typeOfBinding, details);
 
@@ -160,7 +162,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ARRANGE
         PublicationTypeRepository repository =
-                new PublicationTypeRepository();
+                new PublicationTypeRepository(factory);
 
         PublicationType type =
                 new PublicationType(
@@ -191,7 +193,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ARRANGE
         PublicationTypeRepository repository =
-                new PublicationTypeRepository();
+                new PublicationTypeRepository(factory);
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
@@ -211,7 +213,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ARRANGE
         PublicationTypeRepository repository =
-                new PublicationTypeRepository();
+                new PublicationTypeRepository(factory);
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
@@ -231,7 +233,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ARRANGE
         PublicationTypeRepository repository =
-                new PublicationTypeRepository();
+                new PublicationTypeRepository(factory);
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
@@ -251,7 +253,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ARRANGE
         PublicationTypeRepository repository =
-                new PublicationTypeRepository();
+                new PublicationTypeRepository(factory);
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
@@ -271,7 +273,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ARRANGE
         PublicationTypeRepository repository =
-                new PublicationTypeRepository();
+                new PublicationTypeRepository(factory);
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
