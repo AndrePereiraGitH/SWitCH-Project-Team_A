@@ -10,7 +10,7 @@ public class GenreDTO_US022 {
     public String name;
 
     public GenreDTO_US022(Genre genre) {
-        this.name = genre.getTitle();
+        this.name = genre.getGenreType();
     }
 
     // Create a list of GenreDTO from a List of domain object

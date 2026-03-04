@@ -16,7 +16,7 @@ public class GenreDTO_US013 {
         if (genre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }
-        return new GenreDTO_US013(genre.getTitle());
+        return new GenreDTO_US013(genre.getGenreType());
     }
 }
 

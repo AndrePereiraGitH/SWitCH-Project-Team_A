@@ -250,7 +250,7 @@ public class PublicationSampleDTO_US015 {
                         .map(a -> a.getProfile().getName())
                         .toList(),
                 publicationSample.getBibliographicalData().getGenres().stream()
-                        .map(Genre::getTitle)
+                        .map(Genre::getGenreType)
                         .toList(),
                 publicationSample.getOwner().getUserName(),
                 publicationSample.getPublicationStatus().toString(),

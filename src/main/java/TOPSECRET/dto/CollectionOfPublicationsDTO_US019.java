@@ -19,7 +19,7 @@ public class CollectionOfPublicationsDTO_US019 {
 
        CollectionOfPublicationsDTO_US019 collection1DTO = new CollectionOfPublicationsDTO_US019(
                collection.getCollectionName(),
-               collection.getCollectionGenre().getTitle(),
+               collection.getCollectionGenre().getGenreType(),
                collection.getOwner()
        );
 

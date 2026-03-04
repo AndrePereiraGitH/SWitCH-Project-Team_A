@@ -3,7 +3,6 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.BibliographicalDataFactory;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
@@ -136,7 +135,7 @@ public class PublicationSampleRepository {
                 .toList();
 
         List<String> genreTypes = bd.getGenres().stream()
-                .map(Genre::getTitle)
+                .map(Genre::getGenreType)
                 .toList();
 
         return Objects.equals(bd.getTitle(), dto.getTitle())

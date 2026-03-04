@@ -2,7 +2,6 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,7 +70,7 @@ public class GenreRepository {
         }
 
         for (Genre genre : _genres) {
-            if (genre.getTitle().equalsIgnoreCase(title)) {
+            if (genre.getGenreType().equalsIgnoreCase(title)) {
                 return genre;
             }
         }

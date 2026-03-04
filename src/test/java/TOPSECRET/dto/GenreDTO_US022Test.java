@@ -30,7 +30,7 @@ class GenreDTO_US022Test {
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreOneElement() {
         // Arrange
         Genre genreDouble = mock(Genre.class);
-        when(genreDouble.getTitle()).thenReturn("Comedy");
+        when(genreDouble.getGenreType()).thenReturn("Comedy");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genreDouble);
@@ -49,8 +49,8 @@ class GenreDTO_US022Test {
         Genre genreDouble1 = mock(Genre.class);
         Genre genreDouble2 = mock(Genre.class);
 
-        when(genreDouble1.getTitle()).thenReturn("Fantasy");
-        when(genreDouble2.getTitle()).thenReturn("Romance");
+        when(genreDouble1.getGenreType()).thenReturn("Fantasy");
+        when(genreDouble2.getGenreType()).thenReturn("Romance");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genreDouble1);

@@ -21,10 +21,6 @@ public class Genre {
      * Returns the genre title.
      * @return Genre title.
      */
-    public String getTitle() {
-        return _genreType;
-    }
-
     public String getGenreType() {
         return _genreType;
     }

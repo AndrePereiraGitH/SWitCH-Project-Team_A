@@ -203,7 +203,7 @@ class BibliographicalDataDTO_US024Test {
      */
     private Genre createMockGenre(String genreTitle) {
         Genre genre = mock(Genre.class);
-        when(genre.getTitle()).thenReturn(genreTitle);
+        when(genre.getGenreType()).thenReturn(genreTitle);
         return genre;
     }
 

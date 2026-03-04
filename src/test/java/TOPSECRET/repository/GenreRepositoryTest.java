@@ -179,7 +179,7 @@ class GenreRepositoryTest {
         Genre result = repository.findByTitle("Fantasy");
 
         // ASSERT
-        assertEquals("Fantasy", result.getTitle());
+        assertEquals("Fantasy", result.getGenreType());
     }
 
     /**
