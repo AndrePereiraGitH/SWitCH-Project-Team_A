@@ -51,7 +51,7 @@ class ToRegisterAuthorControllerTest {
     }
 
     @Test
-    void registerAuthor_shouldDelegateToRepository_andReturnRepositoryResult_AAA() {
+    void houldDelegateToRepository_andReturnRepositoryResult() {
 
         // ARRANGE
         AuthorRepository authorRepository = mock(AuthorRepository.class);
