@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
-class AuctionDTO_US022Test {
+
+class AuctionDTO_US022DependenciesTest {
 
     // ==========================================================
     // ===================== Basic Tests =========================
@@ -22,22 +22,26 @@ class AuctionDTO_US022Test {
 
     @Test
     void fromDomainListEmptyListReturnsEmptyList() {
+        // Act
         List<AuctionDTO_US022> result =
                 AuctionDTO_US022.fromDomainList(new ArrayList<>());
-
+        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
    @Test
     void fromDomainListOneAuctionReturnsOneDTO() {
-        Genre fantasy = new Genre("Fantasy");
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+        Genre fantasy = factory.createGenre("Fantasy");
 
         Auction auction = createAuctionWithGenre(fantasy);
 
+        // Act
         List<AuctionDTO_US022> result =
                 AuctionDTO_US022.fromDomainList(List.of(auction));
-
+        // Assert
         assertEquals(1, result.size());
         assertEquals("Book Title", result.get(0).title);
         assertTrue(result.get(0).genres.contains("Fantasy"));
@@ -46,28 +50,32 @@ class AuctionDTO_US022Test {
 
     @Test
     void fromDomainListMultipleAuctionsReturnsMultipleDTOs() {
-        Genre fantasy = new Genre("Fantasy");
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+        Genre fantasy = factory.createGenre("Fantasy");
 
         Auction auction1 = createAuctionWithGenre(fantasy);
         Auction auction2 = createAuctionWithGenre(fantasy);
-
+        // Act
         List<AuctionDTO_US022> result =
                 AuctionDTO_US022.fromDomainList(List.of(auction1, auction2));
-
+        // Assert
         assertEquals(2, result.size());
     }
 
     @Test
     void fromDomainListExtractsMultipleGenresCorrectly() {
-        Genre fantasy = new Genre("Fantasy");
-        Genre romance = new Genre("Romance");
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+        Genre fantasy = factory.createGenre("Fantasy");
+        Genre romance = factory.createGenre("Romance");
 
         Auction auction =
                 createAuctionWithMultipleGenres(fantasy, romance);
-
+        // Act
         List<AuctionDTO_US022> result =
                 AuctionDTO_US022.fromDomainList(List.of(auction));
-
+        // Assert
         assertEquals(1, result.size());
 
         List<String> genres = result.get(0).genres;
@@ -82,13 +90,17 @@ class AuctionDTO_US022Test {
 
 
     private Auction createAuctionWithGenre(Genre genre) {
-       BibliographicalData bd1 = new BibliographicalData(
+
+        BibliographicalDataFactory bibliographicalDataFactory = new BibliographicalDataFactory();
+        AuthorFactory authorFactory = new AuthorFactory();
+        BibliographicalData bd1 = bibliographicalDataFactory.create(
                 "Book Title",
-                List.of(new Author(
-                        new Profile("Author",
-                                new Country("Portugal"),
-                                LocalDate.of(1980, 1, 1)),
-                        "bio")),
+                List.of(authorFactory.createAuthor(
+                        "Author",
+                        new Country("Portugal"),
+                        LocalDate.of(1980, 1, 1),
+                        "bio"
+                )),
                 new Locale("pt","PT"),
                 LocalDate.of(2020,1,1),
                 List.of(genre),
@@ -102,8 +114,9 @@ class AuctionDTO_US022Test {
         PhysicalAttributes physicalAttributes1 =
                 new PhysicalAttributes(dimensions, 400.0, 250);
 
+        FactoryPublicationType pTypeFactory = new FactoryPublicationType();
         PublicationType pubType1 =
-                new PublicationType(MediaFormat.BOOK,
+                pTypeFactory.create(MediaFormat.BOOK,
                         TypeOfBinding.CASE_BINDING,
                         "Some details");
 
@@ -112,7 +125,8 @@ class AuctionDTO_US022Test {
                         "PT987654321",
                         null);
 
-        Edition edition1 = new Edition(
+        EditionFactory editionFactory = new EditionFactory();
+        Edition edition1 = editionFactory.create(
                 "1st",
                 code,
                 physicalAttributes1,
@@ -122,7 +136,8 @@ class AuctionDTO_US022Test {
                 LocalDate.of(2020, 1, 1)
         );
 
-        PublicationSample item = new PublicationSample(
+        PublicationSampleFactory publicationSampleFactory = new PublicationSampleFactory();
+        PublicationSample item = publicationSampleFactory.create(
                 bd1,
                 owner,
                 PublicationStatus.READ,
@@ -130,7 +145,8 @@ class AuctionDTO_US022Test {
                 Condition.NEW
         );
 
-        Listing listing = new Listing(
+        ListingFactory listingFactory = new ListingFactory();
+        Listing listing = listingFactory.create(
                 "Valid Title",
                 List.of(item),
                 SaleType.AUCTION,
@@ -142,7 +158,8 @@ class AuctionDTO_US022Test {
         LocalDateTime start = LocalDateTime.now().plusMinutes(1);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
-        return new Auction(
+        AuctionFactory auctionFactory = new AuctionFactory();
+        return auctionFactory.create(
                 listing,
                 start,
                 end,
@@ -153,12 +170,14 @@ class AuctionDTO_US022Test {
 
     private Auction createAuctionWithMultipleGenres(Genre... genres) {
 
-        BibliographicalData bd = new BibliographicalData(
+        BibliographicalDataFactory bibliographicalDataFactory = new BibliographicalDataFactory();
+        AuthorFactory authorFactory = new AuthorFactory();
+        BibliographicalData bd = bibliographicalDataFactory.create(
                 "Book Title",
-                List.of(new Author(
-                        new Profile("Author",
+                List.of(authorFactory.createAuthor(
+                        "Author",
                                 new Country("Portugal"),
-                                LocalDate.of(1980,1,1)),
+                                LocalDate.of(1980,1,1),
                         "bio")),
                 new Locale("pt","PT"),
                 LocalDate.of(2020,1,1),
@@ -173,8 +192,9 @@ class AuctionDTO_US022Test {
         PhysicalAttributes physicalAttributes =
                 new PhysicalAttributes(dimensions, 400.0, 250);
 
+        FactoryPublicationType pTypeFactory = new FactoryPublicationType();
         PublicationType pubType =
-                new PublicationType(MediaFormat.BOOK,
+                pTypeFactory.create(MediaFormat.BOOK,
                         TypeOfBinding.CASE_BINDING,
                         "Some details");
 
@@ -183,7 +203,8 @@ class AuctionDTO_US022Test {
                         "PT987654321",
                         null);
 
-        Edition edition = new Edition(
+        EditionFactory editionFactory = new EditionFactory();
+        Edition edition = editionFactory.create(
                 "1st",
                 code,
                 physicalAttributes,
@@ -193,7 +214,8 @@ class AuctionDTO_US022Test {
                 LocalDate.of(2020, 1, 1)
         );
 
-        PublicationSample item = new PublicationSample(
+        PublicationSampleFactory publicationSampleFactory = new PublicationSampleFactory();
+        PublicationSample item = publicationSampleFactory.create(
                 bd,
                 owner,
                 PublicationStatus.READ,
@@ -201,7 +223,8 @@ class AuctionDTO_US022Test {
                 Condition.NEW
         );
 
-        Listing listing = new Listing(
+        ListingFactory listingFactory = new ListingFactory();
+        Listing listing = listingFactory.create(
                 "Valid Title",
                 List.of(item),
                 SaleType.AUCTION,
@@ -213,7 +236,8 @@ class AuctionDTO_US022Test {
         LocalDateTime start = LocalDateTime.now().plusMinutes(1);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
-        return new Auction(
+        AuctionFactory auctionFactory = new AuctionFactory();
+        return auctionFactory.create(
                 listing,
                 start,
                 end,
@@ -223,7 +247,9 @@ new Price(new BigDecimal("125.00"))
     }
 
     private User createUser(String name) {
-        return new User(
+
+        UserFactory userFactory = new UserFactory();
+        return userFactory.create(
                 name,
                 new Contact("91233213","+351",
                         new Email("a","b.com"),

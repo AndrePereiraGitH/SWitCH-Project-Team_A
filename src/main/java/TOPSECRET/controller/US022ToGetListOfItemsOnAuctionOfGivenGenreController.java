@@ -19,7 +19,7 @@ import java.util.List;
  * - Converts domain objects into DTOs.
  * - Returns a list of AuctionDTO_US022 to the UI.
  */
-public class GetListOfItemsOnAuctionOfGivenGenreController {
+public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
 
     // Repository responsible for accessing Auction domain objects
     private final AuctionRepository auctionRepository;
@@ -30,7 +30,7 @@ public class GetListOfItemsOnAuctionOfGivenGenreController {
      *
      * @param auctionRepository repository that stores auctions
      */
-    public GetListOfItemsOnAuctionOfGivenGenreController(
+    public US022ToGetListOfItemsOnAuctionOfGivenGenreController(
             AuctionRepository auctionRepository, GenreRepository genreRepository) {
 
         if (auctionRepository == null) {

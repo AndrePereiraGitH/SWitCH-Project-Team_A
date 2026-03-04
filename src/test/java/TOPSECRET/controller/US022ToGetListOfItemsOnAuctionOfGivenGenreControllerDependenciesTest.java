@@ -6,20 +6,27 @@ import TOPSECRET.dto.AuctionDTO_US022;
 import TOPSECRET.dto.GenreDTO_US022;
 import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.GenreRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
+class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerDependenciesTest {
 
     private AuctionFactory auctionFactory;
+    private GenreFactory genreFactory;
+
+    @BeforeEach
+    void setUp() {
+        AuctionFactory auctionFactory = new AuctionFactory();
+        GenreFactory genreFactory = new GenreFactory();
+    }
 
     @Test
     void getAllGenresReturnsAllGenresFromRepository() {
@@ -78,165 +85,127 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void getListOfItemsOnAuctionGivenGenre_returnsDtosWhenAuctionsExist() {
-
+   @Test
+    void getListOfItemsOnAuctionOneMatchingAuctionReturnsOneDTO() {
         // Arrange
-        AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        Genre fantasy = new Genre("Fantasy");
+
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
-                        auctionRepoMock,
-                        genreRepoMock
+                        auctionRepository,
+                        new GenreRepository(new ArrayList<>(), new GenreFactory())
                 );
-
-        Genre genre = new Genre("Fiction");
-
-        BibliographicalData bd = mock(BibliographicalData.class);
-        when(bd.getTitle()).thenReturn("Test Title");
-        when(bd.getGenres()).thenReturn(List.of(genre));
-
-        PublicationSample publicationSample = mock(PublicationSample.class);
-        when(publicationSample.getBibliographicalData()).thenReturn(bd);
-
-        Listing listing = mock(Listing.class);
-        when(listing.getItems()).thenReturn(List.of(publicationSample));
-
-        Auction auction = mock(Auction.class);
-        when(auction.getListing()).thenReturn(listing);
-
-        when(auctionRepoMock.getListOfItemsOnAuctionGivenGenre(genre))
-                .thenReturn(List.of(auction));
 
         // Act
         List<AuctionDTO_US022> result =
-                controller.getListOfItemsOnAuctionGivenGenre(genre);
+                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("Test Title", result.get(0).title);
+        assertTrue(result.get(0).genres.contains("Fantasy"));
+    }
+    @Test
+    void getListOfItemsOnAuctionFiltersByGenre() {
+        // Arrange
+        Genre fantasy = new Genre("Fantasy");
+        Genre romance = new Genre("Romance");
+
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(romance));
+
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepository,
+                        new GenreRepository(new ArrayList<>(), new GenreFactory())
+                );
+
+        // Act
+        List<AuctionDTO_US022> result =
+                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).genres.contains("Fantasy"));
+        assertFalse(result.get(0).genres.contains("Romance"));
+    }
+    @Test
+    void getListOfItemsOnAuctionMultipleMatchingAuctionsReturnsAll() {
+        // Arrange
+        Genre fantasy = new Genre("Fantasy");
+
+        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
+
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepository,
+                        new GenreRepository(new ArrayList<>(), new GenreFactory())
+                );
+
+        // Act
+        List<AuctionDTO_US022> result =
+                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(2, result.size());
     }
 
-//   @Test
-//    void getListOfItemsOnAuctionOneMatchingAuctionReturnsOneDTO() {
-//        // Arrange
-//        Genre fantasy = new Genre("Fantasy");
-//
-//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
-//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
-//
-//        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
-//                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
-//                        auctionRepository,
-//                        new GenreRepository(new ArrayList<>())
-//                );
-//
-//        // Act
-//        List<AuctionDTO_US022> result =
-//                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
-//
-//        // Assert
-//        assertEquals(1, result.size());
-//        assertTrue(result.get(0).genres.contains("Fantasy"));
-//    }
+ // ==========================================================
+ // Private Methods to Help Instantiate
 
-//    @Test
-//    void getListOfItemsOnAuctionFiltersByGenre() {
-//        // Arrange
-//        Genre fantasy = new Genre("Fantasy");
-//        Genre romance = new Genre("Romance");
-//
-//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
-//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
-//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(romance));
-//
-//        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
-//                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
-//                        auctionRepository,
-//                        new GenreRepository(new ArrayList<>())
-//                );
-//
-//        // Act
-//        List<AuctionDTO_US022> result =
-//                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
-//
-//        // Assert
-//        assertEquals(1, result.size());
-//        assertTrue(result.get(0).genres.contains("Fantasy"));
-//        assertFalse(result.get(0).genres.contains("Romance"));
-//    }
 
-//    @Test
-//    void getListOfItemsOnAuctionMultipleMatchingAuctionsReturnsAll() {
-//        // Arrange
-//        Genre fantasy = new Genre("Fantasy");
-//
-//        AuctionRepository auctionRepository = new AuctionRepository(auctionFactory);
-//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
-//        auctionRepository.getAllAuctions().add(createAuctionWithGenre(fantasy));
-//
-//        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
-//                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
-//                        auctionRepository,
-//                        new GenreRepository(new ArrayList<>())
-//                );
-//
-//        // Act
-//        List<AuctionDTO_US022> result =
-//                controller.getListOfItemsOnAuctionGivenGenre(fantasy);
-//
-//        // Assert
-//        assertEquals(2, result.size());
-//    }
 
-    // ==========================================================
-    // Private Methods to Help Instantiate
+    private Auction createAuctionWithGenre(Genre genre) {
 
-//    private Auction createAuctionWithGenre(Genre genre) {
-//
-//        BibliographicalData bd = createBibliographicalDataWithGenre(genre);
-//        User seller = createUser("Seller");
-//        Publication publication = createPublication(bd, seller);
-//        PublicationSample item = new PublicationSample(
-//                bd,
-//                new User(
-//                        "Marrike",
-//                        new Contact("91233213","+351",
-//                            new Email("a","b.com"),
-//                                new Address("Rua","1","1111", new Country("Portugal"))),
-//                new Profile("marrike", new Country("Portugal"), LocalDate.of(1990,1,1)),
-//                UserRole.NORMAL_USER),
-//                PublicationStatus.READ,
-//                edition,
-//                Condition.NEW
-//        );
-//
-//        Listing listing = new Listing(
-//                "Valid Title",
-//                List.of(item),
-//                SaleType.AUCTION,
-//                new Price(new BigDecimal("10.00")),
-//                "Short desc",
-//                List.of(new Picture("pic1"))
-//        );
-//
-//        LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
-//        LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
-//
-//        return new Auction(listing, start, end, new Price(new BigDecimal("20.00")));
-//    }
-    private BibliographicalData createBibliographicalDataWithGenre(Genre genre) {
+        BibliographicalData bd = createBibliographicalDataWithGenre(genre);
+        User seller = createUser("Seller");
+        Publication publication = createPublication(bd, seller);
+        PublicationSampleFactory pSampleFactory = new PublicationSampleFactory();
+        PublicationSample item = pSampleFactory.create(
+                bd,
+                new User(
+                        "Marrike",
+                        new Contact("91233213","+351",
+                            new Email("a","b.com"),
+                                new Address("Rua","1","1111", new Country("Portugal"))),
+                new Profile("marrike", new Country("Portugal"), LocalDate.of(1990,1,1)),
+                UserRole.NORMAL_USER),
+                PublicationStatus.READ,
+                edition,
+                Condition.NEW
+        );
+
+        ListingFactory listingFactory = new ListingFactory();
+        Listing listing = listingFactory.create(
+                "Valid Title",
+                List.of(item),
+                SaleType.AUCTION,
+                new Price(new BigDecimal("10.00")),
+                "Short desc",
+                List.of(new Picture("pic1"))
+        );
+
+        LocalDateTime start = LocalDateTime.of(2026, 6, 30, 14, 30);
+        LocalDateTime end = LocalDateTime.of(2026, 7, 1, 14, 30);
+
+        AuctionFactory auctionFactory = new AuctionFactory();
+        return auctionFactory.create(listing, start, end, new Price(new BigDecimal("20.00")));
+    }
+
+private BibliographicalData createBibliographicalDataWithGenre(Genre genre) {
+        BibliographicalDataFactory bdFactory = new BibliographicalDataFactory();
         AuthorFactory authorFactory = new AuthorFactory();
-
-        return new BibliographicalData(
+        return bdFactory.create(
                 "Book",
                 List.of(authorFactory.createAuthorWithExistingProfile( new Profile("Freida", new Country("Spain"), LocalDate.of(1975, 4, 25)), "Valid Bio")),
                 new Locale("pt","PT"),
-//                new Publisher("Pub","123",null),
                 LocalDate.now(),
                 List.of(genre),
-//                100,
                 "Desc"
         );
     }
@@ -256,14 +225,14 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback"),
                 seller,
                 PublicationStatus.READ,
-//                "1st",
                 edition,
                 Code.fromIsbn13("9781234567890")
         );
     }
 
     private User createUser(String name) {
-        return new User(
+        UserFactory userFactory = new UserFactory();
+        return userFactory.create(
                 name,
                 new Contact("9123","+351",
                         new Email("a","b.com"),

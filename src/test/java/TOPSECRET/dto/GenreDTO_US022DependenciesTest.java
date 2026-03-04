@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GenreDTO_US022Test {
+class GenreDTO_US022DependenciesTest {
 
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreEmptyList(){
