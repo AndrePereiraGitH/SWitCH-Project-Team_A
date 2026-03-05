@@ -8,20 +8,19 @@ import TOPSECRET.repository.PublicationSampleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Locale;
 
 
-class AddPublicationToLibraryControllerTest {
+class US011AddPublicationToLibraryControllerTest {
     //verify that the controller asks the library for the publications
     //verify that the controller asks the repository for the remaining publications
     //verify that the controller returns the correct list
 
     private Library library;
     private PublicationSampleRepository publicationSampleRepository;
-    private AddPublicationToLibraryController controller;
+    private US011AddPublicationToLibraryController controller;
     private AuthorFactory authorFactory = new AuthorFactory();
 
     private PublicationSample publicationSample1;
@@ -118,7 +117,7 @@ class AddPublicationToLibraryControllerTest {
         library = new Library("UserTest Library", user1);
 
         //Controller
-        controller = new AddPublicationToLibraryController(library, publicationSampleRepository);
+        controller = new US011AddPublicationToLibraryController(library, publicationSampleRepository);
 
         //Add publication to library
         library.addPublication(publicationSample1);
@@ -139,7 +138,7 @@ class AddPublicationToLibraryControllerTest {
     void getListOfOtherPublications_shouldReturnAllPublications_emptyLibrary(){
         //Make sure the library is clear
         library = new Library("User4's Library", user4);
-        AddPublicationToLibraryController controller2 = new AddPublicationToLibraryController(library, publicationSampleRepository);
+        US011AddPublicationToLibraryController controller2 = new US011AddPublicationToLibraryController(library, publicationSampleRepository);
 
         List<PublicationSample> otherPublications = controller2.getListOfOtherPublications();
 
@@ -155,7 +154,7 @@ class AddPublicationToLibraryControllerTest {
         library.addPublication(publicationSample2);
         library.addPublication(publicationSample3);
 
-        AddPublicationToLibraryController controller3 = new AddPublicationToLibraryController(library, publicationSampleRepository);
+        US011AddPublicationToLibraryController controller3 = new US011AddPublicationToLibraryController(library, publicationSampleRepository);
 
         List<PublicationSample> otherPublications = controller3.getListOfOtherPublications();
 

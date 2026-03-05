@@ -8,13 +8,13 @@ import TOPSECRET.repository.PublicationSampleRepository;
 import java.util.List;
 
 
-public class AddPublicationToLibraryController {
+public class US011AddPublicationToLibraryController {
 
     private final Library library; //Vai representar a library do User, este controller não vai criar a library
     private final PublicationSampleRepository publicationSampleRepository; //Vai ter o repositório com todas as publicações do sistema
 
     //Construtor
-    public AddPublicationToLibraryController(Library library, PublicationSampleRepository publicationSampleRepository){ //Recebe tudo o que precisa
+    public US011AddPublicationToLibraryController(Library library, PublicationSampleRepository publicationSampleRepository){ //Recebe tudo o que precisa
         this.library = library;
         this.publicationSampleRepository = publicationSampleRepository; //Associa as dependências ao controller (low coupling - controller não cria nada)
     }
