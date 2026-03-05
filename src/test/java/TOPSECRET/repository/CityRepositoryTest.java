@@ -3,46 +3,86 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.City;
 import TOPSECRET.domain.CityFactory;
 import TOPSECRET.domain.Country;
-import TOPSECRET.domain.User;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+
+/**
+ * Unit tests for {@link CityRepository}.
+ * <p>
+ * These tests verify the behavior of creating, adding, and handling
+ * duplicate {@link City} objects using a mocked {@link CityFactory}.
+ */
 
 class CityRepositoryTest {
 
-    //Reusing Repo and Factory here
-    CityFactory cityFactory = new CityFactory();
-    CityRepository cityRepository1 = new CityRepository(cityFactory);
+    private final Country anyCountry = new Country("Portugal");
+    private final String anyName = "Braga";
+
+    // Mocked city to be returned by the factory as the constructor is now protected
+    private final City anyCity = mock(City.class);
+    private final CityFactory factory = mock(CityFactory.class);
 
     @Test
-    void shouldCreateNewCity() {
+    void shouldCreateAndAddCity() {
         //Arrange
-        Country country1 = new Country("Poland");
-        String cityName1 = "Warsaw";
-        City expectedCity1 = new City(country1, cityName1);
+        CityRepository repository = new CityRepository(factory);
 
-        User _user = new User();
+        when(factory.create(anyCountry, anyName)).thenReturn(anyCity);
 
         //Act
-        City result1 = cityRepository1.createAndAdd(country1, cityName1);
+        City result = repository.createAndAdd(anyCountry, anyName);
 
         //Assert
-        assertEquals(expectedCity1, result1); //in City class the @Override methods were created to address the issue here
+        assertEquals(anyCity, result);
+        verify(factory).create(anyCountry, anyName);
     }
 
     @Test
-    void shouldThrowIfCityAlreadyExists() {
+    void shouldThrowWhenCityAlreadyExists() {
+        //Arrange
+        CityRepository repository = new CityRepository(factory);
 
-        Country country2 = new Country("Belgium");
-        String cityName2 = "Brussels";
+        when(factory.create(anyCountry, anyName)).thenReturn(anyCity);
 
-        cityRepository1.createAndAdd(country2, cityName2);
+        repository.createAndAdd(anyCountry, anyName);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            cityRepository1.createAndAdd(country2, cityName2);
-        });
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.createAndAdd(anyCountry, anyName));
+
+        // Indicates how many times a given class is used/call (and, as such, if it's used at all)
+        verify(factory, times(2)).create(anyCountry, anyName);
     }
 
+    @Test
+    void shouldThrowExceptionIfCountryNull() {
 
+        //Arrange
+        CityRepository repository = new CityRepository(factory);
+
+        when(factory.create(null, anyName))
+                .thenThrow(new IllegalArgumentException());
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.createAndAdd(null, anyName));
+    }
+
+    @Test
+    void shouldThrowIfCityExists() {
+
+        //Arrange
+        CityRepository repository = new CityRepository(factory);
+
+        when(factory.create(anyCountry, anyName)).thenReturn(anyCity);
+
+        repository.createAndAdd(anyCountry, anyName);
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.createAndAdd(anyCountry, anyName));
+    }
 }
