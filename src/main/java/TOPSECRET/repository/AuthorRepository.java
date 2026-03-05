@@ -42,7 +42,7 @@ public class AuthorRepository {
 
     public Author createAndAddAuthor(String name, Country country, LocalDate dateOfBirth, String biography) {
         // Creates Author
-        Author author = _authorFactory.createAuthor(name, country, dateOfBirth, biography);
+        Author author = _authorFactory.create(name, country, dateOfBirth, biography);
         if (!exists(author)) {
             this._authors.add(author);  // Add the author that was passed in
             return author;
