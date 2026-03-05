@@ -52,7 +52,7 @@ public class AuthorRepositoryDependenciesTest {
     void shouldCreateRepositoryWithExistingAuthors() {
         // Arrange
         List<Author> existingAuthors = new ArrayList<>();
-        existingAuthors.add(authorFactory.createAuthor("Name", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"));
+        existingAuthors.add(authorFactory.create("Name", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"));
 
         // Act
         AuthorRepository repository = new AuthorRepository(existingAuthors, authorFactory);
@@ -85,9 +85,6 @@ public class AuthorRepositoryDependenciesTest {
 
     @Test
     void shouldCreateAuthor() {
-        //  Arrange
-        Profile expectedProfile = new Profile("João", new Country("Portugal"), LocalDate.of(1978, 5, 12));
-
         // Act
         Author result = authorRepository.createAndAddAuthor("João", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
 
@@ -193,7 +190,7 @@ public class AuthorRepositoryDependenciesTest {
 
         // Assert - trying to modify should throw exception
         assertThrows(UnsupportedOperationException.class,
-                () -> result.add(authorFactory.createAuthor("Hacker", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"))
+                () -> result.add(authorFactory.create("Hacker", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"))
         );
     }
 

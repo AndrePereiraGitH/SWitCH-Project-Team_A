@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 class AuthorTest {
 
     Profile profile = mock(Profile.class);
+    Country country = mock(Country.class);
 
     //========================================
     // CONSTRUCTOR TESTS - Primary Constructor
@@ -75,11 +76,11 @@ class AuthorTest {
     @Test
     void shouldCreateAuthorUsingSecondaryConstructor() {
         // Act
-        Author author = new Author("Jane", new Country("AUSTRIA"), LocalDate.of(1990, 1, 1), "Author bio");
+        Author author = new Author("Jane", country, LocalDate.of(1990, 1, 1), "Author bio");
 
         // Assert
         assertEquals("Jane", author.getProfile().getName());
-        assertEquals(new Country("AUSTRIA"), author.getProfile().getCountry());
+        assertEquals(country, author.getProfile().getCountry());
         assertEquals(LocalDate.of(1990, 1, 1), author.getProfile().getBirthday());
         assertEquals("Author bio", author.getBiography());
     }
@@ -88,11 +89,11 @@ class AuthorTest {
     void shouldThrowExceptionWhenSecondaryConstructorReceivesInvalidData() {
         // Profile validation should trigger
         assertThrows(IllegalArgumentException.class,
-                () -> new Author(null, new Country("AUSTRIA"), LocalDate.of(1990, 1, 1), "bio")
+                () -> new Author(null, country, LocalDate.of(1990, 1, 1), "bio")
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new Author("", new Country("AUSTRIA"), LocalDate.of(1990, 1, 1), "bio")
+                () -> new Author("", country, LocalDate.of(1990, 1, 1), "bio")
         );
 
         assertThrows(IllegalArgumentException.class,
@@ -100,7 +101,7 @@ class AuthorTest {
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new Author("Name", new Country("AUSTRIA"), null, "bio")
+                () -> new Author("Name", country, null, "bio")
         );
     }
 
