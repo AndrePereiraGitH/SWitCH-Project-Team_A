@@ -85,7 +85,7 @@ public class PublicationSampleRepository {
         return false;
     }
 
-    public List<PublicationSample> getListOfDifferentPublications(List<Publication> listOfPublicationsInLibrary){
+    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary){
         List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
 
         for (PublicationSample publication : allPublicationsInSystem) {
