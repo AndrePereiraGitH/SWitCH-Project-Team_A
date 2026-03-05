@@ -1,5 +1,4 @@
 package TOPSECRET.dto;
-
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +78,8 @@ class DirectSaleDTO_US025Test {
         );
 
         // --- DIRECT SALE ---
-        directSale = new DirectSale(List.of(listing1,listing2),seller1,true);
+        DirectSaleFactory factory = new DirectSaleFactory();
+        directSale = factory.create(List.of(listing1, listing2), seller1);
     }
 
     /**

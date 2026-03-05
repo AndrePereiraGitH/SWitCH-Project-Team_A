@@ -12,13 +12,19 @@ import java.util.List;
 public class DirectSaleFactory {
 
     /**
-     * Creates a DirectSale after validating that all listings
+     * Creates a new DirectSale after validating that all provided listings
      * are of type DIRECT_SALE.
      *
-     * @param listings the listings included in the sale
-     * @param buyer    the buyer involved
-     * @return a new DirectSale instance
-     * @throws IllegalArgumentException if any listing is not DIRECT_SALE
+     * <p>This method always creates a DirectSale in an unfinished state
+     * (isFinished = false). A DirectSale represents the buyer's shopping cart,
+     * which begins as an open and modifiable collection of listings. The sale
+     * is only marked as finished when a corresponding Transaction is created,
+     * meaning the buyer has completed the purchase process.</p>
+     *
+     * @param listings the listings included in the sale; must not be null and must all be DIRECT_SALE
+     * @param buyer    the buyer associated with the sale
+     * @return a new DirectSale instance in an unfinished state
+     * @throws IllegalArgumentException if listings is null or contains any listing not of type DIRECT_SALE
      */
 
     public DirectSale create(List<Listing> listings, User buyer) {
@@ -37,27 +43,5 @@ public class DirectSaleFactory {
         }
 
         return new DirectSale(listings, buyer, false);
-    }
-
-    /**
-     * Creates a DirectSale with explicit finished state,
-     * still enforcing that all listings are DIRECT_SALE.
-     */
-    public DirectSale create(List<Listing> listings, User buyer, boolean isFinished) {
-
-        if (listings == null) {
-            throw new IllegalArgumentException("Listings cannot be null");
-        }
-
-        boolean invalid = listings.stream()
-                .anyMatch(l -> l.getSaleType() != SaleType.DIRECT_SALE);
-
-        if (invalid) {
-            throw new IllegalArgumentException(
-                    "All listings must be of type DIRECT_SALE to create a DirectSale"
-            );
-        }
-
-        return new DirectSale(listings, buyer, isFinished);
     }
 }

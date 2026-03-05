@@ -19,21 +19,34 @@ import java.util.List;
 public class DirectSaleRepository {
 
     private List<DirectSale> _directSaleList;
+    private DirectSaleFactory _directSaleFactory;
 
     //============================================================================================================
     // Constructor
 
     /**
-     * Creates a new DirectSaleRepository with an initial list of DirectSale instances.
+     * Creates a new DirectSaleRepository with an initial list of DirectSale instances
+     * and a factory responsible for creating new DirectSale objects.
      *
      * @param directSaleList the initial list of direct sales to populate the repository
      */
 
-    public DirectSaleRepository(List<DirectSale> directSaleList) {
+    public DirectSaleRepository(List<DirectSale> directSaleList,  DirectSaleFactory directSaleFactory) {
         _directSaleList = new ArrayList<>(directSaleList);
+        _directSaleFactory = directSaleFactory;
     }
 
     //============================================================================================================
+
+    /**
+     * Creates a new DirectSale (cart) for the given buyer and listings,
+     * stores it in the repository, and returns it.
+     */
+    public DirectSale createAndAdd(List<Listing> listings, User buyer) {
+        DirectSale directSale = _directSaleFactory.create(listings, buyer);
+        addDirectSaleOrThrow(directSale);
+        return directSale;
+    }
 
     /**
      * Checks whether a given {@link DirectSale} already exists in the repository.
@@ -101,49 +114,4 @@ public class DirectSaleRepository {
         }
         _directSaleList.add(directSale);
     }
-
-    // TODO - os metodos seguintes devem ser movidos para a classe ListingRepository
-    /*
-       public List<DirectSale> getListOfItemsOnDirectSale(PublicationSample publication) {
-
-        if (publication == null) {
-            throw new IllegalArgumentException("Publication cannot be null");
-        }
-
-        List<DirectSale> dsList = new ArrayList<>();
-
-
-        for (DirectSale ds : _directSaleList) {
-            boolean added = false;
-            for (Listing listing : ds.getListings()) {
-                for (PublicationSample item : listing.getItems()) {
-                    dsList.add(ds);
-                    added = true;
-                    break;                                          // avoids adding twice the same DirectSale
-                }
-                if (added) break;                                      // leaves listings
-            }
-        }
-
-        return dsList;
-    }
-
-    public List<DirectSale> getListOfItemsOnDirectSale(Publisher publisher) {
-        List<DirectSale> dsList = new ArrayList<>();
-
-        for (DirectSale ds : _directSaleList) {
-            for (Listing listing : ds.getListings()) {
-                for (PublicationSample item : listing.getItems()) {
-                    if (item.getEdition().getPublisher().equals(publisher)) {
-                        dsList.add(ds);
-                        break;
-                    }
-                }
-            }
-        }
-
-        return dsList;
-    }
-
-     */
 }

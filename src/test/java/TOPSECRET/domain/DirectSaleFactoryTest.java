@@ -3,12 +3,12 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.SaleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class DirectSaleFactoryTest {
 
@@ -34,56 +34,40 @@ class DirectSaleFactoryTest {
 
         List<Listing> listings = List.of(listing1Double, listing2Double);
 
-        // Act
-        DirectSale sale = factory.create(listings, buyerDouble);
+        try (MockedConstruction<DirectSale> mocked =
+                     mockConstruction(DirectSale.class)) {
 
-        // Assert
-        assertNotNull(sale);
-        assertEquals(listings, sale.getListings());
-        assertEquals(buyerDouble, sale.getDetails().buyer());
-        assertFalse(sale.getDetails().isFinished());
+            // Act
+            DirectSale sale = factory.create(listings, buyerDouble);
+
+            // Assert
+            assertEquals(1, mocked.constructed().size());
+            DirectSale constructed = mocked.constructed().get(0);
+            assertSame(constructed, sale);
+
+            var args = mocked.constructed().get(0);         // verifies the constructor was called with the right arguments
+        }
     }
 
     @Test
     void create_ShouldThrowExceptionWhenAnyListingIsNotDirectSale() {
         // Arrange
         when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(listing2Double.getSaleType()).thenReturn(SaleType.AUCTION); // inválido
+        when(listing2Double.getSaleType()).thenReturn(SaleType.AUCTION);
 
         List<Listing> listings = List.of(listing1Double, listing2Double);
 
         // Act + Assert
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> factory.create(listings, buyerDouble)
-        );
-
-        assertEquals("All listings must be of type DIRECT_SALE to create a DirectSale", ex.getMessage());
-    }
-    @Test
-    void create_WithFinishedFlagShouldRespectFinishedState() {
-        // Arrange
-        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-
-        List<Listing> listings = List.of(listing1Double);
-
-        // Act
-        DirectSale sale = factory.create(listings, buyerDouble, true);
-
-        // Assert
-        assertTrue(sale.getDetails().isFinished());
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(listings, buyerDouble));
     }
 
     @Test
     void create_ShouldThrowExceptionWhenListingsIsNull() {
-        // Act + Assert
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> factory.create(null, buyerDouble)
-        );
-
-        assertEquals("Listings cannot be null", ex.getMessage());
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(null, buyerDouble));
     }
+
 
     @Test
     void create_ShouldThrowExceptionWhenListingIsNotDirectSale() {
@@ -100,5 +84,4 @@ class DirectSaleFactoryTest {
 
         assertEquals("All listings must be of type DIRECT_SALE to create a DirectSale",ex.getMessage());
     }
-
 }

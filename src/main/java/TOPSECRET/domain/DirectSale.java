@@ -23,7 +23,7 @@ public class DirectSale {
 
     public DirectSale() {}
 
-    public DirectSale (List<Listing> _listings, User _buyer, boolean _isFinished) {
+    protected DirectSale (List<Listing> _listings, User _buyer, boolean _isFinished) {
 
         if(_listings == null){
             throw new IllegalArgumentException("List of listings cannot be null");
