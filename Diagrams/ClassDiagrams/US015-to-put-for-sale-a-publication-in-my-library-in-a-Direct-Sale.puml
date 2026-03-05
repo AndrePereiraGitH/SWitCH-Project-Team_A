@@ -49,7 +49,7 @@ class ListingFactory {
 
 class ListingRepository {
     - listings: List<Listing>
-    + add(listing): boolean
+    + createAndAdd(title, selectedPublications, saleType, price, shortDescription, seller, pictures): Listing
 }
 
 class Listing {
