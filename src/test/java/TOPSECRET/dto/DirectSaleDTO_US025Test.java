@@ -36,8 +36,8 @@ class DirectSaleDTO_US025Test {
 
         // --- AUTHORS ---
         AuthorFactory authorFactory = new AuthorFactory();
-        author1 = authorFactory.createAuthor("author1",new Country("PORTUGAL"),LocalDate.of(1945,2,4),"bio");
-        author2 = authorFactory.createAuthor("author2",new Country("PORTUGAL"),LocalDate.of(1945,2,4),"bio");
+        author1 = authorFactory.create("author1",new Country("PORTUGAL"),LocalDate.of(1945,2,4),"bio");
+        author2 = authorFactory.create("author2",new Country("PORTUGAL"),LocalDate.of(1945,2,4),"bio");
 
         // --- PUBLICATIONS ---
         Genre genre1 = new Genre("genre");
