@@ -4,6 +4,22 @@ import TOPSECRET.domain.City;
 import TOPSECRET.domain.Country;
 import TOPSECRET.repository.CityRepository;
 
+/**
+ * Controller responsible for handling the use case of registering
+ * a new {@link City} in the system.
+ *
+ * <p>This controller belongs to the application layer and acts as an
+ * intermediary between the user interface and the domain/repository layer.
+ * It coordinates the creation of a city by delegating the operation to
+ * {@link CityRepository}.</p>
+ *
+ * <p>The controller itself does not enforce domain rules. All validation
+ * and integrity constraints are handled by the domain model and the
+ * repository/factory infrastructure.</p>
+ *
+ * <p>Use Case: <b>US008 – Register a new city</b></p>
+ */
+
 public class US008ToRegisterACityCtrl {
     private final CityRepository _cityRepository;
 
