@@ -38,8 +38,45 @@ public class Transaction {
     private LocalDateTime _paymentDate;
     private List<User> _sellers;
     private TransactionStatus _status;
-    // private SupportService _supportService;  //TODO WAITING FOR CONFIRMATION
-    // private LogisticsServices _logisticsServices;   //TODO WAITING FOR CONFIRMATION
+
+    /** Private constructor with commun logic
+     *
+     * This way code will not be repeated
+     *
+     * @param buyer
+     * @param price
+     * @param transactionDate
+     * @param paymentDate
+     * @param sellers
+     * @param status
+     */
+
+    private Transaction(User buyer, Price price, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers, TransactionStatus status){
+
+        if (buyer == null){
+            throw new IllegalArgumentException("Buyer cannot be null");
+        }
+        if (price == null) {
+            throw new IllegalArgumentException("Price cannot be null");
+        }
+        if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())){
+            throw new IllegalArgumentException("Transaction date cannot be null");
+        }
+        if (paymentDate == null || paymentDate.isAfter(LocalDateTime.now())){
+            throw new IllegalArgumentException("Future Payment date cannot be null");
+        }
+        if (sellers == null){
+            throw new IllegalArgumentException("Seller list cannot be null");
+        }
+
+        this._buyer = buyer;
+        this._price = price;
+        this._transactionDate = transactionDate;
+        this._paymentDate = paymentDate;
+        this._sellers = sellers;
+        this._status = status;
+
+    }
 
     /**
      * Default constructor.
@@ -72,35 +109,13 @@ public class Transaction {
      */
     public Transaction(User buyer, Auction auction, Price price, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers, TransactionStatus status) {
 
+        this(buyer, price, transactionDate, paymentDate, sellers, status);
 
         if (auction == null){
             throw new IllegalArgumentException("Auction cannot be null");
         }
-        if (buyer == null){
-            throw new IllegalArgumentException("Buyer cannot be null");
-        }
-        if (price == null) {
-            throw new IllegalArgumentException("Price cannot be null");
-        }
-        if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Transaction date cannot be null");
-        }
-        if (paymentDate == null || paymentDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Future Payment date cannot be null");
-        }
-        if (sellers == null){
-            throw new IllegalArgumentException("Seller list cannot be null");
-        }
-
-        this._buyer = buyer;
         this._auction = auction;
-        this._price = price;
-        this._transactionDate = transactionDate;
-        this._paymentDate = paymentDate;
-        this._sellers = sellers;
-        this._status = status;
-        // this._supportService = supportService;
-        // this._logisticsServices = logisticsServices;
+
     }
 
 
@@ -127,34 +142,11 @@ public class Transaction {
      */
     public Transaction(User buyer, Price price, DirectSale directSale, LocalDateTime transactionDate, LocalDateTime paymentDate, List<User> sellers, TransactionStatus status){
 
+        this(buyer, price, transactionDate, paymentDate, sellers, status);
         if (directSale == null){
             throw new IllegalArgumentException("Cart cannot be null");
         }
-        if (buyer == null){
-            throw new IllegalArgumentException("Buyer cannot be null");
-        }
-        if (price == null) {
-            throw new IllegalArgumentException("Price cannot be null");
-        }
-        if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Transaction date cannot be null");
-        }
-        if (paymentDate == null || paymentDate.isAfter(LocalDateTime.now())){
-            throw new IllegalArgumentException("Transaction payment date cannot be null");
-        }
-        if (sellers == null){
-            throw new IllegalArgumentException("Seller list cannot be null");
-        }
-
-        this._buyer = buyer;
         this._directSale = directSale;
-        this._price = price;
-        this._transactionDate = transactionDate;
-        this._paymentDate = paymentDate;
-        this._sellers = sellers;
-        this._status = status;
-        // this._supportService = supportService;
-        // this._logisticsServices = logisticsServices;
 
     }
 
