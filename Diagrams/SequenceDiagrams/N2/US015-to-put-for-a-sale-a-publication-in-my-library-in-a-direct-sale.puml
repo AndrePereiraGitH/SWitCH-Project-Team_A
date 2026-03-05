@@ -13,8 +13,8 @@ participant ":Library" as Lib
 participant ":PublicationSampleDTO_US015" as DTO
 participant "publicationSampleDTO:\nPublicationSampleDTO_US015" as DTO_O
 participant ":PublicationSample" as Pub
-participant ":ListingFactory" as LFactory
 participant ":ListingRepository" as LRepo
+participant ":ListingFactory" as LFactory
 
 User -> UI : I want to put for sale a publication in my library in a direct sale
 activate UI
@@ -67,19 +67,19 @@ activate UI
 
 UI -> Ctrl: putPublicationForSale(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
 activate Ctrl
-Ctrl-> LFactory : create(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+Ctrl-> LRepo : createAndAdd(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+activate LRepo
+LRepo-> LFactory : create(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
 activate LFactory
 
 create "listing: Listing" as listing
 LFactory -> listing : create (title, selectedPublications, saleType, price, shortDescription, seller, pictures)
-LFactory --> Ctrl : listing
+LFactory --> LRepo: listing
 deactivate LFactory
-Ctrl -> LRepo: add(listing)
-activate LRepo
-LRepo --> Ctrl: true
+LRepo --> Ctrl: listing
 deactivate LRepo
 
-Ctrl--> UI: true
+Ctrl--> UI: listing
 deactivate Ctrl
 
 UI --> User : Publication(s) put for direct sale with success

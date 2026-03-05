@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,190 +20,131 @@ class ListingRepositoryTest {
     // ======================================================
 
     ListingRepository repo;
+    ListingFactory listingFactoryDouble;
+
     Listing listing1Double;
     Listing listing2Double;
     Listing listing3Double;
 
+    PublicationSample pub1;
+    PublicationSample pub2;
+    PublicationSample pub3;
+
+    Price price1;
+    Price price2;
+    Price price3;
+
+    Picture pic1;
+    Picture pic2;
+    Picture pic3;
+
     @BeforeEach
     void setUp() {
 
-        listing1Double = mock(Listing.class);               // directSale
-        listing2Double = mock(Listing.class);               // directSale
-        listing3Double = mock(Listing.class);               // auction
+        listingFactoryDouble = mock(ListingFactory.class);
+        repo = new ListingRepository(listingFactoryDouble);
 
-        PublicationSample pubSample1Double = mock(PublicationSample.class);
-        PublicationSample pubSample2Double = mock(PublicationSample.class);
-        PublicationSample pubSample3Double = mock(PublicationSample.class);
+        listing1Double = mock(Listing.class);
+        listing2Double = mock(Listing.class);
+        listing3Double = mock(Listing.class);
 
-        Price price1Double = mock(Price.class);
-        Price price2Double = mock(Price.class);
-        Price price3Double = mock(Price.class);
+        pub1 = mock(PublicationSample.class);
+        pub2 = mock(PublicationSample.class);
+        pub3 = mock(PublicationSample.class);
 
-        User seller1Double = mock(User.class);                              // seller of listing 1 and 3
-        User seller2Double = mock(User.class);                              // seller of listing 2
+        price1 = mock(Price.class);
+        price2 = mock(Price.class);
+        price3 = mock(Price.class);
 
-        Picture picture1Double = mock(Picture.class);
-        Picture picture2Double = mock(Picture.class);
-        Picture picture3Double = mock(Picture.class);
+        pic1 = mock(Picture.class);
+        pic2 = mock(Picture.class);
+        pic3 = mock(Picture.class);
 
-        // listing1
-        when(listing1Double.getListingTitle()).thenReturn("title1");
-        when(listing1Double.getItems()).thenReturn(List.of(pubSample1Double));
         when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(listing1Double.getPrice()).thenReturn(price1Double);
-        when(price1Double.getPrice()).thenReturn(BigDecimal.valueOf(10));
-        when(listing1Double.getShortDescription()).thenReturn("description1");
-        when(listing1Double.getSeller()).thenReturn(seller1Double);
-        when(seller1Double.getUserName()).thenReturn("seller username1");
-        when(listing1Double.getPictures()).thenReturn(List.of(picture1Double));
-        when(picture1Double.get_picture()).thenReturn("picture1");
-
-        // listing2
-        when(listing2Double.getListingTitle()).thenReturn("title2");
-        when(listing2Double.getItems()).thenReturn(List.of(pubSample2Double));
         when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(listing2Double.getPrice()).thenReturn(price2Double);
-        when(price2Double.getPrice()).thenReturn(BigDecimal.valueOf(5));
-        when(listing2Double.getShortDescription()).thenReturn("description2");
-        when(listing2Double.getSeller()).thenReturn(seller2Double);
-        when(seller2Double.getUserName()).thenReturn("seller username2");
-        when(listing2Double.getPictures()).thenReturn(List.of(picture2Double));
-        when(picture2Double.get_picture()).thenReturn("picture2");
-
-        // listing3
-        when(listing3Double.getListingTitle()).thenReturn("title3");
-        when(listing3Double.getItems()).thenReturn(List.of(pubSample3Double));
         when(listing3Double.getSaleType()).thenReturn(SaleType.AUCTION);
-        when(listing3Double.getPrice()).thenReturn(price3Double);
-        when(price3Double.getPrice()).thenReturn(BigDecimal.valueOf(10.50));
-        when(listing3Double.getShortDescription()).thenReturn("description3");
-        when(listing3Double.getSeller()).thenReturn(seller1Double);
-        when(seller1Double.getUserName()).thenReturn("seller username3");
-        when(listing3Double.getPictures()).thenReturn(List.of(picture3Double));
-        when(picture3Double.get_picture()).thenReturn("picture3");
-
-
-        // Repository
-        repo = new ListingRepository();
-    }
-
-    // ======================================================
-    // ================= Tests to add =======================
-    // ======================================================
-
-    @Test
-    void add_ShouldReturnTrueWhenListingIsNew() {
-        // Act
-        boolean result = repo.add(listing1Double);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void add_ShouldStoreListingWhenNew() {
-        // Arrange
-        repo.add(listing1Double);
-
-        // Act
-        List<Listing> listings = repo.getAllListings();
-
-        // Assert
-        assertTrue(listings.contains(listing1Double));
-    }
-
-    @Test
-    void add_ShouldReturnFalseWhenListingAlreadyExists() {
-        // Arrange
-        repo.add(listing1Double);
-
-        // Act
-        boolean result = repo.add(listing1Double);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void add_ShouldNotAddDuplicateListing() {
-        // Arrange
-        repo.add(listing1Double);
-        repo.add(listing1Double);
-
-        // Act
-        List<Listing> allListings = repo.getAllListings();
-
-        assertEquals(1, allListings.size());
-    }
-
-    @Test
-    void add_ShouldAllowAddingMultipleDifferentListings() {
-        repo.add(listing1Double);
-        repo.add(listing2Double);
-
-        List<Listing> all = repo.getAllListings();
-
-        assertEquals(2, all.size());
-        assertTrue(all.contains(listing1Double));
-        assertTrue(all.contains(listing2Double));
     }
 
     // ======================================================
     // ==== Tests to findAllDirectSaleListings===============
     // ======================================================
 
+
     @Test
-    void findAllDirectSaleListings_ShouldReturnOnlyDirectSaleListings() {
+    void findAllDirectSaleListings_ShouldReturnOnlyDirectSaleListings() throws Exception {
+
         // Arrange
-        repo.add(listing1Double);
-        repo.add(listing2Double);
-        repo.add(listing3Double);
+        when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1)
+        )).thenReturn(listing1Double);
+
+        when(listingFactoryDouble.create("title2", List.of(pub2), SaleType.DIRECT_SALE, price2, "description2", List.of(pic2)
+        )).thenReturn(listing2Double);
+
+        when(listingFactoryDouble.create("title3", List.of(pub3), SaleType.AUCTION, price3, "description3", List.of(pic3)
+        )).thenReturn(listing3Double);
+
+        repo.createAndAdd("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2), SaleType.DIRECT_SALE, price2, "description2", List.of(pic2));
+        repo.createAndAdd("title3", List.of(pub3), SaleType.AUCTION,      price3, "description3", List.of(pic3));
 
         // Act
-        List<Listing> dsListings = repo.findAllDirectSaleListings();
+        List<Listing> result = repo.findAllDirectSaleListings();
 
         // Assert
-        assertEquals(2, repo.findAllDirectSaleListings().size());
-        assertEquals(listing1Double, repo.findAllDirectSaleListings().get(0));
-        assertEquals(listing2Double, repo.findAllDirectSaleListings().get(1));
+        assertEquals(2, result.size());
+        assertEquals(listing1Double, result.get(0));
+        assertEquals(listing2Double, result.get(1));
     }
 
     @Test
-    void findAllDirectSaleListings_ShouldReturnEmptyListWhenNoDirectSaleListingsExist() {
+    void findAllDirectSaleListings_ShouldReturnEmptyListWhenNoDirectSaleListingsExist() throws Exception {
+
         // Arrange
-        repo.add(listing3Double);
+        when(listingFactoryDouble.create("title3", List.of(pub3), SaleType.AUCTION, price3, "description3",
+                List.of(pic3))).thenReturn(listing3Double);
+
+        when(listing3Double.getSaleType()).thenReturn(SaleType.AUCTION);
+
+        repo.createAndAdd("title3", List.of(pub3), SaleType.AUCTION, price3, "description3", List.of(pic3));
 
         // Act
-        List<Listing> dsListings = repo.findAllDirectSaleListings();
+        List<Listing> result = repo.findAllDirectSaleListings();
 
         // Assert
-        assertTrue(dsListings.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void findAllDirectSaleListings_ShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // Act
-        List<Listing> dsListings = repo.findAllDirectSaleListings();
+        List<Listing> result = repo.findAllDirectSaleListings();
 
-        assertTrue(dsListings.isEmpty());
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void findAllDirectSaleListings_ShouldReturnNewIndependentList() {
+    void findAllDirectSaleListings_ShouldReturnNewIndependentList() throws Exception {
+
         // Arrange
-        repo.add(listing1Double);
+        when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1",
+                List.of(pic1))).thenReturn(listing1Double);
+
+        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        repo.createAndAdd("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1));
 
         // Act
-        List<Listing> dsListings1 = repo.findAllDirectSaleListings();
-        dsListings1.clear();                                                             // tries to modify
+        List<Listing> firstCall = repo.findAllDirectSaleListings();
+        firstCall.clear(); // tries to modify the list
 
-        List<Listing> dsListings2 = repo.findAllDirectSaleListings();
+        List<Listing> secondCall = repo.findAllDirectSaleListings();
 
-        assertEquals(1, dsListings2.size());
+        assertEquals(1, secondCall.size());
     }
 
     @Test
-    void getListOfItemsOnDirectSaleofAGivenAuthor_ShouldFilterCorrectly() {
+    void getListOfItemsOnDirectSaleOfAGivenAuthor_ShouldFilterCorrectly() throws Exception {
 
         Author targetAuthor = mock(Author.class);
         PublicationSample sampleWithAuthor = mock(PublicationSample.class);
@@ -225,8 +167,14 @@ class ListingRepositoryTest {
         when(listingAuction.getSaleType()).thenReturn(SaleType.AUCTION);
         when(listingAuction.getItems()).thenReturn(List.of(sampleWithAuthor));
 
-        repo.add(listingDirectSale);
-        repo.add(listingAuction);
+        when(listingFactoryDouble.create("listing1", List.of(sampleWithAuthor), SaleType.DIRECT_SALE, price1,
+                "desc", List.of(pic1))).thenReturn(listingDirectSale);
+
+        when(listingFactoryDouble.create("listing2", List.of(sampleWithAuthor), SaleType.AUCTION, price2,
+                "desc", List.of(pic2))).thenReturn(listingAuction);
+
+        repo.createAndAdd("listing1", List.of(sampleWithAuthor), SaleType.DIRECT_SALE, price1, "desc", List.of(pic1));
+        repo.createAndAdd("listing2", List.of(sampleWithAuthor), SaleType.AUCTION, price2, "desc", List.of(pic2));
 
         List<PublicationSample> result = repo.getListOfItemsOnDirectSaleofAGivenAuthor(targetAuthor);
 
