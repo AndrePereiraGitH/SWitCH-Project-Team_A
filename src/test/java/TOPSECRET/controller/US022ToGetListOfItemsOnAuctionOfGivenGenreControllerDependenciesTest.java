@@ -164,7 +164,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerDependenciesTest {
 
         BibliographicalData bd = createBibliographicalDataWithGenre(genre);
         User seller = createUser("Seller");
-        Publication publication = createPublication(bd, seller);
+
         PublicationSampleFactory pSampleFactory = new PublicationSampleFactory();
         PublicationSample item = pSampleFactory.create(
                 bd,
