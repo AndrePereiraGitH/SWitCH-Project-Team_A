@@ -95,7 +95,7 @@ class AuctionDTO_US022DependenciesTest {
         AuthorFactory authorFactory = new AuthorFactory();
         BibliographicalData bd1 = bibliographicalDataFactory.create(
                 "Book Title",
-                List.of(authorFactory.createAuthor(
+                List.of(authorFactory.create(
                         "Author",
                         new Country("Portugal"),
                         LocalDate.of(1980, 1, 1),
@@ -174,7 +174,7 @@ class AuctionDTO_US022DependenciesTest {
         AuthorFactory authorFactory = new AuthorFactory();
         BibliographicalData bd = bibliographicalDataFactory.create(
                 "Book Title",
-                List.of(authorFactory.createAuthor(
+                List.of(authorFactory.create(
                         "Author",
                                 new Country("Portugal"),
                                 LocalDate.of(1980,1,1),

@@ -2,11 +2,9 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
-import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.AuthorRepository;
 import TOPSECRET.repository.ListingRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.math.BigDecimal;
@@ -14,8 +12,6 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionDTO_US026Test {
 
@@ -103,7 +99,7 @@ class AuctionDTO_US026Test {
     }
 
     private Author instantiateAuthor(String name) {
-        return authorFactory.createAuthor(name, new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");
+        return authorFactory.create(name, new Country("United_kingdom"), LocalDate.of(1949, 6, 5),"this is ken follett's biography");
     }
 
     private PublicationSample instantiatePublication(List<Author> authors, User user) {
