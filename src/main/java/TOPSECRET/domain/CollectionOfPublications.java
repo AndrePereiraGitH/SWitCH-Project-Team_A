@@ -14,12 +14,12 @@ import java.util.Objects;
 
 public class CollectionOfPublications {
 
-    // Attributes
-    private String _collectionName;
-    private Genre _collectionGenre;
-    private List<PublicationSample> _collectionOfPublications;
-    private User _owner;
-    private boolean _isPrivate;
+    // Attributes - US017
+    private String _collectionName;                                                     // US017
+    private Genre _collectionGenre;                                                     // US017
+    private List<PublicationSample> _collectionOfPublications;                          // US017
+    private User _owner;                                                                // US017
+    private boolean _isPrivate;                                                         // US017
 
     /**
      * Creates a new collection of publications.
@@ -30,30 +30,30 @@ public class CollectionOfPublications {
      * @throws IllegalArgumentException if any parameter is null or invalid
      */
 
-    // Constructor
+    // Constructor - US017
     public CollectionOfPublications(String collectionName, Genre collectionGenre, User user) {
-
+        // Validation 1: name cannot be null or empty
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
         }
-
+        // Validation 2 : genre cannot be null
         if (collectionGenre == null) {
             throw new IllegalArgumentException("Collection genre cannot be null.");
         }
-
+        // Validation 3: user cannot be null
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
 
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
-        this._isPrivate = true;
+        this._isPrivate = true;   // ← RULE US017: always private!
         this._owner = user;
-        this._collectionOfPublications = new ArrayList<>();
+        this._collectionOfPublications = new ArrayList<>();     // ← Starts empty
     }
 
 
-    // Getters
+    // Getters - US017
     public String getCollectionName() {
         return _collectionName;
     }
@@ -70,7 +70,7 @@ public class CollectionOfPublications {
      */
 
     public List<PublicationSample> getPublications() {
-        return new ArrayList<>(_collectionOfPublications);
+        return new ArrayList<>(_collectionOfPublications);                            // Defensive copy
     }
 
 
@@ -134,15 +134,6 @@ public class CollectionOfPublications {
                 && _collectionOfPublications.equals(other._collectionOfPublications);
     }
 
-    // This method generates a hash code consistent with equals().
-    // If two objects are considered equal by equals(), they must return the same hash code.
-//    @Override
-//    public int hashCode() {
-//        return (_collectionName.toLowerCase()
-//                + _collectionGenre.hashCode()
-//                + _isPrivate
-//                + _collectionOfPublications.hashCode()).hashCode();
-//    }
     @Override
     public int hashCode() {
         return Objects.hash(

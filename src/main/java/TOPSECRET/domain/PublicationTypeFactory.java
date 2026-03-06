@@ -3,7 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 
-public class FactoryPublicationType {
+public class PublicationTypeFactory {
 
     /**
      * Creates new publication types after validating inputs such as media format, type of binding and details

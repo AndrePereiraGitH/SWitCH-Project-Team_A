@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -13,30 +14,38 @@ class PublicationSampleFactoryTest {
     void create_shouldReturnValidPublicationSample() {
 
         // Arrange
-        PublicationSampleFactory factory = new PublicationSampleFactory();
 
-        BibliographicalData bd = mock(BibliographicalData.class);
-        User user = mock(User.class);
-        Edition edition = mock(Edition.class);
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        User userDouble = mock(User.class);
+        Edition editionDouble = mock(Edition.class);
 
         PublicationStatus status = PublicationStatus.READ;
         Condition condition = Condition.NEW;
 
-        // Act
-        PublicationSample result = factory.create(
-                bd,
-                user,
-                status,
-                edition,
-                condition
-        );
+        try(MockedConstruction<PublicationSample> mocked =
+                mockConstruction(PublicationSample.class,
+                        (mock, context) -> {
+                })) {
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(bd, result.getBibliographicalData());
-        assertEquals(user, result.getOwner());
-        assertEquals(status, result.getPublicationStatus());
-        assertEquals(edition, result.getEdition());
-        assertEquals(condition, result.getCondition());
+            PublicationSampleFactory factory = new PublicationSampleFactory();
+
+
+            // Act
+            PublicationSample result = factory.create(
+                    bdDouble,
+                    userDouble,
+                    status,
+                    editionDouble,
+                    condition
+            );
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1, mocked.constructed().size());
+
+            PublicationSample constructedPublicationSample = mocked.constructed().get(0);
+            assertSame(result, constructedPublicationSample);
+
+        }
     }
 }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link US020PublicListByGenreController}.
+ * Has {@link GenreRepository} and {@link CollectionOfPublicationsRepository} as dependencies to be mocked
  */
 
 class US020PublicListByGenreControllerTest {

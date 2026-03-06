@@ -2,7 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 
 import java.util.ArrayList;
@@ -29,17 +29,17 @@ public class PublicationTypeRepository {
      * Internal list that stores all created publication types.
      */
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
-    FactoryPublicationType _factory;
+    PublicationTypeFactory _factory;
 
     /**
      * Constructs an empty {@code PublicationTypeRepository}.
      */
-    public PublicationTypeRepository(FactoryPublicationType factory) {
+    public PublicationTypeRepository(PublicationTypeFactory factory) {
         this._factory = factory;
     }
 
     /**
-     * Creates a new {@link PublicationType} using {@link FactoryPublicationType}.
+     * Creates a new {@link PublicationType} using {@link PublicationTypeFactory}.
      *
      * @param mediaFormat   the media format of the publication (e.g., book, magazine)
      * @param typeOfBinding the type of binding (e.g., hardback, paperback)

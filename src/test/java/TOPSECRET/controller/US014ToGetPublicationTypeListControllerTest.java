@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationTypeDTO_US014;
 import TOPSECRET.repository.PublicationTypeRepository;
@@ -42,7 +42,7 @@ class US014ToGetPublicationTypeListControllerTest {
         // Arrange
         PublicationTypeRepository repository = mock(PublicationTypeRepository.class);
 
-        FactoryPublicationType factory = new FactoryPublicationType();
+        PublicationTypeFactory factory = new PublicationTypeFactory();
 
         PublicationType type =
                 factory.create(
@@ -78,7 +78,7 @@ class US014ToGetPublicationTypeListControllerTest {
         // Arrange
         PublicationTypeRepository repository = mock(PublicationTypeRepository.class);
 
-        FactoryPublicationType factory = new FactoryPublicationType();
+        PublicationTypeFactory factory = new PublicationTypeFactory();
 
         PublicationType t1 =
                 factory.create(

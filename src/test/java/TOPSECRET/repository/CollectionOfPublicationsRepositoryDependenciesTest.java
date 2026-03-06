@@ -11,7 +11,6 @@
 //
 //import javax.management.InstanceNotFoundException;
 //import java.time.LocalDate;
-//import java.util.ArrayList;
 //import java.util.List;
 //import java.util.Locale;
 //
@@ -672,56 +671,11 @@
 //    {
 //        Genre desiredGenre = new Genre("Action");
 //
-//        // User Creation
-//        Profile profile = new Profile("Joao",new Country("Portugal"), LocalDate.of(1974,7,24));
-//        Email email = new Email("john.doe25","hotmail.com");
-//        Address location = new Address("rua das pedras","29","4852-2524",new Country("Portugal"));
-//        Contact contact = new Contact("919402245", "+351", email, location);
-//        User userName = new User("John Doe", contact, profile, UserRole.NORMAL_USER);
-//
-//
-//        // Publication sample creation begins
-//
-//        // Author creation
-//        Profile authorProfile = new Profile("John Doe",new Country("Portugal"), LocalDate.of(1940,2,24));
-//        List<Author> authors = new ArrayList<>();
-//        AuthorFactory authorFactory = new AuthorFactory();
-//        authors.add(authorFactory.createWithExistingProfile(authorProfile, "Author Biography"));
-//
-//        // Bibliographical Data creation
-//        Locale language = Locale.getDefault();
-//        LocalDate publishDate = LocalDate.now();
-//        List<Genre> genre = new ArrayList<>();
-//        genre.add(new Genre("Sci-Fi"));
-//
-//        BibliographicalData bd = new BibliographicalData(
-//                "bibliographical data test",
-//                authors,
-//                language,
-//                publishDate,
-//                genre,
-//                "Sample text"
-//        );
-//
-//        PublicationStatus pubStatus = PublicationStatus.FOR_SALE;
-//
-//        // Edition creation
-//        Code code1 = Code.fromIsbn13 ("9783161484123");
-//        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-//        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-//        PublicationType pubType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-//        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-//
-//        EditionFactory editionFactory = new EditionFactory();
-//        Edition edition = editionFactory.create("1st", code1, physicalAttributes, pubType1, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-//
-//
-//        PublicationSample publicationSample = new PublicationSample(bd, userName, pubStatus, edition, Condition.NEW);
-//        // Publication Sample creation ends
-//
-//
-//        // Creates a private library for the user
-////        Library privateLibrary = new Library("My Library", userName);
+//        // Setup
+//        User userName = createValidUser();
+//        PublicationSample publicationSample = createValidPublication();
+//        LibraryFactory libraryFactory = new LibraryFactory();
+//        Library library = libraryFactory.create("library name", userName);
 //
 //
 //        // Creation of Collection of Publications
@@ -754,10 +708,10 @@
 //        c4.set_isPrivate(false);  // Torna pública
 //
 //
-////        repository.addPublicationToCollection(userName, privateLibrary, c1, publicationSample);
-////        repository.addPublicationToCollection(userName, privateLibrary, c2, publicationSample);
-////        repository.addPublicationToCollection(userName, privateLibrary, c3, publicationSample);
-////        repository.addPublicationToCollection(userName, privateLibrary, c4, publicationSample);
+//        repository.addPublicationToCollection(userName, library, c1, publicationSample);
+//        repository.addPublicationToCollection(userName, library, c2, publicationSample);
+//        repository.addPublicationToCollection(userName, library, c3, publicationSample);
+//        repository.addPublicationToCollection(userName, library, c4, publicationSample);
 //
 //        repository.addCollectionToRepo(c1);
 //        repository.addCollectionToRepo(c2);

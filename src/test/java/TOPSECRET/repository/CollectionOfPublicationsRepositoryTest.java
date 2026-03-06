@@ -254,4 +254,36 @@ class CollectionOfPublicationsRepositoryTest {
         assertThrows(InstanceNotFoundException.class,
                 () -> sut.collectionDTOToDomain(dto));
     }
+
+    // ----- US020 START -----
+
+    /**
+     * US020 - Get list of public lists by a given genre
+     * Ensures
+     */
+    @Test
+    void shouldReturnListOfPublicListByGivenGenre(){
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository();
+
+        User owner = mock(User.class);
+        Genre desiredGenre = mock(Genre.class);
+
+        when(owner.getUserName()).thenReturn("john");
+        when(desiredGenre.getGenreType()).thenReturn("Drama");
+
+        CollectionOfPublications collection1 = new CollectionOfPublications("test", desiredGenre, owner);
+        collection1.set_isPrivate(false);
+        CollectionOfPublications collection2 = new CollectionOfPublications("test2", new Genre("Action"), owner);
+        collection2.set_isPrivate(false);
+        CollectionOfPublications collection3 = new CollectionOfPublications("test3", desiredGenre, owner);
+
+
+        sut.addCollectionToRepo(collection1);
+        sut.addCollectionToRepo(collection2);
+        sut.addCollectionToRepo(collection3);
+
+        assertEquals(1, sut.findPublicByGenre(desiredGenre).size());
+
+    }
 }

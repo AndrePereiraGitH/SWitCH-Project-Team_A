@@ -2,7 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ class PublicationTypeDTO_US014Test {
     @Test
     void fromDomainListValidPublicationType(){
         // Arrange
-        FactoryPublicationType factory = new FactoryPublicationType();
+        PublicationTypeFactory factory = new PublicationTypeFactory();
 
         PublicationType pt = factory.create(
                 MediaFormat.BOOK,
