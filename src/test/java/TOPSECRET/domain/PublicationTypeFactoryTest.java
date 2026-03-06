@@ -23,13 +23,13 @@ import static org.mockito.Mockito.mockConstruction;
  * {@link PublicationType} constructor and verify that object creation occurs as expected.
  */
 
-class FactoryPublicationTypeTest {
+class PublicationTypeFactoryTest {
 
     @Test
     void mockConstructsPublicationType() {
         MediaFormat mediaFormat = MediaFormat.BOOK;
         TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
-        String details = "some details";
+        String details = "details";
 
         try (MockedConstruction<PublicationType> mocked =
                      mockConstruction(PublicationType.class)) {

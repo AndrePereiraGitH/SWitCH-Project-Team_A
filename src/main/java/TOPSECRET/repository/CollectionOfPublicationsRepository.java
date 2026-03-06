@@ -83,7 +83,7 @@ public class CollectionOfPublicationsRepository {
      */
     public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName)
     {
-        if (genreName == null) {
+        if (genreName == null || genreName.getGenreType() == null || genreName.getGenreType().isBlank()) {
             throw new IllegalArgumentException("Genre can't be null.");
         }
 
