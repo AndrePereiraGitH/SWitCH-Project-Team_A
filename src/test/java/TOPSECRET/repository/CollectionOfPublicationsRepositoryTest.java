@@ -270,24 +270,45 @@ class CollectionOfPublicationsRepositoryTest {
 
         CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository();
 
+        // User setup
         User owner = mock(User.class);
-        Genre desiredGenre = mock(Genre.class);
-
         when(owner.getUserName()).thenReturn("john");
+
+        // Genre setup
+        Genre desiredGenre = mock(Genre.class);
         when(desiredGenre.getGenreType()).thenReturn("Drama");
 
-        CollectionOfPublications collection1 = new CollectionOfPublications("test", desiredGenre, owner);
-        collection1.set_isPrivate(false);
-        CollectionOfPublications collection2 = new CollectionOfPublications("test2", new Genre("Action"), owner);
-        collection2.set_isPrivate(false);
-        CollectionOfPublications collection3 = new CollectionOfPublications("test3", desiredGenre, owner);
+        // Collection creation
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c3 = mock(CollectionOfPublications.class);
 
+        // Collection user
+        when(c1.getOwner()).thenReturn(owner);
+        when(c2.getOwner()).thenReturn(owner);
+        when(c3.getOwner()).thenReturn(owner);
 
-        sut.addCollectionToRepo(collection1);
-        sut.addCollectionToRepo(collection2);
-        sut.addCollectionToRepo(collection3);
+        // Collection privacy
+        when(c1.getIsPrivate()).thenReturn(true);
+        when(c2.getIsPrivate()).thenReturn(false);
+        when(c3.getIsPrivate()).thenReturn(false);
 
-        assertEquals(1, sut.findPublicByGenre(desiredGenre).size());
+        // Collection name
+        when(c1.getCollectionName()).thenReturn("Collection 1");
+        when(c2.getCollectionName()).thenReturn("Collection 2");
+        when(c3.getCollectionName()).thenReturn("Collection 3");
+
+        // Collection genre
+        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c2.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c3.getCollectionGenre()).thenReturn(desiredGenre);
+
+        // Add collections to repo
+        sut.addCollectionToRepo(c1);
+        sut.addCollectionToRepo(c2);
+        sut.addCollectionToRepo(c3);
+
+        assertEquals(2, sut.findPublicByGenre(desiredGenre).size());
 
     }
 
@@ -321,7 +342,7 @@ class CollectionOfPublicationsRepositoryTest {
     }
 
     /**
-     * Ensures the return list is empty when there are no public lists of the user inputed genre
+     * Ensures the return list is empty when there are no public lists of the given genre
      */
     @Test
     void shouldReturnEmptyListWhenNoPublicListsExist() {
@@ -331,6 +352,9 @@ class CollectionOfPublicationsRepositoryTest {
         // Genre setup
         Genre desiredGenre = mock(Genre.class);
         when(desiredGenre.getGenreType()).thenReturn("Action");
+
+        Genre otherGenre = mock(Genre.class);
+        when(otherGenre.getGenreType()).thenReturn("Drama");
 
 
         // Collection setup
@@ -344,9 +368,9 @@ class CollectionOfPublicationsRepositoryTest {
         when(c3.getIsPrivate()).thenReturn(false);
 
         // Collection genre
-        when(c1.getCollectionName()).thenReturn("Action");
-        when(c2.getCollectionName()).thenReturn("Drama");
-        when(c3.getCollectionName()).thenReturn("Sci-fi");
+        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c2.getCollectionGenre()).thenReturn(otherGenre);
+        when(c3.getCollectionGenre()).thenReturn(otherGenre);
 
         // Adding collections to repo
         sut.addCollectionToRepo(c1);
