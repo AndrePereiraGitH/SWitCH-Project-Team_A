@@ -26,7 +26,7 @@ class LibraryRepositoryDependenciesTest {
     // BibliographicalData
     Profile profile = new Profile("Tove Ditlevsen", new Country("DENMARK"), LocalDate.of(1917, 12, 14));
     AuthorFactory authorFactory = new AuthorFactory();
-    Author author = authorFactory.createAuthorWithExistingProfile(profile, "valio bio");
+    Author author = authorFactory.createWithExistingProfile(profile, "valio bio");
     Address address = new Address("R Maria", "12", "156-5", new Country("PARAGUAY"));
     Email email = new Email("Maria1", "gmail.com");
     Contact contact = new Contact("915945695", "+351", email, address);

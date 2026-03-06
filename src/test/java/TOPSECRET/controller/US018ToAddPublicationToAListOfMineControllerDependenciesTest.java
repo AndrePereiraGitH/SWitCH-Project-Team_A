@@ -83,7 +83,7 @@ class US018ToAddPublicationToAListOfMineControllerDependenciesTest {
                 LocalDate.of(1980, 1, 1)
         );
 
-        Author author = authorFactory.createAuthorWithExistingProfile(authorProfile, "Short biography");
+        Author author = authorFactory.createWithExistingProfile(authorProfile, "Short biography");
 
         BibliographicalData bd = new BibliographicalData(
                 title,

@@ -38,7 +38,7 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
                 LocalDate.of(1980, 1, 1)
         );
         AuthorFactory authorFactory = new AuthorFactory();
-        Author author = authorFactory.createAuthorWithExistingProfile(
+        Author author = authorFactory.createWithExistingProfile(
                 profile,
                 "Short biography"
         );
@@ -686,7 +686,7 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         Profile authorProfile = new Profile("John Doe",new Country("Portugal"), LocalDate.of(1940,2,24));
         List<Author> authors = new ArrayList<>();
         AuthorFactory authorFactory = new AuthorFactory();
-        authors.add(authorFactory.createAuthorWithExistingProfile(authorProfile, "Author Biography"));
+        authors.add(authorFactory.createWithExistingProfile(authorProfile, "Author Biography"));
 
         // Bibliographical Data creation
         Locale language = Locale.getDefault();

@@ -29,7 +29,7 @@ public class ToRegisterAuthorController {
         this._authorRepository = authorRepository;
     }
 
-    public Author registerAuthor(String name, Country country, LocalDate dateOfBirth, String biography) {
+    public Author register(String name, Country country, LocalDate dateOfBirth, String biography) {
         // Delegates author creation and persistence to the repository
         return _authorRepository.createAndAddAuthor(name, country, dateOfBirth, biography);
     }

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p><b>What is tested here:</b>
  * <ul>
  *   <li>Constructor — null repository</li>
- *   <li>{@link ToRegisterAuthorController#registerAuthor} — happy path, duplicate prevention,
+ *   <li>{@link ToRegisterAuthorController#register} — happy path, duplicate prevention,
  *       invalid input propagation, multiple authors</li>
  * </ul>
  */
@@ -56,16 +56,16 @@ class ToRegisterAuthorControllerDependenciesTest {
     // ========================================
 
     @Test
-    void shouldRegisterAuthor() {
+    void shouldRegister() {
         // Arrange
         ToRegisterAuthorController controller = new ToRegisterAuthorController(authorRepository);
 
         Profile expectedProfile = new Profile("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12));
         AuthorFactory factory = new AuthorFactory();
-        Author expected = factory.createAuthorWithExistingProfile(expectedProfile, "bio");
+        Author expected = factory.createWithExistingProfile(expectedProfile, "bio");
 
         // Act
-        Author result = controller.registerAuthor("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "bio");
+        Author result = controller.register("Maria", new Country("Portugal"), LocalDate.of(1978, 5, 12), "bio");
 
         // Assert
         assertNotNull(result);
@@ -78,11 +78,11 @@ class ToRegisterAuthorControllerDependenciesTest {
         // Arrange
         ToRegisterAuthorController controller = new ToRegisterAuthorController(authorRepository);
 
-        controller.registerAuthor("Duplicate", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio");
+        controller.register("Duplicate", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio");
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> controller.registerAuthor("Duplicate", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio")
+                () -> controller.register("Duplicate", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio")
         );
         assertEquals("Author already exists", exception.getMessage());
     }
@@ -94,15 +94,15 @@ class ToRegisterAuthorControllerDependenciesTest {
 
         // Act + Assert - null name
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerAuthor(null, new Country("USA"), LocalDate.of(1980, 1, 1), "bio")
+                () -> controller.register(null, new Country("USA"), LocalDate.of(1980, 1, 1), "bio")
         );
         // Act + Assert - blank name
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerAuthor("  ", new Country("USA"), LocalDate.of(1980, 1, 1), "bio")
+                () -> controller.register("  ", new Country("USA"), LocalDate.of(1980, 1, 1), "bio")
         );
         // Act + Assert - null biography
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerAuthor("Name", new Country("USA"), LocalDate.of(1980, 1, 1), null)
+                () -> controller.register("Name", new Country("USA"), LocalDate.of(1980, 1, 1), null)
         );
     }
 
@@ -113,9 +113,9 @@ class ToRegisterAuthorControllerDependenciesTest {
         ToRegisterAuthorController controller = new ToRegisterAuthorController(repository);
 
         // Act
-        Author author1 = controller.registerAuthor("Author1", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
-        Author author2 = controller.registerAuthor("Author2", new Country("BAHAMAS"), LocalDate.of(1985, 2, 2), "bio2");
-        Author author3 = controller.registerAuthor("Author3", new Country("BELARUS"), LocalDate.of(1990, 3, 3), "bio3");
+        Author author1 = controller.register("Author1", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
+        Author author2 = controller.register("Author2", new Country("BAHAMAS"), LocalDate.of(1985, 2, 2), "bio2");
+        Author author3 = controller.register("Author3", new Country("BELARUS"), LocalDate.of(1990, 3, 3), "bio3");
 
         // Assert
         assertNotNull(author1);

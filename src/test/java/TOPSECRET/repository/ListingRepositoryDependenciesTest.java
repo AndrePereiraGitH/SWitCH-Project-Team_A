@@ -82,7 +82,7 @@ class ListingRepositoryDependenciesTest {
     private static BibliographicalData instantiateBibliographicalData() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
         AuthorFactory authorFactory = new AuthorFactory();
-        Author author = authorFactory.createAuthorWithExistingProfile(authorProfile, "valid bio");
+        Author author = authorFactory.createWithExistingProfile(authorProfile, "valid bio");
 
         List<Author> authors = new ArrayList<>();
         authors.add(author);

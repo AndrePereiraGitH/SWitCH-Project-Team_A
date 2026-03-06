@@ -33,7 +33,7 @@ import org.mockito.MockedConstruction;
  *   <li>Behaviour of both factory methods:
  *       {@link AuthorFactory#create(String, Country, java.time.LocalDate, String)}
  *       and
- *       {@link AuthorFactory#createAuthorWithExistingProfile(Profile, String)}</li>
+ *       {@link AuthorFactory#createWithExistingProfile(Profile, String)}</li>
  * </ul>
  *
  * <p><b>What is NOT tested here:</b> the internal validation or domain behaviour
@@ -180,13 +180,13 @@ class AuthorFactoryTest {
     // ========================================
 
     @Test
-    void createAuthorWithExistingProfile_shouldCallAuthorConstructorOnce() {
+    void createAuthorWithExistingProfile_shouldCallConstructorOnce() {
 
         // ARRANGE
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
 
             // ACT
-            factory.createAuthorWithExistingProfile(profile, expectedBio);
+            factory.createWithExistingProfile(profile, expectedBio);
 
             // ASSERT
             assertEquals(1, mocked.constructed().size());
@@ -194,7 +194,7 @@ class AuthorFactoryTest {
     }
 
     @Test
-    void createAuthorWithExistingProfile_shouldTrimBiography() {
+    void createWithExistingProfile_shouldTrimBiography() {
 
         // ARRANGE
         try (MockedConstruction<Author> mocked =
@@ -204,7 +204,7 @@ class AuthorFactoryTest {
                      })) {
 
             // ACT
-            Author author = factory.createAuthorWithExistingProfile(profile, rawBio);
+            Author author = factory.createWithExistingProfile(profile, rawBio);
 
             // ASSERT
             assertSame(profile, author.getProfile());

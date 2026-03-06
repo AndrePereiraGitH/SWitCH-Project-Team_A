@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  * <ul>
  *   <li>Constructor validation — an {@link IllegalArgumentException} is thrown
  *       when the {@link AuthorRepository} dependency is {@code null}</li>
- *   <li>Delegation behaviour — {@link ToRegisterAuthorController#registerAuthor(String, Country, java.time.LocalDate, String)}
+ *   <li>Delegation behaviour — {@link ToRegisterAuthorController#register(String, Country, java.time.LocalDate, String)}
  *       calls {@link AuthorRepository#createAndAddAuthor(String, Country, java.time.LocalDate, String)}
  *       with the same arguments</li>
  *   <li>The controller returns the same {@link Author} instance produced by the repository</li>
@@ -51,7 +51,7 @@ class ToRegisterAuthorControllerTest {
     }
 
     @Test
-    void houldDelegateToRepository_andReturnRepositoryResult() {
+    void shouldDelegateToRepository_andReturnRepositoryResult() {
 
         // ARRANGE
         AuthorRepository authorRepository = mock(AuthorRepository.class);
@@ -68,7 +68,7 @@ class ToRegisterAuthorControllerTest {
                 .thenReturn(expectedAuthor);
 
         // ACT
-        Author result = controller.registerAuthor(name, country, dateOfBirth, biography);
+        Author result = controller.register(name, country, dateOfBirth, biography);
 
         // ASSERT
         assertSame(expectedAuthor, result);
