@@ -18,7 +18,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController}.
+ * Unit tests for {@link US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController}.
  *
  * This test class verifies:
  * - Retrieval of all authors as DTOs.
@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * - Correct behavior when the author has no direct sales.
  * - Proper exception handling when null is provided.
  */
-class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
+class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
-    private ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController controller;
+    private US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController controller;
     private AuthorRepository authorRepository;
     private ListingRepository listingRepository;
 
@@ -143,7 +143,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         );
 
         // ---------- Initialize Controller ----------
-        controller = new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
+        controller = new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                 authorRepository,
                 listingRepository
         );
@@ -187,7 +187,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void constructorShouldThrowExceptionWhenAuthorRepositoryIsNull() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
+                () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         null,
                         listingRepository
                 )
@@ -198,7 +198,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void constructorShouldThrowExceptionWhenListingRepositoryIsNull() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
+                () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepository,
                         null
                 )

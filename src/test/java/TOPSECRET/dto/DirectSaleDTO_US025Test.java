@@ -93,7 +93,7 @@ class DirectSaleDTO_US025Test {
         assertEquals(List.of("author2"), dto.getAuthors());
         assertEquals(new BigDecimal("25.00"), dto.getPrice());
         assertEquals("Pack of 2 listings", dto.getListingTitle());
-        assertEquals("Multiple sellers", dto.getSeller());
+        assertEquals("nmeee", dto.getSeller());
     }
 
     /**

@@ -10,16 +10,16 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RegisterUserControllerTest {
+class US001ToRegisterUserControllerTest {
 
-    private RegisterUserController registerUserController;
+    private US001ToRegisterUserController US001ToRegisterUserController;
     private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         UserFactory userFactory = new UserFactory();
         userRepository = new UserRepository(userFactory);
-        registerUserController = new RegisterUserController(userRepository);
+        US001ToRegisterUserController = new US001ToRegisterUserController(userRepository);
     }
 
     private Contact createSampleContact() {
@@ -44,7 +44,7 @@ class RegisterUserControllerTest {
         Contact contact = createSampleContact();
         Profile profile = createSampleProfile();
 
-        registerUserController.registerUser(userName, contact, profile, UserRole.ADMIN);
+        US001ToRegisterUserController.registerUser(userName, contact, profile, UserRole.ADMIN);
         assertTrue(userRepository.exists(userName), "User registered successfully");
     }
 
@@ -55,15 +55,15 @@ class RegisterUserControllerTest {
         Profile profile = createSampleProfile();
 
         assertThrows(IllegalArgumentException.class, () ->
-                registerUserController.registerUser(null, contact, profile, UserRole.ADMIN));
+                US001ToRegisterUserController.registerUser(null, contact, profile, UserRole.ADMIN));
 
         assertThrows(IllegalArgumentException.class, () ->
-                registerUserController.registerUser("User", null, profile, UserRole.ADMIN));
+                US001ToRegisterUserController.registerUser("User", null, profile, UserRole.ADMIN));
 
         assertThrows(IllegalArgumentException.class, () ->
-                registerUserController.registerUser("User", contact, null, UserRole.ADMIN));
+                US001ToRegisterUserController.registerUser("User", contact, null, UserRole.ADMIN));
 
         assertThrows(IllegalArgumentException.class, () ->
-                registerUserController.registerUser("User", contact, profile, null));
+                US001ToRegisterUserController.registerUser("User", contact, profile, null));
     }
 }
