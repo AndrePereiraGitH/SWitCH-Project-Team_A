@@ -2,7 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +30,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     MediaFormat mediaFormat = MediaFormat.BOOK;
     TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
     String details = "Book with gold engravings";
-    FactoryPublicationType factory = new FactoryPublicationType();
+    PublicationTypeFactory factory = new PublicationTypeFactory();
 
 
     /**

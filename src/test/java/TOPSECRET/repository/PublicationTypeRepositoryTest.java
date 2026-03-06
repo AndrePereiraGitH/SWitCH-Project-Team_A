@@ -2,7 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,28 +10,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Test with mocks for publication type repository
- * Used mock for FactoryPublicationType
+ * Test with mocks for {@link PublicationTypeRepository}
+ * Used mock for {@link PublicationTypeFactory}
  */
 class PublicationTypeRepositoryTest {
 
     /**
      * Initial setup for tests
      * Creation of PublicationTypeRepository object
-     * Creation of {@link FactoryPublicationType} mock
+     * Creation of {@link PublicationTypeFactory} mock
      */
-    FactoryPublicationType factory;
+    PublicationTypeFactory factory;
     PublicationTypeRepository repo;
 
     @BeforeEach
     void setup()
     {
-        factory = mock(FactoryPublicationType.class);
+        factory = mock(PublicationTypeFactory.class);
         repo = new PublicationTypeRepository(factory);
     }
 
     /**
-     * Creating publication types should delegate creating to factory
+     * Creating publication types should delegate creation to factory
      */
     @Test
     void createPublicationTypeDelegatesToFactory()

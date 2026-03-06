@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationTypeDTO_US014;
 import TOPSECRET.repository.PublicationTypeRepository;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class US014ToGetPublicationTypeListControllerDependenciesTest {
 
-    FactoryPublicationType factory = new FactoryPublicationType();
+    PublicationTypeFactory factory = new PublicationTypeFactory();
 
     @Test
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {

@@ -49,7 +49,7 @@ class AppraisalEntityRepositoryDependenciesTest {
      * @return PublicationTypeRepository instance.
      */
     private PublicationTypeRepository createPublicationTypeRepository() {
-        PublicationTypeRepository repo = new PublicationTypeRepository(new FactoryPublicationType());
+        PublicationTypeRepository repo = new PublicationTypeRepository(new PublicationTypeFactory());
         repo.addToList(new PublicationType(
                 MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
@@ -186,7 +186,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         // ARRANGE
         GenreRepository genreRepo = createGenreRepository();
 
-        PublicationTypeRepository emptyPubRepo = new PublicationTypeRepository(new FactoryPublicationType());
+        PublicationTypeRepository emptyPubRepo = new PublicationTypeRepository(new PublicationTypeFactory());
 
         AppraisalEntityRepository repository = new AppraisalEntityRepository(genreRepo, emptyPubRepo);
 

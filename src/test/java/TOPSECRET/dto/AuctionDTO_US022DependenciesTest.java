@@ -114,7 +114,7 @@ class AuctionDTO_US022DependenciesTest {
         PhysicalAttributes physicalAttributes1 =
                 new PhysicalAttributes(dimensions, 400.0, 250);
 
-        FactoryPublicationType pTypeFactory = new FactoryPublicationType();
+        PublicationTypeFactory pTypeFactory = new PublicationTypeFactory();
         PublicationType pubType1 =
                 pTypeFactory.create(MediaFormat.BOOK,
                         TypeOfBinding.CASE_BINDING,
@@ -192,7 +192,7 @@ class AuctionDTO_US022DependenciesTest {
         PhysicalAttributes physicalAttributes =
                 new PhysicalAttributes(dimensions, 400.0, 250);
 
-        FactoryPublicationType pTypeFactory = new FactoryPublicationType();
+        PublicationTypeFactory pTypeFactory = new PublicationTypeFactory();
         PublicationType pubType =
                 pTypeFactory.create(MediaFormat.BOOK,
                         TypeOfBinding.CASE_BINDING,
