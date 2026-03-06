@@ -1,16 +1,14 @@
-package TOPSECRET.domain;
+package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
-import TOPSECRET.controller.US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.dto.AuctionDTO_US028;
@@ -61,7 +59,8 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         publisher2 = new Publisher("Other Books", "PT987654321", contact);
 
         // Bibliographical data
-        Author author = new Author(profile, "Author bio");
+        AuthorFactory authorFactory = new AuthorFactory();
+        Author author = authorFactory.createAuthorWithExistingProfile(profile, "Author bio");
 
         // Book published by publisher1
         BibliographicalData data1 = new BibliographicalData(
@@ -126,7 +125,9 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         );
 
        // -------- Listings --------
-        Listing listing1 = new Listing(
+        ListingFactory listingFactory = new ListingFactory();
+
+        Listing listing1 = listingFactory.create(
                 "Auction 1",
                 Arrays.asList(item1),
                 SaleType.AUCTION,
@@ -135,7 +136,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 Arrays.asList(new Picture("img1.jpg"))
         );
 
-        Listing listing2 = new Listing(
+        Listing listing2 = listingFactory.create(
                 "Auction 2",
                 Arrays.asList(item2),
                 SaleType.AUCTION,
