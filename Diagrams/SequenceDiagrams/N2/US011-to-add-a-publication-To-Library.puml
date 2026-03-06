@@ -20,6 +20,7 @@ participant ":PublicationRepository" as PubRepo
 
 participant "Library" as LibDomain
 
+autonumber
 
 User -> UI : asks to add publication to library
 activate UI
@@ -48,9 +49,8 @@ activate Ctrl
 
 Ctrl -> LibDomain: addPublication(selectedPub)
 activate LibDomain
-LibDomain -> LibDomain: verifyUnique(selectedPub)
 LibDomain -> LibDomain: add(selectedPub)
-LibDomain --> Ctrl: true
+LibDomain --> Ctrl: selectedPub
 deactivate LibDomain
 
 Ctrl --> UI: true

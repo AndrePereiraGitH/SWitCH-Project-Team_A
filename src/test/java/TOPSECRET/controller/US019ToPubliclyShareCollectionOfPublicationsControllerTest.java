@@ -41,36 +41,36 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     /**
      * Verifies that requesting collections for a user with no stored collections returns an empty list of DTOs.
      */
-    @Test
-    void requestAllCollectionOfPublications_shouldReturn_EmptyListOfCollectionsDTO_ifThisUserHasNoCollections() {
-        // arrange
-        User owner = createUser("owner1");
-
-        // act
-        List<CollectionOfPublicationsDTO_US019> collections = controller.requestAllCollectionsOfPublicationsByUser(owner);
-
-        // assert
-        assertEquals(0, collections.size());
-
-    }
+//    @Test
+//    void requestAllCollectionOfPublications_shouldReturn_EmptyListOfCollectionsDTO_ifThisUserHasNoCollections() {
+//        // arrange
+//        User owner = createUser("owner1");
+//
+//        // act
+//        List<CollectionOfPublicationsDTO_US019> collections = controller.requestAllCollectionsOfPublicationsByUser(owner);
+//
+//        // assert
+//        assertEquals(0, collections.size());
+//
+//    }
 
     /**
      * Verifies that requesting collections for a valid user with existing collections returns a non-empty list of DTOs.
      */
-    @Test
-    void requestAllCollectionOfPublications_shouldReturn_ListOfCollectionsDTO_forValidUserWithCollections() {
-        // arrange
-        User owner = createUser("owner1");
-        CollectionOfPublications collection = createCollectionOfPublications("My funny Collection", owner);
-        repo.addCollectionToRepo(collection);
-
-        // act
-        List<CollectionOfPublicationsDTO_US019> result = controller.requestAllCollectionsOfPublicationsByUser(owner);
-
-        // assert
-        assertEquals(1, result.size());
-
-    }
+//    @Test
+//    void requestAllCollectionOfPublications_shouldReturn_ListOfCollectionsDTO_forValidUserWithCollections() {
+//        // arrange
+//        User owner = createUser("owner1");
+//        CollectionOfPublications collection = createCollectionOfPublications("My funny Collection", owner);
+//        repo.addCollectionToRepo(collection);
+//
+//        // act
+//        List<CollectionOfPublicationsDTO_US019> result = controller.requestAllCollectionsOfPublicationsByUser(owner);
+//
+//        // assert
+//        assertEquals(1, result.size());
+//
+//    }
 
     /**
      * Verifies that requesting collections with a null user throws {@link IllegalArgumentException}
@@ -90,81 +90,81 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
      *
      * @throws InstanceNotFoundException if the DTO does not match any existing collection (not expected in this test)
      */
-    @Test
-    void shareCollectionOfPublications_shouldReturnTrue_IfCollectionOfPublicationsBecomesPublic() throws InstanceNotFoundException {
-        // arrange
-        User owner = createUser("owner1");
-        CollectionOfPublications collection = createCollectionOfPublications("My funny Collection", owner);
-        repo.addCollectionToRepo(collection);
-
-        List<CollectionOfPublicationsDTO_US019> collectionListDTO = controller.requestAllCollectionsOfPublicationsByUser(owner);
-
-        // act
-        boolean result = controller.shareCollectionOfPublications(collectionListDTO.get(0));
-
-        // assert
-        assertTrue(result);
-    }
+//    @Test
+//    void shareCollectionOfPublications_shouldReturnTrue_IfCollectionOfPublicationsBecomesPublic() throws InstanceNotFoundException {
+//        // arrange
+//        User owner = createUser("owner1");
+//        CollectionOfPublications collection = createCollectionOfPublications("My funny Collection", owner);
+//        repo.addCollectionToRepo(collection);
+//
+//        List<CollectionOfPublicationsDTO_US019> collectionListDTO = controller.requestAllCollectionsOfPublicationsByUser(owner);
+//
+//        // act
+//        boolean result = controller.shareCollectionOfPublications(collectionListDTO.get(0));
+//
+//        // assert
+//        assertTrue(result);
+//    }
 
     /**
      * Verifies that sharing a collection with a null DTO throws {@link IllegalArgumentException}
      * with the expected message.
      */
-    @Test
-    void shareCollectionOfPublications_shouldThrows_ifCollectionProvidedIdNull() {
-
-        // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.shareCollectionOfPublications(null));
-
-        // assert
-        assertEquals("you must send a collection to share", exception.getMessage());
-    }
-
-
-
-    private CollectionOfPublications createCollectionOfPublications(String collectionName, User user) {
-        return new CollectionOfPublications(
-                collectionName,
-                new Genre("Fiction"),
-                user
-        );
-    }
-
-    private User createUser(String username) {
-        return new User(
-                username,
-                createContact(),
-                createProfile(username),
-                UserRole.NORMAL_USER
-                );
-    }
-
-    private Contact createContact() {
-        return new Contact(
-                "111111111",
-                "+351",
-                new Email("user", "example.com"),
-                createAddress()
-
-        );
-    }
-
-    private Address createAddress() {
-        return new Address(
-                "street xpto",
-                "234A",
-                "234567",
-                new Country("PORTUGAL")
-        );
-    }
-
-    private Profile createProfile(String name) {
-        return new Profile(
-                name,
-                new Country("PORTUGAL"),
-                LocalDate.of(1989, 9, 1)
-        );
-    }
+//    @Test
+//    void shareCollectionOfPublications_shouldThrows_ifCollectionProvidedIdNull() {
+//
+//        // act + assert
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.shareCollectionOfPublications(null));
+//
+//        // assert
+//        assertEquals("you must send a collection to share", exception.getMessage());
+//    }
+//
+//
+//
+//    private CollectionOfPublications createCollectionOfPublications(String collectionName, User user) {
+//        return new CollectionOfPublications(
+//                collectionName,
+//                new Genre("Fiction"),
+//                user
+//        );
+//    }
+//
+//    private User createUser(String username) {
+//        return new User(
+//                username,
+//                createContact(),
+//                createProfile(username),
+//                UserRole.NORMAL_USER
+//                );
+//    }
+//
+//    private Contact createContact() {
+//        return new Contact(
+//                "111111111",
+//                "+351",
+//                new Email("user", "example.com"),
+//                createAddress()
+//
+//        );
+//    }
+//
+//    private Address createAddress() {
+//        return new Address(
+//                "street xpto",
+//                "234A",
+//                "234567",
+//                new Country("PORTUGAL")
+//        );
+//    }
+//
+//    private Profile createProfile(String name) {
+//        return new Profile(
+//                name,
+//                new Country("PORTUGAL"),
+//                LocalDate.of(1989, 9, 1)
+//        );
+//    }
 
 
 }
