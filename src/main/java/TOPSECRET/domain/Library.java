@@ -35,7 +35,7 @@ public class Library {
      * @throws IllegalArgumentException if libraryName is null or blank
      * @throws IllegalArgumentException if user is null
      */
-    public Library(String libraryName, User user) {
+    protected Library(String libraryName, User user) {
         if (libraryName == null || libraryName.isBlank()) {
             throw new IllegalArgumentException("Library Name cannot be null or blank");
         }

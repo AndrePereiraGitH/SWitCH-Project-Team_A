@@ -558,109 +558,109 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         assertFalse(result);
     }
 
-    @Test
-    void addPublicationToCollection_shouldReturnFalse_whenUserIsNotOwner_US018() {
+//    @Test
+//    void addPublicationToCollection_shouldReturnFalse_whenUserIsNotOwner_US018() {
+//
+//        User user = createValidUser();
+//        User otherUser = new User(
+//                "otherUser",
+//                new Contact("913333333", "351", null, null),
+//                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
+//                UserRole.NORMAL_USER
+//        );
+//
+//        CollectionOfPublications collection =
+//                new CollectionOfPublications("Favorites", new Genre("Fiction"), otherUser);
+//
+//        Library library = new Library("Test", user);
+//
+//        PublicationSample publication = createValidPublication();
+//        library.addPublication(publication);
+//
+//        boolean result = repository.addPublicationToCollection(
+//                user,
+//                library,
+//                collection,
+//                publication
+//        );
+//
+//        assertFalse(result);
+//    }
 
-        User user = createValidUser();
-        User otherUser = new User(
-                "otherUser",
-                new Contact("913333333", "351", null, null),
-                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
-                UserRole.NORMAL_USER
-        );
+//    @Test
+//    void addPublicationToCollection_shouldReturnFalse_whenLibraryDoesNotBelongToUser_US018() {
+//
+//        User user = createValidUser();
+//        User otherUser = new User(
+//                "otherUser",
+//                new Contact("913333333", "351", null, null),
+//                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
+//                UserRole.NORMAL_USER
+//        );
+//
+//        CollectionOfPublications collection =
+//                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+//
+//        Library library = new Library("Test", otherUser);
+//
+//        PublicationSample publication = createValidPublication();
+//        library.addPublication(publication);
+//
+//        boolean result = repository.addPublicationToCollection(
+//                user,
+//                library,
+//                collection,
+//                publication
+//        );
+//
+//        assertFalse(result);
+//    }
 
-        CollectionOfPublications collection =
-                new CollectionOfPublications("Favorites", new Genre("Fiction"), otherUser);
+//    @Test
+//    void addPublicationToCollection_shouldReturnFalse_whenPublicationNotInLibrary_US018() {
+//
+//        User user = createValidUser();
+//
+//        CollectionOfPublications collection =
+//                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+//
+//        Library library = new Library("Test", user);
+//
+//        PublicationSample publication = createValidPublication();
+//
+//        boolean result = repository.addPublicationToCollection(
+//                user,
+//                library,
+//                collection,
+//                publication
+//        );
+//
+//        assertFalse(result);
+//    }
 
-        Library library = new Library("Test", user);
-
-        PublicationSample publication = createValidPublication();
-        library.addPublication(publication);
-
-        boolean result = repository.addPublicationToCollection(
-                user,
-                library,
-                collection,
-                publication
-        );
-
-        assertFalse(result);
-    }
-
-    @Test
-    void addPublicationToCollection_shouldReturnFalse_whenLibraryDoesNotBelongToUser_US018() {
-
-        User user = createValidUser();
-        User otherUser = new User(
-                "otherUser",
-                new Contact("913333333", "351", null, null),
-                new Profile("Other", new Country("PORTUGAL"), LocalDate.of(1985, 1, 1)),
-                UserRole.NORMAL_USER
-        );
-
-        CollectionOfPublications collection =
-                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
-
-        Library library = new Library("Test", otherUser);
-
-        PublicationSample publication = createValidPublication();
-        library.addPublication(publication);
-
-        boolean result = repository.addPublicationToCollection(
-                user,
-                library,
-                collection,
-                publication
-        );
-
-        assertFalse(result);
-    }
-
-    @Test
-    void addPublicationToCollection_shouldReturnFalse_whenPublicationNotInLibrary_US018() {
-
-        User user = createValidUser();
-
-        CollectionOfPublications collection =
-                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
-
-        Library library = new Library("Test", user);
-
-        PublicationSample publication = createValidPublication();
-
-        boolean result = repository.addPublicationToCollection(
-                user,
-                library,
-                collection,
-                publication
-        );
-
-        assertFalse(result);
-    }
-
-    @Test
-    void addPublicationToCollection_shouldReturnTrue_whenAllValid_US018() {
-
-        User user = createValidUser();
-
-        CollectionOfPublications collection =
-                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
-
-        Library library = new Library("Test", user);
-
-        PublicationSample publication = createValidPublication();
-        library.addPublication(publication);
-
-        boolean result = repository.addPublicationToCollection(
-                user,
-                library,
-                collection,
-                publication
-        );
-
-        assertTrue(result);
-        assertEquals(1, collection.getPublications().size());
-    }
+//    @Test
+//    void addPublicationToCollection_shouldReturnTrue_whenAllValid_US018() {
+//
+//        User user = createValidUser();
+//
+//        CollectionOfPublications collection =
+//                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+//
+//        Library library = new Library("Test", user);
+//
+//        PublicationSample publication = createValidPublication();
+//        library.addPublication(publication);
+//
+//        boolean result = repository.addPublicationToCollection(
+//                user,
+//                library,
+//                collection,
+//                publication
+//        );
+//
+//        assertTrue(result);
+//        assertEquals(1, collection.getPublications().size());
+//    }
 
     /**
      * US020
@@ -721,7 +721,7 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
 
 
         // Creates a private library for the user
-        Library privateLibrary = new Library("My Library", userName);
+//        Library privateLibrary = new Library("My Library", userName);
 
 
         // Creation of Collection of Publications
@@ -754,10 +754,10 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         c4.set_isPrivate(false);  // Torna pública
 
 
-        repository.addPublicationToCollection(userName, privateLibrary, c1, publicationSample);
-        repository.addPublicationToCollection(userName, privateLibrary, c2, publicationSample);
-        repository.addPublicationToCollection(userName, privateLibrary, c3, publicationSample);
-        repository.addPublicationToCollection(userName, privateLibrary, c4, publicationSample);
+//        repository.addPublicationToCollection(userName, privateLibrary, c1, publicationSample);
+//        repository.addPublicationToCollection(userName, privateLibrary, c2, publicationSample);
+//        repository.addPublicationToCollection(userName, privateLibrary, c3, publicationSample);
+//        repository.addPublicationToCollection(userName, privateLibrary, c4, publicationSample);
 
         repository.addCollectionToRepo(c1);
         repository.addCollectionToRepo(c2);

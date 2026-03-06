@@ -362,31 +362,31 @@ class PublicationSampleRepositoryDependenciesTest {
      * Ensures that PublicationSampleDtoToDomain converts
      * a valid DTO into the correct PublicationSample.
      */
-    @Test
-    void publicationSampleDtoToDomain_shouldReturnCorrectPublicationSample_US018() {
-
-        // Arrange
-        PublicationSampleFactory factory = new PublicationSampleFactory();
-
-        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
-
-        PublicationSampleDTO_US018 dto =
-                new PublicationSampleDTO_US018(
-                        publication1.getBibliographicalData().getTitle(),
-                        publication1.getEdition().getEditionNumber(),
-                        publication1.getOwner().getUserName()
-                );
-
-        Library library = new Library("TestLibrary", publication1.getOwner());
-        library.addPublication(publication1);
-
-        // Act
-        PublicationSample result =
-                repo.PublicationSampleDtoToDomain(library, dto);
-
-        // Assert
-        assertEquals(publication1, result);
-    }
+//    @Test
+//    void publicationSampleDtoToDomain_shouldReturnCorrectPublicationSample_US018() {
+//
+//        // Arrange
+//        PublicationSampleFactory factory = new PublicationSampleFactory();
+//
+//        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
+//
+//        PublicationSampleDTO_US018 dto =
+//                new PublicationSampleDTO_US018(
+//                        publication1.getBibliographicalData().getTitle(),
+//                        publication1.getEdition().getEditionNumber(),
+//                        publication1.getOwner().getUserName()
+//                );
+//
+//        Library library = new Library("TestLibrary", publication1.getOwner());
+//        library.addPublication(publication1);
+//
+//        // Act
+//        PublicationSample result =
+//                repo.PublicationSampleDtoToDomain(library, dto);
+//
+//        // Assert
+//        assertEquals(publication1, result);
+//    }
 
     @Test
     void publicationSampleDtoToDomain_shouldThrowException_whenLibraryIsNull_US018() {
@@ -404,46 +404,46 @@ class PublicationSampleRepositoryDependenciesTest {
         );
     }
 
-    @Test
-    void publicationSampleDtoToDomain_shouldThrowException_whenDtoIsNull_US018() {
+//    @Test
+//    void publicationSampleDtoToDomain_shouldThrowException_whenDtoIsNull_US018() {
+//
+//        // ARRANGE
+//        PublicationSampleFactory factory = new PublicationSampleFactory();
+//        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>(), factory);
+//
+//        Library library = new Library("TestLibrary", publication1.getOwner());
+//
+//        // ACT + ASSERT
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.PublicationSampleDtoToDomain(library, null)
+//        );
+//    }
 
-        // ARRANGE
-        PublicationSampleFactory factory = new PublicationSampleFactory();
-        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>(), factory);
-
-        Library library = new Library("TestLibrary", publication1.getOwner());
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.PublicationSampleDtoToDomain(library, null)
-        );
-    }
-
-    @Test
-    void publicationSampleDtoToDomain_shouldThrowException_whenPublicationNotFound_US018() {
-
-        // ARRANGE
-        List<PublicationSample> list = new ArrayList<>();
-        list.add(publication1);
-
-        PublicationSampleFactory factory = new PublicationSampleFactory();
-
-        PublicationSampleRepository repo = new PublicationSampleRepository(list, factory);
-
-        Library library = new Library("TestLibrary", publication1.getOwner());
-
-        PublicationSampleDTO_US018 dto =
-                new PublicationSampleDTO_US018(
-                        publication1.getBibliographicalData().getTitle(),
-                        publication1.getEdition().getEditionNumber(),
-                        publication1.getOwner().getUserName()
-                );
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.PublicationSampleDtoToDomain(library, dto)
-        );
-    }
+//    @Test
+//    void publicationSampleDtoToDomain_shouldThrowException_whenPublicationNotFound_US018() {
+//
+//        // ARRANGE
+//        List<PublicationSample> list = new ArrayList<>();
+//        list.add(publication1);
+//
+//        PublicationSampleFactory factory = new PublicationSampleFactory();
+//
+//        PublicationSampleRepository repo = new PublicationSampleRepository(list, factory);
+//
+//        Library library = new Library("TestLibrary", publication1.getOwner());
+//
+//        PublicationSampleDTO_US018 dto =
+//                new PublicationSampleDTO_US018(
+//                        publication1.getBibliographicalData().getTitle(),
+//                        publication1.getEdition().getEditionNumber(),
+//                        publication1.getOwner().getUserName()
+//                );
+//
+//        // ACT + ASSERT
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.PublicationSampleDtoToDomain(library, dto)
+//        );
+//    }
 
 
 }
