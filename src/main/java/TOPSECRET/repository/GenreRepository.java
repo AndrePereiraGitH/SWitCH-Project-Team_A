@@ -31,7 +31,7 @@ public class GenreRepository {
      * @return the created Genre
      * @throws IllegalArgumentException if the genre already exists
      */
-    public Genre createAndAddGenre(String genreType) {
+    public Genre createAndAdd(String genreType) {
         Genre genre = _genreFactory.create(genreType);
         if (!exists(genre)) {
             this._genres.add(genre);  // Add the genre that was passed in

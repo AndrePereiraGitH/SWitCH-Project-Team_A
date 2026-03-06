@@ -76,8 +76,8 @@ class ToGetListOfGenreControllerDependenciesTest {
     void shouldReturnGenreDTOsFromRepository() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Romance");
-        repository.createAndAddGenre("Horror");
+        repository.createAndAdd("Romance");
+        repository.createAndAdd("Horror");
 
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
@@ -94,8 +94,8 @@ class ToGetListOfGenreControllerDependenciesTest {
     void shouldReturnDTOsWithSameContentAsRepository() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Mystery");
-        repository.createAndAddGenre("Thriller");
+        repository.createAndAdd("Mystery");
+        repository.createAndAdd("Thriller");
 
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
@@ -113,9 +113,9 @@ class ToGetListOfGenreControllerDependenciesTest {
     void shouldMapGenresToDTOsCorrectly() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Action");
-        repository.createAndAddGenre("Comedy");
-        repository.createAndAddGenre("Drama");
+        repository.createAndAdd("Action");
+        repository.createAndAdd("Comedy");
+        repository.createAndAdd("Drama");
 
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 

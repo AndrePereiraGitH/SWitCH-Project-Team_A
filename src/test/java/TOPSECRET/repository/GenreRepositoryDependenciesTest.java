@@ -58,12 +58,12 @@ class GenreRepositoryDependenciesTest {
     // ========================================
 
     @Test
-    void shouldCreateAndAddGenre() {
+    void shouldcreateAndAddGenre() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
 
         // Act
-        Genre result = repository.createAndAddGenre("Romance");
+        Genre result = repository.createAndAdd("Romance");
 
         // Assert
         assertNotNull(result);
@@ -76,11 +76,11 @@ class GenreRepositoryDependenciesTest {
     void shouldThrowExceptionWhenGenreAlreadyExists() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Terror");
+        repository.createAndAdd("Terror");
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre("Terror")
+                () -> repository.createAndAdd("Terror")
         );
         assertEquals("Genre already exists", exception.getMessage());
 
@@ -95,16 +95,16 @@ class GenreRepositoryDependenciesTest {
 
         // Act + Assert - null
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre(null)
+                () -> repository.createAndAdd(null)
         );
 
         // Act + Assert - blank
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre("")
+                () -> repository.createAndAdd("")
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre("   ")
+                () -> repository.createAndAdd("   ")
         );
 
         // Verify no genres were added
@@ -132,9 +132,9 @@ class GenreRepositoryDependenciesTest {
     void shouldReturnAllGenres() {
         // Arrange
         GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Romance");
-        repository.createAndAddGenre("Horror");
-        repository.createAndAddGenre("Mystery");
+        repository.createAndAdd("Romance");
+        repository.createAndAdd("Horror");
+        repository.createAndAdd("Mystery");
 
         // Act
         List<Genre> result = repository.getAllGenres();

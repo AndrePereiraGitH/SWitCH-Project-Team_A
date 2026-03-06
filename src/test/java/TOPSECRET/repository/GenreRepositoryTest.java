@@ -46,7 +46,7 @@ class GenreRepositoryTest {
         when(genreFactory.create(genreType)).thenReturn(genre);
 
         // Act
-        Genre result = genreRepository.createAndAddGenre(genreType);
+        Genre result = genreRepository.createAndAdd(genreType);
 
         // Assert
         assertEquals(1, genres.size());
@@ -63,7 +63,7 @@ class GenreRepositoryTest {
         when(genreFactory.create(genreType)).thenReturn(genre);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAddGenre(genreType));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAdd(genreType));
         assertEquals("Genre already exists", exception.getMessage());
     }
 }
