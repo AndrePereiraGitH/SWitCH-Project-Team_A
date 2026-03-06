@@ -261,7 +261,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
     private static Author createAuthor() {
         AuthorFactory authorFactory = new AuthorFactory();
-        return authorFactory.createAuthorWithExistingProfile(
+        return authorFactory.createWithExistingProfile(
                 createProfile(),
                 "valid bio");
     }

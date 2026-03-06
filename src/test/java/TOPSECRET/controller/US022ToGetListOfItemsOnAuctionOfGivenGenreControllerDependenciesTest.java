@@ -202,7 +202,7 @@ private BibliographicalData createBibliographicalDataWithGenre(Genre genre) {
         AuthorFactory authorFactory = new AuthorFactory();
         return bdFactory.create(
                 "Book",
-                List.of(authorFactory.createAuthorWithExistingProfile( new Profile("Freida", new Country("Spain"), LocalDate.of(1975, 4, 25)), "Valid Bio")),
+                List.of(authorFactory.createWithExistingProfile( new Profile("Freida", new Country("Spain"), LocalDate.of(1975, 4, 25)), "Valid Bio")),
                 new Locale("pt","PT"),
                 LocalDate.now(),
                 List.of(genre),

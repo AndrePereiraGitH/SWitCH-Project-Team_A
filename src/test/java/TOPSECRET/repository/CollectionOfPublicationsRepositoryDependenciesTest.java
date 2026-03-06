@@ -37,7 +37,7 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
                 LocalDate.of(1980, 1, 1)
         );
         AuthorFactory authorFactory = new AuthorFactory();
-        Author author = authorFactory.createAuthorWithExistingProfile(
+        Author author = authorFactory.createWithExistingProfile(
                 profile,
                 "Short biography"
         );

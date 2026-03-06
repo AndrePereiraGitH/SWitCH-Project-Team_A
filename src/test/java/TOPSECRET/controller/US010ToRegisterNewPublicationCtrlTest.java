@@ -33,7 +33,7 @@ class US010ToRegisterNewPublicationCtrlTest {
 
         Profile profile1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
         AuthorFactory authorFactory = new AuthorFactory();
-        Author author1 = authorFactory.createAuthorWithExistingProfile(profile1, "valid bio");
+        Author author1 = authorFactory.createWithExistingProfile(profile1, "valid bio");
         Address address1 = new Address("R Maria", "12", "156-5", country2);
         Email email1 = new Email("Maria1", "gmail.com");
         Contact contact1 = new Contact("915945695", "+351", email1, address1);

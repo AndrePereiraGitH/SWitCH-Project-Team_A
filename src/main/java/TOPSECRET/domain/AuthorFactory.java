@@ -16,7 +16,7 @@ public class AuthorFactory {
     public Author create(String name, Country country, LocalDate dateOfBirth, String biography) {
         return new Author(name == null ? null : name.trim(), country, dateOfBirth, biography == null ? null : biography.trim());
     }
-    public Author createAuthorWithExistingProfile(Profile profile, String biography) {
+    public Author createWithExistingProfile(Profile profile, String biography) {
         return new Author(profile, biography == null ? null : biography.trim());
     }
 }

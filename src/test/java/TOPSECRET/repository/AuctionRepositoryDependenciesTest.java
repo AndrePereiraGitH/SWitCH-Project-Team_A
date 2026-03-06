@@ -294,7 +294,7 @@ class AuctionRepositoryDependenciesTest {
     private Auction createAuctionWithGenre(Genre genre) throws InstanceAlreadyExistsException {
         BibliographicalData bd = new BibliographicalData(
                 "Book",
-                List.of( authorFactory.createAuthorWithExistingProfile(
+                List.of( authorFactory.createWithExistingProfile(
                         new Profile("Author", new Country("Portugal"), LocalDate.of(1980, 1, 1)),
                         "bio"
                 )),
@@ -403,7 +403,7 @@ class AuctionRepositoryDependenciesTest {
 
     private static Author instanciateAuthor() {
         Profile authorProfile = new Profile("J. R. R. Tolkien", new Country("UNITED_KINGDOM"), LocalDate.of(1892, 1, 3));
-        return authorFactory.createAuthorWithExistingProfile(authorProfile, "valid bio");
+        return authorFactory.createWithExistingProfile(authorProfile, "valid bio");
 
     }
 
@@ -528,7 +528,7 @@ class AuctionRepositoryDependenciesTest {
     }
 
     private  Author author(String name) {
-        return authorFactory.createAuthorWithExistingProfile(profile(name), "This is the Biography of " + name);
+        return authorFactory.createWithExistingProfile(profile(name), "This is the Biography of " + name);
     }
 
     private static BibliographicalData instantiateBibliographicalDataAuthor(List<Author> authors) {

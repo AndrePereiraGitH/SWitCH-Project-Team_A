@@ -27,7 +27,7 @@ class PublicationDetailsDTODependencies_US012Test {
     // Profile and Author
     Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
     AuthorFactory factory = new AuthorFactory();
-    Author author1 = factory.createAuthorWithExistingProfile(profileAuthor1, "valid bio1");
+    Author author1 = factory.createWithExistingProfile(profileAuthor1, "valid bio1");
 
     // Contact information
     Address address1 = new Address("R Maria", "12", "156-5", country2);

@@ -54,7 +54,7 @@ class PublicationSampleDTO_US018Test {
                 LocalDate.of(1980, 1, 1)
         );
 
-        Author author = authorFactory.createAuthorWithExistingProfile(authorProfile, "Short bio");
+        Author author = authorFactory.createWithExistingProfile(authorProfile, "Short bio");
 
         BibliographicalData bd = new BibliographicalData(
                 "Test Title",
