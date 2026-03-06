@@ -259,7 +259,11 @@ class CollectionOfPublicationsRepositoryTest {
 
     /**
      * US020 - Get list of public lists by a given genre
-     * Ensures
+     */
+
+    /**
+     * Happy path
+     * Ensures the method correctly lists all public collections of a user given genre
      */
     @Test
     void shouldReturnListOfPublicListByGivenGenre(){
@@ -286,4 +290,71 @@ class CollectionOfPublicationsRepositoryTest {
         assertEquals(1, sut.findPublicByGenre(desiredGenre).size());
 
     }
+
+    /**
+     * When a user inputs an invalid genre, method should throw illegal argument exception
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreIsNull() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository();
+
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn(null);
+
+        assertNull(desiredGenre.getGenreType());
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicByGenre(desiredGenre));
+    }
+
+    /**
+     * When a user input is blank, method should throw illegal argument exception
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreTypeIsBlank() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository();
+
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn(" ");
+
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicByGenre(desiredGenre));
+    }
+
+    /**
+     * Ensures the return list is empty when there are no public lists of the user inputed genre
+     */
+    @Test
+    void shouldReturnEmptyListWhenNoPublicListsExist() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository();
+
+        // Genre setup
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn("Action");
+
+
+        // Collection setup
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c3 = mock(CollectionOfPublications.class);
+
+        // Collection privacy
+        when(c1.getIsPrivate()).thenReturn(true);
+        when(c2.getIsPrivate()).thenReturn(true);
+        when(c3.getIsPrivate()).thenReturn(false);
+
+        // Collection genre
+        when(c1.getCollectionName()).thenReturn("Action");
+        when(c2.getCollectionName()).thenReturn("Drama");
+        when(c3.getCollectionName()).thenReturn("Sci-fi");
+
+        // Adding collections to repo
+        sut.addCollectionToRepo(c1);
+        sut.addCollectionToRepo(c2);
+        sut.addCollectionToRepo(c3);
+
+        // Assert must be 0
+        assertEquals(0, sut.findPublicByGenre(desiredGenre).size());
+    }
+
 }
