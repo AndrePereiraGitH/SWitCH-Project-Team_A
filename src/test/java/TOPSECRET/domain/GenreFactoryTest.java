@@ -1,6 +1,5 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,12 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * and throws exceptions for invalid inputs.
  */
 class GenreFactoryTest {
-    private GenreFactory genreFactory;
 
-    @BeforeEach
-    void setUp() {
-        genreFactory = new GenreFactory();
-    }
+    private final GenreFactory genreFactory = new GenreFactory(); //Sempre que chamo genreFactory crio um novo objeto
+
 
     @Test
     void ensureFactoryCreatesGenreSuccessfully() {
@@ -24,7 +20,7 @@ class GenreFactoryTest {
         String genreType = "Ergodic literature";
 
         // Act
-        Genre genre = genreFactory.createGenre(genreType);
+        Genre genre = genreFactory.create(genreType);
 
         // Assert
         assertNotNull(genre);
@@ -37,7 +33,7 @@ class GenreFactoryTest {
         String genreType = "Ergodic literature";
 
         // Act
-        Genre genre = genreFactory.createGenre(genreType);
+        Genre genre = genreFactory.create(genreType);
 
         // Assert
         assertEquals(genreType, genre.getGenreType());
@@ -46,13 +42,13 @@ class GenreFactoryTest {
     @Test
     void ensureFactoryThrowsExceptionWithNullGenreType() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> genreFactory.createGenre(null));
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(null));
     }
 
     @Test
     void ensureFactoryThrowsExceptionWithBlankGenreType() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> genreFactory.createGenre("   "));
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create("   "));
     }
 
 }

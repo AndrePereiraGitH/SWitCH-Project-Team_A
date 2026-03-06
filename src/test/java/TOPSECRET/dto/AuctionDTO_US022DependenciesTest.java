@@ -34,7 +34,7 @@ class AuctionDTO_US022DependenciesTest {
     void fromDomainListOneAuctionReturnsOneDTO() {
         // Arrange
         GenreFactory factory = new GenreFactory();
-        Genre fantasy = factory.createGenre("Fantasy");
+        Genre fantasy = factory.create("Fantasy");
 
         Auction auction = createAuctionWithGenre(fantasy);
 
@@ -52,7 +52,7 @@ class AuctionDTO_US022DependenciesTest {
     void fromDomainListMultipleAuctionsReturnsMultipleDTOs() {
         // Arrange
         GenreFactory factory = new GenreFactory();
-        Genre fantasy = factory.createGenre("Fantasy");
+        Genre fantasy = factory.create("Fantasy");
 
         Auction auction1 = createAuctionWithGenre(fantasy);
         Auction auction2 = createAuctionWithGenre(fantasy);
@@ -67,8 +67,8 @@ class AuctionDTO_US022DependenciesTest {
     void fromDomainListExtractsMultipleGenresCorrectly() {
         // Arrange
         GenreFactory factory = new GenreFactory();
-        Genre fantasy = factory.createGenre("Fantasy");
-        Genre romance = factory.createGenre("Romance");
+        Genre fantasy = factory.create("Fantasy");
+        Genre romance = factory.create("Romance");
 
         Auction auction =
                 createAuctionWithMultipleGenres(fantasy, romance);

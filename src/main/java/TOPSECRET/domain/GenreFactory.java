@@ -8,7 +8,7 @@ public class GenreFactory {
      * @return a new Genre instance
      * @throws IllegalArgumentException if genreType is null or blank
      */
-    public Genre createGenre(String genreType) {
+    public Genre create(String genreType) {
         return new Genre(genreType);
     }
 }
