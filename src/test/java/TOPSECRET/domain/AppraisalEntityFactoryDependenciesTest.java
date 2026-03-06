@@ -2,11 +2,13 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.repository.AppraisalEntityRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for FactoryAppraisalEntity.
@@ -23,6 +25,8 @@ class AppraisalEntityFactoryDependenciesTest {
 
         // ARRANGE
         Contact contact = new Contact("912345678", "351", null, null);
+        AppraisalEntityFactory appraisalEntityFactory = new AppraisalEntityFactory();
+
 
         List<Genre> genres =
                 List.of(new Genre("Fantasy"));
@@ -36,7 +40,7 @@ class AppraisalEntityFactoryDependenciesTest {
 
         // ACT
         AppraisalEntity result =
-                AppraisalEntityFactory.create(
+                appraisalEntityFactory.create(
                         "Entity",
                         contact,
                         genres,

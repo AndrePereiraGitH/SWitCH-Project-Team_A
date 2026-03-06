@@ -48,6 +48,13 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
     }
 
     /**
+     * Creates a valid AppraisalEntity Factory.
+     */
+    private AppraisalEntityFactory createAppraisalEntityFactory (){
+        return new AppraisalEntityFactory();
+    }
+
+    /**
      * Creates a valid Contact object.
      */
     private Contact createContact() {
@@ -61,9 +68,10 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
 
         GenreRepository genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+        AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
         AppraisalEntityRepository appraisalRepo =
-                new AppraisalEntityRepository(genreRepo, pubRepo);
+                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
 
         return new US004ToRegisterAppraisalEntityController(
                 genreRepo,
@@ -272,8 +280,9 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
     void shouldThrowWhenGenreRepositoryIsNull() {
 
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+        AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository appraisalRepo =
-                new AppraisalEntityRepository(createGenreRepository(), pubRepo);
+                new AppraisalEntityRepository(createGenreRepository(), pubRepo, appraisalEntityFactory);
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
@@ -291,8 +300,9 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
     void shouldThrowWhenPublicationTypeRepositoryIsNull() {
 
         GenreRepository genreRepo = createGenreRepository();
+        AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository appraisalRepo =
-                new AppraisalEntityRepository(genreRepo, createPublicationTypeRepository());
+                new AppraisalEntityRepository(genreRepo, createPublicationTypeRepository(), appraisalEntityFactory);
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,

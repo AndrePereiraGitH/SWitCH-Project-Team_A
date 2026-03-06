@@ -30,6 +30,8 @@ class AppraisalEntityFactoryTest {
     void shouldCallAppraisalEntityConstructor() {
 
         // ARRANGE
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
         Contact contact = mock(Contact.class);
         Genre genre = mock(Genre.class);
         PublicationType type = mock(PublicationType.class);
@@ -40,7 +42,7 @@ class AppraisalEntityFactoryTest {
                         when(mock.getName()).thenReturn("apEn");
             })) {
 
-            AppraisalEntity entity = AppraisalEntityFactory.create(
+            AppraisalEntity entity = factory.create(
                     "apEn",
                     contact,
                     List.of(genre),

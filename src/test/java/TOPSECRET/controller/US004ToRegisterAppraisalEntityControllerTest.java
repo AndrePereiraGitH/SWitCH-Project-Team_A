@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for US004 - To register an AppraisalEntity to the system
  * SUT: US004ToRegisterAppraisalEntityController
- *
  * Repository dependencies are mocked to isolate controller logic.
  */
 class US004ToRegisterAppraisalEntityControllerTest {
