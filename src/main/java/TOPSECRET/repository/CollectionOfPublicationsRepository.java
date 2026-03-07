@@ -4,6 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.dto.CollectionOfPublicationsDTO;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
+import TOPSECRET.domain.CollectionOfPublicationsFactory;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 /**
  * Repository for managing collections of publications.
- *
+ * <p>
  * Supports multiple user stories:
  * - US017: Creating private collections with name and genre
  * - US018: Adding publications to existing collections
@@ -22,23 +23,35 @@ import java.util.Optional;
  */
 public class CollectionOfPublicationsRepository {
 
-    private List<CollectionOfPublications> _collectionOfPublicationsList = new ArrayList<>();;
+    private List<CollectionOfPublications> _collectionOfPublicationsList = new ArrayList<>();
+    private final CollectionOfPublicationsFactory _factory;
 
-    public CollectionOfPublicationsRepository() {}
+    /**
+     * Constructs a CollectionOfPublicationsRepository with the provided factory.
+     *
+     * @param factory the factory used to create new {@link CollectionOfPublications} instances
+     * @throws IllegalArgumentException if factory is null
+     */
+    public CollectionOfPublicationsRepository(CollectionOfPublicationsFactory factory) {
+        if (factory == null) {
+            throw new IllegalArgumentException("CollectionOfPublicationsFactory cannot be null");
+        }
+        this._factory = factory;
+    }
 
     /**
      * US018 - Adds a publication to a user's collection.
      * Validates ownership and library membership before adding.
      *
-     * @param user Owner of the collection
-     * @param collection Collection to add publication to
+     * @param user        Owner of the collection
+     * @param collection  Collection to add publication to
      * @param publication PublicationSample to add
      * @return true if added successfully, false if validation fails
      */
- public boolean addPublicationToCollection(User user,
-                                           Library userLibrary,
-                                           CollectionOfPublications collection,
-                                           PublicationSample publication) {
+    public boolean addPublicationToCollection(User user,
+                                              Library userLibrary,
+                                              CollectionOfPublications collection,
+                                              PublicationSample publication) {
 
 
         if (user == null || userLibrary == null || collection == null || publication == null) {
@@ -64,8 +77,7 @@ public class CollectionOfPublicationsRepository {
      * @param collection Collection to add
      * @return true if added, false if already exists
      */
-    public boolean addCollectionToRepo(CollectionOfPublications collection)
-    {
+    public boolean addCollectionToRepo(CollectionOfPublications collection) {
         if (_collectionOfPublicationsList.contains(collection)) {
             return false;
         }
@@ -74,6 +86,7 @@ public class CollectionOfPublicationsRepository {
     }
 
     // This method will search for public collections of publications (lists) of a certain genre.
+
     /**
      * US020 - Finds all public collections of a given genre.
      *
@@ -81,18 +94,15 @@ public class CollectionOfPublicationsRepository {
      * @return List of public collections with the given genre
      * @throws IllegalArgumentException if genre is null
      */
-    public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName)
-    {
+    public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName) {
         if (genreName == null || genreName.getGenreType() == null || genreName.getGenreType().isBlank()) {
             throw new IllegalArgumentException("Genre can't be null.");
         }
 
         List<CollectionOfPublicationsDTO> result = new ArrayList<>();
 
-        for (CollectionOfPublications c : _collectionOfPublicationsList)
-        {
-            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre()))
-            {
+        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre())) {
                 result.add(new CollectionOfPublicationsDTO(c.getCollectionName(), c.getOwner().getUserName()));
 
             }
@@ -103,32 +113,26 @@ public class CollectionOfPublicationsRepository {
 
     /**
      * US017 - Creates a new private collection for a user if no duplicate exists.
-     * Collections are always created as private.
      * A user cannot have two collections with the same name and genre.
      *
-     * @param user Owner of the collection
-     * @param name Collection name
+     * @param user  Owner of the collection
+     * @param name  Collection name
      * @param genre Collection genre
-     * @return Created collection
-     * @throws IllegalArgumentException if parameters are invalid or duplicate exists
+     * @return Created collection, always private by default
+     * @throws IllegalArgumentException if any parameter is null or a duplicate exists
      */
-
-    /**
-     * Creates a new private collection for a user if no duplicate exists.
-     * US017 - A user cannot have two private collections with the same name and genre.
-    */
-
     public CollectionOfPublications createIfNotExists(
             User user,
             String name,
-            Genre genre)
-    {
+            Genre genre) {
+        // Validate parameters
         if (user == null || name == null || genre == null) {
             throw new IllegalArgumentException("Invalid arguments.");
         }
 
         // Check for duplicates
-        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+        for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
+            CollectionOfPublications c = _collectionOfPublicationsList.get(i);
             if (user.equals(c.getOwner())
                     && c.getCollectionName().equalsIgnoreCase(name)
                     && c.getCollectionGenre().equals(genre)) {
@@ -139,9 +143,9 @@ public class CollectionOfPublicationsRepository {
             }
         }
 
-        // Create new collection (always private)
+        // Create and add (always private)
         CollectionOfPublications newCollection =
-                new CollectionOfPublications(name, genre, user);
+                _factory.create(name, genre, user);
 
         _collectionOfPublicationsList.add(newCollection);
         return newCollection;
@@ -195,8 +199,8 @@ public class CollectionOfPublicationsRepository {
         Optional<CollectionOfPublications> collectionFound = _collectionOfPublicationsList.stream()
                 .filter(c ->
                         Objects.equals(c.getCollectionName(), collectionDTO.get_name()) &&
-                        Objects.equals(c.getCollectionGenre().getGenreType(), collectionDTO.get_genreName()) &&
-                        Objects.equals(c.getOwner().getUserName(), collectionDTO.getOwnerName().getUserName())
+                                Objects.equals(c.getCollectionGenre().getGenreType(), collectionDTO.get_genreName()) &&
+                                Objects.equals(c.getOwner().getUserName(), collectionDTO.getOwnerName().getUserName())
                 )
                 .findFirst();
 
@@ -220,7 +224,7 @@ public class CollectionOfPublicationsRepository {
      *
      * @param collectionDTO the DTO that identifies the collection to be made public.
      * @return {@code true} if the operation completes successfully.
-     * @throws IllegalArgumentException if {@code collectionDTO} is {@code null}.
+     * @throws IllegalArgumentException  if {@code collectionDTO} is {@code null}.
      * @throws InstanceNotFoundException if no collection matches the provided DTO.
      */
     public boolean makeCollectionOfPublicationsPublic(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
@@ -235,6 +239,7 @@ public class CollectionOfPublicationsRepository {
     }
 
     // ------------------------------------- US018 starts ------------------------------------------
+
     /**
      * US018 - As a User, I want to add one of my publications to a list of mine
      * Retrieves all collections that belong to a given user.
@@ -257,7 +262,7 @@ public class CollectionOfPublicationsRepository {
      *
      * @param dto the selected collection DTO
      * @return the matching CollectionOfPublications domain object
-     * @throws IllegalArgumentException if dto is null
+     * @throws IllegalArgumentException  if dto is null
      * @throws InstanceNotFoundException if no matching collection exists
      */
     public CollectionOfPublications collectionDTOToDomain(
