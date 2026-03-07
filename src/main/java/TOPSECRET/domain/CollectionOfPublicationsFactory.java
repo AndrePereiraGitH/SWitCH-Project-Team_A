@@ -25,7 +25,7 @@ public class CollectionOfPublicationsFactory {
      * @throws IllegalArgumentException if any of the provided arguments are {@code null}
      *                                  or if {@code name} is blank
      */
-    public static CollectionOfPublications create(String name, Genre genre, User user) {
+    public CollectionOfPublications create(String name, Genre genre, User user) {
         return new CollectionOfPublications(name, genre, user);
     }
 }
