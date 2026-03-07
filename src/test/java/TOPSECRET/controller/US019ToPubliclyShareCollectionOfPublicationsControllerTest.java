@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
 
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository();
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
         US019ToPubliclyShareCollectionOfPublicationsController controller = new US019ToPubliclyShareCollectionOfPublicationsController(repo);
 
     /**
