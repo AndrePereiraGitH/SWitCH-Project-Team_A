@@ -140,6 +140,28 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     }
 
 
+    // Tests that the controller propagates the exception thrown by the repository when a duplicate exists
+    @Test
+    void shouldPropagateExceptionWhenDuplicateExists_US017() {
+        // Arrange
+        User userDouble = mock(User.class);
+        Genre genreDouble = mock(Genre.class);
+
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+
+        when(repoDouble.createIfNotExists(userDouble, "Favorites", genreDouble))
+                .thenThrow(new IllegalArgumentException("Collection already exists"));
+
+        US017ToCreateCollectionOfPublicationsController controller =
+                new US017ToCreateCollectionOfPublicationsController(
+                        mock(GenreRepository.class), repoDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.createCollection("Favorites", genreDouble, userDouble));
+    }
+
     // -------------------------------------------------------------------------
     // Test helpers
     // -------------------------------------------------------------------------
