@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,6 +18,29 @@ import static org.mockito.Mockito.when;
  */
 class AuctionRepositoryTest {
 
+    private PublicationSample sample1;
+    private PublicationSample sample2;
+    private Auction auction1;
+    private Auction auction2;
+    private Auction auction3;
+    private AuctionRepository auctionRepository;
+
+
+    @BeforeEach
+    void setup(){
+        sample1 = createMockPublicationSample("First title");
+        sample2 = createMockPublicationSample("Second title");
+
+        auction1 = createMockAuction(List.of(sample1, sample2));
+        auction2 = createMockAuction(List.of(sample1));
+        auction3 = createMockAuction(List.of(sample2));
+
+        auctionRepository = createMockAuctionRepository(List.of(auction1, auction2, auction3));
+
+    }
+
+
+    // US024 getListOfItemsOnAuctionByGivenPublication -----------------------------------------------------------------
     /**
      * Verifies that {@code getListOfItemsOnAuctionByGivenPublication()} returns
      * only the {@link PublicationSample} instances whose title matches the given
@@ -28,16 +52,7 @@ class AuctionRepositoryTest {
      */
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_returnAList() {
-
         // Arrange
-        PublicationSample sample1 = createMockPublicationSample("First title");
-        PublicationSample sample2 = createMockPublicationSample("Second title");
-
-        Auction auction1 = createMockAuction(List.of(sample1, sample2));
-        Auction auction2 = createMockAuction(List.of(sample1));
-        Auction auction3 = createMockAuction(List.of(sample2));
-
-        AuctionRepository auctionRepository = createMockAuctionRepository(List.of(auction1, auction2, auction3));
 
         // Act
         List<PublicationSample> listOfItemsOnAuction =
@@ -59,16 +74,7 @@ class AuctionRepositoryTest {
      */
     @Test
     void shouldReturnAnEmptyListWhenAuctionDoesNotHaveThePublication() {
-
         // Arrange
-        PublicationSample sample1 = createMockPublicationSample("First title");
-        PublicationSample sample2 = createMockPublicationSample("Second title");
-
-        Auction auction1 = createMockAuction(List.of(sample1, sample2));
-        Auction auction2 = createMockAuction(List.of(sample1));
-        Auction auction3 = createMockAuction(List.of(sample2));
-
-        AuctionRepository auctionRepository = createMockAuctionRepository(List.of(auction1, auction2, auction3));
 
         // Act
         List<PublicationSample> listOfItemsOnAuction =
@@ -78,6 +84,29 @@ class AuctionRepositoryTest {
         assertEquals(0, listOfItemsOnAuction.size());
         assertTrue(listOfItemsOnAuction.isEmpty());
     }
+
+    @Test
+    void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsNull(){
+        // Arrange
+
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () ->
+                auctionRepository.getListOfItemsOnAuctionByGivenPublication(null));
+
+    }
+
+    @Test
+    void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsEmpty(){
+        // Arrange
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                auctionRepository.getListOfItemsOnAuctionByGivenPublication(""));
+
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     // -------------------------------------------------------------------------
     // Helper / factory methods

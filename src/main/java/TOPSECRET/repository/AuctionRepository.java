@@ -136,7 +136,16 @@ public class AuctionRepository {
      *         never {@code null}, but may be empty if no matches are found
      */
 
+    // US024 -------------------------------------------------------------------------------------------------------------
     public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
+
+        if(publicationDTO == null){
+            throw new NullPointerException("Publication can not be null");
+        }
+
+        if(publicationDTO.isEmpty()){
+            throw new IllegalArgumentException("Publication can not be empty");
+        }
 
         List<PublicationSample> listOfItemsOnAuctionByPublication = new ArrayList<>();
 
@@ -156,6 +165,8 @@ public class AuctionRepository {
 
         return listOfItemsOnAuctionByPublication;
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns all items that are currently on auction
