@@ -28,7 +28,8 @@ class CollectionOfPublicationsFactoryTest {
                              })) {
 
             // Act
-            CollectionOfPublications result = CollectionOfPublicationsFactory.create(
+            CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
+            CollectionOfPublications result = factory.create(
                     "MyCollection",
                     genre,
                     user
