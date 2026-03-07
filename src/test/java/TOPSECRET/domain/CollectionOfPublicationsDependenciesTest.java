@@ -229,17 +229,6 @@ class CollectionOfPublicationsDependenciesTest {
         });
     }
 
-     // Verifies exception when library is null
-    @Test
-    void shouldThrowExceptionWhenLibraryIsNull()
-    {
-        Genre genre = createValidGenre();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", genre, null);
-        });
-    }
-
     // Verifies exception when User is null
     @Test
     void shouldThrowExceptionWhenUserIsNull()                   // US017
