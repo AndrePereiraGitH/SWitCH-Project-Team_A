@@ -67,7 +67,7 @@ class CollectionOfPublicationsRepository {
 ' FACTORY
 ' ___________________
 
-class FactoryCollectionOfPublications {
+class CollectionOfPublicationsFactory {
   + create(name : String, genre : Genre, user : User) : CollectionOfPublications
 }
 
@@ -79,8 +79,8 @@ US017ToCreateCollectionOfPublicationsController ..> GenreRepository : uses
 US017ToCreateCollectionOfPublicationsController ..> GenreDTO_US017 : uses
 US017ToCreateCollectionOfPublicationsController ..> CollectionOfPublicationsRepository : uses
 
-CollectionOfPublicationsRepository --> FactoryCollectionOfPublications : has
-FactoryCollectionOfPublications ..> CollectionOfPublications : creates
+CollectionOfPublicationsRepository --> CollectionOfPublicationsFactory : has
+CollectionOfPublicationsFactory ..> CollectionOfPublications : creates
 
 GenreDTO_US017 ..> Genre : converts
 
