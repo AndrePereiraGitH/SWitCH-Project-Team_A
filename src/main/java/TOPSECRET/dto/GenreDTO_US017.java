@@ -3,8 +3,8 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Genre;
 
 /**
- * DTO do Genre.
- * Tem a conversão aqui em vez de usar um Mapper à parte.
+ * Genre DTO.
+ * The conversion is done here instead of using a separate Mapper.
  */
 public class GenreDTO_US017 {
 
@@ -15,7 +15,7 @@ public class GenreDTO_US017 {
     }
 
     /**
-     * Converte um Genre para DTO.
+     * Converts a Genre to DTO.
      */
     public static GenreDTO_US017 toDTO(Genre genre) {
         if (genre == null) {
