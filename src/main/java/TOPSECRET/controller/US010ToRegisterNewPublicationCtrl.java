@@ -29,13 +29,12 @@ public class US010ToRegisterNewPublicationCtrl {
     public PublicationSample createAndAddPublication(
             BibliographicalData bibliographicalData1,
             User user1, PublicationStatus publicationStatus1, Edition _edition, Condition condition
+
     ) throws InstanceAlreadyExistsException {
 
         return _publicationRepository.createAndAdd(bibliographicalData1,
                 user1, publicationStatus1, _edition, condition);
 
     }
-
-    //We are using boolean here, even though other repos use the class itself (like City and Author)
 
 }

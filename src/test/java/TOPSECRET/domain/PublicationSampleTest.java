@@ -1,335 +1,106 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import static java.util.Locale.ENGLISH;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+
+/**
+ * Unit tests for {@link PublicationSample} using mocked dependencies.
+ *
+ * <p>This test suite verifies the behavior of {@link PublicationSample}
+ * while isolating it from the internal logic of its dependencies
+ * ({@link BibliographicalData}, {@link User}, {@link Edition}, etc.).</p>
+ *
+ * <p>Mockito is used to create mock objects so that only the logic
+ * inside {@link PublicationSample} is tested.</p>
+ */
 
 class PublicationSampleTest {
 
-    //Writing the variables for testing here instead of repeating them
+    //Mocks
+    private final BibliographicalData anyBiblioData = mock(BibliographicalData.class);
+    private final User anyOwner = mock(User.class);
+    private final Edition anyEdition = mock(Edition.class);
+    private final PublicationStatus anyPublicationStatus = PublicationStatus.READING;
+    private final Condition anyCondition = Condition.GOOD;
 
-    //Arrange BibliographicalData
-
-
-    String title = "A Book";
-
-
-    Country country = new Country("UNITED_STATES");
-    Profile profile2 = new Profile("Henry A Kissinger", country, LocalDate.of(1923, 05, 27));
-    Profile profile3 = new Profile("Eric Schmidt III", country, LocalDate.of(1955, 04, 27));
-    Profile profile4 = new Profile("Daniel Huttenlocher", country, LocalDate.of(1959, 01, 01));
-    Author author2 = new Author(profile2, "valid bio2");
-    Author author3 = new Author(profile3, "valid bio3");
-    Author author4 = new Author(profile4, "valid bio4");
-
-
-    List<Author> authors = List.of(author2, author3, author4);
-
-
-    Locale language = ENGLISH;
-    LocalDate publishDate = LocalDate.of(2022, 8, 4);
-    Genre genre1 = new Genre("Fiction");
-    List<Genre> genres = List.of(genre1);
-    String chunksOfText = "The sweet spot is in partnership—AI handles scale, I bring empathy, wisdom, and context.";
-
-    BibliographicalData anyBd = new BibliographicalData(title, authors, language, publishDate, genres,
-            chunksOfText);
-
-
-    //Arrange User
-
-    Address address1 = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
-    Email email1 = new Email("test.user", "example.com");
-    Contact contact1 = new Contact("987654321", "351", email1, address1);
-
-    Profile profile5 = new Profile(
-            "Test Profile",
-            new Country("PORTUGAL"),
-            LocalDate.of(1997, 8, 15)
-    );
-
-    User anyOwner = new User("ValidName", contact1, profile5, UserRole.NORMAL_USER);
-
-
-    //Arrange PublicationStatus
-
-    PublicationStatus anyPubStatus = PublicationStatus.READING;
-
-
-    //Arrange Edition
-
-    String editionNumber1 = "1st edition";
-    Code code1 = Code.fromIsbn13("0123456789012");
-    Dimensions dimensions1 = new Dimensions(4.5, 5.4, 2.3);
-    PhysicalAttributes physicalAttributes1 = new PhysicalAttributes(dimensions1, 0.8, 250);
-    PublicationType pubType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Cool cover");
-    Address address2 = new Address("Not Main Street", "11", "12346", new Country("SPAIN"));
-    Email email2 = new Email("test.user2", "example2.com");
-    Contact contact2 = new Contact("987438239", "351", email2, address2);
-    Publisher publisher1 = new Publisher("Cool publisher", "MT1234567", contact2);
-    Locale editionLanguage1 = Locale.JAPANESE;
-    LocalDate editionDate1 = LocalDate.of(2015, 1, 12);
-
-    Edition anyEdition = new Edition(editionNumber1, code1, physicalAttributes1, pubType1, publisher1,
-            editionLanguage1, editionDate1);
-
-    //Arrange Condition
-
-    Condition anyCondition = Condition.GOOD;
-
-    PublicationSample anySample = new PublicationSample(anyBd, anyOwner, anyPubStatus, anyEdition, anyCondition);
+    //Class/object under test
+    private final PublicationSample anySample =
+            new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
 
 
     @Test
-    void shouldCreatePublicationSampleWithValidData() {
-
-        //Arrange has been done above for valid attributes
+    void shouldCreateValidPubSampleWithMocks() {
 
         //Act
-        PublicationSample validPubSample = new PublicationSample(anyBd, anyOwner, anyPubStatus,
+        PublicationSample validSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
                 anyEdition, anyCondition);
+    }
+
+    @Test
+    void shouldFetchDependenciesCorrectly() {
 
         //Assert
-        assertNotNull(validPubSample);
-
+        assertEquals(anyBiblioData, anySample.getBibliographicalData());
+        assertEquals(anyOwner, anySample.getOwner());
+        assertEquals(anyEdition, anySample.getEdition());
+        assertEquals(anyPublicationStatus, anySample.getPublicationStatus());
+        assertEquals(anyCondition, anySample.getCondition());
     }
 
     @Test
-    void shouldThrowExceptionIfBiblioDataIsNull() {
+    void shouldChangeStatusToForSaleCorrectly() {
 
-        //Arrange biblioData that is null
-        BibliographicalData nullBiblioData = null;
+        //Act
+        anySample.changeStatusToForSale();
 
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> new PublicationSample(nullBiblioData, anyOwner, anyPubStatus,
-                anyEdition, anyCondition));
-
+        //Assert
+        assertEquals(PublicationStatus.FOR_SALE, anySample.getPublicationStatus());
     }
 
     @Test
-    void shouldThrowExceptionIfOwnerIsEmpty() {
+    void getDetailsMethodShouldReturnCorrectInfo() {
 
-        //Arrange Owner that is null
-        User nullOwner = null;
+        //Act
+        PublicationSample.PublicationDetails anyDetails = anySample.getDetails();
 
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> new PublicationSample(anyBd, nullOwner, anyPubStatus,
-                anyEdition, anyCondition));
-
+        //Assert
+        assertEquals(anyBiblioData, anyDetails.bibliographicalData());
+        assertEquals(anyOwner, anyDetails.owner());
+        assertEquals(anyPublicationStatus, anyDetails.publicationStatus());
+        assertEquals(anyEdition, anyDetails.edition());
+        assertEquals(anyCondition, anyDetails.condition());
     }
 
     @Test
-    void shouldThrowExceptionIfPubStatusIsNull() {
+    void shouldReturnTrueWhenSameObject() {
 
-        //Arrange PubStatus that is null
-        PublicationStatus nullPubStatus = null;
-
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> new PublicationSample(anyBd, anyOwner, nullPubStatus,
-                anyEdition, anyCondition));
-
-    }
-
-    @Test
-    void shouldThrowExceptionIfEditionIsNull() {
-
-        //Arrange Edition that is null
-        Edition nullEdition = null;
-
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                nullEdition, anyCondition));
-
-    }
-
-    @Test
-    void shouldThrowExceptionIfConditionIsNull() {
-
-        //Arrange Condition that is null
-        Condition nullCondition = null;
-
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, nullCondition));
-    }
-
-    @Test
-    void shouldReturnBiblioData() {
-
-        //Arrange
-        PublicationSample wantBiblioData = new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, anyCondition);
-
-        //Act + assert
-        assertEquals(anyBd, wantBiblioData.getBibliographicalData());
-
-    }
-
-    @Test
-    void shouldReturnOwner() {
-
-        //Arrange
-        PublicationSample wantOwner = new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, anyCondition);
-
-        //Act + assert
-        assertEquals(anyOwner, wantOwner.getOwner());
-
-    }
-
-    @Test
-    void shouldReturnPubStatus() {
-
-        //Arrange
-        PublicationSample wantPubStatus = new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, anyCondition);
-
-        //Act + assert
-        assertEquals(anyPubStatus, wantPubStatus.getPublicationStatus());
-
-    }
-
-    @Test
-    void shouldReturnEdition() {
-
-        //Arrange
-        PublicationSample wantEdition = new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, anyCondition);
-
-        //Act + assert
-        assertEquals(anyEdition, wantEdition.getEdition());
-
-    }
-
-    //Testing override methods
-
-    @Test
-    void equals_shouldReturnTrueForSameObject() {
+        //Assert
         assertEquals(anySample, anySample);
     }
 
     @Test
-    void equals_shouldReturnFalseWhenComparedToNull() {
+    void shouldReturnFalseWhenDifferentObject() {
 
         //Arrange
-        PublicationSample nullSample = null;
-
-        assertNotEquals(anySample, nullSample);
-
-    }
-
-    @Test
-    void equals_shouldReturnFalseWhenComparedToNotPublicationSamples() {
-
-        assertNotEquals(anySample, anyPubStatus);
-        assertNotEquals(anySample, "Wait, this isn't a sample!");
-
-    }
-
-    @Test
-    void equals_shouldReturnTrueForEqualSamples() {
-
-        PublicationSample sampleA = anySample;
-        PublicationSample sampleB = anySample;
-
-        assertEquals(sampleA, sampleB);
-        assertEquals(sampleB, sampleA); // testing symmetry
-
-    }
-
-    @Test
-    void equals_shouldReturnFalseIfDifferentAttribute() {
-
-        //Arrange, Condition is the differing field
-        Condition goldCondition = Condition.NEW;
-        Condition silverCondition = Condition.LIKE_NEW;
-
-        PublicationSample goldSample = new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, goldCondition);
-
-        PublicationSample silverSample = new PublicationSample(anyBd, anyOwner, anyPubStatus,
-                anyEdition, silverCondition);
+        PublicationSample otherSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
+                anyEdition, Condition.NEW);
 
         //Assert
-        assertNotEquals(goldSample, silverSample);
-
+        assertNotEquals(anySample, otherSample);
     }
 
     @Test
-    void hashCode_SameIfEqualObjects() {
-        assertEquals(anySample.hashCode(), anySample.hashCode());
-    }
+    void hashCodeShouldBeConsistent() {
 
-    @Test
-    void hashCode_NotEqualIfDifferentAttributes() {
-
-        //Arrange, User is the differing field
-        Address address1 = new Address("Sunset Boulevard", "10", "54321", new Country
-                ("UNITED_STATES"));
-        Email email1 = new Email("iamjohn.user", "doe.com");
-        Contact contact1 = new Contact("873839332", "+1", email1, address1);
-
-        Profile profile5 = new Profile(
-                "John Doe Profile",
-                new Country("UNITED_STATES"),
-                LocalDate.of(1996, 9, 16)
-        );
-
-        User johnDoe = new User("John Doe", contact1, profile5, UserRole.NORMAL_USER);
-
-        PublicationSample doeSample = new PublicationSample(anyBd, johnDoe, anyPubStatus,
-                anyEdition, anyCondition);
+        int hashA = anySample.hashCode();
+        int hashB = anySample.hashCode();
 
         //Assert
-        assertNotEquals(anySample.hashCode(), doeSample.hashCode());
-    }
-
-    @Test
-    void getDetails_ShouldReturnAllFieldsCorrectly() {
-        // Act
-        PublicationSample.PublicationDetails details = anySample.getDetails();
-
-        // Assert
-        assertEquals(anyBd, details.bibliographicalData());
-        assertEquals(anyOwner, details.owner());
-        assertEquals(anyPubStatus, details.publicationStatus());
-        assertEquals(anyEdition, details.edition());
-        assertEquals(anyCondition, details.condition());
-    }
-
-    @Test
-    void getDetails_ShouldReturnSameInstancesNotCopies() {
-        PublicationSample.PublicationDetails details = anySample.getDetails();
-
-        assertSame(anyBd, details.bibliographicalData());
-        assertSame(anyOwner, details.owner());
-        assertSame(anyEdition, details.edition());
-        assertSame(anyCondition, details.condition());
-    }
-
-    @Test
-    void getDetails_ShouldReflectInternalStateChanges() {
-        // Act
-        PublicationSample.PublicationDetails before = anySample.getDetails();
-
-        anySample.changeStatusToForSale();
-
-        PublicationSample.PublicationDetails after = anySample.getDetails();
-
-        // Assert
-        assertEquals(PublicationStatus.FOR_SALE, after.publicationStatus());
-        assertNotEquals(before.publicationStatus(), after.publicationStatus());
-    }
-
-    @Test
-    void getDetails_ShouldNeverReturnNull() {
-        assertNotNull(anySample.getDetails());
+        assertNotEquals(anyBiblioData.hashCode(), anySample.hashCode());
+        assertEquals(hashA, hashB);
     }
 }

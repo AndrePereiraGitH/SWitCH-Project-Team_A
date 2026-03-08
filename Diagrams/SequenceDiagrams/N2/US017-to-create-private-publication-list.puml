@@ -18,7 +18,7 @@ participant ":Genre" as Genre
 participant "genreDTO: GenreDTO_US017" as GDTO
 
 participant ":CollectionOfPublicationsRepository" as CollectionRepository
-participant ":FactoryCollectionOfPublications" as Factory
+participant ":CollectionOfPublicationsFactory" as Factory
 
 ' --- Start ---
 User -> UI : I want to create a new private collection
@@ -49,7 +49,7 @@ activate GenreMapper
 GenreMapper --> GenreDTO** : create()
 
     loop for each genre in the list
-        GenreMapper -> Genre : getTitle()
+        GenreMapper -> Genre : getGenreType()
         activate Genre
         Genre --> GenreMapper : title
         deactivate Genre

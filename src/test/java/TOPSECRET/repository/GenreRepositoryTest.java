@@ -18,6 +18,34 @@ class GenreRepositoryTest {
     private final Genre genre = mock(Genre.class);
     private final GenreRepository genreRepository = new GenreRepository(genres, genreFactory);
 
+    @Test
+    void testCreateAndAddGenre_AddsNewGenre() {
+        // Arrange
+        String genreType = "Fantasy";
+        when(genre.getGenreType()).thenReturn(genreType);
+        when(genreFactory.create(genreType)).thenReturn(genre);
+
+        // Act
+        Genre result = genreRepository.createAndAdd(genreType);
+
+        // Assert
+        assertEquals(1, genres.size());
+        assertEquals(genre, result);
+        assertTrue(genres.contains(genre));
+    }
+
+    @Test
+    void testCreateAndAddGenre_ThrowsExceptionWhenGenreExists() {
+        // Arrange
+        String genreType = "Fantasy";
+        when(genre.getGenreType()).thenReturn(genreType);
+        genres.add(genre);
+        when(genreFactory.create(genreType)).thenReturn(genre);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAdd(genreType));
+        assertEquals("Genre already exists", exception.getMessage());
+    }
 
     @Test
     void getAllGenres_ReturnsCorrectList() {
@@ -39,31 +67,28 @@ class GenreRepositoryTest {
     }
 
     @Test
-    void testCreateAndAddGenre_AddsNewGenre() {
+    void getAllGenresShouldReturnUnmodifiableList() {
+
         // Arrange
-        String genreType = "Fantasy";
-        when(genre.getGenreType()).thenReturn(genreType);
-        when(genreFactory.create(genreType)).thenReturn(genre);
+        GenreRepository repo = new GenreRepository(List.of(genre), genreFactory);
 
         // Act
-        Genre result = genreRepository.createAndAddGenre(genreType);
+        List<Genre> result = repo.getAllGenres();
 
         // Assert
-        assertEquals(1, genres.size());
-        assertEquals(genre, result);
-        assertTrue(genres.contains(genre));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
     }
 
     @Test
-    void testCreateAndAddGenre_ThrowsExceptionWhenGenreExists() {
-        // Arrange
-        String genreType = "Fantasy";
-        when(genre.getGenreType()).thenReturn(genreType);
-        genres.add(genre);
-        when(genreFactory.create(genreType)).thenReturn(genre);
+    void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
 
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAddGenre(genreType));
-        assertEquals("Genre already exists", exception.getMessage());
+        // Arrange
+        GenreRepository repo = new GenreRepository(List.of(), genreFactory);
+
+        // Act
+        List<Genre> result = repo.getAllGenres();
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 }

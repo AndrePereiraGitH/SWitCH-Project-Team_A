@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * Unit tests for the {@link Library} class.
@@ -81,6 +82,66 @@ class LibraryTest {
 
         // Assert
         assertEquals(expectedLibraryName, result);
+    }
+
+    // ============ FindLibraryPublicationsAvailableForSale Tests ============
+
+    @Test
+    void findLibraryPublicationsAvailableForSale_ShouldReturnOnlyEligibleSamples() {
+
+        // Arrange
+        PublicationSample pubSample1 = mock(PublicationSample.class);
+        when(pubSample1.getPublicationStatus()).thenReturn(PublicationStatus.SOLD);
+        PublicationSample pubSample2 = mock(PublicationSample.class);
+        when(pubSample2.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
+        PublicationSample pubSample3 = mock(PublicationSample.class);
+        when(pubSample3.getPublicationStatus()).thenReturn(PublicationStatus.READING);
+
+        Library library = new Library("LibraryName1", createMockUser("User1"));
+        library.addPublication(pubSample1);
+        library.addPublication(pubSample2);
+        library.addPublication(pubSample3);
+
+        // Act
+        List<PublicationSample> availablePublications = library.findLibraryPublicationsAvailableForSale();
+
+        // Assert
+        assertEquals(1, availablePublications.size());
+        assertTrue(availablePublications.contains(pubSample3));
+    }
+
+    @Test
+    void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenNoSamplesAreEligible() {
+
+        // Arrange
+        PublicationSample pubSample1 = mock(PublicationSample.class);
+        when(pubSample1.getPublicationStatus()).thenReturn(PublicationStatus.SOLD);
+        PublicationSample pubSample2 = mock(PublicationSample.class);
+        when(pubSample2.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
+
+        Library library = new Library("LibraryName1", createMockUser("User1"));
+        library.addPublication(pubSample1);
+        library.addPublication(pubSample2);
+
+        // Act
+        List<PublicationSample> availablePublications = library.findLibraryPublicationsAvailableForSale();
+
+        // Assert
+        assertTrue(availablePublications.isEmpty());
+    }
+
+    @Test
+    void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenLibraryIsEmpty() {
+
+        // Arrange
+        Library library = new Library("LibraryName1", createMockUser("User1"));
+
+        // Act
+        List<PublicationSample> availablePublications = library.findLibraryPublicationsAvailableForSale();
+
+        // Assert
+        assertTrue(availablePublications.isEmpty());
+
     }
 
     // -------------------------------------------------------------------------

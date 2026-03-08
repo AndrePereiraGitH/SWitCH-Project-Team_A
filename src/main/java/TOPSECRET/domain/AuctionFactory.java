@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
@@ -19,6 +20,11 @@ public class AuctionFactory {
      */
     public Auction create(Listing listing, LocalDateTime auctionStartDateTime, LocalDateTime finalDate, Price buyOutPrice) {
         return new Auction(listing, auctionStartDateTime, finalDate, buyOutPrice);
+    }
+
+    // --- only for tests ----
+    protected Auction create(Listing listing, LocalDateTime start, LocalDateTime end, Price buyOutPrice, Clock clock) {
+        return new Auction(listing, start, end, buyOutPrice, clock);
     }
 
 }

@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import javax.management.InstanceAlreadyExistsException;
 
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -547,9 +549,282 @@ class PublicationSampleRepositoryTest {
         verify(factory, never()).create(any(), any(), any(), any(), any());
     }
 
+    @Test
+    void getPublicationByDTO_shouldThrow_whenDTOList_Empty() {
+
+        // arrange
+        List<PublicationSampleDTO_US016> pubsDTOList = new ArrayList<>();
+
+        // act + assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(pubsDTOList));
+
+        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void getPublicationByDTO_shouldThrow_whenDTOList_Null() {
+
+        // act + assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(null));
+
+        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void getPublicationByDTO_shouldReturn_EmptyList_whenNoPublicationSampleMatchesDTO() {
+
+        // arrange
+        List<PublicationSample> matchedList = List.of();
+
+
+        PublicationSampleDTO_US016 dtoDouble1 = mock(PublicationSampleDTO_US016.class);
+        PublicationSampleDTO_US016 dtoDouble2 = mock(PublicationSampleDTO_US016.class);
+        List<PublicationSampleDTO_US016> dtoList = List.of(dtoDouble1, dtoDouble2);
+
+        // act
+        List<PublicationSample> result = repo.getPublicationsByDTO(dtoList);
+
+        // assert
+        assertEquals(0, result.size());
+
+    }
+
+
+    @Test
+    void getPublicationsByDTO_allFieldsMatch_returnsPublication() {
+        PublicationSample ps = mockPublicationSample(
+                "Title",
+                List.of("Author1"),
+                Locale.ENGLISH,
+                List.of("Genre1"),
+                "owner",
+                "New"
+        );
+        repo.addPublication(ps);
+
+        PublicationSampleDTO_US016 dto = mockDto(
+                "Title",
+                List.of("Author1"),
+                Locale.ENGLISH,
+                List.of("Genre1"),
+                "owner",
+                "New"
+        );
+
+        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
+
+        assertEquals(1, result.size());
+        assertSame(ps, result.get(0));
+    }
+
+
+    @Test
+    void getPublicationsByDTO_authorOrderDifferent_returnsEmpty_becauseListEqualsIsOrderSensitive() {
+        PublicationSample ps = mockPublicationSample(
+                "Title",
+                List.of("Author1", "Author2"),
+                Locale.ENGLISH,
+                List.of("Genre1"),
+                "owner",
+                "New"
+        );
+        repo.addPublication(ps);
+
+        PublicationSampleDTO_US016 dto = mockDto(
+                "Title",
+                List.of("Author2", "Author1"),
+                Locale.ENGLISH,
+                List.of("Genre1"),
+                "owner",
+                "New"
+        );
+
+        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void isExistent_returnsTrue_WhenRepoContainsSamePublicationSample() {
+
+        // arrange
+        PublicationSample psDouble1 = mock(PublicationSample.class);
+        PublicationSample psDouble2 = mock(PublicationSample.class);
+
+        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
+        PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository(psFactory);
+
+        publicationSampleRepository.addPublication(psDouble1);
+        publicationSampleRepository.addPublication(psDouble2);
+
+        // act + assert
+
+        assertTrue(publicationSampleRepository.isExistent(psDouble1));
+
+    }
+
+    @Test
+    void isExistent_returnsFalse_WhenRepoDoeNotContainPublicationSample() {
+
+        // arrange
+        PublicationSample psDouble1 = mock(PublicationSample.class);
+        PublicationSample psDouble2 = mock(PublicationSample.class);
+
+        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
+        PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository(psFactory);
+
+        publicationSampleRepository.addPublication(psDouble1);
+
+        // act + assert
+        assertFalse(publicationSampleRepository.isExistent(psDouble2));
+
+    }
+
+    @Test
+    void isExistent_returnsFalse_whenEmptyRepo() {
+
+        // arrange
+        PublicationSample psDouble = mock(PublicationSample.class);
+
+        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
+        PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository(psFactory);
+
+        // act + assert
+        assertFalse(publicationSampleRepository.isExistent(psDouble));
+
+    }
 
 
 
 
+
+
+
+
+
+
+
+
+
+    @Test
+    void getListOfDifferentPublications_whenLibraryContainsSome_returnsOnlyMissingOnes() {
+        PublicationSample p1 = mock(PublicationSample.class);
+        PublicationSample p2 = mock(PublicationSample.class);
+        PublicationSample p3 = mock(PublicationSample.class);
+
+        // repo: p1, p2, p3
+        PublicationSampleRepository repo = new PublicationSampleRepository(List.of(p1, p2, p3), null);
+
+        // library tem p2
+        List<PublicationSample> library = List.of(p2);
+
+        List<PublicationSample> result = repo.getListOfDifferentPublications(library);
+
+        // deve devolver p1 e p3
+        assertEquals(2, result.size());
+        assertTrue(result.contains(p1));
+        assertTrue(result.contains(p3));
+        assertFalse(result.contains(p2));
+    }
+
+    @Test
+    void getListOfDifferentPublications_whenLibraryContainsAll_returnsEmpty() {
+        PublicationSample p1 = mock(PublicationSample.class);
+        PublicationSample p2 = mock(PublicationSample.class);
+
+        PublicationSampleRepository repo = new PublicationSampleRepository(List.of(p1, p2), null);
+
+        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of(p1, p2));
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfDifferentPublications_whenLibraryContainsNone_returnsAllRepoPublications() {
+        PublicationSample p1 = mock(PublicationSample.class);
+        PublicationSample p2 = mock(PublicationSample.class);
+
+        PublicationSampleRepository repo = new PublicationSampleRepository(List.of(p1, p2), null);
+
+        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());
+
+        assertEquals(2, result.size());
+        assertEquals(List.of(p1, p2), result); // mesma ordem do repo
+    }
+
+    @Test
+    void getListOfDifferentPublications_returnsImmutableCopy() {
+        PublicationSample p1 = mock(PublicationSample.class);
+
+        PublicationSampleRepository repo = new PublicationSampleRepository(List.of(p1), null);
+
+        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());
+
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(PublicationSample.class)));
+    }
+
+
+    private static PublicationSample mockPublicationSample(
+            String title,
+            List<String> authorNames,
+            Locale language,
+            List<String> genreTypes,
+            String ownerName,
+            String conditionDescription
+    ) {
+        PublicationSample ps = mock(PublicationSample.class);
+
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        when(ps.getBibliographicalData()).thenReturn(bdDouble);
+
+        when(bdDouble.getTitle()).thenReturn(title);
+        when(bdDouble.getOriginalLanguage()).thenReturn(language);
+
+        List<Author> authors = authorNames.stream().map(n -> {
+            Author authorDouble = mock(Author.class);
+            Profile profileDouble = mock(Profile.class);
+            when(authorDouble.getProfile()).thenReturn(profileDouble);
+            when(profileDouble.getName()).thenReturn(n);
+            return authorDouble;
+        }).toList();
+        when(bdDouble.getAuthors()).thenReturn(authors);
+
+        // Genres -> genreType
+        List<Genre> genres = genreTypes.stream().map(gt -> {
+            Genre g = mock(Genre.class);
+            when(g.getGenreType()).thenReturn(gt);
+            return g;
+        }).toList();
+        when(bdDouble.getGenres()).thenReturn(genres);
+
+        // owner username
+        User ownerDouble = mock(User.class);
+        when(ownerDouble.getUserName()).thenReturn(ownerName);
+        when(ps.getOwner()).thenReturn(ownerDouble);
+
+        // condition description
+        Condition conditionDouble = mock(Condition.class);
+        when(conditionDouble.getDescription()).thenReturn(conditionDescription);
+        when(ps.getCondition()).thenReturn(conditionDouble);
+
+        return ps;
+    }
+
+    private static PublicationSampleDTO_US016 mockDto(
+            String title,
+            List<String> authors,
+            Locale language,
+            List<String> genreTypes,
+            String ownerName,
+            String condition
+    ) {
+        PublicationSampleDTO_US016 dtoDouble = mock(PublicationSampleDTO_US016.class);
+        when(dtoDouble.getTitle()).thenReturn(title);
+        when(dtoDouble.getAuthorName()).thenReturn(authors);
+        when(dtoDouble.getLanguage()).thenReturn(language);          // Locale
+        when(dtoDouble.getGenreType()).thenReturn(genreTypes);
+        when(dtoDouble.getOwnerName()).thenReturn(ownerName);
+        when(dtoDouble.getCondition()).thenReturn(condition);
+        return dtoDouble;
+    }
 
 }

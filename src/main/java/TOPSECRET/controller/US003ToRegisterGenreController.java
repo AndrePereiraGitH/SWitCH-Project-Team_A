@@ -9,7 +9,7 @@ import TOPSECRET.repository.GenreRepository;
 
 public class US003ToRegisterGenreController {
 
-    private GenreRepository _genreRepository;
+    private final GenreRepository _genreRepository;
 
     /**
      * Constructor.
@@ -28,6 +28,6 @@ public class US003ToRegisterGenreController {
      * @return Created genre
      */
     public Genre registerGenre(String genreType) {
-        return _genreRepository.createAndAddGenre(genreType);
+        return _genreRepository.createAndAdd(genreType);
     }
 }

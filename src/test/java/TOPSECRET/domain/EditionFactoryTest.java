@@ -1,51 +1,41 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class EditionFactoryTest {
     private final EditionFactory factory = new EditionFactory();
 
     // -------------------------
-    // Helpers
+    // Mocks
     // -------------------------
 
     private PublicationType validPublicationType() {
-        return publicationTypeBook();
+        return mock(PublicationType.class);
     }
 
     private Code validCode() {
-        return codeWithIsbn13();
-    }
-
-    private Dimensions validDimensions() {
-        return new Dimensions(20.0, 15.0, 3.0);
+        return mock(Code.class);
     }
 
     private PhysicalAttributes validPhysicalAttributes() {
-        return new PhysicalAttributes(validDimensions(), 0.5, 200);
+        return mock(PhysicalAttributes.class);
     }
 
     private Contact validContact() {
-        return new Contact("912345678", "351", null, null);
+        return mock(Contact.class);
     }
 
     private Publisher validPublisher() {
-        return new Publisher("Porto Editora", "123456789", validContact());
-    }
-
-    private PublicationType publicationTypeBook() {
-        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Hardcover edition");
-    }
-
-    private Code codeWithIsbn13() {
-        return Code.fromIsbn13("978-3-16-148410-0");
+        Publisher publisher = mock(Publisher.class);
+        when(publisher.getContact()).thenReturn(validContact());
+        return publisher;
     }
 
     // -------------------------
@@ -53,7 +43,7 @@ class EditionFactoryTest {
     // -------------------------
 
     @Test
-    void create_shouldCreateEdition_whenValidData() {
+    void shouldCreateEdition_whenValidData() {
         Edition edition = factory.create(
                 "1st",
                 validCode(),
@@ -71,7 +61,7 @@ class EditionFactoryTest {
     }
 
     @Test
-    void create_shouldTrimEditionNumber() {
+    void shouldTrimEditionNumber() {
         Edition edition = factory.create(
                 "   1st   ",
                 validCode(),
