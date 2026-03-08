@@ -5,6 +5,7 @@ import TOPSECRET.domain.AuctionFactory;
 import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,6 @@ public class AuctionRepository {
      * @return {@code true} if the auction was created and added, {@code false} if it already exists
      */
     public Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
-
 
         Auction auction = _factoryAuction.create(listing, initialDate, finalDate, buyOutPrice);
 
