@@ -11,7 +11,7 @@ class RegisterNewPublicationCtrl {
 }
 
 class PublicationSampleRepository {
-  +createAndAddPublicationToSystem(bd, owner, status, edition, condition)
+  +createAndAdd(bd, owner, status, edition, condition)
   -validate(pub1 : PublicationSample)
   -add(pub1 : PublicationSample)
 }
