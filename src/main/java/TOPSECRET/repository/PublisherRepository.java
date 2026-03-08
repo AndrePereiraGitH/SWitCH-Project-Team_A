@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Publisher;
+import TOPSECRET.domain.PublisherFactory;
 
 import java.util.ArrayList;
 import  java.util.List;
@@ -17,14 +18,16 @@ public class   PublisherRepository {
 
     // Internal list that stores all registered publishers
     private List<Publisher> publishers;
+    private PublisherFactory publisherFactory;
+
 
     /**
      * Initializes the repository with an empty list of publishers.
      */
     public PublisherRepository() {
         publishers = new ArrayList<>();
-    }
-
+        publisherFactory =new PublisherFactory();
+}
 
     /**
      * Creates and adds a new Publisher to the repository.
@@ -38,7 +41,7 @@ public class   PublisherRepository {
     public Publisher  add(String name, String vatNumber, Contact contact) {
 
         // Create a new Publisher instance with the given data
-        Publisher publisher = new Publisher( name,  vatNumber,  contact);
+        Publisher publisher = publisherFactory.create( name,  vatNumber,  contact);
 
         // Check if a publisher with the same identity already exists
         if (exists(publisher)) {
