@@ -77,6 +77,7 @@ public class GenreRepository {
         throw new IllegalArgumentException("Genre not found.");
     }
     // ----------------------------- US004 ends -------------------------------
+    // ----------------------------- US003 starts -------------------------------
 
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
@@ -90,6 +91,8 @@ public class GenreRepository {
         }
         return false;
     }
+    // ----------------------------- US003 ends -------------------------------
+
 
 
 }

@@ -18,26 +18,6 @@ class GenreRepositoryTest {
     private final Genre genre = mock(Genre.class);
     private final GenreRepository genreRepository = new GenreRepository(genres, genreFactory);
 
-
-    @Test
-    void getAllGenres_ReturnsCorrectList() {
-        // Arrange
-        Genre genre2 = mock(Genre.class);
-        when(genre.getGenreType()).thenReturn("Fantasy");
-        when(genre2.getGenreType()).thenReturn("Science Fiction");
-        genres.add(genre);
-        genres.add(genre2);
-
-        // Act
-        List<Genre> result = genreRepository.getAllGenres();
-
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(genre));
-        assertTrue(result.contains(genre2));
-        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
-    }
-
     @Test
     void testCreateAndAddGenre_AddsNewGenre() {
         // Arrange
@@ -65,5 +45,50 @@ class GenreRepositoryTest {
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAdd(genreType));
         assertEquals("Genre already exists", exception.getMessage());
+    }
+
+    @Test
+    void getAllGenres_ReturnsCorrectList() {
+        // Arrange
+        Genre genre2 = mock(Genre.class);
+        when(genre.getGenreType()).thenReturn("Fantasy");
+        when(genre2.getGenreType()).thenReturn("Science Fiction");
+        genres.add(genre);
+        genres.add(genre2);
+
+        // Act
+        List<Genre> result = genreRepository.getAllGenres();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(genre));
+        assertTrue(result.contains(genre2));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
+    }
+
+    @Test
+    void getAllGenresShouldReturnUnmodifiableList() {
+
+        // Arrange
+        GenreRepository repo = new GenreRepository(List.of(genre), genreFactory);
+
+        // Act
+        List<Genre> result = repo.getAllGenres();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
+    }
+
+    @Test
+    void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
+
+        // Arrange
+        GenreRepository repo = new GenreRepository(List.of(), genreFactory);
+
+        // Act
+        List<Genre> result = repo.getAllGenres();
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 }
