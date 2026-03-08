@@ -32,8 +32,6 @@ public class Auction {
     private Price _finalPrice;
     private LocalDateTime _closedAt;
 
-    public Auction() {
-    }
 
     /**
      * Creates a new auction using the system default clock.
@@ -68,7 +66,7 @@ public class Auction {
      *   <li>{@code buyOutPrice} is less than or equal to the listing initial price</li>
      * </ul>
      */
-    public Auction(Listing listing, LocalDateTime auctionStartDateTime, LocalDateTime auctionEndDateTime, Price buyOutPrice, Clock clock) {
+    protected Auction(Listing listing, LocalDateTime auctionStartDateTime, LocalDateTime auctionEndDateTime, Price buyOutPrice, Clock clock) {
 
         if (clock == null)
             throw new IllegalArgumentException("Clock cannot be null");
