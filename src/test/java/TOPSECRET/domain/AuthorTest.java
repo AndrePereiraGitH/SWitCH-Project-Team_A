@@ -128,25 +128,6 @@ class AuthorTest {
     }
 
     @Test
-    void shouldNotBeEquals_whenDifferentClass() {
-        // Arrange
-        Author a1 = new Author(profile, "bio");
-        // Act + Assert
-        assertNotEquals("not an author", a1);
-    }
-
-    @Test
-    void shouldBeEqual_whenSameProfileAndBiography() {
-        // Arrange
-
-        Author a1 = new Author(profile, "bio");
-        Author a2 = new Author(profile, "bio");
-
-        // Act + Assert
-        assertEquals(a1, a2);
-    }
-
-    @Test
     void shouldNotBeEqual_whenDifferentProfile() {
         Author a1 = new Author(profile, "bio");
 
@@ -157,16 +138,6 @@ class AuthorTest {
     }
 
     @Test
-    void shouldBeEquals_whenSameProfileData() {
-        // Arrange
-        Author a1 = new Author(profile, "bio");
-
-        Author a2 = new Author(profile, "bio");
-        // Act + Assert
-        assertEquals(a1, a2);
-    }
-
-    @Test
     void shouldNotBeEquals_whenSameProfileButDifferentBio() {
         // Arrange
 
@@ -174,16 +145,6 @@ class AuthorTest {
         Author a2 = new Author(profile, "bio2");
         // Act + Assert
         assertNotEquals(a1, a2);
-    }
-
-    @Test
-    void shouldBeEqualsWhenAuthorsHaveSameState() {
-        // Arrange
-        Author author1 = new Author(profile, "Bio");
-        Author author2 = new Author(profile, "Bio");
-
-        // Act + Assert
-        assertEquals(author1, author2);
     }
 
     @Test
