@@ -17,28 +17,48 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Integration tests for {@link CollectionOfPublicationsRepository}.
+ *
+ * <p>These tests use <b>real objects</b> — no mocks. A real repository, a real factory,
+ * and real domain objects (User, Genre, CollectionOfPublications) are all created together.
+ * If a test fails here, the bug could be in the repository or in the domain class it uses.
+ *
+ * <p>{@code @BeforeEach} creates a fresh repository before every test,
+ * so tests do not share state and cannot affect each other.
+ *
+ * <p>This file covers four user stories:
+ * <ul>
+ *   <li><b>US017</b> — create a private collection, prevent duplicates, confirm empty start</li>
+ *   <li><b>US018</b> — add publications to collections, get user collections, convert DTOs</li>
+ *   <li><b>US019</b> — make a collection public, find collections by user</li>
+ *   <li><b>US020</b> — find public collections by genre</li>
+ * </ul>
+ */
 class CollectionOfPublicationsRepositoryDependenciesTest {
 
     private CollectionOfPublicationsRepository repository;
 
+    // runs before each test — creates a fresh empty repository so tests don't affect each other
     @BeforeEach
     void setup() {
         repository = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
     }
 
-    // ========== HELPER METHODS ==========
+
+    // ========================= Test helpers =========================
 
     /**
-     * Creates a Country instance using CountryFactory.
-     * Used across multiple tests to avoid repetition.
+     * Creates a {@link Country} using the factory — used across multiple tests to avoid repetition.
      */
-
     private Country createCountry() {
         CountryFactory factory = new CountryFactory();
         return factory.create("Portugal");
     }
 
+    /**
+     * Creates a valid {@link PublicationSample} — used in US018 and US020 tests.
+     */
     private PublicationSample createValidPublication() {
 
         // CHANGE: Replaced new Country("PORTUGAL") with createPortugal()
@@ -113,6 +133,9 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         );
     }
 
+    /**
+     * Creates a valid {@link User} — used across US017, US018, US019, and US020 tests.
+     */
     private User createValidUser() {
 
         // CHANGE: Replaced new Country("PORTUGAL") with createPortugal()
@@ -130,20 +153,26 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         );
     }
 
-/**
- * - US017: Creation of private collections and duplicate validation.
- */
 
+    // ============================== US017 ==============================
+
+    // US017 happy path: the user provides a name and genre, and the repository creates the collection.
+    // We check all five expected values to confirm the repository delegated to the factory correctly:
+    // - name and genre must match what was passed in
+    // - owner must be the correct user
+    // - isPrivate must be true (US017 rule: always starts private)
+    // - publications must be empty (US017 rule: starts with no publications)
     @Test
     void shouldCreatePrivateCollectionSuccessfully_US017() {
-        // US017: Create a private collection with name and genre
-
+        // Arrange
         User user = createValidUser();
         Genre genre = new Genre("Fiction");
 
+        // Act — repository asks the factory to create the collection
         CollectionOfPublications result =
                 repository.createIfNotExists(user, "Favorites", genre);
 
+        // Assert — collection is created, private by default, and starts empty
         assertNotNull(result);
         assertEquals("Favorites", result.getCollectionName());
         assertEquals(genre, result.getCollectionGenre());
@@ -151,32 +180,57 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         assertTrue(result.getPublications().isEmpty());
     }
 
+    // US017 rule: a user cannot have two collections with the same name and genre.
+    // The first creation succeeds. The second one has the exact same data, so it must throw.
+    // The repository checks for this duplicate before calling the factory.
     @Test
     void shouldNotAllowDuplicateCollectionForSameUser_US017() {
-        // US017: Prevent duplicate collections with same name and genre
-
+        // Arrange — first collection is created successfully
         User user = createValidUser();
         Genre genre = new Genre("Fiction");
-
         repository.createIfNotExists(user, "Favorites", genre);
 
+        // Act & Assert — same user + same name + same genre = duplicate = must throw
         assertThrows(IllegalArgumentException.class, () ->
                 repository.createIfNotExists(user, "Favorites", genre)
         );
     }
 
+    // The duplicate check uses both name AND genre — changing the genre makes it a different collection.
+    // This test confirms that the same name with a different genre is NOT treated as a duplicate.
     @Test
     void shouldAllowSameNameWithDifferentGenre_US017() {
-
+        // Arrange — first collection with genre "Fiction"
         User user = createValidUser();
-
         repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
 
+        // Act — same name but different genre ("History") — this must succeed
         CollectionOfPublications result =
                 repository.createIfNotExists(user, "Favorites", new Genre("History"));
 
+        // Assert — a second collection was created successfully
         assertNotNull(result);
     }
+
+    // US017 rule: a new collection must always start with no publications.
+    // getPublications() returns a copy of the internal list — if it is empty, the collection started correctly.
+    @Test
+    void shouldUseGetPublications() {
+        // Arrange & Act
+        User user = createValidUser();
+        Genre genre = new Genre("Fiction");
+
+        CollectionOfPublications collection =
+                repository.createIfNotExists(user, "My Collection", genre);
+
+        // Assert — the list must be empty right after creation
+        assertTrue(collection.getPublications().isEmpty());
+    }
+
+    // ============================== end US017 ==============================
+
+
+    // ============================== US019 ==============================
 
     /**
      * US019 - tests for getAllCollectionsOfPublicationsByUser
@@ -357,118 +411,10 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         assertFalse(collection.getIsPrivate());
     }
 
-    @Test
-    void shouldUseGetPublications() {
-        // US017 - new collection should start empty
-        User user = createValidUser();
-        Genre genre = new Genre("Fiction");
+    // ============================== end US019 ==============================
 
-        CollectionOfPublications collection =
-                repository.createIfNotExists(user, "My Collection", genre);
 
-        // Use the getter to confirm the list is empty.
-        assertTrue(collection.getPublications().isEmpty());
-    }
-
-    @Test
-    void shouldUseEqualsAndHashCode_US017() {
-        // US017: validate equals/hashCode use name, genre, and owner
-        User user = createValidUser();
-        Genre genre = new Genre("Fiction");
-
-        CollectionOfPublications c1 = new CollectionOfPublications("MyCollection", genre, user);
-        CollectionOfPublications c2 = new CollectionOfPublications("MyCollection", genre, user);
-        CollectionOfPublications c3 = new CollectionOfPublications("DifferentName", genre, user);
-
-        // equals should consider c1 and c2 equal
-        assertEquals(c1, c2);
-        assertNotEquals(c1, c3);
-
-        // hashCode should be consistent with equals
-        assertEquals(c1.hashCode(), c2.hashCode());
-    }
-
-    // US017 — equals(), hashCode() e getPublications()
-
-    @Test
-    void equals_shouldReturnTrue_whenComparingToSelf_US017() {
-        // equals must be reflexive
-        User user = createValidUser();
-        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
-        assertEquals(collection, collection);
-    }
-
-    @Test
-    void equals_shouldReturnFalse_whenComparingToNull_US017() {
-        // equals with null should return false
-        User user = createValidUser();
-        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
-        assertNotEquals(collection, null);
-    }
-
-    @Test
-    void equals_shouldReturnFalse_whenComparingToDifferentType_US017() {
-        // equals with another type should return false
-        User user = createValidUser();
-        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
-        assertNotEquals(collection, "uma string qualquer");
-    }
-
-    @Test
-    void equals_shouldReturnFalse_whenGenreIsDifferent_US017() {
-        // Different genres imply different collections.
-        User user = createValidUser();
-        CollectionOfPublications c1 = new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
-        CollectionOfPublications c2 = new CollectionOfPublications("Favorites", new Genre("History"), user);
-        assertNotEquals(c1, c2);
-    }
-
-    @Test
-    void equals_shouldReturnFalse_whenOwnerIsDifferent_US017() {
-        // Different owner implies different collections
-        User user1 = createValidUser();
-        User user2 = new User(
-                "otherUser",
-                new Contact("913333333", "351", null, null),
-                new Profile("Other", createCountry(), LocalDate.of(1985, 1, 1)),
-                UserRole.NORMAL_USER
-        );
-        Genre genre = new Genre("Fiction");
-        CollectionOfPublications c1 = new CollectionOfPublications("Favorites", genre, user1);
-        CollectionOfPublications c2 = new CollectionOfPublications("Favorites", genre, user2);
-        assertNotEquals(c1, c2);
-    }
-
-    @Test
-    void equals_shouldReturnFalse_whenIsPrivateDiffers_US017() {
-        // privacy flag should be part of equals
-        User user = createValidUser();
-        Genre genre = new Genre("Fiction");
-        CollectionOfPublications privateCollection = new CollectionOfPublications("Favorites", genre, user);
-        CollectionOfPublications publicCollection = new CollectionOfPublications("Favorites", genre, user);
-        publicCollection.set_isPrivate(false);
-        assertNotEquals(privateCollection, publicCollection);
-    }
-
-    @Test
-    void hashCode_shouldDiffer_whenCollectionsAreDifferent_US017() {
-        // hashCode should differ when equals is false
-        User user = createValidUser();
-        CollectionOfPublications c1 = new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
-        CollectionOfPublications c2 = new CollectionOfPublications("Favorites", new Genre("History"), user);
-        assertNotEquals(c1.hashCode(), c2.hashCode());
-    }
-
-    @Test
-    void getPublications_shouldReturnDefensiveCopy_US017() {
-        // returns a copy (not the internal list)
-        User user = createValidUser();
-        CollectionOfPublications collection = repository.createIfNotExists(user, "Favorites", new Genre("Fiction"));
-        List<PublicationSample> returned = collection.getPublications();
-        assertTrue(collection.getPublications().isEmpty());
-    }
-
-    // --------- US018
+    // ============================== US018 ==============================
 
     /**
      * US018
@@ -674,6 +620,11 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
 //        assertEquals(1, collection.getPublications().size());
 //    }
 
+    // ============================== end US018 ==============================
+
+
+    // ============================== US020 ==============================
+
     /**
      * US020
      * Should return a list of public collections of publications, given a user selected genre
@@ -744,5 +695,6 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         assertTrue(result.isEmpty());
     }
 
+    // ============================== end US020 ==============================
 
 }

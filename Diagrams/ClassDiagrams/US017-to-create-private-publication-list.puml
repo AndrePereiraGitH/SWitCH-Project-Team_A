@@ -11,7 +11,7 @@ class User {
 
 class Genre {
   - _genreType : String
-  + getTitle() : String
+  + getGenreType() : String
 }
 
 class CollectionOfPublications {
