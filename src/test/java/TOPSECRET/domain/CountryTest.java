@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 import static org.junit.jupiter.api.Assertions.*; //import para nos permitir fazer os assertEquals, assertThrows, etc
-import TOPSECRET.domain.Enum.Countries;
+
 import org.junit.jupiter.api.Test; //import para indicar ao JUnit que é para testes
 
 class CountryTest { //Classe para testar Country

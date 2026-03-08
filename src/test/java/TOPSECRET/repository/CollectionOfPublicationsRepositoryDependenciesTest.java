@@ -315,7 +315,7 @@ class CollectionOfPublicationsRepositoryDependenciesTest {
         CollectionOfPublicationsDTO_US019 fakeDTO = new CollectionOfPublicationsDTO_US019(
                 "Romance",
                 "Romance",
-                owner
+                "Joana"
         );
 
         // act + assert
