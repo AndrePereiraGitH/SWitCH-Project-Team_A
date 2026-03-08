@@ -16,7 +16,7 @@ class PublicationSampleRepository {
   -add(pub1 : PublicationSample)
 }
 
-class FactoryPublicationSample {
+class PublicationSampleFactory {
   +create(bd, owner, status, edition, condition) : PublicationSample
 }
 
@@ -25,7 +25,7 @@ class PublicationSample {
 
 UI010 "1" ..> "1" RegisterNewPublicationCtrl : contacts
 RegisterNewPublicationCtrl "1" ..> "1" PublicationSampleRepository : uses
-PublicationSampleRepository "1" ..> "1" FactoryPublicationSample : uses
+PublicationSampleRepository "1" ..> "1" PublicationSampleFactory : uses
 PublicationSampleRepository "1" -> "*" PublicationSample : owns
 
 @enduml
