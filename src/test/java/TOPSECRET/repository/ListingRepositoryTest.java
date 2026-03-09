@@ -189,4 +189,61 @@ class ListingRepositoryTest {
                 repo.getListOfItemsOnDirectSaleofAGivenAuthor(null)
         );
     }
+
+    /**
+     * Tests that items in non-DIRECT_SALE listings are ignored even if they contain the target author.
+     * <p>
+     * This ensures that getListOfItemsOnDirectSaleofAGivenAuthor only returns items from DIRECT_SALE listings.
+     */
+    @Test
+    void getListOfItemsOnDirectSaleofAGivenAuthor_ShouldIgnoreNonDirectSaleListings() throws Exception {
+
+        // Arrange
+        Author targetAuthor = mock(Author.class);
+        PublicationSample sampleWithAuthor = mock(PublicationSample.class);
+
+        BibliographicalData bdWithAuthor = mock(BibliographicalData.class);
+        when(bdWithAuthor.getAuthors()).thenReturn(List.of(targetAuthor));
+        when(sampleWithAuthor.getBibliographicalData()).thenReturn(bdWithAuthor);
+
+        Listing listingAuction = mock(Listing.class);
+        when(listingAuction.getSaleType()).thenReturn(SaleType.AUCTION);
+        when(listingAuction.getItems()).thenReturn(List.of(sampleWithAuthor));
+
+        // Add non-DIRECT_SALE listing directly to repository
+        repo.getAllListings().add(listingAuction);
+
+        // Act
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleofAGivenAuthor(targetAuthor);
+
+        // Assert
+        assertTrue(result.isEmpty(), "Items in non-DIRECT_SALE listings should be ignored");
+    }
+
+    /**
+     * Tests that getAllListings returns the complete list of listings stored in the repository.
+     *
+     * <p>This ensures that the method reflects the repository's internal state
+     * and returns all listings that were added via createAndAdd.</p>
+     */
+    @Test
+    void getAllListings_ShouldReturnAllListingsInRepository() throws Exception {
+
+        // Arrange
+        when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1,
+                "description1", List.of(pic1))).thenReturn(listing1Double);
+        when(listingFactoryDouble.create("title2", List.of(pub2), SaleType.AUCTION, price2,
+                "description2", List.of(pic2))).thenReturn(listing2Double);
+
+        repo.createAndAdd("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2), SaleType.AUCTION, price2, "description2", List.of(pic2));
+
+        // Act
+        List<Listing> allListings = repo.getAllListings();
+
+        // Assert
+        assertEquals(2, allListings.size(), "getAllListings should return all listings added to the repository");
+        assertTrue(allListings.contains(listing1Double), "The list should contain listing1Double");
+        assertTrue(allListings.contains(listing2Double), "The list should contain listing2Double");
+    }
 }

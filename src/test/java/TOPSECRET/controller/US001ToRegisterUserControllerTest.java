@@ -3,67 +3,147 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for US001 - To register a User in the system
+ * SUT: US001ToRegisterUserController
+ *
+ * Repository dependency is mocked to isolate controller logic.
+ */
 class US001ToRegisterUserControllerTest {
 
-    private US001ToRegisterUserController US001ToRegisterUserController;
-    private UserRepository userRepository;
+    /**
+     * Ensures successful user registration delegates to repository.
+     */
+    @Test
+    void shouldRegisterUserSuccessfully() {
 
-//    @BeforeEach
-//    void setUp() {
-//        UserFactory userFactory = new UserFactory();
-//        userRepository = new UserRepository(userFactory);
-//        US001ToRegisterUserController = new US001ToRegisterUserController(userRepository);
-//    }
-//
-//    private Contact createSampleContact() {
-//        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
-//        Email email = new Email("test.user", "example.com");
-//        return new Contact("987654321", "351", email, address);
-//    }
-//
-//    private Profile createSampleProfile() {
-//        return new Profile(
-//                "Test Profile",
-//                new Country("PORTUGAL"),
-//                LocalDate.of(1997, 8, 15)
-//        );
-//    }
+        // ARRANGE
+        UserRepository repository = mock(UserRepository.class);
 
-    //To test the happy path
+        US001ToRegisterUserController sut =
+                new US001ToRegisterUserController(repository);
 
-//    @Test
-//    void testRegisterUser_Success() {
-//        String userName = "TestUser1";
-//        Contact contact = createSampleContact();
-//        Profile profile = createSampleProfile();
-//
-//        US001ToRegisterUserController.registerUser(userName, contact, profile, UserRole.ADMIN);
-//        assertTrue(userRepository.exists(userName), "User registered successfully");
-//    }
+        Contact contact = mock(Contact.class);
+        Profile profile = mock(Profile.class);
 
-    // To test any null parameter
-//    @Test
-//    void testRegisterUser_NullParameters() {
-//        Contact contact = createSampleContact();
-//        Profile profile = createSampleProfile();
-//
-//        assertThrows(IllegalArgumentException.class, () ->
-//                US001ToRegisterUserController.registerUser(null, contact, profile, UserRole.ADMIN));
-//
-//        assertThrows(IllegalArgumentException.class, () ->
-//                US001ToRegisterUserController.registerUser("User", null, profile, UserRole.ADMIN));
-//
-//        assertThrows(IllegalArgumentException.class, () ->
-//                US001ToRegisterUserController.registerUser("User", contact, null, UserRole.ADMIN));
-//
-//        assertThrows(IllegalArgumentException.class, () ->
-//                US001ToRegisterUserController.registerUser("User", contact, profile, null));
-//    }
+        when(repository.exists("TestUser1")).thenReturn(false);
+
+        // ACT
+        sut.registerUser(
+                "TestUser1",
+                contact,
+                profile,
+                UserRole.ADMIN
+        );
+
+        // ASSERT
+        verify(repository).createAndAddUser(
+                "TestUser1",
+                contact,
+                profile,
+                UserRole.ADMIN
+        );
+    }
+
+    /**
+     * Ensures exception is thrown when username is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenUsernameIsNull() {
+
+        // ARRANGE
+        US001ToRegisterUserController sut =
+                new US001ToRegisterUserController(
+                        mock(UserRepository.class)
+                );
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.registerUser(
+                        null,
+                        mock(Contact.class),
+                        mock(Profile.class),
+                        UserRole.ADMIN
+                )
+        );
+    }
+
+    /**
+     * Ensures exception is thrown when contact is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenContactIsNull() {
+
+        // ARRANGE
+        US001ToRegisterUserController sut =
+                new US001ToRegisterUserController(
+                        mock(UserRepository.class)
+                );
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.registerUser(
+                        "User",
+                        null,
+                        mock(Profile.class),
+                        UserRole.ADMIN
+                )
+        );
+    }
+
+    /**
+     * Ensures exception is thrown when profile is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenProfileIsNull() {
+
+        // ARRANGE
+        US001ToRegisterUserController sut =
+                new US001ToRegisterUserController(
+                        mock(UserRepository.class)
+                );
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.registerUser(
+                        "User",
+                        mock(Contact.class),
+                        null,
+                        UserRole.ADMIN
+                )
+        );
+    }
+
+    /**
+     * Ensures exception is thrown when role is null.
+     */
+    @Test
+    void shouldThrowExceptionWhenRoleIsNull() {
+
+        // ARRANGE
+        US001ToRegisterUserController sut =
+                new US001ToRegisterUserController(
+                        mock(UserRepository.class)
+                );
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.registerUser(
+                        "User",
+                        mock(Contact.class),
+                        mock(Profile.class),
+                        null
+                )
+        );
+    }
 }
