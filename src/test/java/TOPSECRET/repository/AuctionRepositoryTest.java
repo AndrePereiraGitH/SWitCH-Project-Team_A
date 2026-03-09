@@ -262,6 +262,76 @@ class AuctionRepositoryTest {
         assertFalse(result.contains(auction2));
     }
 
+    @Test
+    void getListOfItemsOnAuctionGivenGenreShouldThrowExceptionWhenGenreIsNull() {
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                auctionRepository.getListOfItemsOnAuctionGivenGenre(null)
+        );
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenreNoMatchesReturnsEmptyList() {
+
+        // Arrange
+        Genre genre = mock(Genre.class);
+
+        // Act
+        List<Auction> result =
+                auctionRepository.getListOfItemsOnAuctionGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenreOneAuctionMatchesReturnsOneAuction() {
+
+        // Arrange
+        Genre fantasy = mock(Genre.class);
+
+        PublicationSample sample = createMockPublicationSampleWithGenre(fantasy);
+        Auction auction = createMockAuction(List.of(sample));
+
+        AuctionRepository repo =
+                createMockAuctionRepository(List.of(auction), auctionFactory);
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(auction, result.get(0));
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_multipleAuctionsMatch_returnsAll() {
+
+        // Arrange
+        Genre fantasy = mock(Genre.class);
+
+        PublicationSample sample1 = createMockPublicationSampleWithGenre(fantasy);
+        PublicationSample sample2 = createMockPublicationSampleWithGenre(fantasy);
+
+        Auction auction1 = createMockAuction(List.of(sample1));
+        Auction auction2 = createMockAuction(List.of(sample2));
+
+        AuctionRepository repo =
+                createMockAuctionRepository(List.of(auction1, auction2), auctionFactory);
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(auction1));
+        assertTrue(result.contains(auction2));
+    }
+
 
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -329,4 +399,17 @@ class AuctionRepositoryTest {
 
         return authorDouble;
     }
+
+    private PublicationSample createMockPublicationSampleWithGenre(Genre genre) {
+
+        BibliographicalData bd = mock(BibliographicalData.class);
+        when(bd.getGenres()).thenReturn(List.of(genre));
+
+        PublicationSample sample = mock(PublicationSample.class);
+        when(sample.getBibliographicalData()).thenReturn(bd);
+
+        return sample;
+    }
+
+
 }
