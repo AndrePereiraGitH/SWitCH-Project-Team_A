@@ -4,47 +4,93 @@ hide footbox
 autonumber
 title US028 - To get the list of items on auction of a given publisher
 
-
+box #whitesmoke
 actor Buyer
-participant ":UI028" as UI028
+participant ":UI028" as UI
+end box
 
+participant ":US028ToGetTheListOfItemsOn\nAuctionOfAGivenPublisherController" as Ctrl
+participant ":PublisherRepository" as PublisherRepo
+participant "listOfAllPublishers:\nList<Publisher>" as ListPublishers
+participant ":PublisherDTO_US028" as PublisherDTO
+participant "publisherDTO:\nPublisherDTO_US028" as PublisherDTO_O
+participant ":Publisher" as Publisher
+participant "listOfAllPublishersDTO:\nList<PublisherDTO_US028>" as ListPublisherDTO
+participant ":ListingRepository" as ListingRepo
+participant "listOfListing:\nList<Listing>" as ListListings
+participant ":PublicationSampleRepository" as PubSampleRepo
+participant "listOfPublicationSample:\nList<PublicationSamples>" as ListPubSamples
+participant ":PublicationSampleDTO_US028" as PubSampleDTO
+participant "publicationSampleDTO:\nPublicationSampleDTO_US028" as PubSampleDTO_O
+participant "listOfPublicationSampleDTO:\nList<PublicationSampleDTO_US028>" as ListPubSamplesDTO
+participant ":PublicationSample" as PubSample
 
+' Interactions
 
-participant ":ToGetListOfItemsOnAuctionOf\nGivenPublisherController" as Controller
+' Section 1 - Get all publishers
+Buyer -> UI : I want to get the list of items\n on auction of a given publisher
+activate UI
+UI -> Ctrl : getAllPublishers()
+activate Ctrl
+Ctrl -> PublisherRepo: getAllPublishers()
+activate PublisherRepo
+PublisherRepo -> ListPublishers ** : create()
+PublisherRepo --> Ctrl: listOfAllPublishers
+deactivate PublisherRepo
+Ctrl -> PublisherDTO: toDTOs(listOfAllPublishers)
+activate PublisherDTO
+PublisherDTO -> ListPublisherDTO ** : create()
+loop for each publisher
+    PublisherDTO -> Publisher: getPublisherDetails()
+    activate Publisher
+    Publisher --> PublisherDTO: publisherDetails
+    deactivate Publisher
+    PublisherDTO -> PublisherDTO_O **: createDTO(publisherDetails)
+    PublisherDTO --> ListPublisherDTO: add(publisherDTO)
+end
+PublisherDTO --> Ctrl: listOfAllPublishersDTO
+deactivate PublisherDTO
+Ctrl --> UI : listOfAllPublishersDTO
+deactivate Ctrl
+Buyer <-- UI : Which publisher? Choose!
+deactivate UI
 
+' Section 2 - Get list of listings for auction
+Buyer -> UI : publisher
+activate UI
+UI -> Ctrl : findListOfItemsOnAuction(publisher)
+activate Ctrl
+'Ctrl -> ListingRepo : getListOfListingsOnAuction()
+Ctrl -> ListingRepo : findAllAuctionListings()
+activate ListingRepo
+ListingRepo -> ListListings ** : create()
+ListingRepo --> Ctrl : listOfListing
+deactivate ListingRepo
 
+' Section 3 - Get list of publication samples for the previous listings
+Ctrl -> PubSampleRepo : findItemsByListingAndPublisher(listOfListings, publisher)
+activate PubSampleRepo
+PubSampleRepo -> ListPubSamples ** : create()
+PubSampleRepo --> Ctrl : listOfItems
+deactivate PubSampleRepo
 
-participant ":ListingRepository" as Repository
-
-
-Buyer -> UI028 : I want to get the list of items on auction of a given publisher
-activate UI028
-Buyer <-- UI028 : Which publisher?
-Buyer -> UI028 : publisher
-
-UI028 -> Controller : getItemsOnAuctionByPublisher(publisher)
-activate Controller
-
-Controller -> Repository : getListingsOnAuction()
-activate Repository
-
-
-
-
-create "data: List<Listing>" as Listing
-Repository -> Listing
-
-
-
-Repository --> Controller : data
-deactivate Repository
-
-Controller -> Controller : extract items of given\n publisher into new list\n**res: List<Item>**
-
-Controller --> UI028 : res
-deactivate Controller
-
-UI028 --> Buyer : Display items on auction of given publisher
-deactivate UI028
+' Section 4 - create DTO for items
+Ctrl -> PubSampleDTO : toDTOs(listOfItems)
+activate PubSampleDTO
+PubSampleDTO -> ListPubSamplesDTO ** : create()
+loop for each publicationSample
+    PubSampleDTO -> PubSample: getDetails()
+    activate PubSample
+    PubSample --> PubSampleDTO: publicationSampleDetails
+    deactivate PubSample
+    PubSampleDTO -> PubSampleDTO_O ** : createDTO(publicationSampleDetails)
+    PubSampleDTO -> ListPubSamplesDTO : add(publicationSampleDTO)
+end
+PubSampleDTO --> Ctrl : listOfPublicationSampleDTO
+deactivate PubSampleDTO
+Ctrl --> UI : listOfPublicationSampleDTO
+deactivate Ctrl
+UI --> Buyer : Shows the list of items on auction for the publisher
+deactivate UI
 
 @enduml
