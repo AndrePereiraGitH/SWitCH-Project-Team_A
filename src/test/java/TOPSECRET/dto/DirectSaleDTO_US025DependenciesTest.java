@@ -60,7 +60,7 @@ class DirectSaleDTO_US025DependenciesTest {
         );
 
         // --- AUTHORS ---
-        authorRepo = new AuthorRepository( new AuthorFactory());
+        authorRepo = new AuthorRepository(new AuthorFactory());
         author1 = authorRepo.createAndAddAuthor("author1", portugal1, LocalDate.of(1945, 2, 4), "bio");
         author2 = authorRepo.createAndAddAuthor("author2", portugal2, LocalDate.of(1945, 2, 4), "bio");
 
@@ -68,6 +68,7 @@ class DirectSaleDTO_US025DependenciesTest {
         Genre genre1 = new Genre("genre");
         PublisherFactory publisherFactory = new PublisherFactory();
         Publisher publisher = publisherFactory.create("Porto Editora", "PT987654321", null);
+        EditionFactory editionFactory = new EditionFactory();
 
         sample1 = new PublicationSample(
                 new BibliographicalData(
@@ -80,16 +81,16 @@ class DirectSaleDTO_US025DependenciesTest {
                 ),
                 seller1,
                 PublicationStatus.READ,
-                new Edition(
-                        "1",
-                        new Code("s", "s", "s"),
-                        new PhysicalAttributes(new Dimensions(1, 1, 1), 1, 1),
-                        new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details"),
-                        publisher,
-                        Locale.ENGLISH,
-                        LocalDate.of(1923, 4, 6)
-                ),
-                Condition.NEW
+                editionFactory.create(
+                "1",
+                new Code("s", "s", "s"),
+                new PhysicalAttributes(new Dimensions(1, 1, 1), 1, 1),
+                new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details"),
+                publisher,
+                Locale.ENGLISH,
+                LocalDate.of(1923, 4, 6)
+        ),
+        Condition.NEW
         );
 
         sample2 = new PublicationSample(
@@ -103,7 +104,7 @@ class DirectSaleDTO_US025DependenciesTest {
                 ),
                 seller2,
                 PublicationStatus.READ,
-                new Edition(
+                editionFactory.create(
                         "1",
                         new Code("s", "s", "s"),
                         new PhysicalAttributes(new Dimensions(1, 1, 1), 1, 1),

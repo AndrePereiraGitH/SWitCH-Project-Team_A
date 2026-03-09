@@ -101,7 +101,8 @@ class US011AddPublicationToLibraryControllerDependenciesTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK,TypeOfBinding.CASE_BINDING, "Some details");
         Publisher publisher = publisherFactory.create("Porto Editora", "PT987654321", null);
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        EditionFactory  editionFactory = new EditionFactory();
+        Edition edition= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         //Creating some sample publications, using empty users from the empty constructor in User class
 //        publication1 = new Publication(data1, type, user1, PublicationStatus.READ, "1st", Code.fromIsbn10("001"));
