@@ -1,46 +1,63 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.GenreFactory;
 import TOPSECRET.repository.GenreRepository;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link US003ToRegisterGenreController}.
+ * The repository is replaced by a mock so only the controller logic is tested.
+ */
 class US003ToRegisterGenreControllerTest {
 
+    // Null repository must be rejected immediately in the constructor
     @Test
-    void registerValidGenre() {
+    void shouldThrowExceptionWhenRepositoryIsNull() {
 
-        // arrange
-        GenreRepository genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        US003ToRegisterGenreController controller = new US003ToRegisterGenreController(genreRepository);
-
-        String genreType = "Drama";
-
-        // act
-        Genre genre = controller.registerGenre(genreType);
-
-        // assert
-        assertNotNull(genre);
-        assertEquals("Drama", genre.getGenreType());
+        assertThrows(IllegalArgumentException.class,
+                () -> new US003ToRegisterGenreController(null));
     }
 
+    // Controller must return the genre that the repository gives back
     @Test
-    void registerDuplicateGenre() {
-        // arrange
-        GenreRepository genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+    void shouldRegisterGenreSuccessfully() {
+
+        // Arrange
+        Genre genreDouble = mock(Genre.class);
+        GenreRepository repoDouble = mock(GenreRepository.class);
+
+        // Program the mock: when createAndAdd is called, return the fake genre
+        when(repoDouble.createAndAdd("Drama")).thenReturn(genreDouble);
+
         US003ToRegisterGenreController controller =
-                new US003ToRegisterGenreController(genreRepository);
+                new US003ToRegisterGenreController(repoDouble);
 
-        controller.registerGenre("Science");
+        // Act
+        Genre result = controller.registerGenre("Drama");
 
-        // act + assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.registerGenre("Science")
-        );
+        // Assert
+        assertEquals(genreDouble, result);
     }
 
+    // If the repository throws, the controller must not catch it — let it propagate
+    @Test
+    void shouldPropagateExceptionWhenGenreAlreadyExists() {
+
+        // Arrange
+        GenreRepository repoDouble = mock(GenreRepository.class);
+
+        // Program the mock to simulate a duplicate genre error
+        when(repoDouble.createAndAdd("Drama"))
+                .thenThrow(new IllegalArgumentException("Genre already exists"));
+
+        US003ToRegisterGenreController controller =
+                new US003ToRegisterGenreController(repoDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerGenre("Drama"));
+    }
 }
