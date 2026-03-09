@@ -60,7 +60,7 @@ class DirectSaleDTO_US025DependenciesTest {
         );
 
         // --- AUTHORS ---
-        authorRepo = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
+        authorRepo = new AuthorRepository( new AuthorFactory());
         author1 = authorRepo.createAndAddAuthor("author1", portugal1, LocalDate.of(1945, 2, 4), "bio");
         author2 = authorRepo.createAndAddAuthor("author2", portugal2, LocalDate.of(1945, 2, 4), "bio");
 

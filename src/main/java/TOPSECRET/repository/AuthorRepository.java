@@ -5,6 +5,7 @@ import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,17 +27,13 @@ import java.util.List;
  * and the {@link Author} constructor.
  */
 public class AuthorRepository {
-    private final List<Author> _authors;
+    private final List<Author> _authors = new ArrayList<>();
     private final AuthorFactory _authorFactory;
 
-    public AuthorRepository(List<Author> authors, AuthorFactory authorFactory) {
-        if (authors == null) {
-            throw new IllegalArgumentException("Author cannot be null");
-        }
+    public AuthorRepository(AuthorFactory authorFactory) {
         if (authorFactory == null) {
             throw new IllegalArgumentException("AuthorFactory cannot be null");
         }
-        this._authors = authors;
         this._authorFactory = authorFactory;
     }
 

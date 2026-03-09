@@ -24,7 +24,7 @@ class AuthorDTO_US025DependenciesTest {
 
     @BeforeEach
     void setup() {
-        authorRepo = new AuthorRepository(new ArrayList<>(), authorFactory);
+        authorRepo = new AuthorRepository(authorFactory);
     }
 
     @Test
