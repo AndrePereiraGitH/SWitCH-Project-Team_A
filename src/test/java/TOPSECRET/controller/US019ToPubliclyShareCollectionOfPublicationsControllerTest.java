@@ -1,171 +1,194 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.CollectionOfPublicationsFactory;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 /**
  * Unit tests for {@link US019ToPubliclyShareCollectionOfPublicationsController}.
- * <p>
- * These tests cover:
- * </p>
- * <ul>
- *   <li>Controller instantiation</li>
- *   <li>Retrieval of a user's collections as DTOs</li>
- *   <li>Input validation for null user and null collection DTO</li>
- *   <li>Sharing a collection request using a valid DTO</li>
- * </ul>
+ *
+ * These tests verify the controller's behaviour in isolation using mock doubles
+ * for {@link CollectionOfPublicationsRepository}, ensuring the controller
+ * correctly delegates to its dependencies without testing their internal logic.
  */
 class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
 
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
-        US019ToPubliclyShareCollectionOfPublicationsController controller = new US019ToPubliclyShareCollectionOfPublicationsController(repo);
+    CollectionOfPublicationsRepository repo = mock();
 
-    /**
-     * Verifies that the controller can be instantiated successfully.
-     */
+
     @Test
     void testConstructor() {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+
+        // Act
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Assert
         assertNotNull(controller);
     }
 
-    /**
-     * Verifies that requesting collections for a user with no stored collections returns an empty list of DTOs.
-     */
-//    @Test
-//    void requestAllCollectionOfPublications_shouldReturn_EmptyListOfCollectionsDTO_ifThisUserHasNoCollections() {
-//        // arrange
-//        User owner = createUser("owner1");
-//
-//        // act
-//        List<CollectionOfPublicationsDTO_US019> collections = controller.requestAllCollectionsOfPublicationsByUser(owner);
-//
-//        // assert
-//        assertEquals(0, collections.size());
-//
-//    }
+    @Test
+    void requestAllCollectionOfPublications_shouldReturnEmptyList_ifUserHasNoCollections() {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+        User ownerDouble = mock(User.class);
+
+        when(repoDouble.getAllCollectionOfPublicationsByUser(ownerDouble))
+                .thenReturn(new ArrayList<>());
+
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Act
+        List<CollectionOfPublicationsDTO_US019> result =
+                controller.requestAllCollectionsOfPublicationsByUser(ownerDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(0, result.size());
+    }
+
 
     /**
-     * Verifies that requesting collections for a valid user with existing collections returns a non-empty list of DTOs.
-     */
-//    @Test
-//    void requestAllCollectionOfPublications_shouldReturn_ListOfCollectionsDTO_forValidUserWithCollections() {
-//        // arrange
-//        User owner = createUser("owner1");
-//        CollectionOfPublications collection = createCollectionOfPublications("My funny Collection", owner);
-//        repo.addCollectionToRepo(collection);
-//
-//        // act
-//        List<CollectionOfPublicationsDTO_US019> result = controller.requestAllCollectionsOfPublicationsByUser(owner);
-//
-//        // assert
-//        assertEquals(1, result.size());
-//
-//    }
-
-    /**
-     * Verifies that requesting collections with a null user throws {@link IllegalArgumentException}
-     * with the expected message.
+     * Verifies that requesting collections for a valid user with existing collections
+     * returns a list with the correct number of DTOs.
+     * The repository mock is configured to return a list with one collection double,
+     * which is then converted to a DTO by the controller.
      */
     @Test
-    void requestAllCollectionOfPublications_shouldReturn_shouldThrow_IfUserIsEmpty() {
-        // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.requestAllCollectionsOfPublicationsByUser(null));
+    void requestAllCollectionOfPublications_shouldReturnList_forUserWithCollections() {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+        User ownerDouble = mock(User.class);
 
-        assertEquals("User cannot be null", exception.getMessage());
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        Genre genreDouble = mock(Genre.class);
 
+        when(collectionDouble.getCollectionName()).thenReturn("My funny Collection");
+        when(collectionDouble.getCollectionGenre()).thenReturn(genreDouble);
+        when(genreDouble.getGenreType()).thenReturn("Fiction");
+        when(collectionDouble.getOwner()).thenReturn(ownerDouble);
+        when(ownerDouble.getUserName()).thenReturn("alice"); // <-- isto é o único acrescento
+        when(repoDouble.getAllCollectionOfPublicationsByUser(ownerDouble))
+                .thenReturn(List.of(collectionDouble));
+
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Act
+        List<CollectionOfPublicationsDTO_US019> result =
+                controller.requestAllCollectionsOfPublicationsByUser(ownerDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
     }
+
+
+    @Test
+    void requestAllCollectionOfPublications_shouldThrow_ifUserIsNull() {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.requestAllCollectionsOfPublicationsByUser(null)
+        );
+        assertEquals("User cannot be null", exception.getMessage());
+    }
+
+
 
     /**
      * Verifies that sharing a collection using a valid DTO returns {@code true}.
-     *
-     * @throws InstanceNotFoundException if the DTO does not match any existing collection (not expected in this test)
+     * The repository mock is configured to return a collection double for the given DTO,
+     * simulating a successful lookup.
      */
-//    @Test
-//    void shareCollectionOfPublications_shouldReturnTrue_IfCollectionOfPublicationsBecomesPublic() throws InstanceNotFoundException {
-//        // arrange
-//        User owner = createUser("owner1");
-//        CollectionOfPublications collection = createCollectionOfPublications("My funny Collection", owner);
-//        repo.addCollectionToRepo(collection);
-//
-//        List<CollectionOfPublicationsDTO_US019> collectionListDTO = controller.requestAllCollectionsOfPublicationsByUser(owner);
-//
-//        // act
-//        boolean result = controller.shareCollectionOfPublications(collectionListDTO.get(0));
-//
-//        // assert
-//        assertTrue(result);
-//    }
+    @Test
+    void shareCollectionOfPublications_shouldReturnTrue_ifCollectionExists() throws Exception {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble = mock(CollectionOfPublicationsRepository.class);
+
+        CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
+
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        when(repoDouble.getCollectionByDTO(dtoDouble)).thenReturn(collectionDouble);
+
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Act
+        boolean result = controller.shareCollectionOfPublications(dtoDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+
+    @Test
+    void shareCollectionOfPublications_shouldThrow_ifCollectionIsNull() {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.shareCollectionOfPublications(null)
+        );
+        assertEquals("you must send a collection to share", exception.getMessage());
+    }
+
+
 
     /**
-     * Verifies that sharing a collection with a null DTO throws {@link IllegalArgumentException}
-     * with the expected message.
+     * Verifies that sharing a DTO that does not match any existing collection
+     * throws {@link InstanceNotFoundException}.
+     * The repository mock is configured to throw the exception when queried
+     * with the given DTO double.
      */
-//    @Test
-//    void shareCollectionOfPublications_shouldThrows_ifCollectionProvidedIdNull() {
-//
-//        // act + assert
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.shareCollectionOfPublications(null));
-//
-//        // assert
-//        assertEquals("you must send a collection to share", exception.getMessage());
-//    }
-//
-//
-//
-//    private CollectionOfPublications createCollectionOfPublications(String collectionName, User user) {
-//        return new CollectionOfPublications(
-//                collectionName,
-//                new Genre("Fiction"),
-//                user
-//        );
-//    }
-//
-//    private User createUser(String username) {
-//        return new User(
-//                username,
-//                createContact(),
-//                createProfile(username),
-//                UserRole.NORMAL_USER
-//                );
-//    }
-//
-//    private Contact createContact() {
-//        return new Contact(
-//                "111111111",
-//                "+351",
-//                new Email("user", "example.com"),
-//                createAddress()
-//
-//        );
-//    }
-//
-//    private Address createAddress() {
-//        return new Address(
-//                "street xpto",
-//                "234A",
-//                "234567",
-//                new Country("PORTUGAL")
-//        );
-//    }
-//
-//    private Profile createProfile(String name) {
-//        return new Profile(
-//                name,
-//                new Country("PORTUGAL"),
-//                LocalDate.of(1989, 9, 1)
-//        );
-//    }
+    @Test
+    void shareCollectionOfPublications_shouldThrow_ifCollectionNotFound()
+            throws Exception {
+        // Arrange
+        CollectionOfPublicationsRepository repoDouble =
+                mock(CollectionOfPublicationsRepository.class);
+        CollectionOfPublicationsDTO_US019 dtoDouble =
+                mock(CollectionOfPublicationsDTO_US019.class);
 
+        when(repoDouble.getCollectionByDTO(dtoDouble))
+                .thenThrow(new InstanceNotFoundException());
+
+        US019ToPubliclyShareCollectionOfPublicationsController controller =
+                new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> controller.shareCollectionOfPublications(dtoDouble));
+    }
 
 }

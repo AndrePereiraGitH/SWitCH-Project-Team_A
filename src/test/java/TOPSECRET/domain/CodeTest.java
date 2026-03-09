@@ -5,40 +5,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for the {@link Code} class.
- *
- * <p>A {@code Code} represents the identification code of a publication.
- * It supports three standard formats:
- * <ul>
- *   <li><b>ISBN-10</b> — 10 characters, used in older books</li>
- *   <li><b>ISBN-13</b> — 13 digits, the current standard for books</li>
- *   <li><b>ISSN</b> — 8 characters, used for magazines and journals</li>
- * </ul>
- *
- * <p>Each instance holds exactly one type — the other two fields are always {@code null}.
- * Objects are created through static factory methods ({@code fromIsbn10}, {@code fromIsbn13},
- * {@code fromIssn}), which validate the format before creating anything.
- *
- * <p>Tests are grouped by scenario:
- * <ul>
- *   <li>Valid codes without hyphens — basic happy path for each type</li>
- *   <li>Valid codes with hyphens — hyphens must be stripped before validation</li>
- *   <li>Errors: null or blank — missing input must be rejected</li>
- *   <li>Errors: wrong length — too short or too long must be rejected</li>
- *   <li>Errors: invalid characters — letters in wrong positions must be rejected</li>
- *   <li>Special valid cases — 'X' as last character, exact boundary length</li>
- *   <li>equals — same value must mean equal objects</li>
- *   <li>toString — must return whichever field is set</li>
- * </ul>
+ * Unit tests for {@link Code}.
+ * Code has no injected dependencies, so no mocks are needed — direct object creation is used.
+ * Objects are created through static factory methods: {@code fromIsbn10}, {@code fromIsbn13}, {@code fromIssn}.
  */
 class CodeTest {
 
 
     // --- Valid codes without hyphens ---
 
-    // The basic happy path for each code type.
-    // We also check that only the correct field is set — the other two must be null.
-    // This confirms that each Code instance holds exactly one type, never two at the same time.
+    // Happy path for each type. Only the matching field must be set — the other two must be null.
 
     @Test
     void shouldCreateCodeWithIsbn10() {
@@ -76,10 +52,8 @@ class CodeTest {
 
     // --- Valid codes with hyphens ---
 
-    // Real codes are often written with hyphens (e.g. "978-3-16-148410-0").
-    // The class removes hyphens before checking length and format,
-    // so inputs with hyphens must also be accepted.
-    // The original value (with hyphens) is stored as-is — only validation uses the cleaned version.
+    // Hyphens are removed before validation, so codes with hyphens must also be accepted.
+    // The original value (with hyphens) is what gets stored.
 
     @Test
     void shouldAcceptIsbn10WithHyphens() {
@@ -111,8 +85,7 @@ class CodeTest {
 
     // --- Errors: null or blank values ---
 
-    // A code that is null or blank has no value at all — it must be rejected immediately.
-    // We test one case per code type to confirm each factory method performs this check.
+    // Null or blank means there is no code at all — each factory method must reject it.
 
     @Test
     void shouldFailWhenIsbn10IsNull() {
@@ -141,8 +114,7 @@ class CodeTest {
 
     // --- Errors: too few characters ---
 
-    // Each code type has a fixed length (10, 13, or 8 after removing hyphens).
-    // A code that is too short does not match the standard — it must be rejected.
+    // Fixed lengths: ISBN-10 = 10, ISBN-13 = 13, ISSN = 8. Too short must be rejected.
 
     @Test
     void shouldFailWhenIsbn10IsTooShort() {
@@ -171,7 +143,7 @@ class CodeTest {
 
     // --- Errors: too many characters ---
 
-    // A code that is too long also does not match the standard — it must be rejected.
+    // Too long must also be rejected.
 
     @Test
     void shouldFailWhenIsbn10IsTooLong() {
@@ -200,9 +172,7 @@ class CodeTest {
 
     // --- Errors: invalid characters ---
 
-    // The digits of each code must all be numbers (0-9).
-    // Only the last character of ISBN-10 and ISSN can be 'X' — it is a valid check digit.
-    // Any other letter anywhere must be rejected.
+    // All digits must be numbers. Only the last char of ISBN-10 and ISSN can be 'X'.
 
     @Test
     void shouldFailWhenIsbn10HasLetterInMiddle() {
@@ -239,8 +209,7 @@ class CodeTest {
 
     // --- Special valid cases ---
 
-    // ISBN-10 and ISSN allow 'X' as the last character — it is a standard check digit.
-    // We also confirm the boundary: an ISSN with exactly 8 characters must be accepted.
+    // 'X' as last character is valid in ISBN-10 and ISSN (standard check digit).
 
     @Test
     void shouldAcceptIssnEndingWithX() {
@@ -263,9 +232,7 @@ class CodeTest {
 
     // --- equals tests ---
 
-    // The equals method must compare codes by their value, not by memory address.
-    // Two Code objects created with the same value must be equal.
-    // A Code must not be equal to null or to an object of a different type.
+    // equals compares field values, not memory addresses.
 
     @Test
     void equals_shouldBeFalse_whenNull() {
@@ -315,8 +282,7 @@ class CodeTest {
 
     // --- toString tests ---
 
-    // toString must return whichever code type is stored in the instance.
-    // Since only one field is non-null, it finds that field and returns its value.
+    // Must return the value of whichever field is set.
 
     @Test
     void toString_shouldReturnIsbn10_whenIsbn10Exists() {
