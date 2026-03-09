@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,18 +14,14 @@ import java.util.Locale;
  * that duplicate editions are not added.
  */
 public class EditionRepository {
-    private final List<Edition> _editions;
+    private final List<Edition> _editions = new ArrayList<>();
     private final EditionFactory _editionFactory;
 
 
-    public EditionRepository ( List<Edition> editions, EditionFactory editionFactory) {
-        if (editions == null) {
-            throw new IllegalArgumentException("Editions cannot be null");
-        }
+    public EditionRepository (EditionFactory editionFactory) {
         if (editionFactory == null) {
             throw new IllegalArgumentException("Editions Factory cannot be null");
         }
-        this._editions = editions;
         this._editionFactory = editionFactory;
     }
 
