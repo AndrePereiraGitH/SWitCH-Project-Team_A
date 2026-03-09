@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * Tests follow the AAA pattern.
  */
-class PublicationSampleDTO_US018Test {
+class PublicationSampleDTO_US018DependenciesTest {
 
 
     // ============================
