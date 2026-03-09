@@ -48,7 +48,7 @@ public class   US006ToRegisterNewPublisherController {
 
         // Delegate the creation and persistence of the Publisher
         // to the PublisherRepository
-        Publisher publisher = _publisherRepository.add(name, vatNumber,contact);
+        Publisher publisher = _publisherRepository.createAndAdd(name, vatNumber,contact);
 
         // Return the created Publisher to the caller
         return publisher;

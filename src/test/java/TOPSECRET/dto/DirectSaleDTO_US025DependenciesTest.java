@@ -66,6 +66,8 @@ class DirectSaleDTO_US025DependenciesTest {
 
         // --- PUBLICATIONS ---
         Genre genre1 = new Genre("genre");
+        PublisherFactory publisherFactory = new PublisherFactory();
+        Publisher publisher = publisherFactory.create("Porto Editora", "PT987654321", null);
 
         sample1 = new PublicationSample(
                 new BibliographicalData(
@@ -83,12 +85,7 @@ class DirectSaleDTO_US025DependenciesTest {
                         new Code("s", "s", "s"),
                         new PhysicalAttributes(new Dimensions(1, 1, 1), 1, 1),
                         new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details"),
-                        new Publisher(
-                                "name",
-                                "number",
-                                new Contact("wer", "fd", new Email("s", "example.com"),
-                                        new Address("s", "s", "s", portugal1))
-                        ),
+                        publisher,
                         Locale.ENGLISH,
                         LocalDate.of(1923, 4, 6)
                 ),
@@ -111,12 +108,7 @@ class DirectSaleDTO_US025DependenciesTest {
                         new Code("s", "s", "s"),
                         new PhysicalAttributes(new Dimensions(1, 1, 1), 1, 1),
                         new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "details"),
-                        new Publisher(
-                                "name",
-                                "number",
-                                new Contact("wer", "fd", new Email("s", "example.com"),
-                                        new Address("s", "s", "s", portugal2))
-                        ),
+                        publisher,
                         Locale.ENGLISH,
                         LocalDate.of(1956, 4, 8)
                 ),

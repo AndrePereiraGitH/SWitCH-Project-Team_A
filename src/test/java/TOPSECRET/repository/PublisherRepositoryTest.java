@@ -89,7 +89,7 @@ class PublisherRepositoryTest {
         // Needed because the repository iterates over the list
         when(publishers.iterator()).thenReturn(Collections.emptyIterator());
 
-        Publisher result = repository.add(name, vatNumber, contact);
+        Publisher result = repository.createAndAdd(name, vatNumber, contact);
 
         assertEquals(mockPublisher, result);
         verify(publisherFactory).create(name, vatNumber, contact);
@@ -107,7 +107,7 @@ class PublisherRepositoryTest {
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
         when(publishers.iterator()).thenAnswer(invocation -> List.of(mockPublisher).iterator());
 
-        Publisher result = repository.add(name, vatNumber, contact);
+        Publisher result = repository.createAndAdd(name, vatNumber, contact);
 
         assertNull(result);
         verify(publishers, never()).add(any());
@@ -123,7 +123,7 @@ class PublisherRepositoryTest {
                 .thenThrow(new IllegalArgumentException("Invalid data"));
 
         assertThrows(IllegalArgumentException.class,
-                () -> repository.add(name, vatNumber, contact));
+                () -> repository.createAndAdd(name, vatNumber, contact));
 
         verify(publishers, never()).add(any());
     }
@@ -152,7 +152,7 @@ class PublisherRepositoryTest {
         Publisher mockPublisher = mock(Publisher.class);
 
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
-        realRepository.add(name, vatNumber, contact);
+        realRepository.createAndAdd(name, vatNumber, contact);
 
         List<Publisher> result1 = realRepository.getAllPublishers();
         List<Publisher> result2 = realRepository.getAllPublishers();

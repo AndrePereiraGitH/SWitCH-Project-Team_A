@@ -50,7 +50,12 @@ class EditionRepositoryDependenciesTest {
     }
 
     private Publisher validPublisher() {
-        return new Publisher("Porto Editora", "PT123456789", null);
+        PublisherFactory publisherFactory = new PublisherFactory();
+        return publisherFactory.create(
+                "Publisher Name",
+                "123456789",
+                null
+        );
     }
 
     private Locale validEditionLanguage() {

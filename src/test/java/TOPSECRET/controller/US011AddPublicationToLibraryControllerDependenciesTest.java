@@ -66,9 +66,10 @@ class US011AddPublicationToLibraryControllerDependenciesTest {
         Contact contact2 = new Contact();
         Contact contact3 = new Contact();
 
-        Publisher publisher1 = new Publisher("Publisher1", "VAT001", contact1);
-        Publisher publisher2 = new Publisher("Publisher2", "VAT002", contact2);
-        Publisher publisher3 = new Publisher("Publisher3", "VAT003", contact3);
+        PublisherFactory publisherFactory = new PublisherFactory();
+        Publisher publisher1 = publisherFactory.create("Publisher1", "VAT001", null);
+        Publisher publisher2= publisherFactory.create("Publisher2", "VAT002", null);
+        Publisher publisher3 = publisherFactory.create("Publisher3", "VAT003", null);
 
         //Creating BibliographicalData
         BibliographicalData data1 = new BibliographicalData(
@@ -99,7 +100,7 @@ class US011AddPublicationToLibraryControllerDependenciesTest {
         Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK,TypeOfBinding.CASE_BINDING, "Some details");
-        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+        Publisher publisher = publisherFactory.create("Porto Editora", "PT987654321", null);
         Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         //Creating some sample publications, using empty users from the empty constructor in User class

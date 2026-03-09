@@ -71,7 +71,7 @@ public PublisherRepository(List<Publisher> publishers, PublisherFactory publishe
      * @return the created Publisher, or null if a Publisher
      *         with the same VAT number already exists
      */
-    public Publisher  add(String name, String vatNumber, Contact contact) {
+    public Publisher  createAndAdd(String name, String vatNumber, Contact contact) {
 
         // Create a new Publisher instance with the given data
         Publisher publisher = publisherFactory.create( name,  vatNumber,  contact);
