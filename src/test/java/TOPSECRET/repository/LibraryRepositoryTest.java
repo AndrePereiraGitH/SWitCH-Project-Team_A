@@ -38,7 +38,6 @@ class LibraryRepositoryTest {
 
     // ============ getLibraryOfUser Tests ============
 
-
     @Test
     void ensureGetLibraryOfUserSuccessfully() throws InstanceNotFoundException {
         // Arrange
@@ -128,6 +127,26 @@ class LibraryRepositoryTest {
         assertNotNull(result);
         assertEquals(libraryName, result.getLibraryName());
         assertEquals(username, result.getUser().getUserName());
+    }
+
+    @Test
+    void shouldReturnAnExceptionWhenTheLibraryNameIsNull() {
+        // Arrange
+        String libraryName = "";
+        String username = "User1";
+
+        User userDouble = createMockUser(username);
+
+        Map<String, Library> libraries = new HashMap<>();
+
+        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
+        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> libraryRepository.createAndAdd(null, userDouble));
+
     }
 
 

@@ -17,7 +17,6 @@ import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,13 +34,6 @@ import static org.mockito.Mockito.*;
  * </ul>
  */
 class US016ToPutPublicationInAuctionControllerTest {
-    AuctionFactory auctionFactory = new AuctionFactory();
-
-    LibraryFactory factory = new LibraryFactory();
-    private final LibraryRepository libRepo = new LibraryRepository(new HashMap<>(),factory);
-    EditionFactory editionFactory = new EditionFactory();
-    AuthorFactory authorFactory = new AuthorFactory();
-
 
     private LibraryRepository libraryRepoDouble;
     private ListingRepository listingRepoDouble;
@@ -141,8 +133,10 @@ class US016ToPutPublicationInAuctionControllerTest {
         LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
         Price buyoutPrice = mock(Price.class);
 
-        // act
-        assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(listingTitle, publicationDTOs, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice));
+        // act + assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(listingTitle, publicationDTOs, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice));
+
+        assertEquals("You should send at least one publication to Listing", exception.getMessage());
     }
 
     @Test
@@ -159,7 +153,9 @@ class US016ToPutPublicationInAuctionControllerTest {
         Price buyoutPrice = mock(Price.class);
 
         // act + assert
-        assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(listingTitle, null, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(listingTitle, null, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice));
+
+        assertEquals("You should send at least one publication to Listing", exception.getMessage());
     }
 
     @Test
