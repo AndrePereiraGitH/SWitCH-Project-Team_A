@@ -4,34 +4,24 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * Represents the personal profile of a user.
- *
- * <p>A profile groups the personal data that belongs to a user:
- * their display name, the country they are from, and their date of birth.
- *
- * <p>All three fields are required and cannot be changed after the profile is created.
- * This makes the class immutable — once built, it always holds the same data.
+ * Holds the personal data of a user: name, country, and date of birth.
+ * All three fields are required and cannot change after the profile is created.
  */
 public class Profile {
 
-    // all fields are final — they are set once in the constructor and never change
-    private final String _name;        // the display name of the user
-    private final Country _country;    // the country the user is from
-    private final LocalDate _birthday; // the user's date of birth
+    private final String _name;
+    private final Country _country;
+    private final LocalDate _birthday;
 
     /**
-     * Creates a new Profile with the given personal data.
+     * Creates a Profile with the given data.
      *
-     * <p>All three parameters are required. A profile without a name, country,
-     * or birthday is not valid and will not be created.
-     *
-     * @param name     the display name of the user; must not be null or blank
-     * @param country  the country the user is from; must not be null
+     * @param name     the user's name; must not be null or blank
+     * @param country  the user's country; must not be null
      * @param birthday the user's date of birth; must not be null
-     * @throws IllegalArgumentException if any parameter is null, or if name is blank
+     * @throws IllegalArgumentException if any field is null, or if name is blank
      */
     public Profile(String name, Country country, LocalDate birthday) {
-        // all three must be present — a profile with missing data makes no sense
         if (name == null || name.isBlank() || country == null || birthday == null) {
             throw new IllegalArgumentException("Profile attributes cannot be null or blank");
         }
@@ -40,14 +30,12 @@ public class Profile {
         this._birthday = birthday;
     }
 
-    // ============ Getters ============
-
-    /** Returns the display name of the user. */
+    /** Returns the user's name. */
     public String getName() {
         return _name;
     }
 
-    /** Returns the country the user is from. */
+    /** Returns the user's country. */
     public Country getCountry() {
         return _country;
     }
@@ -57,27 +45,14 @@ public class Profile {
         return _birthday;
     }
 
-    // ============ equals ============
-
     /**
      * Two profiles are equal if they have the same name, country, and birthday.
-     *
-     * <p>By default, Java compares objects by memory address — two different objects
-     * with the same data would not be equal. By overriding equals, we make sure
-     * that two profiles with the same data are treated as the same profile.
-     *
-     * <p>{@code Objects.equals} is used for safe null comparison on each field.
+     * Overridden because Java's default compares memory addresses, not field values.
      */
     @Override
     public boolean equals(Object o) {
-        // null or wrong type — cannot be equal
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        // same object in memory — definitely equal, no need to check fields
-        if (this == o) {
-            return true;
-        }
+        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
         Profile profile = (Profile) o;
         return Objects.equals(_name, profile._name)
                 && Objects.equals(_country, profile._country)
