@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  *
  * Repository dependencies are mocked to isolate controller logic.
  */
-class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerDependenciesTest {
+class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
     /**
      * Ensures all authors are retrieved and converted to DTOs.

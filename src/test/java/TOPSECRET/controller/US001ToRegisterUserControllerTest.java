@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
  *
  * Repository dependency is mocked to isolate controller logic.
  */
-class US001ToRegisterUserControllerDependenciesTest {
+class US001ToRegisterUserControllerTest {
 
     /**
      * Ensures successful user registration delegates to repository.
