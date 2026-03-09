@@ -306,7 +306,8 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     }
 
     private static Publisher createPublisher() {
-        return new Publisher(
+        PublisherFactory publisherFactory = new PublisherFactory();
+        return publisherFactory.create(
                 "Publisher Name",
                 "123456789",
                 createContact()
