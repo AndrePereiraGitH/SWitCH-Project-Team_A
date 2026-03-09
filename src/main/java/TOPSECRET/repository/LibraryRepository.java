@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Repository for managing {@link Library} objects.
  * <p>
@@ -97,6 +96,10 @@ public class LibraryRepository {
     public Library createAndAdd(String libraryName, User owner) throws InstanceAlreadyExistsException {
         if (verifyIfUserHasALibrary(owner)) {
             throw new InstanceAlreadyExistsException("The user already has a library");
+        }
+
+        if(libraryName == null){
+            throw new IllegalArgumentException("Library name can not be null");
         }
 
         if(libraryName.isEmpty()){
