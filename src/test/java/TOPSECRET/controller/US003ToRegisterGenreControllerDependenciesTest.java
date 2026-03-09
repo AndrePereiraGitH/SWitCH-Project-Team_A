@@ -21,7 +21,7 @@ class US003ToRegisterGenreControllerDependenciesTest {
     void shouldRegisterGenreSuccessfully() {
 
         // Arrange
-        GenreRepository genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository genreRepository = new GenreRepository(new GenreFactory());
         US003ToRegisterGenreController controller =
                 new US003ToRegisterGenreController(genreRepository);
 
@@ -38,7 +38,7 @@ class US003ToRegisterGenreControllerDependenciesTest {
     void shouldThrowExceptionWhenGenreAlreadyExists() {
 
         // Arrange
-        GenreRepository genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository genreRepository = new GenreRepository( new GenreFactory());
         US003ToRegisterGenreController controller =
                 new US003ToRegisterGenreController(genreRepository);
 

@@ -30,7 +30,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureControllerIsCreatedSuccessfully() {
         //Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
 
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
@@ -53,7 +53,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureThrowsExceptionWhenListingRepositoryIsNull() {
         //Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -70,7 +70,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureGetAllGenresReturnsEmptyList() {
         //Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
 
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
@@ -87,7 +87,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureGetAllGenresReturnsCorrectList() {
         //Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
 
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
@@ -107,7 +107,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureThrowsExceptionWhenGenreIsNull() {
         //Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
 
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
@@ -121,7 +121,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureReturnsEmptyListWhenNoItemsMatchGenre() {
         //Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                 genreRepository, listingRepository);
@@ -149,7 +149,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureReturnsListWithOneItemWhenOneMatchesGenre() throws Exception {
         // Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                 genreRepository, listingRepository);
@@ -195,7 +195,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureReturnsEmptyListWhenNoListingsMatchGenre() throws Exception {
         // Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         listingRepository = new ListingRepository();
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                 genreRepository, listingRepository);
@@ -242,7 +242,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     @Test
     void ensureReturnsEmptyListWhenListingIsNotDirectSale() throws Exception {
         // Arrange
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository(new GenreFactory());
         listingRepository = new ListingRepository();
         controller = new US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                 genreRepository, listingRepository);

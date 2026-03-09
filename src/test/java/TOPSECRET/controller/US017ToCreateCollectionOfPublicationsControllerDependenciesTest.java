@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +38,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     // runs before each test — builds real objects so tests work with the full system, not mocks
     @BeforeEach
     void setup() {
-        genreRepository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        genreRepository = new GenreRepository( new GenreFactory());
         collectionRepository = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
 
         controller = new US017ToCreateCollectionOfPublicationsController(
@@ -124,7 +123,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenUserIsNull() {
         // Arrange — valid genre, but no user
-        GenreRepository genreRepo = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository genreRepo = new GenreRepository(new GenreFactory());
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
@@ -144,7 +143,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenGenreIsNull() {
         // Arrange — valid user, but no genre
-        GenreRepository genreRepo = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository genreRepo = new GenreRepository(new GenreFactory());
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
@@ -179,7 +178,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenCollectionRepositoryIsNull() {
         // Arrange — only provide the genre repo; collection repo is null on purpose
-        GenreRepository genreRepo = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository genreRepo = new GenreRepository(new GenreFactory());
 
         // Act & Assert — null collection repo must fail at construction time
         assertThrows(

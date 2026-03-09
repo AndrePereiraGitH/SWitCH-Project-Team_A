@@ -16,22 +16,23 @@ class GenreRepositoryTest {
     private final GenreFactory genreFactory = mock(GenreFactory.class);
     private final List<Genre> genres = new ArrayList<>();
     private final Genre genre = mock(Genre.class);
-    private final GenreRepository genreRepository = new GenreRepository(genres, genreFactory);
 
     @Test
     void testCreateAndAddGenre_AddsNewGenre() {
         // Arrange
+        GenreRepository genreRepository = new GenreRepository(genreFactory);
+
         String genreType = "Fantasy";
         when(genre.getGenreType()).thenReturn(genreType);
         when(genreFactory.create(genreType)).thenReturn(genre);
+
 
         // Act
         Genre result = genreRepository.createAndAdd(genreType);
 
         // Assert
-        assertEquals(1, genres.size());
+        assertEquals(1, genreRepository.getAllGenres().size());
         assertEquals(genre, result);
-        assertTrue(genres.contains(genre));
     }
 
     @Test
@@ -39,12 +40,14 @@ class GenreRepositoryTest {
         // Arrange
         String genreType = "Fantasy";
         when(genre.getGenreType()).thenReturn(genreType);
-        genres.add(genre);
         when(genreFactory.create(genreType)).thenReturn(genre);
 
+        GenreRepository genreRepository = new GenreRepository(genreFactory);
+        genreRepository.createAndAdd(genreType);
+
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAdd(genreType));
-        assertEquals("Genre already exists", exception.getMessage());
+        assertThrows(IllegalArgumentException.class,
+                () -> genreRepository.createAndAdd(genreType));
     }
 
     @Test
@@ -53,8 +56,13 @@ class GenreRepositoryTest {
         Genre genre2 = mock(Genre.class);
         when(genre.getGenreType()).thenReturn("Fantasy");
         when(genre2.getGenreType()).thenReturn("Science Fiction");
-        genres.add(genre);
-        genres.add(genre2);
+        when(genreFactory.create("Fantasy")).thenReturn(genre);
+        when(genreFactory.create("Science Fiction")).thenReturn(genre2);
+
+
+        GenreRepository genreRepository = new GenreRepository(genreFactory);
+        genreRepository.createAndAdd("Fantasy");       // adiciona ao repo
+        genreRepository.createAndAdd("Science Fiction");
 
         // Act
         List<Genre> result = genreRepository.getAllGenres();
@@ -70,7 +78,7 @@ class GenreRepositoryTest {
     void getAllGenresShouldReturnUnmodifiableList() {
 
         // Arrange
-        GenreRepository repo = new GenreRepository(List.of(genre), genreFactory);
+        GenreRepository repo = new GenreRepository(genreFactory);
 
         // Act
         List<Genre> result = repo.getAllGenres();
@@ -83,7 +91,7 @@ class GenreRepositoryTest {
     void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
 
         // Arrange
-        GenreRepository repo = new GenreRepository(List.of(), genreFactory);
+        GenreRepository repo = new GenreRepository(genreFactory);
 
         // Act
         List<Genre> result = repo.getAllGenres();

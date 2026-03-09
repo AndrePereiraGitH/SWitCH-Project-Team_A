@@ -39,7 +39,7 @@ class AppraisalEntityRepositoryDependenciesTest {
      * @return GenreRepository instance.
      */
     private GenreRepository createGenreRepository() {
-        GenreRepository repo = new GenreRepository(new ArrayList<>(),  new GenreFactory());
+        GenreRepository repo = new GenreRepository( new GenreFactory());
         repo.addGenre(new Genre("Fantasy"));
         return repo;
     }
@@ -156,7 +156,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     void shouldThrowExceptionWhenGenreDoesNotExist() {
 
         // ARRANGE
-        GenreRepository emptyGenreRepo = new GenreRepository(new ArrayList<>(),  new GenreFactory());
+        GenreRepository emptyGenreRepo = new GenreRepository(new GenreFactory());
 
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
 

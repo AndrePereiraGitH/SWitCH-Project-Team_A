@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,20 +11,18 @@ import java.util.List;
  * NOTE: Returns an unmodifiable copy of the internal list.
  */
 public class GenreRepository {
-    private final List<Genre> _genres;
+    private final List<Genre> _genres = new ArrayList<>();
     private final GenreFactory _genreFactory;
 
-    public GenreRepository(List<Genre> genres, GenreFactory genreFactory) {
-        if (genres == null) {
-            throw new IllegalArgumentException("Genre List cannot be null");
-        }
+    public GenreRepository( GenreFactory genreFactory) {
         if (genreFactory == null) {
             throw new IllegalArgumentException("GenreFactory cannot be null");
         }
-        this._genres = genres;
         this._genreFactory = genreFactory;
     }
 
+
+    // ----------------------------- US003 starts -------------------------------
     /**
      * Creates a new Genre using the factory and adds it to the repository.
      *
@@ -31,7 +30,7 @@ public class GenreRepository {
      * @return the created Genre
      * @throws IllegalArgumentException if the genre already exists
      */
-    public Genre createAndAdd(String genreType) {
+    public Genre createAndAdd    (String genreType) {
         Genre genre = _genreFactory.create(genreType);
         if (!exists(genre)) {
             this._genres.add(genre);  // Add the genre that was passed in
@@ -39,6 +38,7 @@ public class GenreRepository {
         }
         throw new IllegalArgumentException("Genre already exists");
     }
+    // ----------------------------- US003 starts -------------------------------
 
     // ----------------------------- US004 starts -------------------------------
     /**
@@ -77,7 +77,7 @@ public class GenreRepository {
         throw new IllegalArgumentException("Genre not found.");
     }
     // ----------------------------- US004 ends -------------------------------
-    // ----------------------------- US003 starts -------------------------------
+    // ----------------------------- US013 starts -------------------------------
 
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
@@ -91,7 +91,7 @@ public class GenreRepository {
         }
         return false;
     }
-    // ----------------------------- US003 ends -------------------------------
+    // ----------------------------- US013 ends -------------------------------
 
 
 

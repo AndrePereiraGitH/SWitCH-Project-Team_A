@@ -36,7 +36,7 @@ class ToGetListOfGenreControllerDependenciesTest {
     @Test
     void shouldCreateControllerWithValidRepository() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository( new GenreFactory());
         // Act
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
@@ -61,7 +61,7 @@ class ToGetListOfGenreControllerDependenciesTest {
     @Test
     void shouldReturnEmptyListWhenNoGenres() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(),  new GenreFactory());
+        GenreRepository repository = new GenreRepository(   new GenreFactory());
         ToGetListOfGenreController controller = new ToGetListOfGenreController(repository);
 
         // Act
@@ -75,7 +75,7 @@ class ToGetListOfGenreControllerDependenciesTest {
     @Test
     void shouldReturnGenreDTOsFromRepository() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(  new GenreFactory());
         repository.createAndAdd("Romance");
         repository.createAndAdd("Horror");
 
@@ -93,7 +93,7 @@ class ToGetListOfGenreControllerDependenciesTest {
     @Test
     void shouldReturnDTOsWithSameContentAsRepository() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(  new GenreFactory());
         repository.createAndAdd("Mystery");
         repository.createAndAdd("Thriller");
 
@@ -112,7 +112,7 @@ class ToGetListOfGenreControllerDependenciesTest {
     @Test
     void shouldMapGenresToDTOsCorrectly() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(  new GenreFactory());
         repository.createAndAdd("Action");
         repository.createAndAdd("Comedy");
         repository.createAndAdd("Drama");
