@@ -1,150 +1,143 @@
-//package TOPSECRET.dto;
-//import TOPSECRET.domain.*;
-//import TOPSECRET.domain.Enum.*;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//
-//import java.math.BigDecimal;
-//import java.time.LocalDate;
-//import java.util.List;
-//import java.util.Locale;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-///**
-// * Unit tests for DirectSaleDTO_US025.
-// * Validates correct mapping from domain objects to DTOs.
-// */
-//class DirectSaleDTO_US025Test {
-//
-//    private User seller1;
-//    private User seller2;
-//    private Author author1;
-//    private Author author2;
-//    private PublicationSample sample1;
-//    private PublicationSample sample2;
-//    private Listing listing1;
-//    private Listing listing2;
-//    private DirectSale directSale;
-//
-//    @BeforeEach
-//    void setup() {
-//        // --- USERS ---
-//        seller1 = new User("namee",new Contact("wer","fd",new Email("s","example.com"),new Address("s","s","s",new Country("PORTUGAL"))),new Profile("s",new Country("Portugal"), LocalDate.of(1983,2,3)), UserRole.NORMAL_USER);
-//        seller2 = new User("nmeee",new Contact("wer","fd",new Email("s","example.com"),new Address("s","s","s",new Country("PORTUGAL"))),new Profile("s",new Country("Portugal"), LocalDate.of(1983,2,3)), UserRole.NORMAL_USER);
-//
-//        // --- AUTHORS ---
-//        AuthorFactory authorFactory = new AuthorFactory();
-//        author1 = authorFactory.create("author1",new Country("PORTUGAL"),LocalDate.of(1945,2,4),"bio");
-//        author2 = authorFactory.create("author2",new Country("PORTUGAL"),LocalDate.of(1945,2,4),"bio");
-//
-//        // --- PUBLICATIONS ---
-//        Genre genre1 = new Genre("genre");
-//
-//        sample1 = new PublicationSample(
-//                new BibliographicalData("Title One", List.of(author2), Locale.ENGLISH,LocalDate.of(1956,6,4),List.of(genre1),"text"),
-//                seller1,
-//                    PublicationStatus.READ,
-//                new Edition("1",new Code("s","s","s"),new PhysicalAttributes(new Dimensions(1,1,1),1,1),new PublicationType(MediaFormat.BOOK,TypeOfBinding.HARDBACK,"details"),new Publisher("name","number",new Contact("wer","fd",new Email("s","example.com"),new Address("s","s","s",new Country("PORTUGAL")))),Locale.ENGLISH,LocalDate.of(1923,4,6)),
-//                Condition.NEW
-//        );
-//
-//        sample2 = new PublicationSample(
-//                new BibliographicalData("Title Two", List.of(author2), Locale.ENGLISH,LocalDate.of(1945,6,9),List.of(genre1),"text"),
-//                seller2,
-//                PublicationStatus.READ,
-//                new Edition("1",new Code("s","s","s"),new PhysicalAttributes(new Dimensions(1,1,1),1,1),new PublicationType(MediaFormat.BOOK,TypeOfBinding.HARDBACK,"details"),new Publisher("name","number",new Contact("wer","fd",new Email("s","example.com"),new Address("s","s","s",new Country("PORTUGAL")))),Locale.ENGLISH,LocalDate.of(1956,4,8)),
-//                Condition.NEW
-//        );
-//
-//        // --- LISTINGS ---
-//        ListingFactory listingFactory = new ListingFactory();
-//        listing1 = listingFactory.create(
-//                "Listing One",
-//                List.of(sample1),
-//                SaleType.DIRECT_SALE,
-//                new Price(new BigDecimal("10.00")),
-//                "Good condition book",
-//                List.of(new Picture("img1.jpg"))
-//        );
-//
-//        listing2 = listingFactory.create(
-//                "Listing Two",
-//                List.of(sample2),
-//                SaleType.DIRECT_SALE,
-//                new Price(new BigDecimal("15.00")),
-//                "Another good book",
-//                List.of(new Picture("img2.jpg"))
-//        );
-//
-//        // --- DIRECT SALE ---
-//        DirectSaleFactory factory = new DirectSaleFactory();
-//        directSale = factory.create(List.of(listing1, listing2), seller1);
-//    }
-//
-//    /**
-//     * Tests that fromItemAndDirectSale creates a DTO with correct aggregated data.
-//     */
-//    @Test
-//    void testFromItemAndDirectSale() {
-//        DirectSaleDTO_US025 dto = DirectSaleDTO_US025.fromItemAndDirectSale(sample1, directSale);
-//
-//        assertEquals("Title One", dto.getTitle());
-//        assertEquals(List.of("author2"), dto.getAuthors());
-//        assertEquals(new BigDecimal("25.00"), dto.getPrice());
-//        assertEquals("Pack of 2 listings", dto.getListingTitle());
-//        assertEquals("nmeee", dto.getSeller());
-//    }
-//
-//    /**
-//     * Tests that fromDirectSale returns a DTO for each publication sample in all listings.
-//     */
-//    @Test
-//    void testFromDirectSale() {
-//        List<DirectSaleDTO_US025> dtos = DirectSaleDTO_US025.fromDirectSale(directSale);
-//
-//        assertEquals(2, dtos.size());
-//
-//        // Check first DTO
-//        DirectSaleDTO_US025 dto1 = dtos.get(0);
-//        assertEquals("Title One", dto1.getTitle());
-//        assertEquals(List.of("author2"), dto1.getAuthors());
-//        assertEquals(new BigDecimal("25.00"), dto1.getPrice());
-//
-//        // Check second DTO
-//        DirectSaleDTO_US025 dto2 = dtos.get(1);
-//        assertEquals("Title Two", dto2.getTitle());
-//        assertEquals(List.of("author2"), dto2.getAuthors());
-//        assertEquals(new BigDecimal("25.00"), dto2.getPrice());
-//    }
-//
-//    /*@Test
-//    void fromItemAndDirectSale_shouldNotDuplicateSellerNames_sameSeller() {
-//
-//        User sameSeller = seller1;
-//
-//        ListingFactory listingFactory = new ListingFactory();
-//
-//        Listing listingA = listingFactory.create(
-//                "Listing A",
-//                List.of(sample1),
-//                SaleType.DIRECT_SALE,
-//                new Price(new BigDecimal("5.00")),
-//                "Description A",
-//                List.of(new Picture("picA.jpg"))
-//        );
-//
-//        Listing listingB = listingFactory.create(
-//                "Listing B",
-//                List.of(sample2),
-//                SaleType.DIRECT_SALE,
-//                new Price(new BigDecimal("7.00")),
-//                "Description B",
-//                List.of(new Picture("picB.jpg"))
-//        );
-//
-//        DirectSale dsSameSeller = new DirectSale(List.of(listingA, listingB), sameSeller, true);
-//        DirectSaleDTO_US025 dto = DirectSaleDTO_US025.fromItemAndDirectSale(sample1, dsSameSeller);
-//        assertEquals(sameSeller.getUserName(), dto.getSeller());
-//    }*/
-//}
+package TOPSECRET.dto;
+
+import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for {@link DirectSaleDTO_US025}.
+ *
+ * This test class validates that DTO mapping from domain objects (DirectSale, Listing, PublicationSample)
+ * is done correctly. All domain dependencies are mocked to isolate DTO conversion logic.
+ */
+class DirectSaleDTO_US025Test {
+
+    private User seller1;
+    private User seller2;
+    private Author author1;
+    private Author author2;
+    private PublicationSample sample1;
+    private PublicationSample sample2;
+    private Listing listing1;
+    private Listing listing2;
+    private DirectSale directSale;
+
+    /**
+     * Sets up mocks for users, authors, publication samples, listings, and a direct sale.
+     * This setup ensures all dependencies return controlled values to test DTO conversion.
+     */
+    @BeforeEach
+    void setup() {
+        // --- USERS ---
+        seller1 = mock(User.class);
+        when(seller1.getUserName()).thenReturn("namee");
+        when(seller1.getContact()).thenReturn(mock(Contact.class));
+        when(seller1.getProfile()).thenReturn(mock(Profile.class));
+        when(seller1.getUserRole()).thenReturn(UserRole.NORMAL_USER);
+
+        seller2 = mock(User.class);
+        when(seller2.getUserName()).thenReturn("nmeee");
+        when(seller2.getContact()).thenReturn(mock(Contact.class));
+        when(seller2.getProfile()).thenReturn(mock(Profile.class));
+        when(seller2.getUserRole()).thenReturn(UserRole.NORMAL_USER);
+
+        // --- AUTHORS ---
+        author1 = mock(Author.class);
+        Profile profile1 = mock(Profile.class);
+        when(profile1.getName()).thenReturn("author1");
+        when(author1.getProfile()).thenReturn(profile1);
+
+        author2 = mock(Author.class);
+        Profile profile2 = mock(Profile.class);
+        when(profile2.getName()).thenReturn("author2");
+        when(author2.getProfile()).thenReturn(profile2);
+
+        // --- GENRES ---
+        Genre genre1 = mock(Genre.class);
+        when(genre1.getGenreType()).thenReturn("genre");
+
+        // --- BIBLIOGRAPHICAL DATA ---
+        BibliographicalData bd1 = mock(BibliographicalData.class);
+        when(bd1.getTitle()).thenReturn("Title One");
+        when(bd1.getAuthors()).thenReturn(List.of(author2));
+        when(bd1.getGenres()).thenReturn(List.of(genre1));
+
+        BibliographicalData bd2 = mock(BibliographicalData.class);
+        when(bd2.getTitle()).thenReturn("Title Two");
+        when(bd2.getAuthors()).thenReturn(List.of(author2));
+        when(bd2.getGenres()).thenReturn(List.of(genre1));
+
+        // --- PUBLICATION SAMPLES ---
+        sample1 = mock(PublicationSample.class);
+        when(sample1.getBibliographicalData()).thenReturn(bd1);
+        when(sample1.getOwner()).thenReturn(seller1);
+        when(sample1.getPublicationStatus()).thenReturn(PublicationStatus.READ);
+
+        sample2 = mock(PublicationSample.class);
+        when(sample2.getBibliographicalData()).thenReturn(bd2);
+        when(sample2.getOwner()).thenReturn(seller2);
+        when(sample2.getPublicationStatus()).thenReturn(PublicationStatus.READ);
+
+        // --- LISTINGS ---
+        listing1 = mock(Listing.class);
+        when(listing1.getItems()).thenReturn(List.of(sample1));
+        when(listing1.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listing1.getPrice()).thenReturn(new Price(new BigDecimal("10.00")));
+        when(listing1.getListingTitle()).thenReturn("Listing One");
+        when(listing1.getSeller()).thenReturn(seller1);
+
+        listing2 = mock(Listing.class);
+        when(listing2.getItems()).thenReturn(List.of(sample2));
+        when(listing2.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listing2.getPrice()).thenReturn(new Price(new BigDecimal("15.00")));
+        when(listing2.getListingTitle()).thenReturn("Listing Two");
+        when(listing2.getSeller()).thenReturn(seller2);
+
+        // --- DIRECT SALE ---
+        directSale = mock(DirectSale.class);
+        when(directSale.getListings()).thenReturn(List.of(listing1, listing2));
+    }
+
+    /**
+     * Validates that {@link DirectSaleDTO_US025#fromItemAndDirectSale(PublicationSample, DirectSale)}
+     * correctly maps a single publication sample and aggregates direct sale data.
+     */
+    @Test
+    void testFromItemAndDirectSale() {
+        DirectSaleDTO_US025 dto = DirectSaleDTO_US025.fromItemAndDirectSale(sample1, directSale);
+
+        assertEquals("Title One", dto.getTitle());
+        assertEquals(List.of("author2"), dto.getAuthors());
+        assertEquals(new BigDecimal("25.00"), dto.getPrice());
+        assertEquals("Pack of 2 listings", dto.getListingTitle());
+        assertEquals("nmeee", dto.getSeller());
+    }
+
+    /**
+     * Validates that {@link DirectSaleDTO_US025#fromDirectSale(DirectSale)}
+     * correctly maps all publication samples from all listings in the direct sale.
+     */
+    @Test
+    void testFromDirectSale() {
+        List<DirectSaleDTO_US025> dtos = DirectSaleDTO_US025.fromDirectSale(directSale);
+
+        assertEquals(2, dtos.size());
+
+        DirectSaleDTO_US025 dto1 = dtos.get(0);
+        assertEquals("Title One", dto1.getTitle());
+        assertEquals(List.of("author2"), dto1.getAuthors());
+        assertEquals(new BigDecimal("25.00"), dto1.getPrice());
+
+        DirectSaleDTO_US025 dto2 = dtos.get(1);
+        assertEquals("Title Two", dto2.getTitle());
+        assertEquals(List.of("author2"), dto2.getAuthors());
+        assertEquals(new BigDecimal("25.00"), dto2.getPrice());
+    }
+}

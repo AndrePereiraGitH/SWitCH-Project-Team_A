@@ -29,8 +29,8 @@ class AuctionRepositoryTest {
     private Auction auction1;
     private Auction auction2;
     private Auction auction3;
-    private AuctionRepository auctionRepository;
     private AuctionFactory auctionFactory;
+    private List<Auction> auctions = new ArrayList<>();;
 
 
     @BeforeEach
@@ -45,18 +45,19 @@ class AuctionRepositoryTest {
         auction2 = createMockAuction(List.of(sample1));
         auction3 = createMockAuction(List.of(sample2));
 
-        List<Auction> auctions = new ArrayList<>();
+
         auctions.add(auction1);
         auctions.add(auction2);
         auctions.add(auction3);
 
         auctionFactory = mock(AuctionFactory.class);
-        auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
     }
 
     @Test
     void getAllAuctions_shouldReturn_ListOfAllAuctionsInRepo() {
+
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         List<Auction> result = auctionRepository.getAllAuctions();
 
@@ -70,6 +71,7 @@ class AuctionRepositoryTest {
         Price buyOutPrice = mock(Price.class);
         LocalDateTime initial = LocalDateTime.now();
         LocalDateTime end = initial.plusDays(1);
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         when(auctionFactory.create(listing, initial, end, buyOutPrice)).thenReturn(auction1);
 
@@ -85,6 +87,7 @@ class AuctionRepositoryTest {
         // arrange
         Listing listing = mock(Listing.class);
         Price buyOut = mock(Price.class);
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         LocalDateTime initial = LocalDateTime.now();
         LocalDateTime end = initial.plusDays(4);
@@ -127,6 +130,7 @@ class AuctionRepositoryTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_returnAList() {
         // Arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         // Act
         List<PublicationSample> listOfItemsOnAuction =
@@ -149,6 +153,7 @@ class AuctionRepositoryTest {
     @Test
     void shouldReturnAnEmptyListWhenAuctionDoesNotHaveThePublication() {
         // Arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         // Act
         List<PublicationSample> listOfItemsOnAuction =
@@ -162,6 +167,7 @@ class AuctionRepositoryTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsNull(){
         // Arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
 
         // Act & Assert
@@ -173,6 +179,7 @@ class AuctionRepositoryTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsEmpty(){
         // Arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -186,6 +193,7 @@ class AuctionRepositoryTest {
 
     @Test
     void getListOfItemsOnAuctionGivenAuthor_shouldThrows_ifAuthorDTOisNULL() {
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
 
         IllegalArgumentException exception =  assertThrows(IllegalArgumentException.class, () -> auctionRepository.getListOfItemsOnAuctionGivenAuthor(null));
 
@@ -195,6 +203,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_shouldThrows_ifAuthorDTOisBlank() {
         // arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("    ");
 
@@ -207,6 +216,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_noMatchesAuctions_returnsEmpty() {
         // arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Mary");
 
@@ -221,6 +231,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction() {
         // arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Adolf");
 
@@ -234,6 +245,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction_ensuresTitle() {
         // arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Adolf");
 
@@ -250,6 +262,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction_ensuresSameAuction() {
         // arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Adolf");
 
@@ -260,6 +273,78 @@ class AuctionRepositoryTest {
         assertSame(auction1, result.get(0));
         assertSame(auction3, result.get(1));
         assertFalse(result.contains(auction2));
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenreShouldThrowExceptionWhenGenreIsNull() {
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                auctionRepository.getListOfItemsOnAuctionGivenGenre(null)
+        );
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenreNoMatchesReturnsEmptyList() {
+
+        // Arrange
+        AuctionRepository auctionRepository = createMockAuctionRepository(auctions, auctionFactory);
+        Genre genre = mock(Genre.class);
+
+        // Act
+        List<Auction> result =
+                auctionRepository.getListOfItemsOnAuctionGivenGenre(genre);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenreOneAuctionMatchesReturnsOneAuction() {
+
+        // Arrange
+        Genre fantasy = mock(Genre.class);
+
+        PublicationSample sample = createMockPublicationSampleWithGenre(fantasy);
+        Auction auction = createMockAuction(List.of(sample));
+
+        AuctionRepository repo =
+                createMockAuctionRepository(List.of(auction), auctionFactory);
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(auction, result.get(0));
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_multipleAuctionsMatch_returnsAll() {
+
+        // Arrange
+        Genre fantasy = mock(Genre.class);
+
+        PublicationSample sample1 = createMockPublicationSampleWithGenre(fantasy);
+        PublicationSample sample2 = createMockPublicationSampleWithGenre(fantasy);
+
+        Auction auction1 = createMockAuction(List.of(sample1));
+        Auction auction2 = createMockAuction(List.of(sample2));
+
+        AuctionRepository repo =
+                createMockAuctionRepository(List.of(auction1, auction2), auctionFactory);
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(fantasy);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(auction1));
+        assertTrue(result.contains(auction2));
     }
 
 
@@ -329,4 +414,17 @@ class AuctionRepositoryTest {
 
         return authorDouble;
     }
+
+    private PublicationSample createMockPublicationSampleWithGenre(Genre genre) {
+
+        BibliographicalData bd = mock(BibliographicalData.class);
+        when(bd.getGenres()).thenReturn(List.of(genre));
+
+        PublicationSample sample = mock(PublicationSample.class);
+        when(sample.getBibliographicalData()).thenReturn(bd);
+
+        return sample;
+    }
+
+
 }

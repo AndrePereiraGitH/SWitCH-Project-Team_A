@@ -1,8 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
-
 import java.util.Objects;
 
 public class Publisher {
@@ -10,7 +7,7 @@ public class Publisher {
     private String _vatNumber;
     private Contact _contact;
 
-    public Publisher(String name, String vatNumber, Contact contact) {
+    protected Publisher(String name, String vatNumber, Contact contact) {
 
         // Validator internal to the class Publisher itself
         if (name.isBlank()) {

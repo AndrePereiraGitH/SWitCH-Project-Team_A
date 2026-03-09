@@ -23,34 +23,11 @@ class GenreRepositoryDependenciesTest {
     @Test
     void shouldCreateRepositoryWithEmptyList() {
         // Act
-        GenreRepository repository = new GenreRepository(List.of(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(new GenreFactory());
 
         // Assert
         assertNotNull(repository);
         assertEquals(0, repository.getAllGenres().size());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenListIsNull() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new GenreRepository(null, new GenreFactory())
-        );
-        assertEquals("Genre List cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldCreateRepositoryWithExistingGenres() {
-        // Arrange
-        List<Genre> existingGenres = new ArrayList<>();
-        existingGenres.add(new Genre("Romance"));
-        existingGenres.add(new Genre("Horror"));
-
-        // Act
-        GenreRepository repository = new GenreRepository(existingGenres, new GenreFactory());
-
-        // Assert
-        assertEquals(2, repository.getAllGenres().size());
     }
 
     // ========================================
@@ -60,7 +37,7 @@ class GenreRepositoryDependenciesTest {
     @Test
     void shouldcreateAndAddGenre() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(new GenreFactory());
 
         // Act
         Genre result = repository.createAndAdd("Romance");
@@ -75,7 +52,7 @@ class GenreRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionWhenGenreAlreadyExists() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(new GenreFactory());
         repository.createAndAdd("Terror");
 
         // Act + Assert
@@ -91,7 +68,7 @@ class GenreRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionForInvalidGenreName() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(new GenreFactory());
 
         // Act + Assert - null
         assertThrows(IllegalArgumentException.class,
@@ -118,7 +95,7 @@ class GenreRepositoryDependenciesTest {
     @Test
     void shouldReturnEmptyListWhenNoGenres() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(new GenreFactory());
 
         // Act
         List<Genre> result = repository.getAllGenres();
@@ -131,7 +108,7 @@ class GenreRepositoryDependenciesTest {
     @Test
     void shouldReturnAllGenres() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repository = new GenreRepository(new GenreFactory());
         repository.createAndAdd("Romance");
         repository.createAndAdd("Horror");
         repository.createAndAdd("Mystery");
@@ -146,21 +123,6 @@ class GenreRepositoryDependenciesTest {
         assertTrue(result.contains(new Genre("Mystery")));
     }
 
-    @Test
-    void shouldReturnDefensiveCopy() {
-        // Arrange
-        List<Genre> originalList = new ArrayList<>();
-        originalList.add(new Genre("Programming"));
-        GenreRepository repository = new GenreRepository(originalList, new GenreFactory());
-
-        // Act
-        List<Genre> result = repository.getAllGenres();
-
-        // Assert - different list instances
-        assertNotSame(originalList, result);
-        assertEquals(originalList.size(), result.size());
-    }
-
     // US004 starts -----------
     /**
      * Verifies that findByTitle returns the correct Genre.
@@ -170,7 +132,7 @@ class GenreRepositoryDependenciesTest {
 
         // ARRANGE
         GenreRepository repository =
-                new GenreRepository(new ArrayList<>(), new GenreFactory());
+                new GenreRepository(new GenreFactory());
 
         repository.addGenre(new Genre("Fantasy"));
 
@@ -189,7 +151,7 @@ class GenreRepositoryDependenciesTest {
 
         // ARRANGE
         GenreRepository repository =
-                new GenreRepository(new ArrayList<>(), new GenreFactory());
+                new GenreRepository( new GenreFactory());
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
@@ -202,7 +164,7 @@ class GenreRepositoryDependenciesTest {
      */
     @Test
     void shouldThrowExceptionWhenTitleIsNull() {
-        GenreRepository repo = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repo = new GenreRepository( new GenreFactory());
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findByTitle(null));
     }
@@ -212,7 +174,7 @@ class GenreRepositoryDependenciesTest {
      */
     @Test
     void shouldThrowExceptionWhenTitleIsBlank() {
-        GenreRepository repo = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        GenreRepository repo = new GenreRepository(  new GenreFactory());
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findByTitle(" "));
     }

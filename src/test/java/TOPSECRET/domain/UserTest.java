@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static TOPSECRET.domain.Enum.UserRole.NORMAL_USER;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {

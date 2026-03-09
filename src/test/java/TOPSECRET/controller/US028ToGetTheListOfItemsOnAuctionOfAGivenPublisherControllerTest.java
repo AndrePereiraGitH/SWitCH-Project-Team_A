@@ -57,8 +57,9 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         Contact contact = new Contact("912345678", "+351", email, address);
 
         // Publishers (domain objects)
-        publisher1 = new Publisher("Tech Books", "PT123456789", contact);
-        publisher2 = new Publisher("Other Books", "PT987654321", contact);
+        PublisherFactory publisherFactory = new PublisherFactory();
+        publisher1 = publisherFactory.create("Tech Books", "PT123456789", null);
+        publisher2 = publisherFactory.create("Other Books", "PT987654321", null);
 
         // Bibliographical data
         AuthorFactory authorFactory = new AuthorFactory();
@@ -105,8 +106,9 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
         PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
 //        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        Edition edition1= new Edition("1st", code1, physicalAttributes, pubType, publisher1, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-        Edition edition2= new Edition("1st", code2, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        EditionFactory editionFactory = new EditionFactory();
+        Edition edition1= editionFactory.create("1st", code1, physicalAttributes, pubType, publisher1, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        Edition edition2= editionFactory.create("1st", code2, physicalAttributes, pubType, publisher2, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
 
         // -------- Publication Samples (items on auction) --------
@@ -164,8 +166,8 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         auctionRepo = new AuctionRepository(auctionFactory);
 
         // Seed publishers into repo using add(...)
-        publisherRepo.add(publisher1.getName(), publisher1.getVatNumber(), contact);
-        publisherRepo.add(publisher2.getName(), publisher2.getVatNumber(), contact);
+        publisherRepo.createAndAdd(publisher1.getName(), publisher1.getVatNumber(), contact);
+        publisherRepo.createAndAdd(publisher2.getName(), publisher2.getVatNumber(), contact);
 
         auctionRepo.createAndAdd(listing1, start, end, buyOut);
         auctionRepo.createAndAdd(listing2, start, end, buyOut);

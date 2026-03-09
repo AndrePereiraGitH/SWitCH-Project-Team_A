@@ -30,7 +30,6 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     private BibliographicalDataRepository bdRepository;
     private AuctionRepository auctionRepository;
-    private US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller;
 
     // -------------------------------------------------------------------------
     // Setup
@@ -44,10 +43,6 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     void setUp() {
         bdRepository = mock(BibliographicalDataRepository.class);
         auctionRepository = mock(AuctionRepository.class);
-        controller = new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(
-                bdRepository,
-                auctionRepository
-        );
     }
 
     // -------------------------------------------------------------------------
@@ -63,6 +58,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationBD_ShouldReturnListOfDTOsWhenPublicationBDExist() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
         BibliographicalData bd1 = createMockBibliographicalData("Title1");
         BibliographicalData bd2 = createMockBibliographicalData("Title2");
 
@@ -85,6 +82,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
         BibliographicalDataRepository bdRepoDouble = mock(BibliographicalDataRepository.class);
         when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
 
@@ -110,6 +109,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getListOfItemsOnAuctionByGivenPublicationDTO_ShouldReturnListOfDTOsWhenItemsExist() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
         PublicationSample sampleDouble1 = createMockPublicationSample("Title1", "12345678910", "User1");
         PublicationSample sampleDouble2 = createMockPublicationSample("Title1", "12345678910", "User2");
 
@@ -133,6 +134,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
 
         // Act
         List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title2");
@@ -145,6 +148,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsNull() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
 
         // Act & Assert
         assertThrows(NullPointerException.class,
@@ -154,6 +159,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsEmpty() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
