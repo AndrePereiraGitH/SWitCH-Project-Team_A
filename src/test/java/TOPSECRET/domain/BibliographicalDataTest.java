@@ -54,9 +54,9 @@ class BibliographicalDataTest {
         pubDate = LocalDate.of(2022, 8, 4);
 
         Genre genre1Double = mock(Genre.class);
-        when(genre1Double.getTitle()).thenReturn("Fiction");
+        when(genre1Double.getGenreType()).thenReturn("Fiction");
         Genre genre2Double = mock(Genre.class);
-        when(genre2Double.getTitle()).thenReturn("Biography");
+        when(genre2Double.getGenreType()).thenReturn("Biography");
         genres = List.of(genre1Double, genre2Double);
         differentGenres = List.of(genre1Double);
 
@@ -175,7 +175,7 @@ class BibliographicalDataTest {
         // Arrange
         BibliographicalData bdDouble = new BibliographicalData(title, authors, language, pubDate, genres, chunksOfText);
         Genre nonExistingGenreDouble = mock(Genre.class);                    // we can't compare mocks with real objects
-        when(nonExistingGenreDouble.getTitle()).thenReturn("Sci-Fi");
+        when(nonExistingGenreDouble.getGenreType()).thenReturn("Sci-Fi");
 
         // Act
         boolean result = bdDouble.hasGenre(nonExistingGenreDouble);
@@ -461,7 +461,7 @@ class BibliographicalDataTest {
 
         // New Genre
         Genre genre3Double = mock(Genre.class);
-        when(genre3Double.getTitle()).thenReturn("Young Adult");
+        when(genre3Double.getGenreType()).thenReturn("Young Adult");
 
         // Act
         originalGenres.add(genre3Double);
@@ -527,7 +527,7 @@ class BibliographicalDataTest {
 
         // New genre
         Genre genre3Double = mock(Genre.class);
-        when(genre3Double.getTitle()).thenReturn("Young adult");
+        when(genre3Double.getGenreType()).thenReturn("Young adult");
 
         // Act
         BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();

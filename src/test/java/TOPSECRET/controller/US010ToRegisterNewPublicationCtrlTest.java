@@ -1,105 +1,121 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.repository.PublicationSampleRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for {@link US010ToRegisterNewPublicationCtrl}.
+ *
+ * <p>This test suite verifies the behavior of the controller responsible
+ * for registering a new {@link PublicationSample} in the system.</p>
+ *
+ * <p>The controller depends on {@link PublicationSampleRepository}, which
+ * is mocked to isolate the controller logic and verify the interaction
+ * between the controller and the repository.</p>
+ */
 
 
 class US010ToRegisterNewPublicationCtrlTest {
 
+
+    //Mocks
+    private final BibliographicalData anyBiblioData = mock(BibliographicalData.class);
+    private final User anyUser = mock(User.class);
+    private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
+    private final Edition anyEdition = mock(Edition.class);
+    private final Condition anyCondition = mock(Condition.class);
+    private final PublicationSampleRepository anyPublicationSampleRepository = mock(PublicationSampleRepository.class);
+    private final PublicationSample anyPublicationSample = mock(PublicationSample.class);
+
+    //Actual controller class under test
+    private final US010ToRegisterNewPublicationCtrl anyController = new US010ToRegisterNewPublicationCtrl
+            (anyPublicationSampleRepository);
+
     @Test
-    void shouldAddPublication() throws InstanceAlreadyExistsException {
+    void shouldThrowWhenNullRepo() {
 
-        PublicationSampleFactory factory = new PublicationSampleFactory();
-        PublicationSampleRepository publicationRepository1 = new PublicationSampleRepository(factory);
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new US010ToRegisterNewPublicationCtrl(null));
+    }
 
-        US010ToRegisterNewPublicationCtrl pubCtrl1 = new US010ToRegisterNewPublicationCtrl(publicationRepository1);
-
-        //Instantiating Publication here, could also do that above to standardize future tests and make it more readable
+    @Test
+    void shouldCallRepoToCreatePubSample() throws InstanceAlreadyExistsException {
 
         //Arrange
-        Country country1 = new Country("United_States"); //reminder that multiple word countries are written like this
-        Country country2 = new Country("Germany");
+        when(anyPublicationSampleRepository.createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
+                anyEdition, anyCondition)).thenReturn(anyPublicationSample);
 
+        //Act
+        anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition, anyCondition);
 
-        Profile profile1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-        AuthorFactory authorFactory = new AuthorFactory();
-        Author author1 = authorFactory.createAuthorWithExistingProfile(profile1, "valid bio");
-        Address address1 = new Address("R Maria", "12", "156-5", country2);
-        Email email1 = new Email("Maria1", "gmail.com");
-        Contact contact1 = new Contact("915945695", "+351", email1, address1);
-        Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
-        BibliographicalData bibliographicalData1 = new BibliographicalData(
-                "Childhood, Youth, Dependency: The Copenhagen Trilogy",
-                List.of(author1),
-                Locale.ENGLISH,
-//                publisher1,
-                LocalDate.of(2020, 1, 1),
-                List.of(new Genre("Fiction")),
-//                200,
-                "Some text");
-
-//        String edition1 = "2nd Edition";
-        // Edition
-        Code code = Code.fromIsbn13 ("9783161484123");
-        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-        Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-        EditionFactory editionFactory = new EditionFactory();
-        Edition edition1= editionFactory.create(
-                "1st",
-                code,
-                physicalAttributes,
-                pubType,
-                publisher,
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
-        );
-
-        Code code1 = Code.fromIsbn10("1234567890");
-        Condition condition = Condition.LIKE_NEW;
-
-        Country country3 = new Country("Italy");
-
-        Address address2 = new Address("Main Street", "10", "12345", country3);
-        Email email2 = new Email("test.user", "example.com");
-        Contact contact2 = new Contact("987654321", "351", email2, address2);
-
-
-        Country country4 = new Country("Uganda");
-        Profile profile2 = new Profile(
-                "Test Profile",
-                country4,
-                LocalDate.of(1997, 8, 15)
-        );
-
-        UserRole userRole1 = UserRole.ADMIN;
-        User user1 = new User("coolGuy", contact2, profile2, userRole1);
-        PublicationStatus pubStatus1 = PublicationStatus.READING;
-        PublicationType publicationType1 = new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Paperback");
-
-
-        //Act is here
-        PublicationSample publicationAdded1 = pubCtrl1.createAndAddPublication(bibliographicalData1, user1, pubStatus1, edition1, condition);
-
-
-        //Assert is here
-        assertEquals(1, publicationRepository1.getAllPublications().size());
-        assertTrue(publicationRepository1.getAllPublications().contains(publicationAdded1));
-
+        //Assert
+        verify(anyPublicationSampleRepository).createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
+                anyEdition, anyCondition);
 
     }
 
-    //Should test here if it throws exception when a parameter comes null, for example?
+    @Test
+    void shouldReturnPubSampleFromRepo() throws InstanceAlreadyExistsException {
+
+        //Arrange
+        when(anyPublicationSampleRepository.createAndAdd(
+                anyBiblioData,
+                anyUser,
+                anyPublicationStatus,
+                anyEdition,
+                anyCondition
+        )).thenReturn(anyPublicationSample);
+
+        //Act
+        PublicationSample result = anyController.createAndAddPublication(
+                anyBiblioData,
+                anyUser,
+                anyPublicationStatus,
+                anyEdition,
+                anyCondition);
+
+        //Assert
+        assertEquals(anyPublicationSample, result);
+    }
+
+    /**
+     * Verifies that the controller propagates the exception thrown by the repository.
+     *
+     * <p>If the {@link PublicationSampleRepository} detects that the publication
+     * being registered already exists, it throws an {@link InstanceAlreadyExistsException}.
+     * Since the controller does not handle this exception internally, it must allow
+     * the exception to continue towards the caller.</p>
+     *
+     * <p>This test configures the mocked repository to throw the exception and
+     * verifies that calling the controller method results in the same exception
+     * being thrown.</p>
+     */
+
+    @Test
+    void shouldThrowExceptionWhenRepositoryThrows() throws InstanceAlreadyExistsException {
+
+        //Arrange
+        when(anyPublicationSampleRepository.createAndAdd(
+                anyBiblioData,
+                anyUser,
+                anyPublicationStatus,
+                anyEdition,
+                anyCondition)).thenThrow
+                (InstanceAlreadyExistsException.class);
+
+        //Act + assert
+        assertThrows(InstanceAlreadyExistsException.class, ()
+                -> anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition,
+                anyCondition));
+    }
 
 }

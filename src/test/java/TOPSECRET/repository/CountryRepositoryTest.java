@@ -1,70 +1,166 @@
 package TOPSECRET.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import TOPSECRET.domain.Country;
+import TOPSECRET.domain.CountryFactory;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
+/**
+ * Unit tests for the {@link CountryRepository} class.
+ *
+ * <p>This test class uses Mockito to isolate the System Under Test (SUT),
+ * which is the {@link CountryRepository}. Its collaborators
+ * ({@link CountryFactory} and {@link Country}) are mocked in order to
+ * focus exclusively on testing the repository behavior.</p>
+ *
+ * <p>The tests validate the following responsibilities of the repository:</p>
+ * <ul>
+ *     <li>Adding valid countries</li>
+ *     <li>Rejecting invalid country inputs</li>
+ *     <li>Rejecting null inputs</li>
+ *     <li>Preventing duplicate countries</li>
+ *     <li>Returning an immutable list of registered countries</li>
+ * </ul>
+ */
 class CountryRepositoryTest {
-    private CountryRepository repository; //declara que este repositório vai ser testado ("repository" do tipo CountryRepository)
 
-    @BeforeEach //Faz antes de cada teste
-    void preparation() {
-        repository = new CountryRepository(); //O "repository" torna-se uma List<Country> vazia - ver linha 12 do CountryRepository
+    /** System Under Test (SUT): the repository responsible for storing countries. */
+    private CountryRepository repository; //Our SUT
+
+    /** Mocked collaborator responsible for creating Country objects. */
+    private CountryFactory factoryMock;
+
+    /** Mocked Country object used in tests. */
+    private Country countryMock1;
+
+    /** Another mocked Country object used in tests. */
+    private Country countryMock2;
+
+    /**
+     * Initializes the test environment before each test execution.
+     *
+     * <p>Creates mocks for {@link CountryFactory} and {@link Country}
+     * objects and injects the mocked factory into the repository.</p>
+     */
+    @BeforeEach
+    void preparation(){
+        factoryMock = mock(CountryFactory.class);
+        countryMock1 = mock(Country.class);
+        countryMock2 = mock(Country.class);
+        repository = new CountryRepository(factoryMock);
     }
-    //Este teste vai testar a criação e adicionar um novo country
-    @Test
-    void createAndAddNewCountry_ValidCountry(){
 
-        //act
-        repository.createAndAddNewCountry("Portugal"); //No repositório que criamos, usamos o méto.do createAndAddNewCountry, para adicionar "Portugal"
+    /**
+     * Tests the successful creation and addition of valid countries.
+     *
+     * <p>The {@link CountryFactory} mock is configured to return mocked
+     * {@link Country} objects when valid country names are provided.
+     * The test verifies that both countries are added to the repository
+     * and that the factory's create method is called for each one.</p>
+     */
+    @Test
+    void createAndAddANewCountry_validCountry(){
+
+        when(factoryMock.create("Portugal")).thenReturn(countryMock1);
+        when(factoryMock.create("France")).thenReturn(countryMock2);
+
+        repository.createAndAddNewCountry("Portugal");
+        repository.createAndAddNewCountry("France");
 
         //assert
-        assertEquals(1, repository.getAllCountries().size()); //Verificamos se o repositório aumentou de tamanho (se adicionou, deve aumentar de 0 para 1)
+        assertEquals(2, repository.getAllCountries().size ());;
 
-        //assert (another valid country)
-        repository.createAndAddNewCountry("France"); //Cria outro país com o createAndAddNewCountry no "repository"
-        assertEquals(2, repository.getAllCountries().size()); //Volta a verificar se o repositório aumentou de trabalho
+        verify(factoryMock).create("Portugal");
+        verify(factoryMock).create("France");
     }
-    //Este teste vai testar a resposta em caso de ser introduzido um input inválido
-    @Test
-    void createAndAddNewCountry_InvalidInput(){
 
-        //act (add invalid country)
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddNewCountry("Mordor")); //"Quando tentar criar o país Mordor, o sistema deve falhar"
-
-        //Repository should remain empty, since the input was invalid
-        assertEquals(0,repository.getAllCountries().size()); //O input inválido não deve levar à mudança de tamanho do repositório
-    }
-    //Este teste vai testar o que acontece quando se faz createAndAddNewCountry com um input null
+    /**
+     * Tests the behavior when attempting to add an invalid country.
+     *
+     * <p>The factory mock is configured to throw an
+     * {@link IllegalArgumentException} when the invalid country
+     * "Mordor" is requested. The repository should propagate the
+     * exception and remain unchanged.</p>
+     */
     @Test
-    void createAndAddNewCountry_Null(){
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddNewCountry(null));
+    void createAndAddANewCountry_invalidCountry(){
+
+        when(factoryMock.create("Mordor")).thenThrow(new IllegalArgumentException());
+
+        //assert
+        assertThrows(IllegalArgumentException.class, () -> repository.createAndAddNewCountry("Mordor"));
         assertEquals(0, repository.getAllCountries().size());
+
+        verify(factoryMock).create("Mordor");
     }
-    //Este teste vai testar o que acontece quando se faz createAndAddNewCountry com input de um country já registado
+
+    /**
+     * Tests the repository behavior when a null country name is provided.
+     *
+     * <p>The factory mock is configured to throw an
+     * {@link IllegalArgumentException} when null is passed. The test
+     * verifies that the repository propagates the exception and that
+     * no country is added to the internal list.</p>
+     */
     @Test
-    void createAndAddNewCountry_Duplicate(){
-        repository.createAndAddNewCountry("Portugal"); //A lista agora tem 1 country, "Portugal"
+    void createAndAddANewCountry_nullCountry(){
 
-        //Now we add the same country again, expecting it to "throw"
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddNewCountry("Portugal")); //Vai-se tentar adicionar o mesmo país novamente e dizer que se for feito isto, para dar throw ao "IllegalArgumentException"
+        when(factoryMock.create(null)).thenThrow(new IllegalArgumentException());
 
-        //Only 1 should have been added
-        assertEquals(1, repository.getAllCountries().size()); //Verifica se o repositório só ficou com 1 país
+        //assert
+        assertThrows(IllegalArgumentException.class, () -> repository.createAndAddNewCountry(null));
+        assertEquals(0, repository.getAllCountries().size());
+
+        verify(factoryMock).create(null);
     }
-    //Este teste vai testar o que acontece quando fazemos createAndAddNewCountry e depois tentamos modificar a lista com os countries (não deve ser possível)
-    @Test
-    void createAndAddNewCountry_ReturnReadOnlyList(){
-        repository.createAndAddNewCountry("Portugal"); //Cria e adiciona um novo país - "Portugal"
-        List<Country> registeredCountries = repository.getAllCountries(); //Cria uma List<Country> chamada registeredCountries e vai buscar o méto.do getAllCountries para por os países dentro da lista
 
-        //try to modify the list externally (not allowed)
-        assertThrows(UnsupportedOperationException.class, //exception expected, implied in the name "UnsupportedOperation"
-                () -> registeredCountries.add(new Country("France"))); //tenta-se modificar a lista para conter "France". Não pode ser possível
+    /**
+     * Tests that the repository prevents duplicate countries.
+     *
+     * <p>The factory returns the same mocked country for repeated
+     * creation requests. The repository should detect the duplicate
+     * using the equals comparison and throw an
+     * {@link IllegalArgumentException}.</p>
+     */
+    @Test
+    void createAndAddANewCountry_duplicateCountry(){
+
+        when(factoryMock.create("Portugal")).thenReturn(countryMock1);
+
+        repository.createAndAddNewCountry("Portugal");
+
+        when(factoryMock.create("Portugal")).thenReturn(countryMock1);
+
+        //assert
+        assertThrows(IllegalArgumentException.class, () -> repository.createAndAddNewCountry("Portugal"));
+        assertEquals(1, repository.getAllCountries().size());
+    }
+
+    /**
+     * Tests that the list returned by {@link CountryRepository#getAllCountries()}
+     * is immutable.
+     *
+     * <p>The repository returns a copy of the internal list using
+     * {@code List.copyOf()}, which should prevent external modifications.
+     * Attempting to add a new country to the returned list should
+     * throw an {@link UnsupportedOperationException}.</p>
+     */
+    @Test
+    void createAndAddANewCountry_returnsReadOnlyList(){
+
+        when(factoryMock.create("Portugal")).thenReturn(countryMock1);
+
+        repository.createAndAddNewCountry("Portugal");
+
+        List<Country> countryList = repository.getAllCountries();
+
+        //assert
+        assertThrows(UnsupportedOperationException.class, () -> countryList.add(countryMock2));
     }
 }

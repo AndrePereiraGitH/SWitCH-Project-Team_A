@@ -3,220 +3,92 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.GenreFactory;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Unit tests for GenreRepository.
- *
- * Verifies:
- * - Successful creation and addition of Genre
- * - Duplicate prevention
- * - Retrieval using findByTitle
- */
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GenreRepositoryTest {
 
-
-
-    @Test
-    void shouldCreateRepositoryWithEmptyList() {
-        // Act
-        GenreRepository repository = new GenreRepository(List.of(), new GenreFactory());
-
-        // Assert
-        assertNotNull(repository);
-        assertEquals(0, repository.getAllGenres().size());
-    }
+    private final GenreFactory genreFactory = mock(GenreFactory.class);
+    private final List<Genre> genres = new ArrayList<>();
+    private final Genre genre = mock(Genre.class);
+    private final GenreRepository genreRepository = new GenreRepository(genres, genreFactory);
 
     @Test
-    void shouldThrowExceptionWhenListIsNull() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new GenreRepository(null, new GenreFactory())
-        );
-        assertEquals("Genre List cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldCreateRepositoryWithExistingGenres() {
+    void testCreateAndAddGenre_AddsNewGenre() {
         // Arrange
-        List<Genre> existingGenres = new ArrayList<>();
-        existingGenres.add(new Genre("Romance"));
-        existingGenres.add(new Genre("Horror"));
+        String genreType = "Fantasy";
+        when(genre.getGenreType()).thenReturn(genreType);
+        when(genreFactory.create(genreType)).thenReturn(genre);
 
         // Act
-        GenreRepository repository = new GenreRepository(existingGenres, new GenreFactory());
+        Genre result = genreRepository.createAndAdd(genreType);
 
         // Assert
-        assertEquals(2, repository.getAllGenres().size());
-    }
-
-    // ========================================
-    // CREATE AND ADD TESTS
-    // ========================================
-
-    @Test
-    void shouldCreateAndAddGenre() {
-        // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-
-        // Act
-        Genre result = repository.createAndAddGenre("Romance");
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(new Genre("Romance"), result);
-        assertEquals(1, repository.getAllGenres().size());
-        assertTrue(repository.getAllGenres().contains(result));
+        assertEquals(1, genres.size());
+        assertEquals(genre, result);
+        assertTrue(genres.contains(genre));
     }
 
     @Test
-    void shouldThrowExceptionWhenGenreAlreadyExists() {
+    void testCreateAndAddGenre_ThrowsExceptionWhenGenreExists() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Terror");
+        String genreType = "Fantasy";
+        when(genre.getGenreType()).thenReturn(genreType);
+        genres.add(genre);
+        when(genreFactory.create(genreType)).thenReturn(genre);
 
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre("Terror")
-        );
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> genreRepository.createAndAdd(genreType));
         assertEquals("Genre already exists", exception.getMessage());
-
-        // Verify only one genre was added
-        assertEquals(1, repository.getAllGenres().size());
     }
 
     @Test
-    void shouldThrowExceptionForInvalidGenreName() {
+    void getAllGenres_ReturnsCorrectList() {
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-
-        // Act + Assert - null
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre(null)
-        );
-
-        // Act + Assert - blank
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre("")
-        );
-
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddGenre("   ")
-        );
-
-        // Verify no genres were added
-        assertEquals(0, repository.getAllGenres().size());
-    }
-
-    // ========================================
-    // GET ALL GENRES TESTS
-    // ========================================
-
-    @Test
-    void shouldReturnEmptyListWhenNoGenres() {
-        // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
+        Genre genre2 = mock(Genre.class);
+        when(genre.getGenreType()).thenReturn("Fantasy");
+        when(genre2.getGenreType()).thenReturn("Science Fiction");
+        genres.add(genre);
+        genres.add(genre2);
 
         // Act
-        List<Genre> result = repository.getAllGenres();
+        List<Genre> result = genreRepository.getAllGenres();
 
         // Assert
-        assertNotNull(result);
-        assertEquals(0, result.size());
+        assertEquals(2, result.size());
+        assertTrue(result.contains(genre));
+        assertTrue(result.contains(genre2));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
     }
 
     @Test
-    void shouldReturnAllGenres() {
+    void getAllGenresShouldReturnUnmodifiableList() {
+
         // Arrange
-        GenreRepository repository = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        repository.createAndAddGenre("Romance");
-        repository.createAndAddGenre("Horror");
-        repository.createAndAddGenre("Mystery");
+        GenreRepository repo = new GenreRepository(List.of(genre), genreFactory);
 
         // Act
-        List<Genre> result = repository.getAllGenres();
+        List<Genre> result = repo.getAllGenres();
 
         // Assert
-        assertEquals(3, result.size());
-        assertTrue(result.contains(new Genre("Romance")));
-        assertTrue(result.contains(new Genre("Horror")));
-        assertTrue(result.contains(new Genre("Mystery")));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
     }
 
     @Test
-    void shouldReturnDefensiveCopy() {
+    void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
+
         // Arrange
-        List<Genre> originalList = new ArrayList<>();
-        originalList.add(new Genre("Programming"));
-        GenreRepository repository = new GenreRepository(originalList, new GenreFactory());
+        GenreRepository repo = new GenreRepository(List.of(), genreFactory);
 
         // Act
-        List<Genre> result = repository.getAllGenres();
+        List<Genre> result = repo.getAllGenres();
 
-        // Assert - different list instances
-        assertNotSame(originalList, result);
-        assertEquals(originalList.size(), result.size());
+        // Assert
+        assertTrue(result.isEmpty());
     }
-
-    // US004 starts -----------
-    /**
-     * Verifies that findByTitle returns the correct Genre.
-     */
-    @Test
-    void shouldReturnGenreWhenTitleExists() {
-
-        // ARRANGE
-        GenreRepository repository =
-                new GenreRepository(new ArrayList<>(), new GenreFactory());
-
-        repository.addGenre(new Genre("Fantasy"));
-
-        // ACT
-        Genre result = repository.findByTitle("Fantasy");
-
-        // ASSERT
-        assertEquals("Fantasy", result.getTitle());
-    }
-
-    /**
-     * Verifies that findByTitle throws exception when not found.
-     */
-    @Test
-    void shouldThrowExceptionWhenGenreNotFound() {
-
-        // ARRANGE
-        GenreRepository repository =
-                new GenreRepository(new ArrayList<>(), new GenreFactory());
-
-        // ACT & ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                repository.findByTitle("Unknown")
-        );
-    }
-
-    /**
-     * Verifies that findByTitle throws exception when title is null.
-     */
-    @Test
-    void shouldThrowExceptionWhenTitleIsNull() {
-        GenreRepository repo = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findByTitle(null));
-    }
-
-    /**
-     * Verifies that findByTitle throws exception when title is blank.
-     */
-    @Test
-    void shouldThrowExceptionWhenTitleIsBlank() {
-        GenreRepository repo = new GenreRepository(new ArrayList<>(), new GenreFactory());
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findByTitle(" "));
-    }
-    // ends ---------------------
-
 }

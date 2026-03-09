@@ -80,7 +80,7 @@ public class US004ToRegisterAppraisalEntityController {
         List<GenreDetailsDTO_US004> result = new ArrayList<>();
 
         for (Genre genre : genres) {
-            result.add(new GenreDetailsDTO_US004(genre.getTitle()));
+            result.add(new GenreDetailsDTO_US004(genre.getGenreType()));
         }
         return result;
     }

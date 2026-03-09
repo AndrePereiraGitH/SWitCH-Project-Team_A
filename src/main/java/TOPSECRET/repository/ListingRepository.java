@@ -17,6 +17,11 @@ public class ListingRepository {
         this.listingFactory = new ListingFactory();
     }
 
+    public ListingRepository(ListingFactory listingFactory) {
+        this.listings = new ArrayList<>();
+        this.listingFactory = listingFactory;
+    }
+
     public Listing createAndAdd(
             String listingTitle,
             List<PublicationSample> items,
@@ -34,27 +39,6 @@ public class ListingRepository {
         listings.add(newListing);
 
         return newListing;
-    }
-
-    /**
-     * Adds a listing to the repository if it is not already present.
-     *
-     * <p>This method checks whether the given {@link Listing} is already stored
-     * in the repository. If the listing is not present, it is added to the
-     * internal collection and the method returns {@code true}. If the listing
-     * is already contained in the repository, no changes are made and the
-     * method returns {@code false}.</p>
-     *
-     * @param listing the listing to add; must not be {@code null}
-     * @return {@code true} if the listing was successfully added,
-     *         {@code false} if it was already present
-     */
-
-    public boolean add(Listing listing) {
-        if (listings.contains(listing))
-            return false;
-        listings.add(listing);
-        return true;
     }
 
     private boolean isExistent(Listing listing) {

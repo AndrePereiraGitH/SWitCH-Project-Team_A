@@ -6,6 +6,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CityTest {
 
+    /**
+     * Unit tests for the {@link City} domain class.
+     * <p>
+     * These tests verify the following aspects of the {@code City} entity:
+     * <ul>
+     *     <li>Correct construction with valid parameters</li>
+     *     <li>Enforcement of domain invariants (country and city name cannot be null or blank)</li>
+     *     <li>Correct behavior of accessor methods</li>
+     *     <li>Correct implementation of {@link City#equals(Object)} and {@link City#hashCode()}</li>
+     * </ul>
+     * <p>
+     * The {@code City} class represents a value defined by a combination of a
+     * {@link Country} and a city name.
+     */
+
     //Arrange
     Country anyCountry = new Country("Finland");
     String anyCityName = "Helsinki";
@@ -23,7 +38,6 @@ class CityTest {
 
         //Assert
         assertNotNull(city);
-
     }
 
     @Test
@@ -116,9 +130,6 @@ class CityTest {
         assertEquals(wantCountryMultipleWords, city7.getCityCountry());
 
     }
-
-
-    //Testing the override methods, following the same format as in Publication
 
     @Test
     void equals_shouldReturnTrueForSameObject() {

@@ -2,29 +2,61 @@ package TOPSECRET.domain;
 
 import java.util.Objects;
 
+import java.util.Objects;
+
+/**
+ * Represents a city within a specific country.
+ * <p>
+ * Instances of this class can only be created by subclasses or classes
+ * within the same package.
+ */
 public class City {
 
+    /** The country this city belongs to. */
     private Country _country;
 
+    /** The name of the city. */
     private String _cityName;
 
+    /**
+     * Constructs a new City with the specified country and city name.
+     * <p>
+     * The constructor is protected, so it can only be called from
+     * subclasses or classes in the same package.
+     *
+     * @param country the country this city belongs to; must not be null
+     * @param cityName the name of the city; must not be null or blank
+     * @throws IllegalArgumentException if country is null or cityName is null/blank
+     */
 
-    public City(Country country, String cityName) {
+    //
+    protected City(Country country, String cityName) {
         if (cityName == null || cityName.isBlank()) {
             throw new IllegalArgumentException("A city name cannot be left blank");
         }
 
-        if (country == null)
+        if (country == null) {
             throw new IllegalArgumentException("Country cannot be left blank");
+        }
 
         _country = country;
         _cityName = cityName;
     }
 
+    /**
+     * Returns the country this city belongs to.
+     *
+     * @return the country of this city
+     */
     public Country getCityCountry() {
         return _country;
     }
 
+    /**
+     * Returns the name of the city.
+     *
+     * @return the city name
+     */
     public String getCityName() {
         return _cityName;
     }

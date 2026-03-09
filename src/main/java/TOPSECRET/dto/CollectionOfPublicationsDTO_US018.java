@@ -35,7 +35,7 @@ public class CollectionOfPublicationsDTO_US018 {
             result.add(
                     new CollectionOfPublicationsDTO_US018(
                             cp.getCollectionName(),
-                            cp.getCollectionGenre().getTitle(),
+                            cp.getCollectionGenre().getGenreType(),
                             cp.getOwner().getUserName()
                     )
             );

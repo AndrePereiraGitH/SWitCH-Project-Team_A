@@ -67,6 +67,11 @@ public class PublicationTypeDTO_US014 {
 
     // =======================
     // Getters
+
+    public String getMediaFormat() {
+        return _mediaFormat;
+    }
+    public void setMediaFormat(String mediaFormat) {}
     public String getTypeOfBinding() {
         return _typeOfBinding;
     }

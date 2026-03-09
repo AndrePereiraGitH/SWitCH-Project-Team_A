@@ -6,18 +6,15 @@ import TOPSECRET.domain.Enum.*;
 
 import TOPSECRET.dto.PublicationDetailsDTO_US012;
 import TOPSECRET.repository.LibraryRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for the {@link US012GetListOfPublicationsInLibraryController} class.
@@ -28,89 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class US012GetListOfPublicationsInLibraryControllerTest {
 
-    private US012GetListOfPublicationsInLibraryController _ctrl;
-    private AuthorFactory authorFactory = new AuthorFactory();
-    private EditionFactory editionFactory = new EditionFactory();
-
-
-    // Countries
-    Country country1 = new Country("Denmark");
-    Country country2 = new Country("Germany");
-    Country country4 = new Country("Uganda");
-
-    // Profile and Author
-    Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
-    Author author1 = authorFactory.createAuthorWithExistingProfile(profileAuthor1, "valid bio1");
-
-    // Contact information
-    Address address1 = new Address("R Maria", "12", "156-5", country2);
-    Email email1 = new Email("Maria1", "gmail.com");
-    Contact contact1 = new Contact("915945695", "+351", email1, address1);
-
-    // BibliographicalData
-    BibliographicalData bibliographicalData1 = new BibliographicalData(
-            "Childhood, Youth, Dependency: The Copenhagen Trilogy",
-            List.of(author1),
-            Locale.ENGLISH,
-            LocalDate.of(2020, 1, 1),
-            List.of(new Genre("Fiction")),
-            "Some text"
-    );
-
-    // Users
-    Profile profile2 = new Profile("Test Profile", country4, LocalDate.of(1997, 8, 15));
-    User user1 = new User("coolGuy", contact1, profile2, UserRole.ADMIN);
-    User user2 = new User("niceGuy", contact1, profile2, UserRole.ADMIN);
-    User user3 = new User("emptyGuy", contact1, profile2, UserRole.ADMIN);
-
-    // Edition components
-    Code code = Code.fromIsbn13("9783161484123");
-    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
-    Edition edition1 = editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-
-    // PublicationSamples
-    PublicationSample publication1 = new PublicationSample(bibliographicalData1, user1, PublicationStatus.READING, edition1, Condition.POOR);
-    PublicationSample publication2 = new PublicationSample(bibliographicalData1, user1, PublicationStatus.READING, edition1, Condition.LIKE_NEW);
-
-
-    /**
-     * Sets up the test fixtures before each test method.
-     * <p>
-     * Initializes test data including countries, authors, contacts, bibliographical data,
-     * users, editions, and publication samples. Creates three libraries with different
-     * publication configurations and initializes the system under test (controller).
-     * </p>
-     *
-     */
-    @BeforeEach
-    void setup() {
-        //Libraries
-        Library lib1 = new Library("mylib1", user1);
-        lib1.addPublication(publication1);
-        lib1.addPublication(publication2);
-
-        Library lib2 = new Library("mylib2", user2);
-        lib2.addPublication(publication1);
-
-        Library emptyLibrary = new Library("emptyLib", user3);
-
-        // Repository with test data
-        LibraryFactory factory = new LibraryFactory();
-        LibraryRepository userLib = new LibraryRepository(
-                Map.of(
-                        user1.getUserName(), lib1,
-                        user2.getUserName(), lib2,
-                        user3.getUserName(), emptyLibrary
-                ), factory
-        );
-
-        // System Under Test
-        _ctrl = new US012GetListOfPublicationsInLibraryController(userLib);
-
-    }
 
     // ============ Tests ============
 
@@ -125,8 +39,12 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         // Arrange
         String emptyUser = "";
 
+        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        US012GetListOfPublicationsInLibraryController ctrl = new US012GetListOfPublicationsInLibraryController(libraryRepositoryDouble);
+
+
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> _ctrl.getListOfPublicationsInLibraryDTO(emptyUser));
+        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibraryDTO(emptyUser));
     }
 
     /**
@@ -144,15 +62,22 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     @Test
     void ensureListOfPublicationsInLibraryIsEmptyWhenLibraryReturnsEmptyAList() throws InstanceNotFoundException {
         // Arrange
-        String username = user3.getUserName();
+        String username = "User1";
+
+        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        when(libraryRepositoryDouble.getAllPublicationsFromUserLibrary(username)).thenReturn(List.of());
+
+
+        US012GetListOfPublicationsInLibraryController ctrl = new US012GetListOfPublicationsInLibraryController(libraryRepositoryDouble);
 
         // Act
-        List<PublicationDetailsDTO_US012> result = _ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<PublicationDetailsDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
 
     /**
      * Tests that the controller correctly retrieves and converts publications to DTOs.
@@ -171,26 +96,26 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     @Test
     void ensureListOfPublicationsInLibraryReturnsDTOs() throws InstanceNotFoundException {
         // Arrange
-        String username = user1.getUserName();
+        String username = "User1";
+        String expectedTitle1 = "Title1";
+        String expectedTitle2 = "Title2";
+        List<String> expectedAuthors1 = List.of("Author1","Author2");
+        List<String> expectedAuthors2 = List.of("Author3","Author4");
+        String expectedCode1 = "123456789";
+        String expectedCode2 = "123456780";
 
-        String expectedTitle1 = publication1.getBibliographicalData().getTitle();
-        String expectedCode1 = publication1.getEdition().getCode().toString();
-        String expectedType1 = publication1.getEdition().getPublicationType().getTypeOfBinding().toString();
-        List<String> expectedAuthors1 = publication1.getBibliographicalData().getAuthors()
-                .stream()
-                .map(author -> author.getProfile().getName())
-                .toList();
 
-        String expectedTitle2 = publication2.getBibliographicalData().getTitle();
-        String expectedCode2 = publication2.getEdition().getCode().toString();
-        String expectedType2 = publication2.getEdition().getPublicationType().getTypeOfBinding().toString();
-        List<String> expectedAuthors2 = publication2.getBibliographicalData().getAuthors()
-                .stream()
-                .map(author -> author.getProfile().getName())
-                .toList();
+        PublicationSample pub1 = createMockPublicationSample(expectedTitle1,expectedAuthors1,expectedCode1);
+        PublicationSample pub2 = createMockPublicationSample(expectedTitle2,expectedAuthors2,expectedCode2);
+
+        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        when(libraryRepositoryDouble.getAllPublicationsFromUserLibrary(username)).thenReturn(List.of(pub1,pub2));
+
+
+        US012GetListOfPublicationsInLibraryController ctrl = new US012GetListOfPublicationsInLibraryController(libraryRepositoryDouble);
 
         // Act
-        List<PublicationDetailsDTO_US012> result = _ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<PublicationDetailsDTO_US012> result = ctrl.getListOfPublicationsInLibraryDTO(username);
 
         // Assert
         assertNotNull(result);
@@ -200,14 +125,68 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         PublicationDetailsDTO_US012 dto1 = result.get(0);
         assertEquals(expectedTitle1, dto1.pubTitle);
         assertEquals(expectedCode1, dto1.code);
-        assertEquals(expectedType1, dto1.publicationType);
+        assertEquals(MediaFormat.BOOK.toString(), dto1.publicationType);
         assertIterableEquals(expectedAuthors1, dto1.authorName);
 
         // Verify second DTO
         PublicationDetailsDTO_US012 dto2 = result.get(1);
         assertEquals(expectedTitle2, dto2.pubTitle);
         assertEquals(expectedCode2, dto2.code);
-        assertEquals(expectedType2, dto2.publicationType);
+        assertEquals(MediaFormat.BOOK.toString(), dto2.publicationType);
         assertIterableEquals(expectedAuthors2, dto2.authorName);
+    }
+    // -------------------------------------------------------------------------
+    // Test helpers
+    // -------------------------------------------------------------------------
+
+    private PublicationSample createMockPublicationSample(String title, List<String> authors, String code) {
+        BibliographicalData bibliographicalDataDouble = createMockBibliographicalData(title, authors);
+        Edition editionDouble = createMockEdition(code);
+
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        when(publicationSample.getBibliographicalData()).thenReturn(bibliographicalDataDouble);
+        when(publicationSample.getEdition()).thenReturn(editionDouble);
+
+        return publicationSample;
+    }
+
+    private Edition createMockEdition(String code) {
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        when(publicationTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+
+        Code codeDouble = mock(Code.class);
+        when(codeDouble.toString()).thenReturn(code);
+
+        Edition editionDouble = mock(Edition.class);
+        when(editionDouble.getCode()).thenReturn(codeDouble);
+        when(editionDouble.getPublicationType()).thenReturn(publicationTypeDouble);
+
+        return editionDouble;
+    }
+
+    private BibliographicalData createMockBibliographicalData(String title, List<String> authorsNames) {
+        List<Author> authorsDouble = createMockAuthors(authorsNames);
+        BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
+
+        when(bibliographicalDataDouble.getTitle()).thenReturn(title);
+        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
+
+        return bibliographicalDataDouble;
+    }
+
+    private List<Author> createMockAuthors(List<String> authorNames) {
+        return authorNames.stream()
+                .map(this::createMockAuthor)
+                .toList();
+    }
+
+    private Author createMockAuthor(String authorName) {
+        Profile profile = mock(Profile.class);
+        when(profile.getName()).thenReturn(authorName);
+
+        Author author = mock(Author.class);
+        when(author.getProfile()).thenReturn(profile);
+
+        return author;
     }
 }

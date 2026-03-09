@@ -5,12 +5,12 @@ import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.repository.UserRepository;
 
-public class RegisterUserController {
+public class US001ToRegisterUserController {
 
     private final UserRepository userRepository;
 
     // Constructor
-    public RegisterUserController(UserRepository userRepository) {
+    public US001ToRegisterUserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

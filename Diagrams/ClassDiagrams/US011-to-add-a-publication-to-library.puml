@@ -7,12 +7,12 @@ class UI011 {
 
 class AddPublicationToLibraryController {
     + getListOfOtherPublications()
-    + addPublicationToLib(selectedPub)
+    + addPublicationSampleToLib(selectedPub)
 }
 
 
 
-class PublicationRepository {
+class PublicationSampleRepository {
     + getListOfDifferentPublications(listOfPublicationsInLibrary)
 }
 
@@ -20,7 +20,7 @@ class PublicationRepository {
 
 class Library {
     + getAll()
-    + addPublication(selectedPub)
+    + addPublicationSample(selectedPub)
     - verifyUnique(selectedPub)
     - add(selectedPub)
 }
@@ -29,7 +29,7 @@ class Library {
 ' ---------------- Relationships ----------------
 
 UI011 ..> AddPublicationToLibraryController : uses
-AddPublicationToLibraryController ..> PublicationRepository:uses
+AddPublicationToLibraryController ..> PublicationSampleRepository:uses
 AddPublicationToLibraryController -->Library : interacts with
 
 

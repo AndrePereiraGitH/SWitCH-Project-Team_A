@@ -5,6 +5,7 @@ import TOPSECRET.domain.AuctionFactory;
 import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,6 @@ public class AuctionRepository {
      * @return {@code true} if the auction was created and added, {@code false} if it already exists
      */
     public Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
-
 
         Auction auction = _factoryAuction.create(listing, initialDate, finalDate, buyOutPrice);
 
@@ -136,7 +136,16 @@ public class AuctionRepository {
      *         never {@code null}, but may be empty if no matches are found
      */
 
+    // US024 -------------------------------------------------------------------------------------------------------------
     public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
+
+        if(publicationDTO == null){
+            throw new NullPointerException("Publication can not be null");
+        }
+
+        if(publicationDTO.isEmpty()){
+            throw new IllegalArgumentException("Publication can not be empty");
+        }
 
         List<PublicationSample> listOfItemsOnAuctionByPublication = new ArrayList<>();
 
@@ -156,6 +165,8 @@ public class AuctionRepository {
 
         return listOfItemsOnAuctionByPublication;
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns all items that are currently on auction

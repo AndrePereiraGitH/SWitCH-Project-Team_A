@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Country;
+import TOPSECRET.domain.CountryFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,11 @@ public class CountryRepository { //Define a classe - responsável por armazenar 
     //private garante encapsulamento, final faz com que a referência à lista não possa ser trocada, List<Country> diz que registeredCountries é do tipo List (uma lista) de objetos Country;
     //new ArrayLists<>() é uma implementação concreta, cria uma nova lista Arrays. É um "resizable array", pode ir aumentando e diminuindo
     //linha funciona como "base de dados" em memória
+    private final CountryFactory countryFactory;
+
+    public CountryRepository(CountryFactory countryFactory){
+        this.countryFactory = countryFactory;
+    }
 
     //Prevenir duplicados
     private boolean isANewCountry(Country country){ //méto.do privado auxiliar, só usado nesta classe (por causa de ser privado)
@@ -25,7 +31,7 @@ public class CountryRepository { //Define a classe - responsável por armazenar 
 
     //Criar um country e adicionar à list
     public Country createAndAddNewCountry(String countryName) { //méto.do público, para criar o objeto do tipo Country e adicionar à lista (repositório)
-        Country country = new Country(countryName); //cria um novo objeto do domínio e chama o construtor da classe Country (a validação interna acontece lá)
+        Country country = countryFactory.create(countryName); //cria um novo objeto do domínio e chama o construtor da classe Country (a validação interna acontece lá)
         if (!isANewCountry(country)) { //prevenir duplicados, o "isANewCountry" é "true" e com o ! fica false, ou seja, if "!" isANewCountry significa se for falso
             //chama o méto.do auxiliar de cima, se não for um país novo, entra no "if"
             throw new IllegalArgumentException("Country is already registered"); //quando entrar no "if", vai dar "throw new" a uma exceção e usa essa mensagem

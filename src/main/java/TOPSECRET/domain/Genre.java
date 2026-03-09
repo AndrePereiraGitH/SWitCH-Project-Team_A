@@ -2,12 +2,22 @@ package TOPSECRET.domain;
 
 import java.util.Objects;
 
+/**
+ * Represents a literary genre (e.g. "Drama", "Science Fiction").
+ * Stores the genre name and ensures it is never null or blank.
+ */
 public class Genre {
 
-    // Attributes
+    // --------------------------------- US003 starts ---------------------------------
+
     private String _genreType;
 
-    // Constructor
+    /**
+     * Creates a Genre with the given name.
+     *
+     * @param genreType the genre name; must not be null or blank
+     * @throws IllegalArgumentException if genreType is null or blank
+     */
     public Genre(String genreType) {
         if (genreType == null || genreType.isBlank()) {
             throw new IllegalArgumentException("Genre type cannot be null or blank");
@@ -15,16 +25,13 @@ public class Genre {
         this._genreType = genreType;
     }
 
+    // --------------------------------- US003 ends ---------------------------------
 
     // --------------------------------- US004 starts ---------------------------------
     /**
      * Returns the genre title.
      * @return Genre title.
      */
-    public String getTitle() {
-        return _genreType;
-    }
-
     public String getGenreType() {
         return _genreType;
     }

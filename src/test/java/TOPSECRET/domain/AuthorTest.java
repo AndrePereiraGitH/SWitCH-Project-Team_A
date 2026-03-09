@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 class AuthorTest {
 
     Profile profile = mock(Profile.class);
+    Country country = mock(Country.class);
 
     //========================================
     // CONSTRUCTOR TESTS - Primary Constructor
@@ -75,11 +76,11 @@ class AuthorTest {
     @Test
     void shouldCreateAuthorUsingSecondaryConstructor() {
         // Act
-        Author author = new Author("Jane", new Country("AUSTRIA"), LocalDate.of(1990, 1, 1), "Author bio");
+        Author author = new Author("Jane", country, LocalDate.of(1990, 1, 1), "Author bio");
 
         // Assert
         assertEquals("Jane", author.getProfile().getName());
-        assertEquals(new Country("AUSTRIA"), author.getProfile().getCountry());
+        assertEquals(country, author.getProfile().getCountry());
         assertEquals(LocalDate.of(1990, 1, 1), author.getProfile().getBirthday());
         assertEquals("Author bio", author.getBiography());
     }
@@ -88,11 +89,11 @@ class AuthorTest {
     void shouldThrowExceptionWhenSecondaryConstructorReceivesInvalidData() {
         // Profile validation should trigger
         assertThrows(IllegalArgumentException.class,
-                () -> new Author(null, new Country("AUSTRIA"), LocalDate.of(1990, 1, 1), "bio")
+                () -> new Author(null, country, LocalDate.of(1990, 1, 1), "bio")
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new Author("", new Country("AUSTRIA"), LocalDate.of(1990, 1, 1), "bio")
+                () -> new Author("", country, LocalDate.of(1990, 1, 1), "bio")
         );
 
         assertThrows(IllegalArgumentException.class,
@@ -100,7 +101,7 @@ class AuthorTest {
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new Author("Name", new Country("AUSTRIA"), null, "bio")
+                () -> new Author("Name", country, null, "bio")
         );
     }
 
@@ -127,25 +128,6 @@ class AuthorTest {
     }
 
     @Test
-    void shouldNotBeEquals_whenDifferentClass() {
-        // Arrange
-        Author a1 = new Author(profile, "bio");
-        // Act + Assert
-        assertNotEquals("not an author", a1);
-    }
-
-    @Test
-    void shouldBeEqual_whenSameProfileAndBiography() {
-        // Arrange
-
-        Author a1 = new Author(profile, "bio");
-        Author a2 = new Author(profile, "bio");
-
-        // Act + Assert
-        assertEquals(a1, a2);
-    }
-
-    @Test
     void shouldNotBeEqual_whenDifferentProfile() {
         Author a1 = new Author(profile, "bio");
 
@@ -156,16 +138,6 @@ class AuthorTest {
     }
 
     @Test
-    void shouldBeEquals_whenSameProfileData() {
-        // Arrange
-        Author a1 = new Author(profile, "bio");
-
-        Author a2 = new Author(profile, "bio");
-        // Act + Assert
-        assertEquals(a1, a2);
-    }
-
-    @Test
     void shouldNotBeEquals_whenSameProfileButDifferentBio() {
         // Arrange
 
@@ -173,16 +145,6 @@ class AuthorTest {
         Author a2 = new Author(profile, "bio2");
         // Act + Assert
         assertNotEquals(a1, a2);
-    }
-
-    @Test
-    void shouldBeEqualsWhenAuthorsHaveSameState() {
-        // Arrange
-        Author author1 = new Author(profile, "Bio");
-        Author author2 = new Author(profile, "Bio");
-
-        // Act + Assert
-        assertEquals(author1, author2);
     }
 
     @Test

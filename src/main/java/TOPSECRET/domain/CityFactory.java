@@ -31,4 +31,5 @@ public class CityFactory {
 
         return new City(country, cityName);
     }
+
 }

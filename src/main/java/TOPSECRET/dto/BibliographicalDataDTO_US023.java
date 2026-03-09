@@ -128,7 +128,7 @@ public class BibliographicalDataDTO_US023 {
         List<Genre> genres = bdPublication.getGenres();
         List<String> genresDTO = new ArrayList<>();
         for (Genre genre : genres) {
-            genresDTO.add(genre.getTitle());
+            genresDTO.add(genre.getGenreType());
         }
 
         return new BibliographicalDataDTO_US023(publicationTitleDTO, authorsDTO, genresDTO);

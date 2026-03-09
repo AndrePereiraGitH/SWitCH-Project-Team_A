@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.CollectionOfPublicationsFactory;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,189 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
 /**
- * Unit tests for US018 functionality in {@link CollectionOfPublicationsRepository}.
- * SUT: CollectionOfPublicationsRepository
- * All domain collaborators are mocked to isolate repository behavior.
+ * Unit tests for {@link CollectionOfPublicationsRepository} — covers US017, US018, and US020.
+ *
+ * <p>These tests use <b>mocks</b> for all domain collaborators ({@link User}, {@link Genre},
+ * {@link CollectionOfPublications}, {@link CollectionOfPublicationsFactory}).
+ * This means every test only checks the logic inside the repository itself —
+ * not the behaviour of Genre, User, or CollectionOfPublications.
+ * If a test fails here, the bug is in the repository.
+ *
+ * <p>Why mocks? The repository receives its collaborators from the outside.
+ * By replacing them with mocks, we control exactly what they return,
+ * so the test result depends only on what the repository does with that data.
+ *
+ * <p>Some tests (US018) use <b>Java Reflection</b> to pre-populate the private
+ * {@code _collectionOfPublicationsList} field. The field has no setter — that is intentional,
+ * to protect the internal list. Reflection is the only way to inject data in a unit test
+ * without going through {@code createIfNotExists()}, which would add noise to the test.
+ *
+ * <p>Tests are grouped by user story:
+ * <ul>
+ *   <li>US017 — {@code createIfNotExists()}: factory null, null validations, happy path, duplicate check, same name different genre</li>
+ *   <li>US018 — {@code addPublicationToCollection()}, {@code getUserCollections()}, {@code collectionDTOToDomain()}</li>
+ *   <li>US020 — {@code findPublicByGenre()}</li>
+ * </ul>
  */
 class CollectionOfPublicationsRepositoryTest {
+
+
+    // ============================== US017 ==============================
+
+    // The repository constructor requires a factory — without it, it cannot create collections.
+    // We pass null to check that the constructor rejects it immediately.
+    @Test
+    void shouldThrowExceptionWhenFactoryIsNull_US017() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new CollectionOfPublicationsRepository(null));
+    }
+
+    // This is the main happy path for US017: a user picks a name and a genre, and the repository
+    // delegates creation to the factory and stores the result.
+    // We mock the factory so it returns our mock collection, then check that the repository
+    // passes the data through correctly: name, genre, isPrivate=true, publications empty.
+    // If any of these assertions fail, the repository is not forwarding or storing the result right.
+    @Test
+    void shouldCreateCollectionSuccessfully_US017() {
+        // Arrange — mock factory returns a mock collection when called with the right arguments
+        User mockUser = mock(User.class);
+        Genre mockGenre = mock(Genre.class);
+        CollectionOfPublications mockCollection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsFactory mockFactory = mock(CollectionOfPublicationsFactory.class);
+
+        when(mockFactory.create("Favorites", mockGenre, mockUser)).thenReturn(mockCollection);
+        when(mockCollection.getCollectionName()).thenReturn("Favorites");
+        when(mockCollection.getCollectionGenre()).thenReturn(mockGenre);
+        when(mockCollection.getIsPrivate()).thenReturn(true);
+        when(mockCollection.getPublications()).thenReturn(List.of());
+
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mockFactory);
+
+        // Act — ask the repository to create the collection
+        CollectionOfPublications result =
+                sut.createIfNotExists(mockUser, "Favorites", mockGenre);
+
+        // Assert — result must exist, carry the correct name and genre, be private, and be empty
+        assertNotNull(result);
+        assertEquals("Favorites", result.getCollectionName());
+        assertEquals(mockGenre, result.getCollectionGenre());
+        assertTrue(result.getIsPrivate());          // US017 rule: always starts private
+        assertTrue(result.getPublications().isEmpty()); // US017 rule: always starts empty
+    }
+
+    // Every collection must have an owner — without a user it belongs to nobody.
+    // The repository must check this before delegating to the factory.
+    @Test
+    void shouldThrowExceptionWhenUserIsNull_US017() {
+        // Arrange — valid factory, null user on purpose
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        Genre mockGenre = mock(Genre.class);
+
+        // Act & Assert — null user must be rejected before creation starts
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createIfNotExists(null, "Favorites", mockGenre));
+    }
+
+    // A collection must always have a name — null means there is nothing to identify it by.
+    // The repository must catch this before passing it to the factory.
+    @Test
+    void shouldThrowExceptionWhenNameIsNull_US017() {
+        // Arrange — valid factory and user, null name on purpose
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        User mockUser = mock(User.class);
+        Genre mockGenre = mock(Genre.class);
+
+        // Act & Assert — null name must be rejected before creation starts
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createIfNotExists(mockUser, null, mockGenre));
+    }
+
+    // US017 requires the user to pick a genre — a collection without a genre is not valid.
+    // The repository must reject null genre before delegating to the factory.
+    @Test
+    void shouldThrowExceptionWhenGenreIsNull_US017() {
+        // Arrange — valid factory and user, null genre on purpose
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        User mockUser = mock(User.class);
+
+        // Act & Assert — null genre must be rejected before creation starts
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createIfNotExists(mockUser, "Favorites", null));
+    }
+
+    // A user can have two collections with the same name if the genre is different.
+    // For example: "Favorites / Fiction" and "Favorites / Science" are not the same collection.
+    // Two separate mock Genre objects have different references, so the duplicate check must treat them as different.
+    // The second call must succeed and return a non-null collection.
+    @Test
+    void shouldAllowSameNameWithDifferentGenre_US017() {
+        // Arrange — same user, same name, but two different mock genres (different references)
+        User mockUser = mock(User.class);
+        Genre mockGenre1 = mock(Genre.class);
+        Genre mockGenre2 = mock(Genre.class);
+
+        CollectionOfPublications mockCollection1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications mockCollection2 = mock(CollectionOfPublications.class);
+
+        CollectionOfPublicationsFactory mockFactory = mock(CollectionOfPublicationsFactory.class);
+        when(mockFactory.create("Favorites", mockGenre1, mockUser)).thenReturn(mockCollection1);
+        when(mockFactory.create("Favorites", mockGenre2, mockUser)).thenReturn(mockCollection2);
+
+        // The repo reads these fields from the stored collection to check duplicates
+        when(mockCollection1.getOwner()).thenReturn(mockUser);
+        when(mockCollection1.getCollectionName()).thenReturn("Favorites");
+        when(mockCollection1.getCollectionGenre()).thenReturn(mockGenre1);
+
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mockFactory);
+
+        // First creation — stored in the repository list
+        sut.createIfNotExists(mockUser, "Favorites", mockGenre1);
+
+        // Act — same name, different genre — must not throw because it is not a duplicate
+        CollectionOfPublications result =
+                sut.createIfNotExists(mockUser, "Favorites", mockGenre2);
+
+        // Assert — second collection was created successfully
+        assertNotNull(result);
+    }
+
+    // A user cannot have two collections with the exact same name AND same genre.
+    // The repository must detect this and throw before creating a second one.
+    // To make the duplicate check work, we stub the mock collection to return the same owner,
+    // name, and genre that the duplicate check will read — otherwise the mock would return
+    // default values and the repository would not detect the collision.
+    @Test
+    void shouldThrowExceptionWhenDuplicateCollectionExists_US017() {
+        // Arrange — mock factory returns the same mock collection on first call
+        User mockUser = mock(User.class);
+        Genre mockGenre = mock(Genre.class);
+        CollectionOfPublications mockCollection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsFactory mockFactory = mock(CollectionOfPublicationsFactory.class);
+
+        when(mockFactory.create("Favorites", mockGenre, mockUser)).thenReturn(mockCollection);
+        // These stubs let the repository read back the stored collection and detect the duplicate
+        when(mockCollection.getOwner()).thenReturn(mockUser);
+        when(mockCollection.getCollectionName()).thenReturn("Favorites");
+        when(mockCollection.getCollectionGenre()).thenReturn(mockGenre);
+
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mockFactory);
+
+        sut.createIfNotExists(mockUser, "Favorites", mockGenre); // first creation — stored in the list
+
+        // Act & Assert — same owner, name, and genre again — must be detected as duplicate and throw
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createIfNotExists(mockUser, "Favorites", mockGenre));
+    }
+
+    // ============================== end US017 ==============================
+
+
+    // ============================== US018 ==============================
 
     /**
      * Ensures publication is added successfully when:
@@ -31,7 +209,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         Library library = mock(Library.class);
@@ -60,7 +238,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertFalse(sut.addPublicationToCollection(null, null, null, null));
@@ -74,7 +252,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         User otherUser = mock(User.class);
@@ -101,7 +279,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         Library library = mock(Library.class);
@@ -128,7 +306,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -143,7 +321,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         User otherUser = mock(User.class);
@@ -154,7 +332,7 @@ class CollectionOfPublicationsRepositoryTest {
         when(collection1.getOwner()).thenReturn(user);
         when(collection2.getOwner()).thenReturn(otherUser);
 
-        // Insert into private list via reflection
+        // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
         Field field = CollectionOfPublicationsRepository.class
                 .getDeclaredField("_collectionOfPublicationsList");
         field.setAccessible(true);
@@ -183,7 +361,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         User owner = mock(User.class);
         when(owner.getUserName()).thenReturn("john");
@@ -226,7 +404,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -242,7 +420,7 @@ class CollectionOfPublicationsRepositoryTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository();
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
 
         CollectionOfPublicationsDTO_US018 dto =
                 mock(CollectionOfPublicationsDTO_US018.class);
@@ -254,4 +432,136 @@ class CollectionOfPublicationsRepositoryTest {
         assertThrows(InstanceNotFoundException.class,
                 () -> sut.collectionDTOToDomain(dto));
     }
+
+    // ============================== end US018 ==============================
+
+
+    // ============================== US020 ==============================
+
+    /**
+     * US020 - Get list of public lists by a given genre
+     */
+
+    /**
+     * Happy path
+     * Ensures the method correctly lists all public collections of a user given genre
+     */
+    @Test
+    void shouldReturnListOfPublicListByGivenGenre() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        // User setup
+        User owner = mock(User.class);
+        when(owner.getUserName()).thenReturn("john");
+
+        // Genre setup
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn("Drama");
+
+        // Collection creation
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c3 = mock(CollectionOfPublications.class);
+
+        // Collection user
+        when(c1.getOwner()).thenReturn(owner);
+        when(c2.getOwner()).thenReturn(owner);
+        when(c3.getOwner()).thenReturn(owner);
+
+        // Collection privacy
+        when(c1.getIsPrivate()).thenReturn(true);
+        when(c2.getIsPrivate()).thenReturn(false);
+        when(c3.getIsPrivate()).thenReturn(false);
+
+        // Collection name
+        when(c1.getCollectionName()).thenReturn("Collection 1");
+        when(c2.getCollectionName()).thenReturn("Collection 2");
+        when(c3.getCollectionName()).thenReturn("Collection 3");
+
+        // Collection genre
+        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c2.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c3.getCollectionGenre()).thenReturn(desiredGenre);
+
+        // Add collections to repo
+        sut.addCollectionToRepo(c1);
+        sut.addCollectionToRepo(c2);
+        sut.addCollectionToRepo(c3);
+
+        assertEquals(2, sut.findPublicByGenre(desiredGenre).size());
+
+    }
+
+    /**
+     * When a user inputs an invalid genre, method should throw illegal argument exception
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreIsNull() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn(null);
+
+        assertNull(desiredGenre.getGenreType());
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicByGenre(desiredGenre));
+    }
+
+    /**
+     * When a user input is blank, method should throw illegal argument exception
+     */
+    @Test
+    void shouldThrowExceptionWhenGenreTypeIsBlank() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn(" ");
+
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicByGenre(desiredGenre));
+    }
+
+    /**
+     * Ensures the return list is empty when there are no public lists of the given genre
+     */
+    @Test
+    void shouldReturnEmptyListWhenNoPublicListsExist() {
+
+        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        // Genre setup
+        Genre desiredGenre = mock(Genre.class);
+        when(desiredGenre.getGenreType()).thenReturn("Action");
+
+        Genre otherGenre = mock(Genre.class);
+        when(otherGenre.getGenreType()).thenReturn("Drama");
+
+
+        // Collection setup
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c3 = mock(CollectionOfPublications.class);
+
+        // Collection privacy
+        when(c1.getIsPrivate()).thenReturn(true);
+        when(c2.getIsPrivate()).thenReturn(true);
+        when(c3.getIsPrivate()).thenReturn(false);
+
+        // Collection genre
+        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c2.getCollectionGenre()).thenReturn(otherGenre);
+        when(c3.getCollectionGenre()).thenReturn(otherGenre);
+
+        // Adding collections to repo
+        sut.addCollectionToRepo(c1);
+        sut.addCollectionToRepo(c2);
+        sut.addCollectionToRepo(c3);
+
+        // Assert must be 0
+        assertEquals(0, sut.findPublicByGenre(desiredGenre).size());
+    }
+
+    // ============================== end US020 ==============================
+
 }

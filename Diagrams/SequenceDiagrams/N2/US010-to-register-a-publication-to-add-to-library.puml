@@ -11,7 +11,7 @@ actor User
 participant ":UI010" as UI
 participant ":ToRegisterNewPublicationCtrl" as Ctrl
 participant ":PublicationSampleRepository" as SystemRepo
-participant ":FactoryPublicationSample" as Factory
+participant ":PublicationSampleFactory" as Factory
 
 User -> UI : I want to add a publication to MiteLovers
 activate UI
@@ -25,7 +25,7 @@ activate UI
 UI -> Ctrl : createAndAddPublication(bd, owner, status, edition, condition)
 activate Ctrl
 
-Ctrl -> SystemRepo : createAndAddPublicationToSystem(bd, owner, status, edition, condition)
+Ctrl -> SystemRepo : createAndAdd(bd, owner, status, edition, condition)
 activate SystemRepo
 
 SystemRepo -> Factory : create(bd, owner, status, edition, condition)

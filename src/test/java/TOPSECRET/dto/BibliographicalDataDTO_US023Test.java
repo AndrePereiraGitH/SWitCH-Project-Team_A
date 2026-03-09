@@ -45,8 +45,8 @@ class BibliographicalDataDTO_US023Test {
         authors = List.of(author1Double,author2Double);
         when(bdDouble.getAuthors()).thenReturn(authors);
 
-        when(genre1Double.getTitle()).thenReturn("genre1");
-        when(genre2Double.getTitle()).thenReturn("genre2");
+        when(genre1Double.getGenreType()).thenReturn("genre1");
+        when(genre2Double.getGenreType()).thenReturn("genre2");
         genres = List.of(genre1Double,genre2Double);
         when(bdDouble.getGenres()).thenReturn(genres);
     }

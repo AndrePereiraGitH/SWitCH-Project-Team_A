@@ -6,8 +6,7 @@ import TOPSECRET.domain.PublicationType;
 import TOPSECRET.repository.PublicationTypeRepository;
 
 /**
- * Controller responsible for handling the use case of registering
- * a new {@link PublicationType}.
+ * Controller responsible for handling the use case of registering a new {@link PublicationType}.
  * <p>
  * This controller coordinates the interaction between the application
  * layer and the {@link PublicationTypeRepository}, delegating:

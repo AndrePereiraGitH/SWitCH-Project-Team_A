@@ -17,7 +17,7 @@ import java.util.List;
  * <p>The controller does not contain business logic.
  * Its responsibility is orchestration only.</p>
  */
-public class GetPublicationTypeListController {
+public class US014ToGetPublicationTypeListController {
 
     /**
      * Repository responsible for storing and providing
@@ -31,7 +31,7 @@ public class GetPublicationTypeListController {
      * @param publicationTypeRepository the repository that provides
      *                                  publication type data
      */
-    public GetPublicationTypeListController(PublicationTypeRepository publicationTypeRepository) {
+    public US014ToGetPublicationTypeListController(PublicationTypeRepository publicationTypeRepository) {
 
         if(publicationTypeRepository==null){
             throw new IllegalArgumentException("PublicationTypeRepository cannot be null");

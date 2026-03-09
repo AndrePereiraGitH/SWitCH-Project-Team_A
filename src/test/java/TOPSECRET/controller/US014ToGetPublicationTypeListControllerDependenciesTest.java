@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationTypeDTO_US014;
 import TOPSECRET.repository.PublicationTypeRepository;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 /**
- * Unit tests for GetPublicationTypeListController.
+ * Unit tests for US014ToGetPublicationTypeListController.
  *
  * <p>This test class verifies that the controller correctly retrieves
  * domain objects from the repository and converts them into DTOs.</p>
@@ -23,15 +24,18 @@ import static org.junit.jupiter.api.Assertions.*;
  *     <li>Empty list behavior</li>
  * </ul>
  */
-class GetPublicationTypeListControllerTest {
+class US014ToGetPublicationTypeListControllerDependenciesTest {
+
+    PublicationTypeFactory factory = new PublicationTypeFactory();
 
     @Test
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
         // Arrange
-        PublicationTypeRepository repository = new PublicationTypeRepository();
 
-        GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repository);
+        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
+
+        US014ToGetPublicationTypeListController controller =
+                new US014ToGetPublicationTypeListController(repository);
 
         // Act
         List<PublicationTypeDTO_US014> result = controller.getAllPublicationTypes();
@@ -44,7 +48,7 @@ class GetPublicationTypeListControllerTest {
     @Test
     void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
         // Arrange
-        PublicationTypeRepository repository = new PublicationTypeRepository();
+        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
 
         PublicationType type =
                 repository.create(
@@ -54,8 +58,8 @@ class GetPublicationTypeListControllerTest {
 
         repository.addToList(type);
 
-        GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repository);
+        US014ToGetPublicationTypeListController controller =
+                new US014ToGetPublicationTypeListController(repository);
 
         // Act
         List<PublicationTypeDTO_US014> result =
@@ -72,7 +76,7 @@ class GetPublicationTypeListControllerTest {
 
     @Test
     void getAllPublicationTypesMultiplePublicationTypesReturnsListDTOs() {
-        PublicationTypeRepository repository = new PublicationTypeRepository();
+        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
 
         PublicationType t1 =
                 repository.create(
@@ -89,8 +93,8 @@ class GetPublicationTypeListControllerTest {
         repository.addToList(t1);
         repository.addToList(t2);
 
-        GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repository);
+        US014ToGetPublicationTypeListController controller =
+                new US014ToGetPublicationTypeListController(repository);
 
         List<PublicationTypeDTO_US014> result =
                 controller.getAllPublicationTypes();

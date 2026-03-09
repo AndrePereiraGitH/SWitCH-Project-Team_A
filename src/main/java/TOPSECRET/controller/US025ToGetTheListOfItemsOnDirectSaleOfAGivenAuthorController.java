@@ -1,16 +1,10 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.dto.DirectSaleDTO_US025;
-import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.AuthorRepository;
-import TOPSECRET.repository.DirectSaleRepository;
 import TOPSECRET.repository.ListingRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,12 +15,12 @@ import java.util.List;
  * The controller only orchestrates repository calls and delegates
  * DTO conversion to the DTO classes.
  */
-public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
+public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
     private final AuthorRepository authorRepository;
     private final ListingRepository listingRepository;
 
-    public ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
+    public US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
             AuthorRepository authorRepository,
             ListingRepository listingRepository) {
 
@@ -34,7 +28,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
 
         if (listingRepository == null)
-            throw new IllegalArgumentException("AuctionRepository cannot be null");
+            throw new IllegalArgumentException("ListingRepository cannot be null");
 
         this.authorRepository = authorRepository;
         this.listingRepository = listingRepository;

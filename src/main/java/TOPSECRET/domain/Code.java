@@ -3,26 +3,20 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 /**
- * Represents a publication code.
- * A Code can be:
- *  - ISBN-10 (books)
- *  - ISBN-13 (books)
- *  - ISSN (magazines)
- *
- * Only one type of code exists per instance.
+ * Represents the identification code of a publication.
+ * Supports three formats: ISBN-10 (books, 10 chars), ISBN-13 (books, 13 digits), ISSN (magazines, 8 chars).
+ * Each instance holds exactly one type — the other two are always null.
+ * Use the static factory methods to create instances: fromIsbn10, fromIsbn13, fromIssn.
  */
-
 public class Code {
 
-    // Attributes
-
+    // only one of these will have a value — the other two will be null
     private final String isbn10;
     private final String isbn13;
     private final String issn;
 
     /**
-     * Private constructor.
-     * Objects must be created using the factory methods.
+     * Private constructor — only the factory methods can call this, after validation.
      */
     public Code(String isbn10, String isbn13, String issn) {
         this.isbn10 = isbn10;
@@ -31,28 +25,32 @@ public class Code {
     }
 
     /**
-     * Creates a Code with an ISBN-10.
+     * Creates a Code from an ISBN-10 string (10 characters; last can be a digit or 'X').
+     * Hyphens are removed before validation, so "0-306-40615-2" is also accepted.
+     *
+     * @param isbn10 the ISBN-10 value; must not be null or blank
+     * @throws IllegalArgumentException if the format is invalid
      */
     public static Code fromIsbn10(String isbn10) {
         if (isbn10 == null || isbn10.isBlank()) {
             throw new IllegalArgumentException("ISBN10 cannot be null or blank");
         }
 
+        // remove hyphens so "0-306-40615-2" is treated the same as "0306406152"
         String clean = removeHyphens(isbn10);
 
-        // ISBN-10 must have exactly 10 characters
         if (clean.length() != 10) {
             throw new IllegalArgumentException("ISBN10 must have 10 characters");
         }
 
-        // First 9 characters must be digits
+        // first 9 must be digits
         for (int i = 0; i < 9; i++) {
             if (!Character.isDigit(clean.charAt(i))) {
                 throw new IllegalArgumentException("Invalid ISBN10 format");
             }
         }
 
-        // Last character can be a digit or 'X'
+        // last character can be a digit or 'X' (standard check digit)
         char last = clean.charAt(9);
         if (!Character.isDigit(last) && last != 'X') {
             throw new IllegalArgumentException("Invalid ISBN10 format");
@@ -62,7 +60,11 @@ public class Code {
     }
 
     /**
-     * Creates a Code with an ISBN-13.
+     * Creates a Code from an ISBN-13 string (13 digits, no letters allowed).
+     * Hyphens are removed before validation.
+     *
+     * @param isbn13 the ISBN-13 value; must not be null or blank
+     * @throws IllegalArgumentException if the format is invalid
      */
     public static Code fromIsbn13(String isbn13) {
         if (isbn13 == null || isbn13.isBlank()) {
@@ -71,11 +73,11 @@ public class Code {
 
         String clean = removeHyphens(isbn13);
 
-        // ISBN-13 must have exactly 13 digits
         if (clean.length() != 13) {
             throw new IllegalArgumentException("ISBN13 must have 13 digits");
         }
 
+        // all 13 characters must be digits — no 'X' allowed in ISBN-13
         for (int i = 0; i < clean.length(); i++) {
             if (!Character.isDigit(clean.charAt(i))) {
                 throw new IllegalArgumentException("Invalid ISBN13 format");
@@ -86,7 +88,11 @@ public class Code {
     }
 
     /**
-     * Creates a Code with an ISSN.
+     * Creates a Code from an ISSN string (8 characters; last can be a digit or 'X').
+     * Hyphens are removed before validation, so "0317-8471" is also accepted.
+     *
+     * @param issn the ISSN value; must not be null or blank
+     * @throws IllegalArgumentException if the format is invalid
      */
     public static Code fromIssn(String issn) {
         if (issn == null || issn.isBlank()) {
@@ -95,19 +101,18 @@ public class Code {
 
         String clean = removeHyphens(issn);
 
-        // ISSN must have exactly 8 characters
         if (clean.length() != 8) {
             throw new IllegalArgumentException("ISSN must have 8 characters");
         }
 
-        // First 7 characters must be digits
+        // first 7 must be digits
         for (int i = 0; i < 7; i++) {
             if (!Character.isDigit(clean.charAt(i))) {
                 throw new IllegalArgumentException("Invalid ISSN format");
             }
         }
 
-        // Last character can be a digit or 'X'
+        // last character can be a digit or 'X'
         char last = clean.charAt(7);
         if (!Character.isDigit(last) && last != 'X') {
             throw new IllegalArgumentException("Invalid ISSN format");
@@ -117,44 +122,43 @@ public class Code {
     }
 
     /**
-     * Removes hyphens from a code.
-     * Used only for validation.
+     * Removes hyphens and converts to uppercase before validation.
+     * The original value is always stored — this is only used internally during checks.
      */
     private static String removeHyphens(String value) {
         return value.replace("-", "").toUpperCase();
     }
 
+    /** Returns the ISBN-10 value, or null if this is not an ISBN-10. */
     public String getIsbn10() {
         return isbn10;
     }
 
+    /** Returns the ISBN-13 value, or null if this is not an ISBN-13. */
     public String getIsbn13() {
         return isbn13;
     }
 
+    /** Returns the ISSN value, or null if this is not an ISSN. */
     public String getIssn() {
         return issn;
     }
 
     /**
-     * Returns the stored code as a string.
+     * Returns whichever code value is stored.
+     * Only one field is non-null at a time, so this checks each one in order.
      */
     @Override
     public String toString() {
-        if (this.isbn10 != null) {
-            return this.isbn10;
-        }
-        if (this.isbn13 != null) {
-            return this.isbn13;
-        }
-        if (this.issn != null) {
-            return this.issn;
-        }
+        if (this.isbn10 != null) return this.isbn10;
+        if (this.isbn13 != null) return this.isbn13;
+        if (this.issn != null) return this.issn;
         return "No Code";
     }
 
     /**
-     * Two Code objects are equal if all their fields are equal.
+     * Two codes are equal if all three fields match.
+     * Since only one field is ever set, this means same type and same value.
      */
     @Override
     public boolean equals(Object o) {
@@ -165,6 +169,7 @@ public class Code {
                 && Objects.equals(issn, code.issn);
     }
 
+    /** hashCode is consistent with equals — same fields, same hash. */
     @Override
     public int hashCode() {
         return Objects.hash(isbn10, isbn13, issn);

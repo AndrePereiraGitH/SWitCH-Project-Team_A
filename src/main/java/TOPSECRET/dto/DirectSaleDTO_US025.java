@@ -68,20 +68,10 @@ public class DirectSaleDTO_US025 {
             listingTitle = "Pack of " + ds.getListings().size() + " listings";
         }
 
-        // Seller(s)
-        List<String> sellers = new ArrayList<>();
+        // Seller
+        String seller = "";
         for (Listing listing : ds.getListings()) {
-            String sellerName = listing.getSeller().getUserName();
-            if (!sellers.contains(sellerName)) {
-                sellers.add(sellerName);
-            }
-        }
-
-        String seller;
-        if (sellers.size() == 1) {
-            seller = sellers.get(0);
-        } else {
-            seller = "Multiple sellers";
+            seller = listing.getSeller().getUserName();
         }
 
         return new DirectSaleDTO_US025(title, authors, price, listingTitle, seller);

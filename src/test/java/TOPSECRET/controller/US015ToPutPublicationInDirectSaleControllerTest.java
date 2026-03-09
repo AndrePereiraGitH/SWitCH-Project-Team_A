@@ -65,8 +65,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Genre
         when(bd1Double.getGenres()).thenReturn(List.of(genre1Double));
         when(bd2Double.getGenres()).thenReturn(List.of(genre2Double));
-        when(genre1Double.getTitle()).thenReturn("fiction");
-        when(genre2Double.getTitle()).thenReturn("fantasy");
+        when(genre1Double.getGenreType()).thenReturn("fiction");
+        when(genre2Double.getGenreType()).thenReturn("fantasy");
 
         // Owner
         when(pubSample1Double.getOwner()).thenReturn(ownerDouble);

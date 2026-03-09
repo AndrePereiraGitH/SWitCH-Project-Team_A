@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GenreDTO_US022Test {
+
 
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreEmptyList(){
@@ -21,16 +24,16 @@ class GenreDTO_US022Test {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
-
     }
 
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreOneElement() {
         // Arrange
-        Genre genre = new Genre("Comedy");
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenreType()).thenReturn("Comedy");
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(genre);
+        genres.add(genreDouble);
 
         // Act
         List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
@@ -43,12 +46,15 @@ class GenreDTO_US022Test {
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreTwoElement() {
         // Arrange
-        Genre genre1 = new Genre("Fantasy");
-        Genre genre2 = new Genre("Romance");
+        Genre genreDouble1 = mock(Genre.class);
+        Genre genreDouble2 = mock(Genre.class);
+
+        when(genreDouble1.getGenreType()).thenReturn("Fantasy");
+        when(genreDouble2.getGenreType()).thenReturn("Romance");
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(genre1);
-        genres.add(genre2);
+        genres.add(genreDouble1);
+        genres.add(genreDouble2);
 
         // Act
         List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
@@ -62,10 +68,11 @@ class GenreDTO_US022Test {
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreInvalid() {
         // Arrange
-        Genre genre1 = new Genre("Fantasy");
+        Genre genre = mock(Genre.class);
+        when(genre.getGenreType()).thenReturn("Fantasy");
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(genre1);
+        genres.add(genre);
 
         // Act
         List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
@@ -75,3 +82,4 @@ class GenreDTO_US022Test {
     }
 
 }
+

@@ -42,7 +42,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 );
 
         Genre genre = mock(Genre.class);
-        when(genre.getTitle()).thenReturn("Fantasy");
+        when(genre.getGenreType()).thenReturn("Fantasy");
         when(genreRepository.getAllGenres()).thenReturn(List.of(genre));
 
         // ACT

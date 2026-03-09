@@ -1,9 +1,6 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Author;
-import TOPSECRET.domain.AuthorFactory;
-import TOPSECRET.domain.Country;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -36,6 +33,8 @@ public class AuthorRepositoryDependenciesTest {
 
     private final AuthorRepository authorRepository = new AuthorRepository(new ArrayList<>(), new AuthorFactory());
     private final AuthorFactory authorFactory = new AuthorFactory();
+    private final String name = "João";
+    private final CountryFactory countryFactory = new CountryFactory();
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -52,7 +51,7 @@ public class AuthorRepositoryDependenciesTest {
     void shouldCreateRepositoryWithExistingAuthors() {
         // Arrange
         List<Author> existingAuthors = new ArrayList<>();
-        existingAuthors.add(authorFactory.createAuthor("Name", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"));
+        existingAuthors.add(authorFactory.create(name, countryFactory. create("Portugal"), LocalDate.of(1990, 1, 1), "bio"));
 
         // Act
         AuthorRepository repository = new AuthorRepository(existingAuthors, authorFactory);
@@ -85,16 +84,13 @@ public class AuthorRepositoryDependenciesTest {
 
     @Test
     void shouldCreateAuthor() {
-        //  Arrange
-        Profile expectedProfile = new Profile("João", new Country("Portugal"), LocalDate.of(1978, 5, 12));
-
         // Act
-        Author result = authorRepository.createAndAddAuthor("João", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
+        Author result = authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
 
         // Assert
         assertNotNull(result);
         assertEquals("João", result.getProfile().getName());
-        assertEquals(new Country("Portugal"), result.getProfile().getCountry());
+        assertEquals(countryFactory. create("Portugal"), result.getProfile().getCountry());
         assertEquals(LocalDate.of(1978, 5, 12), result.getProfile().getBirthday());
         assertEquals("valid bio", result.getBiography());
         assertEquals(1, authorRepository.getAllAuthors().size());
@@ -104,12 +100,12 @@ public class AuthorRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         // Arrange
-        authorRepository.createAndAddAuthor("repeatedName", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
+        authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1978, 5, 12), "valid bio");
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> authorRepository.createAndAddAuthor("repeatedName", new Country("Portugal"), LocalDate.of(1978, 5, 12), "valid bio")
+                () -> authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1978, 5, 12), "valid bio")
         );
         assertEquals("Author already exists", exception.getMessage());
 
@@ -120,10 +116,10 @@ public class AuthorRepositoryDependenciesTest {
     @Test
     void shouldAllowDifferentAuthorsWithSameNameButDifferentData() {
         // Arrange
-        authorRepository.createAndAddAuthor("John", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
+        authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
 
         // Act
-        Author result = authorRepository.createAndAddAuthor("John", new Country("AUSTRALIA"), LocalDate.of(1980, 1, 1), "bio2");
+        Author result = authorRepository.createAndAddAuthor(name, countryFactory. create("AUSTRALIA"), LocalDate.of(1980, 1, 1), "bio2");
 
         // Assert
         assertNotNull(result);
@@ -136,19 +132,19 @@ public class AuthorRepositoryDependenciesTest {
 
         // Act + Assert - null name
         assertThrows(IllegalArgumentException.class,
-                () -> authorRepository.createAndAddAuthor(null, new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio")
+                () -> authorRepository.createAndAddAuthor(null, countryFactory. create("Portugal"), LocalDate.of(1980, 1, 1), "bio")
         );
         // Act + Assert - null country
         assertThrows(IllegalArgumentException.class,
-                () -> authorRepository.createAndAddAuthor("Name", null, LocalDate.of(1980, 1, 1), "bio")
+                () -> authorRepository.createAndAddAuthor(name, null, LocalDate.of(1980, 1, 1), "bio")
         );
         // Act + Assert - null birthday
         assertThrows(IllegalArgumentException.class,
-                () -> authorRepository.createAndAddAuthor("Name", new Country("Portugal"), null, "bio")
+                () -> authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), null, "bio")
         );
         // Act + Assert - null biography
         assertThrows(IllegalArgumentException.class,
-                () -> authorRepository.createAndAddAuthor("Name", new Country("Portugal"), LocalDate.of(1980, 1, 1), null)
+                () -> authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1980, 1, 1), null)
         );
         // Verify no authors were added
         assertEquals(0, authorRepository.getAllAuthors().size());
@@ -173,8 +169,8 @@ public class AuthorRepositoryDependenciesTest {
     @Test
     void shouldReturnAllAuthors() {
         // Arrange
-        authorRepository.createAndAddAuthor("Author1", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
-        authorRepository.createAndAddAuthor("Author2", new Country("AUSTRALIA"), LocalDate.of(1985, 2, 2), "bio2");
+        authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1980, 1, 1), "bio1");
+        authorRepository.createAndAddAuthor("Author2", countryFactory. create("AUSTRALIA"), LocalDate.of(1985, 2, 2), "bio2");
 
         // Act
         List<Author> result = authorRepository.getAllAuthors();
@@ -186,21 +182,21 @@ public class AuthorRepositoryDependenciesTest {
     @Test
     void shouldReturnUnmodifiableList() {
         // Arrange
-        authorRepository.createAndAddAuthor("Author1", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio");
+        authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1980, 1, 1), "bio");
 
         // Act
         List<Author> result = authorRepository.getAllAuthors();
 
         // Assert - trying to modify should throw exception
         assertThrows(UnsupportedOperationException.class,
-                () -> result.add(authorFactory.createAuthor("Hacker", new Country("Portugal"), LocalDate.of(1990, 1, 1), "bio"))
+                () -> result.add(authorFactory.create(name, countryFactory. create("Portugal"), LocalDate.of(1990, 1, 1), "bio"))
         );
     }
 
     @Test
     void shouldReturnDefensiveCopy() {
         // Arrange
-        authorRepository.createAndAddAuthor("Author1", new Country("Portugal"), LocalDate.of(1980, 1, 1), "bio");
+        authorRepository.createAndAddAuthor(name, countryFactory. create("Portugal"), LocalDate.of(1980, 1, 1), "bio");
 
         // Act
         List<Author> result1 = authorRepository.getAllAuthors();

@@ -54,7 +54,7 @@ class PublicationSampleDTO_US023Test {
         when(bd.getAuthors()).thenReturn(List.of(author));
         when(author.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Robert C. Martin");
-        when(genre.getTitle()).thenReturn("Programming");
+        when(genre.getGenreType()).thenReturn("Programming");
         when(bd.getGenres()).thenReturn(List.of(genre));
 
         when(edition.getEditionNumber()).thenReturn("3rd");

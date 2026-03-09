@@ -1,23 +1,16 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.*;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AuctionDTO_US022Test {
-
-    // ==========================================================
-    // ===================== Basic Tests =========================
-    // ==========================================================
 
     @Test
     void fromDomainListEmptyListReturnsEmptyList() {
@@ -28,207 +21,85 @@ class AuctionDTO_US022Test {
         assertTrue(result.isEmpty());
     }
 
-//    @Test
-//    void fromDomainListOneAuctionReturnsOneDTO() {
-//        Genre fantasy = new Genre("Fantasy");
-//        Auction auction = createAuctionWithGenre(fantasy);
-//
-//        List<AuctionDTO_US022> result =
-//                AuctionDTO_US022.fromDomainList(List.of(auction));
-//
-//        assertEquals(1, result.size());
-//        assertEquals("Book Title", result.get(0).title);
-//        assertTrue(result.get(0).genres.contains("Fantasy"));
-//    }
-//
-//    @Test
-//    void fromDomainListMultipleAuctionsReturnsMultipleDTOs() {
-//        Genre fantasy = new Genre("Fantasy");
-//
-//        Auction auction1 = createAuctionWithGenre(fantasy);
-//        Auction auction2 = createAuctionWithGenre(fantasy);
-//
-//        List<AuctionDTO_US022> result =
-//                AuctionDTO_US022.fromDomainList(List.of(auction1, auction2));
-//
-//        assertEquals(2, result.size());
-//    }
-//
-//    @Test
-//    void fromDomainListExtractsMultipleGenresCorrectly() {
-//        Genre fantasy = new Genre("Fantasy");
-//        Genre romance = new Genre("Romance");
-//
-//        Auction auction =
-//                createAuctionWithMultipleGenres(fantasy, romance);
-//
-//        List<AuctionDTO_US022> result =
-//                AuctionDTO_US022.fromDomainList(List.of(auction));
-//
-//        assertEquals(1, result.size());
-//
-//        List<String> genres = result.get(0).genres;
-//
-//        assertEquals(2, genres.size());
-//        assertTrue(genres.contains("Fantasy"));
-//        assertTrue(genres.contains("Romance"));
-//    }
+    @Test
+    void fromDomainListOneAuctionReturnsOneDTO(){
+        // Arrange
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenreType()).thenReturn("Fantasy");
 
-    // ==========================================================
-    // ===================== Helper Methods ======================
-    // ==========================================================
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        when(bdDouble.getTitle()).thenReturn("Book Title");
+        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
 
-//    private Auction createAuctionWithGenre(Genre genre) {
-//
-//        BibliographicalData bd1 = new BibliographicalData(
-//                "Book Title",
-//                List.of(new Author(
-//                        new Profile("Author",
-//                                new Country("Portugal"),
-//                                LocalDate.of(1980, 1, 1)),
-//                        "bio")),
-//                new Locale("pt","PT"),
-//                LocalDate.of(2020,1,1),
-//                List.of(genre),
-//                "Description"
-//        );
-//
-//        User owner = createUser("Owner");
-//
-//        Code code = Code.fromIsbn13("1234567899123");
-//        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-//        PhysicalAttributes physicalAttributes1 =
-//                new PhysicalAttributes(dimensions, 400.0, 250);
-//
-//        PublicationType pubType1 =
-//                new PublicationType(MediaFormat.BOOK,
-//                        TypeOfBinding.CASE_BINDING,
-//                        "Some details");
-//
-//        Publisher publisher1 =
-//                new Publisher("Porto Editora",
-//                        "PT987654321",
-//                        null);
-//
-//        Edition edition1 = new Edition(
-//                "1st",
-//                code,
-//                physicalAttributes1,
-//                pubType1,
-//                publisher1,
-//                Locale.ENGLISH,
-//                LocalDate.of(2020, 1, 1)
-//        );
-//
-//        PublicationSample item = new PublicationSample(
-//                bd1,
-//                owner,
-//                PublicationStatus.READ,
-//                edition1,
-//                Condition.NEW
-//        );
-//
-//        Listing listing = new Listing(
-//                "Valid Title",
-//                List.of(item),
-//                SaleType.AUCTION,
-//                new Price(new BigDecimal("50.00")),
-//                "Short desc",
-//                List.of(new Picture("pic1"))
-//        );
-//
-//        LocalDateTime start = LocalDateTime.now().plusMinutes(1);
-//        LocalDateTime end = LocalDateTime.now().plusDays(1);
-//
-//        return new Auction(
-//                listing,
-//                start,
-//                end,
-//                new Price(new BigDecimal("125.00"))
-//        );
-//    }
+        PublicationSample psDouble = mock(PublicationSample.class);
+        when(psDouble.getBibliographicalData()).thenReturn(bdDouble);
 
-//    private Auction createAuctionWithMultipleGenres(Genre... genres) {
-//
-//        BibliographicalData bd = new BibliographicalData(
-//                "Book Title",
-//                List.of(new Author(
-//                        new Profile("Author",
-//                                new Country("Portugal"),
-//                                LocalDate.of(1980,1,1)),
-//                        "bio")),
-//                new Locale("pt","PT"),
-//                LocalDate.of(2020,1,1),
-//                List.of(genres),
-//                "Description"
-//        );
-//
-//        User owner = createUser("Owner");
-//
-//        Code code = Code.fromIsbn13("1234567891123");
-//        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-//        PhysicalAttributes physicalAttributes =
-//                new PhysicalAttributes(dimensions, 400.0, 250);
-//
-//        PublicationType pubType =
-//                new PublicationType(MediaFormat.BOOK,
-//                        TypeOfBinding.CASE_BINDING,
-//                        "Some details");
-//
-//        Publisher publisher =
-//                new Publisher("Porto Editora",
-//                        "PT987654321",
-//                        null);
-//
-//        Edition edition = new Edition(
-//                "1st",
-//                code,
-//                physicalAttributes,
-//                pubType,
-//                publisher,
-//                Locale.ENGLISH,
-//                LocalDate.of(2020, 1, 1)
-//        );
-//
-//        PublicationSample item = new PublicationSample(
-//                bd,
-//                owner,
-//                PublicationStatus.READ,
-//                edition,
-//                Condition.NEW
-//        );
-//
-//        Listing listing = new Listing(
-//                "Valid Title",
-//                List.of(item),
-//                SaleType.AUCTION,
-//                new Price(new BigDecimal("50.00")),
-//                "Short desc",
-//                List.of(new Picture("pic1"))
-//        );
-//
-//        LocalDateTime start = LocalDateTime.now().plusMinutes(1);
-//        LocalDateTime end = LocalDateTime.now().plusDays(1);
-//
-//        return new Auction(
-//                listing,
-//                start,
-//                end,
-//                new Price(new BigDecimal("125.00"))
-//        );
-//    }
+        Listing listingDouble = mock(Listing.class);
+        when(listingDouble.getItems()).thenReturn(List.of(psDouble));
 
-    private User createUser(String name) {
-        return new User(
-                name,
-                new Contact("91233213","+351",
-                        new Email("a","b.com"),
-                        new Address("Rua","1","1111",
-                                new Country("Portugal"))),
-                new Profile(name,
-                        new Country("Portugal"),
-                        LocalDate.of(1990,1,1)),
-                UserRole.NORMAL_USER
-        );
+        Auction auctionDouble =  mock(Auction.class);
+        when(auctionDouble.getListing()).thenReturn(listingDouble);
+
+        // Act
+        List<AuctionDTO_US022> result = AuctionDTO_US022.fromDomainList(List.of(auctionDouble));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Book Title", result.get(0).title);
+        assertTrue(result.get(0).genres.contains("Fantasy"));
     }
+
+    @Test
+    void fromDomainListTwoAuctionReturnsTwoDTOs(){
+        // Arrange
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenreType()).thenReturn("Fantasy");
+
+        BibliographicalData bdDouble1 = mock(BibliographicalData.class);
+        BibliographicalData bdDouble2 = mock(BibliographicalData.class);
+        when(bdDouble1.getTitle()).thenReturn("Book Title");
+        when(bdDouble2.getTitle()).thenReturn("Book Title");
+        when(bdDouble1.getGenres()).thenReturn(List.of(genreDouble));
+        when(bdDouble2.getGenres()).thenReturn(List.of(genreDouble));
+
+        PublicationSample sampleDouble1 = mock(PublicationSample.class);
+        PublicationSample sampleDouble2 = mock(PublicationSample.class);
+        when(sampleDouble1.getBibliographicalData()).thenReturn(bdDouble1);
+        when(sampleDouble2.getBibliographicalData()).thenReturn(bdDouble2);
+
+        Listing listingDouble1 = mock(Listing.class);
+        Listing listingDouble2 = mock(Listing.class);
+        when(listingDouble1.getItems()).thenReturn(List.of(sampleDouble1));
+        when(listingDouble2.getItems()).thenReturn(List.of(sampleDouble2));
+
+        Auction auctionDouble1 = mock(Auction.class);
+        Auction auctionDouble2 = mock(Auction.class);
+        when(auctionDouble1.getListing()).thenReturn(listingDouble1);
+        when(auctionDouble2.getListing()).thenReturn(listingDouble2);
+
+        // Act
+
+        List<AuctionDTO_US022> result = AuctionDTO_US022.fromDomainList(List.of(auctionDouble1, auctionDouble2));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("Book Title", result.get(0).title);
+        assertTrue(result.get(0).genres.contains("Fantasy"));
+        assertEquals("Book Title", result.get(1).title);
+        assertTrue(result.get(1).genres.contains("Fantasy"));
+
+        List<String> genres = result.get(0).genres;
+        assertTrue(genres.containsAll(List.of("Fantasy", "Fantasy")));
+    }
+
+    @Test
+    void fromDomainListNullListThrowsException() {
+
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> AuctionDTO_US022.fromDomainList(null));
+    }
+
+
+
 }

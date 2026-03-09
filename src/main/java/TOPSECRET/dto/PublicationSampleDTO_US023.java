@@ -1,6 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationSample;
 
@@ -251,7 +250,7 @@ public class PublicationSampleDTO_US023 {
                         .map(a -> a.getProfile().getName())
                         .toList(),
                 publicationSample.getBibliographicalData().getGenres().stream()
-                        .map(Genre::getTitle)
+                        .map(Genre::getGenreType)
                         .toList(),
                 publicationSample.getOwner().getUserName(),
                 publicationSample.getPublicationStatus().toString(),

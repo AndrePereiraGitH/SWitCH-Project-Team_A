@@ -2,7 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.FactoryPublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 
 import java.util.ArrayList;
@@ -29,14 +29,17 @@ public class PublicationTypeRepository {
      * Internal list that stores all created publication types.
      */
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
+    PublicationTypeFactory _factory;
 
     /**
      * Constructs an empty {@code PublicationTypeRepository}.
      */
-    public PublicationTypeRepository() {}
+    public PublicationTypeRepository(PublicationTypeFactory factory) {
+        this._factory = factory;
+    }
 
     /**
-     * Creates a new {@link PublicationType} using {@link FactoryPublicationType}.
+     * Creates a new {@link PublicationType} using {@link PublicationTypeFactory}.
      *
      * @param mediaFormat   the media format of the publication (e.g., book, magazine)
      * @param typeOfBinding the type of binding (e.g., hardback, paperback)
@@ -45,8 +48,7 @@ public class PublicationTypeRepository {
      */
     public PublicationType create(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
-        FactoryPublicationType factory = new FactoryPublicationType();
-        PublicationType p1 = factory.create(mediaFormat, typeOfBinding, details);
+        PublicationType p1 = _factory.create(mediaFormat, typeOfBinding, details);
         return p1;
     }
 
@@ -83,7 +85,7 @@ public class PublicationTypeRepository {
     public PublicationType addToList(PublicationType pubType)
     {
         if (!validatePublicationType(pubType)) { // if validation returns false
-            throw new IllegalArgumentException("PublicationType already exists or is null");
+            throw new IllegalArgumentException("Publication type already exists or is null");
         }
 
         _publicationTypes.add(pubType); // if it returns true, adds publication type to the list

@@ -8,42 +8,54 @@ title Sequence Diagram - US007 Register a new country in the System
 actor Administrator
 participant ":UI" as UI
 
+autonumber
 
 
 participant ":CountryController" as CountryController
+participant ":CountryRepository" as CountryRepository
+participant ":CountryFactory" as CountryFactory
 
 
-
-participant ":CountryRepository" as AddressRepository
-
-
-Administrator -> UI : **1** I want to register a new country
+Administrator -> UI : I want to register a new country
 activate UI
-UI --> Administrator : **2** What is the name of the country?
+UI --> Administrator : What is the name of the country?
 deactivate UI
 
-Administrator -> UI : **3** The country is <countryName>
+Administrator -> UI : The country is <countryName>
 activate UI
 
-UI -> CountryController : **4** registerNewCountry (countryName)
+UI -> CountryController : registerNewCountry (countryName)
 activate CountryController
 
-CountryController -> AddressRepository : **5** createAndAddNewCountry (countryName)
-activate AddressRepository
 
+CountryController -> CountryRepository : createAndAddNewCountry (countryName)
+activate CountryRepository
 
-create "newCountry1: Country" as Country
-AddressRepository -> Country : **6** createCountry(countryName)
+CountryRepository -> CountryFactory : create(countryName)
+activate CountryFactory
+create participant "newCountry1: Country" as Country
+CountryFactory -> Country : create(countryName)
 
-AddressRepository -> AddressRepository : **7** validate (newCountry1)
-AddressRepository -> AddressRepository : **8** Add (newCountry1)
-AddressRepository --> CountryController : **9** (newCountry1)
-deactivate AddressRepository
+CountryFactory --> CountryRepository : newCountry1
+deactivate CountryFactory
 
-CountryController --> UI : **10** success!
+CountryRepository -> CountryRepository : validate (newCountry1)
+
+alt Country already exists
+CountryRepository --> CountryController : newCountry1 already exists
+CountryController --> UI : newCountry1 already exists
+UI --> Administrator : <newCountry1> is already registered in the system!
+else Country does not exist
+CountryRepository -> CountryRepository : Add (newCountry1)
+CountryRepository --> CountryController : newCountry1
+deactivate CountryRepository
+
+CountryController --> UI : success!
 deactivate CountryController
 
-UI --> Administrator : **11** <newCountry1> registered successfully!
+UI --> Administrator : <newCountry1> registered successfully!
 deactivate UI
+end
+
 
 @enduml

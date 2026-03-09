@@ -4,19 +4,27 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.repository.GenreRepository;
 
 /**
- * Controller for US003 - register a new genre.
+ * Controller responsible for handling the registration of a new genre (US003).
+ *
+ * <p>This controller receives a genre name from the UI layer and delegates
+ * the creation and storage to the {@link GenreRepository}.</p>
  */
-
 public class US003ToRegisterGenreController {
 
-    private GenreRepository _genreRepository;
+    private final GenreRepository _genreRepository;
 
     /**
-     * Constructor.
+     * Creates a new instance of the controller.
      *
-     * @param genreRepository Genre repository
+     * @param genreRepository the repository used to create and store genres;
+     *                        must not be {@code null}
+     * @throws IllegalArgumentException if {@code genreRepository} is {@code null}
      */
     public US003ToRegisterGenreController(GenreRepository genreRepository) {
+
+        if (genreRepository == null) {
+            throw new IllegalArgumentException("Genre repository must not be null");
+        }
 
         _genreRepository = genreRepository;
     }
@@ -24,10 +32,14 @@ public class US003ToRegisterGenreController {
     /**
      * Registers a new genre in the system.
      *
-     * @param genreType Genre name
-     * @return Created genre
+     * <p>Delegates to the repository which is responsible for creating the
+     * {@link Genre} object and ensuring no duplicates exist.</p>
+     *
+     * @param genreType the name of the genre to register (e.g. "Drama")
+     * @return the newly created {@link Genre}
+     * @throws IllegalArgumentException if the genre already exists or the name is invalid
      */
     public Genre registerGenre(String genreType) {
-        return _genreRepository.createAndAddGenre(genreType);
+        return _genreRepository.createAndAdd(genreType);
     }
 }

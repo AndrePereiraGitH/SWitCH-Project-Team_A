@@ -84,7 +84,7 @@ public class PublicationDetailsDTO_US012 {
             authorsDTO.add(author.getProfile().getName());
         }
 
-        String typeDTO = String.valueOf(publication.getEdition().getPublicationType().getTypeOfBinding());
+        String typeDTO = String.valueOf(publication.getEdition().getPublicationType().getMediaFormat());
         String codeDTO = String.valueOf(publication.getEdition().getCode());
 
         PublicationDetailsDTO_US012 pubDTO = new PublicationDetailsDTO_US012(titleDTO, authorsDTO, codeDTO, typeDTO);

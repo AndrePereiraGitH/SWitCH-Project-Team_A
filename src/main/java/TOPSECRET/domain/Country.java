@@ -7,7 +7,7 @@ public class Country { //define a classe Country, entidade de domínio
     private String _countryName; // é um atributo da classe, privado (encapsulamento), guarda o estado interno do objeto
 
     //Construtor
-    public Country(String _countryName) { //Construtor principal da classe, vai servir para garantir que os "Country" são válidos
+    protected Country(String _countryName) { //Construtor principal da classe, vai servir para garantir que os "Country" são válidos
 
         //Country name is null
         if (_countryName == null) { //Entramos neste "if" se o String fornecido (nome do país) for null

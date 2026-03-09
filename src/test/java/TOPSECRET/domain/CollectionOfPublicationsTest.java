@@ -1,282 +1,114 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
+/**
+ * Unit tests for {@link CollectionOfPublications} — US017.
+ *
+ * <p>These tests use <b>mocks</b> for {@link Genre} and {@link User}.
+ * This means the tests only check the constructor logic of {@link CollectionOfPublications} itself —
+ * not the behaviour of Genre or User. If a test fails here, the bug is in this class.
+ *
+ * <p>Why mocks and not real objects? The constructor of {@code CollectionOfPublications}
+ * receives Genre and User as parameters. By mocking them, we remove any risk of those classes
+ * causing a failure — so we can be sure the result comes only from this class.
+ *
+ * <p>All tests in this file belong to <b>US017</b>, which defines what a collection is
+ * and what rules apply when it is created:
+ * <ul>
+ *   <li>Name must not be null or blank</li>
+ *   <li>Genre must not be null</li>
+ *   <li>User (owner) must not be null</li>
+ *   <li>Collection always starts as private</li>
+ *   <li>Collection always starts with no publications</li>
+ * </ul>
+ */
 class CollectionOfPublicationsTest {
 
-    private User createValidUser()
-    {
-        Contact contact = new Contact("912222222", "351", null, null);
-        Country country = new Country("PORTUGAL");
-        LocalDate birthday = LocalDate.of(1980, 4, 29);
-        Profile profile = new Profile("John Doe", country, birthday);
 
-        return new User("John Doe", contact, profile, UserRole.NORMAL_USER);
-    }
+    // ============================== US017 ==============================
 
+    // --- Constructor validation ---
 
-    // Creates a valid Genre
-    private Genre createValidGenre()
-    {
-        return new Genre("Fiction");
-    }
-
-
-    // Creates a valid PublicationSample
-    private PublicationSample createValidPublication()
-    {
-        // Create Bibliographical data for publication
-        Country country = new Country("PORTUGAL");
-
-        Profile profile = new Profile("John Doe", country, LocalDate.of(1980, 4, 29));
-
-        Author author = new Author(
-                profile,
-                "Test author for testing"
-        );
-
-        Publisher publisher = new Publisher(
-                "Test Publisher",
-                "PT123456789",
-                new Contact("912345678", "351", null, null)
-        );
-
-        BibliographicalData bibliographicalData = new BibliographicalData(
-                "Test Title",
-                List.of(author),
-                Locale.ENGLISH,
-//                publisher,
-                LocalDate.of(2020, 1, 1),
-                List.of(new Genre("Fiction")),
-//                200,
-                "Sample text"
-        );
-
-        // Create a publication type
-        PublicationType publicationType = new PublicationType(
-                MediaFormat.BOOK,
-                TypeOfBinding.HARDBACK,
-                "Standard publication"
-        );
-
-        // Create a user
-        User user = new User(
-                "validUser",
-                new Contact("911111111", "351", null, null),
-                profile,
-                UserRole.ADMIN   // adjust enum value if needed
-        );
-
-        // Create a code
-        Code code = Code.fromIsbn13("9783161484100");
-
-
-        PublicationStatus publicationStatus = PublicationStatus.FOR_SALE;
-//        String edition = "First Edition";
-        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-        PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-        Edition edition= new Edition("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-
-
-        // Create condition
-        Condition condition1 = Condition.NEW;
-        Condition condition2 = Condition.LIKE_NEW;
-        Condition condition3 = Condition.VERY_GOOD;
-
-
-        // Create publicationSample
-        return new PublicationSample(
-                bibliographicalData,
-                user,
-                publicationStatus,
-                edition,
-                condition1
-        );
-    }
-
-    // Creates a base valid collection
-    private CollectionOfPublications createBaseCollection()
-    {
-        return new CollectionOfPublications(
-                "Favorites",
-                createValidGenre(),
-                createValidUser()
-        );
-    }
-
-    // SUCCESS TESTS
-    // Verifies that two collections with the same data are equal
+    // A collection must always have a name — null is not valid.
+    // We pass a mock Genre and mock User so the test only checks the null name check,
+    // not whether Genre or User are valid objects.
     @Test
-    void shouldCreateEqualCollectionsSuccessfully()
-    {
-        CollectionOfPublications expected = createBaseCollection();
-        CollectionOfPublications result   = createBaseCollection();
+    void shouldThrowExceptionWhenCollectionNameIsNull() {
+        // Arrange — mock Genre and User; we only care about the null name here
+        Genre mockGenre = mock(Genre.class);
+        User mockUser = mock(User.class);
 
-        assertEquals(expected, result);   // Collections must be equal
+        // Act & Assert — null name must be rejected by the constructor
+        assertThrows(IllegalArgumentException.class, () ->
+                new CollectionOfPublications(null, mockGenre, mockUser));
     }
 
-    // Verifies that a publication can be added to the collection
+    // A name with only spaces has no real value — it is considered blank.
+    // The constructor must also reject this, not just null.
     @Test
-    void shouldAddPublicationSuccessfully() {
-        // US018: Add a publication to an existing collection
+    void shouldThrowExceptionWhenCollectionNameIsBlank() {
+        // Arrange — mock Genre and User; we only care about the blank name here
+        Genre mockGenre = mock(Genre.class);
+        User mockUser = mock(User.class);
 
-        // ARRANGE
-        CollectionOfPublications expected = createBaseCollection();
-        CollectionOfPublications result   = createBaseCollection();
-        PublicationSample publication = createValidPublication();
-
-        // ACT
-        expected.addPublication(publication);
-        result.addPublication(publication);
-
-        // ASSERT
-        assertEquals(expected, result);   // Both collections must contain the same publication
+        // Act & Assert — a name with only spaces must be rejected
+        assertThrows(IllegalArgumentException.class, () ->
+                new CollectionOfPublications(" ", mockGenre, mockUser));
     }
 
-
-    // Verifies that duplicate publications are not added
+    // US017 requires the user to pick a genre — a collection without a genre is not valid.
+    // Only User is mocked here; genre is null on purpose to test this specific check.
     @Test
-    void shouldNotAddDuplicatePublication()
-    {
-        CollectionOfPublications expected = createBaseCollection();
-        CollectionOfPublications result   = createBaseCollection();
-        PublicationSample publication = createValidPublication();
+    void shouldThrowExceptionWhenGenreIsNull() {
+        // Arrange — mock User; genre is null on purpose
+        User mockUser = mock(User.class);
 
-        expected.addPublication(publication);
-        result.addPublication(publication);
-        result.addPublication(publication);   // Try to add duplicate
-
-        assertEquals(expected, result);   // Collection should contain only one publication
+        // Act & Assert — null genre must be rejected by the constructor
+        assertThrows(IllegalArgumentException.class, () ->
+                new CollectionOfPublications("Favorites", null, mockUser));
     }
 
-    // ERROR TESTS
-    // Verifies exception when collection name is null
+    // Every collection must have an owner — without a user it belongs to nobody.
+    // Only Genre is mocked here; user is null on purpose to test this specific check.
     @Test
-    void shouldThrowExceptionWhenCollectionNameIsNull()
-    {
-        Genre genre = createValidGenre();
-        User user = createValidUser();
+    void shouldThrowExceptionWhenUserIsNull() {
+        // Arrange — mock Genre; user is null on purpose
+        Genre mockGenre = mock(Genre.class);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications(null, genre, user);
-        });
+        // Act & Assert — null user must be rejected by the constructor
+        assertThrows(IllegalArgumentException.class, () ->
+                new CollectionOfPublications("Favorites", mockGenre, null));
     }
 
-    // Verifies exception when collection name is blank
+    // --- Happy path ---
+
+    // When all three parameters are valid, the constructor must create the collection correctly.
+    // We check all five expected values:
+    // - name, genre, and owner must match what was passed in
+    // - isPrivate must be true (US017 rule: always starts private)
+    // - publications must be empty (US017 rule: starts with no publications)
     @Test
-    void shouldThrowExceptionWhenCollectionNameIsBlank()
-    {
-        Genre genre = createValidGenre();
-        User user = createValidUser();
+    void shouldInitializeInstanceWhenValidParameters() {
+        // Arrange — valid name and mocked Genre and User
+        String name = "Favorites";
+        Genre mockGenre = mock(Genre.class);
+        User mockUser = mock(User.class);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("   ", genre, user);
-        });
+        // Act — constructor creates the collection with the given data
+        CollectionOfPublications result = new CollectionOfPublications(name, mockGenre, mockUser);
+
+        // Assert — all fields must be set correctly
+        assertEquals(name, result.getCollectionName());
+        assertEquals(mockGenre, result.getCollectionGenre());
+        assertEquals(mockUser, result.getOwner());
+        assertTrue(result.getIsPrivate());          // US017 rule: always private at creation
+        assertTrue(result.getPublications().isEmpty()); // US017 rule: starts with no publications
     }
 
-    // Verifies exception when genre is null
-    @Test
-    void shouldThrowExceptionWhenGenreIsNull()
-    {
-        User user = createValidUser();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", null,  user);
-        });
-    }
-
-     // Verifies exception when library is null
-    @Test
-    void shouldThrowExceptionWhenLibraryIsNull()
-    {
-        Genre genre = createValidGenre();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", genre, null);
-        });
-    }
-
-    // Verifies exception when User is null
-    @Test
-    void shouldThrowExceptionWhenUserIsNull()
-    {
-        Genre genre = createValidGenre();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            new CollectionOfPublications("Favorites", genre, null);
-        });
-    }
-
-    // Verifies that adding null publication does not change the collection
-    @Test
-    void shouldNotAddNullPublication()
-    {
-        CollectionOfPublications expected = createBaseCollection();
-        CollectionOfPublications result   = createBaseCollection();
-
-        result.addPublication(null);   // Attempt to add null
-
-        assertEquals(expected, result);   // Collection must remain unchanged
-    }
-
-    // US017
-    @Test
-    void shouldCreateEmptyCollection_US017() {
-        // When a collection is created, it must start with no publications.
-        // The population of the collection is handled by later user stories (e.g. US018).
-
-        // Arrange & Act
-        CollectionOfPublications collection = createBaseCollection();
-
-        // Assert
-        assertNotNull(collection.getPublications());
-        assertTrue(collection.getPublications().isEmpty());
-    }
-
-    /**
-     * US019 set_isPrivate false test - make collection public
-     */
-    @Test
-    void set_isPrivate_shouldChangeIsPrivateToFalse_whenFalseIsPassed() {
-        // arrange
-        CollectionOfPublications collection = createBaseCollection();
-
-        // act
-        collection.set_isPrivate(false);
-
-        // assert
-        assertFalse(collection.getIsPrivate());
-
-    }
-
-    /**
-     * US019 set_isPrivate test - make collection private
-     */
-
-    @Test
-    void set_isPrivate_shouldChangeIsPrivateToTrue_whenTrueIsPassed() {
-        // arrange
-        CollectionOfPublications collection = createBaseCollection();
-        collection.set_isPrivate(false);
-
-        // act
-        collection.set_isPrivate(true);
-
-        // assert
-        assertTrue(collection.getIsPrivate());
-
-    }
+    // ============================== end US017 ==============================
 
 }

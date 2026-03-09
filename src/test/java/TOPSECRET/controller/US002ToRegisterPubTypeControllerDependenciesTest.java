@@ -1,6 +1,8 @@
 package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
@@ -18,12 +20,13 @@ import TOPSECRET.repository.PublicationTypeRepository;
  * </ul>
  */
 
-class RegisterPubTypeControllerTest {
+class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Repository and controller instance used for testing.
      */
-    PublicationTypeRepository repo = new PublicationTypeRepository();
+    PublicationTypeFactory factory = new PublicationTypeFactory();
+    PublicationTypeRepository repo = new PublicationTypeRepository(factory);
     US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
     /**

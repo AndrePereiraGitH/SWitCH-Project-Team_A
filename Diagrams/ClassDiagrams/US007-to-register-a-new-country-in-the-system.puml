@@ -15,6 +15,10 @@ class CountryRepository {
     +createAndAddNewCountry (countryName: String)
     }
 
+class CountryFactory {
+    +createNewCountry
+}
+
 class US007RegisterNewCountryController{
   + registerNewCountry(countryName : String)
 }
@@ -30,5 +34,6 @@ class Country {
 US007RegisterNewCountryController "1" .--> "1" CountryRepository : request registering country
 CountryRepository "1" --> "1" "List<Country>" : has a
 "List<Country>" "1" --> "*" Country : contains
-CountryRepository "1" .--> "*" Country : creates/manages
+CountryRepository "1" .--> "*" CountryFactory : requests creation
+CountryFactory "1" .--> "*" Country : creates
 @enduml

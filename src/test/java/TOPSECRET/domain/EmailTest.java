@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class responsible for validating the behavior of the Email domain object.
