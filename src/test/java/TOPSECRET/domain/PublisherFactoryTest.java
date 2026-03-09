@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link PublisherFactory}.
@@ -37,10 +38,7 @@ class PublisherFactoryTest {
     void create_with_valid_attributes_should_succeed() {
         PublisherFactory factory = new PublisherFactory();
 
-        Country country = new Country("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345", "12", email, address);
+        Contact contact = mock(Contact.class);
 
         Publisher publisher = factory.create("Penguin Books", "123456789", contact);
 
@@ -58,10 +56,7 @@ class PublisherFactoryTest {
     void create_should_trim_name_and_vatNumber() {
         PublisherFactory factory = new PublisherFactory();
 
-        Country country = new Country("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345", "12", email, address);
+        Contact contact = mock(Contact.class);
 
         Publisher publisher = factory.create("  Penguin Books  ", "  123456789  ", contact);
 
@@ -79,10 +74,7 @@ class PublisherFactoryTest {
     void create_with_blank_name_should_throw_exception() {
         PublisherFactory factory = new PublisherFactory();
 
-        Country country = new Country("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345", "12", email, address);
+        Contact contact = mock(Contact.class);
 
         assertThrows(IllegalArgumentException.class, () ->
                 factory.create("   ", "123456789", contact)
@@ -99,10 +91,7 @@ class PublisherFactoryTest {
     void create_with_blank_vatNumber_should_throw_exception() {
         PublisherFactory factory = new PublisherFactory();
 
-        Country country = new Country("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345", "12", email, address);
+        Contact contact = mock(Contact.class);
 
         assertThrows(IllegalArgumentException.class, () ->
                 factory.create("Penguin Books", "   ", contact)
@@ -117,10 +106,7 @@ class PublisherFactoryTest {
     void create_with_null_name_should_throw_nullPointerException() {
         PublisherFactory factory = new PublisherFactory();
 
-        Country country = new Country("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345", "12", email, address);
+        Contact contact = mock(Contact.class);
 
         assertThrows(NullPointerException.class, () ->
                 factory.create(null, "123456789", contact)
@@ -135,10 +121,7 @@ class PublisherFactoryTest {
     void create_with_null_vatNumber_should_throw_nullPointerException() {
         PublisherFactory factory = new PublisherFactory();
 
-        Country country = new Country("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345", "12", email, address);
+        Contact contact = mock(Contact.class);
 
         assertThrows(NullPointerException.class, () ->
                 factory.create("Penguin Books", null, contact)
