@@ -24,9 +24,17 @@ import static org.mockito.Mockito.when;
  */
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
+    // -------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------
+
     private BibliographicalDataRepository bdRepository;
     private AuctionRepository auctionRepository;
     private US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller;
+
+    // -------------------------------------------------------------------------
+    // Setup
+    // -------------------------------------------------------------------------
 
     /**
      * Initialises fresh mock repositories and a new controller instance
@@ -41,6 +49,10 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 auctionRepository
         );
     }
+
+    // -------------------------------------------------------------------------
+    // Tests — getAllPublicationBD()
+    // -------------------------------------------------------------------------
 
     /**
      * Verifies that {@code getAllPublicationBD()} returns a correctly mapped list
@@ -84,6 +96,10 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         assertTrue(result.isEmpty());
     }
 
+    // -------------------------------------------------------------------------
+    // Tests — getListOfItemsOnAuctionByGivenPublicationDTO()
+    // -------------------------------------------------------------------------
+
     /**
      * Verifies that {@code getListOfItemsOnAuctionByGivenPublicationDTO()} returns
      * a correctly mapped list of {@link AuctionItemDTO_US024} when auction items
@@ -116,7 +132,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
      */
     @Test
     void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
-        // Arrange — auction repository returns null/empty by default for unstubbed calls
+        // Arrange
 
         // Act
         List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title2");
@@ -124,6 +140,24 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsNull() {
+        // Arrange
+
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(null));
+    }
+
+    @Test
+    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsEmpty() {
+        // Arrange
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(""));
     }
 
     // -------------------------------------------------------------------------

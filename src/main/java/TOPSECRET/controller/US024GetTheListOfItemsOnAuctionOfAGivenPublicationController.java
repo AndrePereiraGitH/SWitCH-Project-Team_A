@@ -71,6 +71,14 @@ public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
     public List<AuctionItemDTO_US024> getListOfItemsOnAuctionByGivenPublicationDTO(
             String bdPublicationDTO) {
 
+        if(bdPublicationDTO == null){
+            throw new NullPointerException("The publication can not be null");
+        }
+
+        if(bdPublicationDTO.isEmpty()){
+            throw new IllegalArgumentException("The publication can not be empty");
+        }
+
         List<PublicationSample> listOfItemsOnAuctionByPublication =
                 _aucRepo.getListOfItemsOnAuctionByGivenPublication(bdPublicationDTO);
 
