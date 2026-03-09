@@ -1,54 +1,50 @@
 package TOPSECRET.controller;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import TOPSECRET.domain.*;
 
-import TOPSECRET.dto.AuctionDTO_US028;
+import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
-import TOPSECRET.repository.AuctionRepository;
+import TOPSECRET.repository.ListingRepository;
+import TOPSECRET.repository.PublicationSampleRepository;
 import TOPSECRET.repository.PublisherRepository;
-import java.util.ArrayList;
 
 /**
  * Controller responsible for use case US028:
  * "Get the list of items currently on auction for a given publisher".
- *
  * This controller receives requests from the UI and
  *  * gets the required data from the repositories.
  */
 public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
 
     // attributes
-    // Repository that stores and manages publishers
-    private final PublisherRepository publisherRepo;
-
-    // Repository that stores and manages auctions and items
-    private final AuctionRepository auctionRepo;
-
+    private final PublisherRepository _publisherRepo;
+    private final ListingRepository _listingRepo;
+    private final PublicationSampleRepository _pubSampleRepo;
 
     /**
      * Constructor that receives all dependencies required by the controller.
      * These objects are saved so the controller can use them later.
      *
-     * @param auctionRepository   repository for auction-related operations
      * @param publisherRepository repository for publisher-related operations
+     * @param listingRepo   repository for listing-related operations
+     * @param pubSampleRepo   repository for publicationSample-related operations
      *
      */
-    public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-            AuctionRepository auctionRepository,
-            PublisherRepository publisherRepository) {
+    public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController( PublisherRepository publisherRepository,
+                                                                         ListingRepository listingRepo,
+                                                                         PublicationSampleRepository pubSampleRepo) {
 
         // Store injected dependencies for later use
-        this.publisherRepo = publisherRepository;
-        this.auctionRepo = auctionRepository;
+        this._publisherRepo = publisherRepository;
+        this._listingRepo = listingRepo;
+        this._pubSampleRepo = pubSampleRepo;
     }
 
     // methods
 
     /**
-     * Step 2 of the use case:
      * Returns a list of all publishers.
      * * This is used by the UI so the user can choose one publisher
      *
@@ -57,52 +53,38 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
     public List<PublisherDTO_US028> getAllPublishers() {
 
         // Retrieve all publishers from the repository
-        List<Publisher> publishers =
-                publisherRepo.getAllPublishers();
-        List<PublisherDTO_US028> result = new ArrayList<>();
-        for (Publisher p : publishers) {
-            result.add(new PublisherDTO_US028(p));
-        }
+        List<Publisher> listOfAllPublishers = _publisherRepo.getAllPublishers();
 
-        return result;
+        List<PublisherDTO_US028> listOfAllPublishersDTO = PublisherDTO_US028.toDTOs(listOfAllPublishers);
+
+        return listOfAllPublishersDTO;
     }
 
-
     /**
-     * Step 8 of the use case:
-     * The UI provides the selected publisher's VAT number,
-     * and the controller retrieves all items currently on auction
-     * for that publisher.
+     * Returns a list of publication samples (as DTOs) that are on auction
+     * and belong to the specified publisher.
      *
-     * @param publisherVatNumber VAT number of the selected publisher
-     * @return list of auction items as DTOs (empty list if publisher not found)
+     * <p>This method first retrieves all auction listings, then filters the
+     * publication samples associated with those listings and the given publisher,
+     * and finally converts the results into DTOs.</p>
+     *
+     * @param publisher the publisher whose items should be retrieved; must not be null
+     * @return a list of DTOs representing the publisher's items on auction;
+     *         never null, but may be empty
      */
-    public List<AuctionDTO_US028> getListOfItemsOnAuction(String publisherVatNumber) {
 
-        // Find the publisher using the provided VAT number
-        Publisher publisher =
-                publisherRepo.findByVatNumber(publisherVatNumber);
 
-        // If the publisher does not exist, return an empty list
-        if (publisher == null) return List.of();
+    public List<PublicationSampleDTO_US028> findListOfItemsOnAuctionByPublisher(Publisher publisher) {
 
-        // Retrieve all auction items associated with the given publisher
-        List<PublicationSample> items = auctionRepo.getItemsOnAuctionGivenPublisher(publisher);
+        // Gets all the listings for auction
+        List<Listing> listOfListings = _listingRepo.findAllAuctionListings();
 
-        List<AuctionDTO_US028> result = new ArrayList<>();
+        // Gets all the publication samples related to the that publisher
+        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
 
-        for (PublicationSample item : items) {
+        // Converts to DTOs
+        List<PublicationSampleDTO_US028> listOfPublicationSampleDTO = PublicationSampleDTO_US028.toDTOs(listOfItems);
 
-            List<String> publisherNames = new ArrayList<>();
-            // Use owner username as publisher name
-            publisherNames.add(item.getOwner().getUserName());
-
-            AuctionDTO_US028 dto =
-                    new AuctionDTO_US028(item.getBibliographicalData().getTitle(), publisherNames);
-
-            result.add(dto);
-        }
-
-        return result;
+        return listOfPublicationSampleDTO;
     }
 }

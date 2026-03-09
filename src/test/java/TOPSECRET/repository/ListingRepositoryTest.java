@@ -143,6 +143,83 @@ class ListingRepositoryTest {
         assertEquals(1, secondCall.size());
     }
 
+    // ======================================================
+    // ==== Tests to findAllAuctionListings===============
+    // ======================================================
+
+
+    @Test
+    void findAllAuctionListings_ShouldReturnOnlyAuctionListings() throws Exception {
+
+        // Arrange
+        when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1)
+        )).thenReturn(listing1Double);
+
+        when(listingFactoryDouble.create("title2", List.of(pub2), SaleType.DIRECT_SALE, price2, "description2", List.of(pic2)
+        )).thenReturn(listing2Double);
+
+        when(listingFactoryDouble.create("title3", List.of(pub3), SaleType.AUCTION, price3, "description3", List.of(pic3)
+        )).thenReturn(listing3Double);
+
+        repo.createAndAdd("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2), SaleType.DIRECT_SALE, price2, "description2", List.of(pic2));
+        repo.createAndAdd("title3", List.of(pub3), SaleType.AUCTION, price3, "description3", List.of(pic3));
+
+        // Act
+        List<Listing> result = repo.findAllAuctionListings();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(listing3Double, result.get(0));
+    }
+
+    @Test
+    void findAllAuctionListings_ShouldReturnEmptyListWhenNoAuctionListingsExist() throws Exception {
+
+        // Arrange
+        when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1",
+                List.of(pic1))).thenReturn(listing1Double);
+
+        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        repo.createAndAdd("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1));
+
+        // Act
+        List<Listing> result = repo.findAllAuctionListings();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllAuctionListings_ShouldReturnEmptyListWhenRepositoryIsEmpty() {
+        // Act
+        List<Listing> result = repo.findAllAuctionListings();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllAuctionListings_ShouldReturnNewIndependentList() throws Exception {
+
+        // Arrange
+        when(listingFactoryDouble.create("title3", List.of(pub3), SaleType.AUCTION, price3, "description3",
+                List.of(pic3))).thenReturn(listing3Double);
+
+        when(listing3Double.getSaleType()).thenReturn(SaleType.AUCTION);
+
+        repo.createAndAdd("title3", List.of(pub3), SaleType.AUCTION, price3, "description3", List.of(pic3));
+
+        // Act
+        List<Listing> firstCall = repo.findAllAuctionListings();
+        firstCall.clear(); // tries to modify the list
+
+        List<Listing> secondCall = repo.findAllAuctionListings();
+
+        assertEquals(1, secondCall.size());
+    }
+
     @Test
     void getListOfItemsOnDirectSaleOfAGivenAuthor_ShouldFilterCorrectly() throws Exception {
 
