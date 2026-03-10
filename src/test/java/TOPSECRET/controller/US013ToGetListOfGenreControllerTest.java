@@ -25,7 +25,6 @@ import static org.mockito.Mockito.*;
 class US013ToGetListOfGenreControllerTest {
 
     GenreRepository genreRepository = mock(GenreRepository.class);
-    US013ToGetListOfGenreController controller = new US013ToGetListOfGenreController(genreRepository);
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -48,6 +47,7 @@ class US013ToGetListOfGenreControllerTest {
     void shouldReturnEmptyListWhenNoGenres() {
         // Arrange
         when(genreRepository.getAllGenres()).thenReturn(List.of());
+        US013ToGetListOfGenreController controller = new US013ToGetListOfGenreController(genreRepository);
 
         // Act
         List<GenreDTO_US013> result = controller.getGenresList();
@@ -65,6 +65,7 @@ class US013ToGetListOfGenreControllerTest {
         when(mockGenre1.getGenreType()).thenReturn("Romance");
         when(mockGenre2.getGenreType()).thenReturn("Horror");
         when(genreRepository.getAllGenres()).thenReturn(List.of(mockGenre1, mockGenre2));
+        US013ToGetListOfGenreController controller = new US013ToGetListOfGenreController(genreRepository);
 
         // Act
         List<GenreDTO_US013> result = controller.getGenresList();
@@ -79,6 +80,7 @@ class US013ToGetListOfGenreControllerTest {
     void shouldDelegateToRepositoryExactlyOnce() {
         // Arrange
         when(genreRepository.getAllGenres()).thenReturn(List.of());
+        US013ToGetListOfGenreController controller = new US013ToGetListOfGenreController(genreRepository);
 
         // Act
         controller.getGenresList();
