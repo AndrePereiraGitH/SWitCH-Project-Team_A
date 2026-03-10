@@ -316,7 +316,7 @@ class AuctionRepositoryTest {
     }
 
     @Test
-    void getListOfItemsOnAuctionGivenGenre_multipleAuctionsMatch_returnsAll() {
+    void getListOfItemsOnAuctionGivenGenreMultipleAuctionsMatchReturnsAll() {
 
         // Arrange
         Genre fantasy = mock(Genre.class);

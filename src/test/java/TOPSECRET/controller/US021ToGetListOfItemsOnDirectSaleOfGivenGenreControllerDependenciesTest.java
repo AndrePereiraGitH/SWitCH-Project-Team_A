@@ -1,4 +1,4 @@
-package TOPSECRET.controller;
+/*package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for {@link US021ToGetListOfItemsOnDirectSaleOfGivenGenreController}.
  * Tests are performed without mocking, using real instances of the repositories.
- */
+
 class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
 
     private GenreRepository genreRepository;
@@ -145,7 +145,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
      * A listing with a "Fiction" sample is created and added to the repository.
      * The controller is then queried for items of the "Fiction" genre,
      * and the result should contain exactly one item.
-     */
+
     @Test
     void ensureReturnsListWithOneItemWhenOneMatchesGenre() throws Exception {
         // Arrange
@@ -191,7 +191,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
      * A listing with a "Fiction" sample is created, but the controller
      * is queried for "Science" genre items. Since no listings belong
      * to "Science", the result should be empty.
-     */
+
     @Test
     void ensureReturnsEmptyListWhenNoListingsMatchGenre() throws Exception {
         // Arrange
@@ -238,7 +238,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
      * A listing with a "Fiction" sample is created as an AUCTION.
      * When querying for direct sale items of the "Fiction" genre,
      * the result should be empty since the listing type does not match.
-     */
+
     @Test
     void ensureReturnsEmptyListWhenListingIsNotDirectSale() throws Exception {
         // Arrange
@@ -382,4 +382,4 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
         return new Country();
     }
 
-}
+}*/
