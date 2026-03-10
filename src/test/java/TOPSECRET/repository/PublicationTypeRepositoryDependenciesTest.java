@@ -165,7 +165,7 @@ public class PublicationTypeRepositoryDependenciesTest {
                 new PublicationTypeRepository(factory);
 
         PublicationType type =
-                new PublicationType(
+                factory.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Standard"

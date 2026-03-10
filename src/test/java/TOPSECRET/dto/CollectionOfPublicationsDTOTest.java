@@ -3,8 +3,21 @@ package TOPSECRET.dto;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for {@link CollectionOfPublicationsDTO}.
+ * <p>
+ * These tests verify that the DTO correctly handles valid input,
+ * trims whitespace from fields, and throws exceptions when invalid
+ * values are provided.
+ */
 
 class CollectionOfPublicationsDTOTest {
+
+    /**
+     * Verifies that the DTO is created successfully when valid
+     * list name and owner username are provided.
+     * Also confirms that the stored values match the input.
+     */
 
     @Test
     void shouldCreateDTOWithValidData()
@@ -17,6 +30,10 @@ class CollectionOfPublicationsDTOTest {
         assertEquals("Raul", dto.getOwnerUsername());
     }
 
+    /**
+     * Ensures that leading and trailing whitespace in the constructor
+     * parameters is automatically trimmed before storing the values.
+     */
     @Test
     void shouldTrimInputValues()
     {
@@ -27,6 +44,10 @@ class CollectionOfPublicationsDTOTest {
         assertEquals("Raul", dto.getOwnerUsername());
     }
 
+    /**
+     * Verifies that an {@link IllegalArgumentException} is thrown
+     * when the list name is {@code null}.
+     */
     @Test
     void shouldThrowWhenListNameIsNull()
     {
@@ -35,6 +56,10 @@ class CollectionOfPublicationsDTOTest {
         );
     }
 
+    /**
+     * Verifies that an {@link IllegalArgumentException} is thrown
+     * when the list name is blank or contains only whitespace.
+     */
     @Test
     void shouldThrowWhenListNameIsBlank()
     {
@@ -43,6 +68,10 @@ class CollectionOfPublicationsDTOTest {
         );
     }
 
+    /**
+     * Verifies that an {@link IllegalArgumentException} is thrown
+     * when the owner username is {@code null}.
+     */
     @Test
     void shouldThrowWhenOwnerUsernameIsNull()
     {
@@ -51,9 +80,12 @@ class CollectionOfPublicationsDTOTest {
         );
     }
 
+    /**
+     * Verifies that an {@link IllegalArgumentException} is thrown
+     * when the owner username is blank or contains only whitespace.
+     */
     @Test
-    void shouldThrowWhenOwnerUsernameIsBlank()
-    {
+    void shouldThrowWhenOwnerUsernameIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublicationsDTO("List Name", "   ")
         );

@@ -20,7 +20,7 @@ public class PublicationType {
     private TypeOfBinding _typeOfBinding;
     private String _details;
 
-    public PublicationType (MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
+    protected PublicationType (MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
     {
         if(mediaFormat==null){
             throw new IllegalArgumentException("Media Format can't be null");

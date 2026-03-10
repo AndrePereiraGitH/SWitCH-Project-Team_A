@@ -39,7 +39,8 @@ class EditionRepositoryDependenciesTest {
     }
 
     private PublicationType validPublicationType() {
-        return new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        return factory.create(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
     }
 
     private Publisher validPublisher() {
