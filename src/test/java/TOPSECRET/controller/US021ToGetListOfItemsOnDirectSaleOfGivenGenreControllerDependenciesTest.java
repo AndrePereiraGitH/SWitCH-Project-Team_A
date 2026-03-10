@@ -361,7 +361,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerDependenciesTest {
     }
 
     private static User createSeller() {
-        return new User(
+        return UserFactory.create(
                 "Seller",
                 new Contact(
                         "918374628",

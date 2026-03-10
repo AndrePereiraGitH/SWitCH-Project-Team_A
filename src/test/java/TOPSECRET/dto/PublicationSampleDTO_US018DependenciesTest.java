@@ -42,7 +42,7 @@ class PublicationSampleDTO_US018DependenciesTest {
                 LocalDate.of(1990, 1, 1)
         );
 
-        return new User(
+        return UserFactory.create(
                 "user1",
                 new Contact("912345678", "351", null, null),
                 profile,

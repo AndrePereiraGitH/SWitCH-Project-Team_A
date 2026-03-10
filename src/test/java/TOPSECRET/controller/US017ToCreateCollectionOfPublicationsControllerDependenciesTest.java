@@ -52,7 +52,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
         CountryFactory countryFactory = new CountryFactory();
         Country country = countryFactory.create("PORTUGAL");
 
-        return new User(
+        return UserFactory.create(
                 "validUser",
                 new Contact("912345678", "351", null, null),
                 new Profile("User Name", country, LocalDate.of(1990, 1, 1)),

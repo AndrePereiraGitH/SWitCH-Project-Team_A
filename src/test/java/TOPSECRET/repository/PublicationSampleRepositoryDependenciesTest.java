@@ -69,11 +69,11 @@ class PublicationSampleRepositoryDependenciesTest {
             LocalDate.of(1997, 8, 15)
     );
     UserRole userRole1 = UserRole.ADMIN;
-    User user1 = new User("coolGuy", contact1, profile2, userRole1);
-    User user2 = new User("coolGuy2", contact1, profile2, userRole1);
-    User user3 = new User("coolGuy3", contact1, profile2, userRole1);
+    User user1 = UserFactory.create("coolGuy", contact1, profile2, userRole1);
+    User user2 = UserFactory.create("coolGuy2", contact1, profile2, userRole1);
+    User user3 = UserFactory.create("coolGuy3", contact1, profile2, userRole1);
 
-    User userTest = new User ("userTest", contact1, profile2, userRole1);
+    User userTest = UserFactory.create("userTest", contact1, profile2, userRole1);
 
     //PublicationStatus
     PublicationStatus pubStatus1 = PublicationStatus.READING;

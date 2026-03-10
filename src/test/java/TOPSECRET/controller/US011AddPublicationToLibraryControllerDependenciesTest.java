@@ -93,7 +93,7 @@ class US011AddPublicationToLibraryControllerDependenciesTest {
         User user1 = new User();
         User user2 = new User();
         User user3 = new User();
-        user4 = new User("user4", contact1, profile1, UserRole.NORMAL_USER);
+        user4 = UserFactory.create("user4", contact1, profile1, UserRole.NORMAL_USER);
 
         // Edition
         Code code = Code.fromIsbn13 ("9783161484123");

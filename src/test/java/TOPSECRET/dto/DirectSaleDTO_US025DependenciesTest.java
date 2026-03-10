@@ -43,7 +43,7 @@ class DirectSaleDTO_US025DependenciesTest {
         when(portugal2.getCountryName()).thenReturn("Portugal");
 
         // --- USERS ---
-        seller1 = new User(
+        seller1 = UserFactory.create(
                 "namee",
                 new Contact("wer", "fd", new Email("s", "example.com"),
                         new Address("s", "s", "s", portugal1)),
@@ -51,7 +51,7 @@ class DirectSaleDTO_US025DependenciesTest {
                 UserRole.NORMAL_USER
         );
 
-        seller2 = new User(
+        seller2 = UserFactory.create(
                 "nmeee",
                 new Contact("wer", "fd", new Email("s", "example.com"),
                         new Address("s", "s", "s", portugal2)),

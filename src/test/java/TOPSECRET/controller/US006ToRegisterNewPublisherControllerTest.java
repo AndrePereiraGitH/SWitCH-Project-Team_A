@@ -32,7 +32,7 @@ class   US006ToRegisterNewPublisherControllerTest {
         Profile profile = new Profile("John", country, LocalDate.of(1990, 1, 1) );
 
         // Create an admin user who is allowed to register publishers
-        User admin = new User("admin", contact, profile, UserRole.ADMIN);
+        User admin = UserFactory.create("admin", contact, profile, UserRole.ADMIN);
 
         // Act
         // Instantiate the controller with the repository and admin user
@@ -64,7 +64,7 @@ class   US006ToRegisterNewPublisherControllerTest {
         Profile profile = new Profile("John", country, LocalDate.of(2001,6,20) );
 
 
-        User admin = new User("admin", contact, profile, UserRole.ADMIN );
+        User admin = UserFactory.create("admin", contact, profile, UserRole.ADMIN );
 
         // Create the controller under test
         US006ToRegisterNewPublisherController controller =
@@ -100,7 +100,7 @@ class   US006ToRegisterNewPublisherControllerTest {
         Contact contact = new Contact("+4412312345","12",email, address);
         Profile profile = new Profile("John", country, LocalDate.of(2000,4,19) );
 
-        User admin = new User("admin", contact, profile, UserRole.ADMIN );
+        User admin = UserFactory.create("admin", contact, profile, UserRole.ADMIN );
         US006ToRegisterNewPublisherController controller =
                 new US006ToRegisterNewPublisherController(publisherRepo, admin);
 

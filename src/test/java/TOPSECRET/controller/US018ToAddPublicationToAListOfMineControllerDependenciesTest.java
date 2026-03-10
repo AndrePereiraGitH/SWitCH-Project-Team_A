@@ -100,7 +100,7 @@ class US018ToAddPublicationToAListOfMineControllerDependenciesTest {
                 LocalDate.of(1990, 1, 1)
         );
 
-        return new User(
+        return UserFactory.create(
                 "validUser",
                 new Contact("912345678", "351", null, null),
                 profile,
