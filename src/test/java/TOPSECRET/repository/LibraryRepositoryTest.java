@@ -1,13 +1,12 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -22,17 +21,25 @@ import static org.mockito.Mockito.when;
  */
 class LibraryRepositoryTest {
 
+    private LibraryFactory libraryFactoryDouble;
+
+    @BeforeEach
+    void setup() {
+        libraryFactoryDouble = mock(LibraryFactory.class);
+    }
+
+
     // ============ Constructor Tests ============
 
 
     @Test
     void shouldThrowAnExceptionWhenFactoryIsNull() {
         // Arrange
-        Map<String, Library> libraries = new HashMap<>();
+
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new LibraryRepository(libraries, null));
+                () -> new LibraryRepository( null));
     }
 
 
@@ -45,13 +52,11 @@ class LibraryRepositoryTest {
         String libraryName = "lib1";
 
         User userDouble = createMockUser(username);
+
         Library libraryDouble = createMockLibrary(libraryName, userDouble);
 
-        Map<String, Library> libraries = new HashMap<>();
-        libraries.put(username, libraryDouble);
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        libraryRepository.add(libraryDouble);
 
         // Act
         Library result = libraryRepository.getLibraryOfUser(username);
@@ -64,9 +69,7 @@ class LibraryRepositoryTest {
     @Test
     void throwExceptionWhenUsernameIsNull() {
         // Arrange
-        Map<String, Library> libraries = new HashMap<>();
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
         // Act & Assert
         assertThrows(NullPointerException.class,
@@ -77,9 +80,7 @@ class LibraryRepositoryTest {
     @Test
     void throwExceptionWhenUsernameIsEmpty() {
         // Arrange
-        Map<String, Library> libraries = new HashMap<>();
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -88,20 +89,15 @@ class LibraryRepositoryTest {
 
 
     @Test
-    void throwExceptionWhenLibraryIsNull() {
+    void throwExceptionWhenLibraryIsNotFound() {
         // Arrange
-        String username = "User123";
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        Map<String, Library> libraries = new HashMap<>();
-        libraries.put(username, null);
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
-
-        // Act & Assert
+        // act & assert
         assertThrows(InstanceNotFoundException.class,
-                () -> libraryRepository.getLibraryOfUser(username));
+                () -> libraryRepository.getLibraryOfUser("ghost_user"));
     }
+
 
 
     // ============ createAndAdd Tests ============
@@ -115,10 +111,11 @@ class LibraryRepositoryTest {
 
         User userDouble = createMockUser(username);
 
-        Map<String, Library> libraries = new HashMap<>();
+        Library library = createMockLibrary(libraryName,userDouble);
 
-        LibraryFactory libraryFactoryDouble = createMockLibraryFactory(userDouble, libraryName);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(library);
+
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
         // Act
         Library result = libraryRepository.createAndAdd(libraryName, userDouble);
@@ -132,23 +129,17 @@ class LibraryRepositoryTest {
     @Test
     void shouldReturnAnExceptionWhenTheLibraryNameIsNull() {
         // Arrange
-        String libraryName = "";
         String username = "User1";
 
         User userDouble = createMockUser(username);
 
-        Map<String, Library> libraries = new HashMap<>();
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
-
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> libraryRepository.createAndAdd(null, userDouble));
 
     }
-
 
     @Test
     void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty() {
@@ -158,10 +149,7 @@ class LibraryRepositoryTest {
 
         User userDouble = createMockUser(username);
 
-        Map<String, Library> libraries = new HashMap<>();
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -174,10 +162,7 @@ class LibraryRepositoryTest {
         // Arrange
         String libraryName = "mylib";
 
-        Map<String, Library> libraries = new HashMap<>();
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -192,14 +177,12 @@ class LibraryRepositoryTest {
         String username = "User1";
 
         User userDouble = createMockUser(username);
+
         Library libraryDouble = createMockLibrary(libraryName, userDouble);
 
-        Map<String, Library> libraries = new HashMap<>();
-        libraries.put(username, libraryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        libraryRepository.add(libraryDouble);
 
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
 
         // Act & Assert
         assertThrows(InstanceAlreadyExistsException.class,
@@ -217,13 +200,11 @@ class LibraryRepositoryTest {
         String username = "User1";
 
         User userDouble = createMockUser(username);
+
         Library libraryDouble = createMockLibrary(libraryName, userDouble);
 
-        Map<String, Library> libraries = new HashMap<>();
-        libraries.put(username, libraryDouble);
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        libraryRepository.add(libraryDouble);
 
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(userDouble);
@@ -240,9 +221,8 @@ class LibraryRepositoryTest {
 
         User userDouble = createMockUser(username);
 
-        Map<String, Library> libraries = new HashMap<>();
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+
 
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(userDouble);
@@ -267,15 +247,12 @@ class LibraryRepositoryTest {
         List<PublicationSample> expectedPublications = List.of(pub1, pub2, pub3);
 
         User userDouble = createMockUser(username);
-        Library libraryDouble = createMockLibrary(libraryName, userDouble);
 
+        Library libraryDouble = createMockLibrary(libraryName, userDouble);
         when(libraryDouble.getAllPublications()).thenReturn(expectedPublications);
 
-        Map<String, Library> libraries = new HashMap<>();
-        libraries.put(username, libraryDouble);
-
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        LibraryRepository libraryRepository = new LibraryRepository(libraries, libraryFactoryDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        libraryRepository.add(libraryDouble);
 
         // Act
         List<PublicationSample> realPublications =
@@ -287,15 +264,6 @@ class LibraryRepositoryTest {
 
 
     // ============ Helper Methods ============
-
-
-    private LibraryFactory createMockLibraryFactory(User userDouble, String libraryName) {
-        Library library = createMockLibrary(libraryName, userDouble);
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(library);
-        return libraryFactoryDouble;
-    }
-
 
     private Library createMockLibrary(String libraryName, User owner) {
         Library libraryDouble = mock(Library.class);
