@@ -211,4 +211,22 @@ class AuthorFactoryTest {
             assertEquals(expectedBio, author.getBiography());
         }
     }
+    @Test
+    void createWithExistingProfile_shouldForwardNullBiography() {
+
+        // ARRANGE
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getBiography()).thenReturn(null);
+                         when(mock.getProfile()).thenReturn(profile);
+                     })) {
+
+            // ACT
+            Author author = factory.createWithExistingProfile(profile, null);
+
+            // ASSERT
+            assertSame(profile, author.getProfile());
+            assertNull(author.getBiography());
+        }
+    }
 }
