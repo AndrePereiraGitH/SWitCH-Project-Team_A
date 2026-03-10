@@ -36,18 +36,10 @@ public class PublicationSampleRepository {
     }
 
     /**
-     * Adds a {@link PublicationSample} to the repository.
-     * <p>
-     * <b>Note:</b> This method is intended for testing purposes only
-     * and should not be used in production code.
-     * </p>
+     * Returns an immutable copy of all {@link PublicationSample} instances currently held in the repository.
      *
-     * @param publicationSample the publication sample to add; should not be {@code null}
+     * @return an unmodifiable list of all publication samples; never {@code null}
      */
-    void add(PublicationSample publicationSample){
-        allPublicationsInSystem.add(publicationSample);
-    }
-
     public List<PublicationSample> getAllPublications() { //getter to obtain list of all publications in the system
         return List.copyOf(allPublicationsInSystem);
     }
@@ -64,7 +56,6 @@ public class PublicationSampleRepository {
      * @return the created PublicationSample
      * @throws IllegalArgumentException if any required argument is null
      */
-
     public PublicationSample createAndAdd(BibliographicalData bibliographicalData, User userName, PublicationStatus status, Edition edition, Condition condition) throws InstanceAlreadyExistsException {
 
         if(bibliographicalData == null){
@@ -90,7 +81,25 @@ public class PublicationSampleRepository {
         return newPublicationSample;
     }
 
+    /**
+     * Adds a {@link PublicationSample} to the repository.
+     * <p>
+     * <b>Note:</b> This method is intended for testing purposes only
+     * and should not be used in production code.
+     * </p>
+     *
+     * @param publicationSample the publication sample to add; should not be {@code null}
+     */
+    void add(PublicationSample publicationSample){
+        allPublicationsInSystem.add(publicationSample);
+    }
 
+    /**
+     * Checks whether the given {@link PublicationSample} already exists in the repository.
+     *
+     * @param pub the publication sample to look up; must not be {@code null}
+     * @return {@code true} if the repository contains an equal publication sample; {@code false} otherwise
+     */
     public boolean isExistent(PublicationSample pub){
         for(PublicationSample publication: allPublicationsInSystem){
             if(pub.equals(publication)){
@@ -100,6 +109,15 @@ public class PublicationSampleRepository {
         return false;
     }
 
+    /**
+     * Returns all publication samples in the repository that are <em>not</em> present
+     * in the given library list.
+     *
+     * @param listOfPublicationsInLibrary the publications already owned by the user;
+     *                                    must not be {@code null}
+     * @return an immutable list of publication samples absent from the provided library;
+     *         never {@code null}, but may be empty
+     */
     public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary){
         List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
 
@@ -112,16 +130,19 @@ public class PublicationSampleRepository {
         return List.copyOf(listOfDifferentPublications);
 
     }
-    //Method for testing purposes only (AddPublicationToLibraryControllerTest)
-    public void addPublication(PublicationSample p) {
-        if (!allPublicationsInSystem.contains(p)) {
-            allPublicationsInSystem.add(p);
-        }
-    }
+
 
     /**
-     * US016
-     * @return
+     * Retrieves all {@link PublicationSample} instances that match at least one of the
+     * provided {@link PublicationSampleDTO_US016} criteria.
+     * <p>
+     * Matching is performed across title, authors, language, genres, owner username,
+     * and physical condition. See {@link #matches(PublicationSample, PublicationSampleDTO_US016)}.
+     * </p>
+     *
+     * @param pubsDto the list of DTOs to match against; must not be {@code null} or empty
+     * @return a list of matching {@link PublicationSample} instances; never {@code null}, but may be empty
+     * @throws IllegalArgumentException if {@code pubsDto} is {@code null} or empty
      */
     public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
 
@@ -137,10 +158,16 @@ public class PublicationSampleRepository {
     }
 
     /**
+     * Determines whether a {@link PublicationSample} matches the criteria defined in a
+     * {@link PublicationSampleDTO_US016}.
+     * <p>
+     * Equality is checked across: title, author names (order-sensitive), original language,
+     * genre types (order-sensitive), owner username, and condition description.
+     * </p>
      *
-     * @param ps
-     * @param dto
-     * @return
+     * @param ps  the publication sample to evaluate; must not be {@code null}
+     * @param dto the DTO containing the filter criteria; must not be {@code null}
+     * @return {@code true} if all fields match; {@code false} otherwise
      */
     private static boolean matches(PublicationSample ps, PublicationSampleDTO_US016 dto) {
         BibliographicalData bd = ps.getBibliographicalData();
@@ -176,8 +203,6 @@ public class PublicationSampleRepository {
      * @return a list of publication samples belonging to the given listings and
      *         matching the specified publication; never {@code null}, but may be empty
      */
-
-
     public List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication){
 
         List<PublicationSample> pubSamplesList = new ArrayList<>();
@@ -252,8 +277,6 @@ public class PublicationSampleRepository {
      *         matches the specified publisher
      * @throws NullPointerException if {@code listings} or {@code publisher} is {@code null}
      */
-
-
     public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher){
 
         List<PublicationSample> pubSamplesList = new ArrayList<>();

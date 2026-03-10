@@ -623,7 +623,7 @@ class PublicationSampleRepositoryTest {
                 "owner",
                 "New"
         );
-        repo.addPublication(ps);
+        repo.add(ps);
 
         PublicationSampleDTO_US016 dto = mockDto(
                 "Title",
@@ -655,7 +655,7 @@ class PublicationSampleRepositoryTest {
                 "owner",
                 "New"
         );
-        repo.addPublication(ps);
+        repo.add(ps);
 
         PublicationSampleDTO_US016 dto = mockDto(
                 "Title",
@@ -683,8 +683,8 @@ class PublicationSampleRepositoryTest {
         PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
         PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository(psFactory);
 
-        publicationSampleRepository.addPublication(psDouble1);
-        publicationSampleRepository.addPublication(psDouble2);
+        publicationSampleRepository.add(psDouble1);
+        publicationSampleRepository.add(psDouble2);
 
         // act + assert
 
@@ -702,7 +702,7 @@ class PublicationSampleRepositoryTest {
         PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
         PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository(psFactory);
 
-        publicationSampleRepository.addPublication(psDouble1);
+        publicationSampleRepository.add(psDouble1);
 
         // act + assert
         assertFalse(publicationSampleRepository.isExistent(psDouble2));
@@ -722,18 +722,6 @@ class PublicationSampleRepositoryTest {
         assertFalse(publicationSampleRepository.isExistent(psDouble));
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     void getListOfDifferentPublications_whenLibraryContainsSome_returnsOnlyMissingOnes() {
