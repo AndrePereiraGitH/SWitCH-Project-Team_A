@@ -12,10 +12,14 @@ import java.util.Objects;
  */
 public class City {
 
-    /** The country this city belongs to. */
+    /**
+     * The country this city belongs to.
+     */
     private Country _country;
 
-    /** The name of the city. */
+    /**
+     * The name of the city.
+     */
     private String _cityName;
 
     /**
@@ -24,12 +28,11 @@ public class City {
      * The constructor is protected, so it can only be called from
      * subclasses or classes in the same package.
      *
-     * @param country the country this city belongs to; must not be null
+     * @param country  the country this city belongs to; must not be null
      * @param cityName the name of the city; must not be null or blank
      * @throws IllegalArgumentException if country is null or cityName is null/blank
      */
 
-    //
     protected City(Country country, String cityName) {
         if (cityName == null || cityName.isBlank()) {
             throw new IllegalArgumentException("A city name cannot be left blank");
