@@ -24,7 +24,7 @@ public class PublicationSample {
     private final Edition _edition;
     private final Condition _condition;
 
-    public PublicationSample(BibliographicalData bd, User owner, PublicationStatus publicationStatus, Edition edition,
+    protected PublicationSample(BibliographicalData bd, User owner, PublicationStatus publicationStatus, Edition edition,
                              Condition condition) {
 
         if (bd == null || owner == null || publicationStatus == null || edition == null || condition == null) {
