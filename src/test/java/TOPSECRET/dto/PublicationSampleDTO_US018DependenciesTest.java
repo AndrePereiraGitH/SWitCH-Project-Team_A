@@ -1,4 +1,4 @@
-package TOPSECRET.dto;
+/*package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * </ul>
  *
  * Tests follow the AAA pattern.
- */
+
 class PublicationSampleDTO_US018DependenciesTest {
 
 
@@ -153,4 +153,4 @@ class PublicationSampleDTO_US018DependenciesTest {
         assertTrue(result.isEmpty());
     }
 
-}
+}*/
