@@ -28,98 +28,97 @@ import static org.mockito.Mockito.*;
  */
 class AuthorRepositoryTest {
 
-        private final AuthorFactory authorFactory = mock(AuthorFactory.class);
-        private final AuthorRepository authorRepository = new AuthorRepository(  authorFactory);
-        private final Country country = mock(Country.class);
-        private final String name = "João";
-        String validBio = "bio";
+    private final AuthorFactory authorFactory = mock(AuthorFactory.class);
+    private final Country country = mock(Country.class);
+    private final String name = "João";
+    String validBio = "bio";
 
-        // ========================================
-        // CONSTRUCTOR TESTS
-        // ========================================
+    // ========================================
+    // CONSTRUCTOR TESTS
+    // ========================================
+    @Test
+    void shouldThrowExceptionWhenFactoryIsNull() {
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new AuthorRepository(null)
+        );
 
-        @Test
-        void shouldThrowExceptionWhenFactoryIsNull() {
-            IllegalArgumentException exception = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> new AuthorRepository(  null)
-            );
-            assertEquals("AuthorFactory cannot be null", exception.getMessage());
-        }
+        // Assert
+        assertEquals("AuthorFactory cannot be null", exception.getMessage());
+    }
 
-        // ========================================
-        // CREATE AND ADD TESTS
-        // ========================================
-    /**
-     * I stub {@code iterator()} when mocking a {@link List}.
-     *
-     * <p>A Java for-each loop internally calls {@code iterator()} on the collection.
-     * When the list is a Mockito mock, {@code iterator()} returns {@code null} by default,
-     * causing a {@link NullPointerException} the moment the loop starts.
-     */
-        @Test
-        void shouldDelegateCreationToFactoryAndAddToList() {
-            // Arrange
-            Author mockAuthor = mock(Author.class);
-            when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
-                    .thenReturn(mockAuthor);
+    // ========================================
+    // CREATE AND ADD TESTS
+    // ========================================
 
-            // Act
-            Author result = authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+    @Test
+    void shouldDelegateCreationToFactoryAndAddToList() {
+        // Arrange
+        Author mockAuthor = mock(Author.class);
+        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
+                .thenReturn(mockAuthor);
+        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
 
-            // Assert
-            assertEquals(mockAuthor, result);
-            verify(authorFactory).create(name, country, LocalDate.of(1978, 5, 12), validBio);
-        }
+        // Act
+        Author result = authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
-//    @Test
-//    void shouldThrowExceptionWhenAuthorAlreadyExists() {
-//        // Arrange
-//        Author mockAuthor = mock(Author.class);
-//
-//        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
-//                .thenReturn(mockAuthor);
-//
-//        // Use thenAnswer so a fresh iterator is returned every time iterator() is called
-//
-//        // Act + Assert
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                () -> authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio)
-//        );
-//        assertEquals("Author already exists", exception.getMessage());
-//    }
+        // Assert
+        assertSame(mockAuthor, result);
+        verify(authorFactory).create(name, country, LocalDate.of(1978, 5, 12), validBio);
+    }
 
-        // ========================================
-        // GET ALL AUTHORS TESTS
-        // ========================================
+    @Test
+    void shouldThrowExceptionWhenAuthorAlreadyExists() {
+        // Arrange
+        Author mockAuthor = mock(Author.class);
+        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
+                .thenReturn(mockAuthor);
 
+        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+        authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
-        @Test
-        void shouldReturnUnmodifiableList() {
-            // Arrange
-            Author mockAuthor = mock(Author.class);
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio)
+        );
 
-            // Act
-            List<Author> result = authorRepository.getAllAuthors();
+        assertEquals("Author already exists", exception.getMessage());
+    }
 
-            // Assert
-            assertThrows(UnsupportedOperationException.class, () -> result.add(mockAuthor));
-        }
+    // ========================================
+    // GET ALL AUTHORS TESTS
+    // ========================================
+
+    @Test
+    void shouldReturnUnmodifiableList() {
+        // Arrange
+        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+
+        // Act
+        List<Author> result = authorRepository.getAllAuthors();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Author.class)));
+    }
 
     @Test
     void shouldReturnDefensiveCopy() {
-        // Arrange — real list so getAllAuthors() actually has something to copy
-        AuthorRepository realRepository = new AuthorRepository(authorFactory);
-        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), "bio"))
-                .thenReturn(mock(Author.class));
-        realRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), "bio");
+        // Arrange
+        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+        Author mockAuthor = mock(Author.class);
+
+        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
+                .thenReturn(mockAuthor);
+
+        authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
         // Act
-        List<Author> result1 = realRepository.getAllAuthors();
-        List<Author> result2 = realRepository.getAllAuthors();
+        List<Author> result1 = authorRepository.getAllAuthors();
+        List<Author> result2 = authorRepository.getAllAuthors();
 
-        // Assert — different instances, same content
+        // Assert
         assertNotSame(result1, result2);
         assertEquals(result1, result2);
     }
