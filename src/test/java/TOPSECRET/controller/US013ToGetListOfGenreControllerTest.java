@@ -11,21 +11,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ToGetListOfGenreController}.
+ * Unit tests for {@link US013ToGetListOfGenreController}.
  *
  * <p>{@link GenreRepository} is mocked to isolate the controller's own logic completely.
  *
  * <p><b>What is tested here (controller logic only):</b>
  * <ul>
  *   <li>Constructor — null repository</li>
- *   <li>{@link ToGetListOfGenreController#getGenresList} — delegates to repository,
+ *   <li>{@link US013ToGetListOfGenreController#getGenresList} — delegates to repository,
  *       maps each {@link Genre} to a {@link GenreDTO_US013}, returns empty list when no genres exist</li>
  * </ul>
  */
-class ToGetListOfGenreControllerTest {
+class US013ToGetListOfGenreControllerTest {
 
     GenreRepository genreRepository = mock(GenreRepository.class);
-    ToGetListOfGenreController controller = new ToGetListOfGenreController(genreRepository);
+    US013ToGetListOfGenreController controller = new US013ToGetListOfGenreController(genreRepository);
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -35,7 +35,7 @@ class ToGetListOfGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenRepositoryIsNull() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new ToGetListOfGenreController(null)
+                () -> new US013ToGetListOfGenreController(null)
         );
         assertEquals("Genre Repository can't be null", exception.getMessage());
     }

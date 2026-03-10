@@ -18,10 +18,10 @@ import java.time.LocalDate;
  * preserving separation of concerns between the domain and presentation layers.
  */
 
-public class ToRegisterAuthorController {
+public class US005ToRegisterAuthorController {
     private final AuthorRepository _authorRepository;
 
-    public ToRegisterAuthorController(AuthorRepository authorRepository) {
+    public US005ToRegisterAuthorController(AuthorRepository authorRepository) {
         if (authorRepository == null) {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
         }

@@ -18,10 +18,10 @@ import java.util.List;
  * Its responsibility is limited to delegation and data transformation,
  * preserving separation of concerns between the domain and presentation layers.
  */
-public class ToGetListOfGenreController {
+public class US013ToGetListOfGenreController {
     private final GenreRepository _genreRepository;
 
-    public ToGetListOfGenreController(GenreRepository genreRepository) {
+    public US013ToGetListOfGenreController(GenreRepository genreRepository) {
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre Repository can't be null");
         }
