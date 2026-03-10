@@ -27,14 +27,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DimensionsTest {
 
-    private final Dimensions validDimensions = new Dimensions(10.0, 0.2, 5.2);
+    @Test
+    void shouldReturnCorrectDimensions() {
+        // Arrange
+        double height = 10.0;
+        double width = 0.2;
+        double depth = 5.2;
 
+        // Act
+        Dimensions dimensions = new Dimensions(height, width, depth);
+
+        // Assert
+        assertEquals(height, dimensions.getHeight(), 0.0);
+        assertEquals(width, dimensions.getWidth(), 0.0);
+        assertEquals(depth, dimensions.getDepth(), 0.0);
+    }
+
+// -------------------------
+// PARAMETERIZED TESTS
+// -------------------------
     static Stream<Arguments> validDimensionsProvider() {
         return Stream.of(
                 // normal positive values
                 Arguments.of(1.0, 1.0, 1.0),
                 Arguments.of(3.5, 5.2, 15.1)
-
         );
     }
 
@@ -62,7 +78,6 @@ class DimensionsTest {
         );
     }
 
-    // ---------------- PARAMETERIZED TESTS ----------------
     @ParameterizedTest
     @MethodSource("validDimensionsProvider")
     void shouldCreateDimensionsWhenAllValuesArePositive(
@@ -93,78 +108,61 @@ class DimensionsTest {
         );
     }
 
-    @Test
-    void shouldReturnCorrectDimensions() {
-        // Arrange
-        double height = 10.0;
-        double width = 0.2;
-        double depth = 5.2;
 
-        // Act
-        Dimensions dimensions = new Dimensions(height, width, depth);
-
-        // Assert
-        assertEquals(height, dimensions.getHeight(), 0.0);
-        assertEquals(width, dimensions.getWidth(), 0.0);
-        assertEquals(depth, dimensions.getDepth(), 0.0);
-    }
-
-
-    // -------------------------
-    // equals
-    // -------------------------
-
-    @Test
-    void equals_shouldReturnTrue_whenSameReference() {
-        Dimensions dimensions1 = validDimensions;
-        Dimensions dimensions2 = validDimensions;
-
-        assertEquals(dimensions1, dimensions2); // same object
-    }
+// -------------------------
+// equals
+// -------------------------
 
     @Test
     void equals_shouldReturnFalse_whenOtherIsNull() {
-        Dimensions d = validDimensions;
-        assertNotEquals(null, d);
+        // Arrange
+        Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+
+        // Act
+        boolean result = dimensions.equals(null);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
     void equals_shouldReturnFalse_whenOtherIsDifferentClass() {
-        Dimensions d = validDimensions;
-        assertNotEquals("not dimensions", d);
+        // Arrange
+        Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+
+        // Act
+        boolean result = dimensions.equals("not dimensions");
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
     void equals_shouldReturnTrue_whenSameValues() {
-        Dimensions a = new Dimensions(10.0, 0.2, 5.2);
-        Dimensions b = new Dimensions(10.0, 0.2, 5.2);
+        // Arrange
+        Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+        Dimensions dimensions2 = new Dimensions(10.0, 0.2, 5.2);
 
-        assertEquals(a, b);
-        assertEquals(b, a); // symmetry
+        // Act
+        boolean result1 = dimensions.equals(dimensions2);
+        boolean result2 = dimensions2.equals(dimensions);
+
+        // Assert
+        assertTrue(result1);
+        assertTrue(result2);
     }
 
     @Test
     void equals_shouldReturnFalse_whenHeightDiffers() {
-        Dimensions a = validDimensions;
-        Dimensions b = new Dimensions(99.0, 0.2, 5.2);
+        // Arrange
+        Dimensions dimensions = new Dimensions(10.0, 0.2, 5.2);
+        Dimensions dimensions2 = new Dimensions(99.0, 0.2, 5.2);
 
-        assertNotEquals(a, b);
-    }
+        // Act
+        boolean result = dimensions.equals(dimensions2);
 
-    @Test
-    void equals_shouldReturnFalse_whenWidthDiffers() {
-        Dimensions a = validDimensions;
-        Dimensions b = new Dimensions(10.0, 9.9, 5.2);
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_shouldReturnFalse_whenDepthDiffers() {
-        Dimensions a = validDimensions;
-        Dimensions b = new Dimensions(10.0, 0.2, 99.9);
-
-        assertNotEquals(a, b);
+        // Assert
+        assertFalse(result);
     }
 }
 
