@@ -160,4 +160,58 @@ class PublisherRepositoryTest {
         assertNotSame(result1, result2);
         assertEquals(result1, result2);
     }
+    /**
+     * Verifies that findByVatNumber returns the correct publisher
+     * when a matching VAT number exists.
+     */
+    @Test
+    void shouldFindPublisherByVatNumber() {
+        Publisher mockPublisher = mock(Publisher.class);
+
+        when(mockPublisher.getVatNumber()).thenReturn(vatNumber);
+        when(publishers.iterator()).thenReturn(List.of(mockPublisher).iterator());
+
+        Publisher result = repository.findByVatNumber(vatNumber);
+
+        assertEquals(mockPublisher, result);
+    }
+
+    /**
+     * Verifies that findByVatNumber returns null
+     * when no publisher with the given VAT number exists.
+     */
+    @Test
+    void shouldReturnNullWhenVatNumberDoesNotExist() {
+        Publisher mockPublisher = mock(Publisher.class);
+
+        when(mockPublisher.getVatNumber()).thenReturn("999999999");
+        when(publishers.iterator()).thenReturn(List.of(mockPublisher).iterator());
+
+        Publisher result = repository.findByVatNumber(vatNumber);
+
+        assertNull(result);
+    }
+
+    @Test
+    void findByVatNumber_shouldReturnNullWhenRepositoryEmpty() {
+        when(publishers.iterator()).thenReturn(Collections.emptyIterator());
+
+        Publisher result = repository.findByVatNumber(vatNumber);
+
+        assertNull(result);
+    }
+
+    @Test
+    void shouldAddPublisherWhenDifferentPublisherExists() {
+        Publisher existingPublisher = mock(Publisher.class);
+        Publisher newPublisher = mock(Publisher.class);
+
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(newPublisher);
+        when(publishers.iterator()).thenReturn(List.of(existingPublisher).iterator());
+
+        Publisher result = repository.createAndAdd(name, vatNumber, contact);
+
+        assertEquals(newPublisher, result);
+        verify(publishers).add(newPublisher);
+    }
 }
