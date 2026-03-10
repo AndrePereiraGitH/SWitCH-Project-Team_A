@@ -12,31 +12,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Repository for managing {@link PublicationSample} instances within the system.
+ * <p>
+ * Acts as an in-memory collection that centralizes storage and access
+ * to all publication samples, using a {@link PublicationSampleFactory} for creation.
+ * </p>
+ */
 public class PublicationSampleRepository {
 
-    private PublicationSampleFactory _publicationSampleFactory;
-    private List<PublicationSample> allPublicationsInSystem = new ArrayList<>();
+    private final PublicationSampleFactory _publicationSampleFactory;
+    private List<PublicationSample> allPublicationsInSystem;
 
-    public PublicationSampleRepository(PublicationSampleFactory publicationSampleFactory){
-        this._publicationSampleFactory = publicationSampleFactory;
-    }
-
-    public PublicationSampleRepository(List<PublicationSample> publicationList, PublicationSampleFactory publicationSampleFactory) {
-        allPublicationsInSystem = new ArrayList<>(publicationList);
+    /**
+     * Constructs a new {@code PublicationSampleRepository} with the given factory.
+     * Initializes an empty internal list of publication samples.
+     *
+     * @param publicationSampleFactory the factory used to create {@link PublicationSample} instances
+     */
+    public PublicationSampleRepository(PublicationSampleFactory publicationSampleFactory) {
+        allPublicationsInSystem = new ArrayList<>();
         _publicationSampleFactory = publicationSampleFactory;
     }
 
-    public PublicationSampleRepository(){
-        this.allPublicationsInSystem = new ArrayList<>(); //no-argument constructor so that it can compile (this way it's not restrictive)
+    /**
+     * Adds a {@link PublicationSample} to the repository.
+     * <p>
+     * <b>Note:</b> This method is intended for testing purposes only
+     * and should not be used in production code.
+     * </p>
+     *
+     * @param publicationSample the publication sample to add; should not be {@code null}
+     */
+    void add(PublicationSample publicationSample){
+        allPublicationsInSystem.add(publicationSample);
     }
 
     public List<PublicationSample> getAllPublications() { //getter to obtain list of all publications in the system
         return List.copyOf(allPublicationsInSystem);
     }
 
-
-//    public boolean createAndAdd(BibliographicalData bibliographicalData, PublicationType publicationType, User username,
-//                                PublicationStatus publicationStatus, String edition, Code code){
 
     /**
      * Creates a new PublicationSample and adds it to the repository.
