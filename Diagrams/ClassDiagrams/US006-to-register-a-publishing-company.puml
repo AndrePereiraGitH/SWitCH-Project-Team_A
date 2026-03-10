@@ -1,27 +1,33 @@
 @startuml
 title US006 - To register a publishing company in the system
 
-class RegisterPublisher {
-  +registerPublisher(name:String, vatNumber:String, contact:Contact)
+class US006ToRegisterNewPublisherController {
+  -publisherRepository: PublisherRepository
+  +registerPublisher(name: String, vatNumber: String, contact: Contact): boolean
 }
 
 class PublisherRepository {
-- List<Publisher> publishers
-  +createAndAddPublisher(name:String, vatNumber:String, contact:Contact)
-  +add(p1)
-  +validator(p1): boolean
+  -publishers: List<Publisher>
+  +create(name: String, vatNumber: String, contact: Contact)
+  -isExistent()
+  -publishers.add(publisher:Publisher)
 }
+
+class PublisherFactory {
+  +create(name: String, vatNumber: String, contact: Contact)
+}
+
 
 class Publisher {
-  +name: String
-  +vatNumber: String
-  +contact: Contact
-
+  -name: String
+  -vatNumber: String
+  -contact: Contact
 }
 
-' Interactions
+US006ToRegisterNewPublisherController "1" ..> "1" PublisherRepository : requests registration to >
+PublisherRepository "1" --> "1" PublisherFactory : uses >
+PublisherFactory "1" ..> "*" Publisher : creates >
+PublisherRepository "1" --> "*" Publisher : stores >
 
-RegisterPublisher "1 " -.- "1 " PublisherRepository : requests registration to >
-PublisherRepository "1 " -- " * " Publisher : creates / stores >
 
 @enduml

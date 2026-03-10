@@ -1,6 +1,7 @@
 @startuml
 
 hide footbox
+autonumber
 title US006 - To register a publishing company in the system
 
 box #WhiteSmoke
@@ -9,42 +10,55 @@ participant ":UI006" as UI
 end box
 
 
-participant ":PublisherController" as RegisterPublisherController
+participant ":US006ToRegisterNewPublisherController" as RegisterPublisherController
 
 
 
 participant ":PublisherRepository" as PublisherRepository
- participant ":List<Publisher>"
-Administrator -> UI : 1 I want to register a Publishing Company
-UI -->> Administrator : **2** Please Provide name, VatNumber, and Contact
-Administrator -> UI : **3** Name: Cambridge; VatNumber 123456; Contact: +4412345678
+participant "publishers:List<Publisher>" as list
+participant "PublisherFactory" as factory
+participant "publisher:Publisher" as publisher
 
-UI -> RegisterPublisherController : 4 registerPublisher(name, vatNumber, contact)
+Administrator -> UI : I want to register a Publishing Company
+
+activate UI
+UI -->> Administrator : Please Provide name, VatNumber, and Contact
+
+deactivate UI
+
+Administrator -> UI : Name: Cambridge; VatNumber 123456; Contact: +4412345678
+
+activate UI
+
+UI -> RegisterPublisherController : registerPublisher(name, vatNumber, contact)
 activate RegisterPublisherController
 
-RegisterPublisherController -> PublisherRepository : 5 createAndAddNewPublisher(name, vatNumber, contact)
+RegisterPublisherController -> PublisherRepository : createAndAddPublisher(name, vatNumber, contact)
 
 activate PublisherRepository
 
-create "publisherTest: Publisher" as User
+PublisherRepository -> list **: create()
+PublisherRepository -> factory: create(name, vatNumber, contact)
 
 
-PublisherRepository -> User : 6 create(name, vatNumber, contact)
+activate factory
 
+factory -> publisher ** : create(name, vatNumber, contact)
 
-PublisherRepository -> PublisherRepository : 7 validatePublisher(publisherTest)
-PublisherRepository -> ":List<Publisher>" : 8 addPublisherToPublisherList(publisherList)
- activate ":List<Publisher>"
- ":List<Publisher>" -->> PublisherRepository : 9 publisherTest added to the PublisherList
- deactivate
+factory -> PublisherRepository: publisher
 
-PublisherRepository --> RegisterPublisherController : 10 New Publisher added to the list of Publishers
+deactivate factory
+
+PublisherRepository -> PublisherRepository : isExistent()
+PublisherRepository -> PublisherRepository: publishers.add(publisher)
+
+PublisherRepository --> RegisterPublisherController : publisher
 deactivate PublisherRepository
 
-RegisterPublisherController --> UI : 11 success
+RegisterPublisherController --> UI : success
 deactivate RegisterPublisherController
 
-UI --> Administrator : 12 success
+UI --> Administrator : success
 
 
 
