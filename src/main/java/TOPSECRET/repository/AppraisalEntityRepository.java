@@ -26,7 +26,7 @@ public class AppraisalEntityRepository {
     private List<AppraisalEntity> _appraisalEntities;
     private GenreRepository _genreRepository;
     private PublicationTypeRepository _publicationTypeRepository;
-    private AppraisalEntityFactory _appraisalEntityRepository;
+    private AppraisalEntityFactory _appraisalEntityFactory;
 
     /**
      * Constructor.
@@ -37,7 +37,7 @@ public class AppraisalEntityRepository {
     public AppraisalEntityRepository(
             GenreRepository genreRepository,
             PublicationTypeRepository publicationTypeRepository,
-            AppraisalEntityFactory appraisalEntityRepository) {
+            AppraisalEntityFactory appraisalEntityFactory) {
 
         if (genreRepository == null) {
             throw new IllegalArgumentException("GenreRepository cannot be null.");
@@ -50,7 +50,7 @@ public class AppraisalEntityRepository {
         this._appraisalEntities = new ArrayList<>();
         this._genreRepository = genreRepository;
         this._publicationTypeRepository = publicationTypeRepository;
-        this._appraisalEntityRepository = appraisalEntityRepository;
+        this._appraisalEntityFactory = appraisalEntityFactory;
     }
 
     /**
@@ -110,7 +110,7 @@ public class AppraisalEntityRepository {
 
 
         AppraisalEntity apEn =
-                _appraisalEntityRepository.create(name, contact, genres, publicationTypes);
+                _appraisalEntityFactory.create(name, contact, genres, publicationTypes);
 
         _appraisalEntities.add(apEn);
         return apEn;

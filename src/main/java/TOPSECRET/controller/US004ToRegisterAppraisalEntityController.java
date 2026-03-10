@@ -71,40 +71,60 @@ public class US004ToRegisterAppraisalEntityController {
     }
 
     /**
-     * Retrieves all available Genres and converts them to DTO objects.
-     * @return List of GenreDetailsDTO_US004 for UI display.
+     * Retrieves all available genres from the repository and converts them
+     * into DTO objects suitable for presentation in the UI layer.
+     * The method performs the following steps:
+     *   <li>Requests the list of {@link Genre} objects from the {@link GenreRepository}.</li>
+     *   <li>Creates a new list to avoid exposing the original domain collection.</li>
+     *   <li>Converts each {@link Genre} domain object into a {@link GenreDetailsDTO_US004}.</li>
+     *   <li>Only the genre title is included in the DTO to prevent exposing
+     *       internal domain details.</li>
+     * This ensures a clear separation between the domain layer and the
+     * presentation layer by exposing only the necessary information.
+     * @return a list of {@link GenreDetailsDTO_US004} containing the titles
+     * of all available genres.
      */
     public List<GenreDetailsDTO_US004> getAllGenres() {
 
         List<Genre> genres = _genreRepository.getAllGenres();
-        List<GenreDetailsDTO_US004> result = new ArrayList<>();
 
-        for (Genre genre : genres) {
-            result.add(new GenreDetailsDTO_US004(genre.getGenreType()));
-        }
-        return result;
+        return GenreDetailsDTO_US004.genreToDTO(genres);
     }
 
     /**
-     * Retrieves all available PublicationTypes and converts them to DTO objects.
-     * @return List of PublicationTypeDTO_US004 for UI display.
+     * Retrieves all available publication types from the repository
+     * and converts them into DTO objects for presentation in the UI layer.
+     *
+     * <p>
+     * The method performs the following steps:
+     * </p>
+     * <ol>
+     *     <li>Requests the list of {@link PublicationType} domain objects from
+     *         the {@link PublicationTypeRepository}.</li>
+     *     <li>Creates a new list to avoid exposing the original domain collection.</li>
+     *     <li>Converts each {@link PublicationType} domain object into a
+     *         {@link PublicationTypeDTO_US004}.</li>
+     *     <li>Returns the resulting list of DTO objects containing only the
+     *         attributes required by the UI.</li>
+     * </ol>
+     *
+     * <p>
+     * This ensures that internal domain objects are not directly exposed to the
+     * presentation layer and maintains a clear separation between the domain
+     * model and the UI representation.
+     * </p>
+     *
+     * @return list of {@link PublicationTypeDTO_US004} representing
+     *         all available publication types.
      */
     public List<PublicationTypeDTO_US004> getAllPublicationTypes() {
 
-        List<PublicationType> types =
+        List<PublicationType> publicationTypes =
                 _publicationTypeRepository.getAllPublicationTypes();
 
-        List<PublicationTypeDTO_US004> result = new ArrayList<>();
+        List<PublicationTypeDTO_US004> result =
+                PublicationTypeDTO_US004.publicationTypesToDTO(publicationTypes);
 
-        for (PublicationType type : types) {
-            result.add(
-                    new PublicationTypeDTO_US004(
-                            type.getMediaFormat(),
-                            type.getTypeOfBinding(),
-                            type.getDetails()
-                    )
-            );
-        }
         return result;
     }
 

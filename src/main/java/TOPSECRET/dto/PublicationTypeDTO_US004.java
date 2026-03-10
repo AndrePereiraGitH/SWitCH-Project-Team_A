@@ -47,6 +47,31 @@ public class PublicationTypeDTO_US004 {
     }
 
     /**
+     * Converts domain PublicationType objects into DTOs.
+     *
+     * @param publicationTypes list of PublicationType domain objects
+     * @return list of PublicationTypeDTO_US004
+     */
+    public static List<PublicationTypeDTO_US004> publicationTypesToDTO(
+            List<PublicationType> publicationTypes) {
+
+        List<PublicationTypeDTO_US004> result = new ArrayList<>();
+
+        for (PublicationType type : publicationTypes) {
+
+            result.add(
+                    new PublicationTypeDTO_US004(
+                            type.getMediaFormat(),
+                            type.getTypeOfBinding(),
+                            type.getDetails()
+                    )
+            );
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the media format.
      * @return MediaFormat
      */
