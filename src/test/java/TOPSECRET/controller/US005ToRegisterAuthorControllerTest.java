@@ -10,9 +10,9 @@ import TOPSECRET.repository.AuthorRepository;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for the {@link ToRegisterAuthorController} application controller.
+ * Unit tests for the {@link US005ToRegisterAuthorController} application controller.
  *
- * <p>This test class verifies the behaviour of {@link ToRegisterAuthorController},
+ * <p>This test class verifies the behaviour of {@link US005ToRegisterAuthorController},
  * ensuring that it correctly validates its constructor dependency and delegates
  * author registration to the {@link AuthorRepository}.
  *
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  * <ul>
  *   <li>Constructor validation — an {@link IllegalArgumentException} is thrown
  *       when the {@link AuthorRepository} dependency is {@code null}</li>
- *   <li>Delegation behaviour — {@link ToRegisterAuthorController#register(String, Country, java.time.LocalDate, String)}
+ *   <li>Delegation behaviour — {@link US005ToRegisterAuthorController#register(String, Country, java.time.LocalDate, String)}
  *       calls {@link AuthorRepository#createAndAddAuthor(String, Country, java.time.LocalDate, String)}
  *       with the same arguments</li>
  *   <li>The controller returns the same {@link Author} instance produced by the repository</li>
@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * behaviour implemented inside {@link AuthorRepository} or {@link Author}.
  * Those responsibilities are covered by their respective unit tests.
  */
-class ToRegisterAuthorControllerTest {
+class US005ToRegisterAuthorControllerTest {
 
     @Test
     void constructorShouldThrowIllegalArgumentException_whenRepositoryIsNull() {
@@ -43,7 +43,7 @@ class ToRegisterAuthorControllerTest {
         // ACT
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> new ToRegisterAuthorController(null)
+                () -> new US005ToRegisterAuthorController(null)
         );
 
         // ASSERT
@@ -55,7 +55,7 @@ class ToRegisterAuthorControllerTest {
 
         // ARRANGE
         AuthorRepository authorRepository = mock(AuthorRepository.class);
-        ToRegisterAuthorController controller = new ToRegisterAuthorController(authorRepository);
+        US005ToRegisterAuthorController controller = new US005ToRegisterAuthorController(authorRepository);
 
         String name = "John";
         Country country = mock(Country.class);
