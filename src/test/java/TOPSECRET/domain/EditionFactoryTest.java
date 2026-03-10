@@ -7,49 +7,32 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class EditionFactoryTest {
     private final EditionFactory factory = new EditionFactory();
 
-    // -------------------------
-    // Mocks
-    // -------------------------
+// -------------------------
+// Mocks
+// -------------------------
 
-    private PublicationType validPublicationType() {
-        return mock(PublicationType.class);
-    }
+    private final PublicationType validPublicationType = mock(PublicationType.class);
+    private final Code validCode = mock(Code.class);
+    private final PhysicalAttributes validPhysicalAttributes = mock(PhysicalAttributes.class);
+    private final Publisher validPublisher = mock(Publisher.class);
 
-    private Code validCode() {
-        return mock(Code.class);
-    }
-
-    private PhysicalAttributes validPhysicalAttributes() {
-        return mock(PhysicalAttributes.class);
-    }
-
-    private Contact validContact() {
-        return mock(Contact.class);
-    }
-
-    private Publisher validPublisher() {
-        Publisher publisher = mock(Publisher.class);
-        when(publisher.getContact()).thenReturn(validContact());
-        return publisher;
-    }
-
-    // -------------------------
-    // Tests
-    // -------------------------
+    
+// -------------------------
+// Tests
+// -------------------------
 
     @Test
     void shouldCreateEdition_whenValidData() {
         Edition edition = factory.create(
                 "1st",
-                validCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
+                validCode,
+                validPhysicalAttributes,
+                validPublicationType,
+                validPublisher,
                 Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1)
         );
@@ -64,10 +47,10 @@ class EditionFactoryTest {
     void shouldTrimEditionNumber() {
         Edition edition = factory.create(
                 "   1st   ",
-                validCode(),
-                validPhysicalAttributes(),
-                validPublicationType(),
-                validPublisher(),
+                validCode,
+                validPhysicalAttributes,
+                validPublicationType,
+                validPublisher,
                 Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1)
         );
