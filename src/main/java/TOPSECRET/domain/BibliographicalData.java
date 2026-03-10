@@ -46,7 +46,7 @@ public class BibliographicalData {
      *                                  or if the genres list is null/empty
      */
 
-    public BibliographicalData(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
+    protected BibliographicalData(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
                 List<Genre> genres, String chunksOfText) {
 
         if (title == null || title.isBlank()) {
