@@ -332,25 +332,23 @@ class PublicationSampleRepositoryTest {
     void shouldReturnMatchingPublicationSample() {
 
         // ARRANGE
-        PublicationSampleRepository sut = new PublicationSampleRepository();
-
         Library library = mock(Library.class);
         PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
 
-        PublicationSample publication = mock(PublicationSample.class);
-        BibliographicalData bd = mock(BibliographicalData.class);
-        Edition edition = mock(Edition.class);
-        User owner = mock(User.class);
+        when(library.getAllPublications()).thenReturn(List.of(pubSample1Double));
 
-        when(library.getAllPublications()).thenReturn(List.of(publication));
+        when(pubSample1Double.getBibliographicalData()).thenReturn(bd1Double);
 
-        when(publication.getBibliographicalData()).thenReturn(bd);
-        when(publication.getEdition()).thenReturn(edition);
-        when(publication.getOwner()).thenReturn(owner);
+        // 👇 FALTAVA ISTO
+        when(bd1Double.getTitle()).thenReturn("Clean Code");
 
-        when(bd.getTitle()).thenReturn("Clean Code");
-        when(edition.getEditionNumber()).thenReturn("1");
-        when(owner.getUserName()).thenReturn("john");
+        Edition editionDouble = mock(Edition.class);
+        when(pubSample1Double.getEdition()).thenReturn(editionDouble);
+        when(editionDouble.getEditionNumber()).thenReturn("1");
+
+        User ownerDouble = mock(User.class);
+        when(pubSample1Double.getOwner()).thenReturn(ownerDouble);
+        when(ownerDouble.getUserName()).thenReturn("john");
 
         when(dto.getTitle()).thenReturn("Clean Code");
         when(dto.getEditionNumber()).thenReturn("1");
@@ -358,10 +356,10 @@ class PublicationSampleRepositoryTest {
 
         // ACT
         PublicationSample result =
-                sut.PublicationSampleDtoToDomain(library, dto);
+                repo.PublicationSampleDtoToDomain(library, dto);
 
         // ASSERT
-        assertEquals(publication, result);
+        assertEquals(pubSample1Double, result);
     }
 
     /**
@@ -372,25 +370,17 @@ class PublicationSampleRepositoryTest {
     void shouldThrowExceptionWhenPublicationNotFound() {
 
         // ARRANGE
-        PublicationSampleRepository sut = new PublicationSampleRepository();
-
         Library library = mock(Library.class);
         PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
 
-        PublicationSample publication = mock(PublicationSample.class);
-        BibliographicalData bd = mock(BibliographicalData.class);
-        Edition edition = mock(Edition.class);
-        User owner = mock(User.class);
+        when(library.getAllPublications()).thenReturn(List.of(pubSample1Double));
 
-        when(library.getAllPublications()).thenReturn(List.of(publication));
+        when(bd1Double.getTitle()).thenReturn("Different");
+        when(pubSample1Double.getEdition().getEditionNumber()).thenReturn("2");
 
-        when(publication.getBibliographicalData()).thenReturn(bd);
-        when(publication.getEdition()).thenReturn(edition);
-        when(publication.getOwner()).thenReturn(owner);
-
-        when(bd.getTitle()).thenReturn("Different");
-        when(edition.getEditionNumber()).thenReturn("2");
-        when(owner.getUserName()).thenReturn("mary");
+        User ownerDouble = mock(User.class);
+        when(pubSample1Double.getOwner()).thenReturn(ownerDouble);
+        when(ownerDouble.getUserName()).thenReturn("mary");
 
         when(dto.getTitle()).thenReturn("Clean Code");
         when(dto.getEditionNumber()).thenReturn("1");
@@ -398,10 +388,10 @@ class PublicationSampleRepositoryTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> sut.PublicationSampleDtoToDomain(library, dto));
+                () -> repo.PublicationSampleDtoToDomain(library, dto));
     }
 
-    // ENDS --------------------------------------------------------------------------
+    // US018 ENDS --------------------------------------------------------------------------
 
     //============================================================
     // TESTING CREATE AND ADD WITH FACTORY
@@ -826,5 +816,4 @@ class PublicationSampleRepositoryTest {
         when(dtoDouble.getCondition()).thenReturn(condition);
         return dtoDouble;
     }
-
 }
