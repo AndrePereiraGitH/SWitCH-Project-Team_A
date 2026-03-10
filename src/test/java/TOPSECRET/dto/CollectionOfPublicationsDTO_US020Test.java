@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link CollectionOfPublicationsDTO}.
+ * Unit tests for {@link CollectionOfPublicationsDTO_US020}.
  * <p>
  * These tests verify that the DTO correctly handles valid input,
  * trims whitespace from fields, and throws exceptions when invalid
  * values are provided.
  */
 
-class CollectionOfPublicationsDTOTest {
+class CollectionOfPublicationsDTO_US020Test {
 
     /**
      * Verifies that the DTO is created successfully when valid
@@ -22,8 +22,8 @@ class CollectionOfPublicationsDTOTest {
     @Test
     void shouldCreateDTOWithValidData()
     {
-        CollectionOfPublicationsDTO dto =
-                new CollectionOfPublicationsDTO("List Name", "Raul");
+        CollectionOfPublicationsDTO_US020 dto =
+                new CollectionOfPublicationsDTO_US020("List Name", "Raul");
 
         assertNotNull(dto);
         assertEquals("List Name", dto.getListName());
@@ -37,8 +37,8 @@ class CollectionOfPublicationsDTOTest {
     @Test
     void shouldTrimInputValues()
     {
-        CollectionOfPublicationsDTO dto =
-                new CollectionOfPublicationsDTO("  List Name  ", "  Raul  ");
+        CollectionOfPublicationsDTO_US020 dto =
+                new CollectionOfPublicationsDTO_US020("  List Name  ", "  Raul  ");
 
         assertEquals("List Name", dto.getListName());
         assertEquals("Raul", dto.getOwnerUsername());
@@ -52,7 +52,7 @@ class CollectionOfPublicationsDTOTest {
     void shouldThrowWhenListNameIsNull()
     {
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublicationsDTO(null, "Raul")
+                new CollectionOfPublicationsDTO_US020(null, "Raul")
         );
     }
 
@@ -64,7 +64,7 @@ class CollectionOfPublicationsDTOTest {
     void shouldThrowWhenListNameIsBlank()
     {
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublicationsDTO("   ", "Raul")
+                new CollectionOfPublicationsDTO_US020("   ", "Raul")
         );
     }
 
@@ -76,7 +76,7 @@ class CollectionOfPublicationsDTOTest {
     void shouldThrowWhenOwnerUsernameIsNull()
     {
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublicationsDTO("List Name", null)
+                new CollectionOfPublicationsDTO_US020("List Name", null)
         );
     }
 
@@ -87,7 +87,7 @@ class CollectionOfPublicationsDTOTest {
     @Test
     void shouldThrowWhenOwnerUsernameIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublicationsDTO("List Name", "   ")
+                new CollectionOfPublicationsDTO_US020("List Name", "   ")
         );
     }
 }

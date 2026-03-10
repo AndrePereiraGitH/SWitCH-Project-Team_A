@@ -32,6 +32,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     String details = "Book with gold engravings";
     PublicationTypeFactory factory = new PublicationTypeFactory();
 
+    // --------------------- US002 START ---------------------
 
     /**
      * Verifies that a {@link PublicationTypeRepository} can be created,
@@ -152,7 +153,10 @@ public class PublicationTypeRepositoryDependenciesTest {
         assertSame(pubType, returned);
     }
 
-    // US004 starts -------------
+    // ---------------------- US002 END ----------------------
+
+
+    // --------------------- US004 START ---------------------
 
     /**
      * Verifies that findByAttributes returns correct PublicationType.
@@ -285,5 +289,5 @@ public class PublicationTypeRepositoryDependenciesTest {
         );
     }
 
-    // ends ---------------------
+    // ---------------------- US004 END ----------------------
 }

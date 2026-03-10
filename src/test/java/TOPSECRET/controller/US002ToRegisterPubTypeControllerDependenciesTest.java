@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import TOPSECRET.domain.Picture;
 import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
 import TOPSECRET.domain.Enum.MediaFormat;
@@ -25,8 +26,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     /**
      * Repository and controller instance used for testing.
      */
-    PublicationTypeFactory factory = new PublicationTypeFactory();
-    PublicationTypeRepository repo = new PublicationTypeRepository(factory);
+    PublicationTypeRepository repo = new PublicationTypeRepository(new PublicationTypeFactory());
     US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
     /**
@@ -47,14 +47,49 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     }
 
     /**
-     * Verifies that an {@link IllegalArgumentException} is thrown
-     * when attempting to register an invalid publication type,
+     * Invalid data tests
+     * Verifies that an {@link IllegalArgumentException} is thrown when parameters are invalid
      * and ensures that nothing is added to the repository.
+
+    /**
+     * Invalid Media format
      */
     @Test
-    void shouldThrowExceptionAndNotAddToRepository()
+    void shouldThrowExceptionWhenMediaFormatIsInvalid()
+    {
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(null, TypeOfBinding.HARDBACK, "detail"));
+        assertEquals(0, repo.getAllPublicationTypes().size());
+    }
+
+    /**
+     * Invalid Type Of Binding
+     */
+    @Test
+    void shouldThrowExceptionWhenTypeOfBindingIsInvalid()
+    {
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, null, "detail"));
+        assertEquals(0, repo.getAllPublicationTypes().size());
+    }
+
+    /**
+     * Invalid details
+     */
+    @Test
+    void shouldThrowExceptionWhenDetailsAreInvalids()
     {
         assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, ""));
         assertEquals(0, repo.getAllPublicationTypes().size());
     }
+
+    /**
+     * Verifies that an {@link IllegalArgumentException} is thrown when trying to add a duplicate publication type
+     */
+    @Test
+    void shouldThrowExceptionWhenAddingDuplicatePublicationTypes()
+    {
+        PublicationType pt1 = controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "detail");
+
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "detail"));
+    }
+
 }

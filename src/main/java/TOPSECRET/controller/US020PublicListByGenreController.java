@@ -2,7 +2,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
-import TOPSECRET.dto.CollectionOfPublicationsDTO;
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepository;
 
@@ -49,10 +49,10 @@ public class US020PublicListByGenreController {
      * Retrieves all public publication lists associated with a given genre.
      *
      * @param genre the genre used to filter public publication lists
-     * @return a list of {@link CollectionOfPublicationsDTO} matching the specified genre
+     * @return a list of {@link CollectionOfPublicationsDTO_US020} matching the specified genre
      * @throws IllegalArgumentException if the provided genre is {@code null}
      */
-    public List<CollectionOfPublicationsDTO> getPublicListsByGenre(Genre genre) {
+    public List<CollectionOfPublicationsDTO_US020> getPublicListsByGenre(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre can't be null.");
         }
