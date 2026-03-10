@@ -33,8 +33,8 @@ import static org.mockito.Mockito.when;
 
 class AuthorTest {
 
-    Profile profile = mock(Profile.class);
-    Country country = mock(Country.class);
+    Profile profileDouble = mock(Profile.class);
+    Country countryDouble = mock(Country.class);
 
     //========================================
     // CONSTRUCTOR TESTS - Primary Constructor
@@ -43,12 +43,12 @@ class AuthorTest {
     @Test
     void shouldCreateAuthorWithValidData() {
         //Arrange
-        when(profile.getName()).thenReturn("Joana");
+        when(profileDouble.getName()).thenReturn("Joana");
         // Act
-        Author author = new Author(profile, "valid bio");
+        Author author = new Author(profileDouble, "valid bio");
 
         // Assert
-        assertSame(profile, author.getProfile());
+        assertSame(profileDouble, author.getProfile());
         assertEquals("valid bio", author.getBiography());
     }
 
@@ -65,22 +65,22 @@ class AuthorTest {
     @Test
     void shouldThrowExceptionWhenBiographyIsNullOrBlank() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> new Author(profile, null));
-        assertThrows(IllegalArgumentException.class, () -> new Author(profile, "   "));
+        assertThrows(IllegalArgumentException.class, () -> new Author(profileDouble, null));
+        assertThrows(IllegalArgumentException.class, () -> new Author(profileDouble, "   "));
     }
 
-    // ========================================
-    // CONSTRUCTOR TESTS - Secondary Constructor
-    // ========================================
+// ========================================
+// CONSTRUCTOR TESTS - Secondary Constructor
+// ========================================
 
     @Test
     void shouldCreateAuthorUsingSecondaryConstructor() {
         // Act
-        Author author = new Author("Jane", country, LocalDate.of(1990, 1, 1), "Author bio");
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "Author bio");
 
         // Assert
         assertEquals("Jane", author.getProfile().getName());
-        assertEquals(country, author.getProfile().getCountry());
+        assertEquals(countryDouble, author.getProfile().getCountry());
         assertEquals(LocalDate.of(1990, 1, 1), author.getProfile().getBirthday());
         assertEquals("Author bio", author.getBiography());
     }
@@ -89,11 +89,11 @@ class AuthorTest {
     void shouldThrowExceptionWhenSecondaryConstructorReceivesInvalidData() {
         // Profile validation should trigger
         assertThrows(IllegalArgumentException.class,
-                () -> new Author(null, country, LocalDate.of(1990, 1, 1), "bio")
+                () -> new Author(null, countryDouble, LocalDate.of(1990, 1, 1), "bio")
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new Author("", country, LocalDate.of(1990, 1, 1), "bio")
+                () -> new Author("", countryDouble, LocalDate.of(1990, 1, 1), "bio")
         );
 
         assertThrows(IllegalArgumentException.class,
@@ -101,60 +101,88 @@ class AuthorTest {
         );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new Author("Name", country, null, "bio")
+                () -> new Author("Name", countryDouble, null, "bio")
         );
     }
 
-    // ========================================
-    // EQUALS TESTS
-    // ========================================
+// ========================================
+// EQUALS TESTS
+// ========================================
 
     @Test
-    void shouldBeEquals_whenSameProfileAndBio() {
+    void shouldBeEqual_whenComparedToItself() {
         // Arrange
-        Author a1 = new Author(profile, "bio");
-        Author a2 = new Author(profile, "bio");
+        Author author = new Author(profileDouble, "bio");
 
-        // Act + Assert
-        assertEquals(a1, a2);
+        // Act
+        boolean result = author.equals(author);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldBeEqual_whenSameProfileAndBio() {
+        // Arrange
+        Author a1 = new Author(profileDouble, "bio");
+        Author a2 = new Author(profileDouble, "bio");
+
+        // Act
+        boolean result = a1.equals(a2);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
     void shouldNotBeEqual_whenComparedToNull() {
         // Arrange
-        Author a1 = new Author(profile, "bio");
-        // Act + Assert
-        assertNotEquals(null, a1);
+        Author a1 = new Author(profileDouble, "bio");
+
+        // Act
+        boolean result = a1.equals(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldNotBeEqual_whenComparedToDifferentClass() {
+        // Arrange
+        Author a1 = new Author(profileDouble, "bio");
+
+        // Act
+        boolean result = a1.equals("not an author");
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
     void shouldNotBeEqual_whenDifferentProfile() {
-        Author a1 = new Author(profile, "bio");
-
+        // Arrange
         Profile differentProfile = mock(Profile.class);
+        Author a1 = new Author(profileDouble, "bio");
         Author a2 = new Author(differentProfile, "bio");
 
-        assertNotEquals(a1, a2);
+        // Act
+        boolean result = a1.equals(a2);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
-    void shouldNotBeEquals_whenSameProfileButDifferentBio() {
+    void shouldNotBeEqual_whenSameProfileButDifferentBio() {
         // Arrange
+        Author a1 = new Author(profileDouble, "bio1");
+        Author a2 = new Author(profileDouble, "bio2");
 
-        Author a1 = new Author(profile, "bio1");
-        Author a2 = new Author(profile, "bio2");
-        // Act + Assert
-        assertNotEquals(a1, a2);
-    }
+        // Act
+        boolean result = a1.equals(a2);
 
-    @Test
-    void shouldNotBeEqualsWhenAuthorsHaveDifferentState() {
-        // Arrange
-        Author author1 = new Author(profile, "Bio A");
-        Author author2 = new Author(profile, "Bio B");
-
-        // Act + Assert
-        assertNotEquals(author1, author2);
+        // Assert
+        assertFalse(result);
     }
 }
 
