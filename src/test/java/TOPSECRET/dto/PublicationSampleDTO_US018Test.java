@@ -1,148 +1,141 @@
-//package TOPSECRET.dto;
-//
-//import TOPSECRET.domain.*;
-//import TOPSECRET.domain.Enum.*;
-//import org.junit.jupiter.api.Test;
-//
-//import java.time.LocalDate;
-//import java.util.List;
-//import java.util.Locale;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-///**
-// * Unit tests for PublicationSampleDTO_US018.
-// *
-// * <p>
-// * Validates:
-// * </p>
-// * <ul>
-// *   <li>Constructor and getters</li>
-// *   <li>Conversion from domain PublicationSample to DTO</li>
-// *   <li>Behavior with empty lists</li>
-// * </ul>
-// *
-// * Tests follow the AAA pattern.
-// */
-//class PublicationSampleDTO_US018Test {
-//
-//
-//    // ============================
-//    // Helpers
-//    // ============================
-//
-//    private User createValidUser() {
-//        Profile profile = new Profile(
-//                "Test User",
-//                new Country("PORTUGAL"),
-//                LocalDate.of(1990, 1, 1)
-//        );
-//
-//        return new User(
-//                "user1",
-//                new Contact("912345678", "351", null, null),
-//                profile,
-//                UserRole.ADMIN
-//        );
-//    }
-//
-//    private PublicationSample createValidPublicationSample(User user) {
-//
-//        Profile authorProfile = new Profile(
-//                "Author",
-//                new Country("PORTUGAL"),
-//                LocalDate.of(1980, 1, 1)
-//        );
-//
-//        Author author = authorFactory.createWithExistingProfile(authorProfile, "Short bio");
-//
-//        BibliographicalData bd = new BibliographicalData(
-//                "Test Title",
-//                List.of(author),
-//                Locale.ENGLISH,
-//                LocalDate.of(2020, 1, 1),
-//                List.of(new Genre("Fiction")),
-//                "Sample text"
-//        );
-//
-//        Code code = Code.fromIsbn13("9783161484100");
-//
-//        Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
-//        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
-//
-//        PublicationType pubType = new PublicationType(
-//                MediaFormat.BOOK,
-//                TypeOfBinding.HARDBACK,
-//                "Standard"
-//        );
-//
-//        Publisher publisher = new Publisher("Test Publisher", "PT123456789", null);
-//
-//        Edition edition = editionFactory.create(
-//                "1st",
-//                code,
-//                physicalAttributes,
-//                pubType,
-//                publisher,
-//                Locale.ENGLISH,
-//                LocalDate.of(2020, 1, 1)
-//        );
-//
-//        return new PublicationSample(
-//                bd,
-//                user,
-//                PublicationStatus.READING,
-//                edition,
-//                Condition.NEW
-//        );
-//    }
-//
-//    private final AuthorFactory authorFactory = new AuthorFactory();
-//    private final EditionFactory editionFactory = new EditionFactory();
-//
-//    @Test
-//    void shouldCreateDTOWithCorrectValues() {
-//
-//        // Arrange
-//        PublicationSampleDTO_US018 dto =
-//                new PublicationSampleDTO_US018("Test Title", "1st", "user1");
-//
-//        // Act & Assert
-//        assertEquals("Test Title", dto.getTitle());
-//        assertEquals("1st", dto.getEditionNumber());
-//        assertEquals("user1", dto.getOwnerUsername());
-//    }
-//
-//    @Test
-//    void shouldConvertPublicationSampleToDTO() {
-//
-//        // Arrange
-//        User user = createValidUser();
-//        PublicationSample sample = createValidPublicationSample(user);
-//
-//        // Act
-//        List<PublicationSampleDTO_US018> result =
-//                PublicationSampleDTO_US018.publicationToDTO(List.of(sample));
-//
-//        // Assert
-//        assertEquals(1, result.size());
-//        assertEquals("Test Title", result.get(0).getTitle());
-//        assertEquals("1st", result.get(0).getEditionNumber());
-//        assertEquals(user.getUserName(), result.get(0).getOwnerUsername());
-//    }
-//
-//    @Test
-//    void shouldReturnEmptyListWhenPublicationListIsEmpty() {
-//
-//        // Arrange
-//        List<PublicationSample> emptyList = List.of();
-//
-//        // Act
-//        List<PublicationSampleDTO_US018> result =
-//                PublicationSampleDTO_US018.publicationToDTO(emptyList);
-//
-//        // Assert
-//        assertTrue(result.isEmpty());
-//    }
-//
-//}
+package TOPSECRET.dto;
+
+import TOPSECRET.domain.BibliographicalData;
+import TOPSECRET.domain.Edition;
+import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.User;
+import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.function.Executable;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Unit tests for PublicationSampleDTO_US018 using mocks.
+ *
+ * Validates:
+ * - Constructor and getters
+ * - Conversion from domain PublicationSample to DTO
+ * - Behavior with empty lists
+ * Tests follow the AAA pattern.
+ */
+class PublicationSampleDTO_US018Test {
+
+
+    // ============================
+    // Helpers
+    // ============================
+
+    private PublicationSample createMockPublicationSample(String title, String editionNumber, String ownerUsername) {
+
+        PublicationSample publication = mock(PublicationSample.class);
+        BibliographicalData bd = mock(BibliographicalData.class);
+        Edition edition = mock(Edition.class);
+        User owner = mock(User.class);
+
+        when(publication.getBibliographicalData()).thenReturn(bd);
+        when(publication.getEdition()).thenReturn(edition);
+        when(publication.getOwner()).thenReturn(owner);
+
+        when(bd.getTitle()).thenReturn(title);
+        when(edition.getEditionNumber()).thenReturn(editionNumber);
+        when(owner.getUserName()).thenReturn(ownerUsername);
+
+        return publication;
+    }
+
+
+    // ============================
+    // Tests
+    // ============================
+
+    @Test
+    void shouldCreateDTOWithCorrectValues() {
+
+        // Arrange
+        PublicationSampleDTO_US018 dto =
+                new PublicationSampleDTO_US018("Test Title", "1st", "user1");
+
+        // Act
+
+        // Assert
+        assertEquals("Test Title", dto.getTitle());
+        assertEquals("1st", dto.getEditionNumber());
+        assertEquals("user1", dto.getOwnerUsername());
+    }
+
+
+    @Test
+    void shouldConvertPublicationSampleToDTO() {
+
+        // Arrange
+        PublicationSample publication = createMockPublicationSample("Test Title", "1st", "user1");
+
+        // Act
+        List<PublicationSampleDTO_US018> result =
+                PublicationSampleDTO_US018.publicationToDTO(List.of(publication));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Test Title", result.get(0).getTitle());
+        assertEquals("1st", result.get(0).getEditionNumber());
+        assertEquals("user1", result.get(0).getOwnerUsername());
+    }
+
+
+    @Test
+    void shouldReturnEmptyListWhenPublicationListIsEmpty() {
+
+        // Arrange
+        List<PublicationSample> emptyList = List.of();
+
+        // Act
+        List<PublicationSampleDTO_US018> result =
+                PublicationSampleDTO_US018.publicationToDTO(emptyList);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+
+    @Test
+    void shouldConvertMultiplePublicationSamplesToDTO() {
+
+        // ARRANGE
+        PublicationSample publication1 = createMockPublicationSample("Title 1", "1st", "user1");
+        PublicationSample publication2 = createMockPublicationSample("Title 2", "2nd", "user2");
+
+        // ACT
+        List<PublicationSampleDTO_US018> result =
+                PublicationSampleDTO_US018.publicationToDTO(List.of(publication1, publication2));
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertEquals("Title 1", result.get(0).getTitle());
+        assertEquals("1st", result.get(0).getEditionNumber());
+        assertEquals("user1", result.get(0).getOwnerUsername());
+
+        assertEquals("Title 2", result.get(1).getTitle());
+        assertEquals("2nd", result.get(1).getEditionNumber());
+        assertEquals("user2", result.get(1).getOwnerUsername());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPublicationListIsNull() {
+
+        // ARRANGE
+        List<PublicationSample> publications = null;
+
+        // ACT
+        Executable action =
+                () -> PublicationSampleDTO_US018.publicationToDTO(publications);
+
+        // ASSERT
+        assertThrows(NullPointerException.class, action);
+    }
+
+
+}

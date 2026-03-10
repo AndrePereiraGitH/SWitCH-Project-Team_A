@@ -14,7 +14,7 @@ public class User {
     private UserRole _userRole;
 
     //Constructor
-    public User(String userName, Contact contact, Profile profile, UserRole userRole) {
+    protected User(String userName, Contact contact, Profile profile, UserRole userRole) {
 
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits

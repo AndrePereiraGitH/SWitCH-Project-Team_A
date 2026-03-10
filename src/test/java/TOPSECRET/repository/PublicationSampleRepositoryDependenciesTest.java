@@ -19,8 +19,10 @@
 //class PublicationSampleRepositoryDependenciesTest {
 //
 //    // BibliographicalData
-//    Country country1 = new Country("Denmark");
-//    Country country2 = new Country("Germany");
+//    CountryFactory countryFactory = new CountryFactory();
+//
+//    Country country1 = countryFactory.create("Denmark");
+//    Country country2 = countryFactory.create("Germany");
 //
 //
 //    Profile profileAuthor1 = new Profile("Tove Ditlevsen", country1, LocalDate.of(1917, 12, 14));
@@ -30,7 +32,7 @@
 //    Address address1 = new Address("R Maria", "12", "156-5", country2);
 //    Email email1 = new Email("Maria1", "gmail.com");
 //    Contact contact1 = new Contact("915945695", "+351", email1, address1);
-//    Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
+////    Publisher publisher1 = new Publisher("Some Publisher", "PT123456789", contact1);
 //    BibliographicalData bibliographicalData1 = new BibliographicalData(
 //            "Childhood, Youth, Dependency: The Copenhagen Trilogy",
 //            List.of(author1),
@@ -60,18 +62,18 @@
 //            "Some text");
 //
 //    // User
-//    Country country4 = new Country("Uganda");
+//    Country country4 = countryFactory.create("Uganda");
 //    Profile profile2 = new Profile(
 //            "Test Profile",
 //            country4,
 //            LocalDate.of(1997, 8, 15)
 //    );
 //    UserRole userRole1 = UserRole.ADMIN;
-//    User user1 = new User("coolGuy", contact1, profile2, userRole1);
-//    User user2 = new User("coolGuy2", contact1, profile2, userRole1);
-//    User user3 = new User("coolGuy3", contact1, profile2, userRole1);
+//    User user1 = UserFactory.create("coolGuy", contact1, profile2, userRole1);
+//    User user2 = UserFactory.create("coolGuy2", contact1, profile2, userRole1);
+//    User user3 = UserFactory.create("coolGuy3", contact1, profile2, userRole1);
 //
-//    User userTest = new User ("userTest", contact1, profile2, userRole1);
+//    User userTest = UserFactory.create("userTest", contact1, profile2, userRole1);
 //
 //    //PublicationStatus
 //    PublicationStatus pubStatus1 = PublicationStatus.READING;
@@ -87,7 +89,9 @@
 //    Dimensions dimensions = new Dimensions(10.0, 2.0, 5.0);
 //    PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 250);
 //    PublicationType pubType = new PublicationType(MediaFormat.BOOK, TypeOfBinding.CASE_BINDING, "Some details");
-//    Publisher publisher = new Publisher("Porto Editora", "PT987654321", null);
+//
+//    PublisherFactory publisherFactory = new PublisherFactory();
+//    Publisher publisher = publisherFactory.create("Porto Editora", "PT987654321", null);
 //
 //    EditionFactory editionFactory = new EditionFactory();
 //    Edition edition1= editionFactory.create("1st", code, physicalAttributes, pubType, publisher, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
@@ -362,31 +366,33 @@
 //     * Ensures that PublicationSampleDtoToDomain converts
 //     * a valid DTO into the correct PublicationSample.
 //     */
-////    @Test
-////    void publicationSampleDtoToDomain_shouldReturnCorrectPublicationSample_US018() {
-////
-////        // Arrange
-////        PublicationSampleFactory factory = new PublicationSampleFactory();
-////
-////        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
-////
-////        PublicationSampleDTO_US018 dto =
-////                new PublicationSampleDTO_US018(
-////                        publication1.getBibliographicalData().getTitle(),
-////                        publication1.getEdition().getEditionNumber(),
-////                        publication1.getOwner().getUserName()
-////                );
-////
-////        Library library = new Library("TestLibrary", publication1.getOwner());
-////        library.addPublication(publication1);
-////
-////        // Act
-////        PublicationSample result =
-////                repo.PublicationSampleDtoToDomain(library, dto);
-////
-////        // Assert
-////        assertEquals(publication1, result);
-////    }
+//    @Test
+//    void publicationSampleDtoToDomain_shouldReturnCorrectPublicationSample_US018() {
+//
+//        // Arrange
+//        PublicationSampleFactory factory = new PublicationSampleFactory();
+//
+//        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
+//
+//        PublicationSampleDTO_US018 dto =
+//                new PublicationSampleDTO_US018(
+//                        publication1.getBibliographicalData().getTitle(),
+//                        publication1.getEdition().getEditionNumber(),
+//                        publication1.getOwner().getUserName()
+//                );
+//
+//        LibraryFactory libraryFactory = new LibraryFactory();
+//
+//        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
+//        library.addPublication(publication1);
+//
+//        // Act
+//        PublicationSample result =
+//                repo.PublicationSampleDtoToDomain(library, dto);
+//
+//        // Assert
+//        assertEquals(publication1, result);
+//    }
 //
 //    @Test
 //    void publicationSampleDtoToDomain_shouldThrowException_whenLibraryIsNull_US018() {
@@ -404,46 +410,48 @@
 //        );
 //    }
 //
-////    @Test
-////    void publicationSampleDtoToDomain_shouldThrowException_whenDtoIsNull_US018() {
-////
-////        // ARRANGE
-////        PublicationSampleFactory factory = new PublicationSampleFactory();
-////        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>(), factory);
-////
-////        Library library = new Library("TestLibrary", publication1.getOwner());
-////
-////        // ACT + ASSERT
-////        assertThrows(IllegalArgumentException.class, () ->
-////                repo.PublicationSampleDtoToDomain(library, null)
-////        );
-////    }
+//    @Test
+//    void publicationSampleDtoToDomain_shouldThrowException_whenDtoIsNull_US018() {
 //
-////    @Test
-////    void publicationSampleDtoToDomain_shouldThrowException_whenPublicationNotFound_US018() {
-////
-////        // ARRANGE
-////        List<PublicationSample> list = new ArrayList<>();
-////        list.add(publication1);
-////
-////        PublicationSampleFactory factory = new PublicationSampleFactory();
-////
-////        PublicationSampleRepository repo = new PublicationSampleRepository(list, factory);
-////
-////        Library library = new Library("TestLibrary", publication1.getOwner());
-////
-////        PublicationSampleDTO_US018 dto =
-////                new PublicationSampleDTO_US018(
-////                        publication1.getBibliographicalData().getTitle(),
-////                        publication1.getEdition().getEditionNumber(),
-////                        publication1.getOwner().getUserName()
-////                );
-////
-////        // ACT + ASSERT
-////        assertThrows(IllegalArgumentException.class, () ->
-////                repo.PublicationSampleDtoToDomain(library, dto)
-////        );
-////    }
+//        // ARRANGE
+//        PublicationSampleFactory factory = new PublicationSampleFactory();
+//        PublicationSampleRepository repo = new PublicationSampleRepository(new ArrayList<>(), factory);
+//
+//        LibraryFactory libraryFactory = new LibraryFactory();
+//        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
+//
+//        // ACT + ASSERT
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.PublicationSampleDtoToDomain(library, null)
+//        );
+//    }
+//
+//    @Test
+//    void publicationSampleDtoToDomain_shouldThrowException_whenPublicationNotFound_US018() {
+//
+//        // ARRANGE
+//        List<PublicationSample> list = new ArrayList<>();
+//        list.add(publication1);
+//
+//        PublicationSampleFactory factory = new PublicationSampleFactory();
+//
+//        PublicationSampleRepository repo = new PublicationSampleRepository(list, factory);
+//
+//        LibraryFactory libraryFactory = new LibraryFactory();
+//        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
+//
+//        PublicationSampleDTO_US018 dto =
+//                new PublicationSampleDTO_US018(
+//                        publication1.getBibliographicalData().getTitle(),
+//                        publication1.getEdition().getEditionNumber(),
+//                        publication1.getOwner().getUserName()
+//                );
+//
+//        // ACT + ASSERT
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.PublicationSampleDtoToDomain(library, dto)
+//        );
+//    }
 //
 //
 //}

@@ -145,7 +145,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerDependenciesTest {
     }
 
     private User createUser(String username) {
-        return new User(
+        return UserFactory.create(
                 username,
                 createContact(),
                 createProfile(username),

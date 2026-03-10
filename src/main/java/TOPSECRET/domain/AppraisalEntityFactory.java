@@ -19,7 +19,7 @@ public class AppraisalEntityFactory {
      * @param publicationTypes List of publication types (1..*)
      * @return Created AppraisalEntity
      */
-    public static AppraisalEntity create(String name, Contact contact, List<Genre> genres, List<PublicationType> publicationTypes) {
+    public AppraisalEntity create(String name, Contact contact, List<Genre> genres, List<PublicationType> publicationTypes) {
 
         return new AppraisalEntity(name, contact, publicationTypes, genres);
     }

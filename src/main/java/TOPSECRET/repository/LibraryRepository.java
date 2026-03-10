@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Repository for managing {@link Library} objects.
  * <p>
@@ -31,18 +30,29 @@ public class LibraryRepository {
      * A defensive copy of the provided map is created to prevent external modifications.
      * </p>
      *
-     * @param libraries a map of library names to {@link Library} objects; can be empty
      * @param libraryFactory the factory used to create new {@link Library} instances
      * @throws IllegalArgumentException if libraryFactory is null
      */
-    public LibraryRepository(Map<String, Library> libraries, LibraryFactory libraryFactory) {
+    public LibraryRepository(LibraryFactory libraryFactory) {
 
         if (libraryFactory == null) {
             throw new IllegalArgumentException("LibraryFactory cannot be null");
         }
 
-        _libraries = new HashMap<>(libraries);
+        _libraries = new HashMap<>();
         _libraryFactory = libraryFactory;
+    }
+
+    /**
+     * Package-private method used to seed the repository directly, bypassing the factory.
+     *
+     * <p>Intended for use in unit tests only. The library is stored using the owner's
+     * username as the key, consistent with {@link #createAndAdd(String, User)}.</p>
+     *
+     * @param library the {@link Library} instance to add; must not be {@code null}
+     */
+    void add(Library library) {
+        _libraries.put(library.getUser().getUserName(), library);
     }
 
     /**
@@ -97,6 +107,10 @@ public class LibraryRepository {
     public Library createAndAdd(String libraryName, User owner) throws InstanceAlreadyExistsException {
         if (verifyIfUserHasALibrary(owner)) {
             throw new InstanceAlreadyExistsException("The user already has a library");
+        }
+
+        if(libraryName == null){
+            throw new IllegalArgumentException("Library name can not be null");
         }
 
         if(libraryName.isEmpty()){

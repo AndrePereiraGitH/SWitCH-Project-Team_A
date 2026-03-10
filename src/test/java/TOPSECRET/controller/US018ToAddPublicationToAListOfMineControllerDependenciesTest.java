@@ -34,9 +34,39 @@
 // */
 //class US018ToAddPublicationToAListOfMineControllerDependenciesTest {
 //
-//    // =====================================================
+//    private US018ToAddPublicationToAListOfMineController controller;
+//    private CollectionOfPublicationsRepository collectionRepo;
+//    private LibraryRepository libraryRepo;
+//    private final AuthorFactory authorFactory = new AuthorFactory();
+//    private final EditionFactory editionFactory = new EditionFactory();
+//    private User user;
+//    private CountryFactory countryFactory;
+//
+//    @BeforeEach
+//    void setup() throws Exception {
+//        // ARRANGE
+//        countryFactory = new CountryFactory();
+//        CollectionOfPublicationsFactory collectionFactory = new CollectionOfPublicationsFactory();
+//        collectionRepo = new CollectionOfPublicationsRepository(collectionFactory);
+//        PublicationSampleRepository publicationSampleRepo = new PublicationSampleRepository();
+//
+//        // LibraryRepository requires (Map, Factory)
+//        Map<String, Library> libraries = new HashMap<>();
+//        LibraryFactory libraryFactory = new LibraryFactory();
+//        libraryRepo = new LibraryRepository(libraries, libraryFactory);
+//
+//        user = createValidUser();
+//        createAndRegisterLibraryForUser("UserLibrary", user);
+//
+//        controller = new US018ToAddPublicationToAListOfMineController(
+//                user,
+//                collectionRepo,
+//                libraryRepo,
+//                publicationSampleRepo
+//        );
+//    }
+//
 //    // HELPERS (setup only)
-//    // =====================================================
 //
 //    private void createAndRegisterLibraryForUser(String libraryName, User owner) throws InstanceAlreadyExistsException {
 //        libraryRepo.createAndAdd(libraryName, owner);
@@ -61,13 +91,16 @@
 //    }
 //
 //    private User createValidUser() {
+//
+//        Country country = countryFactory.create("PORTUGAL");
+//
 //        Profile profile = new Profile(
 //                "Test User",
-//                new Country("PORTUGAL"),
+//                country,
 //                LocalDate.of(1990, 1, 1)
 //        );
 //
-//        return new User(
+//        return UserFactory.create(
 //                "validUser",
 //                new Contact("912345678", "351", null, null),
 //                profile,
@@ -77,9 +110,11 @@
 //
 //    private PublicationSample createValidPublicationSample(User owner, String title, String editionNumber) {
 //
+//        Country country = countryFactory.create("PORTUGAL");
+//
 //        Profile authorProfile = new Profile(
 //                "Author Name",
-//                new Country("PORTUGAL"),
+//                country,
 //                LocalDate.of(1980, 1, 1)
 //        );
 //
@@ -104,7 +139,8 @@
 //                "Standard"
 //        );
 //
-//        Publisher publisher = new Publisher("Test Publisher", "PT123456789", null);
+//        PublisherFactory publisherFactory = new PublisherFactory();
+//        Publisher publisher = publisherFactory.create("Test Publisher", "PT123456789", null);
 //
 //        Edition edition = editionFactory.create(
 //                editionNumber,
@@ -125,40 +161,7 @@
 //        );
 //    }
 //
-//    private US018ToAddPublicationToAListOfMineController controller;
-//    private CollectionOfPublicationsRepository collectionRepo;
-//    private LibraryRepository libraryRepo;
-//    private PublicationSampleRepository publicationSampleRepo;
-//    private final AuthorFactory authorFactory = new AuthorFactory();
-//    private final EditionFactory editionFactory = new EditionFactory();
-//    private User user;
-//
-//    @BeforeEach
-//    void setup() throws Exception {
-//        // ARRANGE
-//        collectionRepo = new CollectionOfPublicationsRepository();
-//        publicationSampleRepo = new PublicationSampleRepository();
-//
-//        // LibraryRepository requires (Map, Factory)
-//        Map<String, Library> libraries = new HashMap<>();
-//        LibraryFactory libraryFactory = new LibraryFactory();
-//        libraryRepo = new LibraryRepository(libraries, libraryFactory);
-//
-//        user = createValidUser();
-//        createAndRegisterLibraryForUser("UserLibrary", user);
-//
-//        controller = new US018ToAddPublicationToAListOfMineController(
-//                user,
-//                collectionRepo,
-//                libraryRepo,
-//                publicationSampleRepo
-//        );
-//    }
-//
-//    // =====================================================
 //    // getUserCollections(User user)
-//    // =====================================================
-//
 //    @Test
 //    void shouldReturnUserCollections() {
 //        // ARRANGE
@@ -180,9 +183,7 @@
 //        assertThrows(IllegalArgumentException.class, () -> controller.getUserCollections(null));
 //    }
 //
-//    // =====================================================
 //    // getPublicationsForCollection(CollectionDTO)
-//    // =====================================================
 //
 //    @Test
 //    void shouldReturnAvailablePublicationsWhenCollectionIsEmpty() throws Exception {
@@ -225,11 +226,7 @@
 //        assertThrows(IllegalArgumentException.class, () -> controller.getPublicationsForCollection(null));
 //    }
 //
-//
-//
-//    // =====================================================
 //    // addPublicationToCollection(CollectionDTO, List<PublicationDTO>)
-//    // =====================================================
 //
 //    @Test
 //    void shouldAddPublicationToCollection() throws Exception {

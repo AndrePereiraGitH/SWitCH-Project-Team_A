@@ -24,9 +24,16 @@ import static org.mockito.Mockito.when;
  */
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
+    // -------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------
+
     private BibliographicalDataRepository bdRepository;
     private AuctionRepository auctionRepository;
-    private US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller;
+
+    // -------------------------------------------------------------------------
+    // Setup
+    // -------------------------------------------------------------------------
 
     /**
      * Initialises fresh mock repositories and a new controller instance
@@ -36,11 +43,11 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     void setUp() {
         bdRepository = mock(BibliographicalDataRepository.class);
         auctionRepository = mock(AuctionRepository.class);
-        controller = new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(
-                bdRepository,
-                auctionRepository
-        );
     }
+
+    // -------------------------------------------------------------------------
+    // Tests — getAllPublicationBD()
+    // -------------------------------------------------------------------------
 
     /**
      * Verifies that {@code getAllPublicationBD()} returns a correctly mapped list
@@ -51,6 +58,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationBD_ShouldReturnListOfDTOsWhenPublicationBDExist() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
         BibliographicalData bd1 = createMockBibliographicalData("Title1");
         BibliographicalData bd2 = createMockBibliographicalData("Title2");
 
@@ -73,6 +82,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
         BibliographicalDataRepository bdRepoDouble = mock(BibliographicalDataRepository.class);
         when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
 
@@ -84,6 +95,10 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         assertTrue(result.isEmpty());
     }
 
+    // -------------------------------------------------------------------------
+    // Tests — getListOfItemsOnAuctionByGivenPublicationDTO()
+    // -------------------------------------------------------------------------
+
     /**
      * Verifies that {@code getListOfItemsOnAuctionByGivenPublicationDTO()} returns
      * a correctly mapped list of {@link AuctionItemDTO_US024} when auction items
@@ -94,6 +109,8 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getListOfItemsOnAuctionByGivenPublicationDTO_ShouldReturnListOfDTOsWhenItemsExist() {
         // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
         PublicationSample sampleDouble1 = createMockPublicationSample("Title1", "12345678910", "User1");
         PublicationSample sampleDouble2 = createMockPublicationSample("Title1", "12345678910", "User2");
 
@@ -116,7 +133,9 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
      */
     @Test
     void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
-        // Arrange — auction repository returns null/empty by default for unstubbed calls
+        // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
 
         // Act
         List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title2");
@@ -124,6 +143,28 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsNull() {
+        // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(null));
+    }
+
+    @Test
+    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsEmpty() {
+        // Arrange
+        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(""));
     }
 
     // -------------------------------------------------------------------------

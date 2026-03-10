@@ -32,9 +32,10 @@ class AppraisalEntityRepositoryTest {
         // ARRANGE
         GenreRepository genreRepository = mock(GenreRepository.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository);
+                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 
@@ -69,8 +70,7 @@ class AppraisalEntityRepositoryTest {
         try (MockedStatic<AppraisalEntityFactory> mockedFactory =
                      mockStatic(AppraisalEntityFactory.class)) {
 
-            mockedFactory.when(() ->
-                    AppraisalEntityFactory.create(
+            mockedFactory.when(() -> appraisalEntityFactory.create(
                             eq("Test"),
                             eq(contact),
                             anyList(),
@@ -102,9 +102,10 @@ class AppraisalEntityRepositoryTest {
         // Arrange
         GenreRepository genreRepository = mock(GenreRepository.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
-        AppraisalEntityRepository apEnRepo =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository);
+        AppraisalEntityRepository sut =
+                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 
@@ -140,7 +141,7 @@ class AppraisalEntityRepositoryTest {
                      mockStatic(AppraisalEntityFactory.class)) {
 
             mockedFactory.when(() ->
-                    AppraisalEntityFactory.create(
+                    appraisalEntityFactory.create(
                             anyString(),
                             any(),
                             anyList(),
@@ -149,7 +150,7 @@ class AppraisalEntityRepositoryTest {
             ).thenReturn(createdEntity);
 
             // First creation (should succeed)
-            apEnRepo.createAndAddAppraisalEntity(
+            sut.createAndAddAppraisalEntity(
                     "Test",
                     contact,
                     genreDTOs,
@@ -158,7 +159,7 @@ class AppraisalEntityRepositoryTest {
 
             // ACT + ASSERT
             assertThrows(IllegalArgumentException.class, () ->
-                    apEnRepo.createAndAddAppraisalEntity(
+                    sut.createAndAddAppraisalEntity(
                             "Test",
                             contact,
                             genreDTOs,
@@ -176,9 +177,10 @@ class AppraisalEntityRepositoryTest {
         // ARRANGE
         GenreRepository genreRepository = mock(GenreRepository.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository);
+                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 
@@ -201,9 +203,10 @@ class AppraisalEntityRepositoryTest {
         // ARRANGE
         GenreRepository genreRepository = mock(GenreRepository.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository);
+                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 

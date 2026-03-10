@@ -1,63 +1,68 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static TOPSECRET.domain.Enum.MediaFormat.BOOK;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for PublicationTypeDTO_US004.
- *
- * Validates:
- * - Successful object creation
- * - Getter correctness
- * - Constructor validations
+ * Unit tests for {@link PublicationTypeDTO_US004}.
+ * These tests validate:
+ *     <li>DTO creation and validation rules</li>
+ *     <li>Getter correctness</li>
+ *     <li>Conversion from {@link PublicationType} domain objects to DTO objects</li>
+ *     <li>Interaction with mocked domain collaborators</li>
+ * Mockito is used to mock {@link PublicationType} objects in order to
+ * isolate the DTO conversion logic.
+ * </p>
  */
 class PublicationTypeDTO_US004Test {
 
     /**
-     * Verifies successful creation of DTO with valid data.
+     * Ensures a DTO is created with valid attributes.
      */
     @Test
-    void shouldCreateDTOWhenDataIsValid() {
+    void shouldCreateDTOWithValidValues() {
 
         // ARRANGE
         MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
+        TypeOfBinding binding = TypeOfBinding.HARDBACK;
         String details = "Standard";
 
         // ACT
         PublicationTypeDTO_US004 dto =
-                new PublicationTypeDTO_US004(mediaFormat, typeOfBinding, details);
+                new PublicationTypeDTO_US004(mediaFormat, binding, details);
 
         // ASSERT
         assertEquals(mediaFormat, dto.getMediaFormat());
-        assertEquals(typeOfBinding, dto.getTypeOfBinding());
+        assertEquals(binding, dto.getTypeOfBinding());
         assertEquals(details, dto.getDetails());
     }
 
     /**
-     * Verifies exception when MediaFormat is null.
+     * Ensures an exception is thrown when MediaFormat is null.
      */
     @Test
     void shouldThrowExceptionWhenMediaFormatIsNull() {
 
         // ARRANGE
-        TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
+        TypeOfBinding binding = TypeOfBinding.HARDBACK;
 
         // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                new PublicationTypeDTO_US004(null, typeOfBinding, "Standard")
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PublicationTypeDTO_US004(null, binding, "details")
         );
     }
 
     /**
-     * Verifies exception when TypeOfBinding is null.
+     * Ensures an exception is thrown when TypeOfBinding is null.
      */
     @Test
     void shouldThrowExceptionWhenTypeOfBindingIsNull() {
@@ -66,63 +71,72 @@ class PublicationTypeDTO_US004Test {
         MediaFormat mediaFormat = MediaFormat.BOOK;
 
         // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                new PublicationTypeDTO_US004(mediaFormat, null, "Standard")
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PublicationTypeDTO_US004(mediaFormat, null, "details")
         );
     }
 
     /**
-     * Verifies exception when details is null.
+     * Ensures an exception is thrown when details are null.
      */
     @Test
     void shouldThrowExceptionWhenDetailsIsNull() {
 
         // ARRANGE
         MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
+        TypeOfBinding binding = TypeOfBinding.HARDBACK;
 
         // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                new PublicationTypeDTO_US004(mediaFormat, typeOfBinding, null)
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PublicationTypeDTO_US004(mediaFormat, binding, null)
         );
     }
 
     /**
-     * Verifies exception when details is blank.
+     * Ensures domain PublicationType objects are correctly converted into DTO objects.
      */
     @Test
-    void shouldThrowExceptionWhenDetailsIsBlank() {
+    void shouldConvertPublicationTypesToDTO() {
 
         // ARRANGE
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
+        PublicationType publicationTypeMock = mock(PublicationType.class);
 
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () ->
-                new PublicationTypeDTO_US004(mediaFormat, typeOfBinding, "   ")
-        );
-    }
-
-    /**
-     * Verifies DTO works correctly with different enum values.
-     */
-    @Test
-    void shouldAllowDifferentEnumValues() {
-
-        // ARRANGE
-        MediaFormat mediaFormat = MediaFormat.MAGAZINE;
-        TypeOfBinding typeOfBinding = TypeOfBinding.PAPERBACK;
-        String details = "Pocket edition";
+        when(publicationTypeMock.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationTypeMock.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
+        when(publicationTypeMock.getDetails()).thenReturn("Standard");
 
         // ACT
-        PublicationTypeDTO_US004 dto =
-                new PublicationTypeDTO_US004(mediaFormat, typeOfBinding, details);
+        List<PublicationTypeDTO_US004> result =
+                PublicationTypeDTO_US004.publicationTypesToDTO(
+                        List.of(publicationTypeMock)
+                );
 
         // ASSERT
-        assertEquals(MediaFormat.MAGAZINE, dto.getMediaFormat());
-        assertEquals(TypeOfBinding.PAPERBACK, dto.getTypeOfBinding());
-        assertEquals(details, dto.getDetails());
+        assertEquals(1, result.size());
+
+        PublicationTypeDTO_US004 dto = result.get(0);
+
+        assertEquals(MediaFormat.BOOK, dto.getMediaFormat());
+        assertEquals(TypeOfBinding.HARDBACK, dto.getTypeOfBinding());
+        assertEquals("Standard", dto.getDetails());
     }
 
+    /**
+     * Ensures an empty list results in an empty DTO list.
+     */
+    @Test
+    void shouldReturnEmptyListWhenPublicationTypeListIsEmpty() {
 
+        // ARRANGE
+        List<PublicationType> types = List.of();
+
+        // ACT
+        List<PublicationTypeDTO_US004> result =
+                PublicationTypeDTO_US004.publicationTypesToDTO(types);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
 }

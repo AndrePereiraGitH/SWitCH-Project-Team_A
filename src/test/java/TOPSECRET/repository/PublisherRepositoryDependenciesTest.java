@@ -31,7 +31,7 @@ class PublisherRepositoryDependenciesTest {
 
         // Act
         // Attempt to add a new publisher with valid data
-        Publisher publisher = repo.add(
+        Publisher publisher = repo.createAndAdd(
                 "Penguin Books",
                 "123456789",
                 contact
@@ -61,7 +61,7 @@ class PublisherRepositoryDependenciesTest {
         Contact contact = new Contact("+4412312345","12",email, address);
 
         // Add the first publisher with a specific VAT number
-        repo.add(
+        repo.createAndAdd(
                 "Penguin Books",
                 "123456789",
                 contact
@@ -69,7 +69,7 @@ class PublisherRepositoryDependenciesTest {
 
         // Act
         // Try to add another publisher using the same VAT number
-        Publisher secondPublisher = repo.add(
+        Publisher secondPublisher = repo.createAndAdd(
                 "Penguin Publishing",
                 "123456789",
                 contact

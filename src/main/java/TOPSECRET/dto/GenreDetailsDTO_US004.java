@@ -27,6 +27,23 @@ public class GenreDetailsDTO_US004 {
     }
 
     /**
+     * Converts a list of Genre domain objects into DTOs.
+     *
+     * @param genres list of Genre
+     * @return list of GenreDetailsDTO_US004
+     */
+    public static List<GenreDetailsDTO_US004> genreToDTO (List<Genre> genres) {
+
+        List<GenreDetailsDTO_US004> result = new ArrayList<>();
+
+        for (Genre genre : genres) {
+            result.add(new GenreDetailsDTO_US004(genre.getGenreType()));
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the genre title.
      * @return Genre title.
      */

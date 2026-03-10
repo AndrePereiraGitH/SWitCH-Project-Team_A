@@ -125,4 +125,27 @@ public class ListingRepository {
         }
         return dsListings;
     }
+
+    /**
+     * Returns all listings that are marked as auction listings.
+     *
+     * <p>This method scans the repository's internal collection of listings and
+     * selects only those whose {@link Listing#getSaleType()} is equal to
+     * {@link SaleType#AUCTION}. The returned list is a new collection and
+     * does not expose or modify the repository's internal state.</p>
+     *
+     * @return a list containing all listings with sale type {@code AUCTION};
+     *         never {@code null}, but may be empty if no such listings exist
+     */
+
+    public List<Listing> findAllAuctionListings() {
+
+        List<Listing> auctionListings = new ArrayList<>();
+        for (Listing listing : listings) {
+            if (listing.getSaleType() == SaleType.AUCTION) {
+                auctionListings.add(listing);
+            }
+        }
+        return auctionListings;
+    }
 }
