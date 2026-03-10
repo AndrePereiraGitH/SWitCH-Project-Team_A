@@ -1,7 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.dto.CollectionOfPublicationsDTO;
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import TOPSECRET.domain.CollectionOfPublicationsFactory;
@@ -293,16 +293,16 @@ public class CollectionOfPublicationsRepository {
      * @return list of public collections with the given genre
      * @throws IllegalArgumentException if genre is null or blank
      */
-    public List<CollectionOfPublicationsDTO> findPublicByGenre(Genre genreName) {
+    public List<CollectionOfPublicationsDTO_US020> findPublicByGenre(Genre genreName) {
         if (genreName == null || genreName.getGenreType() == null || genreName.getGenreType().isBlank()) {
             throw new IllegalArgumentException("Genre can't be null.");
         }
 
-        List<CollectionOfPublicationsDTO> result = new ArrayList<>();
+        List<CollectionOfPublicationsDTO_US020> result = new ArrayList<>();
 
         for (CollectionOfPublications c : _collectionOfPublicationsList) {
             if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre())) {
-                result.add(new CollectionOfPublicationsDTO(c.getCollectionName(), c.getOwner().getUserName()));
+                result.add(new CollectionOfPublicationsDTO_US020(c.getCollectionName(), c.getOwner().getUserName()));
             }
         }
 

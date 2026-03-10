@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
  * Unit tests for US014ToGetPublicationTypeListController.
  *
@@ -32,7 +34,8 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
         // Arrange
 
-        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
+        PublicationTypeRepository repository = mock(PublicationTypeRepository.class);
+        when(repository.getAllPublicationTypes()).thenReturn(List.of());
 
         US014ToGetPublicationTypeListController controller =
                 new US014ToGetPublicationTypeListController(repository);
@@ -48,15 +51,15 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
     @Test
     void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
         // Arrange
-        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
+        PublicationTypeRepository repository = mock(PublicationTypeRepository.class);
 
         PublicationType type =
-                repository.create(
+                factory.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
-        repository.addToList(type);
+        when(repository.getAllPublicationTypes()).thenReturn(List.of(type));
 
         US014ToGetPublicationTypeListController controller =
                 new US014ToGetPublicationTypeListController(repository);
@@ -72,36 +75,42 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
         assertEquals("BOOK", dto._mediaFormat);
         assertEquals("HARDBACK", dto._typeOfBinding);
         assertEquals("Hardback", dto._details);
+        verify(repository).getAllPublicationTypes();
+
     }
 
     @Test
     void getAllPublicationTypesMultiplePublicationTypesReturnsListDTOs() {
-        PublicationTypeRepository repository = new PublicationTypeRepository(factory);
+        // Arrange
+        PublicationTypeRepository repository = mock(PublicationTypeRepository.class);
 
         PublicationType t1 =
-                repository.create(
+                factory.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Hardback");
 
         PublicationType t2 =
-                repository.create(
+                factory.create(
                         MediaFormat.BOOK,
                         TypeOfBinding.PAPERBACK,
                         "Paperback");
 
-        repository.addToList(t1);
-        repository.addToList(t2);
+        when(repository.getAllPublicationTypes()).thenReturn(List.of(t1, t2));
 
         US014ToGetPublicationTypeListController controller =
                 new US014ToGetPublicationTypeListController(repository);
 
+        // Act
         List<PublicationTypeDTO_US014> result =
                 controller.getAllPublicationTypes();
 
+        // Assert
         assertEquals(2, result.size());
 
         assertTrue(result.stream().anyMatch(d -> d._details.equals("Hardback")));
         assertTrue(result.stream().anyMatch(d -> d._details.equals("Paperback")));
+        verify(repository).getAllPublicationTypes();
+
     }
 }

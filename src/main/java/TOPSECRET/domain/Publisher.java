@@ -2,14 +2,28 @@ package TOPSECRET.domain;
 
 import java.util.Objects;
 
+/**
+ * Represents a publisher entity in the system.
+ *
+ * <p>A publisher is uniquely identified by its VAT number.
+ * Two publishers are considered equal if they share the same VAT number,
+ * regardless of name or contact information.</p>
+ */
 public class Publisher {
     private String _name;
     private String _vatNumber;
     private Contact _contact;
 
+    /**
+     * Constructs a new {@code Publisher} with the given name, VAT number, and contact.
+     *
+     * @param name      the publisher's name; must not be blank
+     * @param vatNumber the publisher's VAT number; must not be blank
+     * @param contact   the publisher's contact information
+     * @throws IllegalArgumentException if {@code name} or {@code vatNumber} is blank
+     */
     protected Publisher(String name, String vatNumber, Contact contact) {
 
-        // Validator internal to the class Publisher itself
         if (name.isBlank()) {
             throw new IllegalArgumentException("Not a valid name");
         }
@@ -23,7 +37,6 @@ public class Publisher {
         _contact = contact;
     }
 
-    // Review what methods we will want in each class
 
     public String getName() {
         return _name;

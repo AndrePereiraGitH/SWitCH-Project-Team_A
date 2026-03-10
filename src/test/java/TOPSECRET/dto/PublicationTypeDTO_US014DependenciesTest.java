@@ -3,6 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
@@ -22,10 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class PublicationTypeDTO_US014DependenciesTest {
 
+    // Factory setup
+    PublicationTypeFactory factory = new PublicationTypeFactory();
+
     @Test
     void fromDomainListValidPublicationType(){
         // Arrange
-        PublicationType pT = new PublicationType(
+        PublicationType pT = factory.create(
                 MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
@@ -60,7 +64,7 @@ class PublicationTypeDTO_US014DependenciesTest {
     void fromDomainListListOneElement(){
         // Arrange
 
-        PublicationType pT = new PublicationType(
+        PublicationType pT = factory.create(
                 MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
@@ -81,12 +85,12 @@ class PublicationTypeDTO_US014DependenciesTest {
     @Test
     void fromDomainListListMultipleElements(){
         // Arrange
-        PublicationType pT1 = new PublicationType(
+        PublicationType pT1 = factory.create(
                 MediaFormat.BOOK,
                 TypeOfBinding.PAPERBACK,
                 "Paperback"
         );
-        PublicationType pT2 = new PublicationType(
+        PublicationType pT2 = factory.create(
                 MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Hardback"

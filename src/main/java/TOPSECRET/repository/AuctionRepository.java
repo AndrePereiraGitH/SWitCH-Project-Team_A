@@ -21,12 +21,6 @@ public class AuctionRepository {
         _auctionsList = new ArrayList<>();
     }
 
-    public AuctionRepository(List<Auction> auctionsList, AuctionFactory auctionFactory) {
-        this._auctionsList = auctionsList;
-        this._factoryAuction = auctionFactory;
-    }
-
-
     public List<Auction> getAllAuctions() {
         return _auctionsList;
     }
@@ -51,6 +45,16 @@ public class AuctionRepository {
         _auctionsList.add(auction);
 
         return auction;
+    }
+
+    /**
+     * Package-private helper used by tests to seed the repository
+     * without going through the factory.
+     *
+     * @param auction the auction to add directly
+     */
+    void add(Auction auction) {
+        _auctionsList.add(auction);
     }
 
     /**
@@ -168,39 +172,38 @@ public class AuctionRepository {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Returns all items that are currently on auction
-     * and belong to the given publisher.
-     *
-     * @param publisher the publisher to search for
-     * @return list of items on auction for that publisher
-     */
-    public List<PublicationSample> getItemsOnAuctionGivenPublisher(Publisher publisher) {
-
-        if (publisher == null) {
-            throw new IllegalArgumentException("publisher cannot be null");
-        }
-
-        List<PublicationSample> result = new ArrayList<>();
-
-        for (Auction auction : _auctionsList) {
-            Listing listing = auction.getListing();
-            if (listing == null) continue;
-
-            for (PublicationSample item : listing.getItems()) {
-                Edition edition = item.getEdition();
-                if (edition == null) continue;
-
-                Publisher itemPublisher = edition.getPublisher();
-                if (publisher.equals(itemPublisher)) {
-                    result.add(item);
-                }
-            }
-        }
-
-        return result;
-    }
-
+//    /**
+//     * Returns all items that are currently on auction
+//     * and belong to the given publisher.
+//     *
+//     * @param publisher the publisher to search for
+//     * @return list of items on auction for that publisher
+//     */
+//    public List<PublicationSample> getItemsOnAuctionGivenPublisher(Publisher publisher) {
+//
+//        if (publisher == null) {
+//            throw new IllegalArgumentException("publisher cannot be null");
+//        }
+//
+//        List<PublicationSample> result = new ArrayList<>();
+//
+//        for (Auction auction : _auctionsList) {
+//            Listing listing = auction.getListing();
+//            if (listing == null) continue;
+//
+//            for (PublicationSample item : listing.getItems()) {
+//                Edition edition = item.getEdition();
+//                if (edition == null) continue;
+//
+//                Publisher itemPublisher = edition.getPublisher();
+//                if (publisher.equals(itemPublisher)) {
+//                    result.add(item);
+//                }
+//            }
+//        }
+//
+//        return result;
+//    }
 
 
 }

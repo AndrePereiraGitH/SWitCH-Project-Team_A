@@ -6,6 +6,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.support.hierarchical.ThrowableCollector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +50,10 @@ class AppraisalEntityRepositoryDependenciesTest {
      * @return PublicationTypeRepository instance.
      */
     private PublicationTypeRepository createPublicationTypeRepository() {
-        PublicationTypeRepository repo = new PublicationTypeRepository(new PublicationTypeFactory());
-        repo.addToList(new PublicationType(
+
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        PublicationTypeRepository repo = new PublicationTypeRepository(factory);
+        repo.addToList(factory.create(
                 MediaFormat.BOOK,
                 TypeOfBinding.HARDBACK,
                 "Standard"

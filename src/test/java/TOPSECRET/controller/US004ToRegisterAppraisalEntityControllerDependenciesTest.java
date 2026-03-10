@@ -41,9 +41,10 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
      * Creates a PublicationTypeRepository with predefined PublicationTypes.
      */
     private PublicationTypeRepository createPublicationTypeRepository() {
-        PublicationTypeRepository repo = new PublicationTypeRepository(new PublicationTypeFactory());
-        repo.addToList(new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard"));
-        repo.addToList(new PublicationType(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Pocket"));
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        PublicationTypeRepository repo = new PublicationTypeRepository(factory);
+        repo.addToList(factory.create(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Standard"));
+        repo.addToList(factory.create(MediaFormat.BOOK, TypeOfBinding.PAPERBACK, "Pocket"));
         return repo;
     }
 

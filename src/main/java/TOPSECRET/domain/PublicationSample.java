@@ -24,8 +24,8 @@ public class PublicationSample {
     private final Edition _edition;
     private final Condition _condition;
 
-    public PublicationSample(BibliographicalData bd, User owner, PublicationStatus publicationStatus, Edition edition,
-                             Condition condition) {
+    protected PublicationSample(BibliographicalData bd, User owner, PublicationStatus publicationStatus, Edition edition,
+                                Condition condition) {
 
         if (bd == null || owner == null || publicationStatus == null || edition == null || condition == null) {
             throw new IllegalArgumentException("All criteria must be filled");
@@ -56,8 +56,15 @@ public class PublicationSample {
         return _edition;
     }
 
-    public void changeStatusToForSale(){
+    public boolean changeStatusToForSale() {
+
+        if (_publicationStatus == PublicationStatus.FOR_SALE) {
+
+            return false;
+        }
+
         _publicationStatus = PublicationStatus.FOR_SALE;
+        return true;
     }
 
     public Condition getCondition() {
@@ -79,7 +86,7 @@ public class PublicationSample {
     }
 
     //US021 Start
-    public boolean hasGenre (Genre genre) {
+    public boolean hasGenre(Genre genre) {
         return _bd.hasGenre(genre);
     }
     //US021 End
@@ -95,8 +102,8 @@ public class PublicationSample {
      * business logic operations.</p>
      *
      * @return a new {@link PublicationDetails} instance populated with this
-     *         publication's bibliographical data, owner, status, edition,
-     *         and condition.
+     * publication's bibliographical data, owner, status, edition,
+     * and condition.
      */
 
     public PublicationSample.PublicationDetails getDetails() {
@@ -131,7 +138,8 @@ public class PublicationSample {
             PublicationStatus publicationStatus,
             Edition edition,
             Condition condition
-    ) {}
+    ) {
+    }
 
     // US023 End ----------------------------------------------------------------------------------------------------
 }

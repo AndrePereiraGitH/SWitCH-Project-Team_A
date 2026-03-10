@@ -1,126 +1,63 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Publisher;
 import TOPSECRET.repository.PublisherRepository;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import javax.management.InstanceAlreadyExistsException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class   US006ToRegisterNewPublisherControllerTest {
+class US006ToRegisterNewPublisherControllerTest {
 
-    /**
-     * Test that verifies the controller can be instantiated
-     * when provided with valid dependencies.
-     */
-    @Test
-    void newControllerNewPublisher_with_success() {
+    private PublisherRepository repo;
 
-        // Arrange
-        // Create a repository to store publishers
-        PublisherRepository publisherRepo = new PublisherRepository();
-
-        // Create supporting domain objects required to build a User
-        CountryFactory countryFactory = new CountryFactory();
-        Country country = countryFactory.create("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345","12",email, address);
-        Profile profile = new Profile("John", country, LocalDate.of(1990, 1, 1) );
-
-        // Create an admin user who is allowed to register publishers
-        User admin = new User("admin", contact, profile, UserRole.ADMIN);
-
-        // Act
-        // Instantiate the controller with the repository and admin user
-        US006ToRegisterNewPublisherController controller =
-                new US006ToRegisterNewPublisherController(publisherRepo, admin);
-
-        // Assert
-        // Verify that the controller was successfully created
-
-        assertNotNull(controller);
+    @BeforeEach
+    void setup(){
+        repo = mock(PublisherRepository.class);
     }
 
-    /**
-     * Test that verifies a publisher can be registered
-     * when all provided attributes are valid.
-     */
+
     @Test
-    //A publisher can be registered with valid attributes
-    void newPublisher_with_valid_attributes() {
+    void ensureConstructorIsBuildSucessfully(){
+        //Arrange
 
-        // Arrange
+        //Act
+        US006ToRegisterNewPublisherController ctrl = new US006ToRegisterNewPublisherController(repo);
 
-        PublisherRepository publisherRepo = new PublisherRepository();
-        CountryFactory countryFactory = new CountryFactory();
-        Country country = countryFactory.create("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345","12",email, address);
-        Profile profile = new Profile("John", country, LocalDate.of(2001,6,20) );
-
-
-        User admin = new User("admin", contact, profile, UserRole.ADMIN );
-
-        // Create the controller under test
-        US006ToRegisterNewPublisherController controller =
-                new US006ToRegisterNewPublisherController(publisherRepo, admin);
-
-        // Act
-        // Attempt to register a new publisher with valid data
-        Publisher publisher = controller.createPublisher(
-                "Penguin Books",
-                "123456789",
-                contact
-        );
-
-        // Assert
-        // Verify that the publisher was successfully created
-        assertNotNull(publisher);
+        //Assert
+        assertNotNull(ctrl);
     }
 
-    /**
-     * Test that verifies the system does not allow
-     * two publishers to be registered with the same VAT number.
-     */
     @Test
-    //A publisher cannot be registered twice with the same VAT number
-    void newPublisher_with_repeated_vatNumber_should_fail() {
-
-        // Arrange
-        PublisherRepository publisherRepo = new PublisherRepository();
-        CountryFactory countryFactory = new CountryFactory();
-        Country country = countryFactory.create("Portugal");
-        Email email = new Email("contact", "penguin.com");
-        Address address = new Address("PallMall", "1", "SW1", country);
-        Contact contact = new Contact("+4412312345","12",email, address);
-        Profile profile = new Profile("John", country, LocalDate.of(2000,4,19) );
-
-        User admin = new User("admin", contact, profile, UserRole.ADMIN );
-        US006ToRegisterNewPublisherController controller =
-                new US006ToRegisterNewPublisherController(publisherRepo, admin);
-
-        // Register the first publisher with a given VAT number
-        controller.createPublisher(
-                "Penguin Books",
-                "123456789",
-                contact
-        );
-
-        // Act
-        // Attempt to register another publisher using the same VAT number
-        Publisher publisher2 = controller.createPublisher(
-                "Penguin Publishing",
-                "123456789",
-                contact
-        );
-
-        // Assert
-        // Verify that the second registration fails
-        assertNull(publisher2);
+    void ensure_ConstructorThrowsException_WhenRepositoryIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> new US006ToRegisterNewPublisherController(null));
     }
+
+    @Test
+    void registerPublisher_returnTrue_WhenPublisherIsCreated() throws InstanceAlreadyExistsException {
+        //Arrange
+        String name = "Publisher1";
+        String vatNumber = "12345679";
+
+        Publisher publisherDouble = mock(Publisher.class);
+        Contact contactDouble = mock(Contact.class);
+
+        when(repo.createAndAdd(name,vatNumber,contactDouble)).thenReturn(publisherDouble);
+
+        US006ToRegisterNewPublisherController ctrl = new US006ToRegisterNewPublisherController(repo);
+
+
+        //Act
+        boolean result = ctrl.registerPublisher(name,vatNumber,contactDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
 }

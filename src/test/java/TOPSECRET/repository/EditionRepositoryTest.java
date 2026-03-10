@@ -1,27 +1,30 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.MediaFormat;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link EditionRepository} using Mockito mocks for all dependencies.
+ * Unit tests for {@link EditionRepository} using Mockito mocks for all external dependencies.
  * <p>
- * Dependencies such as {@link EditionFactory}, {@link Edition},
+ * Collaborators such as {@link EditionFactory}, {@link Edition},
  * {@link PhysicalAttributes}, {@link Publisher}, and {@link PublicationType}
- * are mocked to isolate repository logic from its collaborators.
+ * are mocked to isolate and validate the repository's behavior independently
+ * from the domain objects they produce.
+ * <p>
+ * The test suite verifies:
  * <ul>
- *     <li>Constructor argument validation</li>
- *     <li>Duplicate edition prevention</li>
- *     <li>Propagation of validation errors from {@link EditionFactory}</li>
+ *     <li>Constructor argument validation.</li>
+ *     <li>Prevention of duplicate editions in the repository.</li>
+ *     <li>Propagation of validation errors thrown by {@link EditionFactory}.</li>
+ *     <li>Protection of the repository's internal state through unmodifiable collections.</li>
  * </ul>
  */
 class EditionRepositoryTest {
@@ -29,79 +32,102 @@ class EditionRepositoryTest {
     // ─────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────
-    private Code validCode() { return Code.fromIsbn13("9783161484100"); }
-    private PhysicalAttributes validPhysicalAttributes() { return mock(PhysicalAttributes.class); }
-    private Publisher validPublisher() { return mock(Publisher.class); }
-    private Locale validEditionLanguage() { return Locale.ENGLISH; }
-    private LocalDate validEditionDate() { return LocalDate.of(2020, 1, 3); }
 
-    private PublicationType validPublicationType() {
-        PublicationType mock = mock(PublicationType.class);
-        when(mock.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        return mock;
-    }
+    private final Code codeDouble = Code.fromIsbn13("9783161484100");
+    private final EditionFactory editionFactoryDouble = mock(EditionFactory.class);
+    private final PhysicalAttributes physicalAttributesDouble = mock(PhysicalAttributes.class);
+    private final Publisher publisherDouble = mock(Publisher.class);
+    private final PublicationType publicationTypeDouble = mock(PublicationType.class);
 
     // ─────────────────────────────────────────────────────────────
     // Constructor
     // ─────────────────────────────────────────────────────────────
 
+    @Test
+    void shouldThrowWhenEditionFactoryIsNull() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new EditionRepository(null));
+    }
+
+    @Test
+    void shouldCreateRepositoryWhenEditionFactoryIsValid() {
+        new EditionRepository(editionFactoryDouble);
+    }
 
     // ─────────────────────────────────────────────────────────────
     // createAndAddEdition
     // ─────────────────────────────────────────────────────────────
 
-
-//    /**
-//     * Verifies that {@link EditionRepository#createAndAddEdition} throws
-//     * {@link IllegalArgumentException} when the produced edition already exists.
-//     *
-//     * <p>{@code contains()} relies on {@code equals()}, which cannot be stubbed
-//     * in Mockito. Instead, the same mock instance returned by the factory is
-//     * pre-loaded into the list — {@code contains()} then finds it via reference
-//     * equality, correctly triggering the duplicate check.</p>
-//     */
-//    @Test
-//    void createAndAddEdition_shouldThrow_whenDuplicateExists() {
-//        // Arrange
-//        Edition existingEdition = mock(Edition.class);
-//
-//        EditionFactory factory = mock(EditionFactory.class);
-//        when(factory.create(any(), any(), any(), any(), any(), any(), any()))
-//                .thenReturn(existingEdition); // same instance = contains() returns true
-//
-//        List<Edition> list = new ArrayList<>();
-//        list.add(existingEdition);
-//
-//        EditionRepository repo = new EditionRepository(factory);
-//
-//        // Act & Assert
-//        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-//                repo.createAndAddEdition(validEditionNumber(), validCode(), validPhysicalAttributes(),
-//                        validPublicationType(), validPublisher(), validEditionLanguage(), validEditionDate()));
-//
-//        assertEquals("Edition already exists", ex.getMessage());
-//        assertEquals(1, list.size());
-//    }
-
-    /**
-     * Verifies that {@link EditionRepository#createAndAddEdition} propagates
-     * {@link IllegalArgumentException} thrown by {@link EditionFactory#create}.
-     *
-     * <p>The factory mock is stubbed to throw before the repository can add
-     * anything, ensuring validation errors from the factory bubble up correctly.</p>
-     */
     @Test
-    void createAndAddEdition_shouldPropagateEditionValidationErrors() {
+    void shouldReturnListWithOneEdition_whenAddingFirstEdition() {
         // Arrange
-        EditionFactory factory = mock(EditionFactory.class);           // single instance
-        when(factory.create(any(), any(), any(), any(), any(), any(), any()))
-                .thenThrow(new IllegalArgumentException("Edition Number cannot be blank"));
+        Edition edition = mock(Edition.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+                .thenReturn(edition);
+        EditionRepository repository = new EditionRepository(editionFactoryDouble);
 
-        EditionRepository repo = new EditionRepository(factory); // same factory
+        // Act
+        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(edition));
+    }
+
+    @Test
+    void shouldReturnListWithTwoEditions_whenAddingTwoDifferentEditions() {
+        // Arrange
+        Edition edition1 = mock(Edition.class);
+        Edition edition2 = mock(Edition.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+                .thenReturn(edition1);
+        when(editionFactoryDouble.create("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1)))
+                .thenReturn(edition2);
+        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+
+        // Act
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        List<Edition> result = repository.createAndAddEdition("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(edition1));
+        assertTrue(result.contains(edition2));
+    }
+
+    @Test
+    void shouldThrowWhenAddingDuplicateEdition() {
+        // Arrange
+        Edition edition = mock(Edition.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+                .thenReturn(edition);
+        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAddEdition("   ", validCode(), validPhysicalAttributes(),
-                        validPublicationType(), validPublisher(), validEditionLanguage(), validEditionDate()));
+                repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)));
     }
+    /**
+     * Verifies that the list returned by {@link EditionRepository#createAndAddEdition}
+     * is unmodifiable. This ensures that external callers cannot change the internal
+     * state of the repository by adding or removing elements from the returned list.
+     * <p>
+     * Attempting to modify the list should throw an {@link UnsupportedOperationException}.
+     */
+    @Test
+    void shouldReturnUnmodifiableList() {
+        // Arrange
+        Edition edition = mock(Edition.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+                .thenReturn(edition);
+        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+
+        // Act
+        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Edition.class)));
+    }
+
 }

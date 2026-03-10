@@ -1,57 +1,52 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Publisher;
 import TOPSECRET.repository.PublisherRepository;
-import TOPSECRET.domain.User;
+
+
+import javax.management.InstanceAlreadyExistsException;
 
 /**
  * Controller responsible for handling the use case
- * of registering a new Publisher (US006).
+ * of registering a new publisher (US006).
  *
- * This class acts as an intermediary between the UI layer
- * and the domain/repository layers.
+ * <p>This class acts as an intermediary between the UI layer
+ * and the domain/repository layers.</p>
  */
-
 public class   US006ToRegisterNewPublisherController {
 
-    // Repository used to store and retrieve Publisher entities
     private PublisherRepository _publisherRepository;
 
-    // Admin user performing the registration action
-    private User admin;
-
     /**
-     * Constructor that initializes the controller with
-     * the required dependencies.
+     * Constructs a new {@code US006ToRegisterNewPublisherController} with the given repository.
      *
+     * @param publisherRepository the repository used to store publishers; must not be {@code null}
+     * @throws NullPointerException if {@code publisherRepository} is {@code null}
      */
-    public US006ToRegisterNewPublisherController(PublisherRepository publisherRepository, User admin) {
+    public US006ToRegisterNewPublisherController(PublisherRepository publisherRepository) {
 
-        // Store the repository for later use
-        this._publisherRepository = publisherRepository;
+        if(publisherRepository == null){
+            throw new NullPointerException("Repository can not be null");
+        }
 
-        // Store the admin user (could be used for authorization or auditing)
-        this.admin = admin;
+        _publisherRepository = publisherRepository;
 
     }
 
     /**
-     * Creates and registers a new Publisher in the system.
+     * Registers a new publisher in the system by delegating creation to the repository.
      *
-     * @param name the publisher's name
-     * @param vatNumber the publisher's VAT number
-     * @param contact the publisher's contact information
-     * @return the newly created Publisher
+     * @param name      the publisher's name; must not be blank
+     * @param vatNumber the publisher's VAT number; must not be blank
+     * @param contact   the publisher's contact information
+     * @return {@code true} if the publisher was successfully created and registered
+     * @throws InstanceAlreadyExistsException if a publisher with the same identity already exists
      */
-    public Publisher createPublisher(String name, String vatNumber, Contact contact){
+    public boolean registerPublisher(String name, String vatNumber, Contact contact) throws InstanceAlreadyExistsException {
 
-        // Delegate the creation and persistence of the Publisher
-        // to the PublisherRepository
-        Publisher publisher = _publisherRepository.createAndAdd(name, vatNumber,contact);
+        _publisherRepository.createAndAdd(name, vatNumber,contact);
 
-        // Return the created Publisher to the caller
-        return publisher;
+        return true;
     }
 
 }

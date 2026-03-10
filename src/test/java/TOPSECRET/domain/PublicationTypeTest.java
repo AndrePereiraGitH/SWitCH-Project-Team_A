@@ -1,14 +1,30 @@
 package TOPSECRET.domain;
-
 import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link PublicationType} class.
+ *
+ * <p>This test suite validates the correct behavior of the PublicationType
+ * domain object, including:
+ * <ul>
+ *     <li>Successful creation with valid parameters</li>
+ *     <li>Validation of invalid constructor arguments</li>
+ *     <li>Correct implementation of {@code equals()}</li>
+ *     <li>Correct implementation of {@code hashCode()}</li>
+ * </ul>
+ */
+
 class PublicationTypeTest {
 
+    /**
+     * Tests that a {@link PublicationType} object is successfully created
+     * when valid parameters are provided and that the getters return
+     * the expected values.
+     */
     @Test
     void TestValidPublicationType()
     {
@@ -25,18 +41,30 @@ class PublicationTypeTest {
 
     }
 
+    /**
+     * Verifies that comparing a {@link PublicationType} object with {@code null}
+     * using {@code equals()} returns {@code false}.
+     */
     @Test
     void shouldReturnFalseWhenComparedWithNull() {
         PublicationType pt = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "A");
         assertFalse(pt.equals(null));
     }
 
+    /**
+     * Verifies that comparing a {@link PublicationType} object with
+     * an instance of a different class returns {@code false}.
+     */
     @Test
     void shouldReturnFalseWhenComparedWithDifferentClass() {
         PublicationType pt = new PublicationType(MediaFormat.MAGAZINE, TypeOfBinding.HARDBACK, "A");
         assertFalse(pt.equals("not a PublicationType"));
     }
 
+    /**
+     * Tests that the constructor throws {@link IllegalArgumentException}
+     * when invalid parameters are provided, such as null values or empty details.
+     */
     @Test
     void TestInvalidPublicationTypes()
     {
@@ -45,7 +73,12 @@ class PublicationTypeTest {
         assertThrows(IllegalArgumentException.class, () -> new PublicationType(MediaFormat.BOOK, null,"Book with gold engravings"));
     }
 
-    // Test to see if identical objects have the same hash code
+    /**
+     * Verifies that two equal {@link PublicationType} objects produce
+     * the same hash code, and that different objects produce different hash codes.
+     *
+     * <p>This ensures compliance with the general contract of {@code hashCode()}.
+     */
     @Test
     void equalObjectsMustHaveSameHashCode()
     {

@@ -1,8 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.*;
-import TOPSECRET.dto.CollectionOfPublicationsDTO;
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import TOPSECRET.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,12 +64,12 @@ class US020PublicListByGenreControllerTest {
     {
         Genre desiredGenre = new Genre("Action");
 
-        List<CollectionOfPublicationsDTO> expected =
-                List.of(mock(CollectionOfPublicationsDTO.class));
+        List<CollectionOfPublicationsDTO_US020> expected =
+                List.of(mock(CollectionOfPublicationsDTO_US020.class));
 
         when(collectionRepo.findPublicByGenre(desiredGenre)).thenReturn(expected);
 
-        List<CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(desiredGenre);
+        List<CollectionOfPublicationsDTO_US020> result = controller.getPublicListsByGenre(desiredGenre);
 
         assertEquals(expected, result);
     }
@@ -85,7 +84,7 @@ class US020PublicListByGenreControllerTest {
 
         when(collectionRepo.findPublicByGenre(desiredGenre)).thenReturn(List.of());
 
-        List<CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(desiredGenre);
+        List<CollectionOfPublicationsDTO_US020> result = controller.getPublicListsByGenre(desiredGenre);
 
         assertTrue(result.isEmpty());
     }
