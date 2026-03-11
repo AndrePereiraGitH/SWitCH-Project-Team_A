@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuctionDTO_US022;
+import TOPSECRET.dto.GenreDTO_US022;
 import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.GenreRepository;
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
@@ -153,7 +153,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     }
 
     @Test
-    void getListOfItemsOnAuctionGivenGenre_dtoContainsCorrectGenres() {
+    void getListOfItemsOnAuctionGivenGenreDtoContainsCorrectGenres() {
 
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
         GenreRepository genreRepoMock = mock(GenreRepository.class);
@@ -189,4 +189,95 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         assertTrue(result.get(0).genres.contains("fiction"));
     }
 
+    @Test
+    void constructor_shouldThrowException_whenGenreRepositoryIsNull() {
+
+        AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepoMock,
+                        null
+                )
+        );
+    }
+
+    @Test
+    void getAllGenresReturnsEmptyListWhenRepositoryIsEmpty() {
+
+        // Arrange
+        AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
+        GenreRepository genreRepoMock = mock(GenreRepository.class);
+
+        when(genreRepoMock.getAllGenres()).thenReturn(List.of());
+
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepoMock,
+                        genreRepoMock
+                );
+
+        // Act
+        List<GenreDTO_US022> result = controller.getAllGenres();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllGenres_shouldReturnListOfGenreDTOs() {
+
+        // Arrange
+        AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
+        GenreRepository genreRepoMock = mock(GenreRepository.class);
+
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
+
+        when(genre1Double.getGenreType()).thenReturn("Fantasy");
+        when(genre2Double.getGenreType()).thenReturn("Romance");
+
+        when(genreRepoMock.getAllGenres())
+                .thenReturn(List.of(genre1Double, genre2Double));
+
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepoMock,
+                        genreRepoMock
+                );
+
+        // Act
+        List<GenreDTO_US022> result = controller.getAllGenres();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("Fantasy", result.get(0).name);
+        assertEquals("Romance", result.get(1).name);
+    }
+
+    @Test
+    void getAllGenres_shouldReturnCorrectDTOs() {
+
+        AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
+        GenreRepository genreRepoMock = mock(GenreRepository.class);
+
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenreType()).thenReturn("Fantasy");
+
+        when(genreRepoMock.getAllGenres()).thenReturn(List.of(genreDouble));
+
+        US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
+                new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepoMock,
+                        genreRepoMock
+                );
+
+        List<GenreDTO_US022> result = controller.getAllGenres();
+
+        assertEquals(1, result.size());
+        assertEquals("Fantasy", result.get(0).name);
+
+        verify(genreRepoMock).getAllGenres();
+    }
 }

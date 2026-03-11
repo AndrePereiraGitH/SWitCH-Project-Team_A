@@ -36,6 +36,9 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
         if (auctionRepository == null) {
             throw new IllegalArgumentException("AuctionRepository cannot be null");
         }
+        if (genreRepository == null) {
+            throw new IllegalArgumentException("GenreRepository cannot be null");
+        }
 
         this.auctionRepository = auctionRepository;
         this.genreRepository = genreRepository;

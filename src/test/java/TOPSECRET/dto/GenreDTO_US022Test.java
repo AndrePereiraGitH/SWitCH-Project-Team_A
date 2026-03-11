@@ -14,6 +14,15 @@ class GenreDTO_US022Test {
 
 
     @Test
+    void fromDomainList_shouldReturnEmptyListWhenInputIsEmpty() {
+
+        List<GenreDTO_US022> result =
+                GenreDTO_US022.fromDomainList(List.of());
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreEmptyList(){
         // Arrange
         List<Genre> genres = new ArrayList<>();
@@ -68,17 +77,34 @@ class GenreDTO_US022Test {
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreInvalid() {
         // Arrange
-        Genre genre = mock(Genre.class);
-        when(genre.getGenreType()).thenReturn("Fantasy");
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenreType()).thenReturn("Fantasy");
 
         List<Genre> genres = new ArrayList<>();
-        genres.add(genre);
+        genres.add(genreDouble);
 
         // Act
         List<GenreDTO_US022> result = GenreDTO_US022.fromDomainList(genres);
 
         // Assert
         assertNotSame(result, result.get(0));
+    }
+
+    @Test
+    void fromDomainList_shouldConvertGenresToDTO() {
+
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
+
+        when(genre1Double.getGenreType()).thenReturn("Fantasy");
+        when(genre2Double.getGenreType()).thenReturn("Romance");
+
+        List<GenreDTO_US022> result =
+                GenreDTO_US022.fromDomainList(List.of(genre1Double, genre2Double));
+
+        assertEquals(2, result.size());
+        assertEquals("Fantasy", result.get(0).name);
+        assertEquals("Romance", result.get(1).name);
     }
 
 }
