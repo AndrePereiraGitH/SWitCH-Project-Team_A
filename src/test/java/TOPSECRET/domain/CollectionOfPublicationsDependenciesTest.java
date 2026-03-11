@@ -425,6 +425,55 @@ class CollectionOfPublicationsDependenciesTest {
         assertEquals(expected, result);   // Collection must remain unchanged
     }
 
+    @Test
+    void shouldReturnTrueWhenPublicationIsAdded() {                // US018
+        CollectionOfPublications collection = createBaseCollection();
+        PublicationSample publication = createValidPublication();
+
+        boolean result = collection.addPublication(publication);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenPublicationIsDuplicate() {           // US018
+        CollectionOfPublications collection = createBaseCollection();
+        PublicationSample publication = createValidPublication();
+
+        collection.addPublication(publication);
+
+        boolean result = collection.addPublication(publication);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenPublicationIsNull() {                // US018
+        CollectionOfPublications collection = createBaseCollection();
+
+        boolean result = collection.addPublication(null);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void containsPublication_shouldReturnTrueWhenPublicationExists() {   // US018
+        CollectionOfPublications collection = createBaseCollection();
+        PublicationSample publication = createValidPublication();
+
+        collection.addPublication(publication);
+
+        assertTrue(collection.containsPublication(publication));
+    }
+
+    @Test
+    void containsPublication_shouldReturnFalseWhenPublicationDoesNotExist() {   // US018
+        CollectionOfPublications collection = createBaseCollection();
+        PublicationSample publication = createValidPublication();
+
+        assertFalse(collection.containsPublication(publication));
+    }
+
     // ============================== end US018 ==============================
 
 

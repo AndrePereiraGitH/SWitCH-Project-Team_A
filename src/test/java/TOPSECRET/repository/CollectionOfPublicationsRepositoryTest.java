@@ -230,6 +230,33 @@ class CollectionOfPublicationsRepositoryTest {
         verify(collection).addPublication(publication);
     }
 
+    @Test
+    void shouldReturnFalseWhenCollectionRejectsPublication() {
+
+        // ARRANGE
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        User user = mock(User.class);
+        Library library = mock(Library.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        PublicationSample publication = mock(PublicationSample.class);
+
+        when(collection.getOwner()).thenReturn(user);
+        when(library.getUser()).thenReturn(user);
+        when(library.containsPublication(publication)).thenReturn(true);
+
+        // collection rejects publication
+        when(collection.addPublication(publication)).thenReturn(false);
+
+        // ACT
+        boolean result = sut.addPublicationToCollection(
+                user, library, collection, publication);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
     /**
      * Ensures method returns false when any argument is null.
      */
@@ -298,6 +325,31 @@ class CollectionOfPublicationsRepositoryTest {
         assertFalse(result);
     }
 
+    @Test
+    void shouldReturnFalseWhenLibraryDoesNotBelongToUser() {
+
+        // ARRANGE
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        User user = mock(User.class);
+        User otherUser = mock(User.class);
+
+        Library library = mock(Library.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        PublicationSample publication = mock(PublicationSample.class);
+
+        when(collection.getOwner()).thenReturn(user);
+        when(library.getUser()).thenReturn(otherUser); // library owner diferente
+
+        // ACT
+        boolean result = sut.addPublicationToCollection(
+                user, library, collection, publication);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
     /**
      * Ensures exception is thrown when user is null.
      */
@@ -312,6 +364,42 @@ class CollectionOfPublicationsRepositoryTest {
         assertThrows(IllegalArgumentException.class,
                 () -> sut.getUserCollections(null));
     }
+
+    @Test
+    void shouldAddCollectionToRepositorySuccessfully() {
+
+        // ARRANGE
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        // ACT
+        boolean result = sut.addCollectionToRepo(collection);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCollectionAlreadyExistsInRepository() {
+
+        // ARRANGE
+        CollectionOfPublicationsRepository sut =
+                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        sut.addCollectionToRepo(collection);
+
+        // ACT
+        boolean result = sut.addCollectionToRepo(collection);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+
 
     /**
      * Ensures user collections are retrieved correctly.
