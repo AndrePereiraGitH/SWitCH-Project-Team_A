@@ -99,4 +99,51 @@ class GenreRepositoryTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void shouldReturnGenreWhenTitleExists() {
+        // Arrange
+        String genreType = "Fantasy";
+        when(genre.getGenreType()).thenReturn(genreType);
+        when(genreFactory.create(genreType)).thenReturn(genre);
+
+        GenreRepository repository = new GenreRepository(genreFactory);
+        repository.createAndAdd(genreType);
+
+        // Act
+        Genre result = repository.findByTitle("Fantasy");
+
+        // Assert
+        assertEquals(genre, result);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenGenreNotFound() {
+        // Arrange
+        GenreRepository repository = new GenreRepository(genreFactory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.findByTitle("Unknown"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTitleIsNull() {
+        // Arrange
+        GenreRepository repository = new GenreRepository(genreFactory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.findByTitle(null));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTitleIsBlank() {
+        // Arrange
+        GenreRepository repository = new GenreRepository(genreFactory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.findByTitle(" "));
+    }
 }
