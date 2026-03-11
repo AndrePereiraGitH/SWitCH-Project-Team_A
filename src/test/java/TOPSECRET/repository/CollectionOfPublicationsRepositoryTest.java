@@ -4,6 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.CollectionOfPublicationsFactory;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 
+import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
@@ -522,6 +523,241 @@ class CollectionOfPublicationsRepositoryTest {
     }
 
     // ============================== end US018 ==============================
+
+    // US019 ---START---------------------------------------------------------
+    // getAllCollectionOfPublicationsByUser
+
+    @Test
+    void getAllCollectionOfPublicationsByUser_shouldThrowWhenOwnerIsNull() {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.getAllCollectionOfPublicationsByUser(null));
+    }
+
+    @Test
+    void getAllCollectionOfPublicationsByUser_shouldReturnEmptyListWhenNoCollections() {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        User ownerDouble = mock(User.class);
+
+        // Act
+        List<CollectionOfPublications> result = repo.getAllCollectionOfPublicationsByUser(ownerDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
+    /**
+     * Verifies that when the repository contains collections belonging to different owners,
+     * only the collections owned by the given user are returned.
+     * Two collections are added via the factory — one for each owner —
+     * and only the one matching the queried owner should appear in the result.
+     */
+    @Test
+    void getAllCollectionOfPublicationsByUser_shouldReturnOnlyCollectionsOfGivenOwner() {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        User ownerDouble = mock(User.class);
+        User otherOwnerDouble = mock(User.class);
+
+        CollectionOfPublications collection1Double = mock(CollectionOfPublications.class);
+        CollectionOfPublications collection2Double = mock(CollectionOfPublications.class);
+
+        when(collection1Double.getOwner()).thenReturn(ownerDouble);
+        when(collection1Double.getCollectionName()).thenReturn("Collection 1");
+        when(collection1Double.getCollectionGenre()).thenReturn(mock(Genre.class));
+        when(collection2Double.getOwner()).thenReturn(otherOwnerDouble);
+
+        when(factoryDouble.create(any(), any(), any()))
+                .thenReturn(collection1Double)
+                .thenReturn(collection2Double);
+
+        repo.createIfNotExists(ownerDouble, "Collection 1", mock(Genre.class));
+        repo.createIfNotExists(ownerDouble, "Collection 2", mock(Genre.class));
+
+        // Act
+        List<CollectionOfPublications> result = repo.getAllCollectionOfPublicationsByUser(ownerDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(collection1Double));
+    }
+
+
+    // getCollectionByDTO
+
+    @Test
+    void getCollectionByDTO_shouldThrowWhenNoDTOMatches() {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
+        when(dtoDouble.get_name()).thenReturn("Unknown");
+        when(dtoDouble.get_genreName()).thenReturn("Fiction");
+        when(dtoDouble.getOwnerName()).thenReturn("alice");
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> repo.getCollectionByDTO(dtoDouble));
+    }
+
+    /**
+     * Verifies that getCollectionByDTO returns the correct domain object when a collection
+     * matching all three fields (name, genre, owner username) exists in the repository.
+     * The collection mock is configured to return values that match the DTO double exactly.
+     */
+    @Test
+    void getCollectionByDTO_shouldReturnMatchingCollection() throws Exception {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        User ownerDouble = mock(User.class);
+        Genre genreDouble = mock(Genre.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        when(ownerDouble.getUserName()).thenReturn("alice");
+        when(genreDouble.getGenreType()).thenReturn("Fiction");
+        when(collectionDouble.getCollectionName()).thenReturn("My Collection");
+        when(collectionDouble.getCollectionGenre()).thenReturn(genreDouble);
+        when(collectionDouble.getOwner()).thenReturn(ownerDouble);
+
+        when(factoryDouble.create(any(), any(), any())).thenReturn(collectionDouble);
+        repo.createIfNotExists(ownerDouble,"My Collection", genreDouble);
+
+        CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
+        when(dtoDouble.get_name()).thenReturn("My Collection");
+        when(dtoDouble.get_genreName()).thenReturn("Fiction");
+        when(dtoDouble.getOwnerName()).thenReturn("alice");
+
+        // Act
+        CollectionOfPublications result = repo.getCollectionByDTO(dtoDouble);
+
+        // Assert
+        assertEquals(collectionDouble, result);
+    }
+
+
+    @Test
+    void getCollectionByDTO_shouldThrowWhenOnlyNameDoesNotMatch() throws Exception {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        User ownerDouble = mock(User.class);
+        Genre genreDouble = mock(Genre.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        when(ownerDouble.getUserName()).thenReturn("alice");
+        when(genreDouble.getGenreType()).thenReturn("Fiction");
+        when(collectionDouble.getCollectionName()).thenReturn("My Collection");
+        when(collectionDouble.getCollectionGenre()).thenReturn(genreDouble);
+        when(collectionDouble.getOwner()).thenReturn(ownerDouble);
+
+        when(factoryDouble.create(any(), any(), any())).thenReturn(collectionDouble);
+        repo.createIfNotExists(ownerDouble, "My Collection", genreDouble);
+
+        CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
+        when(dtoDouble.get_name()).thenReturn("Different Name"); // <-- nome diferente
+        when(dtoDouble.get_genreName()).thenReturn("Fiction");   // genre igual
+        when(dtoDouble.getOwnerName()).thenReturn("alice");      // owner igual
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> repo.getCollectionByDTO(dtoDouble));
+    }
+
+    // makeCollectionOfPublicationsPublic
+
+    @Test
+    void makeCollectionOfPublicationsPublic_shouldThrowWhenDTOIsNull() {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.makeCollectionOfPublicationsPublic(null));
+    }
+
+    @Test
+    void makeCollectionOfPublicationsPublic_shouldThrowWhenCollectionNotFound() {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
+        when(dtoDouble.get_name()).thenReturn("Unknown");
+        when(dtoDouble.get_genreName()).thenReturn("Fiction");
+        when(dtoDouble.getOwnerName()).thenReturn("alice");
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> repo.makeCollectionOfPublicationsPublic(dtoDouble));
+    }
+
+
+    /**
+     * Verifies that makeCollectionOfPublicationsPublic sets the collection's private flag to false.
+     * The collection mock is configured to match the DTO, and set_isPrivate is verified
+     * to have been called with false after the operation completes.
+     */
+    @Test
+    void makeCollectionOfPublicationsPublic_shouldSetCollectionToPublic() throws Exception {
+        CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
+
+        // Arrange
+        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+
+        User ownerDouble = mock(User.class);
+        Genre genreDouble = mock(Genre.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        when(ownerDouble.getUserName()).thenReturn("alice");
+        when(genreDouble.getGenreType()).thenReturn("Fiction");
+        when(collectionDouble.getCollectionName()).thenReturn("My Collection");
+        when(collectionDouble.getCollectionGenre()).thenReturn(genreDouble);
+        when(collectionDouble.getOwner()).thenReturn(ownerDouble);
+
+        when(factoryDouble.create(any(), any(), any())).thenReturn(collectionDouble);
+        repo.createIfNotExists(ownerDouble, "My Collection", genreDouble);
+
+        CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
+        when(dtoDouble.get_name()).thenReturn("My Collection");
+        when(dtoDouble.get_genreName()).thenReturn("Fiction");
+        when(dtoDouble.getOwnerName()).thenReturn("alice");
+
+        // Act
+        boolean result = repo.makeCollectionOfPublicationsPublic(dtoDouble);
+
+        // Assert
+        assertTrue(result);
+        verify(collectionDouble).set_isPrivate(false);
+    }
+
+
+
+    //----------------------END---------------------------------------------
 
 
     // ============================== US020 ==============================
