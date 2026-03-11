@@ -78,6 +78,20 @@ class ContactTest {
         assertEquals("987654321", result);
     }
 
+    @Test
+    void shouldReturnFalseWhenPhoneNumberIsNullInOneObject() {
+
+        // ARRANGE
+        Contact contact1 = createContact(null, "351", null, null);
+        Contact contact2 = createContact("912345678", "351", null, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
     // Test getExtension
     @Test
     void testShouldReturnExtension() {
@@ -96,6 +110,34 @@ class ContactTest {
 
         // Assert
         assertEquals("351", result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenExtensionIsNullInOneObject() {
+
+        // ARRANGE
+        Contact contact1 = new Contact();
+        Contact contact2 = createContact("912345678", "351", null, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenOneExtensionIsNullAndOtherIsNot() {
+
+        // ARRANGE
+        Contact contact1 = new Contact();
+        Contact contact2 = createContact("912345678", "351", null, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
     }
 
     // Test getEmail
@@ -118,6 +160,55 @@ class ContactTest {
         assertEquals(email, result);
     }
 
+    @Test
+    void shouldReturnFalseWhenEmailIsNullInOneObject() {
+
+        // ARRANGE
+        Email email = new Email("user", "mail.com");
+
+        Contact contact1 = createContact("912345678", "351", null, null);
+        Contact contact2 = createContact("912345678", "351", email, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenEmailIsDifferent() {
+
+        // ARRANGE
+        Email email1 = new Email("user", "mail.com");
+        Email email2 = new Email("other", "mail.com");
+
+        Contact contact1 = createContact("912345678", "351", email1, null);
+        Contact contact2 = createContact("912345678", "351", email2, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenOneEmailIsNullAndOtherIsNot() {
+
+        // ARRANGE
+        Email email = new Email("user", "mail.com");
+
+        Contact contact1 = createContact("912345678", "351", email, null);
+        Contact contact2 = createContact("912345678", "351", null, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
     // Test getAddress
     @Test
     void testShouldReturnAddress() {
@@ -136,6 +227,76 @@ class ContactTest {
 
         // Assert
         assertEquals(address, result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAddressIsDifferent() {
+
+        // ARRANGE
+        Address address1 = new Address(
+                "Street A",
+                "1",
+                "1000",
+                new Country("PORTUGAL")
+        );
+
+        Address address2 = new Address(
+                "Street B",
+                "2",
+                "2000",
+                new Country("PORTUGAL")
+        );
+
+        Contact contact1 = createContact("912345678", "351", null, address1);
+        Contact contact2 = createContact("912345678", "351", null, address2);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenOneAddressIsNullAndOtherIsNot() {
+
+        // ARRANGE
+        Address address = new Address(
+                "Street A",
+                "1",
+                "1000",
+                new Country("PORTUGAL")
+        );
+
+        Contact contact1 = createContact("912345678", "351", null, address);
+        Contact contact2 = createContact("912345678", "351", null, null);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAddressIsNullInOneObject() {
+
+        // ARRANGE
+        Address address = new Address(
+                "Street",
+                "10",
+                "12345",
+                new Country("PORTUGAL")
+        );
+
+        Contact contact1 = createContact("912345678", "351", null, null);
+        Contact contact2 = createContact("912345678", "351", null, address);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertFalse(result);
     }
 
     // Test getFullPhoneNumber
@@ -208,6 +369,19 @@ class ContactTest {
         assertFalse(contact1.equals(contact2));
     }
 
+    @Test
+    void shouldReturnTrueWhenComparingSameInstance() {
+
+        // ARRANGE
+        Contact contact = createContact("912345678", "351", null, null);
+
+        // ACT
+        boolean result = contact.equals(contact);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
     /**
      * Verifies that Contacts with different extension are not equal.
      */
@@ -277,4 +451,123 @@ class ContactTest {
 
         assertTrue(contact1.equals(contact2));
     }
+
+    @Test
+    void hashCodeShouldBeDifferentWhenEmailIsDifferent() {
+
+        // ARRANGE
+        Email email1 = new Email("user", "mail.com");
+        Email email2 = new Email("other", "mail.com");
+
+        Contact contact1 = createContact("912345678", "351", email1, null);
+        Contact contact2 = createContact("912345678", "351", email2, null);
+
+        // ACT
+        int hash1 = contact1.hashCode();
+        int hash2 = contact2.hashCode();
+
+        // ASSERT
+        assertNotEquals(hash1, hash2);
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentWhenExtensionDiffers() {
+
+        // ARRANGE
+        Contact contact1 = createContact("912345678", "351", null, null);
+        Contact contact2 = createContact("912345678", "44", null, null);
+
+        // ACT
+        int hash1 = contact1.hashCode();
+        int hash2 = contact2.hashCode();
+
+        // ASSERT
+        assertNotEquals(hash1, hash2);
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentWhenEmailDiffers() {
+
+        // ARRANGE
+        Email email1 = new Email("user", "mail.com");
+        Email email2 = new Email("other", "mail.com");
+
+        Contact contact1 = createContact("912345678", "351", email1, null);
+        Contact contact2 = createContact("912345678", "351", email2, null);
+
+        // ACT
+        int hash1 = contact1.hashCode();
+        int hash2 = contact2.hashCode();
+
+        // ASSERT
+        assertNotEquals(hash1, hash2);
+    }
+
+    @Test
+    void shouldReturnTrueWhenAddressIsEqualAndNotNull() {
+
+        // ARRANGE
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                new Country("PORTUGAL")
+        );
+
+        Contact contact1 = createContact("912345678", "351", null, address);
+        Contact contact2 = createContact("912345678", "351", null, address);
+
+        // ACT
+        boolean result = contact1.equals(contact2);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void hashCodeShouldMatchExpectedFormula() {
+
+        // ARRANGE
+        Email email = new Email("test.user", "example.com");
+        Address address = new Address(
+                "Main Street",
+                "10",
+                "12345",
+                new Country("PORTUGAL")
+        );
+
+        Contact contact = createContact("987654321", "351", email, address);
+
+        int expected = 17;
+        expected = 31 * expected + "987654321".hashCode();
+        expected = 31 * expected + "351".hashCode();
+        expected = 31 * expected + email.hashCode();
+        expected = 31 * expected + address.hashCode();
+
+        // ACT
+        int result = contact.hashCode();
+
+        // ASSERT
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void hashCodeShouldMatchExpectedFormulaWhenEmailAndAddressAreNull() {
+
+        // ARRANGE
+        Contact contact = createContact("912345678", "351", null, null);
+
+        int expected = 17;
+        expected = 31 * expected + "912345678".hashCode();
+        expected = 31 * expected + "351".hashCode();
+        expected = 31 * expected + 0;
+        expected = 31 * expected + 0;
+
+        // ACT
+        int result = contact.hashCode();
+
+        // ASSERT
+        assertEquals(expected, result);
+    }
+
 }
