@@ -130,4 +130,37 @@ class CityTest {
 
         assertEquals(cityA.hashCode(), cityB.hashCode());
     }
+
+    @Test
+    void differentCitiesShouldHaveDifferentHashCodes() {
+        Country country = mock(Country.class);
+
+        City city1 = new City(country, "Lisbon");
+        City city2 = new City(country, "Porto");
+
+        assertNotEquals(city1.hashCode(), city2.hashCode());
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparingWithNull() {
+
+        //Arrange
+        Country country = mock(Country.class);
+        City city = new City(country, "Lisbon");
+
+        //Assert
+        assertFalse(city.equals(null));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparingWithDifferentType() {
+
+        //Arrange
+        Country country = mock(Country.class);
+        City city = new City(country, "Lisbon");
+
+        //Assert
+        assertFalse(city.equals("NotACity"));
+    }
+
 }
