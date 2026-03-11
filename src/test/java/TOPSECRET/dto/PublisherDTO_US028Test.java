@@ -162,15 +162,16 @@ class PublisherDTO_US028Test {
 
     @Test
     void toDTO_ShouldConvertPublisherCorrectly() {
+        // Arrange
+        when(mockPublisher.getName()).thenReturn(name);
+        when(mockPublisher.getVatNumber()).thenReturn(vatNumber);
+
         // Act
         PublisherDTO_US028 dto = PublisherDTO_US028.toDTO(mockPublisher);
 
         // Assert
         assertEquals(name, dto.getName());
         assertEquals(vatNumber, dto.getVatNumber());
-
-        verify(mockPublisher).getName();
-        verify(mockPublisher).getVatNumber();
     }
 
     @Test

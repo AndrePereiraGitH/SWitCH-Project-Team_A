@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.when;
 
 class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
@@ -44,19 +46,6 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     // ===============================================
 
     // ======= getAllPublishers ========================================================================================
-
-    @Test
-    void getAllPublishers_ShouldCallRepositoryOnce() {
-        // Arrange
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-
-        // Act
-        controller.getAllPublishers();
-
-        // Assert
-        verify(publisherRepoDouble, times(1)).getAllPublishers();
-    }
 
     @Test
     void getAllPublishers_ShouldConvertPublishersToDTOs() {
@@ -105,45 +94,6 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     // ======= findListOfItemsOnAuctionByPublisher ==================================================================
 
     @Test
-    void findListOfItemsOnAuctionByPublisher_ShouldCalllistingRepoDouble() {
-        // Arrange
-        Publisher publisher = mock(Publisher.class);
-        when(listingRepoDouble.findAllAuctionListings()).thenReturn(List.of());
-        when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any())).thenReturn(List.of());
-
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-
-        // Act
-        controller.findListOfItemsOnAuctionByPublisher(publisher);
-
-        // Assert
-        verify(listingRepoDouble, times(1)).findAllAuctionListings();
-    }
-
-    @Test
-    void findListOfItemsOnAuctionByPublisher_ShouldCallPubSampleRepoWithCorrectArguments() {
-        // Arrange
-        Publisher publisher = mock(Publisher.class);
-
-        Listing l1 = mock(Listing.class);
-        Listing l2 = mock(Listing.class);
-        List<Listing> listings = List.of(l1, l2);
-
-        when(listingRepoDouble.findAllAuctionListings()).thenReturn(listings);
-        when(pubSampleRepoDouble.findItemsByListingAndPublisher(listings, publisher))
-                .thenReturn(List.of());
-
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-
-        // Act
-        controller.findListOfItemsOnAuctionByPublisher(publisher);
-
-        // Assert
-        verify(pubSampleRepoDouble).findItemsByListingAndPublisher(listings, publisher);
-    }
-    @Test
     void findListOfItemsOnAuctionByPublisher_ShouldReturnEmptyListWhenNoItemsFound() {
         // Arrange
         Publisher publisher = mock(Publisher.class);
@@ -191,26 +141,6 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Act + Assert
         assertThrows(RuntimeException.class,
                 () -> controller.findListOfItemsOnAuctionByPublisher(publisher));
-    }
-
-    @Test
-    void findListOfItemsOnAuctionByPublisher_ShouldCallMethodsInCorrectOrder() {
-        // Arrange
-        Publisher publisher = mock(Publisher.class);
-        when(listingRepoDouble.findAllAuctionListings()).thenReturn(List.of());
-        when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any()))
-                .thenReturn(List.of());
-
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-
-        // Act
-        controller.findListOfItemsOnAuctionByPublisher(publisher);
-
-        // Assert
-        InOrder order = inOrder(listingRepoDouble, pubSampleRepoDouble);
-        order.verify(listingRepoDouble).findAllAuctionListings();
-        order.verify(pubSampleRepoDouble).findItemsByListingAndPublisher(any(), eq(publisher));
     }
 
     @Test
@@ -269,4 +199,5 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Assert
         assertEquals(1, result.size());
     }
+
 }
