@@ -8,6 +8,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -40,7 +42,8 @@ class PhysicalAttributesTest {
    @Test
     void testAllArgumentsConstructor() {
        // arrange
-       Dimensions dimensions = new Dimensions(10.0, 10.0, 10.0);
+
+       Dimensions dimensions = mock(Dimensions.class); //new Dimensions(10.0, 10.0, 10.0);
 
        // act
        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 2, 768);
@@ -89,11 +92,14 @@ class PhysicalAttributesTest {
 
     @Test
     void equals_shouldBeTrue_whenSameValues() {
+
+       Dimensions dimensionsDouble = mock(Dimensions.class);
+
         PhysicalAttributes a =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+                new PhysicalAttributes(dimensionsDouble, 300.0, 200);
 
         PhysicalAttributes b =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+                new PhysicalAttributes(dimensionsDouble, 300.0, 200);
 
         assertEquals(a, b);
         assertEquals(b, a);
@@ -101,35 +107,52 @@ class PhysicalAttributesTest {
 
     @Test
     void equals_shouldBeFalse_whenDimensionsDiffer() {
-        PhysicalAttributes a =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+       Dimensions dimensionsDouble1 = mock(Dimensions.class);
+       Dimensions dimensionsDouble2 = mock(Dimensions.class);
+
+       PhysicalAttributes a =
+                new PhysicalAttributes(dimensionsDouble1, 300.0, 200);
 
         PhysicalAttributes b =
-                new PhysicalAttributes(new Dimensions(11.0, 2.0, 5.0), 300.0, 200);
+                new PhysicalAttributes(dimensionsDouble2, 300.0, 200);
 
         assertNotEquals(a, b);
     }
 
     @Test
     void equals_shouldBeFalse_whenWeightDiffers() {
-        PhysicalAttributes a =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+
+       Dimensions dimensionsDouble1 = mock(Dimensions.class);
+
+       PhysicalAttributes a =
+                new PhysicalAttributes(dimensionsDouble1, 300.0, 200);
 
         PhysicalAttributes b =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 350.0, 200);
+                new PhysicalAttributes(dimensionsDouble1, 350.0, 200);
 
         assertNotEquals(a, b);
     }
 
     @Test
     void equals_shouldBeFalse_whenPageCountDiffers() {
+
+        Dimensions dimensionsDouble = mock(Dimensions.class);
+
         PhysicalAttributes a =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 200);
+                new PhysicalAttributes(dimensionsDouble, 300.0, 200);
 
         PhysicalAttributes b =
-                new PhysicalAttributes(new Dimensions(10.0, 2.0, 5.0), 300.0, 250);
+                new PhysicalAttributes(dimensionsDouble, 300.0, 250);
 
         assertNotEquals(a, b);
+    }
+
+    @Test
+    void equals_shouldBeFalse_forNull_andDifferentObjects() {
+       PhysicalAttributes attributes = new PhysicalAttributes();
+
+       assertNotEquals(attributes, null);
+       assertNotEquals(attributes, "not a physical attribute");
     }
 
 

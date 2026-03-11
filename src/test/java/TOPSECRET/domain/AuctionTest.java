@@ -242,9 +242,9 @@ class AuctionTest {
 
     @Test
     void equals_returnsFalse_forNull_andDifferentClass() {
-        Auction auctionDouble = createScheduledAuction("35.00", "150.00");
-        assertFalse(auctionDouble.equals(null));
-        assertFalse(auctionDouble.equals("not an auction"));
+        Auction auction = createScheduledAuction("35.00", "150.00");
+        assertFalse(auction.equals(null));
+        assertFalse(auction.equals("not an auction"));
     }
 
     @Test
