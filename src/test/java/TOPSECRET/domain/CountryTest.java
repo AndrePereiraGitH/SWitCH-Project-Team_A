@@ -2,7 +2,7 @@ package TOPSECRET.domain;
 
 import static org.junit.jupiter.api.Assertions.*; //import para nos permitir fazer os assertEquals, assertThrows, etc
 
-import org.junit.jupiter.api.Test; //import para indicar ao JUnit que é para testes
+import org.junit.jupiter.api.Test;
 
 class CountryTest { //Classe para testar Country
 
@@ -14,14 +14,14 @@ class CountryTest { //Classe para testar Country
 
     //Test when a country is "null"
     @Test
-    void NullCountryTest(){ //vai testar o código de domínio em Country, linha 13 e 14
+    void NullCountryTest(){
 
-        IllegalArgumentException exception = //Cria uma variável para guardar a exceção lançada
+        IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
-                        () -> new Country(null)); // esta linha é usada para dar "trigger" ao "if (_countryName == null)"
+                        () -> new Country(null));
 
-        assertEquals("Country name is null",exception.getMessage()); //chama o "exception" e compara as mensagens
-    } //Este teste, para passar, tem de ser lançada exceção pelo código a ser testado em Country, linha 13 e 14
+        assertEquals("Country name is null",exception.getMessage());
+    }
 
     //Test when a country doesn't exist (in the ENUM)
     @Test
@@ -35,14 +35,13 @@ class CountryTest { //Classe para testar Country
 
     //Test when a country does exist. It's the "happy path"
     @Test
-    void CountryExists(){ //Vai servir para testar o que acontece quando se introduz um país que está no ENUM. Ou seja, quando é um país válido
-
+    void CountryExists(){
         //Act
         Country country = new Country("Portugal");
 
         //Assert
-        assertNotNull(country); //checks the line "Countries.valuesOf(_countryName.toUpperCase());" and runs the constructor
-    } //Teste para garantir que o objeto foi criado (com o assertNotNull)
+        assertNotNull(country);
+    }
 
     //Test when provided country is misspelled
     @Test
@@ -53,5 +52,56 @@ class CountryTest { //Classe para testar Country
                         () -> new Country("Portug"));
 
         assertEquals("Country name is not valid", exception.getMessage());
-    } //Este teste corre o ENUM e como não vai existir um país mal-escrito, não será válido, é considerado um país não existente, tal como "Mordor"
+    }
+    @Test
+    void equalsSameObject(){
+
+        CountryFactory factory = new CountryFactory();
+
+        Country country = factory.create("Portugal");
+
+        assertTrue(country.equals(country));
+    }
+
+    @Test
+    void equalsNullObject(){
+
+        CountryFactory factory = new CountryFactory();
+
+        Country country = factory.create("Portugal");
+
+        assertFalse(country.equals(null));
+    }
+    @Test
+
+    void equalsDifferentClass(){
+
+        CountryFactory factory = new CountryFactory();
+
+        Country country = factory.create("Portugal");
+
+        assertFalse(country.equals("Portugal"));
+    }
+
+    @Test
+    void hashCodeSameCountryName(){
+
+        CountryFactory factory = new CountryFactory();
+
+        Country country1 = factory.create("Portugal");
+        Country country2 = factory.create("Portugal");
+
+        assertEquals(country1.hashCode(), country2.hashCode());
+    }
+
+    @Test
+    void hashCodeDifferentCountryName(){
+
+        CountryFactory factory = new CountryFactory();
+
+        Country country1 = factory.create("Portugal");
+        Country country2 = factory.create("France");
+
+        assertNotEquals(country1.hashCode(), country2.hashCode());
+    }
 }
