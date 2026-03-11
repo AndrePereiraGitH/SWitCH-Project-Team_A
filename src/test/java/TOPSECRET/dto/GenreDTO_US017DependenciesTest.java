@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.GenreFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ class GenreDTO_US017DependenciesTest {
     @Test
     void shouldConvertGenreToDTO() {
         // Arrange — a real Genre with name "Fiction"
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
 
         // Act — convert the Genre into a DTO using the static factory method
         GenreDTO_US017 dto = GenreDTO_US017.toDTO(genre);

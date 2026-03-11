@@ -44,7 +44,7 @@ class GenreRepositoryDependenciesTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(new Genre("Romance"), result);
+        assertEquals(new GenreFactory().create("Romance"), result);
         assertEquals(1, repository.getAllGenres().size());
         assertTrue(repository.getAllGenres().contains(result));
     }
@@ -118,9 +118,9 @@ class GenreRepositoryDependenciesTest {
 
         // Assert
         assertEquals(3, result.size());
-        assertTrue(result.contains(new Genre("Romance")));
-        assertTrue(result.contains(new Genre("Horror")));
-        assertTrue(result.contains(new Genre("Mystery")));
+        assertTrue(result.contains(new GenreFactory().create("Romance")));
+        assertTrue(result.contains(new GenreFactory().create("Horror")));
+        assertTrue(result.contains(new GenreFactory().create("Mystery")));
     }
 
     // US004 starts -----------
@@ -134,7 +134,7 @@ class GenreRepositoryDependenciesTest {
         GenreRepository repository =
                 new GenreRepository(new GenreFactory());
 
-        repository.addGenre(new Genre("Fantasy"));
+        repository.createAndAdd("Fantasy");
 
         // ACT
         Genre result = repository.findByTitle("Fantasy");

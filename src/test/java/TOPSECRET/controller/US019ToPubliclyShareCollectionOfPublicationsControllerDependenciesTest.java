@@ -137,9 +137,9 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerDependenciesTest {
 
 
     private CollectionOfPublications createCollectionOfPublications(String collectionName, User user) {
-        return new CollectionOfPublications(
+        return new CollectionOfPublicationsFactory().create(
                 collectionName,
-                new Genre("Fiction"),
+                new GenreFactory().create("Fiction"),
                 user
         );
     }

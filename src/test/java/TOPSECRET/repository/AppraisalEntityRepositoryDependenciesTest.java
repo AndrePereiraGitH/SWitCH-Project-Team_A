@@ -41,7 +41,7 @@ class AppraisalEntityRepositoryDependenciesTest {
      */
     private GenreRepository createGenreRepository() {
         GenreRepository repo = new GenreRepository( new GenreFactory());
-        repo.addGenre(new Genre("Fantasy"));
+        repo.addGenre(new GenreFactory().create("Fantasy"));
         return repo;
     }
 

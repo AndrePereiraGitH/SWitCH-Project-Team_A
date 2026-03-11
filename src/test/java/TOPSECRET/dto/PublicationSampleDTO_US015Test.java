@@ -52,7 +52,7 @@ class PublicationSampleDTO_US015Test {
         when(bd.getAuthors()).thenReturn(List.of(author));
         when(author.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Robert C. Martin");
-        when(bd.getGenres()).thenReturn(List.of(new Genre("Programming")));
+        when(bd.getGenres()).thenReturn(List.of(new GenreFactory().create("Programming")));
 
         when(edition.getEditionNumber()).thenReturn("3rd");
         when(edition.getCode()).thenReturn(Code.fromIsbn13("9780132350884"));

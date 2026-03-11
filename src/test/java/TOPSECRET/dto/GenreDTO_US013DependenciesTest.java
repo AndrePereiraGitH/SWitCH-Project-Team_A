@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.GenreFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +10,7 @@ class GenreDTO_US013DependenciesTest {
     @Test
     void testGenreDTOCreation_ValidGenre() {
         // Arrange
-        Genre genre = new Genre("Adventure");
+        Genre genre = new GenreFactory().create("Adventure");
 
         // Act
         GenreDTO_US013 dto = new GenreDTO_US013(genre.getGenreType());
@@ -21,7 +22,7 @@ class GenreDTO_US013DependenciesTest {
     @Test
     void testGenreDTOCreation_PreservesGenreType() {
         // Arrange
-        Genre genre = new Genre("Fantasy");
+        Genre genre = new GenreFactory().create("Fantasy");
 
         // Act
         GenreDTO_US013 dto = new GenreDTO_US013(genre.getGenreType());

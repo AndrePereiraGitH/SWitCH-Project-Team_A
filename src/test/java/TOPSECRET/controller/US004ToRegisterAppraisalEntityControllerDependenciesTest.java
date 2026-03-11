@@ -32,8 +32,8 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
      */
     private GenreRepository createGenreRepository() {
         GenreRepository repo = new GenreRepository(new GenreFactory());
-        repo.addGenre(new Genre("Fantasy"));
-        repo.addGenre(new Genre("History"));
+        repo.addGenre(new GenreFactory().create("Fantasy"));
+        repo.addGenre(new GenreFactory().create("History"));
         return repo;
     }
 

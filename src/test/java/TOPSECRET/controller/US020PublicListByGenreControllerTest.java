@@ -37,7 +37,7 @@ class US020PublicListByGenreControllerTest {
     @Test
     void getAllGenresDelegatesToGenreRepoAndReturnsResult() {
 
-        List<Genre> expected = List.of(new Genre("Action"), new Genre("Drama"));
+        List<Genre> expected = List.of(new GenreFactory().create("Action"), new GenreFactory().create("Drama"));
 
         when(genreRepo.getAllGenres()).thenReturn(expected);
 
@@ -62,7 +62,7 @@ class US020PublicListByGenreControllerTest {
     @Test
     void getPublicListsByGenreDelegatesToCollectionRepoAndReturnsResult()
     {
-        Genre desiredGenre = new Genre("Action");
+        Genre desiredGenre = new GenreFactory().create("Action");
 
         List<CollectionOfPublicationsDTO_US020> expected =
                 List.of(mock(CollectionOfPublicationsDTO_US020.class));
@@ -80,7 +80,7 @@ class US020PublicListByGenreControllerTest {
     @Test
     void shouldReturnEmptyListWhenNoListsExist()
     {
-        Genre desiredGenre = new Genre("Sci-Fi");
+        Genre desiredGenre = new GenreFactory().create("Sci-Fi");
 
         when(collectionRepo.findPublicByGenre(desiredGenre)).thenReturn(List.of());
 

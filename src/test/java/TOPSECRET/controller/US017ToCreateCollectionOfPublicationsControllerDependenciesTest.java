@@ -88,7 +88,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     void shouldCreatePrivateCollectionSuccessfully_US017() {
         // Arrange — a real user and a real genre
         User user = createValidUser();
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
 
         // Act — controller asks the repository to create the collection
         CollectionOfPublications collection =
@@ -108,7 +108,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     void shouldThrowExceptionWhenDuplicateCollectionExists_US017() {
         // Arrange — first collection is created successfully
         User user = createValidUser();
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
         controller.createCollection("My Favorites", genre, user);
 
         // Act & Assert — second creation with the same data must throw
@@ -127,7 +127,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
 
         // Act & Assert — null user must be rejected with the correct message
         IllegalArgumentException exception = assertThrows(

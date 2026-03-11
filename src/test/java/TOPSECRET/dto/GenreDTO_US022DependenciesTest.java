@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.GenreFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ class GenreDTO_US022DependenciesTest {
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreOneElement() {
         // Arrange
-        Genre genre = new Genre("Comedy");
+        Genre genre = new GenreFactory().create("Comedy");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genre);
@@ -43,8 +44,8 @@ class GenreDTO_US022DependenciesTest {
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreTwoElement() {
         // Arrange
-        Genre genre1 = new Genre("Fantasy");
-        Genre genre2 = new Genre("Romance");
+        Genre genre1 = new GenreFactory().create("Fantasy");
+        Genre genre2 = new GenreFactory().create("Romance");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genre1);
@@ -62,7 +63,7 @@ class GenreDTO_US022DependenciesTest {
     @Test
     void fromDomainListGetListOfItemsOnAuctionOfGivenGenreInvalid() {
         // Arrange
-        Genre genre1 = new Genre("Fantasy");
+        Genre genre1 = new GenreFactory().create("Fantasy");
 
         List<Genre> genres = new ArrayList<>();
         genres.add(genre1);

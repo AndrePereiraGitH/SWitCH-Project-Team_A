@@ -45,7 +45,7 @@ class CollectionOfPublicationsDTO_US018DependenciesTest {
         User user = createValidUser();
 
         CollectionOfPublications collection =
-                new CollectionOfPublications("Favorites", new Genre("Fiction"), user);
+                new CollectionOfPublicationsFactory().create("Favorites", new GenreFactory().create("Fiction"), user);
 
         // Act
         List<CollectionOfPublicationsDTO_US018> result =
