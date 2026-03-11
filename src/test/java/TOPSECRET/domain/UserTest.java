@@ -2,30 +2,26 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class UserTest {
 
     /**
      * Helper method to create a valid User instance for testing purposes.
      */
-    private User createValidUser() {
+    private User createValidUser(String username) {
 
-        Address address = new Address("Main Street", "10", "12345", new Country("PORTUGAL"));
-        Email email = new Email("test.user", "example.com");
-        Contact contact = new Contact("987654321", "351", email, address);
+        Contact contactDouble = mock(Contact.class);
+        Profile profileDouble = mock(Profile.class);
 
-        Profile profile = new Profile(
-                "John Doe",
-                new Country("PORTUGAL"),
-                LocalDate.of(1997, 8, 15)
-        );
-
-        return new User("John Doe", contact, profile, UserRole.NORMAL_USER);
+        return new User(username, contactDouble, profileDouble, UserRole.NORMAL_USER);
     }
 
 
@@ -54,7 +50,7 @@ class UserTest {
             // Arrange
 
             // Act
-            User user = createValidUser();
+            User user = createValidUser("Rodolph");
 
             // Assert
             assertNotNull(user);
@@ -69,7 +65,7 @@ class UserTest {
     void testConstructorWithUsernameNullShouldThrowException() {
 
         // Arrange
-        User valid = createValidUser();
+        User valid = createValidUser("Rodolph");
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -84,7 +80,7 @@ class UserTest {
     void testConstructorUsernameWithFiveCharacters() {
 
         // Arrange
-        User valid = createValidUser();
+        User valid = createValidUser("Rodolph");
 
         // Act
         User user = new User("abcde", valid.getContact(), valid.getProfile(), UserRole.NORMAL_USER);
@@ -102,7 +98,7 @@ class UserTest {
     void testConstructorWithUsernameTooShortShouldThrowException() {
 
         // Arrange
-        User valid = createValidUser();
+        User valid = createValidUser("Rodolph");
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -120,7 +116,7 @@ class UserTest {
     void testShouldReturnUserName() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("John Doe");
 
         // Act
         String result = user.getUserName();
@@ -137,7 +133,8 @@ class UserTest {
     void testShouldReturnContact() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("Rodolph");
+
         Contact expected = user.getContact();
 
         // Act
@@ -155,7 +152,7 @@ class UserTest {
     void testShouldReturnProfile() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("Rodolph");
         Profile expected = user.getProfile();
 
         // Act
@@ -173,12 +170,7 @@ class UserTest {
     void testShouldReturnProvidedUsername() {
 
         // Arrange
-        User user = new User(
-                "userNameTest",
-                createValidUser().getContact(),
-                createValidUser().getProfile(),
-                UserRole.NORMAL_USER
-        );
+        User user = createValidUser("userNameTest");
 
         // Act
         String result = user.getUserName();
@@ -196,7 +188,7 @@ class UserTest {
     void testShouldReturnFormattedString() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("userNameTest");
 
         String expected = "User: " + user.getUserName() +
                 ", Role: " + user.getUserRole() +
@@ -218,7 +210,7 @@ class UserTest {
     void testShouldReturnUserRole() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("userNameTest");
 
         // Act
         UserRole result = user.getUserRole();
@@ -234,7 +226,7 @@ class UserTest {
     @Test
     void testEqualsShouldReturnFalseWhenUsernamesAreDifferent() {
 
-        User user1 = createValidUser();
+        User user1 = createValidUser("userNameTest");
 
         User user2 = new User(
                 "DifferentUser",
@@ -253,7 +245,7 @@ class UserTest {
     @Test
     void testEqualsShouldReturnTrueWhenUsernamesAreEqual() {
 
-        User user1 = createValidUser();
+        User user1 = createValidUser("John Doe");
 
         User user2 = new User(
                 "John Doe",
@@ -265,6 +257,23 @@ class UserTest {
         assertEquals(user1, user2);
     }
 
+    @Test
+    void equals_shouldReturnFalseForNull_orDifferentObject() {
+
+        // arrange
+        String username = "Rodolph";
+
+
+        // act
+        User user = createValidUser(username);
+       // User user = new User(username, contactDouble, profileDouble, UserRole.NORMAL_USER);
+
+        // arrange
+        assertFalse(user.equals(null));
+        assertFalse(user.equals("not a user"));
+
+    }
+
     /**
      * Verifies that hashCode() is equal for users that are considered equal.
      * Ensures equals/hashCode contract compliance.
@@ -272,14 +281,9 @@ class UserTest {
     @Test
     void testHashCodeShouldBeEqualForEqualUsers() {
 
-        User user1 = createValidUser();
+        User user1 = createValidUser("John Doe");
 
-        User user2 = new User(
-                "John Doe",
-                user1.getContact(),
-                user1.getProfile(),
-                UserRole.NORMAL_USER
-        );
+        User user2 = createValidUser("John Doe");
 
         assertEquals(user1.hashCode(), user2.hashCode());
     }
@@ -293,7 +297,7 @@ class UserTest {
     void testEqualsShouldReturnTrueWhenSameReference() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("John Doe");
 
         // Act
         boolean result = user.equals(user);
@@ -310,7 +314,7 @@ class UserTest {
     void testHashCodeShouldNotBeZeroForValidUser() {
 
         // Arrange
-        User user = createValidUser();
+        User user = createValidUser("John Doe");
 
         // Act
         int hash = user.hashCode();
