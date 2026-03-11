@@ -28,7 +28,7 @@ class AuctionDTO_US026Test {
     void fromAuction_shouldReturnAuctionDTO_whenValidAuctionGiven() {
 
         // arrange
-        Listing listingDouble = createListingMock("35.00");
+        Listing listingDouble = createListingDouble("35.00");
         Auction auction = mock(Auction.class);
         when(auction.getListing()).thenReturn(listingDouble);
 
@@ -40,7 +40,7 @@ class AuctionDTO_US026Test {
 
     }
 
-    private Listing createListingMock(String initialPrice) {
+    private Listing createListingDouble(String initialPrice) {
         Listing listing = mock(Listing.class);
         when(listing.getSaleType()).thenReturn(SaleType.AUCTION);
         Price initial = mock(Price.class);
