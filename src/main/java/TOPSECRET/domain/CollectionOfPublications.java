@@ -37,7 +37,7 @@ public class CollectionOfPublications {
      * @param user            the user who owns the collection
      * @throws IllegalArgumentException if name is null or blank, or if genre or user is null
      */
-    public CollectionOfPublications(String collectionName, Genre collectionGenre, User user) {
+    protected CollectionOfPublications(String collectionName, Genre collectionGenre, User user) {
 
         // name cannot be null or blank — a collection must always have a name
         if (collectionName == null || collectionName.isBlank()) {

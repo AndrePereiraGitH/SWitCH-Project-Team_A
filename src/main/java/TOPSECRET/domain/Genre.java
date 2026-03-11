@@ -18,7 +18,7 @@ public class Genre {
      * @param genreType the genre name; must not be null or blank
      * @throws IllegalArgumentException if genreType is null or blank
      */
-    public Genre(String genreType) {
+    protected Genre(String genreType) {
         if (genreType == null || genreType.isBlank()) {
             throw new IllegalArgumentException("Genre type cannot be null or blank");
         }
