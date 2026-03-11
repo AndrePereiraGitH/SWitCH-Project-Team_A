@@ -57,4 +57,12 @@ class GenreTest {
 
         assertEquals(g1.hashCode(), g2.hashCode());
     }
+
+    @Test
+    void equals_shouldReturnFalse_forNull_orDifferentObjects() {
+        Genre genre = new Genre("Fiction");
+
+        assertFalse(genre.equals(null));
+        assertFalse(genre.equals("not a genre"));
+    }
 }

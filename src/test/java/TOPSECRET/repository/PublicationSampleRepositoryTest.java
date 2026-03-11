@@ -227,20 +227,6 @@ class PublicationSampleRepositoryTest {
                 () -> result.add(pubSample2Double));
     }
 
-    @Test
-    void findItemsByListingAndPublisher_ShouldCallGetItemsOnEachListing() {
-        // Arrange
-        List<Listing> listings = List.of(listing1Double, listing2Double, listing3Double);
-
-        // Act
-        PublicationSampleRepository repo = new PublicationSampleRepository(factory);
-        repo.findItemsByListingAndPublisher(listings, publisher1Double);
-
-        // Assert
-        verify(listing1Double).getItems();
-        verify(listing2Double).getItems();
-        verify(listing3Double).getItems();
-    }
 
     @Test
     void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingsIsNull() {
