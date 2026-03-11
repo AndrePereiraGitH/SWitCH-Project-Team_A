@@ -12,11 +12,6 @@ public class ListingRepository {
     private List<Listing> listings;
     private ListingFactory listingFactory;
 
-    public ListingRepository() {
-        this.listings = new ArrayList<>();
-        this.listingFactory = new ListingFactory();
-    }
-
     public ListingRepository(ListingFactory listingFactory) {
         this.listings = new ArrayList<>();
         this.listingFactory = listingFactory;

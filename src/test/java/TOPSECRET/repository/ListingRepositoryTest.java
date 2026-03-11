@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -303,6 +304,187 @@ class ListingRepositoryTest {
 
         assertEquals(1, secondCall.size());
     }
+
+    // US021 -----------------------------------------------------------------------------------------
+    //Method getListOfItemsOnDirectSaleOfAGivenGenre--------------------------------------------------
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldThrownErrorWhenGenreIsNull() {
+      ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+      Genre genreDouble = null;
+
+        // Arrange
+        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.getListOfItemsOnDirectSaleOfAGivenGenre(null));
+
+    }
+
+
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyList() {
+
+        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+        Genre genreDouble = mock(Genre.class);
+
+        // Arrange
+        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+
+        // Act
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenGenre(genreDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
+    /**
+     * Verifies that when a direct-sale listing exists but none of its items match
+     * the given genre, an empty list is returned.
+     * The listing mock is configured as DIRECT_SALE and its sample returns false for hasGenre().
+     */
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListIfNoMatchingGenre() throws InstanceAlreadyExistsException {
+        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+        Genre genreDouble = mock(Genre.class);
+
+        // Arrange
+        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+
+        Listing listingDouble = mock(Listing.class);
+        PublicationSample sampleDouble = mock(PublicationSample.class);
+
+        when(listingDouble.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listingDouble.getItems()).thenReturn(List.of(sampleDouble));
+        when(sampleDouble.hasGenre(genreDouble)).thenReturn(false);
+        when(listingFactoryDouble.create(any(), any(), any(), any(), any(), any()))
+                .thenReturn(listingDouble);
+
+        repo.createAndAdd("Title", List.of(sampleDouble), SaleType.DIRECT_SALE,
+                mock(Price.class), "desc", List.of(mock(Picture.class)));
+
+        // Act
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenGenre(genreDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+
+    }
+
+
+    /**
+     * Verifies that when a direct-sale listing exists with one item matching the given genre,
+     * a list containing exactly that item is returned.
+     * The listing mock is configured as DIRECT_SALE and its sample returns true for hasGenre().
+     */
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithOneMatch() throws InstanceAlreadyExistsException {
+        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+        Genre genreDouble = mock(Genre.class);
+
+        // Arrange
+        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+
+        Listing listingDouble = mock(Listing.class);
+        PublicationSample sampleDouble = mock(PublicationSample.class);
+
+        when(listingDouble.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listingDouble.getItems()).thenReturn(List.of(sampleDouble));
+        when(sampleDouble.hasGenre(genreDouble)).thenReturn(true);
+        when(listingFactoryDouble.create(any(), any(), any(), any(), any(), any()))
+                .thenReturn(listingDouble);
+
+        repo.createAndAdd("Title", List.of(sampleDouble), SaleType.DIRECT_SALE,
+                mock(Price.class), "desc", List.of(mock(Picture.class)));
+
+        // Act
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenGenre(genreDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(sampleDouble));
+    }
+
+
+    /**
+     * Verifies that when two direct-sale listings each contain an item matching the given genre,
+     * both items are returned.
+     * The factory mock is configured to return different listing doubles on consecutive calls.
+     */
+    @Test
+    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithMultipleMatches() throws InstanceAlreadyExistsException {
+        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+        Genre genreDouble = mock(Genre.class);
+
+
+        // Arrange
+        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+
+        Listing listing1Double = mock(Listing.class);
+        Listing listing2Double = mock(Listing.class);
+        PublicationSample sample1Double = mock(PublicationSample.class);
+        PublicationSample sample2Double = mock(PublicationSample.class);
+
+        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listing1Double.getItems()).thenReturn(List.of(sample1Double));
+        when(sample1Double.hasGenre(genreDouble)).thenReturn(true);
+
+        when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listing2Double.getItems()).thenReturn(List.of(sample2Double));
+        when(sample2Double.hasGenre(genreDouble)).thenReturn(true);
+
+        when(listingFactoryDouble.create(any(), any(), any(), any(), any(), any()))
+                .thenReturn(listing1Double)
+                .thenReturn(listing2Double);
+
+        repo.createAndAdd("Title 1", List.of(sample1Double), SaleType.DIRECT_SALE,
+                mock(Price.class), "desc", List.of(mock(Picture.class)));
+        repo.createAndAdd("Title 2", List.of(sample2Double), SaleType.DIRECT_SALE,
+                mock(Price.class), "desc", List.of(mock(Picture.class)));
+
+        // Act
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenGenre(genreDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+
+
+    /**
+     * Verifies that listings with sale type AUCTION are ignored, even if their items
+     * match the given genre. Only DIRECT_SALE listings should be considered.
+     */
+    @Test
+    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldIgnoreAuctionListings() throws Exception {
+        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+        Genre genreDouble = mock(Genre.class);
+
+        // Arrange
+        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+
+        Listing listingDouble = mock(Listing.class);
+        PublicationSample sampleDouble = mock(PublicationSample.class);
+
+        when(listingDouble.getSaleType()).thenReturn(SaleType.AUCTION); // não é direct sale
+        when(listingDouble.getItems()).thenReturn(List.of(sampleDouble));
+        when(sampleDouble.hasGenre(genreDouble)).thenReturn(true);
+        when(listingFactoryDouble.create(any(), any(), any(), any(), any(), any()))
+                .thenReturn(listingDouble);
+
+        repo.createAndAdd("Title", List.of(sampleDouble), SaleType.AUCTION,
+                mock(Price.class), "desc", List.of(mock(Picture.class)));
+
+        // Act
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenGenre(genreDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+// US021 - END ------------------------------------------------------------------------------------------------
 
     @Test
     void getListOfItemsOnDirectSaleOfAGivenAuthor_ShouldFilterCorrectly() throws Exception {
