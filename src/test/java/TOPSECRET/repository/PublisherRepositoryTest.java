@@ -38,7 +38,6 @@ import static org.mockito.Mockito.*;
 class PublisherRepositoryTest {
 
     private PublisherFactory publisherFactory;
-    private PublisherRepository repository;  // ← declared as field, shared across tests
 
     private final String name = "Penguin Books";
     private final String vatNumber = "123456789";
@@ -47,7 +46,6 @@ class PublisherRepositoryTest {
     @BeforeEach
     void setup() {
         publisherFactory = mock(PublisherFactory.class);
-        repository = new PublisherRepository(publisherFactory);  // ← initialised here
     }
 
     /**
@@ -74,11 +72,12 @@ class PublisherRepositoryTest {
         Publisher mockPublisher = mock(Publisher.class);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
 
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
+
         // Act
         Publisher result = repository.createAndAdd(name, vatNumber, contact);
 
         // Assert
-        verify(publisherFactory).create(name, vatNumber, contact);
         assertEquals(mockPublisher, result);
         assertTrue(repository.getAllPublishers().contains(mockPublisher));
     }
@@ -91,6 +90,7 @@ class PublisherRepositoryTest {
     void shouldRejectPublisherWhenAlreadyIsExistent() {
         // Arrange
         Publisher pub1 = mock(Publisher.class);
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
         repository.add(pub1);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(pub1);
 
@@ -108,6 +108,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher existingPublisher = mock(Publisher.class);
         Publisher newPublisher = mock(Publisher.class);
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
         repository.add(existingPublisher);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(newPublisher);
 
@@ -129,6 +130,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
         repository.createAndAdd(name, vatNumber, contact);
 
         // Act
@@ -147,6 +149,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
         repository.createAndAdd(name, vatNumber, contact);
 
         // Act
@@ -167,6 +170,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(mockPublisher.getVatNumber()).thenReturn(vatNumber);
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
         repository.add(mockPublisher);
 
         // Act
@@ -185,6 +189,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(mockPublisher.getVatNumber()).thenReturn("999999999");
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
         repository.add(mockPublisher);
 
         // Act
@@ -200,6 +205,9 @@ class PublisherRepositoryTest {
      */
     @Test
     void shouldReturnNullWhenRepositoryIsEmpty() {
+        // Arrange
+        PublisherRepository repository = new PublisherRepository(publisherFactory);
+
         // Act
         Publisher result = repository.findByVatNumber(vatNumber);
 

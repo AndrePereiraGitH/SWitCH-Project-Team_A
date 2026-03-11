@@ -11,6 +11,16 @@ import TOPSECRET.repository.PublisherRepository;
 
 import java.util.List;
 
+/**
+ * Controller responsible for the execution of the US027 use case.
+ * <p>
+ * This controller coordinates the retrieval of publishers and the list of
+ * publication samples that are available for direct sale from a given publisher.
+ * It interacts with the {@link PublisherRepository}, {@link ListingRepository},
+ * and {@link PublicationSampleRepository} to obtain the necessary domain data
+ * and converts it into DTOs to be used by the application layer.
+ */
+
 public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
     private final PublisherRepository _publisherRepo;
@@ -29,6 +39,12 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
      // ================================================================================================================
 
+    /**
+     * Retrieves all publishers stored in the system and converts them into DTOs.
+     *
+     * @return a list of {@link PublisherDTO_US027} representing all publishers
+     */
+
     public List<PublisherDTO_US027> getAllPublishers() {
 
         // Gets all the publishers on repository
@@ -39,6 +55,22 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         return listOfAllPublishersDTO;
     }
+
+    /**
+     * Retrieves all items on direct sale associated with the given publisher.
+     *
+     * <p>
+     * The process includes:
+     * <ol>
+     *     <li>Retrieving all listings that correspond to direct sale</li>
+     *     <li>Filtering publication samples that belong to the specified publisher</li>
+     *     <li>Converting the resulting domain objects into DTOs</li>
+     * </ol>
+     * </p>
+     *
+     * @param publisher the publisher whose direct-sale items should be retrieved
+     * @return a list of {@link PublicationSampleDTO_US027} associated with the given publisher
+     */
 
     public List<PublicationSampleDTO_US027> findListOfItemsOnDirectSaleByPublisher(Publisher publisher) {
 

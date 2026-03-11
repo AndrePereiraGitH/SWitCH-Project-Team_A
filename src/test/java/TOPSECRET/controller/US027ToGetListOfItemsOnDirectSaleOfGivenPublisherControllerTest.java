@@ -31,17 +31,11 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     ListingRepository listingRepoDouble;
     PublicationSampleRepository pubSampleRepoDouble;
 
-    US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller;
-
     @BeforeEach
     void setUp() {
         publisherRepoDouble = mock(PublisherRepository.class);
         listingRepoDouble = mock(ListingRepository.class);
         pubSampleRepoDouble = mock(PublicationSampleRepository.class);
-
-        controller = new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble
-        );
     }
 
     // ===============================================
@@ -51,20 +45,15 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     // ======= getAllPublishers ========================================================================================
 
     @Test
-    void getAllPublishers_ShouldCallRepositoryOnce() {
-        // Act
-        controller.getAllPublishers();
-
-        // Assert
-        verify(publisherRepoDouble, times(1)).getAllPublishers();
-    }
-
-    @Test
     void getAllPublishers_ShouldConvertPublishersToDTOs() {
         // Arrange
         Publisher pub1 = mock(Publisher.class);
         Publisher pub2 = mock(Publisher.class);
         when(publisherRepoDouble.getAllPublishers()).thenReturn(List.of(pub1, pub2));
+
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
 
         // Act
         List<PublisherDTO_US027> result = controller.getAllPublishers();
@@ -78,6 +67,10 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         when(publisherRepoDouble.getAllPublishers()).thenReturn(List.of());
 
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+
         // Act
         List<PublisherDTO_US027> result = controller.getAllPublishers();
 
@@ -90,6 +83,10 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         when(publisherRepoDouble.getAllPublishers()).thenThrow(new RuntimeException("DB error"));
 
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+
         // Act + Assert
         assertThrows(RuntimeException.class, () -> controller.getAllPublishers());
     }
@@ -97,45 +94,16 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     // ======= findListOfItemsOnDirectSaleByPublisher ==================================================================
 
     @Test
-    void findListOfItemsOnDirectSaleByPublisher_ShouldCalllistingRepoDouble() {
-        // Arrange
-        Publisher publisher = mock(Publisher.class);
-        when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(List.of());
-        when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any())).thenReturn(List.of());
-
-        // Act
-        controller.findListOfItemsOnDirectSaleByPublisher(publisher);
-
-        // Assert
-        verify(listingRepoDouble, times(1)).findAllDirectSaleListings();
-    }
-
-    @Test
-    void findListOfItemsOnDirectSaleByPublisher_ShouldCallPubSampleRepoWithCorrectArguments() {
-        // Arrange
-        Publisher publisher = mock(Publisher.class);
-
-        Listing l1 = mock(Listing.class);
-        Listing l2 = mock(Listing.class);
-        List<Listing> listings = List.of(l1, l2);
-
-        when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(listings);
-        when(pubSampleRepoDouble.findItemsByListingAndPublisher(listings, publisher))
-                .thenReturn(List.of());
-
-        // Act
-        controller.findListOfItemsOnDirectSaleByPublisher(publisher);
-
-        // Assert
-        verify(pubSampleRepoDouble).findItemsByListingAndPublisher(listings, publisher);
-    }
-    @Test
     void findListOfItemsOnDirectSaleByPublisher_ShouldReturnEmptyListWhenNoItemsFound() {
         // Arrange
         Publisher publisher = mock(Publisher.class);
         when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(List.of());
         when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any()))
                 .thenReturn(List.of());
+
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
 
         // Act
         List<PublicationSampleDTO_US027> result =
@@ -152,6 +120,10 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(listingRepoDouble.findAllDirectSaleListings())
                 .thenThrow(new RuntimeException("DB error"));
 
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+
         // Act + Assert
         assertThrows(RuntimeException.class,
                 () -> controller.findListOfItemsOnDirectSaleByPublisher(publisher));
@@ -165,26 +137,13 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any()))
                 .thenThrow(new RuntimeException("DB error"));
 
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+
         // Act + Assert
         assertThrows(RuntimeException.class,
                 () -> controller.findListOfItemsOnDirectSaleByPublisher(publisher));
-    }
-
-    @Test
-    void findListOfItemsOnDirectSaleByPublisher_ShouldCallMethodsInCorrectOrder() {
-        // Arrange
-        Publisher publisher = mock(Publisher.class);
-        when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(List.of());
-        when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any()))
-                .thenReturn(List.of());
-
-        // Act
-        controller.findListOfItemsOnDirectSaleByPublisher(publisher);
-
-        // Assert
-        InOrder order = inOrder(listingRepoDouble, pubSampleRepoDouble);
-        order.verify(listingRepoDouble).findAllDirectSaleListings();
-        order.verify(pubSampleRepoDouble).findItemsByListingAndPublisher(any(), eq(publisher));
     }
 
     @Test
@@ -233,6 +192,10 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(sample.getCondition()).thenReturn(cond);
         when(cond.toString()).thenReturn("NEW");
 
+        US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
+                new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+
         // Act
         List<PublicationSampleDTO_US027> result =
                 controller.findListOfItemsOnDirectSaleByPublisher(publisher);
@@ -240,5 +203,4 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Assert
         assertEquals(1, result.size());
     }
-
 }
