@@ -23,7 +23,6 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
     private Library libraryDouble;
     private ListingFactory listingFactoryDouble;
-    private US015ToPutPublicationInDirectSaleController controller;
 
     @BeforeEach
     void setup() {
@@ -117,9 +116,6 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Listing Factory
         listingFactoryDouble = mock(ListingFactory.class);
 
-        // Controller
-        controller = new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
-
     }
 
     // ==============================================================
@@ -131,6 +127,10 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     @Test
     void constructor_ShouldThrowExceptionWhenLibraryIsNull() {
 
+        // Arrange
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US015ToPutPublicationInDirectSaleController(null, listingFactoryDouble)
@@ -139,6 +139,10 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
     @Test
     void constructor_ShouldThrowExceptionWhenListingFactoryIsNull() {
+
+        // Arrange
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -149,20 +153,22 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     @Test
     void constructor_ShouldCreateControllerWhenBothArgumentsAreValid() {
 
-        // Act
-        US015ToPutPublicationInDirectSaleController controller = new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+        // Arrange
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
-        // Assert
+        // Act + Assert
         assertNotNull(controller);
     }
 
     @Test
     void constructor_ShouldAssignDependenciesCorrectly() {
 
-        // Act
-        US015ToPutPublicationInDirectSaleController controller = new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+        // Arrange
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
-        // Assert
+        // Act + Assert
         assertEquals(libraryDouble, controller.getLibrary());
         assertEquals(listingFactoryDouble, controller.getListingFactory());
     }
@@ -172,6 +178,10 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
     @Test
     void findLibraryPublicationsAvailableForSale_ShouldReturnDTOs() {
+
+        // Arrange
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act
         List<PublicationSampleDTO_US015> listDTOs = controller.findLibraryPublicationsAvailableForSale();
@@ -209,7 +219,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         libraryDouble = mock(Library.class);
         when(libraryDouble.findLibraryPublicationsAvailableForSale()).thenReturn(List.of());
 
-        US015ToPutPublicationInDirectSaleController controller =  new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act
         List<PublicationSampleDTO_US015> listDTOs = controller.findLibraryPublicationsAvailableForSale();
@@ -228,6 +239,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         PublicationSample pubSampleDouble = mock(PublicationSample.class);
         Price priceDouble = mock(Price.class);
         Picture pictureDouble = mock(Picture.class);
+
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -248,6 +262,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Arrange
         Price priceDouble = mock(Price.class);
         Picture pictureDouble = mock(Picture.class);
+
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -270,6 +287,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         Price priceDouble = mock(Price.class);
         Picture pictureDouble = mock(Picture.class);
 
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 controller.putPublicationForSale(
@@ -290,6 +310,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Arrange
         PublicationSample pubSampleDouble = mock(PublicationSample.class);
         Picture pictureDouble = mock(Picture.class);
+
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -312,6 +335,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         Price priceDouble = mock(Price.class);
         Picture pictureDouble = mock(Picture.class);
 
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 controller.putPublicationForSale(
@@ -332,6 +358,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         PublicationSample pubSampleDouble = mock(PublicationSample.class);
         Price priceDouble = mock(Price.class);
         Picture pictureDouble = mock(Picture.class);
+
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -354,8 +383,21 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         Price priceDouble = mock(Price.class);
         Picture pictureDouble = mock(Picture.class);
 
+        Listing listingDouble = mock(Listing.class);
+        when(listingDouble.getListingTitle()).thenReturn("Valid Title");
+        when(listingDouble.getItems()).thenReturn(List.of(pubSampleDouble));
+        when(listingDouble.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listingDouble.getPrice()).thenReturn(priceDouble);
+        when(listingDouble.getShortDescription()).thenReturn("Valid description");
+        when(listingDouble.getPictures()).thenReturn(List.of(pictureDouble));
+
+        when(listingFactoryDouble.create(anyString(), anyList(), any(), any(), anyString(), anyList())).thenReturn(listingDouble);
+
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
+
         // Act
-        controller.putPublicationForSale(
+        Listing listing = controller.putPublicationForSale(
                 "Valid Title",
                 List.of(pubSampleDouble),
                 SaleType.DIRECT_SALE,
@@ -365,14 +407,12 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         );
 
         // Assert
-        verify(listingFactoryDouble, times(1)).create(
-                eq("Valid Title"),
-                eq(List.of(pubSampleDouble)),
-                eq(SaleType.DIRECT_SALE),
-                eq(priceDouble),
-                eq("Valid description"),
-                eq(List.of(pictureDouble))
-        );
+        assertEquals("Valid Title", listing.getListingTitle());
+        assertEquals(List.of(pubSampleDouble), listing.getItems());
+        assertEquals(SaleType.DIRECT_SALE, listing.getSaleType());
+        assertEquals(priceDouble, listing.getPrice());
+        assertEquals("Valid description", listing.getShortDescription());
+        assertEquals(List.of(pictureDouble), listing.getPictures());
     }
 
     @Test
@@ -386,6 +426,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         Listing listingDouble = mock(Listing.class);
         when(listingFactoryDouble.create(any(), any(), any(), any(), any(), any()))
                 .thenReturn(listingDouble);
+
+        US015ToPutPublicationInDirectSaleController controller =
+                new US015ToPutPublicationInDirectSaleController(libraryDouble, listingFactoryDouble);
 
         // Act
         Listing result = controller.putPublicationForSale(
