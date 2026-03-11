@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.Language;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.dto.BibliographicalDataDTO_US023;
@@ -26,7 +25,6 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     // ================= Set Up ==================
     // ===========================================
 
-    private US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller;
     private PublicationSampleRepository pubSampleRepoDouble;
     private PublicationSample pubSample1Double;
     private PublicationSample pubSample2Double;
@@ -116,10 +114,6 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(listListingsDouble);
         when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble,bd1Double)).thenReturn(List.of(pubSample1Double));
         when(bdRepoDouble.getAllPublicationsBD()).thenReturn(listBDDouble);
-
-        // Controller
-        controller = new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
-                listingRepoDouble, pubSampleRepoDouble);
     }
 
     // ===========================================
@@ -129,6 +123,12 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     // Tests for getAllPublicationBD -----------------------------------------------------------------------------------
     @Test
     void getAllPublicationBD_ShouldReturnAllPublications () {
+
+        // Arrange
+        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
+                        listingRepoDouble, pubSampleRepoDouble);
+
         // Act
         List<BibliographicalDataDTO_US023> listOfPublicationsDTO = controller.getAllPublicationBD();
 
@@ -141,8 +141,13 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
     @Test
     void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenNoItemsFound() {
+
         // Arrange
         when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd1Double)).thenReturn(List.of());
+
+        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
+                        listingRepoDouble, pubSampleRepoDouble);
 
         // Act
         List<PublicationSampleDTO_US023> itemsListDTO = controller.findListOfItemsOnDirectSale(bd1Double);
@@ -153,27 +158,15 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     }
 
     @Test
-    void findListOfItemsOnDirectSale_ShouldReturnAllItemsOfAGivenPublication() {
-        // Arrange
-        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd2Double)).thenReturn(List.of(pubSample2Double));
-
-        // Act
-        List<PublicationSampleDTO_US023> itemsListDTO = controller.findListOfItemsOnDirectSale(bd1Double);
-
-        // Assert
-        verify(listingRepoDouble).findAllDirectSaleListings();
-        verify(pubSampleRepoDouble).findItemsByListingAndPublication(List.of(listing1Double,listing2Double), bd1Double);
-
-        assertNotNull(itemsListDTO);
-        assertEquals(1, itemsListDTO.size());
-    }
-
-
-    @Test
     void findListOfItemsOnDirectSale_ShouldReturnAllItem_WhenMultipleSamplesExist() {
+
         // Arrange
         when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd1Double))
                 .thenReturn(List.of(pubSample1Double, pubSample2Double));
+
+        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
+                        listingRepoDouble, pubSampleRepoDouble);
 
         // Act
         List<PublicationSampleDTO_US023> itemsListDTO = controller.findListOfItemsOnDirectSale(bd1Double);
@@ -185,6 +178,12 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
     @Test
     void findListOfItemsOnDirectSale_ShouldMapAttributesCorrectly() {
+
+        // Arrange
+        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
+                        listingRepoDouble, pubSampleRepoDouble);
+
         // Act
         List<PublicationSampleDTO_US023> itemsListDTO = controller.findListOfItemsOnDirectSale(bd1Double);
 
