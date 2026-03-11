@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link PublicationSample} using mocked dependencies.
@@ -34,6 +35,16 @@ class PublicationSampleTest {
         //Act
         PublicationSample validSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
                 anyEdition, anyCondition);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAFieldIsNull() {
+        //Arrange
+        BibliographicalData biblioDataNull = null;
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new PublicationSample(biblioDataNull, anyOwner, anyPublicationStatus, anyEdition, anyCondition));
     }
 
     @Test
@@ -138,5 +149,73 @@ class PublicationSampleTest {
 
         //Assert
         assertEquals(hashA, hashB);
+    }
+
+    @Test
+    void differentPublicationSamplesShouldHaveDifferentHashCodes() {
+
+        //Arrange
+        BibliographicalData otherBd = mock(BibliographicalData.class);
+
+        PublicationSample goldSample = new PublicationSample(
+                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+
+        PublicationSample silverSample = new PublicationSample(
+                otherBd, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+
+        //Act + assert
+        assertNotEquals(goldSample.hashCode(), silverSample.hashCode());
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparedWithNull() {
+
+        //Arrange
+        PublicationSample sample = new PublicationSample(
+                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+
+        PublicationSample nullSample = null;
+
+        //Assert
+        assertFalse(sample.equals(nullSample));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparedWithDifferentType() {
+
+        //Arrange
+        PublicationSample sample = new PublicationSample(
+                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+
+        //Assert
+        assertFalse(sample.equals("not a publication"));
+    }
+
+    @Test
+    void shouldReturnTrueWhenBibliographicalDataHasGenre() {
+
+        //Arrange + act
+        Genre genre = mock(Genre.class);
+        when(anyBiblioData.hasGenre(genre)).thenReturn(true);
+
+        PublicationSample sample = new PublicationSample(
+                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+
+        //Assert
+        assertTrue(sample.hasGenre(genre));
+    }
+
+    @Test
+    void shouldReturnFalseWhenBibliographicalDataDoesNotHaveGenre() {
+
+        //Arrange + act
+        Genre genre = mock(Genre.class);
+        when(anyBiblioData.hasGenre(genre)).thenReturn(false);
+
+        PublicationSample sample = new PublicationSample(
+                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+
+        //Assert
+        assertFalse(sample.hasGenre(genre));
     }
 }
