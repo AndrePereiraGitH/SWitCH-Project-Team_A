@@ -183,6 +183,14 @@ class CodeTest {
     }
 
     @Test
+    void shouldFailWhenIsbn10HasLetterAtPosition9() {
+        // Act & Assert — 'A' at index 8 (9th char) targets the loop boundary i < 9
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIsbn10("12345678A0")
+        );
+    }
+
+    @Test
     void shouldFailWhenIsbn10EndsWithInvalidLetter() {
         // Act & Assert — the last character can only be a digit or 'X', not 'A'
         assertThrows(IllegalArgumentException.class, () ->
@@ -203,6 +211,14 @@ class CodeTest {
         // Act & Assert — 'A' in the middle is always invalid
         assertThrows(IllegalArgumentException.class, () ->
                 Code.fromIssn("2049A630")
+        );
+    }
+
+    @Test
+    void shouldFailWhenIssnEndsWithInvalidChar() {
+        // Act & Assert — last char must be a digit or 'X', anything else is invalid
+        assertThrows(IllegalArgumentException.class, () ->
+                Code.fromIssn("2049363A")
         );
     }
 
@@ -303,6 +319,43 @@ class CodeTest {
         // Act & Assert
         Code code = Code.fromIssn("20493630");
         assertEquals("20493630", code.toString());
+    }
+
+    @Test
+    void toString_shouldReturnNoCode_whenAllFieldsAreNull() {
+        // Act & Assert — constructor with all nulls hits the "No Code" fallback
+        Code code = new Code(null, null, null);
+        assertEquals("No Code", code.toString());
+    }
+
+
+    // --- equals edge cases ---
+
+    @Test
+    void equals_shouldBeFalse_whenComparedDirectlyToNull() {
+        // Act & Assert — calling equals(null) on the code itself must return false
+        Code code = Code.fromIsbn13("9783161484100");
+        assertFalse(code.equals(null));
+    }
+
+    @Test
+    void equals_shouldBeFalse_whenComparedDirectlyToDifferentClass() {
+        // Act & Assert — calling equals with a String must return false
+        Code code = Code.fromIsbn13("9783161484100");
+        assertFalse(code.equals("9783161484100"));
+    }
+
+
+    // --- hashCode ---
+
+    @Test
+    void hashCode_shouldBeEqualForEqualCodes() {
+        // Arrange
+        Code a = Code.fromIsbn13("9783161484100");
+        Code b = Code.fromIsbn13("9783161484100");
+
+        // Assert — equal objects must have the same hash
+        assertEquals(a.hashCode(), b.hashCode());
     }
 
 }
