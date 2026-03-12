@@ -12,15 +12,12 @@ import static org.mockito.Mockito.*;
 
 class DirectSaleFactoryTest {
 
-    private DirectSaleFactory factory;
     private Listing listing1Double;
     private Listing listing2Double;
     private User buyerDouble;
 
     @BeforeEach
     void setUp() {
-        factory = new DirectSaleFactory();
-
         listing1Double = mock(Listing.class);
         listing2Double = mock(Listing.class);
         buyerDouble = mock(User.class);
@@ -33,6 +30,8 @@ class DirectSaleFactoryTest {
         when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
 
         List<Listing> listings = List.of(listing1Double, listing2Double);
+
+        DirectSaleFactory factory = new DirectSaleFactory();
 
         try (MockedConstruction<DirectSale> mocked =
                      mockConstruction(DirectSale.class)) {
@@ -57,6 +56,8 @@ class DirectSaleFactoryTest {
 
         List<Listing> listings = List.of(listing1Double, listing2Double);
 
+        DirectSaleFactory factory = new DirectSaleFactory();
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(listings, buyerDouble));
@@ -64,6 +65,10 @@ class DirectSaleFactoryTest {
 
     @Test
     void create_ShouldThrowExceptionWhenListingsIsNull() {
+        // Arrange
+        DirectSaleFactory factory = new DirectSaleFactory();
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(null, buyerDouble));
     }
@@ -75,6 +80,8 @@ class DirectSaleFactoryTest {
         when(listing1Double.getSaleType()).thenReturn(SaleType.AUCTION);
 
         List<Listing> listings = List.of(listing1Double);
+
+        DirectSaleFactory factory = new DirectSaleFactory();
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(

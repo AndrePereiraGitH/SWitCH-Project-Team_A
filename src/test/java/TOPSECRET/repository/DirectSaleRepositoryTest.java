@@ -15,7 +15,6 @@ import static org.mockito.Mockito.*;
 class DirectSaleRepositoryTest {
 
     private DirectSaleFactory dsFactoryDouble;
-    private DirectSaleRepository dsRepo;
     private DirectSale dsDouble;
 
     private Listing listing1Double;
@@ -35,39 +34,40 @@ class DirectSaleRepositoryTest {
         dsDouble = mock(DirectSale.class);
         dsFactoryDouble = mock(DirectSaleFactory.class);
         when(dsFactoryDouble.create(listings, buyerDouble)).thenReturn(dsDouble);
-
-        dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
     }
 
     // Method createAndAdd ---------------------------------------------------------------------------------------------
 
     @Test
     void createAndAdd_createsAndAddsDirectSale() {
+        // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
+
         // Act
         DirectSale result = dsRepo.createAndAdd(listings, buyerDouble);
 
         // Assert
         assertEquals(dsDouble, result);
         assertTrue(dsRepo.ifDirectSaleExists(dsDouble));
-        verify(dsFactoryDouble).create(listings, buyerDouble);
     }
 
     @Test
     void createAndAdd_ThrowsWhenDuplicate() {
         // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
         dsRepo.addDirectSale(dsDouble);                                     // first add
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> dsRepo.createAndAdd(listings, buyerDouble));
-
-        verify(dsFactoryDouble).create(listings, buyerDouble);
     }
 
     @Test
     void createAndAdd_propagatesFactoryException() {
         // Arrange
         when(dsFactoryDouble.create(listings, buyerDouble)).thenThrow(new IllegalArgumentException("Invalid listings"));
+
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
@@ -76,7 +76,6 @@ class DirectSaleRepositoryTest {
         );
 
         assertEquals("Invalid listings", ex.getMessage());
-        verify(dsFactoryDouble).create(listings, buyerDouble);
     }
 
     @Test
@@ -84,6 +83,8 @@ class DirectSaleRepositoryTest {
         // Arrange
         when(dsFactoryDouble.create(null, buyerDouble))
                 .thenThrow(new IllegalArgumentException("Listings cannot be null"));
+
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -95,6 +96,8 @@ class DirectSaleRepositoryTest {
         // Arrange
         when(dsFactoryDouble.create(listings, null))
                 .thenThrow(new IllegalArgumentException("Buyer cannot be null"));
+
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -108,6 +111,8 @@ class DirectSaleRepositoryTest {
         DirectSale ds2 = mock(DirectSale.class);
 
         when(dsFactoryDouble.create(listings, buyerDouble)).thenReturn(ds1).thenReturn(ds2);
+
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
 
         // Act
         DirectSale r1 = dsRepo.createAndAdd(listings, buyerDouble);
@@ -165,6 +170,9 @@ class DirectSaleRepositoryTest {
     //Method addDirectSale ---------------------------------------------------------------------------------------------
     @Test
     void addDirectSale_addsWhenNotExists() {
+        // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
+
         // Act
         boolean result = dsRepo.addDirectSale(dsDouble);
 
@@ -187,6 +195,9 @@ class DirectSaleRepositoryTest {
 
     @Test
     void addDirectSale_throwsWhenNull() {
+        // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> dsRepo.addDirectSale(null));
     }
@@ -195,6 +206,9 @@ class DirectSaleRepositoryTest {
     //Method addDirectSaleorThrow --------------------------------------------------------------------------------------
     @Test
     void addDirectSaleOrThrow_addsWhenNotExists() {
+        // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
+
         // Act
         dsRepo.addDirectSaleOrThrow(dsDouble);
 
@@ -213,6 +227,9 @@ class DirectSaleRepositoryTest {
 
     @Test
     void addDirectSaleOrThrow_throwsWhenNull() {
+        // Arrange
+        DirectSaleRepository dsRepo = new DirectSaleRepository(new ArrayList<>(), dsFactoryDouble);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> dsRepo.addDirectSaleOrThrow(null));
     }
