@@ -104,4 +104,49 @@ class ProfileTest {
         assertEquals(a, b);
     }
 
+    // Passing the exact same reference must return true immediately (this == o branch).
+    @Test
+    void equals_shouldBeTrue_whenSameReference() {
+        // Arrange
+        Profile p = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+
+        // Assert — same reference must be equal to itself
+        assertTrue(p.equals(p));
+    }
+
+    // Different name — short-circuits at the name comparison, profiles are not equal.
+    @Test
+    void equals_shouldBeFalse_whenNameDiffers() {
+        // Arrange
+        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Bruno", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+
+        // Assert — different name means not equal
+        assertNotEquals(a, b);
+    }
+
+    // Same name but different country — reaches the country comparison and returns false there.
+    // Without this test, the false branch of Objects.equals(_country, ...) is never hit.
+    @Test
+    void equals_shouldBeFalse_whenCountryDiffers() {
+        // Arrange — same name and birthday, only country differs
+        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", new Country("Spain"), LocalDate.of(1990, 1, 1));
+
+        // Assert — different country means not equal
+        assertNotEquals(a, b);
+    }
+
+    // Same name and country but different birthday — reaches the birthday comparison and returns false there.
+    // Without this test, the false branch of Objects.equals(_birthday, ...) is never hit.
+    @Test
+    void equals_shouldBeFalse_whenBirthdayDiffers() {
+        // Arrange — same name and country, only birthday differs
+        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", new Country("Portugal"), LocalDate.of(2000, 6, 15));
+
+        // Assert — different birthday means not equal
+        assertNotEquals(a, b);
+    }
+
 }
