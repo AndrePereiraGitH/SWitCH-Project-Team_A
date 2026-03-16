@@ -44,18 +44,6 @@ public class LibraryRepository {
     }
 
     /**
-     * Package-private method used to seed the repository directly, bypassing the factory.
-     *
-     * <p>Intended for use in unit tests only. The library is stored using the owner's
-     * username as the key, consistent with {@link #createAndAdd(String, User)}.</p>
-     *
-     * @param library the {@link Library} instance to add; must not be {@code null}
-     */
-    void add(Library library) {
-        _libraries.put(library.getUser().getUserName(), library);
-    }
-
-    /**
      * Retrieves the library associated with the specified username.
      * <p>
      * This method validates that the username is not null and not empty before

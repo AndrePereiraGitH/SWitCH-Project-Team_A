@@ -12,13 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for the {@link LibraryRepository} class.
- * <p>
- * Verifies library creation, retrieval, validation,
- * and user library ownership checks.
- * </p>
- */
 class LibraryRepositoryTest {
 
     private LibraryFactory libraryFactoryDouble;
@@ -31,32 +24,26 @@ class LibraryRepositoryTest {
 
     // ============ Constructor Tests ============
 
-
     @Test
     void shouldThrowAnExceptionWhenFactoryIsNull() {
-        // Arrange
-
-
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new LibraryRepository( null));
+                () -> new LibraryRepository(null));
     }
 
 
     // ============ getLibraryOfUser Tests ============
 
     @Test
-    void ensureGetLibraryOfUserSuccessfully() throws InstanceNotFoundException {
+    void ensureGetLibraryOfUserSuccessfully() throws InstanceNotFoundException, InstanceAlreadyExistsException {
         // Arrange
         String username = "john_doe";
         String libraryName = "lib1";
 
         User userDouble = createMockUser(username);
+        LibraryFactory factoryDouble = createLibraryFactory(libraryName, userDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(factoryDouble);
 
-        Library libraryDouble = createMockLibrary(libraryName, userDouble);
-
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
-        libraryRepository.add(libraryDouble);
+        libraryRepository.createAndAdd(libraryName, userDouble);
 
         // Act
         Library result = libraryRepository.getLibraryOfUser(username);
@@ -65,43 +52,32 @@ class LibraryRepositoryTest {
         assertEquals(libraryName, result.getLibraryName());
     }
 
-
     @Test
     void throwExceptionWhenUsernameIsNull() {
-        // Arrange
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        // Act & Assert
         assertThrows(NullPointerException.class,
                 () -> libraryRepository.getLibraryOfUser(null));
     }
 
-
     @Test
     void throwExceptionWhenUsernameIsEmpty() {
-        // Arrange
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> libraryRepository.getLibraryOfUser(""));
     }
 
-
     @Test
     void throwExceptionWhenLibraryIsNotFound() {
-        // Arrange
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        // act & assert
         assertThrows(InstanceNotFoundException.class,
                 () -> libraryRepository.getLibraryOfUser("ghost_user"));
     }
 
 
-
     // ============ createAndAdd Tests ============
-
 
     @Test
     void shouldCreateAndAddLibrarySuccessfully() throws InstanceAlreadyExistsException {
@@ -110,10 +86,10 @@ class LibraryRepositoryTest {
         String username = "username1";
 
         User userDouble = createMockUser(username);
+        Library libraryDouble = createMockLibrary(libraryName, userDouble);
 
-        Library library = createMockLibrary(libraryName,userDouble);
-
-        when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(library);
+        // ← stub the factory so it returns the mock library
+        when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(libraryDouble);
 
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
@@ -129,62 +105,45 @@ class LibraryRepositoryTest {
     @Test
     void shouldReturnAnExceptionWhenTheLibraryNameIsNull() {
         // Arrange
-        String username = "User1";
-
-        User userDouble = createMockUser(username);
-
+        User userDouble = createMockUser("User1");
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> libraryRepository.createAndAdd(null, userDouble));
-
     }
 
     @Test
     void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty() {
         // Arrange
-        String libraryName = "";
-        String username = "User1";
-
-        User userDouble = createMockUser(username);
-
+        User userDouble = createMockUser("User1");
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> libraryRepository.createAndAdd(libraryName, userDouble));
+                () -> libraryRepository.createAndAdd("", userDouble));
     }
-
 
     @Test
     void shouldReturnAnExceptionWhenTheUserIsNull() {
-        // Arrange
-        String libraryName = "mylib";
-
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> libraryRepository.createAndAdd(libraryName, null));
+                () -> libraryRepository.createAndAdd("mylib", null));
     }
 
-
     @Test
-    void shouldReturnAnExceptionWhenTheUserAlreadyHasALibrary() {
+    void shouldReturnAnExceptionWhenTheUserAlreadyHasALibrary() throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
         String username = "User1";
 
         User userDouble = createMockUser(username);
+        LibraryFactory factoryDouble = createLibraryFactory(libraryName, userDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(factoryDouble);
 
-        Library libraryDouble = createMockLibrary(libraryName, userDouble);
+        // ← first call populates the repo
+        libraryRepository.createAndAdd(libraryName, userDouble);
 
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
-        libraryRepository.add(libraryDouble);
-
-
-        // Act & Assert
+        // Act & Assert — second call should throw because user already has a library
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> libraryRepository.createAndAdd(libraryName, userDouble));
     }
@@ -192,19 +151,18 @@ class LibraryRepositoryTest {
 
     // ============ verifyIfUserHasALibrary Tests ============
 
-
     @Test
-    void returnTrueWhenUserAlreadyHasALibrary() {
+    void returnTrueWhenUserAlreadyHasALibrary() throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
         String username = "User1";
 
         User userDouble = createMockUser(username);
+        LibraryFactory factoryDouble = createLibraryFactory(libraryName, userDouble);
+        LibraryRepository libraryRepository = new LibraryRepository(factoryDouble);
 
-        Library libraryDouble = createMockLibrary(libraryName, userDouble);
-
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
-        libraryRepository.add(libraryDouble);
+        // ← actually add the library first
+        libraryRepository.createAndAdd(libraryName, userDouble);
 
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(userDouble);
@@ -213,16 +171,11 @@ class LibraryRepositoryTest {
         assertTrue(result);
     }
 
-
     @Test
     void returnFalseWhenUserDoesNotHaveALibrary() {
         // Arrange
-        String username = "User1";
-
-        User userDouble = createMockUser(username);
-
+        User userDouble = createMockUser("User1");
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
-
 
         // Act
         boolean result = libraryRepository.verifyIfUserHasALibrary(userDouble);
@@ -234,9 +187,8 @@ class LibraryRepositoryTest {
 
     // ============ getAllPublicationsFromUserLibrary Tests ============
 
-
     @Test
-    void shouldReturnAllPublicationsFromUserLibrary() throws InstanceNotFoundException {
+    void shouldReturnAllPublicationsFromUserLibrary() throws InstanceNotFoundException, InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "MyLib1";
         String username = "User1";
@@ -247,12 +199,15 @@ class LibraryRepositoryTest {
         List<PublicationSample> expectedPublications = List.of(pub1, pub2, pub3);
 
         User userDouble = createMockUser(username);
-
         Library libraryDouble = createMockLibrary(libraryName, userDouble);
         when(libraryDouble.getAllPublications()).thenReturn(expectedPublications);
 
+        // ← stub factory to return our library mock
+        when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(libraryDouble);
         LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
-        libraryRepository.add(libraryDouble);
+
+        // ← actually populate the repo
+        libraryRepository.createAndAdd(libraryName, userDouble);
 
         // Act
         List<PublicationSample> realPublications =
@@ -272,10 +227,16 @@ class LibraryRepositoryTest {
         return libraryDouble;
     }
 
-
     private User createMockUser(String name) {
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(name);
         return userDouble;
+    }
+
+    private LibraryFactory createLibraryFactory(String libraryName, User owner) {
+        Library libraryDouble = createMockLibrary(libraryName, owner);
+        LibraryFactory factory = mock(LibraryFactory.class);
+        when(factory.create(libraryName, owner)).thenReturn(libraryDouble);
+        return factory;
     }
 }
