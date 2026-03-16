@@ -153,11 +153,13 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-
                     <outputFormats>
                         <outputFormat>XML</outputFormat>
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
+                    <excludedClasses>
+                        <param>TOPSECRET.domain.Enum.*</param>
+                    </excludedClasses>
                     <!--<verbose>true</verbose>-->
                 </configuration>
 
