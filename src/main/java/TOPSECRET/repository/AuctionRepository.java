@@ -48,16 +48,6 @@ public class AuctionRepository {
     }
 
     /**
-     * Package-private helper used by tests to seed the repository
-     * without going through the factory.
-     *
-     * @param auction the auction to add directly
-     */
-    void add(Auction auction) {
-        _auctionsList.add(auction);
-    }
-
-    /**
      * Returns the list of auctions containing at least one item whose publication
      * belongs to the given genre.
      *
