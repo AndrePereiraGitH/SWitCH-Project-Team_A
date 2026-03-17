@@ -1,131 +1,30 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.DirectSale;
+import TOPSECRET.domain.Listing;
+import TOPSECRET.domain.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Repository responsible for storing and managing {@link DirectSale} instances.
+ * Contract for repositories responsible for managing {@link DirectSale} instances.
  * <p>
  * A DirectSale represents a buyer's cart, containing one or more {@link Listing}
- * objects selected for direct purchase. This repository provides operations to
- * add new DirectSale instances, verify duplicates, and query existing ones based
- * on different bibliographical attributes.
+ * objects selected for direct purchase. This interface defines the operations
+ * required to create, store, and check the existence of DirectSale objects,
+ * independently of the underlying storage mechanism (e.g., in-memory, database).
+ * </p>
+ *
+ * <p>
+ * Implementations must enforce uniqueness of DirectSale instances and throw
+ * appropriate exceptions when invalid or duplicate entries are provided.
  * </p>
  */
 
+public interface DirectSaleRepository {
 
-public class DirectSaleRepository {
+    DirectSale createAndAdd(List<Listing> listings, User buyer);
+    boolean exists(DirectSale dirSale);
+    void add(DirectSale directSale);
 
-    private List<DirectSale> _directSaleList;
-    private DirectSaleFactory _directSaleFactory;
-
-    //============================================================================================================
-    // Constructors
-
-    /**
-     * Creates a new DirectSaleRepository with an empty internal list of direct sales.
-     * The repository will use the provided factory to create new DirectSale instances.
-     *
-     * @param directSaleFactory the factory responsible for creating DirectSale objects
-     */
-
-    public DirectSaleRepository(DirectSaleFactory directSaleFactory) {
-        this._directSaleFactory = directSaleFactory;
-        this._directSaleList = new ArrayList<>();
-    }
-
-    /**
-     * Creates a new DirectSaleRepository initialized with an existing list of direct sales.
-     * A defensive copy of the provided list is created to preserve encapsulation and prevent
-     * external modifications from affecting the repository's internal state.
-     *
-     * @param directSaleList the initial list of direct sales to populate the repository
-     * @param directSaleFactory the factory responsible for creating DirectSale objects
-     */
-
-    public DirectSaleRepository(List<DirectSale> directSaleList,  DirectSaleFactory directSaleFactory) {
-        this._directSaleList = new ArrayList<>(directSaleList);
-        this._directSaleFactory = directSaleFactory;
-    }
-
-    //============================================================================================================
-
-    /**
-     * Creates a new DirectSale (cart) for the given buyer and listings,
-     * stores it in the repository, and returns it.
-     */
-    public DirectSale createAndAdd(List<Listing> listings, User buyer) {
-        DirectSale directSale = _directSaleFactory.create(listings, buyer);
-        addDirectSaleOrThrow(directSale);
-        return directSale;
-    }
-
-    /**
-     * Checks whether a given {@link DirectSale} already exists in the repository.
-     *
-     * @param dirSale the DirectSale to check
-     * @return true if the DirectSale already exists, false otherwise
-     */
-
-    public boolean ifDirectSaleExists(DirectSale dirSale) {
-        for (DirectSale directSale : _directSaleList) {
-            if (dirSale.equals(directSale)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Adds a {@link DirectSale} to the repository if it does not already exist.
-     * <p>
-     * This method performs a duplicate check using {@link #ifDirectSaleExists(DirectSale)}.
-     * If the direct sale is already present, the method returns {@code false} and
-     * the repository remains unchanged. Otherwise, the direct sale is added and
-     * the method returns {@code true}.
-     * </p>
-     *
-     * @param directSale the DirectSale instance to be added
-     * @return {@code true} if the direct sale was successfully added,
-     *         {@code false} if it already existed in the repository
-     * @throws IllegalArgumentException if {@code directSale} is null
-     */
-
-    public boolean addDirectSale(DirectSale directSale) {
-        if (directSale == null) {
-            throw new IllegalArgumentException("DirectSale cannot be null");
-        }
-
-        if (ifDirectSaleExists(directSale)){
-            return false;
-        }
-        _directSaleList.add(directSale);
-        return true;
-    }
-
-    /**
-     * Adds a {@link DirectSale} to the repository, throwing an exception if it already exists.
-     * <p>
-     * This method is similar to {@link #addDirectSale(DirectSale)}, but instead of
-     * returning a boolean, it enforces uniqueness by throwing an
-     * {@link IllegalArgumentException} when a duplicate is detected.
-     * </p>
-     *
-     * @param directSale the DirectSale instance to be added
-     * @throws IllegalArgumentException if the direct sale already exists in the repository
-     *                                  or if {@code directSale} is null
-     */
-
-    public void addDirectSaleOrThrow(DirectSale directSale) {
-        if (directSale == null) {
-            throw new IllegalArgumentException("DirectSale cannot be null");
-        }
-
-        if (ifDirectSaleExists(directSale)) {
-            throw new IllegalArgumentException("DirectSale already exists");
-        }
-        _directSaleList.add(directSale);
-    }
 }
