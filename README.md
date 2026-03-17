@@ -235,3 +235,37 @@ A user story or task in the MiteLovers project is considered Done when:
 
 **Only when all these conditions are satisfied can a user story be considered complete.**
 
+--- 
+
+# Sprint 4
+
+#### Insert this information when creating issues related to the sprint 4:
+
+- Label: sprint4
+
+- Project : MiteLovers
+
+---
+
+## Main Issue: Implementation of [RepositoryName] Repository Interface
+
+### Description
+Implement the [RepositoryName] Repository Interface to abstract and standardize 
+data access operations, following object-oriented design (OOD) 
+best practices and the chosen design pattern.
+
+
+### Sub-issue: Implement and Test [RepositoryName] Repository Interface
+
+### Description
+Implement the [RepositoryName] Repository Interface and provide comprehensive unit test coverage to ensure correctness and reliability.
+
+### Acceptance Criteria
+
+- The implementation correctly fulfills the [RepositoryName] Repository Interface contract.
+- All methods delegate data access operations appropriately to the underlying data source.
+- The implementation is documented using JavaDoc.
+- All interface methods are covered by unit tests.
+- All edge cases are handled and tested (e.g., null inputs, empty results, duplicate entries).
+- Test coverage is ≥ 95%.
+- The code is reviewed and approved by at least one team member.
