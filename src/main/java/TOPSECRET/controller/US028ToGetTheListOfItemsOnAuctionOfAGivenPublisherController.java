@@ -7,7 +7,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
 import TOPSECRET.repository.ListingRepository;
-import TOPSECRET.repository.PublicationSampleRepository;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import TOPSECRET.repository.PublisherRepository;
 
 /**
@@ -21,7 +21,7 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
     // attributes
     private final PublisherRepository _publisherRepo;
     private final ListingRepository _listingRepo;
-    private final PublicationSampleRepository _pubSampleRepo;
+    private final PublicationSampleRepositoryMem _pubSampleRepo;
 
     /**
      * Constructor that receives all dependencies required by the controller.
@@ -34,7 +34,7 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
      */
     public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController( PublisherRepository publisherRepository,
                                                                          ListingRepository listingRepo,
-                                                                         PublicationSampleRepository pubSampleRepo) {
+                                                                         PublicationSampleRepositoryMem pubSampleRepo) {
 
         // Store injected dependencies for later use
         this._publisherRepo = publisherRepository;

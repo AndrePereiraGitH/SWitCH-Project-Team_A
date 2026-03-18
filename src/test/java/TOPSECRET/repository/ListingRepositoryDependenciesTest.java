@@ -17,7 +17,7 @@
 //
 //    private ListingRepository listingRepo = new ListingRepository();
 //    private EditionFactory editionFactory = new EditionFactory();
-//    PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository();
+//    PublicationSampleRepositoryMem publicationSampleRepository = new PublicationSampleRepositoryMem();
 //
 //    @Test
 //    void testConstructor_shouldCreateEmptyList() {

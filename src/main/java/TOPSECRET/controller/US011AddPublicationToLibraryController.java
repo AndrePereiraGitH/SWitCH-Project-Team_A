@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.repository.PublicationSampleRepository;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
 import java.util.List;
 
@@ -11,12 +11,12 @@ import java.util.List;
 public class US011AddPublicationToLibraryController {
 
     private final Library library; //Vai representar a library do User, este controller não vai criar a library
-    private final PublicationSampleRepository publicationSampleRepository; //Vai ter o repositório com todas as publicações do sistema
+    private final PublicationSampleRepositoryMem publicationSampleRepositoryMem; //Vai ter o repositório com todas as publicações do sistema
 
     //Construtor
-    public US011AddPublicationToLibraryController(Library library, PublicationSampleRepository publicationSampleRepository){ //Recebe tudo o que precisa
+    public US011AddPublicationToLibraryController(Library library, PublicationSampleRepositoryMem publicationSampleRepositoryMem){ //Recebe tudo o que precisa
         this.library = library;
-        this.publicationSampleRepository = publicationSampleRepository; //Associa as dependências ao controller (low coupling - controller não cria nada)
+        this.publicationSampleRepositoryMem = publicationSampleRepositoryMem; //Associa as dependências ao controller (low coupling - controller não cria nada)
     }
 
     // Call by the UI and response
@@ -25,7 +25,7 @@ public class US011AddPublicationToLibraryController {
         List<PublicationSample> listOfPublicationsInLibrary = library.getAllPublications(); //Get all Publications
 
         //Get publications not in library
-        List<PublicationSample> listOfDifferentPublications = publicationSampleRepository.getListOfDifferentPublications(listOfPublicationsInLibrary);
+        List<PublicationSample> listOfDifferentPublications = publicationSampleRepositoryMem.getListOfDifferentPublications(listOfPublicationsInLibrary);
         //Vai buscar o méto.do que está no PublicationRepository
 
         //Return to the UI

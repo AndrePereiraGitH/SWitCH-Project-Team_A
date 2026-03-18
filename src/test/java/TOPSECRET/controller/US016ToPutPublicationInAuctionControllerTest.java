@@ -7,7 +7,7 @@ import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.LibraryRepository;
 import TOPSECRET.repository.ListingRepository;
-import TOPSECRET.repository.PublicationSampleRepository;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     private LibraryRepository libraryRepoDouble;
     private ListingRepository listingRepoDouble;
     private AuctionRepository auctionRepoDouble;
-    private PublicationSampleRepository publicationSampleRepoDouble;
+    private PublicationSampleRepositoryMem publicationSampleRepoDouble;
     private US016ToPutPublicationInAuctionController controller;
 
     @BeforeEach
@@ -46,7 +46,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         libraryRepoDouble = mock(LibraryRepository.class);
         listingRepoDouble = mock(ListingRepository.class);
         auctionRepoDouble = mock(AuctionRepository.class);
-        publicationSampleRepoDouble = mock(PublicationSampleRepository.class);
+        publicationSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
         controller = new US016ToPutPublicationInAuctionController(libraryRepoDouble, listingRepoDouble, auctionRepoDouble, publicationSampleRepoDouble);    }
 
 

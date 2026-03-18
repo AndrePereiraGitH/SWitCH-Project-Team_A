@@ -6,19 +6,20 @@ import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.*;
 import TOPSECRET.repository.BibliographicalDataRepository;
 import TOPSECRET.repository.ListingRepository;
-import TOPSECRET.repository.PublicationSampleRepository;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
+
 import java.util.List;
 
 public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
     private final BibliographicalDataRepository _bdRepo;
     private final ListingRepository _listingRepo;
-    private final PublicationSampleRepository _pubSampleRepo;
+    private final PublicationSampleRepositoryMem _pubSampleRepo;
 
     // ====== Constructor ==============================================================================================
     public US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(BibliographicalDataRepository bdRepo,
                                                                              ListingRepository listingRepo,
-                                                                             PublicationSampleRepository pubSampleRepo) {
+                                                                             PublicationSampleRepositoryMem pubSampleRepo) {
         this._bdRepo = bdRepo;
         this._listingRepo = listingRepo;
         this._pubSampleRepo = pubSampleRepo;

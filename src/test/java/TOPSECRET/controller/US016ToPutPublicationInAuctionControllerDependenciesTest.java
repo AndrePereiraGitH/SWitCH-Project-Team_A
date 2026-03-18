@@ -183,7 +183,7 @@ class US016ToPutPublicationInAuctionControllerDependenciesTest {
         List<PublicationSample> list = new ArrayList<>();
         list.add(pub);
 
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(list);
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
         LibraryRepository libraryRepo = new LibraryRepository(Map.of(),factory);
@@ -225,7 +225,7 @@ class US016ToPutPublicationInAuctionControllerDependenciesTest {
         List<PublicationSample> list = new ArrayList<>();
         list.add(pub);
 
-        PublicationSampleRepository pr1 = new PublicationSampleRepository(list);
+        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(list);
 
         US016ToPutPublicationInAuctionController controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, pr1);
 
@@ -263,7 +263,7 @@ class US016ToPutPublicationInAuctionControllerDependenciesTest {
         ItemRepository itemRepo = new ItemRepository();
         ListingRepository listingRepo = new ListingRepository();
         AuctionRepository auctionRepo = new AuctionRepository(auctionFactory);
-        PublicationSampleRepository publicationSampleRepository = new PublicationSampleRepository();
+        PublicationSampleRepositoryMem publicationSampleRepository = new PublicationSampleRepositoryMem();
         return new US016ToPutPublicationInAuctionController(libraryRepo, listingRepo, auctionRepo, publicationSampleRepository);
     }
 

@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.repository.PublicationSampleRepository;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
  * <p>This test suite verifies the behavior of the controller responsible
  * for registering a new {@link PublicationSample} in the system.</p>
  *
- * <p>The controller depends on {@link PublicationSampleRepository}, which
+ * <p>The controller depends on {@link PublicationSampleRepositoryMem}, which
  * is mocked to isolate the controller logic and verify the interaction
  * between the controller and the repository.</p>
  */
@@ -32,12 +32,12 @@ class US010ToRegisterNewPublicationCtrlTest {
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final Edition anyEdition = mock(Edition.class);
     private final Condition anyCondition = mock(Condition.class);
-    private final PublicationSampleRepository anyPublicationSampleRepository = mock(PublicationSampleRepository.class);
+    private final PublicationSampleRepositoryMem anyPublicationSampleRepositoryMem = mock(PublicationSampleRepositoryMem.class);
     private final PublicationSample anyPublicationSample = mock(PublicationSample.class);
 
     //Actual controller class under test
     private final US010ToRegisterNewPublicationCtrl anyController = new US010ToRegisterNewPublicationCtrl
-            (anyPublicationSampleRepository);
+            (anyPublicationSampleRepositoryMem);
 
     @Test
     void shouldThrowWhenNullRepo() {
@@ -51,14 +51,14 @@ class US010ToRegisterNewPublicationCtrlTest {
     void shouldCallRepoToCreatePubSample() throws InstanceAlreadyExistsException {
 
         //Arrange
-        when(anyPublicationSampleRepository.createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
+        when(anyPublicationSampleRepositoryMem.createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
                 anyEdition, anyCondition)).thenReturn(anyPublicationSample);
 
         //Act
         anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition, anyCondition);
 
         //Assert
-        verify(anyPublicationSampleRepository).createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
+        verify(anyPublicationSampleRepositoryMem).createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
                 anyEdition, anyCondition);
 
     }
@@ -67,7 +67,7 @@ class US010ToRegisterNewPublicationCtrlTest {
     void shouldReturnPubSampleFromRepo() throws InstanceAlreadyExistsException {
 
         //Arrange
-        when(anyPublicationSampleRepository.createAndAdd(
+        when(anyPublicationSampleRepositoryMem.createAndAdd(
                 anyBiblioData,
                 anyUser,
                 anyPublicationStatus,
@@ -90,7 +90,7 @@ class US010ToRegisterNewPublicationCtrlTest {
     /**
      * Verifies that the controller propagates the exception thrown by the repository.
      *
-     * <p>If the {@link PublicationSampleRepository} detects that the publication
+     * <p>If the {@link PublicationSampleRepositoryMem} detects that the publication
      * being registered already exists, it throws an {@link InstanceAlreadyExistsException}.
      * Since the controller does not handle this exception internally, it must allow
      * the exception to continue towards the caller.</p>
@@ -104,7 +104,7 @@ class US010ToRegisterNewPublicationCtrlTest {
     void shouldThrowExceptionWhenRepositoryThrows() throws InstanceAlreadyExistsException {
 
         //Arrange
-        when(anyPublicationSampleRepository.createAndAdd(
+        when(anyPublicationSampleRepositoryMem.createAndAdd(
                 anyBiblioData,
                 anyUser,
                 anyPublicationStatus,

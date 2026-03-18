@@ -22,14 +22,14 @@ public class US016ToPutPublicationInAuctionController {
     private final LibraryRepository libraryRepo;
     private final ListingRepository listingRepository;
     private final AuctionRepository auctionRepository;
-    private final PublicationSampleRepository publicationSampleRepository;
+    private final PublicationSampleRepositoryMem publicationSampleRepositoryMem;
 
-    public US016ToPutPublicationInAuctionController(LibraryRepository libraryRepo, ListingRepository listingRepository, AuctionRepository auctionRepository, PublicationSampleRepository publicationSampleRepository) {
+    public US016ToPutPublicationInAuctionController(LibraryRepository libraryRepo, ListingRepository listingRepository, AuctionRepository auctionRepository, PublicationSampleRepositoryMem publicationSampleRepositoryMem) {
 
         this.libraryRepo = libraryRepo;
         this.listingRepository = listingRepository;
         this.auctionRepository = auctionRepository;
-        this.publicationSampleRepository = publicationSampleRepository;
+        this.publicationSampleRepositoryMem = publicationSampleRepositoryMem;
     }
 
 
@@ -108,7 +108,7 @@ public class US016ToPutPublicationInAuctionController {
             throw new IllegalArgumentException("auctionStartDateTime, auctionEndDateTime and buyoutPrice cannot be null");
         }
 
-        List<PublicationSample> items = publicationSampleRepository.getPublicationsByDTO(publicationDTOs);
+        List<PublicationSample> items = publicationSampleRepositoryMem.getPublicationsByDTO(publicationDTOs);
 
         Listing auctionListing = listingRepository.createAndAdd(listingTitle, items, SaleType.AUCTION, listingPrice, shortDescription, pictures);
 

@@ -8,11 +8,10 @@ import TOPSECRET.dto.BibliographicalDataDTO_US023;
 import TOPSECRET.dto.PublicationSampleDTO_US023;
 import TOPSECRET.repository.BibliographicalDataRepository;
 import TOPSECRET.repository.ListingRepository;
-import TOPSECRET.repository.PublicationSampleRepository;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,7 +24,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     // ================= Set Up ==================
     // ===========================================
 
-    private PublicationSampleRepository pubSampleRepoDouble;
+    private PublicationSampleRepositoryMem pubSampleRepoDouble;
     private PublicationSample pubSample1Double;
     private PublicationSample pubSample2Double;
     private ListingRepository listingRepoDouble;
@@ -46,7 +45,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         listing2Double = mock(Listing.class);
         listListingsDouble= List.of(listing1Double, listing2Double);
 
-        pubSampleRepoDouble = mock(PublicationSampleRepository.class);
+        pubSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
         pubSample1Double = mock(PublicationSample.class);
         pubSample2Double = mock(PublicationSample.class);
 
