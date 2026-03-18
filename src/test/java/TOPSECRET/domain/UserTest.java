@@ -1,15 +1,10 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.repository.UserRepository;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class UserTest {
 

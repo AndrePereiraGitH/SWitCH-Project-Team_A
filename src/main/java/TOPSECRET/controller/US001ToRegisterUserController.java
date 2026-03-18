@@ -20,6 +20,6 @@ public class US001ToRegisterUserController {
             throw new IllegalArgumentException("All parameters must be provided");
         }
 
-        userRepository.createAndAddUser(username, contact, profile, userRole);
+        userRepository.createAndAdd(username, contact, profile, userRole);
     }
 }

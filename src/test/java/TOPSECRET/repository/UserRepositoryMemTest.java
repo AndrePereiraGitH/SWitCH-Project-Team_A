@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link UserRepository}.
+ * Unit tests for {@link UserRepositoryMem}.
  *
  * This class tests the main functionalities of UserRepository including:
  * <ul>
@@ -20,9 +20,9 @@ import static org.mockito.Mockito.*;
  *     <li>Checking user existence</li>
  * </ul>
  */
-class UserRepositoryTest {
+class UserRepositoryMemTest {
 
-    private UserRepository userRepository;
+    private UserRepository userRepository; // interface type
     private UserFactory userFactory;
 
     // --- MOCKED DEPENDENCIES ---
@@ -71,7 +71,7 @@ class UserRepositoryTest {
 
         // Initialize repository with factory
         userFactory = new UserFactory();
-        userRepository = new UserRepository(userFactory);
+        userRepository = new UserRepositoryMem(userFactory); // interface type
     }
 
     /**
@@ -79,9 +79,9 @@ class UserRepositoryTest {
      * Ensures no exception is thrown and the user exists in the repository.
      */
     @Test
-    void testCreateAndAddUser_Success() {
+    void testCreateAndAdd_Success() {
         assertDoesNotThrow(() ->
-                userRepository.createAndAddUser(
+                userRepository.createAndAdd(
                         "TestUser",
                         contact1,
                         profile1,
@@ -91,8 +91,8 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testCreateAndAddUser_ReturnsCreatedUser() {
-        User createdUser = userRepository.createAndAddUser(
+    void testCreateAndAdd_ReturnsCreatedUser() {
+        User createdUser = userRepository.createAndAdd(
                 "ReturnTestUser",
                 contact1,
                 profile1,
@@ -108,8 +108,8 @@ class UserRepositoryTest {
      * Expects an IllegalArgumentException and ensures the user count does not increase.
      */
     @Test
-    void testCreateAndAddUser_UserNameAlreadyExists() {
-        userRepository.createAndAddUser(
+    void testCreateAndAdd_UserNameAlreadyExists() {
+        userRepository.createAndAdd(
                 "DuplicateUser",
                 contact1,
                 profile1,
@@ -117,14 +117,18 @@ class UserRepositoryTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> userRepository.createAndAddUser(
+                () -> userRepository.createAndAdd(
                         "DuplicateUser",
                         contact2,
                         profile2,
                         UserRole.NORMAL_USER));
 
         assertEquals("Username already exists", exception.getMessage());
-        assertEquals(1, userRepository.getUserCount());
+
+        // Only works if using concrete type UserRepositoryMem
+        if (userRepository instanceof UserRepositoryMem repoMem) {
+            assertEquals(1, repoMem.getUserCount());
+        }
     }
 
     /**
@@ -133,7 +137,7 @@ class UserRepositoryTest {
      */
     @Test
     void testExists_ReturnsTrue_WhenUserExists() {
-        userRepository.createAndAddUser(
+        userRepository.createAndAdd(
                 "ExistingUser",
                 contact1,
                 profile1,

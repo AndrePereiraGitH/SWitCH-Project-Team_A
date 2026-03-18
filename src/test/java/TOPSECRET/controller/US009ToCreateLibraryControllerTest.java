@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.repository.LibraryRepository;
-import TOPSECRET.repository.UserRepository;
+import TOPSECRET.repository.UserRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -32,11 +32,11 @@ class US009ToCreateLibraryControllerTest {
     void shouldCreateControllerWithValidRepositories() {
         //Arrange
 
-        UserRepository userRepositoryDouble = mock(UserRepository.class);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
         LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
 
         // Act & Assert
-        assertDoesNotThrow(() -> new US009ToCreateLibraryController(libraryRepositoryDouble,userRepositoryDouble));
+        assertDoesNotThrow(() -> new US009ToCreateLibraryController(libraryRepositoryDouble, userRepositoryMemDouble));
     }
 
     /**
@@ -49,10 +49,10 @@ class US009ToCreateLibraryControllerTest {
     @Test
     void shouldThrowExceptionWhenLibraryRepositoryIsNull() {
         //Arrange
-        UserRepository userRepositoryDouble = mock(UserRepository.class);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
 
         // Act & Assert
-        assertThrows(NullPointerException.class, () -> new US009ToCreateLibraryController(null,userRepositoryDouble));
+        assertThrows(NullPointerException.class, () -> new US009ToCreateLibraryController(null, userRepositoryMemDouble));
     }
 
     /**
@@ -90,13 +90,13 @@ class US009ToCreateLibraryControllerTest {
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(username);
 
-        UserRepository userRepositoryDouble = mock(UserRepository.class);
-        when(userRepositoryDouble.exists(username)).thenReturn(true);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
+        when(userRepositoryMemDouble.exists(username)).thenReturn(true);
 
         LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryDouble);
+                libraryRepositoryDouble, userRepositoryMemDouble);
 
         // Act
         boolean result = ctrl.createAndAddLibrary(libraryName, userDouble);
@@ -122,12 +122,12 @@ class US009ToCreateLibraryControllerTest {
 
         User userDouble = mock(User.class);
 
-        UserRepository userRepositoryDouble = mock(UserRepository.class);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
 
         LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryDouble);
+                libraryRepositoryDouble, userRepositoryMemDouble);
 
         // Act
         boolean result = ctrl.createAndAddLibrary(libraryName,userDouble);
@@ -148,8 +148,8 @@ class US009ToCreateLibraryControllerTest {
         //Arrange
         String username = "User1";
 
-        UserRepository userRepositoryDouble = mock(UserRepository.class);
-        when(userRepositoryDouble.exists(username)).thenReturn(true);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
+        when(userRepositoryMemDouble.exists(username)).thenReturn(true);
 
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(username);
@@ -157,7 +157,7 @@ class US009ToCreateLibraryControllerTest {
         LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryDouble);
+                libraryRepositoryDouble, userRepositoryMemDouble);
 
         // Act
         boolean result = ctrl.isUserExistent(userDouble);
@@ -178,8 +178,8 @@ class US009ToCreateLibraryControllerTest {
         //Arrange
         String username = "User1";
 
-        UserRepository userRepositoryDouble = mock(UserRepository.class);
-        when(userRepositoryDouble.exists(username)).thenReturn(false);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
+        when(userRepositoryMemDouble.exists(username)).thenReturn(false);
 
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(username);
@@ -187,7 +187,7 @@ class US009ToCreateLibraryControllerTest {
         LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryDouble);
+                libraryRepositoryDouble, userRepositoryMemDouble);
 
         // Act
         boolean result = ctrl.isUserExistent(userDouble);

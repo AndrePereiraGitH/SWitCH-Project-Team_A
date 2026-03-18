@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.User;
 import TOPSECRET.repository.LibraryRepository;
-import TOPSECRET.repository.UserRepository;
+import TOPSECRET.repository.UserRepositoryMem;
 
 import javax.management.InstanceAlreadyExistsException;
 
@@ -19,7 +19,7 @@ import javax.management.InstanceAlreadyExistsException;
 public class US009ToCreateLibraryController {
 
     private final LibraryRepository _libraryRepository;
-    private final UserRepository _userRepository;
+    private final UserRepositoryMem _userRepositoryMem;
 
     /**
      * Constructs a new US009ToCreateLibraryController with the specified repositories.
@@ -28,21 +28,21 @@ public class US009ToCreateLibraryController {
      * </p>
      *
      * @param libraryRepository the repository for managing libraries
-     * @param userRepository the repository for managing users
+     * @param userRepositoryMem the repository for managing users
      * @throws NullPointerException if either repository is null
      */
 
-    public US009ToCreateLibraryController(LibraryRepository libraryRepository, UserRepository userRepository){
+    public US009ToCreateLibraryController(LibraryRepository libraryRepository, UserRepositoryMem userRepositoryMem){
         if (libraryRepository == null) {
             throw new NullPointerException("libraryRepository can not be null");
         }
 
-        if(userRepository == null){
+        if(userRepositoryMem == null){
             throw new NullPointerException("User repository can not be null");
         }
 
         _libraryRepository = libraryRepository;
-        _userRepository = userRepository;
+        _userRepositoryMem = userRepositoryMem;
     }
 
     /**
@@ -76,7 +76,7 @@ public class US009ToCreateLibraryController {
 
     public boolean isUserExistent(User user){
         String username = user.getUserName();
-        boolean result = _userRepository.exists(username);
+        boolean result = _userRepositoryMem.exists(username);
         return result;
     }
 }

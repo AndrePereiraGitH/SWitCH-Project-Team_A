@@ -3,7 +3,6 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.repository.UserRepository;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +42,7 @@ class US001ToRegisterUserControllerTest {
         );
 
         // ASSERT
-        verify(repository).createAndAddUser(
+        verify(repository).createAndAdd(
                 "TestUser1",
                 contact,
                 profile,
