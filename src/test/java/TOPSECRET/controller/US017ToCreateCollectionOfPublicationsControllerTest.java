@@ -8,7 +8,7 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +60,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     @Test
     void shouldThrowExceptionWhenCollectionRepositoryIsNull() {
         // Arrange — only provide the genre repo; collection repo is null on purpose
-        GenreRepository genreRepoDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoDouble = mock(GenreRepositoryMem.class);
 
         // Act & Assert — passing null must fail at construction time
         assertThrows(IllegalArgumentException.class,
@@ -81,7 +81,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenreType()).thenReturn("Fiction");
 
-        GenreRepository genreRepoDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoDouble = mock(GenreRepositoryMem.class);
         when(genreRepoDouble.getAllGenres()).thenReturn(List.of(genreDouble));
 
         US017ToCreateCollectionOfPublicationsController controller =
@@ -102,7 +102,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     @Test
     void getAllGenres_shouldReturnEmptyListWhenNoGenres() {
         // Arrange — fake repo that has no genres
-        GenreRepository genreRepoDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoDouble = mock(GenreRepositoryMem.class);
         when(genreRepoDouble.getAllGenres()).thenReturn(List.of());
 
         US017ToCreateCollectionOfPublicationsController controller =
@@ -164,7 +164,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(
-                        mock(GenreRepository.class), collectionRepoDouble);
+                        mock(GenreRepositoryMem.class), collectionRepoDouble);
 
         // Act — controller calls the repo and returns its result
         CollectionOfPublications result =
@@ -193,7 +193,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(
-                        mock(GenreRepository.class), repoDouble);
+                        mock(GenreRepositoryMem.class), repoDouble);
 
         // Act & Assert — the exception from the repo must reach the caller
         assertThrows(IllegalArgumentException.class,
@@ -211,7 +211,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     // This avoids repeating the same setup code in every test.
     private US017ToCreateCollectionOfPublicationsController createController() {
         return new US017ToCreateCollectionOfPublicationsController(
-                mock(GenreRepository.class),
+                mock(GenreRepositoryMem.class),
                 mock(CollectionOfPublicationsRepository.class));
     }
 }

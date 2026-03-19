@@ -30,7 +30,7 @@ class AppraisalEntityRepositoryTest {
     void shouldCreateAndAddAppraisalEntitySuccessfully() {
 
         // ARRANGE
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
@@ -100,7 +100,7 @@ class AppraisalEntityRepositoryTest {
     void shouldThrowExceptionWhenEntityAlreadyExists() {
 
         // Arrange
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
@@ -175,7 +175,7 @@ class AppraisalEntityRepositoryTest {
     void shouldThrowExceptionWhenGenresAreNull() {
 
         // ARRANGE
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
@@ -201,7 +201,7 @@ class AppraisalEntityRepositoryTest {
     void shouldThrowExceptionWhenPublicationTypesAreEmpty() {
 
         // ARRANGE
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 

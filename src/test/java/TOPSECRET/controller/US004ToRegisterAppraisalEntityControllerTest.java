@@ -6,7 +6,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import TOPSECRET.repository.PublicationTypeRepository;
 
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
     void shouldReturnAllGenresAsDTOs() {
 
         // ARRANGE
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
@@ -59,7 +59,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
     void shouldReturnAllPublicationTypesAsDTOs() {
 
         // ARRANGE
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
@@ -101,7 +101,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         // ARRANGE
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
-                        mock(GenreRepository.class),
+                        mock(GenreRepositoryMem.class),
                         mock(PublicationTypeRepository.class),
                         mock(AppraisalEntityRepository.class)
                 );
@@ -125,7 +125,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         // ARRANGE
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
-                        mock(GenreRepository.class),
+                        mock(GenreRepositoryMem.class),
                         mock(PublicationTypeRepository.class),
                         mock(AppraisalEntityRepository.class)
                 );
@@ -147,7 +147,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
     void shouldDelegateRegistrationToRepository() {
 
         // ARRANGE
-        GenreRepository genreRepository = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
         PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 

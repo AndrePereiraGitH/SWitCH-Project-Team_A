@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import TOPSECRET.repository.ListingRepository;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link US021ToGetListOfItemsOnDirectSaleOfGivenGenreController}.
  *
  * These tests verify the controller's behaviour in isolation using mock doubles
- * for {@link GenreRepository} and {@link ListingRepository}, ensuring the controller
+ * for {@link GenreRepositoryMem} and {@link ListingRepository}, ensuring the controller
  * correctly delegates to its dependencies without testing their internal logic.
  */
 
@@ -26,7 +26,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureControllerIsCreatedSuccessfully() {
         //Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         // Act
@@ -51,7 +51,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureThrowsExceptionWhenListingRepositoryIsNull() {
         //Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -74,7 +74,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureGetAllGenresReturnsEmptyList() {
         //Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
         when(genreRepositoryDouble.getAllGenres()).thenReturn(new ArrayList<>());
 
@@ -98,7 +98,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureGetAllGenresReturnsCorrectList() {
         //Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         Genre genre1Double = mock(Genre.class);
@@ -119,7 +119,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureThrowsExceptionWhenGenreIsNull() {
         //Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         US021ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
@@ -141,7 +141,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureReturnsEmptyListWhenNoItemsMatchGenre() {
         //Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         Genre genreDouble = mock(Genre.class);
@@ -171,7 +171,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureReturnsListWithOneItemWhenOneMatchesGenre() throws Exception {
         // Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         Genre genreDouble = mock(Genre.class);
@@ -203,7 +203,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureReturnsEmptyListWhenNoListingsMatchGenre() {
         // Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         Genre scienceDouble = mock(Genre.class);
@@ -233,7 +233,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureReturnsEmptyListWhenListingIsNotDirectSale() {
         // Arrange
-        GenreRepository genreRepositoryDouble = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepositoryDouble = mock(GenreRepositoryMem.class);
         ListingRepository listingRepositoryDouble = mock(ListingRepository.class);
 
         Genre fictionDouble = mock(Genre.class);

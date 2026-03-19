@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.dto.GenreDTO_US013;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link US013ToGetListOfGenreController}.
  *
- * <p>{@link GenreRepository} is mocked to isolate the controller's own logic completely.
+ * <p>{@link GenreRepositoryMem} is mocked to isolate the controller's own logic completely.
  *
  * <p><b>What is tested here (controller logic only):</b>
  * <ul>
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
  */
 class US013ToGetListOfGenreControllerTest {
 
-    GenreRepository genreRepository = mock(GenreRepository.class);
+    GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
 
     // ========================================
     // CONSTRUCTOR TESTS

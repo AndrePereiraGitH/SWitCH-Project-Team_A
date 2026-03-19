@@ -7,10 +7,9 @@ import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import TOPSECRET.repository.PublicationTypeRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +36,7 @@ import java.util.List;
 
 public class US004ToRegisterAppraisalEntityController {
 
-    private GenreRepository _genreRepository;
+    private GenreRepositoryMem _genreRepository;
     private PublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityRepository _appraisalEntityRepository;
 
@@ -49,7 +48,7 @@ public class US004ToRegisterAppraisalEntityController {
      * @param appraisalEntityRepository Repository of AppraisalEntity.
      */
     public US004ToRegisterAppraisalEntityController(
-            GenreRepository genreRepository,
+            GenreRepositoryMem genreRepository,
             PublicationTypeRepository publicationTypeRepository,
             AppraisalEntityRepository appraisalEntityRepository) {
 
@@ -74,7 +73,7 @@ public class US004ToRegisterAppraisalEntityController {
      * Retrieves all available genres from the repository and converts them
      * into DTO objects suitable for presentation in the UI layer.
      * The method performs the following steps:
-     *   <li>Requests the list of {@link Genre} objects from the {@link GenreRepository}.</li>
+     *   <li>Requests the list of {@link Genre} objects from the {@link GenreRepositoryMem}.</li>
      *   <li>Creates a new list to avoid exposing the original domain collection.</li>
      *   <li>Converts each {@link Genre} domain object into a {@link GenreDetailsDTO_US004}.</li>
      *   <li>Only the genre title is included in the DTO to prevent exposing

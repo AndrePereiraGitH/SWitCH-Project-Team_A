@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import TOPSECRET.repository.ListingRepository;
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Controller for US021 - get the list of items on direct sale of a given genre.
  */
 public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
-    private GenreRepository genreRepository;
+    private GenreRepositoryMem genreRepository;
     private ListingRepository listingRepository;
 
     /**
@@ -19,7 +19,7 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * @param genreRepository genre repository
      * @param listingRepository direct sale repository
      */
-    public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController (GenreRepository genreRepository,  ListingRepository listingRepository) {
+    public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController (GenreRepositoryMem genreRepository, ListingRepository listingRepository) {
         if (genreRepository == null || listingRepository == null) {
             throw new IllegalArgumentException("GenreRepository and ListingRepository cannot be null");
         }

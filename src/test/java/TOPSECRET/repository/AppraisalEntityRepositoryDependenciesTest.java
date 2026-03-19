@@ -6,9 +6,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.support.hierarchical.ThrowableCollector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,8 +37,8 @@ class AppraisalEntityRepositoryDependenciesTest {
      * Creates a GenreRepository containing one valid Genre.
      * @return GenreRepository instance.
      */
-    private GenreRepository createGenreRepository() {
-        GenreRepository repo = new GenreRepository( new GenreFactory());
+    private GenreRepositoryMem createGenreRepository() {
+        GenreRepositoryMem repo = new GenreRepositoryMem( new GenreFactory());
         repo.addGenre(new GenreFactory().create("Fantasy"));
         return repo;
     }
@@ -98,7 +96,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     void shouldCreateAndAddAppraisalEntitySuccessfully() {
 
         // ARRANGE
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository repository =
@@ -145,7 +143,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     void shouldThrowExceptionWhenPublicationTypeRepositoryIsNull() {
 
         // ARRANGE
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         AppraisalEntityFactory factory = createAppraisalEntityFactory();
 
         // ACT + ASSERT
@@ -166,7 +164,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     void shouldThrowExceptionWhenAppraisalEntityAlreadyExists() {
 
         // ARRANGE
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository repository =
@@ -203,7 +201,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     void shouldThrowExceptionWhenGenreDoesNotExist() {
 
         // ARRANGE
-        GenreRepository emptyGenreRepo = new GenreRepository(new GenreFactory());
+        GenreRepositoryMem emptyGenreRepo = new GenreRepositoryMem(new GenreFactory());
 
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
 
@@ -233,7 +231,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     void shouldThrowExceptionWhenPublicationTypeDoesNotExist() {
 
         // ARRANGE
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
 
         PublicationTypeRepository emptyPubRepo = new PublicationTypeRepository(new PublicationTypeFactory());
 
@@ -267,7 +265,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionWhenGenreListIsNull() throws IllegalArgumentException {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
@@ -290,7 +288,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionWhenGenreListIsEmpty() {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
@@ -313,7 +311,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionWhenPublicationTypeListIsNull() throws IllegalArgumentException  {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
@@ -336,7 +334,7 @@ class AppraisalEntityRepositoryDependenciesTest {
     @Test
     void shouldThrowExceptionWhenPublicationTypeListIsEmpty() throws IllegalArgumentException {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 

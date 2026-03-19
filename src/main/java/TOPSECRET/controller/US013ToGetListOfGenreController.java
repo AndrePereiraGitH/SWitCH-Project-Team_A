@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.dto.GenreDTO_US013;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Application controller responsible for retrieving the list of genres.
  * <p>
- * This controller coordinates access to the {@link GenreRepository}
+ * This controller coordinates access to the {@link GenreRepositoryMem}
  * and transforms {@link Genre} domain objects into
  * {@link GenreDTO_US013} instances.
  * <p>
@@ -19,9 +19,9 @@ import java.util.List;
  * preserving separation of concerns between the domain and presentation layers.
  */
 public class US013ToGetListOfGenreController {
-    private final GenreRepository _genreRepository;
+    private final GenreRepositoryMem _genreRepository;
 
-    public US013ToGetListOfGenreController(GenreRepository genreRepository) {
+    public US013ToGetListOfGenreController(GenreRepositoryMem genreRepository) {
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre Repository can't be null");
         }

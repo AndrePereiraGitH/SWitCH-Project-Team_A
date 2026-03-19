@@ -24,7 +24,7 @@ import java.util.List;
 public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
 
     private List<AppraisalEntity> _appraisalEntities;
-    private GenreRepository _genreRepository;
+    private GenreRepositoryMem _genreRepository;
     private PublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityFactory _appraisalEntityFactory;
 
@@ -35,7 +35,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
      * @param publicationTypeRepository Repository containing existing PublicationType domain objects.
      */
     public AppraisalEntityRepositoryMem (
-            GenreRepository genreRepository,
+            GenreRepositoryMem genreRepository,
             PublicationTypeRepository publicationTypeRepository,
             AppraisalEntityFactory appraisalEntityFactory) {
 

@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuctionDTO_US022;
 import TOPSECRET.dto.GenreDTO_US022;
 import TOPSECRET.repository.AuctionRepository;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -19,7 +19,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         // Arrange
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -59,7 +59,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnThrowsExceptionNull(){
         // Arrange
         AuctionRepository auctionRepo = mock(AuctionRepository.class);
-        GenreRepository genreRepo = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepo = mock(GenreRepositoryMem.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -77,7 +77,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnEmptyList(){
         // Arrange
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -104,7 +104,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnListOfItemsOnAuctionGivenGenre(){
         // Arrange
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -156,7 +156,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void getListOfItemsOnAuctionGivenGenreDtoContainsCorrectGenres() {
 
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -207,7 +207,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         // Arrange
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         when(genreRepoMock.getAllGenres()).thenReturn(List.of());
 
@@ -230,7 +230,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         // Arrange
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
@@ -260,7 +260,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void getAllGenres_shouldReturnCorrectDTOs() {
 
         AuctionRepository auctionRepoMock = mock(AuctionRepository.class);
-        GenreRepository genreRepoMock = mock(GenreRepository.class);
+        GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenreType()).thenReturn("Fantasy");

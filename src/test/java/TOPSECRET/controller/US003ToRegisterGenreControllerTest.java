@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
@@ -27,7 +27,7 @@ class US003ToRegisterGenreControllerTest {
 
         // Arrange
         Genre genreDouble = mock(Genre.class);
-        GenreRepository repoDouble = mock(GenreRepository.class);
+        GenreRepositoryMem repoDouble = mock(GenreRepositoryMem.class);
 
         // Program the mock: when createAndAdd is called, return the fake genre
         when(repoDouble.createAndAdd("Drama")).thenReturn(genreDouble);
@@ -47,7 +47,7 @@ class US003ToRegisterGenreControllerTest {
     void shouldPropagateExceptionWhenGenreAlreadyExists() {
 
         // Arrange
-        GenreRepository repoDouble = mock(GenreRepository.class);
+        GenreRepositoryMem repoDouble = mock(GenreRepositoryMem.class);
 
         // Program the mock to simulate a duplicate genre error
         when(repoDouble.createAndAdd("Drama"))

@@ -1,17 +1,17 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 
 /**
  * Controller responsible for handling the registration of a new genre (US003).
  *
  * <p>This controller receives a genre name from the UI layer and delegates
- * the creation and storage to the {@link GenreRepository}.</p>
+ * the creation and storage to the {@link GenreRepositoryMem}.</p>
  */
 public class US003ToRegisterGenreController {
 
-    private final GenreRepository _genreRepository;
+    private final GenreRepositoryMem _genreRepository;
 
     /**
      * Creates a new instance of the controller.
@@ -20,7 +20,7 @@ public class US003ToRegisterGenreController {
      *                        must not be {@code null}
      * @throws IllegalArgumentException if {@code genreRepository} is {@code null}
      */
-    public US003ToRegisterGenreController(GenreRepository genreRepository) {
+    public US003ToRegisterGenreController(GenreRepositoryMem genreRepository) {
 
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre repository must not be null");

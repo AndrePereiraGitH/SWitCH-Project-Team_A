@@ -5,7 +5,7 @@ import TOPSECRET.domain.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,14 +31,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
 
     // shared between tests — reset before each test by @BeforeEach
-    private GenreRepository genreRepository;
+    private GenreRepositoryMem genreRepository;
     private CollectionOfPublicationsRepository collectionRepository;
     private US017ToCreateCollectionOfPublicationsController controller;
 
     // runs before each test — builds real objects so tests work with the full system, not mocks
     @BeforeEach
     void setup() {
-        genreRepository = new GenreRepository( new GenreFactory());
+        genreRepository = new GenreRepositoryMem( new GenreFactory());
         collectionRepository = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
 
         controller = new US017ToCreateCollectionOfPublicationsController(
@@ -123,7 +123,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenUserIsNull() {
         // Arrange — valid genre, but no user
-        GenreRepository genreRepo = new GenreRepository(new GenreFactory());
+        GenreRepositoryMem genreRepo = new GenreRepositoryMem(new GenreFactory());
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
@@ -143,7 +143,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenGenreIsNull() {
         // Arrange — valid user, but no genre
-        GenreRepository genreRepo = new GenreRepository(new GenreFactory());
+        GenreRepositoryMem genreRepo = new GenreRepositoryMem(new GenreFactory());
         CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepository(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
@@ -178,7 +178,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenCollectionRepositoryIsNull() {
         // Arrange — only provide the genre repo; collection repo is null on purpose
-        GenreRepository genreRepo = new GenreRepository(new GenreFactory());
+        GenreRepositoryMem genreRepo = new GenreRepositoryMem(new GenreFactory());
 
         // Act & Assert — null collection repo must fail at construction time
         assertThrows(

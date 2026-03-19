@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GenreRepositoryTest {
+class GenreRepositoryMemTest {
 
     private final GenreFactory genreFactory = mock(GenreFactory.class);
     private final List<Genre> genres = new ArrayList<>();
@@ -20,7 +20,7 @@ class GenreRepositoryTest {
     @Test
     void testCreateAndAddGenre_AddsNewGenre() {
         // Arrange
-        GenreRepository genreRepository = new GenreRepository(genreFactory);
+        GenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
 
         String genreType = "Fantasy";
         when(genre.getGenreType()).thenReturn(genreType);
@@ -42,7 +42,7 @@ class GenreRepositoryTest {
         when(genre.getGenreType()).thenReturn(genreType);
         when(genreFactory.create(genreType)).thenReturn(genre);
 
-        GenreRepository genreRepository = new GenreRepository(genreFactory);
+        GenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
         genreRepository.createAndAdd(genreType);
 
         // Act & Assert
@@ -60,7 +60,7 @@ class GenreRepositoryTest {
         when(genreFactory.create("Science Fiction")).thenReturn(genre2);
 
 
-        GenreRepository genreRepository = new GenreRepository(genreFactory);
+        GenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
         genreRepository.createAndAdd("Fantasy");       // adiciona ao repo
         genreRepository.createAndAdd("Science Fiction");
 
@@ -78,7 +78,7 @@ class GenreRepositoryTest {
     void getAllGenresShouldReturnUnmodifiableList() {
 
         // Arrange
-        GenreRepository repo = new GenreRepository(genreFactory);
+        GenreRepository repo = new GenreRepositoryMem(genreFactory);
 
         // Act
         List<Genre> result = repo.getAllGenres();
@@ -91,7 +91,7 @@ class GenreRepositoryTest {
     void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
 
         // Arrange
-        GenreRepository repo = new GenreRepository(genreFactory);
+        GenreRepository repo = new GenreRepositoryMem(genreFactory);
 
         // Act
         List<Genre> result = repo.getAllGenres();
@@ -107,7 +107,7 @@ class GenreRepositoryTest {
         when(genre.getGenreType()).thenReturn(genreType);
         when(genreFactory.create(genreType)).thenReturn(genre);
 
-        GenreRepository repository = new GenreRepository(genreFactory);
+       GenreRepository repository = new GenreRepositoryMem(genreFactory);
         repository.createAndAdd(genreType);
 
         // Act
@@ -120,7 +120,7 @@ class GenreRepositoryTest {
     @Test
     void shouldThrowExceptionWhenGenreNotFound() {
         // Arrange
-        GenreRepository repository = new GenreRepository(genreFactory);
+        GenreRepository repository = new GenreRepositoryMem(genreFactory);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -130,7 +130,7 @@ class GenreRepositoryTest {
     @Test
     void shouldThrowExceptionWhenTitleIsNull() {
         // Arrange
-        GenreRepository repository = new GenreRepository(genreFactory);
+        GenreRepository repository = new GenreRepositoryMem(genreFactory);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -140,7 +140,7 @@ class GenreRepositoryTest {
     @Test
     void shouldThrowExceptionWhenTitleIsBlank() {
         // Arrange
-        GenreRepository repository = new GenreRepository(genreFactory);
+        GenreRepository repository = new GenreRepositoryMem(genreFactory);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,

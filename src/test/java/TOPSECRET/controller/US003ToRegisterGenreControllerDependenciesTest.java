@@ -2,10 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.GenreFactory;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +19,7 @@ class US003ToRegisterGenreControllerDependenciesTest {
     void shouldRegisterGenreSuccessfully() {
 
         // Arrange
-        GenreRepository genreRepository = new GenreRepository(new GenreFactory());
+        GenreRepositoryMem genreRepository = new GenreRepositoryMem(new GenreFactory());
         US003ToRegisterGenreController controller =
                 new US003ToRegisterGenreController(genreRepository);
 
@@ -38,7 +36,7 @@ class US003ToRegisterGenreControllerDependenciesTest {
     void shouldThrowExceptionWhenGenreAlreadyExists() {
 
         // Arrange
-        GenreRepository genreRepository = new GenreRepository( new GenreFactory());
+        GenreRepositoryMem genreRepository = new GenreRepositoryMem( new GenreFactory());
         US003ToRegisterGenreController controller =
                 new US003ToRegisterGenreController(genreRepository);
 

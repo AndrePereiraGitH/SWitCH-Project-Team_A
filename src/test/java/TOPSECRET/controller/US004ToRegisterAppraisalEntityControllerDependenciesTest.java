@@ -7,11 +7,10 @@ import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
 import TOPSECRET.repository.AppraisalEntityRepositoryMem;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 import TOPSECRET.repository.PublicationTypeRepository;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,8 +30,8 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
     /**
      * Creates a GenreRepository with predefined Genres.
      */
-    private GenreRepository createGenreRepository() {
-        GenreRepository repo = new GenreRepository(new GenreFactory());
+    private GenreRepositoryMem createGenreRepository() {
+        GenreRepositoryMem repo = new GenreRepositoryMem(new GenreFactory());
         repo.addGenre(new GenreFactory().create("Fantasy"));
         repo.addGenre(new GenreFactory().create("History"));
         return repo;
@@ -68,7 +67,7 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
      */
     private US004ToRegisterAppraisalEntityController createController() {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
@@ -301,7 +300,7 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
     @Test
     void shouldThrowWhenPublicationTypeRepositoryIsNull() {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository appraisalRepo =
                 new AppraisalEntityRepositoryMem(genreRepo, createPublicationTypeRepository(), appraisalEntityFactory);
@@ -321,7 +320,7 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
     @Test
     void shouldThrowWhenAppraisalEntityRepositoryIsNull() {
 
-        GenreRepository genreRepo = createGenreRepository();
+        GenreRepositoryMem genreRepo = createGenreRepository();
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
 
         IllegalArgumentException ex = assertThrows(

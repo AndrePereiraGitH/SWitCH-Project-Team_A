@@ -5,7 +5,7 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import TOPSECRET.repository.GenreRepository;
+import TOPSECRET.repository.GenreRepositoryMem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
 public class US017ToCreateCollectionOfPublicationsController {
 
     // the controller needs these two to do its job — both are injected so they can be mocked in tests
-    private final GenreRepository genreRepository;
+    private final GenreRepositoryMem genreRepository;
     private final CollectionOfPublicationsRepository collectionRepository;
 
     /**
@@ -37,7 +37,7 @@ public class US017ToCreateCollectionOfPublicationsController {
      * @throws IllegalArgumentException if either repository is null
      */
     public US017ToCreateCollectionOfPublicationsController(
-            GenreRepository genreRepository,
+            GenreRepositoryMem genreRepository,
             CollectionOfPublicationsRepository collectionRepository
     ) {
         // both are required — without them the controller can't do anything
