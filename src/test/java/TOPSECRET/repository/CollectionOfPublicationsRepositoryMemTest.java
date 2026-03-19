@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 
 
 /**
- * Unit tests for {@link CollectionOfPublicationsRepository} — covers US017, US018, and US020.
+ * Unit tests for {@link CollectionOfPublicationsRepositoryMem} — covers US017, US018, and US020.
  *
  * <p>These tests use <b>mocks</b> for all domain collaborators ({@link User}, {@link Genre},
  * {@link CollectionOfPublications}, {@link CollectionOfPublicationsFactory}).
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *   <li>US020 — {@code findPublicByGenre()}</li>
  * </ul>
  */
-class CollectionOfPublicationsRepositoryTest {
+class CollectionOfPublicationsRepositoryMemTest {
 
 
     // ============================== US017 ==============================
@@ -50,7 +50,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldThrowExceptionWhenFactoryIsNull_US017() {
         assertThrows(IllegalArgumentException.class,
-                () -> new CollectionOfPublicationsRepository(null));
+                () -> new CollectionOfPublicationsRepositoryMem(null));
     }
 
     // This is the main happy path for US017: a user picks a name and a genre, and the repository
@@ -72,8 +72,8 @@ class CollectionOfPublicationsRepositoryTest {
         when(mockCollection.getIsPrivate()).thenReturn(true);
         when(mockCollection.getPublications()).thenReturn(List.of());
 
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mockFactory);
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mockFactory);
 
         // Act — ask the repository to create the collection
         CollectionOfPublications result =
@@ -92,7 +92,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldThrowExceptionWhenUserIsNull_US017() {
         // Arrange — valid factory, null user on purpose
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
         Genre mockGenre = mock(Genre.class);
 
         // Act & Assert — null user must be rejected before creation starts
@@ -105,7 +105,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldThrowExceptionWhenNameIsNull_US017() {
         // Arrange — valid factory and user, null name on purpose
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
         User mockUser = mock(User.class);
         Genre mockGenre = mock(Genre.class);
 
@@ -119,7 +119,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldThrowExceptionWhenGenreIsNull_US017() {
         // Arrange — valid factory and user, null genre on purpose
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
         User mockUser = mock(User.class);
 
         // Act & Assert — null genre must be rejected before creation starts
@@ -150,8 +150,8 @@ class CollectionOfPublicationsRepositoryTest {
         when(mockCollection1.getCollectionName()).thenReturn("Favorites");
         when(mockCollection1.getCollectionGenre()).thenReturn(mockGenre1);
 
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mockFactory);
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mockFactory);
 
         // First creation — stored in the repository list
         sut.createIfNotExists(mockUser, "Favorites", mockGenre1);
@@ -183,8 +183,8 @@ class CollectionOfPublicationsRepositoryTest {
         when(mockCollection.getCollectionName()).thenReturn("Favorites");
         when(mockCollection.getCollectionGenre()).thenReturn(mockGenre);
 
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mockFactory);
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mockFactory);
 
         sut.createIfNotExists(mockUser, "Favorites", mockGenre); // first creation — stored in the list
 
@@ -209,8 +209,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldAddPublicationSuccessfully() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         Library library = mock(Library.class);
@@ -235,8 +235,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnFalseWhenCollectionRejectsPublication() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         Library library = mock(Library.class);
@@ -265,8 +265,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnFalseWhenAnyParameterIsNull() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertFalse(sut.addPublicationToCollection(null, null, null, null));
@@ -279,8 +279,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnFalseWhenUserIsNotOwner() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         User otherUser = mock(User.class);
@@ -306,8 +306,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnFalseWhenPublicationNotInLibrary() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         Library library = mock(Library.class);
@@ -330,8 +330,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnFalseWhenLibraryDoesNotBelongToUser() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         User otherUser = mock(User.class);
@@ -358,8 +358,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldThrowExceptionWhenUserIsNull() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -370,8 +370,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldAddCollectionToRepositorySuccessfully() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
@@ -386,8 +386,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnFalseWhenCollectionAlreadyExistsInRepository() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
@@ -409,8 +409,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldReturnCollectionsOwnedByUser() throws Exception {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User user = mock(User.class);
         User otherUser = mock(User.class);
@@ -422,7 +422,7 @@ class CollectionOfPublicationsRepositoryTest {
         when(collection2.getOwner()).thenReturn(otherUser);
 
         // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
-        Field field = CollectionOfPublicationsRepository.class
+        Field field = CollectionOfPublicationsRepositoryMem.class
                 .getDeclaredField("_collectionOfPublicationsList");
         field.setAccessible(true);
 
@@ -449,8 +449,8 @@ class CollectionOfPublicationsRepositoryTest {
             throws Exception {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         User owner = mock(User.class);
         when(owner.getUserName()).thenReturn("john");
@@ -462,7 +462,7 @@ class CollectionOfPublicationsRepositoryTest {
         when(collection.getOwner()).thenReturn(owner);
 
         // Insert mock into internal list
-        Field field = CollectionOfPublicationsRepository.class
+        Field field = CollectionOfPublicationsRepositoryMem.class
                 .getDeclaredField("_collectionOfPublicationsList");
         field.setAccessible(true);
 
@@ -492,8 +492,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldThrowExceptionWhenDTOIsNull() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -508,8 +508,8 @@ class CollectionOfPublicationsRepositoryTest {
     void shouldThrowExceptionWhenCollectionNotFound() {
 
         // ARRANGE
-        CollectionOfPublicationsRepository sut =
-                new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         CollectionOfPublicationsDTO_US018 dto =
                 mock(CollectionOfPublicationsDTO_US018.class);
@@ -533,7 +533,7 @@ class CollectionOfPublicationsRepositoryTest {
 
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -545,7 +545,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
         User ownerDouble = mock(User.class);
 
         // Act
@@ -569,7 +569,7 @@ class CollectionOfPublicationsRepositoryTest {
 
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         User ownerDouble = mock(User.class);
         User otherOwnerDouble = mock(User.class);
@@ -605,7 +605,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
         when(dtoDouble.get_name()).thenReturn("Unknown");
@@ -627,7 +627,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         User ownerDouble = mock(User.class);
         Genre genreDouble = mock(Genre.class);
@@ -660,7 +660,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         User ownerDouble = mock(User.class);
         Genre genreDouble = mock(Genre.class);
@@ -692,7 +692,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -704,7 +704,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
         when(dtoDouble.get_name()).thenReturn("Unknown");
@@ -727,7 +727,7 @@ class CollectionOfPublicationsRepositoryTest {
         CollectionOfPublicationsFactory factoryDouble = mock(CollectionOfPublicationsFactory.class);
 
         // Arrange
-        CollectionOfPublicationsRepository repo = new CollectionOfPublicationsRepository(factoryDouble);
+        CollectionOfPublicationsRepositoryMem repo = new CollectionOfPublicationsRepositoryMem(factoryDouble);
 
         User ownerDouble = mock(User.class);
         Genre genreDouble = mock(Genre.class);
@@ -773,7 +773,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldReturnListOfPublicListByGivenGenre() {
 
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         // User setup
         User owner = mock(User.class);
@@ -823,7 +823,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
 
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         Genre desiredGenre = mock(Genre.class);
         when(desiredGenre.getGenreType()).thenReturn(null);
@@ -838,7 +838,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldThrowExceptionWhenGenreTypeIsBlank() {
 
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         Genre desiredGenre = mock(Genre.class);
         when(desiredGenre.getGenreType()).thenReturn(" ");
@@ -852,7 +852,7 @@ class CollectionOfPublicationsRepositoryTest {
     @Test
     void shouldReturnEmptyListWhenNoPublicListsExist() {
 
-        CollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepository(mock(CollectionOfPublicationsFactory.class));
+        CollectionOfPublicationsRepositoryMem sut = new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         // Genre setup
         Genre desiredGenre = mock(Genre.class);
