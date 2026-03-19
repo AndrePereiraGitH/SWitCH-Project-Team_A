@@ -19,10 +19,10 @@ import java.util.List;
  */
 public class US019ToPubliclyShareCollectionOfPublicationsController {
 
-    CollectionOfPublicationsRepository collectionOfPublicationsRepository;
+    CollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem;
 
-    public US019ToPubliclyShareCollectionOfPublicationsController(CollectionOfPublicationsRepository collectionOfPublicationsRepository) {
-        this.collectionOfPublicationsRepository = collectionOfPublicationsRepository;
+    public US019ToPubliclyShareCollectionOfPublicationsController(CollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem) {
+        this.collectionOfPublicationsRepositoryMem = collectionOfPublicationsRepositoryMem;
     }
 
     /**
@@ -38,7 +38,7 @@ public class US019ToPubliclyShareCollectionOfPublicationsController {
             throw new IllegalArgumentException("User cannot be null");
         }
 
-        List<CollectionOfPublications> collections = collectionOfPublicationsRepository.getAllCollectionOfPublicationsByUser(user);
+        List<CollectionOfPublications> collections = collectionOfPublicationsRepositoryMem.getAllCollectionOfPublicationsByUser(user);
 
         List<CollectionOfPublicationsDTO_US019> collectionsDTO = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public class US019ToPubliclyShareCollectionOfPublicationsController {
             throw new IllegalArgumentException("you must send a collection to share");
         }
 
-        CollectionOfPublications collectionToShare = collectionOfPublicationsRepository.getCollectionByDTO(collectionDTO);
+        CollectionOfPublications collectionToShare = collectionOfPublicationsRepositoryMem.getCollectionByDTO(collectionDTO);
 
         return true;
     }

@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  */
 class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
 
-    CollectionOfPublicationsRepository repo = mock();
+    CollectionOfPublicationsRepository repo = mock(CollectionOfPublicationsRepository.class);
 
 
     @Test
