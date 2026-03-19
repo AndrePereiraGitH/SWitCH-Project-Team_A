@@ -7,9 +7,18 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-
+/**
+ * Unit tests for the {@link EditionFactory} class.
+ *
+ * <p>This test suite verifies that the {@code EditionFactory} correctly creates
+ * {@link Edition} objects when provided with valid input data. It also ensures
+ * that specific behaviors such as trimming the edition number and correctly
+ * assigning language are respected.</p>
+ *
+ * <p>Dependencies required by the factory are mocked to isolate the factory
+ * behavior from external components.</p>
+ */
 class EditionFactoryTest {
-    private final EditionFactory factory = new EditionFactory();
 
 // -------------------------
 // Mocks
@@ -26,7 +35,9 @@ class EditionFactoryTest {
 // -------------------------
 
     @Test
-    void shouldCreateEdition_whenValidData() {
+    void shouldCreateEdition_whenValidEditionNumber() {
+        EditionFactory factory = new EditionFactory();
+
         Edition edition = factory.create(
                 "1st",
                 validCode,
@@ -39,12 +50,50 @@ class EditionFactoryTest {
 
         assertNotNull(edition);
         assertEquals("1st", edition.getEditionNumber());
-        assertEquals(Locale.ENGLISH, edition.getEditionLanguage());
-        assertEquals(LocalDate.of(2020, 1, 1), edition.getEditionDate());
+
     }
 
     @Test
+    void shouldCreateEdition_whenValidEditionLanguage() {
+        EditionFactory factory = new EditionFactory();
+
+        Edition edition = factory.create(
+                "1st",
+                validCode,
+                validPhysicalAttributes,
+                validPublicationType,
+                validPublisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+
+        assertNotNull(edition);
+        assertEquals(Locale.ENGLISH, edition.getEditionLanguage());
+    }
+
+    @Test
+    void shouldCreateEdition_whenValidEditionDate() {
+        EditionFactory factory = new EditionFactory();
+
+        Edition edition = factory.create(
+                "1st",
+                validCode,
+                validPhysicalAttributes,
+                validPublicationType,
+                validPublisher,
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1)
+        );
+
+        assertNotNull(edition);
+        assertEquals(LocalDate.of(2020, 1, 1), edition.getEditionDate());
+    }
+
+
+
+    @Test
     void shouldTrimEditionNumber() {
+        EditionFactory factory = new EditionFactory();
         Edition edition = factory.create(
                 "   1st   ",
                 validCode,

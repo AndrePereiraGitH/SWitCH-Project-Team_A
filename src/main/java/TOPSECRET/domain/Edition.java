@@ -27,7 +27,8 @@ public class Edition {
     private final Locale _editionLanguage;
     private final LocalDate _editionDate;
 
-    protected Edition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType, Publisher publisher, Locale editionLanguage, LocalDate editionDate) {
+    protected Edition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType,
+                      Publisher publisher, Locale editionLanguage, LocalDate editionDate) {
         if (editionNumber == null || editionNumber.isBlank()) {
             throw new IllegalArgumentException("Edition Number cannot be blank");
         }

@@ -621,6 +621,4 @@ class EditionTest {
         assertFalse(result);
     }
 
-
-
 }
