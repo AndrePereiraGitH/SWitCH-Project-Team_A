@@ -35,7 +35,7 @@ class AppraisalEntityRepositoryTest {
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 
@@ -105,7 +105,7 @@ class AppraisalEntityRepositoryTest {
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 
@@ -180,7 +180,7 @@ class AppraisalEntityRepositoryTest {
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 
@@ -206,7 +206,7 @@ class AppraisalEntityRepositoryTest {
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
-                new AppraisalEntityRepository(genreRepository, publicationTypeRepository, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
 

@@ -102,7 +102,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository repository =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         String name = "Entity One";
         Contact contact = createValidContact();
@@ -123,6 +123,41 @@ class AppraisalEntityRepositoryDependenciesTest {
         assertEquals(1, result.getPublicationTypes().size());
     }
 
+    @Test
+    void shouldThrowExceptionWhenGenreRepositoryIsNull() {
+
+        // ARRANGE
+        PublicationTypeRepository pubRepo = createPublicationTypeRepository();
+        AppraisalEntityFactory factory = createAppraisalEntityFactory();
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                new AppraisalEntityRepositoryMem(
+                        null,
+                        pubRepo,
+                        factory
+                )
+        );
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeRepositoryIsNull() {
+
+        // ARRANGE
+        GenreRepository genreRepo = createGenreRepository();
+        AppraisalEntityFactory factory = createAppraisalEntityFactory();
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                new AppraisalEntityRepositoryMem(
+                        genreRepo,
+                        null,
+                        factory
+                )
+        );
+    }
+
     /**
      * Verifies repository throws exception when trying to create duplicate AppraisalEntity
      * using the same name + contact.
@@ -135,7 +170,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository repository =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         String name = "Entity One";
         Contact contact = createValidContact();
@@ -174,7 +209,7 @@ class AppraisalEntityRepositoryDependenciesTest {
 
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
-        AppraisalEntityRepository repository = new AppraisalEntityRepository(emptyGenreRepo, pubRepo, appraisalEntityFactory);
+        AppraisalEntityRepository repository = new AppraisalEntityRepositoryMem(emptyGenreRepo, pubRepo, appraisalEntityFactory);
 
         List<GenreDetailsDTO_US004> invalidGenre = List.of(new GenreDetailsDTO_US004("NonExisting"));
 
@@ -204,7 +239,7 @@ class AppraisalEntityRepositoryDependenciesTest {
 
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
-        AppraisalEntityRepository repository = new AppraisalEntityRepository(genreRepo, emptyPubRepo, appraisalEntityFactory);
+        AppraisalEntityRepository repository = new AppraisalEntityRepositoryMem(genreRepo, emptyPubRepo, appraisalEntityFactory);
 
         List<PublicationTypeDTO_US004> invalidType =
                 List.of(
@@ -237,7 +272,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
         AppraisalEntityRepository repository =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         assertThrows(IllegalArgumentException.class, () ->
                 repository.createAndAddAppraisalEntity(
@@ -260,7 +295,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
         AppraisalEntityRepository repository =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         assertThrows(IllegalArgumentException.class, () ->
                 repository.createAndAddAppraisalEntity(
@@ -283,7 +318,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
         AppraisalEntityRepository repository =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         assertThrows(IllegalArgumentException.class, () ->
                 repository.createAndAddAppraisalEntity(
@@ -306,7 +341,7 @@ class AppraisalEntityRepositoryDependenciesTest {
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
         AppraisalEntityRepository repository =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         assertThrows(IllegalArgumentException.class, () ->
                 repository.createAndAddAppraisalEntity(

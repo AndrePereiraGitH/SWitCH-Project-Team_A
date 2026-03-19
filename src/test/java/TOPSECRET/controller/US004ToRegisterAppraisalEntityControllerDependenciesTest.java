@@ -6,6 +6,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
+import TOPSECRET.repository.AppraisalEntityRepositoryMem;
 import TOPSECRET.repository.GenreRepository;
 import TOPSECRET.repository.PublicationTypeRepository;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,7 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
 
         AppraisalEntityRepository appraisalRepo =
-                new AppraisalEntityRepository(genreRepo, pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, pubRepo, appraisalEntityFactory);
 
         return new US004ToRegisterAppraisalEntityController(
                 genreRepo,
@@ -283,7 +284,7 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
         PublicationTypeRepository pubRepo = createPublicationTypeRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository appraisalRepo =
-                new AppraisalEntityRepository(createGenreRepository(), pubRepo, appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(createGenreRepository(), pubRepo, appraisalEntityFactory);
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
@@ -303,7 +304,7 @@ class US004ToRegisterAppraisalEntityControllerDependenciesTest {
         GenreRepository genreRepo = createGenreRepository();
         AppraisalEntityFactory appraisalEntityFactory = createAppraisalEntityFactory();
         AppraisalEntityRepository appraisalRepo =
-                new AppraisalEntityRepository(genreRepo, createPublicationTypeRepository(), appraisalEntityFactory);
+                new AppraisalEntityRepositoryMem(genreRepo, createPublicationTypeRepository(), appraisalEntityFactory);
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
