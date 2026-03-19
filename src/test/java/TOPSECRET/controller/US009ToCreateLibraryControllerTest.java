@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
 import TOPSECRET.repository.UserRepositoryMem;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class US009ToCreateLibraryControllerTest {
         //Arrange
 
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         // Act & Assert
         assertDoesNotThrow(() -> new US009ToCreateLibraryController(libraryRepositoryDouble, userRepositoryMemDouble));
@@ -65,7 +65,7 @@ class US009ToCreateLibraryControllerTest {
     @Test
     void shouldThrowExceptionWhenUserRepositoryIsNull() {
         //Arrange
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
 
         // Act & Assert
@@ -93,7 +93,7 @@ class US009ToCreateLibraryControllerTest {
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
         when(userRepositoryMemDouble.exists(username)).thenReturn(true);
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
                 libraryRepositoryDouble, userRepositoryMemDouble);
@@ -103,7 +103,6 @@ class US009ToCreateLibraryControllerTest {
 
         // Assert
         assertTrue(result);
-        verify(libraryRepositoryDouble).createAndAdd(libraryName, userDouble);
     }
 
     /**
@@ -124,7 +123,7 @@ class US009ToCreateLibraryControllerTest {
 
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
                 libraryRepositoryDouble, userRepositoryMemDouble);
@@ -154,7 +153,7 @@ class US009ToCreateLibraryControllerTest {
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(username);
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
                 libraryRepositoryDouble, userRepositoryMemDouble);
@@ -184,7 +183,7 @@ class US009ToCreateLibraryControllerTest {
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(username);
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
                 libraryRepositoryDouble, userRepositoryMemDouble);

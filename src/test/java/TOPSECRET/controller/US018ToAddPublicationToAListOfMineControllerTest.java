@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
     private US018ToAddPublicationToAListOfMineController createController(
             User user,
             CollectionOfPublicationsRepository collectionRepo,
-            LibraryRepository libraryRepo,
+            ILibraryRepository libraryRepo,
             PublicationSampleRepositoryMem publicationSampleRepo) {
 
         return new US018ToAddPublicationToAListOfMineController(
@@ -47,7 +47,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
 
         // ARRANGE
         CollectionOfPublicationsRepository collectionRepoDouble = mock(CollectionOfPublicationsRepository.class);
-        LibraryRepository libraryRepoDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepoDouble = mock(ILibraryRepository.class);
         PublicationSampleRepositoryMem publicationSampleDouble = mock(PublicationSampleRepositoryMem.class);
 
         // ACT + ARRANGE
@@ -68,7 +68,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
 
         // ARRANGE
         User userDouble = mock(User.class);
-        LibraryRepository libraryRepoDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepoDouble = mock(ILibraryRepository.class);
         PublicationSampleRepositoryMem publicationSampleDouble = mock(PublicationSampleRepositoryMem.class);
 
         // ACT + ARRANGE
@@ -111,7 +111,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         User userDouble = mock(User.class);
         CollectionOfPublicationsRepository collectionRepoDouble = mock(CollectionOfPublicationsRepository.class);
-        LibraryRepository libraryRepoDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepoDouble = mock(ILibraryRepository.class);
 
         // ACT + ARRANGE
         assertThrows(IllegalArgumentException.class,
@@ -133,7 +133,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         User userDouble = mock(User.class);
         CollectionOfPublicationsRepository collectionRepoDouble = mock(CollectionOfPublicationsRepository.class);
 
-        LibraryRepository libraryRepoDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepoDouble = mock(ILibraryRepository.class);
         PublicationSampleRepositoryMem publicationRepoDouble = mock(PublicationSampleRepositoryMem.class);
 
         US018ToAddPublicationToAListOfMineController sut =
@@ -172,7 +172,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                 createController(
                         mock(User.class),
                         mock(CollectionOfPublicationsRepository.class),
-                        mock(LibraryRepository.class),
+                        mock(ILibraryRepository.class),
                         mock(PublicationSampleRepositoryMem.class)
                 );
 
@@ -190,7 +190,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // Arrange
         User userDouble = mock(User.class);
         CollectionOfPublicationsRepository collectionRepoDouble = mock(CollectionOfPublicationsRepository.class);
-        LibraryRepository libraryRepoDouble  = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepoDouble  = mock(ILibraryRepository.class);
         PublicationSampleRepositoryMem publicationRepoDouble = mock(PublicationSampleRepositoryMem.class);
 
         US018ToAddPublicationToAListOfMineController sut =
@@ -248,7 +248,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                 createController(
                         mock(User.class),
                         mock(CollectionOfPublicationsRepository.class),
-                        mock(LibraryRepository.class),
+                        mock(ILibraryRepository.class),
                         mock(PublicationSampleRepositoryMem.class)
                 );
 
@@ -266,7 +266,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         User userDouble = mock(User.class);
         CollectionOfPublicationsRepository collectionRepoDouble = mock(CollectionOfPublicationsRepository.class);
-        LibraryRepository libraryRepo = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepo = mock(ILibraryRepository.class);
         PublicationSampleRepositoryMem publicationRepo = mock(PublicationSampleRepositoryMem.class);
 
         US018ToAddPublicationToAListOfMineController sut =
@@ -315,7 +315,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                 createController(
                         mock(User.class),
                         mock(CollectionOfPublicationsRepository.class),
-                        mock(LibraryRepository.class),
+                        mock(ILibraryRepository.class),
                         mock(PublicationSampleRepositoryMem.class)
                 );
 

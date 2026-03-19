@@ -5,7 +5,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.repository.AuctionRepository;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
 import TOPSECRET.repository.ListingRepository;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
  */
 class US016ToPutPublicationInAuctionControllerTest {
 
-    private LibraryRepository libraryRepoDouble;
+    private ILibraryRepository libraryRepoDouble;
     private ListingRepository listingRepoDouble;
     private AuctionRepository auctionRepoDouble;
     private PublicationSampleRepositoryMem publicationSampleRepoDouble;
@@ -43,7 +43,7 @@ class US016ToPutPublicationInAuctionControllerTest {
 
     @BeforeEach
     void setUp() {
-        libraryRepoDouble = mock(LibraryRepository.class);
+        libraryRepoDouble = mock(ILibraryRepository.class);
         listingRepoDouble = mock(ListingRepository.class);
         auctionRepoDouble = mock(AuctionRepository.class);
         publicationSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);

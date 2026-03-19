@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.User;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
 import TOPSECRET.repository.UserRepositoryMem;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -18,7 +18,7 @@ import javax.management.InstanceAlreadyExistsException;
 
 public class US009ToCreateLibraryController {
 
-    private final LibraryRepository _libraryRepository;
+    private final ILibraryRepository _libraryRepository;
     private final UserRepositoryMem _userRepositoryMem;
 
     /**
@@ -32,7 +32,7 @@ public class US009ToCreateLibraryController {
      * @throws NullPointerException if either repository is null
      */
 
-    public US009ToCreateLibraryController(LibraryRepository libraryRepository, UserRepositoryMem userRepositoryMem){
+    public US009ToCreateLibraryController(ILibraryRepository libraryRepository, UserRepositoryMem userRepositoryMem){
         if (libraryRepository == null) {
             throw new NullPointerException("libraryRepository can not be null");
         }

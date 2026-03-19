@@ -7,7 +7,7 @@ import TOPSECRET.domain.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
 import javax.management.InstanceNotFoundException;
@@ -39,15 +39,15 @@ import java.util.List;
 public class US018ToAddPublicationToAListOfMineController {
 
     private final CollectionOfPublicationsRepository collectionRepo;
-    private final LibraryRepository libraryRepo;
+    private final ILibraryRepository libraryRepo;
     private final PublicationSampleRepositoryMem publicationSampleRepo;
 
     /**
-     * Utilizador autenticado/ativo no contexto da execução desta US.
+     * Authenticated/active user in the execution context of this US.
      * <p>
-     * Isto permite manter as assinaturas dos métodos
-     * (por exemplo, {@code getPublicationsForCollection(selectedCollectionDTO)} sem parâmetro user),
-     * mas ainda assim obter a Library do utilizador.
+     * This allows keeping method signatures clean
+     * (e.g., {@code getPublicationsForCollection(selectedCollectionDTO)} without a user parameter),
+     * while still being able to retrieve the user's Library.
      * </p>
      */
     private final User user;
@@ -64,7 +64,7 @@ public class US018ToAddPublicationToAListOfMineController {
     public US018ToAddPublicationToAListOfMineController(
             User user,
             CollectionOfPublicationsRepository collectionRepo,
-            LibraryRepository libraryRepo,
+            ILibraryRepository libraryRepo,
             PublicationSampleRepositoryMem publicationSampleRepo) {
 
         if (user == null) throw new IllegalArgumentException("User cannot be null");

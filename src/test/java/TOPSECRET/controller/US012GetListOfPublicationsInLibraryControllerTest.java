@@ -5,7 +5,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 
 import TOPSECRET.dto.PublicationDetailsDTO_US012;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
 import org.junit.jupiter.api.Test;
 
 
@@ -39,7 +39,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         // Arrange
         String emptyUser = "";
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
         US012GetListOfPublicationsInLibraryController ctrl = new US012GetListOfPublicationsInLibraryController(libraryRepositoryDouble);
 
 
@@ -64,7 +64,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         // Arrange
         String username = "User1";
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
         when(libraryRepositoryDouble.getAllPublicationsFromUserLibrary(username)).thenReturn(List.of());
 
 
@@ -108,7 +108,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         PublicationSample pub1 = createMockPublicationSample(expectedTitle1,expectedAuthors1,expectedCode1);
         PublicationSample pub2 = createMockPublicationSample(expectedTitle2,expectedAuthors2,expectedCode2);
 
-        LibraryRepository libraryRepositoryDouble = mock(LibraryRepository.class);
+        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
         when(libraryRepositoryDouble.getAllPublicationsFromUserLibrary(username)).thenReturn(List.of(pub1,pub2));
 
 

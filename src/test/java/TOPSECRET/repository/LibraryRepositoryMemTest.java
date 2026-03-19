@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class LibraryRepositoryTest {
+class LibraryRepositoryMemTest {
 
     private LibraryFactory libraryFactoryDouble;
 
@@ -27,7 +27,7 @@ class LibraryRepositoryTest {
     @Test
     void shouldThrowAnExceptionWhenFactoryIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> new LibraryRepository(null));
+                () -> new LibraryRepositoryMem(null));
     }
 
 
@@ -41,39 +41,40 @@ class LibraryRepositoryTest {
 
         User userDouble = createMockUser(username);
         LibraryFactory factoryDouble = createLibraryFactory(libraryName, userDouble);
-        LibraryRepository libraryRepository = new LibraryRepository(factoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(factoryDouble);
 
-        libraryRepository.createAndAdd(libraryName, userDouble);
+        libraryRepo.createAndAdd(libraryName, userDouble);
 
         // Act
-        Library result = libraryRepository.getLibraryOfUser(username);
+        Library result = libraryRepo.getLibraryOfUser(username);
 
         // Assert
+
         assertEquals(libraryName, result.getLibraryName());
     }
 
     @Test
     void throwExceptionWhenUsernameIsNull() {
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         assertThrows(NullPointerException.class,
-                () -> libraryRepository.getLibraryOfUser(null));
+                () -> libraryRepo.getLibraryOfUser(null));
     }
 
     @Test
     void throwExceptionWhenUsernameIsEmpty() {
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         assertThrows(IllegalArgumentException.class,
-                () -> libraryRepository.getLibraryOfUser(""));
+                () -> libraryRepo.getLibraryOfUser(""));
     }
 
     @Test
     void throwExceptionWhenLibraryIsNotFound() {
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         assertThrows(InstanceNotFoundException.class,
-                () -> libraryRepository.getLibraryOfUser("ghost_user"));
+                () -> libraryRepo.getLibraryOfUser("ghost_user"));
     }
 
 
@@ -91,10 +92,10 @@ class LibraryRepositoryTest {
         // ← stub the factory so it returns the mock library
         when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(libraryDouble);
 
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         // Act
-        Library result = libraryRepository.createAndAdd(libraryName, userDouble);
+        Library result = libraryRepo.createAndAdd(libraryName, userDouble);
 
         // Assert
         assertNotNull(result);
@@ -106,28 +107,28 @@ class LibraryRepositoryTest {
     void shouldReturnAnExceptionWhenTheLibraryNameIsNull() {
         // Arrange
         User userDouble = createMockUser("User1");
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         assertThrows(IllegalArgumentException.class,
-                () -> libraryRepository.createAndAdd(null, userDouble));
+                () -> libraryRepo.createAndAdd(null, userDouble));
     }
 
     @Test
     void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty() {
         // Arrange
         User userDouble = createMockUser("User1");
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepositoryMem = new LibraryRepositoryMem(libraryFactoryDouble);
 
         assertThrows(IllegalArgumentException.class,
-                () -> libraryRepository.createAndAdd("", userDouble));
+                () -> libraryRepositoryMem.createAndAdd("", userDouble));
     }
 
     @Test
     void shouldReturnAnExceptionWhenTheUserIsNull() {
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         assertThrows(IllegalArgumentException.class,
-                () -> libraryRepository.createAndAdd("mylib", null));
+                () -> libraryRepo.createAndAdd("mylib", null));
     }
 
     @Test
@@ -138,14 +139,14 @@ class LibraryRepositoryTest {
 
         User userDouble = createMockUser(username);
         LibraryFactory factoryDouble = createLibraryFactory(libraryName, userDouble);
-        LibraryRepository libraryRepository = new LibraryRepository(factoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(factoryDouble);
 
         // ← first call populates the repo
-        libraryRepository.createAndAdd(libraryName, userDouble);
+        libraryRepo.createAndAdd(libraryName, userDouble);
 
         // Act & Assert — second call should throw because user already has a library
         assertThrows(InstanceAlreadyExistsException.class,
-                () -> libraryRepository.createAndAdd(libraryName, userDouble));
+                () -> libraryRepo.createAndAdd(libraryName, userDouble));
     }
 
 
@@ -159,13 +160,13 @@ class LibraryRepositoryTest {
 
         User userDouble = createMockUser(username);
         LibraryFactory factoryDouble = createLibraryFactory(libraryName, userDouble);
-        LibraryRepository libraryRepository = new LibraryRepository(factoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(factoryDouble);
 
         // ← actually add the library first
-        libraryRepository.createAndAdd(libraryName, userDouble);
+        libraryRepo.createAndAdd(libraryName, userDouble);
 
         // Act
-        boolean result = libraryRepository.verifyIfUserHasALibrary(userDouble);
+        boolean result = libraryRepo.verifyIfUserHasALibrary(userDouble);
 
         // Assert
         assertTrue(result);
@@ -175,13 +176,23 @@ class LibraryRepositoryTest {
     void returnFalseWhenUserDoesNotHaveALibrary() {
         // Arrange
         User userDouble = createMockUser("User1");
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         // Act
-        boolean result = libraryRepository.verifyIfUserHasALibrary(userDouble);
+        boolean result = libraryRepo.verifyIfUserHasALibrary(userDouble);
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void verifyIfUserHasALibrary_shouldThrowException_whenUserIsNull() {
+        //Arrange
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
+
+        //Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> libraryRepo.getLibraryOfUser(null));
     }
 
 
@@ -204,14 +215,14 @@ class LibraryRepositoryTest {
 
         // ← stub factory to return our library mock
         when(libraryFactoryDouble.create(libraryName, userDouble)).thenReturn(libraryDouble);
-        LibraryRepository libraryRepository = new LibraryRepository(libraryFactoryDouble);
+        ILibraryRepository libraryRepo = new LibraryRepositoryMem(libraryFactoryDouble);
 
         // ← actually populate the repo
-        libraryRepository.createAndAdd(libraryName, userDouble);
+        libraryRepo.createAndAdd(libraryName, userDouble);
 
         // Act
         List<PublicationSample> realPublications =
-                libraryRepository.getAllPublicationsFromUserLibrary(username);
+                libraryRepo.getAllPublicationsFromUserLibrary(username);
 
         // Assert
         assertEquals(expectedPublications, realPublications);

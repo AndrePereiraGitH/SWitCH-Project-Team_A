@@ -3,7 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 
 import TOPSECRET.dto.PublicationDetailsDTO_US012;
-import TOPSECRET.repository.LibraryRepository;
+import TOPSECRET.repository.ILibraryRepository;
+
 
 
 import javax.management.InstanceNotFoundException;
@@ -17,18 +18,18 @@ import java.util.List;
  * </p>
  *
  * @see PublicationDetailsDTO_US012
- * @see LibraryRepository
+ *
  */
 public class US012GetListOfPublicationsInLibraryController {
 
-    private final LibraryRepository _libraryRepo;
+    private final ILibraryRepository _libraryRepo;
 
     /**
      * Constructs a new controller with the specified library repository.
      *
      * @param libraryRepo the repository for accessing library data
      */
-    public US012GetListOfPublicationsInLibraryController(LibraryRepository libraryRepo) {
+    public US012GetListOfPublicationsInLibraryController(ILibraryRepository libraryRepo) {
         this._libraryRepo = libraryRepo;
     }
 
