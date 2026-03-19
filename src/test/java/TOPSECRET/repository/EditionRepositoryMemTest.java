@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link EditionRepository} using Mockito mocks for all external dependencies.
+ * Unit tests for {@link EditionRepositoryMem} using Mockito mocks for all external dependencies.
  * <p>
  * Collaborators such as {@link EditionFactory}, {@link Edition},
  * {@link PhysicalAttributes}, {@link Publisher}, and {@link PublicationType}
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
  *     <li>Protection of the repository's internal state through unmodifiable collections.</li>
  * </ul>
  */
-class EditionRepositoryTest {
+class EditionRepositoryMemTest {
 
     // ─────────────────────────────────────────────────────────────
     // Helpers
@@ -46,12 +46,12 @@ class EditionRepositoryTest {
     @Test
     void shouldThrowWhenEditionFactoryIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new EditionRepository(null));
+                new EditionRepositoryMem(null));
     }
 
     @Test
     void shouldCreateRepositoryWhenEditionFactoryIsValid() {
-        new EditionRepository(editionFactoryDouble);
+        new EditionRepositoryMem(editionFactoryDouble);
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ class EditionRepositoryTest {
         Edition edition = mock(Edition.class);
         when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
                 .thenReturn(edition);
-        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
         List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
@@ -83,7 +83,7 @@ class EditionRepositoryTest {
                 .thenReturn(edition1);
         when(editionFactoryDouble.create("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1)))
                 .thenReturn(edition2);
-        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
         repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
@@ -101,7 +101,7 @@ class EditionRepositoryTest {
         Edition edition = mock(Edition.class);
         when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
                 .thenReturn(edition);
-        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
         repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
 
         // Act & Assert
@@ -109,7 +109,7 @@ class EditionRepositoryTest {
                 repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)));
     }
     /**
-     * Verifies that the list returned by {@link EditionRepository#createAndAddEdition}
+     * Verifies that the list returned by {@link EditionRepositoryMem#createAndAddEdition}
      * is unmodifiable. This ensures that external callers cannot change the internal
      * state of the repository by adding or removing elements from the returned list.
      * <p>
@@ -121,7 +121,7 @@ class EditionRepositoryTest {
         Edition edition = mock(Edition.class);
         when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
                 .thenReturn(edition);
-        EditionRepository repository = new EditionRepository(editionFactoryDouble);
+        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
         List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
