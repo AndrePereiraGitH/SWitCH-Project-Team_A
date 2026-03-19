@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Country;
-import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.AuthorRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test;
  *
  * <p>This test class verifies the behaviour of {@link US005ToRegisterAuthorController},
  * ensuring that it correctly validates its constructor dependency and delegates
- * author registration to the {@link AuthorRepository}.
+ * author registration to the {@link AuthorRepositoryMem}.
  *
- * <p><b>Test double strategy:</b> {@link AuthorRepository} is replaced with a
+ * <p><b>Test double strategy:</b> {@link AuthorRepositoryMem} is replaced with a
  * Mockito mock created via {@code mock(AuthorRepository.class)}. This isolates
  * the controller from the persistence layer and allows verification of the
  * interaction between the controller and the repository.
@@ -24,15 +24,15 @@ import org.junit.jupiter.api.Test;
  * <p><b>What is tested:</b>
  * <ul>
  *   <li>Constructor validation — an {@link IllegalArgumentException} is thrown
- *       when the {@link AuthorRepository} dependency is {@code null}</li>
+ *       when the {@link AuthorRepositoryMem} dependency is {@code null}</li>
  *   <li>Delegation behaviour — {@link US005ToRegisterAuthorController#register(String, Country, java.time.LocalDate, String)}
- *       calls {@link AuthorRepository#createAndAddAuthor(String, Country, java.time.LocalDate, String)}
+ *       calls {@link AuthorRepositoryMem#createAndAddAuthor(String, Country, java.time.LocalDate, String)}
  *       with the same arguments</li>
  *   <li>The controller returns the same {@link Author} instance produced by the repository</li>
  * </ul>
  *
  * <p><b>What is NOT tested here:</b> domain validation rules or persistence
- * behaviour implemented inside {@link AuthorRepository} or {@link Author}.
+ * behaviour implemented inside {@link AuthorRepositoryMem} or {@link Author}.
  * Those responsibilities are covered by their respective unit tests.
  */
 class US005ToRegisterAuthorControllerTest {
@@ -54,8 +54,8 @@ class US005ToRegisterAuthorControllerTest {
     void shouldDelegateToRepository_andReturnRepositoryResult() {
 
         // ARRANGE
-        AuthorRepository authorRepository = mock(AuthorRepository.class);
-        US005ToRegisterAuthorController controller = new US005ToRegisterAuthorController(authorRepository);
+        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
+        US005ToRegisterAuthorController controller = new US005ToRegisterAuthorController(authorRepositoryMem);
 
         String name = "John";
         Country country = mock(Country.class);
@@ -64,7 +64,7 @@ class US005ToRegisterAuthorControllerTest {
 
         Author expectedAuthor = mock(Author.class);
 
-        when(authorRepository.createAndAddAuthor(name, country, dateOfBirth, biography))
+        when(authorRepositoryMem.createAndAddAuthor(name, country, dateOfBirth, biography))
                 .thenReturn(expectedAuthor);
 
         // ACT
@@ -73,7 +73,7 @@ class US005ToRegisterAuthorControllerTest {
         // ASSERT
         assertSame(expectedAuthor, result);
 
-        verify(authorRepository, times(1))
+        verify(authorRepositoryMem, times(1))
                 .createAndAddAuthor(name, country, dateOfBirth, biography);
     }
 }

@@ -3,7 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
-import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.AuthorRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,12 +19,12 @@ import static org.mockito.Mockito.when;
  */
 class AuthorDTO_US025DependenciesTest {
 
-    private AuthorRepository authorRepo;
+    private AuthorRepositoryMem authorRepo;
     private AuthorFactory authorFactory = new AuthorFactory();
 
     @BeforeEach
     void setup() {
-        authorRepo = new AuthorRepository(authorFactory);
+        authorRepo = new AuthorRepositoryMem(authorFactory);
     }
 
     @Test

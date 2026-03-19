@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link AuthorRepository}.
+ * Unit tests for {@link AuthorRepositoryMem}.
  *
  * <p>Both collaborators — {@link AuthorFactory} and the backing {@link List} —
  * are mocked, isolating the repository's own logic completely.
@@ -20,13 +20,13 @@ import static org.mockito.Mockito.*;
  * <p><b>What is tested here (repository logic only):</b>
  * <ul>
  *   <li>Constructor — null list, null factory</li>
- *   <li>{@link AuthorRepository#createAndAddAuthor} — delegates to factory,
+ *   <li>{@link AuthorRepositoryMem#createAndAddAuthor} — delegates to factory,
  *       adds result to list, rejects duplicates</li>
- *   <li>{@link AuthorRepository#getAllAuthors} — returns unmodifiable copy</li>
+ *   <li>{@link AuthorRepositoryMem#getAllAuthors} — returns unmodifiable copy</li>
  * </ul>
  *
  */
-class AuthorRepositoryTest {
+class AuthorRepositoryMemTest {
 
     private final AuthorFactory authorFactory = mock(AuthorFactory.class);
     private final Country country = mock(Country.class);
@@ -41,7 +41,7 @@ class AuthorRepositoryTest {
         // Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new AuthorRepository(null)
+                () -> new AuthorRepositoryMem(null)
         );
 
         // Assert
@@ -58,7 +58,7 @@ class AuthorRepositoryTest {
         Author mockAuthor = mock(Author.class);
         when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
-        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+        AuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
 
         // Act
         Author result = authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
@@ -75,7 +75,7 @@ class AuthorRepositoryTest {
         when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
 
-        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+        AuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
         authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
         // Act + Assert
@@ -94,10 +94,10 @@ class AuthorRepositoryTest {
     @Test
     void shouldReturnUnmodifiableList() {
         // Arrange
-        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+        AuthorRepository authorRepositoryMem = new AuthorRepositoryMem(authorFactory);
 
         // Act
-        List<Author> result = authorRepository.getAllAuthors();
+        List<Author> result = authorRepositoryMem.getAllAuthors();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Author.class)));
@@ -106,7 +106,7 @@ class AuthorRepositoryTest {
     @Test
     void shouldReturnDefensiveCopy() {
         // Arrange
-        AuthorRepository authorRepository = new AuthorRepository(authorFactory);
+        AuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
         Author mockAuthor = mock(Author.class);
 
         when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))

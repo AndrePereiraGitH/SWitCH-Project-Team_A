@@ -4,7 +4,7 @@ import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.AuthorRepositoryMem;
 import TOPSECRET.repository.ListingRepository;
 
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for US025 - Get list of items on direct sale of a given author
  * SUT: US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController
- *
  * Repository dependencies are mocked to isolate controller logic.
  */
 class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
@@ -29,12 +28,12 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void shouldReturnAuthorsDTOList() {
 
         // ARRANGE
-        AuthorRepository authorRepository = mock(AuthorRepository.class);
+        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
         ListingRepository listingRepository = mock(ListingRepository.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        authorRepository,
+                        authorRepositoryMem,
                         listingRepository
                 );
 
@@ -50,7 +49,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         when(author1.getProfile()).thenReturn(profile1);
         when(author2.getProfile()).thenReturn(profile2);
 
-        when(authorRepository.getAllAuthors())
+        when(authorRepositoryMem.getAllAuthors())
                 .thenReturn(List.of(author1, author2));
 
         // ACT
@@ -68,12 +67,12 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void shouldReturnPublicationSamplesForAuthorWithDirectSales() {
 
         // ARRANGE
-        AuthorRepository authorRepository = mock(AuthorRepository.class);
+        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
         ListingRepository listingRepository = mock(ListingRepository.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        authorRepository,
+                        authorRepositoryMem,
                         listingRepository
                 );
 
@@ -101,12 +100,12 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void shouldReturnEmptyListForAuthorWithoutDirectSales() {
 
         // ARRANGE
-        AuthorRepository authorRepository = mock(AuthorRepository.class);
+        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
         ListingRepository listingRepository = mock(ListingRepository.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        authorRepository,
+                        authorRepositoryMem,
                         listingRepository
                 );
 
@@ -133,7 +132,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         // ARRANGE
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        mock(AuthorRepository.class),
+                        mock(AuthorRepositoryMem.class),
                         mock(ListingRepository.class)
                 );
 
@@ -170,7 +169,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        mock(AuthorRepository.class),
+                        mock(AuthorRepositoryMem.class),
                         null
                 )
         );

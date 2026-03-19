@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.AuthorRepositoryMem;
 import TOPSECRET.repository.ListingRepository;
 
 import java.util.List;
@@ -11,26 +11,25 @@ import java.util.List;
  * Controller responsible for providing:
  * 1. A list of all authors.
  * 2. A list of items on direct sale of a specific author.
- *
  * The controller only orchestrates repository calls and delegates
  * DTO conversion to the DTO classes.
  */
 public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
-    private final AuthorRepository authorRepository;
+    private final AuthorRepositoryMem authorRepositoryMem;
     private final ListingRepository listingRepository;
 
     public US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-            AuthorRepository authorRepository,
+            AuthorRepositoryMem authorRepositoryMem,
             ListingRepository listingRepository) {
 
-        if (authorRepository == null)
+        if (authorRepositoryMem == null)
             throw new IllegalArgumentException("AuthorRepository cannot be null");
 
         if (listingRepository == null)
             throw new IllegalArgumentException("ListingRepository cannot be null");
 
-        this.authorRepository = authorRepository;
+        this.authorRepositoryMem = authorRepositoryMem;
         this.listingRepository = listingRepository;
     }
 
@@ -40,7 +39,7 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      * @return list of AuthorDTO_US025 representing all authors
      */
     public List<AuthorDTO_US025> getAllAuthors() {
-        return AuthorDTO_US025.fromAuthors(authorRepository.getAllAuthors());
+        return AuthorDTO_US025.fromAuthors(authorRepositoryMem.getAllAuthors());
     }
 
     /**

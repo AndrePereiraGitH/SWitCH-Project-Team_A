@@ -45,7 +45,6 @@ import org.mockito.MockedConstruction;
 
 class AuthorFactoryTest {
 
-    private final AuthorFactory factory = new AuthorFactory();
     private final Country country = mock(Country.class);
     private final Profile profile = mock(Profile.class);
 
@@ -70,10 +69,11 @@ class AuthorFactoryTest {
     void createShouldCallAuthorConstructorOnce() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
 
             // ACT
-            factory.create(expectedName, country, dob, expectedBio);
+            authorFActory.create(expectedName, country, dob, expectedBio);
 
             // ASSERT
             assertEquals(1, mocked.constructed().size());
@@ -84,6 +84,8 @@ class AuthorFactoryTest {
     void createShouldTrimName() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(profile.getName()).thenReturn(expectedName);
@@ -92,7 +94,7 @@ class AuthorFactoryTest {
                      })) {
 
             // ACT
-            Author author = factory.create(rawName, country, dob, expectedBio);
+            Author author = authorFActory.create(rawName, country, dob, expectedBio);
 
             // ASSERT
             assertEquals(expectedName, author.getProfile().getName());
@@ -103,11 +105,12 @@ class AuthorFactoryTest {
     void createShouldForwardNullNameUnchanged() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
 
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
 
             // ACT
-            factory.create(null, country, dob, expectedBio);
+            authorFActory.create(null, country, dob, expectedBio);
 
             // ASSERT
             assertEquals(1, mocked.constructed().size());
@@ -118,13 +121,15 @@ class AuthorFactoryTest {
     void createShouldTrimBiography() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(expectedBio);
                      })) {
 
             // ACT
-            Author author = factory.create(expectedName, country, dob, rawBio);
+            Author author = authorFActory.create(expectedName, country, dob, rawBio);
 
             // ASSERT
             assertEquals(expectedBio, author.getBiography());
@@ -135,6 +140,7 @@ class AuthorFactoryTest {
     void createShouldForwardNullBiographyUnchanged() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
 
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
@@ -142,7 +148,7 @@ class AuthorFactoryTest {
                      })) {
 
             // ACT
-            Author author = factory.create(expectedName, country, dob, null);
+            Author author = authorFActory.create(expectedName, country, dob, null);
 
             // ASSERT
             assertNull(author.getBiography());
@@ -155,6 +161,7 @@ class AuthorFactoryTest {
         // ARRANGE
         final Country expectedCountry = country;
         final LocalDate expectedDob = dob;
+        AuthorFactory authorFActory = new AuthorFactory();
 
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
@@ -167,7 +174,7 @@ class AuthorFactoryTest {
                      })) {
 
             // ACT
-            Author author = factory.create(expectedName, expectedCountry, expectedDob, expectedBio);
+            Author author = authorFActory.create(expectedName, expectedCountry, expectedDob, expectedBio);
 
             // ASSERT
             assertSame(expectedCountry, author.getProfile().getCountry());
@@ -183,10 +190,12 @@ class AuthorFactoryTest {
     void createAuthorWithExistingProfile_shouldCallConstructorOnce() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
 
             // ACT
-            factory.createWithExistingProfile(profile, expectedBio);
+            authorFActory.createWithExistingProfile(profile, expectedBio);
 
             // ASSERT
             assertEquals(1, mocked.constructed().size());
@@ -197,6 +206,8 @@ class AuthorFactoryTest {
     void createWithExistingProfile_shouldTrimBiography() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(expectedBio);
@@ -204,7 +215,7 @@ class AuthorFactoryTest {
                      })) {
 
             // ACT
-            Author author = factory.createWithExistingProfile(profile, rawBio);
+            Author author = authorFActory.createWithExistingProfile(profile, rawBio);
 
             // ASSERT
             assertSame(profile, author.getProfile());
@@ -215,6 +226,8 @@ class AuthorFactoryTest {
     void createWithExistingProfile_shouldForwardNullBiography() {
 
         // ARRANGE
+        AuthorFactory authorFActory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(null);
@@ -222,7 +235,7 @@ class AuthorFactoryTest {
                      })) {
 
             // ACT
-            Author author = factory.createWithExistingProfile(profile, null);
+            Author author = authorFActory.createWithExistingProfile(profile, null);
 
             // ASSERT
             assertSame(profile, author.getProfile());
