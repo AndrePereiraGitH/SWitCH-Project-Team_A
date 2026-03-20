@@ -66,7 +66,7 @@ public class LibraryRepositoryMem implements ILibraryRepository {
     @Override
     public Library getLibraryOfUser(String username) throws InstanceNotFoundException {
         if (username == null) {
-            throw new IllegalArgumentException("Username cannot be null");
+            throw new NullPointerException("Username cannot be null");
         }
         if (username.isEmpty()) {
             throw new IllegalArgumentException("Username cannot be empty");
