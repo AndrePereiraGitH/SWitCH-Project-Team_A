@@ -15,12 +15,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link AuctionRepository#getListOfItemsOnAuctionByGivenPublication(String)}.
+ * Unit tests for {@link AuctionRepositoryMem#getListOfItemsOnAuctionByGivenPublication(String)}.
  *
  * <p>All dependencies are replaced with Mockito doubles to isolate the
  * repository logic from domain construction and persistence concerns.</p>
  */
-class AuctionRepositoryTest {
+class AuctionRepositoryMemTest {
 
     private Author author1;
     private Author author2;
@@ -52,7 +52,7 @@ class AuctionRepositoryTest {
     @Test
     void getAllAuctions_shouldReturn_ListOfAllAuctionsInRepo() throws InstanceAlreadyExistsException {
         //Arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         //Act
         List<Auction> result = auctionRepository.getAllAuctions();
@@ -68,7 +68,7 @@ class AuctionRepositoryTest {
         Price buyOutPrice = mock(Price.class);
         LocalDateTime initial = LocalDateTime.now();
         LocalDateTime end = initial.plusDays(1);
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         when(auctionFactory.create(listing, initial, end, buyOutPrice)).thenReturn(auction1);
 
@@ -84,7 +84,7 @@ class AuctionRepositoryTest {
         // arrange
         Listing listing = mock(Listing.class);
         Price buyOut = mock(Price.class);
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         LocalDateTime initial = LocalDateTime.now();
         LocalDateTime end = initial.plusDays(4);
@@ -122,7 +122,7 @@ class AuctionRepositoryTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_returnAList() throws InstanceAlreadyExistsException {
         // Arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         // Act
         List<PublicationSample> listOfItemsOnAuction =
@@ -145,7 +145,7 @@ class AuctionRepositoryTest {
     @Test
     void shouldReturnAnEmptyListWhenAuctionDoesNotHaveThePublication() throws InstanceAlreadyExistsException {
         // Arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         // Act
         List<PublicationSample> listOfItemsOnAuction =
@@ -159,7 +159,7 @@ class AuctionRepositoryTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsNull() throws InstanceAlreadyExistsException {
         // Arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
 
         // Act & Assert
@@ -171,7 +171,7 @@ class AuctionRepositoryTest {
     @Test
     void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsEmpty() throws InstanceAlreadyExistsException {
         // Arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -187,7 +187,7 @@ class AuctionRepositoryTest {
 
     @Test
     void getListOfItemsOnAuctionGivenAuthor_shouldThrows_ifAuthorDTOisNULL() throws InstanceAlreadyExistsException {
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         IllegalArgumentException exception =  assertThrows(IllegalArgumentException.class, () -> auctionRepository.getListOfItemsOnAuctionGivenAuthor(null));
 
@@ -197,7 +197,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_shouldThrows_ifAuthorDTOisBlank() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("    ");
 
@@ -210,7 +210,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_noMatchesAuctions_returnsEmpty() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Mary");
 
@@ -225,7 +225,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Adolf");
 
@@ -239,7 +239,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction_ensuresTitle() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Adolf");
 
@@ -256,7 +256,7 @@ class AuctionRepositoryTest {
     @Test
     void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction_ensuresSameAuction() throws InstanceAlreadyExistsException {
         // arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
         AuthorDTO_US026 authorDtoDouble = mock(AuthorDTO_US026.class);
         when(authorDtoDouble.name()).thenReturn("Adolf");
 
@@ -271,7 +271,7 @@ class AuctionRepositoryTest {
 
     @Test
     void getListOfItemsOnAuctionGivenGenreShouldThrowExceptionWhenGenreIsNull() throws InstanceAlreadyExistsException {
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -283,7 +283,7 @@ class AuctionRepositoryTest {
     void getListOfItemsOnAuctionGivenGenreNoMatchesReturnsEmptyList() throws InstanceAlreadyExistsException {
 
         // Arrange
-        AuctionRepository auctionRepository = instantiateAuctionRepository();
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
         Genre genre = mock(Genre.class);
 
         // Act
@@ -304,7 +304,7 @@ class AuctionRepositoryTest {
         PublicationSample sample = createMockPublicationSampleWithGenre(fantasy);
         Auction auction = createMockAuction(List.of(sample));
 
-        AuctionRepository repo = new AuctionRepository(auctionFactory);
+        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
         when(auctionFactory.create(any(), any(), any(), any())).thenReturn(auction);
         repo.createAndAdd(mock(Listing.class), LocalDateTime.now(), LocalDateTime.now().plusDays(1), mock(Price.class));
 
@@ -328,7 +328,7 @@ class AuctionRepositoryTest {
         Auction auction1 = createMockAuction(List.of(sample1));
         Auction auction2 = createMockAuction(List.of(sample2));
 
-        AuctionRepository repo = new AuctionRepository(auctionFactory);
+        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
         when(auctionFactory.create(any(), any(), any(), any()))
                 .thenReturn(auction1)
                 .thenReturn(auction2);
@@ -350,8 +350,8 @@ class AuctionRepositoryTest {
     // Helper / factory methods
     // -------------------------------------------------------------------------
 
-    private AuctionRepository instantiateAuctionRepository() throws InstanceAlreadyExistsException {
-        AuctionRepository repo = new AuctionRepository(auctionFactory);
+    private AuctionRepositoryMem instantiateAuctionRepository() throws InstanceAlreadyExistsException {
+        AuctionRepositoryMem repo = new AuctionRepositoryMem(auctionFactory);
 
         Listing listingDouble1 = mock(Listing.class);
         Listing listingDouble2 = mock(Listing.class);

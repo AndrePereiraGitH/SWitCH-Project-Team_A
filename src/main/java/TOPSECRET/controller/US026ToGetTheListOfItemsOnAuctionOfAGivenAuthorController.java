@@ -4,7 +4,8 @@ import TOPSECRET.domain.Auction;
 import TOPSECRET.domain.Author;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.repository.AuctionRepository;
+import TOPSECRET.repository.AuctionRepositoryMem;
+import TOPSECRET.repository.AuthorRepository;
 import TOPSECRET.repository.AuthorRepositoryMem;
 
 import java.util.ArrayList;
@@ -17,9 +18,9 @@ import java.util.List;
 public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
     private final AuthorRepositoryMem authorRepositoryMem;
-    private final AuctionRepository auctionRepo;
+    private final AuctionRepositoryMem auctionRepo;
 
-    public US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(AuthorRepositoryMem authorRepositoryMem, AuctionRepository auctionRepo) {
+    public US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(AuthorRepositoryMem authorRepositoryMem, AuctionRepositoryMem auctionRepo) {
         this.authorRepositoryMem = authorRepositoryMem;
         this.auctionRepo = auctionRepo;
     }

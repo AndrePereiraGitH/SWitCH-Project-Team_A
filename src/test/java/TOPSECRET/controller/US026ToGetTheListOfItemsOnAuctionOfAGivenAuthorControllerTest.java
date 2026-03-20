@@ -3,8 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.AuthorRepositoryMem;
+import TOPSECRET.repository.AuctionRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,15 +17,16 @@ import static org.mockito.Mockito.when;
 
 class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
+    AuctionRepositoryMem auctionRepository;
     AuthorRepositoryMem authorRepositoryMem;
-    AuctionRepository auctionRepository;
 
     US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller;
 
     @BeforeEach
     void setup() {
         authorRepositoryMem = mock(AuthorRepositoryMem.class);
-        auctionRepository = mock(AuctionRepository.class);
+        controller = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepositoryMem, auctionRepository);
+        auctionRepository = mock(AuctionRepositoryMem.class);
         controller = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepositoryMem, auctionRepository);
     }
 

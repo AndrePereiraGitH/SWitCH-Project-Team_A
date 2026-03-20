@@ -5,8 +5,8 @@ import TOPSECRET.domain.Genre;
 
 import TOPSECRET.dto.AuctionDTO_US022;
 import TOPSECRET.dto.GenreDTO_US022;
-import TOPSECRET.repository.AuctionRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.repository.AuctionRepositoryMem;
 
 import java.util.List;
 /**
@@ -22,8 +22,8 @@ import java.util.List;
 public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
 
     // Repository responsible for accessing Auction domain objects
-    private final AuctionRepository auctionRepository;
     private final GenreRepositoryMem genreRepository;
+    private final AuctionRepositoryMem auctionRepository;
 
     /**
      * Constructor injection of dependencies.
@@ -31,7 +31,7 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
      * @param auctionRepository repository that stores auctions
      */
     public US022ToGetListOfItemsOnAuctionOfGivenGenreController(
-            AuctionRepository auctionRepository, GenreRepositoryMem genreRepository) {
+            AuctionRepositoryMem auctionRepository, GenreRepositoryMem genreRepository) {
 
         if (auctionRepository == null) {
             throw new IllegalArgumentException("AuctionRepository cannot be null");

@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
-import TOPSECRET.repository.AuctionRepository;
+import TOPSECRET.repository.AuctionRepositoryMem;
 import TOPSECRET.repository.ILibraryRepository;
 import TOPSECRET.repository.ListingRepository;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
@@ -35,9 +35,9 @@ import static org.mockito.Mockito.*;
  */
 class US016ToPutPublicationInAuctionControllerTest {
 
-    private ILibraryRepository libraryRepoDouble;
     private ListingRepository listingRepoDouble;
-    private AuctionRepository auctionRepoDouble;
+    private AuctionRepositoryMem auctionRepoDouble;
+    private ILibraryRepository libraryRepoDouble;
     private PublicationSampleRepositoryMem publicationSampleRepoDouble;
     private US016ToPutPublicationInAuctionController controller;
 
@@ -45,7 +45,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     void setUp() {
         libraryRepoDouble = mock(ILibraryRepository.class);
         listingRepoDouble = mock(ListingRepository.class);
-        auctionRepoDouble = mock(AuctionRepository.class);
+        auctionRepoDouble = mock(AuctionRepositoryMem.class);
         publicationSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
         controller = new US016ToPutPublicationInAuctionController(libraryRepoDouble, listingRepoDouble, auctionRepoDouble, publicationSampleRepoDouble);    }
 

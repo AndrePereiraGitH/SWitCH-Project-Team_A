@@ -5,18 +5,17 @@ import TOPSECRET.domain.AuctionFactory;
 import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuctionRepository {
+public class AuctionRepositoryMem implements IAuctionRepository{
 
     private static List<Auction> _auctionsList;
     private final AuctionFactory _factoryAuction;
 
 
-    public AuctionRepository(AuctionFactory auctionFactory) {
+    public AuctionRepositoryMem(AuctionFactory auctionFactory) {
         _factoryAuction = auctionFactory;
         _auctionsList = new ArrayList<>();
     }
