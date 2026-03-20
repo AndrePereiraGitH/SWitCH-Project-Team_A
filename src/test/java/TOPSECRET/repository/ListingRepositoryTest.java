@@ -1,13 +1,11 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,7 +67,7 @@ class ListingRepositoryTest {
     void shouldThrowExceptionWhenListingAlreadyExists() throws Exception {
         // arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         String listingTitle = "Title";
         List<PublicationSample> items = List.of(pub1);
@@ -95,7 +93,7 @@ class ListingRepositoryTest {
 
         // arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         String listingTitle = "Title";
         List<PublicationSample> items = List.of(pub1);
@@ -134,7 +132,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1)
         )).thenReturn(listing1Double);
@@ -163,7 +161,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title3", List.of(pub3), SaleType.AUCTION, price3, "description3",
                 List.of(pic3))).thenReturn(listing3Double);
@@ -183,7 +181,7 @@ class ListingRepositoryTest {
     void findAllDirectSaleListings_ShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         // Act
         List<Listing> result = repo.findAllDirectSaleListings();
@@ -197,7 +195,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1",
                 List.of(pic1))).thenReturn(listing1Double);
@@ -225,7 +223,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1", List.of(pic1)
         )).thenReturn(listing1Double);
@@ -253,7 +251,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1, "description1",
                 List.of(pic1))).thenReturn(listing1Double);
@@ -273,7 +271,7 @@ class ListingRepositoryTest {
     void findAllAuctionListings_ShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         // Act
         List<Listing> result = repo.findAllAuctionListings();
@@ -287,7 +285,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title3", List.of(pub3), SaleType.AUCTION, price3, "description3",
                 List.of(pic3))).thenReturn(listing3Double);
@@ -313,7 +311,7 @@ class ListingRepositoryTest {
       Genre genreDouble = null;
 
         // Arrange
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -329,7 +327,7 @@ class ListingRepositoryTest {
         Genre genreDouble = mock(Genre.class);
 
         // Arrange
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         // Act
         List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenGenre(genreDouble);
@@ -351,7 +349,7 @@ class ListingRepositoryTest {
         Genre genreDouble = mock(Genre.class);
 
         // Arrange
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         Listing listingDouble = mock(Listing.class);
         PublicationSample sampleDouble = mock(PublicationSample.class);
@@ -385,7 +383,7 @@ class ListingRepositoryTest {
         Genre genreDouble = mock(Genre.class);
 
         // Arrange
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         Listing listingDouble = mock(Listing.class);
         PublicationSample sampleDouble = mock(PublicationSample.class);
@@ -420,7 +418,7 @@ class ListingRepositoryTest {
 
 
         // Arrange
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         Listing listing1Double = mock(Listing.class);
         Listing listing2Double = mock(Listing.class);
@@ -463,7 +461,7 @@ class ListingRepositoryTest {
         Genre genreDouble = mock(Genre.class);
 
         // Arrange
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         Listing listingDouble = mock(Listing.class);
         PublicationSample sampleDouble = mock(PublicationSample.class);
@@ -490,7 +488,7 @@ class ListingRepositoryTest {
     void getListOfItemsOnDirectSaleOfAGivenAuthor_ShouldFilterCorrectly() throws Exception {
 
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         Author targetAuthor = mock(Author.class);
         PublicationSample sampleWithAuthor = mock(PublicationSample.class);
@@ -522,7 +520,7 @@ class ListingRepositoryTest {
         repo.createAndAdd("listing1", List.of(sampleWithAuthor), SaleType.DIRECT_SALE, price1, "desc", List.of(pic1));
         repo.createAndAdd("listing2", List.of(sampleWithAuthor), SaleType.AUCTION, price2, "desc", List.of(pic2));
 
-        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleofAGivenAuthor(targetAuthor);
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenAuthor(targetAuthor);
 
         assertEquals(1, result.size());
         assertTrue(result.contains(sampleWithAuthor));
@@ -532,10 +530,10 @@ class ListingRepositoryTest {
     @Test
     void getListOfItemsOnDirectSaleofAGivenAuthor_ShouldThrowOnNullAuthor() {
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         assertThrows(IllegalArgumentException.class, () ->
-                repo.getListOfItemsOnDirectSaleofAGivenAuthor(null)
+                repo.getListOfItemsOnDirectSaleOfAGivenAuthor(null)
         );
     }
 
@@ -549,7 +547,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         Author targetAuthor = mock(Author.class);
         PublicationSample sampleWithAuthor = mock(PublicationSample.class);
@@ -566,7 +564,7 @@ class ListingRepositoryTest {
         repo.getAllListings().add(listingAuction);
 
         // Act
-        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleofAGivenAuthor(targetAuthor);
+        List<PublicationSample> result = repo.getListOfItemsOnDirectSaleOfAGivenAuthor(targetAuthor);
 
         // Assert
         assertTrue(result.isEmpty(), "Items in non-DIRECT_SALE listings should be ignored");
@@ -583,7 +581,7 @@ class ListingRepositoryTest {
 
         // Arrange
         ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepository repo = new ListingRepository(listingFactoryDouble);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         when(listingFactoryDouble.create("title1", List.of(pub1), SaleType.DIRECT_SALE, price1,
                 "description1", List.of(pic1))).thenReturn(listing1Double);

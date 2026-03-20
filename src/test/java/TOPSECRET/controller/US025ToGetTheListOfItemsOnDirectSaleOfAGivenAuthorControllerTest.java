@@ -5,7 +5,7 @@ import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.AuthorDTO_US025;
 import TOPSECRET.repository.AuthorRepositoryMem;
-import TOPSECRET.repository.ListingRepository;
+import TOPSECRET.repository.ListingRepositoryMem;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for US025 - Get list of items on direct sale of a given author
  * SUT: US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController
+ *
  * Repository dependencies are mocked to isolate controller logic.
  */
 class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
@@ -29,7 +30,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         // ARRANGE
         AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
-        ListingRepository listingRepository = mock(ListingRepository.class);
+        ListingRepositoryMem listingRepository = mock(ListingRepositoryMem.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
@@ -68,7 +69,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         // ARRANGE
         AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
-        ListingRepository listingRepository = mock(ListingRepository.class);
+        ListingRepositoryMem listingRepository = mock(ListingRepositoryMem.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
@@ -81,7 +82,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         PublicationSample sample1 = mock(PublicationSample.class);
         PublicationSample sample2 = mock(PublicationSample.class);
 
-        when(listingRepository.getListOfItemsOnDirectSaleofAGivenAuthor(author))
+        when(listingRepository.getListOfItemsOnDirectSaleOfAGivenAuthor(author))
                 .thenReturn(List.of(sample1, sample2));
 
         // ACT
@@ -101,7 +102,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         // ARRANGE
         AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
-        ListingRepository listingRepository = mock(ListingRepository.class);
+        ListingRepositoryMem listingRepository = mock(ListingRepositoryMem.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
@@ -111,7 +112,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         Author author = mock(Author.class);
 
-        when(listingRepository.getListOfItemsOnDirectSaleofAGivenAuthor(author))
+        when(listingRepository.getListOfItemsOnDirectSaleOfAGivenAuthor(author))
                 .thenReturn(List.of());
 
         // ACT
@@ -133,7 +134,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         mock(AuthorRepositoryMem.class),
-                        mock(ListingRepository.class)
+                        mock(ListingRepositoryMem.class)
                 );
 
         // ACT + ASSERT
@@ -154,7 +155,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         null,
-                        mock(ListingRepository.class)
+                        mock(ListingRepositoryMem.class)
                 )
         );
     }

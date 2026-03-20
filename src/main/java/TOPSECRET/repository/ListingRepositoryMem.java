@@ -7,12 +7,12 @@ import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListingRepository {
+public class ListingRepositoryMem implements IListingRepository{
 
     private List<Listing> listings;
     private ListingFactory listingFactory;
 
-    public ListingRepository(ListingFactory listingFactory) {
+    public ListingRepositoryMem(ListingFactory listingFactory) {
         this.listings = new ArrayList<>();
         this.listingFactory = listingFactory;
     }
@@ -67,7 +67,7 @@ public class ListingRepository {
         return listOfPublicationSample;
     }
 
-    public List<PublicationSample> getListOfItemsOnDirectSaleofAGivenAuthor(Author author) {
+    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
 
         if (author == null) {
             throw new IllegalArgumentException("Author cannot be null");

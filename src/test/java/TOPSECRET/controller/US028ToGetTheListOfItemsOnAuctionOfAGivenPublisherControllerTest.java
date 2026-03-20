@@ -6,7 +6,7 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
-import TOPSECRET.repository.ListingRepository;
+import TOPSECRET.repository.ListingRepositoryMem;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import TOPSECRET.repository.PublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     // ===============================================
 
     PublisherRepository publisherRepoDouble;
-    ListingRepository listingRepoDouble;
+    ListingRepositoryMem listingRepoDouble;
     PublicationSampleRepositoryMem pubSampleRepoDouble;
 
     US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller;
@@ -36,7 +36,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     @BeforeEach
     void setUp() {
         publisherRepoDouble = mock(PublisherRepository.class);
-        listingRepoDouble = mock(ListingRepository.class);
+        listingRepoDouble = mock(ListingRepositoryMem.class);
         pubSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
     }
 

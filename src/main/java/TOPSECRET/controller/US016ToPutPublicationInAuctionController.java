@@ -20,11 +20,11 @@ import java.util.*;
 public class US016ToPutPublicationInAuctionController {
 
     private final ILibraryRepository libraryRepo;
-    private final ListingRepository listingRepository;
+    private final ListingRepositoryMem listingRepository;
     private final IAuctionRepository auctionRepository;
     private final PublicationSampleRepositoryMem publicationSampleRepositoryMem;
 
-    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, ListingRepository listingRepository, IAuctionRepository auctionRepository, PublicationSampleRepositoryMem publicationSampleRepositoryMem) {
+    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, ListingRepositoryMem listingRepository, IAuctionRepository auctionRepository, PublicationSampleRepositoryMem publicationSampleRepositoryMem) {
 
         this.libraryRepo = libraryRepo;
         this.listingRepository = listingRepository;
