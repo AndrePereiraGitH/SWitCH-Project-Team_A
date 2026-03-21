@@ -1,0 +1,69 @@
+name: Repository Interface Implementation
+description: Implement and test a Repository Interface following OOD best practices
+title: "[REPO] Implement [RepositoryName] Repository Interface"
+labels: ["sprint4"]
+
+body:
+  - type: input
+    id: repository_name
+    attributes:
+      label: Repository Name
+      description: The name of the repository interface to implement (replaces all [RepositoryName] references)
+      placeholder: "e.g. UserRepository, ProductRepository"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "---"
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Description
+        **Implement the Repository Interface** to abstract and standardize data access operations,
+        following object-oriented design (OOD) best practices and the chosen design pattern.
+
+  - type: markdown
+    attributes:
+      value: "---"
+
+  - type: markdown
+    attributes:
+      value: "## Acceptance Criteria"
+
+  - type: checkboxes
+    id: acceptance_criteria
+    attributes:
+      label: Implementation
+      options:
+        - label: The implementation correctly fulfills the Repository Interface contract
+        - label: All methods delegate data access operations appropriately to the underlying data source
+        - label: The implementation is documented using JavaDoc
+
+  - type: checkboxes
+    id: testing_criteria
+    attributes:
+      label: Testing
+      options:
+        - label: All interface methods are covered by unit tests
+        - label: All edge cases are handled and tested (e.g., null inputs, empty results, duplicate entries)
+        - label: Test coverage is ≥ 95%
+
+  - type: checkboxes
+    id: review_criteria
+    attributes:
+      label: Review
+      options:
+        - label: The code is reviewed and approved by at least one team member
+
+  - type: markdown
+    attributes:
+      value: "---"
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: Additional Notes
+      description: Any extra context, design decisions, or references relevant to this implementation
+      placeholder: "e.g. Follows the pattern used in XRepository, related to issue #42..."
