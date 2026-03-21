@@ -17,17 +17,17 @@ import java.util.List;
  * appropriate exceptions when invalid or duplicate entries are provided.
  * </p>
  */
-public interface PublisherRepository {
+public interface IPublisherRepository {
 
     /**
-     * Creates a new {@link Publisher} for the given data,
+     * Creates a new {@link Publisher} from the given data,
      * stores it in the repository, and returns it.
      *
      * @param name the publisher's name
      * @param vatNumber the publisher's VAT number
      * @param contact the publisher's contact information
      * @return the newly created Publisher
-     * @throws IllegalArgumentException if the created Publisher already exists
+     * @throws IllegalArgumentException if a Publisher with the same VAT number already exists
      */
     Publisher createAndAdd(String name, String vatNumber, Contact contact);
 
@@ -35,20 +35,22 @@ public interface PublisherRepository {
      * Checks whether a given {@link Publisher} already exists in the repository.
      *
      * @param publisher the Publisher to check
-     * @return true if the Publisher already exists, false otherwise
+     * @return {@code true} if the Publisher already exists, {@code false} otherwise
      */
     boolean exists(Publisher publisher);
 
     /**
-     * Adds a {@link Publisher} to the repository, throwing an exception if it already exists.
+     * Returns all {@link Publisher} instances currently stored in the repository.
      *
-     * @param publisher the Publisher instance to be added
-     * @throws IllegalArgumentException if the publisher already exists or is null
+     * @return an unmodifiable list of all Publishers; never {@code null}, but may be empty
      */
-    void add(Publisher publisher);
-
     List<Publisher> getAllPublishers();
 
+    /**
+     * Finds and returns the {@link Publisher} with the given VAT number.
+     *
+     * @param vatNumber the VAT number to search for
+     * @return the Publisher with the matching VAT number, or {@code null} if not found
+     */
     Publisher findByVatNumber(String vatNumber);
 }
-

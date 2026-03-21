@@ -8,24 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Repository responsible for managing {@link Publisher} entities in memory.
+ * In-memory implementation of {@link IPublisherRepository}.
  *
- * <p>This class acts as a collection manager that handles the creation,
- * storage, and retrieval of {@link Publisher} objects.</p>
- *
- * <p>Publishers are uniquely identified by their VAT number.
- * The repository prevents duplicate publishers from being added.</p>
+ * <p>Publishers are stored in an {@link ArrayList} and are uniquely identified
+ * by their VAT number. Duplicate publishers are rejected on insertion.</p>
  */
-public class PublisherRepositoryMem implements PublisherRepository{
+public class PublisherRepositoryMem implements IPublisherRepository {
 
     private List<Publisher> _publishers;
-    private PublisherFactory _publisherFactory;
+    private final PublisherFactory _publisherFactory;
 
     /**
-     * Constructs a new {@code PublisherRepository} with the given factory.
+     * Constructs a new {@code PublisherRepositoryMem} with the given factory.
      * Initializes an empty internal list of publishers.
      *
-     * @param publisherFactory the factory responsible for creating {@link Publisher} instances;
+     * @param publisherFactory the factory used to create {@link Publisher} instances;
      *                         must not be {@code null}
      * @throws IllegalArgumentException if {@code publisherFactory} is {@code null}
      */
@@ -38,35 +35,10 @@ public class PublisherRepositoryMem implements PublisherRepository{
     }
 
     /**
-     * Adds a {@link Publisher} directly to the repository.
-     * <p>
-     * <b>Note:</b> This method is intended for testing purposes only
-     * and should not be used in production code.
-     * </p>
-     *
-     * @param publisher the publisher to add; should not be {@code null}
-     */
-    @Override
-    public void add(Publisher publisher) {
-        _publishers.add(publisher);
-    }
-
-    /**
-     * Creates and adds a new {@link Publisher} to the repository.
-     *
-     * <p>The publisher is created using the {@link PublisherFactory}.
-     * If a publisher with the same identity already isExistent
-     * (based on {@link Publisher#equals(Object)}), the operation is rejected.</p>
-     *
-     * @param name      the publisher's name
-     * @param vatNumber the publisher's VAT number; must be unique within the repository
-     * @param contact   the publisher's contact information
-     * @return the newly created and registered {@link Publisher}
-     * @throws IllegalArgumentException if a publisher with the same identity already isExistent
+     * {@inheritDoc}
      */
     @Override
     public Publisher createAndAdd(String name, String vatNumber, Contact contact) {
-
         Publisher publisher = _publisherFactory.create(name, vatNumber, contact);
 
         if (exists(publisher)) {
@@ -78,21 +50,17 @@ public class PublisherRepositoryMem implements PublisherRepository{
     }
 
     /**
-     * Returns an unmodifiable copy of all publishers stored in the repository,
-     * preventing external modification of the internal list.
-     *
-     * @return an immutable list of all {@link Publisher} instances; never {@code null}
+     * {@inheritDoc}
      */
+    @Override
     public List<Publisher> getAllPublishers() {
         return List.copyOf(_publishers);
     }
 
     /**
-     * Finds a publisher by its VAT number.
-     *
-     * @param vatNumber the VAT number to search for; must not be {@code null}
-     * @return the matching {@link Publisher}, or {@code null} if none is found
+     * {@inheritDoc}
      */
+    @Override
     public Publisher findByVatNumber(String vatNumber) {
         for (Publisher publisher : _publishers) {
             if (publisher.getVatNumber().equals(vatNumber)) {
@@ -103,13 +71,7 @@ public class PublisherRepositoryMem implements PublisherRepository{
     }
 
     /**
-     * Checks whether a given {@link Publisher} already isExistent in the repository.
-     *
-     * <p>Existence is determined using {@link Publisher#equals(Object)},
-     * which is based on the VAT number.</p>
-     *
-     * @param publisher the publisher to check; must not be {@code null}
-     * @return {@code true} if an equal publisher is already present; {@code false} otherwise
+     * {@inheritDoc}
      */
     @Override
     public boolean exists(Publisher publisher) {

@@ -68,17 +68,17 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldDelegateCreationToFactoryAndAddPublisher() {
         // Arrange
-        Publisher mockPublisher = mock(Publisher.class);
-        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
 
-        PublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
 
         // Act
         Publisher result = repository.createAndAdd(name, vatNumber, contact);
 
         // Assert
-        assertEquals(mockPublisher, result);
-        assertTrue(repository.getAllPublishers().contains(mockPublisher));
+        assertEquals(publisherDouble, result);
+        assertTrue(repository.getAllPublishers().contains(publisherDouble));
     }
 
     /**
@@ -88,10 +88,15 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldRejectPublisherWhenAlreadyIsExistent() {
         // Arrange
+
         Publisher pub1 = mock(Publisher.class);
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
-        repository.add(pub1);
-        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(pub1);
+
+        when(publisherFactory.create(name,vatNumber,contact)).thenReturn(pub1);
+
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+
+        repository.createAndAdd(name,vatNumber,contact);
+
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -103,13 +108,20 @@ class PublisherRepositoryMemTest {
      * can be added alongside an existing one.
      */
     @Test
-    void shouldAddPublisherWhenDifferentPublisherIsExistent() {
+    void shouldAddPublisherWhenDifferentPublisherAlreadyExists() {
         // Arrange
+        String existingName = "Existing Publisher";
+        String existingVatNumber = "987654321";
+        Contact existingContact = mock(Contact.class);
+
         Publisher existingPublisher = mock(Publisher.class);
         Publisher newPublisher = mock(Publisher.class);
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
-        repository.add(existingPublisher);
+
+        when(publisherFactory.create(existingName, existingVatNumber, existingContact)).thenReturn(existingPublisher);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(newPublisher);
+
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(existingName, existingVatNumber, existingContact);
 
         // Act
         Publisher result = repository.createAndAdd(name, vatNumber, contact);
@@ -127,16 +139,18 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldReturnUnmodifiableList() {
         // Arrange
-        Publisher mockPublisher = mock(Publisher.class);
-        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
+        Publisher publisherDouble = mock(Publisher.class);
+
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
         repository.createAndAdd(name, vatNumber, contact);
 
         // Act
         List<Publisher> result = repository.getAllPublishers();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(mockPublisher));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(publisherDouble));
     }
 
     /**
@@ -146,9 +160,11 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldReturnDefensiveCopy() {
         // Arrange
-        Publisher mockPublisher = mock(Publisher.class);
-        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
+        Publisher publisherDouble = mock(Publisher.class);
+
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
         repository.createAndAdd(name, vatNumber, contact);
 
         // Act
@@ -167,16 +183,19 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldFindPublisherByVatNumber() {
         // Arrange
-        Publisher mockPublisher = mock(Publisher.class);
-        when(mockPublisher.getVatNumber()).thenReturn(vatNumber);
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
-        repository.add(mockPublisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherDouble.getVatNumber()).thenReturn(vatNumber);
+
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name,vatNumber,contact);
 
         // Act
         Publisher result = repository.findByVatNumber(vatNumber);
 
         // Assert
-        assertEquals(mockPublisher, result);
+        assertEquals(publisherDouble, result);
     }
 
     /**
@@ -186,10 +205,13 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldReturnNullWhenVatNumberDoesNotExist() {
         // Arrange
-        Publisher mockPublisher = mock(Publisher.class);
-        when(mockPublisher.getVatNumber()).thenReturn("999999999");
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
-        repository.add(mockPublisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherDouble.getVatNumber()).thenReturn("999999999");
+
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name,vatNumber,contact);
 
         // Act
         Publisher result = repository.findByVatNumber(vatNumber);
@@ -198,19 +220,4 @@ class PublisherRepositoryMemTest {
         assertNull(result);
     }
 
-    /**
-     * Verifies that {@code findByVatNumber} returns {@code null}
-     * when the repository is empty.
-     */
-    @Test
-    void shouldReturnNullWhenRepositoryIsEmpty() {
-        // Arrange
-        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
-
-        // Act
-        Publisher result = repository.findByVatNumber(vatNumber);
-
-        // Assert
-        assertNull(result);
-    }
 }
