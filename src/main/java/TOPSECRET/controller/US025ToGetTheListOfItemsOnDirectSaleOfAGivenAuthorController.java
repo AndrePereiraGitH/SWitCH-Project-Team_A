@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuthorDTO_US025;
 import TOPSECRET.repository.AuthorRepositoryMem;
-import TOPSECRET.repository.ListingRepositoryMem;
+import TOPSECRET.repository.IListingRepository;
 
 import java.util.List;
 
@@ -18,11 +18,11 @@ import java.util.List;
 public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
     private final AuthorRepositoryMem authorRepositoryMem;
-    private final ListingRepositoryMem listingRepository;
+    private final IListingRepository listingRepository;
 
     public US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
             AuthorRepositoryMem authorRepositoryMem,
-            ListingRepositoryMem listingRepository) {
+            IListingRepository listingRepository) {
 
         if (authorRepositoryMem == null)
             throw new IllegalArgumentException("AuthorRepository cannot be null");

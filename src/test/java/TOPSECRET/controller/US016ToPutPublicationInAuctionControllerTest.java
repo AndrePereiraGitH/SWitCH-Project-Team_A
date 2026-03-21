@@ -4,10 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
-import TOPSECRET.repository.AuctionRepositoryMem;
-import TOPSECRET.repository.ILibraryRepository;
-import TOPSECRET.repository.ListingRepositoryMem;
-import TOPSECRET.repository.PublicationSampleRepositoryMem;
+import TOPSECRET.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,23 +32,24 @@ import static org.mockito.Mockito.*;
  */
 class US016ToPutPublicationInAuctionControllerTest {
 
-    private ListingRepositoryMem listingRepoDouble;
-    private AuctionRepositoryMem auctionRepoDouble;
+    private IListingRepository listingRepoDouble;
+    private IAuctionRepository auctionRepoDouble;
     private ILibraryRepository libraryRepoDouble;
-    private PublicationSampleRepositoryMem publicationSampleRepoDouble;
+    private PublicationSampleRepository publicationSampleRepoDouble;
     private US016ToPutPublicationInAuctionController controller;
 
     @BeforeEach
     void setUp() {
         libraryRepoDouble = mock(ILibraryRepository.class);
-        listingRepoDouble = mock(ListingRepositoryMem.class);
-        auctionRepoDouble = mock(AuctionRepositoryMem.class);
-        publicationSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
-        controller = new US016ToPutPublicationInAuctionController(libraryRepoDouble, listingRepoDouble, auctionRepoDouble, publicationSampleRepoDouble);    }
+        listingRepoDouble = mock(IListingRepository.class);
+        auctionRepoDouble = mock(IAuctionRepository.class);
+        publicationSampleRepoDouble = mock(PublicationSampleRepository.class);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepoDouble, listingRepoDouble, auctionRepoDouble, publicationSampleRepoDouble);
+    }
 
 
     @Test
-    void getAllPublicationsInUserLibrary_shouldThrow_ifUsernameNull() throws InstanceNotFoundException {
+    void getAllPublicationsInUserLibrary_shouldThrow_ifUsernameNull() {
 
         User userDouble = mock(User.class);
         when(userDouble.getUserName()).thenReturn(null);
@@ -121,7 +119,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     }
 
     @Test
-    void createAuctionListing_shouldThrow_ifListOfPublications_isEmpty() throws InstanceAlreadyExistsException {
+    void createAuctionListing_shouldThrow_ifListOfPublications_isEmpty() {
 
         String listingTitle = "Listing Title";
         List<PublicationSampleDTO_US016> publicationDTOs = new ArrayList<>();
