@@ -7,16 +7,36 @@ import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * In-memory implementation of {@link IListingRepository}.
+ * <p>
+ * This repository stores {@link Listing} instances in an internal list and
+ * provides operations for creating, retrieving, and filtering listings.
+ * </p>
+ * <p>
+ * Listings are created through a {@link ListingFactory} and are kept only
+ * during the application's runtime.
+ * </p>
+ */
 public class ListingRepositoryMem implements IListingRepository{
 
     private List<Listing> listings;
     private ListingFactory listingFactory;
 
+    /**
+     * Constructs an in-memory listing repository with the given listing factory.
+     *
+     * @param listingFactory the factory used to create {@link Listing} instances
+     */
     public ListingRepositoryMem(ListingFactory listingFactory) {
         this.listings = new ArrayList<>();
         this.listingFactory = listingFactory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Listing createAndAdd(
             String listingTitle,
             List<PublicationSample> items,
@@ -46,6 +66,10 @@ public class ListingRepositoryMem implements IListingRepository{
     }
 
   // US021
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
 
         if (genre == null) {
@@ -67,6 +91,10 @@ public class ListingRepositoryMem implements IListingRepository{
         return listOfPublicationSample;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
 
         if (author == null) {
@@ -89,32 +117,17 @@ public class ListingRepositoryMem implements IListingRepository{
     }
 
     /**
-     * Returns the complete list of listings stored in the repository.
-     *
-     * <p>The returned list reflects the repository's current internal state and
-     * contains all listings that have been previously added. Modifications to the
-     * returned list will affect the repository's internal collection, as no
-     * defensive copy is created.</p>
-     *
-     * @return the internal list of all stored listings; never {@code null}
+     * {@inheritDoc}
      */
-
+    @Override
     public List<Listing> getAllListings() {
         return listings;
     }
 
     /**
-     * Returns all listings that are marked as direct-sale listings.
-     *
-     * <p>This method scans the repository's internal collection of listings and
-     * selects only those whose {@link Listing#getSaleType()} is equal to
-     * {@link SaleType#DIRECT_SALE}. The returned list is a new collection and
-     * does not expose or modify the repository's internal state.</p>
-     *
-     * @return a list containing all listings with sale type {@code DIRECT_SALE};
-     *         never {@code null}, but may be empty if no such listings exist
+     * {@inheritDoc}
      */
-
+    @Override
     public List<Listing> findAllDirectSaleListings() {
 
         List<Listing> dsListings = new ArrayList<>();
@@ -127,17 +140,9 @@ public class ListingRepositoryMem implements IListingRepository{
     }
 
     /**
-     * Returns all listings that are marked as auction listings.
-     *
-     * <p>This method scans the repository's internal collection of listings and
-     * selects only those whose {@link Listing#getSaleType()} is equal to
-     * {@link SaleType#AUCTION}. The returned list is a new collection and
-     * does not expose or modify the repository's internal state.</p>
-     *
-     * @return a list containing all listings with sale type {@code AUCTION};
-     *         never {@code null}, but may be empty if no such listings exist
+     * {@inheritDoc}
      */
-
+    @Override
     public List<Listing> findAllAuctionListings() {
 
         List<Listing> auctionListings = new ArrayList<>();

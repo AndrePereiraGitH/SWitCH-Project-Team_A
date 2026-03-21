@@ -6,6 +6,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.domain.User;
+import TOPSECRET.dto.PublicationSampleDTO_US016;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -40,5 +41,7 @@ public interface PublicationSampleRepository {
     PublicationSample createAndAdd(BibliographicalData bibliographicalData, User user, PublicationStatus status, Edition edition, Condition condition) throws InstanceAlreadyExistsException;
     void add(PublicationSample publicationSample);
     boolean isExistent(PublicationSample publicationSample);
+    List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary);
+    List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
 
 }

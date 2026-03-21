@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuctionDTO_US022;
 import TOPSECRET.dto.GenreDTO_US022;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.AuctionRepositoryMem;
+import TOPSECRET.repository.IAuctionRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,7 +18,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void getListOfItemsOnAuctionGivenGenre_returnsDtosWhenAuctionsExist() {
 
         // Arrange
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
@@ -59,7 +59,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnThrowsExceptionNull(){
         // Arrange
         GenreRepositoryMem genreRepo = mock(GenreRepositoryMem.class);
-        AuctionRepositoryMem auctionRepo = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepo = mock(IAuctionRepository.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -77,7 +77,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnEmptyList(){
         // Arrange
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -104,7 +104,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnListOfItemsOnAuctionGivenGenre(){
         // Arrange
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -156,7 +156,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void getListOfItemsOnAuctionGivenGenreDtoContainsCorrectGenres() {
 
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
 
         US022ToGetListOfItemsOnAuctionOfGivenGenreController controller =
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -192,7 +192,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void constructor_shouldThrowException_whenGenreRepositoryIsNull() {
 
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
 
         assertThrows(IllegalArgumentException.class, () ->
                 new US022ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -206,7 +206,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void getAllGenresReturnsEmptyListWhenRepositoryIsEmpty() {
 
         // Arrange
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
 
         when(genreRepoMock.getAllGenres()).thenReturn(List.of());
@@ -230,7 +230,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         // Arrange
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
 
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
@@ -260,7 +260,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void getAllGenres_shouldReturnCorrectDTOs() {
 
         GenreRepositoryMem genreRepoMock = mock(GenreRepositoryMem.class);
-        AuctionRepositoryMem auctionRepoMock = mock(AuctionRepositoryMem.class);
+        IAuctionRepository auctionRepoMock = mock(IAuctionRepository.class);
 
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenreType()).thenReturn("Fantasy");

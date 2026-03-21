@@ -4,8 +4,8 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.dto.AuctionItemDTO_US024;
 import TOPSECRET.dto.BibliographicalDataDTO_US024;
-import TOPSECRET.repository.AuctionRepositoryMem;
 import TOPSECRET.repository.BibliographicalDataRepository;
+import TOPSECRET.repository.IAuctionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     // -------------------------------------------------------------------------
 
     private BibliographicalDataRepository bdRepository;
-    private AuctionRepositoryMem auctionRepository;
+    private IAuctionRepository auctionRepository;
 
     // -------------------------------------------------------------------------
     // Setup
@@ -42,7 +42,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @BeforeEach
     void setUp() {
         bdRepository = mock(BibliographicalDataRepository.class);
-        auctionRepository = mock(AuctionRepositoryMem.class);
+        auctionRepository = mock(IAuctionRepository.class);
     }
 
     // -------------------------------------------------------------------------

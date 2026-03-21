@@ -7,7 +7,7 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
 import TOPSECRET.repository.IPublisherRepository;
-import TOPSECRET.repository.ListingRepositoryMem;
+import TOPSECRET.repository.IListingRepository;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
@@ -26,16 +27,16 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     // ================== Set Up =====================
     // ===============================================
 
-    ListingRepositoryMem listingRepoDouble;
     IPublisherRepository publisherRepoDouble;
+    IListingRepository listingRepoDouble;
     PublicationSampleRepositoryMem pubSampleRepoDouble;
 
     US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller;
 
     @BeforeEach
     void setUp() {
-        listingRepoDouble = mock(ListingRepositoryMem.class);
         publisherRepoDouble = mock(IPublisherRepository.class);
+        listingRepoDouble = mock(IListingRepository.class);
         pubSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
     }
 
