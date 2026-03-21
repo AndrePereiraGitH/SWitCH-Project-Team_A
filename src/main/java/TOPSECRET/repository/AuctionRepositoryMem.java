@@ -9,33 +9,52 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * In-memory implementation of {@link IAuctionRepository}.
+ * <p>
+ * This repository stores {@link Auction} instances in a static list and
+ * provides operations for creating, retrieving, and filtering auctions.
+ * </p>
+ * <p>
+ * Auctions are created through an {@link AuctionFactory} and kept only
+ * during the application's runtime.
+ * </p>
+ */
 public class AuctionRepositoryMem implements IAuctionRepository{
 
     private static List<Auction> _auctionsList;
     private final AuctionFactory _factoryAuction;
 
 
+    /**
+     * Constructs an in-memory auction repository with the given auction factory.
+     * <p>
+     * Initializes the repository with an empty auction list.
+     * </p>
+     *
+     * @param auctionFactory the factory used to create {@link Auction} instances
+     */
     public AuctionRepositoryMem(AuctionFactory auctionFactory) {
         _factoryAuction = auctionFactory;
         _auctionsList = new ArrayList<>();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Auction> getAllAuctions() {
         return _auctionsList;
     }
 
-    /**
-     * Creates a new auction and adds it to the repository if it does not already exist.
-     *
-     * @param listing the listing associated with the auction
-     * @param initialDate the auction start date and time
-     * @param finalDate the auction end date and time
-     * @param buyOutPrice the buyout price of the auction
-     * @return {@code true} if the auction was created and added, {@code false} if it already exists
-     */
-    public Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 
-        Auction auction = _factoryAuction.create(listing, initialDate, finalDate, buyOutPrice);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyoutPrice) throws InstanceAlreadyExistsException {
+
+        Auction auction = _factoryAuction.create(listing, initialDate, finalDate, buyoutPrice);
 
         if (isExistent(auction)) {
             throw new InstanceAlreadyExistsException("this auction already exists");
@@ -46,14 +65,11 @@ public class AuctionRepositoryMem implements IAuctionRepository{
         return auction;
     }
 
+
     /**
-     * Returns the list of auctions containing at least one item whose publication
-     * belongs to the given genre.
-     *
-     * @param genre the genre used to filter auctions
-     * @return a list of auctions that contain at least one item with the given genre
-     * @throws IllegalArgumentException if {@code genre} is {@code null}
+     * {@inheritDoc}
      */
+    @Override
     public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
 
         if (genre == null) {
@@ -80,13 +96,9 @@ public class AuctionRepositoryMem implements IAuctionRepository{
 
 
     /**
-     * Returns the list of auctions containing at least one item whose publication
-     * is associated with the given author.
-     *
-     * @param author the author DTO used to filter auctions
-     * @return a list of auctions that contain at least one item by the given author
-     * @throws IllegalArgumentException if {@code author} is {@code null} or its name is blank
+     * {@inheritDoc}
      */
+    @Override
     public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {
 
         if (author == null || author.name().isBlank())
@@ -104,32 +116,18 @@ public class AuctionRepositoryMem implements IAuctionRepository{
         return authorAuctions;
     }
 
-
     private boolean isExistent(Auction auction) {
         return _auctionsList.contains(auction);
     }
 
 
-    /**
-     * Retrieves all {@link PublicationSample} instances currently on auction
-     * that match the given publication title.
-     *
-     * <p>Iterates over all active auctions, inspecting each auction's
-     * {@link Listing} and its associated items. An item is included in the
-     * result if its bibliographical title is non-{@code null} and equals
-     * the provided {@code publicationDTO} identifier.</p>
-     *
-     * <p>Auctions with a {@code null} listing or a {@code null} item list
-     * are silently skipped.</p>
-     *
-     * @param publicationDTO the title of the publication to filter by;
-     *                       a {@code null} value will result in an empty list
-     * @return a {@link List} of {@link PublicationSample} objects whose
-     *         bibliographical title matches {@code publicationDTO};
-     *         never {@code null}, but may be empty if no matches are found
-     */
+
 
     // US024 -------------------------------------------------------------------------------------------------------------
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
 
         if(publicationDTO == null){
@@ -158,41 +156,5 @@ public class AuctionRepositoryMem implements IAuctionRepository{
 
         return listOfItemsOnAuctionByPublication;
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-//    /**
-//     * Returns all items that are currently on auction
-//     * and belong to the given publisher.
-//     *
-//     * @param publisher the publisher to search for
-//     * @return list of items on auction for that publisher
-//     */
-//    public List<PublicationSample> getItemsOnAuctionGivenPublisher(Publisher publisher) {
-//
-//        if (publisher == null) {
-//            throw new IllegalArgumentException("publisher cannot be null");
-//        }
-//
-//        List<PublicationSample> result = new ArrayList<>();
-//
-//        for (Auction auction : _auctionsList) {
-//            Listing listing = auction.getListing();
-//            if (listing == null) continue;
-//
-//            for (PublicationSample item : listing.getItems()) {
-//                Edition edition = item.getEdition();
-//                if (edition == null) continue;
-//
-//                Publisher itemPublisher = edition.getPublisher();
-//                if (publisher.equals(itemPublisher)) {
-//                    result.add(item);
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
-
 
 }
