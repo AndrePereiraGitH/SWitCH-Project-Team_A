@@ -8,7 +8,7 @@ import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
 import TOPSECRET.repository.ListingRepositoryMem;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
-import TOPSECRET.repository.PublisherRepository;
+import TOPSECRET.repository.PublisherRepositoryMem;
 
 /**
  * Controller responsible for use case US028:
@@ -19,25 +19,25 @@ import TOPSECRET.repository.PublisherRepository;
 public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
 
     // attributes
-    private final PublisherRepository _publisherRepo;
     private final ListingRepositoryMem _listingRepo;
+    private final PublisherRepositoryMem _publisherRepo;
     private final PublicationSampleRepositoryMem _pubSampleRepo;
 
     /**
      * Constructor that receives all dependencies required by the controller.
      * These objects are saved so the controller can use them later.
      *
-     * @param publisherRepository repository for publisher-related operations
+     * @param publisherRepositoryMem repository for publisher-related operations
      * @param listingRepo   repository for listing-related operations
      * @param pubSampleRepo   repository for publicationSample-related operations
      *
      */
-    public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController( PublisherRepository publisherRepository,
+    public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController( PublisherRepositoryMem publisherRepositoryMem,
                                                                          ListingRepositoryMem listingRepo,
                                                                          PublicationSampleRepositoryMem pubSampleRepo) {
 
         // Store injected dependencies for later use
-        this._publisherRepo = publisherRepository;
+        this._publisherRepo = publisherRepositoryMem;
         this._listingRepo = listingRepo;
         this._pubSampleRepo = pubSampleRepo;
     }

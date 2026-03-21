@@ -8,7 +8,7 @@ import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
 import TOPSECRET.repository.ListingRepositoryMem;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
-import TOPSECRET.repository.PublisherRepository;
+import TOPSECRET.repository.PublisherRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,16 +27,16 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     // ================== Set Up =====================
     // ===============================================
 
-    PublisherRepository publisherRepoDouble;
     ListingRepositoryMem listingRepoDouble;
+    PublisherRepositoryMem publisherRepoDouble;
     PublicationSampleRepositoryMem pubSampleRepoDouble;
 
     US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller;
 
     @BeforeEach
     void setUp() {
-        publisherRepoDouble = mock(PublisherRepository.class);
         listingRepoDouble = mock(ListingRepositoryMem.class);
+        publisherRepoDouble = mock(PublisherRepositoryMem.class);
         pubSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
     }
 

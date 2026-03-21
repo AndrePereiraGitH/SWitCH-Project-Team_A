@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Publisher;
-import TOPSECRET.repository.PublisherRepository;
+import TOPSECRET.repository.PublisherRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,11 +14,11 @@ import static org.mockito.Mockito.when;
 
 class US006ToRegisterNewPublisherControllerTest {
 
-    private PublisherRepository repo;
+    private PublisherRepositoryMem repo;
 
     @BeforeEach
     void setup(){
-        repo = mock(PublisherRepository.class);
+        repo = mock(PublisherRepositoryMem.class);
     }
 
 

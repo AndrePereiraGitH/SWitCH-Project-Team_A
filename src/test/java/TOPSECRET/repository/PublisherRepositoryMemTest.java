@@ -6,16 +6,15 @@ import TOPSECRET.domain.PublisherFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link PublisherRepository}.
+ * Unit tests for {@link PublisherRepositoryMem}.
  *
- * <p>This test class verifies the behaviour of {@link PublisherRepository}
+ * <p>This test class verifies the behaviour of {@link PublisherRepositoryMem}
  * in isolation by mocking its collaborators:
  * <ul>
  *     <li>{@link PublisherFactory} – responsible for creating Publisher objects</li>
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.*;
  *     <li>Finding a publisher by VAT number</li>
  * </ul>
  */
-class PublisherRepositoryTest {
+class PublisherRepositoryMemTest {
 
     private PublisherFactory publisherFactory;
 
@@ -56,7 +55,7 @@ class PublisherRepositoryTest {
     void shouldThrowExceptionWhenFactoryIsNull() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PublisherRepository(null)
+                () -> new PublisherRepositoryMem(null)
         );
         assertEquals("PublisherFactory cannot be null", exception.getMessage());
     }
@@ -67,12 +66,12 @@ class PublisherRepositoryTest {
      * in the internal publisher list.
      */
     @Test
-    void shouldDelegateCreationToFactoryAndAddPublisher() throws InstanceAlreadyExistsException {
+    void shouldDelegateCreationToFactoryAndAddPublisher() {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
 
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
 
         // Act
         Publisher result = repository.createAndAdd(name, vatNumber, contact);
@@ -90,12 +89,12 @@ class PublisherRepositoryTest {
     void shouldRejectPublisherWhenAlreadyIsExistent() {
         // Arrange
         Publisher pub1 = mock(Publisher.class);
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
         repository.add(pub1);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(pub1);
 
         // Act + Assert
-        assertThrows(InstanceAlreadyExistsException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> repository.createAndAdd(name, vatNumber, contact));
     }
 
@@ -104,11 +103,11 @@ class PublisherRepositoryTest {
      * can be added alongside an existing one.
      */
     @Test
-    void shouldAddPublisherWhenDifferentPublisherIsExistent() throws InstanceAlreadyExistsException {
+    void shouldAddPublisherWhenDifferentPublisherIsExistent() {
         // Arrange
         Publisher existingPublisher = mock(Publisher.class);
         Publisher newPublisher = mock(Publisher.class);
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
         repository.add(existingPublisher);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(newPublisher);
 
@@ -122,15 +121,15 @@ class PublisherRepositoryTest {
     }
 
     /**
-     * Verifies that {@link PublisherRepository#getAllPublishers()}
+     * Verifies that {@link PublisherRepositoryMem#getAllPublishers()}
      * returns an unmodifiable list.
      */
     @Test
-    void shouldReturnUnmodifiableList() throws InstanceAlreadyExistsException {
+    void shouldReturnUnmodifiableList() {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
         repository.createAndAdd(name, vatNumber, contact);
 
         // Act
@@ -141,15 +140,15 @@ class PublisherRepositoryTest {
     }
 
     /**
-     * Verifies that {@link PublisherRepository#getAllPublishers()}
+     * Verifies that {@link PublisherRepositoryMem#getAllPublishers()}
      * returns a defensive copy of the publisher list.
      */
     @Test
-    void shouldReturnDefensiveCopy() throws InstanceAlreadyExistsException {
+    void shouldReturnDefensiveCopy() {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(mockPublisher);
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
         repository.createAndAdd(name, vatNumber, contact);
 
         // Act
@@ -170,7 +169,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(mockPublisher.getVatNumber()).thenReturn(vatNumber);
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
         repository.add(mockPublisher);
 
         // Act
@@ -189,7 +188,7 @@ class PublisherRepositoryTest {
         // Arrange
         Publisher mockPublisher = mock(Publisher.class);
         when(mockPublisher.getVatNumber()).thenReturn("999999999");
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
         repository.add(mockPublisher);
 
         // Act
@@ -206,7 +205,7 @@ class PublisherRepositoryTest {
     @Test
     void shouldReturnNullWhenRepositoryIsEmpty() {
         // Arrange
-        PublisherRepository repository = new PublisherRepository(publisherFactory);
+        PublisherRepositoryMem repository = new PublisherRepositoryMem(publisherFactory);
 
         // Act
         Publisher result = repository.findByVatNumber(vatNumber);

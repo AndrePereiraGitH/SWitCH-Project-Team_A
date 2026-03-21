@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Contact;
-import TOPSECRET.repository.PublisherRepository;
+import TOPSECRET.repository.PublisherRepositoryMem;
 
 
 import javax.management.InstanceAlreadyExistsException;
@@ -15,21 +15,21 @@ import javax.management.InstanceAlreadyExistsException;
  */
 public class   US006ToRegisterNewPublisherController {
 
-    private PublisherRepository _publisherRepository;
+    private PublisherRepositoryMem _publisherRepositoryMem;
 
     /**
      * Constructs a new {@code US006ToRegisterNewPublisherController} with the given repository.
      *
-     * @param publisherRepository the repository used to store publishers; must not be {@code null}
+     * @param publisherRepositoryMem the repository used to store publishers; must not be {@code null}
      * @throws NullPointerException if {@code publisherRepository} is {@code null}
      */
-    public US006ToRegisterNewPublisherController(PublisherRepository publisherRepository) {
+    public US006ToRegisterNewPublisherController(PublisherRepositoryMem publisherRepositoryMem) {
 
-        if(publisherRepository == null){
+        if(publisherRepositoryMem == null){
             throw new NullPointerException("Repository can not be null");
         }
 
-        _publisherRepository = publisherRepository;
+        _publisherRepositoryMem = publisherRepositoryMem;
 
     }
 
@@ -44,7 +44,7 @@ public class   US006ToRegisterNewPublisherController {
      */
     public boolean registerPublisher(String name, String vatNumber, Contact contact) throws InstanceAlreadyExistsException {
 
-        _publisherRepository.createAndAdd(name, vatNumber,contact);
+        _publisherRepositoryMem.createAndAdd(name, vatNumber,contact);
 
         return true;
     }
