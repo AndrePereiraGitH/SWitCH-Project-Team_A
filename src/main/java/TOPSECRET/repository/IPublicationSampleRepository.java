@@ -1,12 +1,10 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.BibliographicalData;
-import TOPSECRET.domain.Edition;
+import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.domain.User;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
+import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -35,7 +33,7 @@ import java.util.List;
  * </p>
  */
 
-public interface PublicationSampleRepository {
+public interface IPublicationSampleRepository {
 
     List<PublicationSample> getAllPublications();
     PublicationSample createAndAdd(BibliographicalData bibliographicalData, User user, PublicationStatus status, Edition edition, Condition condition) throws InstanceAlreadyExistsException;
@@ -43,5 +41,9 @@ public interface PublicationSampleRepository {
     boolean isExistent(PublicationSample publicationSample);
     List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary);
     List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
+    List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication);
+    PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
+    List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher);
+
 
 }

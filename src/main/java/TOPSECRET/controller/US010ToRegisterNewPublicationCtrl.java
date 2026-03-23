@@ -6,15 +6,15 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.domain.User;
-import TOPSECRET.repository.PublicationSampleRepositoryMem;
+import TOPSECRET.repository.IPublicationSampleRepositoryMem;
 
 import javax.management.InstanceAlreadyExistsException;
 
 public class US010ToRegisterNewPublicationCtrl {
 
-    private final PublicationSampleRepositoryMem _publicationRepository;
+    private final IPublicationSampleRepositoryMem _publicationRepository;
 
-    public US010ToRegisterNewPublicationCtrl(PublicationSampleRepositoryMem publicationRepository) {
+    public US010ToRegisterNewPublicationCtrl(IPublicationSampleRepositoryMem publicationRepository) {
 
         if (publicationRepository == null) {
             throw new IllegalArgumentException("PublicationRepository cannot be left blank");

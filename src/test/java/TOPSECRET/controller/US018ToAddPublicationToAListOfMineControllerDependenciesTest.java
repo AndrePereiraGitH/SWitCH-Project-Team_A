@@ -6,7 +6,7 @@
 //import TOPSECRET.dto.PublicationSampleDTO_US018;
 //import TOPSECRET.repository.CollectionOfPublicationsRepository;
 //import TOPSECRET.repository.LibraryRepository;
-//import TOPSECRET.repository.PublicationSampleRepositoryMem;
+//import TOPSECRET.repository.IPublicationSampleRepositoryMem;
 //
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@
 //        countryFactory = new CountryFactory();
 //        CollectionOfPublicationsFactory collectionFactory = new CollectionOfPublicationsFactory();
 //        collectionRepo = new CollectionOfPublicationsRepository(collectionFactory);
-//        PublicationSampleRepositoryMem publicationSampleRepo = new PublicationSampleRepositoryMem();
+//        IPublicationSampleRepositoryMem publicationSampleRepo = new IPublicationSampleRepositoryMem();
 //
 //        // LibraryRepository requires (Map, Factory)
 //        Map<String, Library> libraries = new HashMap<>();

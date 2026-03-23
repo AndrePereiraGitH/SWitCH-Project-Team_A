@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 
 
 import TOPSECRET.domain.*;
-import TOPSECRET.repository.PublicationSampleRepositoryMem;
+import TOPSECRET.repository.IPublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * Unit tests for {@link US011AddPublicationToLibraryController} using Mockito.
  * <p>
  * This test class verifies the behavior of the controller in isolation by mocking
- * all its collaborators, namely {@link Library} and {@link PublicationSampleRepositoryMem}.
+ * all its collaborators, namely {@link Library} and {@link IPublicationSampleRepositoryMem}.
  * The goal is to ensure that the controller correctly delegates responsibilities
  * to its dependencies and returns the expected results.
  * </p>
@@ -23,7 +23,7 @@ import java.util.List;
 class US011AddPublicationToLibraryControllerTest {
 
     private Library libraryMock;
-    private PublicationSampleRepositoryMem pubSampleRepositoryMock;
+    private IPublicationSampleRepositoryMem pubSampleRepositoryMock;
     private US011AddPublicationToLibraryController controller;
 
     private PublicationSample publication1;
@@ -41,7 +41,7 @@ class US011AddPublicationToLibraryControllerTest {
     void preparation() {
 
         libraryMock = mock(Library.class);
-        pubSampleRepositoryMock = mock(PublicationSampleRepositoryMem.class);
+        pubSampleRepositoryMock = mock(IPublicationSampleRepositoryMem.class);
 
         publication1 = mock(PublicationSample.class);
         publication2 = mock(PublicationSample.class);
