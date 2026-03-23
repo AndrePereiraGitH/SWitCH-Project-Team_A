@@ -12,12 +12,6 @@
 - 
 - 
 
-## How to Test
-<!-- Steps to verify this PR -->
-1. 
-2. 
-3. 
-
 ## Screenshots (if applicable)
 <!-- Add before/after screenshots -->
 
