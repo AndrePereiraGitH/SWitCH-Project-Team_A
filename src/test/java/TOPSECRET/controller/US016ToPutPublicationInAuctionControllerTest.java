@@ -35,7 +35,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     private IListingRepository listingRepoDouble;
     private IAuctionRepository auctionRepoDouble;
     private ILibraryRepository libraryRepoDouble;
-    private PublicationSampleRepository publicationSampleRepoDouble;
+    private IPublicationSampleRepository publicationSampleRepoDouble;
     private US016ToPutPublicationInAuctionController controller;
 
     @BeforeEach
@@ -43,7 +43,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         libraryRepoDouble = mock(ILibraryRepository.class);
         listingRepoDouble = mock(IListingRepository.class);
         auctionRepoDouble = mock(IAuctionRepository.class);
-        publicationSampleRepoDouble = mock(PublicationSampleRepository.class);
+        publicationSampleRepoDouble = mock(IPublicationSampleRepository.class);
         controller = new US016ToPutPublicationInAuctionController(libraryRepoDouble, listingRepoDouble, auctionRepoDouble, publicationSampleRepoDouble);
     }
 
