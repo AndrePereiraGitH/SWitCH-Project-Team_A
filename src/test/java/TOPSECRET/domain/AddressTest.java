@@ -33,12 +33,9 @@ public class AddressTest {
      * @param street invalid street values (null, empty, or whitespace)
      */
 
-    @ParameterizedTest //needs to be Parameterized here to test different inputs for multiple tests
+    @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"  ", "\t", "\n"})
-
-    // Ensures constructor rejects null, empty, and blank street values
-
     void constructorIfCalledWithInvalidStreetThrowsException(String street) {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address(street, "dummyNumber", "dummyZipCode", anyCity));
