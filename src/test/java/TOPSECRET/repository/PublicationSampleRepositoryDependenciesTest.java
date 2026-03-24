@@ -125,7 +125,7 @@
 //    void ensureANewPublicationIsCreatedAndAdded() throws InstanceAlreadyExistsException {
 //        //Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(factory);
 //
 //        //Act
 //        PublicationSample realResult = pr1.createAndAdd(bibliographicalData1, user1,
@@ -142,7 +142,7 @@
 //        //Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(factory);
 //
 //        //Act
 //        PublicationSample realResult=pr1.createAndAdd(bibliographicalData1, user1,
@@ -159,7 +159,7 @@
 //    void ifPublicationIsExistentShouldReturnTrue() {
 //        //Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(factory);
 //        pr1.addPublication(publication1);
 //
 //        //Act
@@ -175,7 +175,7 @@
 //
 //        //Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(factory);
 //
 //        //Act
 //        boolean realResult = pr1.isExistent(publication1);
@@ -190,7 +190,7 @@
 //    void ensureConstructorCopiesListNotOriginalReferences(){
 //        // Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(factory);
 //
 //        //Act
 //        boolean realResult=pr1.isExistent(publication1);
@@ -207,7 +207,7 @@
 //        PublicationSample pub2 = publication2;
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(factory);
 //        repo.addPublication(pub1);
 //        repo.addPublication(pub2);
 //
@@ -225,7 +225,7 @@
 //
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem publicationRepository = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem publicationRepository = new IPublicationSampleRepositoryMem(factory);
 //
 //        List<PublicationSample> resultingList = publicationRepository.getAllPublications();
 //
@@ -310,7 +310,7 @@
 //        // Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(List.of(publication1), factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(List.of(publication1), factory);
 //
 //        List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
 //        pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
@@ -331,7 +331,7 @@
 //        // Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(List.of(publication1), factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(List.of(publication1), factory);
 //
 //        List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
 //        pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
@@ -349,7 +349,7 @@
 //        // Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem pr1 = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem pr1 = new IPublicationSampleRepositoryMem(factory);
 //
 //        List<PublicationSampleDTO_US016> pubsDto = new ArrayList<>();
 //       // pubsDto.add(PublicationSampleDTO_US016.toDTO(publication1));
@@ -372,7 +372,7 @@
 //        // Arrange
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem(factory);
+//        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(factory);
 //
 //        PublicationSampleDTO_US018 dto =
 //                new PublicationSampleDTO_US018(
@@ -399,7 +399,7 @@
 //
 //        // ARRANGE
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
-//        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem(new ArrayList<>(), factory);
+//        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(new ArrayList<>(), factory);
 //
 //        PublicationSampleDTO_US018 dto =
 //                new PublicationSampleDTO_US018("Title", "1", "user");
@@ -415,7 +415,7 @@
 //
 //        // ARRANGE
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
-//        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem(new ArrayList<>(), factory);
+//        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(new ArrayList<>(), factory);
 //
 //        LibraryFactory libraryFactory = new LibraryFactory();
 //        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
@@ -435,7 +435,7 @@
 //
 //        PublicationSampleFactory factory = new PublicationSampleFactory();
 //
-//        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem(list, factory);
+//        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(list, factory);
 //
 //        LibraryFactory libraryFactory = new LibraryFactory();
 //        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());

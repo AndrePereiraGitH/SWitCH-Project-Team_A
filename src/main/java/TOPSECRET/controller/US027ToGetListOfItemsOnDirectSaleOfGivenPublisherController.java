@@ -5,9 +5,9 @@ import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.domain.Publisher;
 import TOPSECRET.dto.PublicationSampleDTO_US027;
 import TOPSECRET.dto.PublisherDTO_US027;
+import TOPSECRET.repository.IPublicationSampleRepository;
 import TOPSECRET.repository.IPublisherRepository;
 import TOPSECRET.repository.IListingRepository;
-import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  * This controller coordinates the retrieval of publishers and the list of
  * publication samples that are available for direct sale from a given publisher.
  * It interacts with the {@link IPublisherRepository}, {@link IListingRepository},
- * and {@link PublicationSampleRepositoryMem} to obtain the necessary domain data
+ * and {@link IPublicationSampleRepository} to obtain the necessary domain data
  * and converts it into DTOs to be used by the application layer.
  */
 
@@ -25,12 +25,12 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
     private final IPublisherRepository _publisherRepo;
     private final IListingRepository _listingRepo;
-    private final PublicationSampleRepositoryMem _pubSampleRepo;
+    private final IPublicationSampleRepository _pubSampleRepo;
 
     // ========= Constructor ===========================================================================================
     public US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(IPublisherRepository publisherRepo,
                                                                        IListingRepository listingRepo,
-                                                                       PublicationSampleRepositoryMem pubSampleRepo) {
+                                                                       IPublicationSampleRepository pubSampleRepo) {
 
         this._publisherRepo = publisherRepo;
         this._listingRepo = listingRepo;

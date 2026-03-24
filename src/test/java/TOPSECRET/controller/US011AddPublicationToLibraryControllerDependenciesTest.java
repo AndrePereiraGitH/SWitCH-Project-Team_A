@@ -4,7 +4,7 @@
 //
 //import TOPSECRET.domain.*;
 //import TOPSECRET.domain.Enum.*;
-//import TOPSECRET.repository.PublicationSampleRepositoryMem;
+//import TOPSECRET.repository.IPublicationSampleRepositoryMem;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //
@@ -19,7 +19,7 @@
 //    //verify that the controller returns the correct list
 //
 //    private Library library;
-//    private PublicationSampleRepositoryMem publicationSampleRepository;
+//    private IPublicationSampleRepositoryMem publicationSampleRepository;
 //    private US011AddPublicationToLibraryController controller;
 //    private AuthorFactory authorFactory = new AuthorFactory();
 //
@@ -39,7 +39,7 @@
 //
 //    @BeforeEach //Vai fazer antes de cada teste
 //    void preparation() {
-//        publicationSampleRepository = new PublicationSampleRepositoryMem();
+//        publicationSampleRepository = new IPublicationSampleRepositoryMem();
 //
 //        //Creating a valid PublicationType
 //        PublicationType type = new PublicationType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "Details1");

@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.repository.PublicationSampleRepositoryMem;
+import TOPSECRET.repository.IPublicationSampleRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
  * <p>This test suite verifies the behavior of the controller responsible
  * for registering a new {@link PublicationSample} in the system.</p>
  *
- * <p>The controller depends on {@link PublicationSampleRepositoryMem}, which
+ * <p>The controller depends on {@link IPublicationSampleRepository}, which
  * is mocked to isolate the controller logic and verify the interaction
  * between the controller and the repository.</p>
  */
@@ -32,7 +32,7 @@ class US010ToRegisterNewPublicationCtrlTest {
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final Edition anyEdition = mock(Edition.class);
     private final Condition anyCondition = mock(Condition.class);
-    private final PublicationSampleRepositoryMem anyPublicationSampleRepositoryMem = mock(PublicationSampleRepositoryMem.class);
+    private final IPublicationSampleRepository anyPublicationSampleRepositoryMem = mock(IPublicationSampleRepository.class);
     private final PublicationSample anyPublicationSample = mock(PublicationSample.class);
 
     //Actual controller class under test
@@ -90,7 +90,7 @@ class US010ToRegisterNewPublicationCtrlTest {
     /**
      * Verifies that the controller propagates the exception thrown by the repository.
      *
-     * <p>If the {@link PublicationSampleRepositoryMem} detects that the publication
+     * <p>If the {@link IPublicationSampleRepository} detects that the publication
      * being registered already exists, it throws an {@link InstanceAlreadyExistsException}.
      * Since the controller does not handle this exception internally, it must allow
      * the exception to continue towards the caller.</p>

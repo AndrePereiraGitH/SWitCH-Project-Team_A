@@ -8,9 +8,9 @@ import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationSampleDTO_US027;
 import TOPSECRET.dto.PublisherDTO_US027;
+import TOPSECRET.repository.IPublicationSampleRepository;
 import TOPSECRET.repository.IPublisherRepository;
 import TOPSECRET.repository.IListingRepository;
-import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,13 +29,13 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
     IPublisherRepository publisherRepoDouble;
     IListingRepository listingRepoDouble;
-    PublicationSampleRepositoryMem pubSampleRepoDouble;
+    IPublicationSampleRepository pubSampleRepoDouble;
 
     @BeforeEach
     void setUp() {
         publisherRepoDouble = mock(IPublisherRepository.class);
         listingRepoDouble = mock(IListingRepository.class);
-        pubSampleRepoDouble = mock(PublicationSampleRepositoryMem.class);
+        pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
     }
 
     // ===============================================

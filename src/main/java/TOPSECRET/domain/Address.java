@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 /**
- * Represents an address with street, number, zip code, and country.
+ * Represents an address with street, number, zip code, and city.
  * <p>
  * This class validates required fields in the constructor.
  */
@@ -11,7 +11,7 @@ public class Address {
     private String street;
     private String number;
     private String zipCode;
-    private Country country;
+    private City city;
 
     /**
      * Creates a new address.
@@ -19,19 +19,20 @@ public class Address {
      * @param street  street name (required, must not be null or blank)
      * @param number  address number (required, must not be null or blank)
      * @param zipCode zip/postal code (required, must not be null or blank)
-     * @param country country (required, must not be null)
+     * @param city    city (required, must not be null)
      * @throws IllegalArgumentException if any required field is invalid
      */
-    public Address(String street, String number, String zipCode, Country country) {
+    public Address(String street, String number, String zipCode, City city) {
 
-        if (street == null || street.isBlank() || number == null || number.isBlank() || zipCode == null || zipCode.isBlank() || country == null) {
-            throw new IllegalArgumentException("Street, number, zip Code and country are all required fields.");
+        if (street == null || street.isBlank() || number == null || number.isBlank() || zipCode == null
+                || zipCode.isBlank() || city == null) {
+            throw new IllegalArgumentException("Street, number, zip Code and city are all required fields.");
         }
 
         this.street = street;
         this.number = number;
         this.zipCode = zipCode;
-        this.country = country;
+        this.city = city;
     }
 
     public String getStreet() {
@@ -46,8 +47,8 @@ public class Address {
         return zipCode;
     }
 
-    public Country getCountry() {
-        return country;
+    public City getCity() {
+        return city;
     }
 
     public void setStreet(String street) {
@@ -62,13 +63,13 @@ public class Address {
         this.zipCode = zipCode;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public void setCity(City city) {
+        this.city = city;
     }
 
     @Override
     public String toString() {
-        return street + ", no. " + number + ", " + zipCode + ", " + country.getCountryName();
+        return street + ", no. " + number + ", " + zipCode + ", " + city.getCityName();
     }
 }
 

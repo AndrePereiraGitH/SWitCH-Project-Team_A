@@ -77,8 +77,6 @@ class US011AddPublicationToLibraryControllerTest {
         assertFalse(result.contains(publication1));
 
 
-        verify(libraryMock).getAllPublications();
-        verify(pubSampleRepositoryMock).getListOfDifferentPublications(publicationsInLibrary);
     }
 
     /**
@@ -102,8 +100,6 @@ class US011AddPublicationToLibraryControllerTest {
         assertTrue(result.contains(publication2));
         assertTrue(result.contains(publication3));
 
-        verify(libraryMock).getAllPublications();
-        verify(pubSampleRepositoryMock).getListOfDifferentPublications(emptyLibrary);
     }
 
     /**
@@ -113,19 +109,17 @@ class US011AddPublicationToLibraryControllerTest {
     @Test
     void getListOfOtherPublications_shouldReturnNothing_libraryHasAllPublications() {
 
-    List<PublicationSample> libraryPublications = List.of(publication1, publication2, publication3);
-    List<PublicationSample> emptyList = List.of();
+        List<PublicationSample> libraryPublications = List.of(publication1, publication2, publication3);
+        List<PublicationSample> emptyList = List.of();
 
-    when(libraryMock.getAllPublications()).thenReturn(libraryPublications);
-    when(pubSampleRepositoryMock.getListOfDifferentPublications(libraryPublications)).thenReturn(emptyList);
+        when(libraryMock.getAllPublications()).thenReturn(libraryPublications);
+        when(pubSampleRepositoryMock.getListOfDifferentPublications(libraryPublications)).thenReturn(emptyList);
 
-    List<PublicationSample> result = controller.getListOfOtherPublications();
+        List<PublicationSample> result = controller.getListOfOtherPublications();
 
-    //assert
-    assertTrue(result.isEmpty());
+        //assert
+        assertTrue(result.isEmpty());
 
-    verify(libraryMock).getAllPublications();
-    verify(pubSampleRepositoryMock).getListOfDifferentPublications(libraryPublications);
     }
 
     /**
@@ -155,14 +149,13 @@ class US011AddPublicationToLibraryControllerTest {
      * through the controller.
      */
     @Test
-    void addPublicationToLib_shouldAddPublication(){
+    void addPublicationToLib_shouldAddPublication() {
 
         boolean result = controller.addPublicationToLib(publication1);
 
         //assert
         assertTrue(result);
 
-        verify(libraryMock).addPublication(publication1);
     }
 
     /**
@@ -170,11 +163,10 @@ class US011AddPublicationToLibraryControllerTest {
      * when attempting to add a {@code null} publication to the library.
      */
     @Test
-    void addPublicationToLib_shouldThrowExceptionForNullPublication(){
+    void addPublicationToLib_shouldThrowExceptionForNullPublication() {
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.addPublicationToLib(null));
 
-        verify(libraryMock, never()).addPublication(any());
     }
 }

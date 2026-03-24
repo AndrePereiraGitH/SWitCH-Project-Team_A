@@ -4,8 +4,12 @@ import TOPSECRET.domain.ValueObjects.Email;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class ContactTest {
+
+    //Double for City class
+    private final City anyCity = mock(City.class);
 
     /**
      * Helper method to create a valid Contact.
@@ -19,7 +23,8 @@ class ContactTest {
         return new Contact(phone, extension, email, address);
     }
 
-    @Test void testEmptyConstructor() {
+    @Test
+    void testEmptyConstructor() {
 
         new Contact();
     }
@@ -32,7 +37,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         // Act & Assert
@@ -49,7 +54,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         // Act & Assert
@@ -67,7 +72,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -101,7 +106,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -149,7 +154,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -218,7 +223,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -237,14 +242,14 @@ class ContactTest {
                 "Street A",
                 "1",
                 "1000",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         Address address2 = new Address(
                 "Street B",
                 "2",
                 "2000",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         Contact contact1 = createContact("912345678", "351", null, address1);
@@ -265,7 +270,7 @@ class ContactTest {
                 "Street A",
                 "1",
                 "1000",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         Contact contact1 = createContact("912345678", "351", null, address);
@@ -286,7 +291,7 @@ class ContactTest {
                 "Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         Contact contact1 = createContact("912345678", "351", null, null);
@@ -308,7 +313,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -327,7 +332,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
         Contact contact = new Contact("987654321", "351", email, address);
 
@@ -511,7 +516,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         Contact contact1 = createContact("912345678", "351", null, address);
@@ -533,7 +538,7 @@ class ContactTest {
                 "Main Street",
                 "10",
                 "12345",
-                new Country("PORTUGAL")
+                anyCity
         );
 
         Contact contact = createContact("987654321", "351", email, address);
