@@ -6,183 +6,206 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for the {@link Author} domain class.
  *
- * <p>This test class verifies the construction and equality behaviour of {@link Author},
- * using a Mockito mock of {@link Profile} to isolate the {@link Author} from its collaborator.
+ * <p>This test class verifies the construction and equality behaviour of {@link Author}.
  *
- * <p><b>Test double strategy:</b> {@code Profile} is mocked via
- * {@code mock(Profile.class)} declared as a field. Because JUnit 5 creates a new
- * instance of the test class before each test method, the mock is automatically
+ * <p><b>Test double strategy:</b> {@link Country} is replaced with a test double
+ * via {@code mock(Country.class)} declared as a field. Because JUnit 5 creates a
+ * new instance of the test class before each test method, the double is automatically
  * fresh for every test — no {@code @BeforeEach} or {@code @ExtendWith} required.
  *
  * <p><b>What is tested:</b>
  * <ul>
- *   <li>Primary constructor — valid data, null profile, null/blank biography</li>
- *   <li>Secondary constructor — valid data, invalid arguments</li>
- *   <li>Equals contract — same reference, null, different class, different profile, different biography</li>
+ *   <li>Constructor — valid data, null/blank name, null country, null date of birth,
+ *       null/blank biography</li>
+ *   <li>Equals contract — same reference, null, different class, different name,
+ *       different country, different date of birth</li>
  * </ul>
  *
- * <p><b>What is NOT tested here:</b> the internal behaviour of {@link Profile}.
- * Profile has its own dedicated test class. The mock here exists purely to
+ * <p><b>What is NOT tested here:</b> the internal behaviour of {@link Country}.
+ * That class has its own dedicated test class. The test double exists purely to
  * isolate {@link Author} from that dependency.
  */
-
 class AuthorTest {
 
-    Profile profileDouble = mock(Profile.class);
     Country countryDouble = mock(Country.class);
 
-    //========================================
-    // CONSTRUCTOR TESTS - Primary Constructor
-    //========================================
+    // ========================================
+    // CONSTRUCTOR TESTS
+    // ========================================
 
     @Test
-    void shouldCreateAuthorWithValidData() {
-        //Arrange
-        when(profileDouble.getName()).thenReturn("Joana");
+    void should_CreateAuthor_WithValidData() {
         // Act
-        Author author = new Author(profileDouble, "valid bio");
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "valid bio");
 
         // Assert
-        assertSame(profileDouble, author.getProfile());
+        assertEquals("Jane", author.getName());
+        assertSame(countryDouble, author.getCountry());
+        assertEquals(LocalDate.of(1990, 1, 1), author.getDateOfBirth());
         assertEquals("valid bio", author.getBiography());
     }
 
     @Test
-    void shouldThrowExceptionWhenProfileIsNull() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
+    void should_ThrowExceptionWhen_NameIsNull() {
+        IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Author(null, "valid bio")
-        );
-        assertEquals("Profile cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenBiographyIsNullOrBlank() {
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> new Author(profileDouble, null));
-        assertThrows(IllegalArgumentException.class, () -> new Author(profileDouble, "   "));
-    }
-
-// ========================================
-// CONSTRUCTOR TESTS - Secondary Constructor
-// ========================================
-
-    @Test
-    void shouldCreateAuthorUsingSecondaryConstructor() {
-        // Act
-        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "Author bio");
-
-        // Assert
-        assertEquals("Jane", author.getProfile().getName());
-        assertEquals(countryDouble, author.getProfile().getCountry());
-        assertEquals(LocalDate.of(1990, 1, 1), author.getProfile().getBirthday());
-        assertEquals("Author bio", author.getBiography());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSecondaryConstructorReceivesInvalidData() {
-        // Profile validation should trigger
-        assertThrows(IllegalArgumentException.class,
                 () -> new Author(null, countryDouble, LocalDate.of(1990, 1, 1), "bio")
         );
-
-        assertThrows(IllegalArgumentException.class,
-                () -> new Author("", countryDouble, LocalDate.of(1990, 1, 1), "bio")
-        );
-
-        assertThrows(IllegalArgumentException.class,
-                () -> new Author("Name", null, LocalDate.of(1990, 1, 1), "bio")
-        );
-
-        assertThrows(IllegalArgumentException.class,
-                () -> new Author("Name", countryDouble, null, "bio")
-        );
+        assertEquals("Name cannot be null or blank", ex.getMessage());
     }
 
-// ========================================
-// EQUALS TESTS
-// ========================================
+    @Test
+    void should_ThrowExceptionWhenNameIsBlank() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author("   ", countryDouble, LocalDate.of(1990, 1, 1), "bio")
+        );
+        assertEquals("Name cannot be null or blank", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_CountryIsNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author("Jane", null, LocalDate.of(1990, 1, 1), "bio")
+        );
+        assertEquals("Country cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_DateOfBirthIsNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author("Jane", countryDouble, null, "bio")
+        );
+        assertEquals("DateOfBirth cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_BiographyIsNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), null)
+        );
+        assertEquals("Biography cannot be null or blank", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_BiographyIsBlank() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "   ")
+        );
+        assertEquals("Biography cannot be null or blank", ex.getMessage());
+    }
+
+    // ========================================
+    // EQUALS TESTS
+    // ========================================
 
     @Test
     void shouldBeEqual_whenComparedToItself() {
         // Arrange
-        Author author = new Author(profileDouble, "bio");
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
-        // Act
-        boolean result = author.equals(author);
-
-        // Assert
-        assertTrue(result);
+        // Act + Assert
+        assertEquals(author, author);
     }
 
     @Test
-    void shouldBeEqual_whenSameProfileAndBio() {
+    void shouldBeEqual_whenSameNameCountryAndDateOfBirth() {
         // Arrange
-        Author a1 = new Author(profileDouble, "bio");
-        Author a2 = new Author(profileDouble, "bio");
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
+        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
 
-        // Act
-        boolean result = a1.equals(a2);
-
-        // Assert
-        assertTrue(result);
+        // Act + Assert
+        assertEquals(a1, a2);
     }
 
     @Test
     void shouldNotBeEqual_whenComparedToNull() {
         // Arrange
-        Author a1 = new Author(profileDouble, "bio");
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
-        // Act
-        boolean result = a1.equals(null);
-
-        // Assert
-        assertFalse(result);
+        // Act + Assert
+        assertNotEquals(null, author);
     }
 
     @Test
     void shouldNotBeEqual_whenComparedToDifferentClass() {
         // Arrange
-        Author a1 = new Author(profileDouble, "bio");
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
-        // Act
-        boolean result = a1.equals("not an author");
-
-        // Assert
-        assertFalse(result);
+        // Act + Assert
+        assertNotEquals("not an author", author);
     }
 
     @Test
-    void shouldNotBeEqual_whenDifferentProfile() {
+    void shouldNotBeEqual_whenDifferentName() {
         // Arrange
-        Profile differentProfile = mock(Profile.class);
-        Author a1 = new Author(profileDouble, "bio");
-        Author a2 = new Author(differentProfile, "bio");
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("John", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
-        // Act
-        boolean result = a1.equals(a2);
-
-        // Assert
-        assertFalse(result);
+        // Act + Assert
+        assertNotEquals(a1, a2);
     }
 
     @Test
-    void shouldNotBeEqual_whenSameProfileButDifferentBio() {
+    void shouldNotBeEqual_whenDifferentCountry() {
         // Arrange
-        Author a1 = new Author(profileDouble, "bio1");
-        Author a2 = new Author(profileDouble, "bio2");
+        Country otherCountry = mock(Country.class);
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("Jane", otherCountry, LocalDate.of(1990, 1, 1), "bio");
 
-        // Act
-        boolean result = a1.equals(a2);
+        // Act + Assert
+        assertNotEquals(a1, a2);
+    }
 
-        // Assert
-        assertFalse(result);
+    @Test
+    void shouldNotBeEqual_whenDifferentDateOfBirth() {
+        // Arrange
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1995, 6, 15), "bio");
+
+        // Act + Assert
+        assertNotEquals(a1, a2);
+    }
+    // ========================================
+    // HASHCODE TESTS
+    // ========================================
+
+    @Test
+    void shouldHaveSameHashCode_whenSameNameCountryAndDateOfBirth() {
+        // Arrange
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
+        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
+
+        // Act + Assert
+        assertEquals(a1.hashCode(), a2.hashCode());
+    }
+
+    @Test
+    void shouldHaveDifferentHashCode_whenDifferentName() {
+        // Arrange
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("John", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+
+        // Act + Assert
+        assertNotEquals(a1.hashCode(), a2.hashCode());
+    }
+
+    @Test
+    void shouldHaveDifferentHashCode_whenDifferentDateOfBirth() {
+        // Arrange
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1995, 6, 15), "bio");
+
+        // Act + Assert
+        assertNotEquals(a1.hashCode(), a2.hashCode());
     }
 }
 

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.*;
  */
 class AuthorDTO_US025Test {
 
+
     // ===============================
     // Tests for fromAuthor()
     // ===============================
@@ -22,14 +23,11 @@ class AuthorDTO_US025Test {
     void fromAuthor_whenValidAuthor_shouldMapNameFromProfile() {
 
         // Arrange
-        Author author = mock(Author.class);
-        Profile profile = mock(Profile.class);
-
-        when(author.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Ken Follett");
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.getName()).thenReturn("Ken Follett");
 
         // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(author);
+        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(authorDouble);
 
         // Assert
         assertNotNull(dto);
@@ -40,14 +38,11 @@ class AuthorDTO_US025Test {
     void fromAuthor_whenAuthorHasDifferentName_shouldMapThatExactName() {
 
         // Arrange
-        Author author = mock(Author.class);
-        Profile profile = mock(Profile.class);
-
-        when(author.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Dan Brown");
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.getName()).thenReturn("Dan Brown");
 
         // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(author);
+        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(authorDouble);
 
         // Assert
         assertNotNull(dto);
@@ -72,19 +67,13 @@ class AuthorDTO_US025Test {
     void fromAuthors_listOfAuthors_shouldMapAllNames() {
 
         // Arrange
-        Author a1 = mock(Author.class);
-        Author a2 = mock(Author.class);
+        Author authorDouble1 = mock(Author.class);
+        Author authorDouble2 = mock(Author.class);
 
-        Profile p1 = mock(Profile.class);
-        Profile p2 = mock(Profile.class);
+        when(authorDouble1.getName()).thenReturn("Author One");
+        when(authorDouble2.getName()).thenReturn("Author Two");
 
-        when(a1.getProfile()).thenReturn(p1);
-        when(a2.getProfile()).thenReturn(p2);
-
-        when(p1.getName()).thenReturn("Author One");
-        when(p2.getName()).thenReturn("Author Two");
-
-        List<Author> authors = List.of(a1, a2);
+        List<Author> authors = List.of(authorDouble1, authorDouble2);
 
         // Act
         List<AuthorDTO_US025> dtos = AuthorDTO_US025.fromAuthors(authors);

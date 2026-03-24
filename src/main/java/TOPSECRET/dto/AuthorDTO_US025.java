@@ -29,7 +29,7 @@ public class AuthorDTO_US025 {
      */
     public static AuthorDTO_US025 fromAuthor(Author author) {
         if (author == null) return null;
-        return new AuthorDTO_US025(author.getProfile().getName());
+        return new AuthorDTO_US025(author.getName());
     }
 
     /**

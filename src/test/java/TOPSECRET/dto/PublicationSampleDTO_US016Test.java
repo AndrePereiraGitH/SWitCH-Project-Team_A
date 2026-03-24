@@ -22,8 +22,6 @@ class PublicationSampleDTO_US016Test {
 
         Author authorDouble1 = mock(Author.class);
         Author authorDouble2 = mock(Author.class);
-        Profile profileDouble1 = mock(Profile.class);
-        Profile profileDouble2 = mock(Profile.class);
 
         Genre genreDouble1 = mock(Genre.class);
         Genre genreDouble2 = mock(Genre.class);
@@ -37,10 +35,8 @@ class PublicationSampleDTO_US016Test {
         when(bdDouble.getOriginalLanguage()).thenReturn(Locale.ENGLISH);
 
         when(bdDouble.getAuthors()).thenReturn(List.of(authorDouble1, authorDouble2));
-        when(authorDouble1.getProfile()).thenReturn(profileDouble1);
-        when(authorDouble2.getProfile()).thenReturn(profileDouble2);
-        when(profileDouble1.getName()).thenReturn("Toy");
-        when(profileDouble2.getName()).thenReturn("Quim Barreiros");
+        when(authorDouble1.getName()).thenReturn("Toy");
+        when(authorDouble2.getName()).thenReturn("Quim Barreiros");
 
         when(bdDouble.getGenres()).thenReturn(List.of(genreDouble1, genreDouble2));
         when(genreDouble1.getGenreType()).thenReturn("Fiction");

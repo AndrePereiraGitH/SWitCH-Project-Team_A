@@ -52,16 +52,12 @@ class DirectSaleDTO_US025Test {
         when(seller2.getUserRole()).thenReturn(UserRole.NORMAL_USER);
 
         // --- AUTHORS ---
+        // --- AUTHORS ---
         author1 = mock(Author.class);
-        Profile profile1 = mock(Profile.class);
-        when(profile1.getName()).thenReturn("author1");
-        when(author1.getProfile()).thenReturn(profile1);
+        when(author1.getName()).thenReturn("author1");
 
         author2 = mock(Author.class);
-        Profile profile2 = mock(Profile.class);
-        when(profile2.getName()).thenReturn("author2");
-        when(author2.getProfile()).thenReturn(profile2);
-
+        when(author2.getName()).thenReturn("author2");
         // --- GENRES ---
         Genre genre1 = mock(Genre.class);
         when(genre1.getGenreType()).thenReturn("genre");

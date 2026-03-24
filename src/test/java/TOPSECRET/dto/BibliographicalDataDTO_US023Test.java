@@ -30,24 +30,20 @@ class BibliographicalDataDTO_US023Test {
         bdDouble = mock(BibliographicalData.class);
 
         Author author1Double = mock(Author.class);
-        Profile profile1Double = mock(Profile.class);
         Author author2Double = mock(Author.class);
-        Profile profile2Double = mock(Profile.class);
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
 
         when(bdDouble.getTitle()).thenReturn("title1");
 
-        when(author1Double.getProfile()).thenReturn(profile1Double);
-        when(profile1Double.getName()).thenReturn("author1 name");
-        when(author2Double.getProfile()).thenReturn(profile2Double);
-        when(profile2Double.getName()).thenReturn("author2 name");
-        authors = List.of(author1Double,author2Double);
+        when(author1Double.getName()).thenReturn("author1 name");
+        when(author2Double.getName()).thenReturn("author2 name");
+        authors = List.of(author1Double, author2Double);
         when(bdDouble.getAuthors()).thenReturn(authors);
 
         when(genre1Double.getGenreType()).thenReturn("genre1");
         when(genre2Double.getGenreType()).thenReturn("genre2");
-        genres = List.of(genre1Double,genre2Double);
+        genres = List.of(genre1Double, genre2Double);
         when(bdDouble.getGenres()).thenReturn(genres);
     }
 

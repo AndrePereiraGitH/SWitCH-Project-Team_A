@@ -409,12 +409,9 @@ class AuctionRepositoryMemTest {
     }
 
     private Author createMockAuthor(String authorName) {
-
-        Profile profileDouble = mock(Profile.class);
-        when(profileDouble.getName()).thenReturn(authorName);
-
         Author authorDouble = mock(Author.class);
-        when(authorDouble.getProfile()).thenReturn(profileDouble);
+
+        when(authorDouble.getName()).thenReturn(authorName);
 
         return authorDouble;
     }

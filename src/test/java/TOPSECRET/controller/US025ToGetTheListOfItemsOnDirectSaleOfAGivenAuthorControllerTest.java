@@ -40,16 +40,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         Author author1 = mock(Author.class);
         Author author2 = mock(Author.class);
-
-        Profile profile1 = mock(Profile.class);
-        Profile profile2 = mock(Profile.class);
-
-        when(profile1.getName()).thenReturn("Author One");
-        when(profile2.getName()).thenReturn("Author Two");
-
-        when(author1.getProfile()).thenReturn(profile1);
-        when(author2.getProfile()).thenReturn(profile2);
-
+        
         when(IAuthorRepository.getAllAuthors())
                 .thenReturn(List.of(author1, author2));
 

@@ -51,7 +51,7 @@ public class DirectSaleDTO_US025 {
         // Authors' names
         List<String> authors = new ArrayList<>();
         for (Author a : item.getBibliographicalData().getAuthors()) {
-            authors.add(a.getProfile().getName());
+            authors.add(a.getName());
         }
 
         // Total price

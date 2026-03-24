@@ -794,9 +794,7 @@ class PublicationSampleRepositoryMemTest {
 
         List<Author> authors = authorNames.stream().map(n -> {
             Author authorDouble = mock(Author.class);
-            Profile profileDouble = mock(Profile.class);
-            when(authorDouble.getProfile()).thenReturn(profileDouble);
-            when(profileDouble.getName()).thenReturn(n);
+            when(authorDouble.getName()).thenReturn(n);
             return authorDouble;
         }).toList();
         when(bdDouble.getAuthors()).thenReturn(authors);

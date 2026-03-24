@@ -101,13 +101,10 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         when(countryDouble.getCountryName()).thenReturn(country);
 
         Author authorDouble = mock(Author.class);
-        Profile profileDouble = mock(Profile.class);
 
-        when(profileDouble.getName()).thenReturn(name);
-        when(profileDouble.getBirthday()).thenReturn(dateOfBirth);
-        when(profileDouble.getCountry()).thenReturn(countryDouble);
-
-        when(authorDouble.getProfile()).thenReturn(profileDouble);
+        when(authorDouble.getName()).thenReturn(name);
+        when(authorDouble.getDateOfBirth()).thenReturn(dateOfBirth);
+        when(authorDouble.getCountry()).thenReturn(countryDouble);
         when(authorDouble.getBiography()).thenReturn(biography);
 
         return authorDouble;

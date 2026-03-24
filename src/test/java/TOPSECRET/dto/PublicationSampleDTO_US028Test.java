@@ -35,7 +35,6 @@ class PublicationSampleDTO_US028Test {
 
         // Arrange
         Author author = mock(Author.class);
-        Profile profile = mock(Profile.class);
         Publisher  publisher = mock(Publisher.class);
         PublicationType pubType = mock(PublicationType.class);
         Code code = mock(Code.class);
@@ -55,8 +54,7 @@ class PublicationSampleDTO_US028Test {
 
         when(bd.getTitle()).thenReturn("Clean Code");
         when(bd.getAuthors()).thenReturn(List.of(author));
-        when(author.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Robert C. Martin");
+        when(author.getName()).thenReturn("Robert C. Martin");
         when(genre.getGenreType()).thenReturn("Programming");
         when(bd.getGenres()).thenReturn(List.of(genre));
 
