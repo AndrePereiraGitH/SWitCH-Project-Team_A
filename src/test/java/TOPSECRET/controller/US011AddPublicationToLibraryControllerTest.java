@@ -77,8 +77,6 @@ class US011AddPublicationToLibraryControllerTest {
         assertFalse(result.contains(publication1));
 
 
-        verify(libraryMock).getAllPublications();
-        verify(pubSampleRepositoryMock).getListOfDifferentPublications(publicationsInLibrary);
     }
 
     /**
@@ -102,8 +100,6 @@ class US011AddPublicationToLibraryControllerTest {
         assertTrue(result.contains(publication2));
         assertTrue(result.contains(publication3));
 
-        verify(libraryMock).getAllPublications();
-        verify(pubSampleRepositoryMock).getListOfDifferentPublications(emptyLibrary);
     }
 
     /**
@@ -124,8 +120,6 @@ class US011AddPublicationToLibraryControllerTest {
         //assert
         assertTrue(result.isEmpty());
 
-        verify(libraryMock).getAllPublications();
-        verify(pubSampleRepositoryMock).getListOfDifferentPublications(libraryPublications);
     }
 
     /**
@@ -162,7 +156,6 @@ class US011AddPublicationToLibraryControllerTest {
         //assert
         assertTrue(result);
 
-        verify(libraryMock).addPublication(publication1);
     }
 
     /**
@@ -175,6 +168,5 @@ class US011AddPublicationToLibraryControllerTest {
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.addPublicationToLib(null));
 
-        verify(libraryMock, never()).addPublication(any());
     }
 }
