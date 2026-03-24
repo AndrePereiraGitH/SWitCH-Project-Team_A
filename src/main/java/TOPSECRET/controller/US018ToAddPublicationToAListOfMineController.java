@@ -8,7 +8,7 @@ import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.ILibraryRepository;
-import TOPSECRET.repository.IPublicationSampleRepositoryMem;
+import TOPSECRET.repository.IPublicationSampleRepository;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class US018ToAddPublicationToAListOfMineController {
 
     private final CollectionOfPublicationsRepository collectionRepo;
     private final ILibraryRepository libraryRepo;
-    private final IPublicationSampleRepositoryMem publicationSampleRepo;
+    private final IPublicationSampleRepository publicationSampleRepo;
 
     /**
      * Authenticated/active user in the execution context of this US.
@@ -65,7 +65,7 @@ public class US018ToAddPublicationToAListOfMineController {
             User user,
             CollectionOfPublicationsRepository collectionRepo,
             ILibraryRepository libraryRepo,
-            IPublicationSampleRepositoryMem publicationSampleRepo) {
+            IPublicationSampleRepository publicationSampleRepo) {
 
         if (user == null) throw new IllegalArgumentException("User cannot be null");
         if (collectionRepo == null) throw new IllegalArgumentException("CollectionOfPublicationsRepository cannot be null");

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 
 
 import TOPSECRET.domain.*;
-import TOPSECRET.repository.IPublicationSampleRepositoryMem;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * Unit tests for {@link US011AddPublicationToLibraryController} using Mockito.
  * <p>
  * This test class verifies the behavior of the controller in isolation by mocking
- * all its collaborators, namely {@link Library} and {@link IPublicationSampleRepositoryMem}.
+ * all its collaborators, namely {@link Library} and {@link PublicationSampleRepositoryMem}.
  * The goal is to ensure that the controller correctly delegates responsibilities
  * to its dependencies and returns the expected results.
  * </p>
@@ -23,7 +23,7 @@ import java.util.List;
 class US011AddPublicationToLibraryControllerTest {
 
     private Library libraryMock;
-    private IPublicationSampleRepositoryMem pubSampleRepositoryMock;
+    private PublicationSampleRepositoryMem pubSampleRepositoryMock;
     private US011AddPublicationToLibraryController controller;
 
     private PublicationSample publication1;
@@ -41,7 +41,7 @@ class US011AddPublicationToLibraryControllerTest {
     void preparation() {
 
         libraryMock = mock(Library.class);
-        pubSampleRepositoryMock = mock(IPublicationSampleRepositoryMem.class);
+        pubSampleRepositoryMock = mock(PublicationSampleRepositoryMem.class);
 
         publication1 = mock(PublicationSample.class);
         publication2 = mock(PublicationSample.class);
@@ -113,19 +113,19 @@ class US011AddPublicationToLibraryControllerTest {
     @Test
     void getListOfOtherPublications_shouldReturnNothing_libraryHasAllPublications() {
 
-    List<PublicationSample> libraryPublications = List.of(publication1, publication2, publication3);
-    List<PublicationSample> emptyList = List.of();
+        List<PublicationSample> libraryPublications = List.of(publication1, publication2, publication3);
+        List<PublicationSample> emptyList = List.of();
 
-    when(libraryMock.getAllPublications()).thenReturn(libraryPublications);
-    when(pubSampleRepositoryMock.getListOfDifferentPublications(libraryPublications)).thenReturn(emptyList);
+        when(libraryMock.getAllPublications()).thenReturn(libraryPublications);
+        when(pubSampleRepositoryMock.getListOfDifferentPublications(libraryPublications)).thenReturn(emptyList);
 
-    List<PublicationSample> result = controller.getListOfOtherPublications();
+        List<PublicationSample> result = controller.getListOfOtherPublications();
 
-    //assert
-    assertTrue(result.isEmpty());
+        //assert
+        assertTrue(result.isEmpty());
 
-    verify(libraryMock).getAllPublications();
-    verify(pubSampleRepositoryMock).getListOfDifferentPublications(libraryPublications);
+        verify(libraryMock).getAllPublications();
+        verify(pubSampleRepositoryMock).getListOfDifferentPublications(libraryPublications);
     }
 
     /**
@@ -155,7 +155,7 @@ class US011AddPublicationToLibraryControllerTest {
      * through the controller.
      */
     @Test
-    void addPublicationToLib_shouldAddPublication(){
+    void addPublicationToLib_shouldAddPublication() {
 
         boolean result = controller.addPublicationToLib(publication1);
 
@@ -170,7 +170,7 @@ class US011AddPublicationToLibraryControllerTest {
      * when attempting to add a {@code null} publication to the library.
      */
     @Test
-    void addPublicationToLib_shouldThrowExceptionForNullPublication(){
+    void addPublicationToLib_shouldThrowExceptionForNullPublication() {
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.addPublicationToLib(null));

@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.repository.IPublicationSampleRepositoryMem;
+import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
 import java.util.List;
 
@@ -11,10 +11,10 @@ import java.util.List;
 public class US011AddPublicationToLibraryController {
 
     private final Library library; //Vai representar a library do User, este controller não vai criar a library
-    private final IPublicationSampleRepositoryMem publicationSampleRepositoryMem; //Vai ter o repositório com todas as publicações do sistema
+    private final PublicationSampleRepositoryMem publicationSampleRepositoryMem; //Vai ter o repositório com todas as publicações do sistema
 
     //Construtor
-    public US011AddPublicationToLibraryController(Library library, IPublicationSampleRepositoryMem publicationSampleRepositoryMem){ //Recebe tudo o que precisa
+    public US011AddPublicationToLibraryController(Library library, PublicationSampleRepositoryMem publicationSampleRepositoryMem){ //Recebe tudo o que precisa
         this.library = library;
         this.publicationSampleRepositoryMem = publicationSampleRepositoryMem; //Associa as dependências ao controller (low coupling - controller não cria nada)
     }
