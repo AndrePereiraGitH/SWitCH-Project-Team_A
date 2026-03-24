@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 

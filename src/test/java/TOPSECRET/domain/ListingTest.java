@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.ValueObjects.Picture;
+import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

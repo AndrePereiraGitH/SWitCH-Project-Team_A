@@ -21,18 +21,18 @@ import java.util.Objects;
  * <p>It provides basic operations to manage publication samples such as creation,
  * addition, retrieval, and existence verification, without any persistence mechanism.</p>
  */
-public class IPublicationSampleRepositoryMem implements IPublicationSampleRepository {
+public class PublicationSampleRepositoryMem implements IPublicationSampleRepository {
 
     private final PublicationSampleFactory _publicationSampleFactory;
     private List<PublicationSample> allPublicationsInSystem;
 
     /**
-     * Constructs a new {@code IPublicationSampleRepositoryMem} with the given factory.
+     * Constructs a new {@code PublicationSampleRepositoryMem} with the given factory.
      * Initializes an empty internal list of publication samples.
      *
      * @param publicationSampleFactory the factory used to create {@link PublicationSample} instances
      */
-    public IPublicationSampleRepositoryMem(PublicationSampleFactory publicationSampleFactory) {
+    public PublicationSampleRepositoryMem(PublicationSampleFactory publicationSampleFactory) {
         allPublicationsInSystem = new ArrayList<>();
         _publicationSampleFactory = publicationSampleFactory;
     }

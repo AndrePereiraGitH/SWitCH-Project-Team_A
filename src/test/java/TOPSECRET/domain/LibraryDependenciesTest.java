@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

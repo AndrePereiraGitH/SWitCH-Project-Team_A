@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.ValueObjects.Email;
+
 public class Contact {
 
     private String _phoneNum;

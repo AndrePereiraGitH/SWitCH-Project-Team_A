@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Profile;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-class IPublicationSampleRepositoryMemTest {
+class PublicationSampleRepositoryMemTest {
 
     // ===========================================================
     // ======================== Set Up ===========================
@@ -103,7 +104,7 @@ class IPublicationSampleRepositoryMemTest {
     void findItemsByListingAndPublication_ShouldReturnSamplesMatchingPublication() {
         // Arrange
         List<Listing> listOfListings = List.of(listing1Double, listing2Double, listing3Double);
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act
         List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
@@ -120,7 +121,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listOfListings = List.of(listing1Double, listing3Double);
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd2Double);
 
         assertTrue(itemsList.isEmpty());
@@ -132,7 +133,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listOfListings = List.of();
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
 
         // Assert
@@ -145,7 +146,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listOfListings = List.of(listing1Double);
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
 
         // Assert
@@ -159,7 +160,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listOfListings = List.of(listing3Double);
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
 
         assertEquals(1, itemsList.size());
@@ -176,7 +177,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listings = List.of(listing1Double, listing2Double, listing3Double);
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> result = repo.findItemsByListingAndPublisher(listings, publisher1Double);
 
         // Assert
@@ -193,7 +194,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listings = List.of(listing1Double, listing2Double, listing3Double);
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> result = repo.findItemsByListingAndPublisher(listings, publisherDouble);
 
         // Assert
@@ -206,7 +207,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listings = List.of();
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> result =  repo.findItemsByListingAndPublisher(List.of(), publisher1Double);
 
         // Assert
@@ -219,7 +220,7 @@ class IPublicationSampleRepositoryMemTest {
         List<Listing> listings = List.of(listing1Double);
 
         // Act
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> result = repo.findItemsByListingAndPublisher(listings, publisher1Double);
 
         // Assert
@@ -231,7 +232,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingsIsNull() {
         //Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -241,7 +242,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void findItemsByListingAndPublisher_ShouldThrowExceptionWhenPublisherIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         when(listing1Double.getItems()).thenReturn(List.of());
         when(listing2Double.getItems()).thenReturn(List.of());
 
@@ -255,7 +256,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingsContainNull() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<Listing> listings = new ArrayList<>();
         listings.add(listing1Double);
         listings.add(null);
@@ -268,7 +269,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingItemsIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         when(listing1Double.getItems()).thenReturn(null);
 
         List<Listing> listings = List.of(listing1Double);
@@ -281,7 +282,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingContainsNullItem() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> items = new ArrayList<>();
         items.add(pubSample1Double);
         items.add(null);
@@ -304,7 +305,7 @@ class IPublicationSampleRepositoryMemTest {
     void shouldThrowExceptionWhenLibraryIsNull() {
 
         // ARRANGE
-        IPublicationSampleRepository sut = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository sut = new PublicationSampleRepositoryMem(factory);
         PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
 
         // ACT + ASSERT
@@ -319,7 +320,7 @@ class IPublicationSampleRepositoryMemTest {
     void shouldThrowExceptionWhenDtoIsNull() {
 
         // ARRANGE
-        IPublicationSampleRepository sut = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository sut = new PublicationSampleRepositoryMem(factory);
         Library library = mock(Library.class);
 
         // ACT + ASSERT
@@ -335,7 +336,7 @@ class IPublicationSampleRepositoryMemTest {
     void shouldReturnMatchingPublicationSample() {
 
         // ARRANGE
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         Library library = mock(Library.class);
         PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
 
@@ -373,7 +374,7 @@ class IPublicationSampleRepositoryMemTest {
     void shouldThrowExceptionWhenPublicationNotFound() {
 
         // ARRANGE
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         Library library = mock(Library.class);
         PublicationSampleDTO_US018 dto = mock(PublicationSampleDTO_US018.class);
 
@@ -411,26 +412,26 @@ class IPublicationSampleRepositoryMemTest {
         Condition condition = Condition.LIKE_NEW;
 
         PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository IPublicationSampleRepositoryMem = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(factory);
 
 
         when(factory.create(bdDouble, ownerDouble, status, eDouble, condition)).thenReturn(publicationSampleDouble);
 
         // Act
-        PublicationSample result = IPublicationSampleRepositoryMem.createAndAdd(bdDouble, ownerDouble, status, eDouble, condition);
+        PublicationSample result = publicationSampleRepositoryMem.createAndAdd(bdDouble, ownerDouble, status, eDouble, condition);
 
         // Assert
         verify(factory).create(bdDouble, ownerDouble, status, eDouble, condition);
         assertEquals(publicationSampleDouble, result);
-        assertTrue(IPublicationSampleRepositoryMem.getAllPublications().contains(publicationSampleDouble));
-        assertEquals(1, IPublicationSampleRepositoryMem.getAllPublications().size());
+        assertTrue(publicationSampleRepositoryMem.getAllPublications().contains(publicationSampleDouble));
+        assertEquals(1, publicationSampleRepositoryMem.getAllPublications().size());
     }
 
     @Test
     void createAndAdd_shouldThrowException_whenBibliographicalDataIsNull() {
         // Arrange
 
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
 
@@ -455,7 +456,7 @@ class IPublicationSampleRepositoryMemTest {
     void createAndAdd_shouldThrowException_whenUserIsNull() {
         // Arrange
 
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
 
@@ -479,7 +480,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void createAndAdd_shouldThrowException_whenStatusIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
 
@@ -504,7 +505,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void createAndAdd_shouldThrowException_whenEditionIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
 
@@ -528,7 +529,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void createAndAdd_shouldThrowException_whenConditionIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
 
@@ -554,7 +555,7 @@ class IPublicationSampleRepositoryMemTest {
     void getPublicationByDTO_shouldThrow_whenDTOList_Empty() {
 
         // arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSampleDTO_US016> pubsDTOList = new ArrayList<>();
 
         // act + assert
@@ -567,7 +568,7 @@ class IPublicationSampleRepositoryMemTest {
     void getPublicationByDTO_shouldThrow_whenDTOList_Null() {
 
         //Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // act + assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(null));
@@ -579,7 +580,7 @@ class IPublicationSampleRepositoryMemTest {
     void getPublicationByDTO_shouldReturn_EmptyList_whenNoPublicationSampleMatchesDTO() {
 
         // arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         List<PublicationSample> matchedList = List.of();
 
 
@@ -599,7 +600,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void getPublicationsByDTO_allFieldsMatch_returnsPublication() {
         //Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         PublicationSample ps = mockPublicationSample(
                 "Title",
@@ -632,7 +633,7 @@ class IPublicationSampleRepositoryMemTest {
     @Test
     void getPublicationsByDTO_authorOrderDifferent_returnsEmpty_becauseListEqualsIsOrderSensitive() {
         //Arrange
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         PublicationSample ps = mockPublicationSample(
                 "Title",
                 List.of("Author1", "Author2"),
@@ -667,14 +668,14 @@ class IPublicationSampleRepositoryMemTest {
         PublicationSample psDouble2 = mock(PublicationSample.class);
 
         PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository IPublicationSampleRepositoryMem = new IPublicationSampleRepositoryMem(psFactory);
+        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(psFactory);
 
-        IPublicationSampleRepositoryMem.add(psDouble1);
-        IPublicationSampleRepositoryMem.add(psDouble2);
+        publicationSampleRepositoryMem.add(psDouble1);
+        publicationSampleRepositoryMem.add(psDouble2);
 
         // act + assert
 
-        assertTrue(IPublicationSampleRepositoryMem.isExistent(psDouble1));
+        assertTrue(publicationSampleRepositoryMem.isExistent(psDouble1));
 
     }
 
@@ -686,12 +687,12 @@ class IPublicationSampleRepositoryMemTest {
         PublicationSample psDouble2 = mock(PublicationSample.class);
 
         PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository IPublicationSampleRepositoryMem = new IPublicationSampleRepositoryMem(psFactory);
+        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(psFactory);
 
-        IPublicationSampleRepositoryMem.add(psDouble1);
+        publicationSampleRepositoryMem.add(psDouble1);
 
         // act + assert
-        assertFalse(IPublicationSampleRepositoryMem.isExistent(psDouble2));
+        assertFalse(publicationSampleRepositoryMem.isExistent(psDouble2));
 
     }
 
@@ -702,10 +703,10 @@ class IPublicationSampleRepositoryMemTest {
         PublicationSample psDouble = mock(PublicationSample.class);
 
         PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository IPublicationSampleRepositoryMem = new IPublicationSampleRepositoryMem(psFactory);
+        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(psFactory);
 
         // act + assert
-        assertFalse(IPublicationSampleRepositoryMem.isExistent(psDouble));
+        assertFalse(publicationSampleRepositoryMem.isExistent(psDouble));
 
     }
 
@@ -716,7 +717,7 @@ class IPublicationSampleRepositoryMemTest {
         PublicationSample p3 = mock(PublicationSample.class);
 
         // repo: p1, p2, p3
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         repo.add(p1);
         repo.add(p2);
         repo.add(p3);
@@ -738,7 +739,7 @@ class IPublicationSampleRepositoryMemTest {
         PublicationSample p1 = mock(PublicationSample.class);
         PublicationSample p2 = mock(PublicationSample.class);
 
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         repo.add(p1);
         repo.add(p2);
 
@@ -752,7 +753,7 @@ class IPublicationSampleRepositoryMemTest {
         PublicationSample p1 = mock(PublicationSample.class);
         PublicationSample p2 = mock(PublicationSample.class);
 
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         repo.add(p1);
         repo.add(p2);
 
@@ -766,7 +767,7 @@ class IPublicationSampleRepositoryMemTest {
     void getListOfDifferentPublications_returnsImmutableCopy() {
         PublicationSample p1 = mock(PublicationSample.class);
 
-        IPublicationSampleRepository repo = new IPublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         repo.add(p1);
 
         List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());

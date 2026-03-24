@@ -41,9 +41,8 @@ public interface IPublicationSampleRepository {
     boolean isExistent(PublicationSample publicationSample);
     List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary);
     List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
-    List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication);
-    PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
     List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher);
-
+    PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
+    List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication);
 
 }

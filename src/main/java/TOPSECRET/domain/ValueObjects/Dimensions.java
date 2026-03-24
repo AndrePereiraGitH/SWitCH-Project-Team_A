@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 /**
  * Immutable value object representing physical dimensions.
  * Invariants:

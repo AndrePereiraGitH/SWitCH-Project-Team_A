@@ -1,6 +1,9 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
+import TOPSECRET.domain.PublicationType;
 
 import java.time.LocalDate;
 import java.util.List;

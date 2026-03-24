@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.ValueObjects.Price;
+
 import java.time.LocalDateTime;
 
 /**
