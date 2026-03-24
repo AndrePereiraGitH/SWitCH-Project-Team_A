@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
+import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
 import java.time.LocalDate;
 import java.util.Locale;

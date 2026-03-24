@@ -3,7 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Auction;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.Price;
+import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

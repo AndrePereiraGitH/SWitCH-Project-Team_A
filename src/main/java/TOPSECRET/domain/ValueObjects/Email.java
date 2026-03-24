@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 
 import java.util.regex.Pattern;
 

@@ -3,6 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Profile;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.CollectionOfPublicationsRepositoryMem;

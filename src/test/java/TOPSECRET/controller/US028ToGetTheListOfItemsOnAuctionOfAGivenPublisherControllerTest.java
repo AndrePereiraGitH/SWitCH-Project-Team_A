@@ -4,6 +4,8 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationSampleDTO_US028;
 import TOPSECRET.dto.PublisherDTO_US028;
 import TOPSECRET.repository.IPublisherRepository;

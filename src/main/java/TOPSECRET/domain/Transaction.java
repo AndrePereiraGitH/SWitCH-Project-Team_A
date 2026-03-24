@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.TransactionStatus;
+import TOPSECRET.domain.ValueObjects.Price;
 
 import java.time.LocalDateTime;
 import java.util.List;

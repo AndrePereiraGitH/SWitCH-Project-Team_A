@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import TOPSECRET.domain.Picture;
 import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
 import TOPSECRET.domain.Enum.MediaFormat;
