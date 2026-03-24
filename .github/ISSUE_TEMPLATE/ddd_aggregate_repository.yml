@@ -1,0 +1,26 @@
+name: "DDD <Aggregate Name> - Repository Refactor"
+description: "Infrastructure layer implementation for Aggregate persistence"
+title: "[DDD] Repository: <Aggregate Name>"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ##  Repository Implementation (Infrastructure)
+        > **Constraint:** This layer must bridge the gap between the Domain Model and the Database without introducing side effects.
+
+        ### Implementation Checklist
+        - [ ] **Interface Compliance:** Implementation strictly follows the contract defined in `domain/<aggregateName>/`.
+        - [ ] **Aggregate-Centric:** The repository only handles the **Aggregate Root**; internal entities are never accessed or saved independently.
+        - [ ] **Atomic Persistence:** Verified that saving the Root persists the entire entity tree (cascading saves/updates) in a single operation.
+        - [ ] **Identity Mapping:** Correctly handles the conversion between the **Aggregate ID Value Object** and the database primary key.
+        - [ ] **Zero Business Logic:** Confirmed that the repository contains no `if/else` logic related to domain invariants.
+        - [ ] **Transactional Integrity:** Methods are marked as `@Transactional` (or equivalent) to ensure "all or nothing" updates.
+
+        ### Data Mapping & Cleanliness
+        - [ ] **No Leakage:** Database-specific annotations (e.g., JPA/Hibernate) do not bleed into the Domain classes.
+        - [ ] **Consistency Check:** Repository ensures the state in the database perfectly mirrors the state of the Aggregate Root after an operation.
+        - [ ] **Exception Translation:** Infrastructure-specific exceptions (SQL, Connection) are caught or translated if necessary to prevent leaking to the UI.

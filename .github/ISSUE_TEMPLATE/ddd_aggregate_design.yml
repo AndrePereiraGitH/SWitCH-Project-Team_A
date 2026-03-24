@@ -1,0 +1,31 @@
+---
+name: "DDD <Aggregate Name> - Design Refactor"
+description: "Architecture & Design phase for a Domain Aggregate"
+title: "[DDD] Design: <Aggregate Name>"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Design & Architecture (Pre-Implementation)
+        > **Note:** Implementation is blocked until these architectural artifacts are reviewed and approved.
+
+        ### Class Diagram (CD)
+        - [ ] **Aggregate Root:** Clearly identified with its encapsulated invariants.
+        - [ ] **Value Objects:** Modeled for all attributes (avoiding Primitive Obsession).
+        - [ ] **Internal Entities:** Hidden within the aggregate boundary; not accessible externally.
+        - [ ] **Domain Factory:** Defined for complex instantiation logic.
+        - [ ] **Repository Interface:** Defined within the Domain Layer (Contract only).
+        - [ ] **CRITICAL:** Ensure all external aggregates are referenced by **ID (Value Object)** only—no direct object references.
+
+        ### Sequence Diagrams (SD)
+        - [ ] **Creation Flow:** `Controller` → `Factory.create(...)` → `Aggregate (Init)` → `Repository.save()`
+        - [ ] **Business Logic Flow (Update):** `Controller` → `Repository.findById()` → `Aggregate.executeMethod()` → `Repository.save()`
+
+        ### Boundary & Integrity Check
+        - [ ] **Zero Leakage:** No business/domain logic exists in the Controller.
+        - [ ] **Persistence Ignorance:** No database or framework-specific logic exists in the Domain Layer.
+        - [ ] **Invariant Protection:** The Aggregate Root is the sole entry point for state changes, ensuring all business rules are satisfied before returning.
