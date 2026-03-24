@@ -102,7 +102,6 @@ public class BibliographicalDataDTO_US023 {
      * <p>Extracts the following fields from the domain object:</p>
      * <ul>
      *   <li><b>title</b> — from {@code getTitle()}</li>
-     *   <li><b>authors</b> — each author's name via {@code getProfile().getName()}</li>
      *   <li><b>genres</b> — each genre's title via {@code getTitle()}</li>
      * </ul>
      *
@@ -122,7 +121,7 @@ public class BibliographicalDataDTO_US023 {
         List<Author> authors = bdPublication.getAuthors();
         List<String> authorsDTO = new ArrayList<>();
         for (Author author : authors) {
-            authorsDTO.add(author.getProfile().getName());
+            authorsDTO.add(author.getName());
         }
 
         List<Genre> genres = bdPublication.getGenres();

@@ -33,17 +33,14 @@ class BibliographicalDataTest {
 
         Author author1Double = mock(Author.class);
         Profile profile1Double = mock(Profile.class);
-        when(author1Double.getProfile()).thenReturn(profile1Double);
         when(profile1Double.getName()).thenReturn("Daniel Huttenlocher");
 
         Author author2Double = mock(Author.class);
         Profile profile2Double = mock(Profile.class);
-        when(author2Double.getProfile()).thenReturn(profile2Double);
         when(profile2Double.getName()).thenReturn("Eric Schmidt III");
 
         Author author3Double = mock(Author.class);
         Profile profile3Double = mock(Profile.class);
-        when(author3Double.getProfile()).thenReturn(profile3Double);
         when(profile3Double.getName()).thenReturn("Daniel Huttenlocher");
 
         authors = List.of(author1Double, author2Double, author3Double);
@@ -441,7 +438,6 @@ class BibliographicalDataTest {
         // New author
         Author author4Double = mock(Author.class);
         Profile profile4Double = mock(Profile.class);
-        when(author4Double.getProfile()).thenReturn(profile4Double);
         when(profile4Double.getName()).thenReturn("John Green");
 
         // Act
@@ -509,9 +505,7 @@ class BibliographicalDataTest {
 
         // New author
         Author author4Double = mock(Author.class);
-        Profile profile4Double = mock(Profile.class);
-        when(author4Double.getProfile()).thenReturn(profile4Double);
-        when(profile4Double.getName()).thenReturn("John Green");
+        when(author4Double.getName()).thenReturn("John Green");
 
         // Act
         BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();

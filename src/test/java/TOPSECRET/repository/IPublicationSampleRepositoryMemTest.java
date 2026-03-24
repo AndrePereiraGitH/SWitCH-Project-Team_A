@@ -3,7 +3,6 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Profile;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import org.junit.jupiter.api.BeforeEach;
@@ -794,9 +793,7 @@ class PublicationSampleRepositoryMemTest {
 
         List<Author> authors = authorNames.stream().map(n -> {
             Author authorDouble = mock(Author.class);
-            Profile profileDouble = mock(Profile.class);
-            when(authorDouble.getProfile()).thenReturn(profileDouble);
-            when(profileDouble.getName()).thenReturn(n);
+            when(authorDouble.getName()).thenReturn(n);
             return authorDouble;
         }).toList();
         when(bdDouble.getAuthors()).thenReturn(authors);
