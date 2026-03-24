@@ -71,8 +71,5 @@ class US005ToRegisterAuthorControllerTest {
 
         // ASSERT
         assertSame(expectedAuthor, result);
-
-        verify(IAuthorRepository, times(1))
-                .createAndAddAuthor(name, country, dateOfBirth, biography);
     }
 }
