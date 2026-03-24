@@ -4,7 +4,7 @@ import TOPSECRET.domain.Auction;
 import TOPSECRET.domain.Author;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.repository.AuthorRepository;
+import TOPSECRET.repository.IAuthorRepository;
 import TOPSECRET.repository.IAuctionRepository;
 
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ import java.util.List;
  */
 public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
-    private final AuthorRepository authorRepository;
+    private final IAuthorRepository IAuthorRepository;
     private final IAuctionRepository auctionRepo;
 
-    public US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(AuthorRepository authorRepository, IAuctionRepository auctionRepo) {
-        this.authorRepository = authorRepository;
+    public US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository IAuthorRepository, IAuctionRepository auctionRepo) {
+        this.IAuthorRepository = IAuthorRepository;
         this.auctionRepo = auctionRepo;
     }
 
@@ -31,7 +31,7 @@ public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
      */
     public List<AuthorDTO_US026> getAllAuthors() {
 
-        List<Author> authorsList = authorRepository.getAllAuthors();
+        List<Author> authorsList = IAuthorRepository.getAllAuthors();
         List<AuthorDTO_US026> authorsListDTO = new ArrayList<>();
 
         for (Author a : authorsList) {

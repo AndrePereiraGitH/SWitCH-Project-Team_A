@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.repository.AuthorRepositoryMem;
+import TOPSECRET.repository.IAuthorRepository;
 import TOPSECRET.repository.AuctionRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,16 +18,16 @@ import static org.mockito.Mockito.when;
 class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     AuctionRepositoryMem auctionRepository;
-    AuthorRepositoryMem authorRepositoryMem;
+    IAuthorRepository IAuthorRepository;
 
     US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller;
 
     @BeforeEach
     void setup() {
-        authorRepositoryMem = mock(AuthorRepositoryMem.class);
-        controller = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepositoryMem, auctionRepository);
+        IAuthorRepository = mock(IAuthorRepository.class);
+        controller = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository, auctionRepository);
         auctionRepository = mock(AuctionRepositoryMem.class);
-        controller = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(authorRepositoryMem, auctionRepository);
+        controller = new US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository, auctionRepository);
     }
 
     @Test
@@ -56,7 +56,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         Author author1 = createMockAuthor(name, country, birthday, biography);
         Author author2 = createMockAuthor(name2, country, birthday2, biography2);
 
-        when(authorRepositoryMem.getAllAuthors()).thenReturn(List.of(author1, author2));
+        when(IAuthorRepository.getAllAuthors()).thenReturn(List.of(author1, author2));
 
         // act
         List<AuthorDTO_US026> result = controller.getAllAuthors();

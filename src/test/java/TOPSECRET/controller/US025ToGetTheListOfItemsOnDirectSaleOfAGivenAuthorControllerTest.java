@@ -4,7 +4,7 @@ import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.repository.AuthorRepositoryMem;
+import TOPSECRET.repository.IAuthorRepository;
 import TOPSECRET.repository.IListingRepository;
 
 import org.junit.jupiter.api.Test;
@@ -29,12 +29,12 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void shouldReturnAuthorsDTOList() {
 
         // ARRANGE
-        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
+        IAuthorRepository IAuthorRepository = mock(IAuthorRepository.class);
         IListingRepository listingRepository = mock(IListingRepository.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        authorRepositoryMem,
+                        IAuthorRepository,
                         listingRepository
                 );
 
@@ -50,7 +50,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         when(author1.getProfile()).thenReturn(profile1);
         when(author2.getProfile()).thenReturn(profile2);
 
-        when(authorRepositoryMem.getAllAuthors())
+        when(IAuthorRepository.getAllAuthors())
                 .thenReturn(List.of(author1, author2));
 
         // ACT
@@ -68,12 +68,12 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void shouldReturnPublicationSamplesForAuthorWithDirectSales() {
 
         // ARRANGE
-        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
+        IAuthorRepository IAuthorRepository = mock(IAuthorRepository.class);
         IListingRepository listingRepository = mock(IListingRepository.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        authorRepositoryMem,
+                        IAuthorRepository,
                         listingRepository
                 );
 
@@ -101,12 +101,12 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     void shouldReturnEmptyListForAuthorWithoutDirectSales() {
 
         // ARRANGE
-        AuthorRepositoryMem authorRepositoryMem = mock(AuthorRepositoryMem.class);
+        IAuthorRepository IAuthorRepository = mock(IAuthorRepository.class);
         IListingRepository listingRepository = mock(IListingRepository.class);
 
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        authorRepositoryMem,
+                        IAuthorRepository,
                         listingRepository
                 );
 
@@ -133,7 +133,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         // ARRANGE
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        mock(AuthorRepositoryMem.class),
+                        mock(IAuthorRepository.class),
                         mock(IListingRepository.class)
                 );
 
@@ -170,7 +170,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-                        mock(AuthorRepositoryMem.class),
+                        mock(IAuthorRepository.class),
                         null
                 )
         );

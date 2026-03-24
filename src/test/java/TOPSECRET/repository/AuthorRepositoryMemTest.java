@@ -58,10 +58,10 @@ class AuthorRepositoryMemTest {
         Author mockAuthor = mock(Author.class);
         when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
-        AuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
 
         // Act
-        Author result = authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+        Author result = IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
         // Assert
         assertSame(mockAuthor, result);
@@ -75,13 +75,13 @@ class AuthorRepositoryMemTest {
         when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
 
-        AuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
-        authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+        IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio)
+                () -> IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio)
         );
 
         assertEquals("Author already exists", exception.getMessage());
@@ -94,10 +94,10 @@ class AuthorRepositoryMemTest {
     @Test
     void shouldReturnUnmodifiableList() {
         // Arrange
-        AuthorRepository authorRepositoryMem = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository IAuthorRepositoryMem = new AuthorRepositoryMem(authorFactory);
 
         // Act
-        List<Author> result = authorRepositoryMem.getAllAuthors();
+        List<Author> result = IAuthorRepositoryMem.getAllAuthors();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Author.class)));
@@ -106,17 +106,17 @@ class AuthorRepositoryMemTest {
     @Test
     void shouldReturnDefensiveCopy() {
         // Arrange
-        AuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
         Author mockAuthor = mock(Author.class);
 
         when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
 
-        authorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+        IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
 
         // Act
-        List<Author> result1 = authorRepository.getAllAuthors();
-        List<Author> result2 = authorRepository.getAllAuthors();
+        List<Author> result1 = IAuthorRepository.getAllAuthors();
+        List<Author> result2 = IAuthorRepository.getAllAuthors();
 
         // Assert
         assertNotSame(result1, result2);
