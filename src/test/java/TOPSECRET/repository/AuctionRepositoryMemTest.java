@@ -2,7 +2,6 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.Profile;
 import TOPSECRET.dto.AuthorDTO_US026;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

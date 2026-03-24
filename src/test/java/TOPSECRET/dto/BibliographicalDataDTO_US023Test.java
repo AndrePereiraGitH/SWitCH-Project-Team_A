@@ -3,7 +3,6 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

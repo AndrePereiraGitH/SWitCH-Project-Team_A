@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author;
-import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.AuthorDTO_US025;
 import TOPSECRET.repository.IAuthorRepository;

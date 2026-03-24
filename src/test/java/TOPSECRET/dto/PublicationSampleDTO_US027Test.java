@@ -5,7 +5,6 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

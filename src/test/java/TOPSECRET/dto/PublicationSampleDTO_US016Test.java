@@ -2,7 +2,6 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -91,14 +90,14 @@ class PublicationSampleDTO_US016Test {
     void equals_shouldReturnFalse_whenComparedWithNull() {
         PublicationSampleDTO_US016 dto = createPublicationSampleDTO();
 
-        assertNotEquals(dto, null);
+        assertNotEquals(null, dto);
     }
 
     @Test
     void equals_shouldReturnFalse_whenComparedWithDifferentClass() {
         PublicationSampleDTO_US016 dto = createPublicationSampleDTO();
 
-        assertNotEquals(dto, "not a dto");
+        assertNotEquals("not a dto", dto);
     }
 
     @Test

@@ -31,7 +31,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         PublicationSample pubSample1Double = mock(PublicationSample.class);
         PublicationSample pubSample2Double = mock(PublicationSample.class);
         BibliographicalData bd1Double = mock(BibliographicalData.class);
-        BibliographicalData bd2Double = mock(BibliographicalData.class);;
+        BibliographicalData bd2Double = mock(BibliographicalData.class);
         Author authorDouble = mock(Author.class);
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
