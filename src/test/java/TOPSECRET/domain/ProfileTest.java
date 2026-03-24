@@ -1,6 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.Countries;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

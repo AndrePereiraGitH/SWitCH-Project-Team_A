@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 
 import java.math.BigDecimal;
 import java.util.Objects;

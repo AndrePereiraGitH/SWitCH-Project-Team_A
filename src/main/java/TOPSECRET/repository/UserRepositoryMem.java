@@ -2,6 +2,8 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Profile;
 
 import java.util.ArrayList;
 import java.util.List;

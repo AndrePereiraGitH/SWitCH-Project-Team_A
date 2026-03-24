@@ -2,9 +2,8 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;

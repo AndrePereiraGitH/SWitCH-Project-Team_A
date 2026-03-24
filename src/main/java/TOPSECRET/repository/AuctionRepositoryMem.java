@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.AuctionFactory;
+import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;

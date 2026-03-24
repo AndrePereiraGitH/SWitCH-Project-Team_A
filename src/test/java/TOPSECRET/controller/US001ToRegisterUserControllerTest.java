@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Profile;
 import TOPSECRET.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
+import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
