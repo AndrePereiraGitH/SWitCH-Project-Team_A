@@ -17,32 +17,27 @@ participant ":AuthorRepository" as R
 Administrator -> UI :  I want to register an author in MiteLovers
 activate UI
 
-UI -->> Administrator :  Please provide profile information and biography
+UI -->> Administrator :  Please provide author information
 deactivate
 
-Administrator -> UI :  Here's the profile information and biography
+Administrator -> UI :  Here's the information
 activate UI
 UI -> C : registerAuthor(name, \n country, birthday, biography)
 activate C
 
-C -> R :  createAndAddAuthor(name, \n country, birthday, biography)
+C -> R :  createAndAdd(name, \n country, birthday, biography)
 activate R
 
 participant ":AuthorFactory" as F
-R -> F :  createAuthor(name, \n country, birthday, biography)
+R -> F :  create(name, \n country, birthday, biography)
 activate F
 
- create participant "author1:Author" as A
- F-> A ++ : create(name, country, birthday, biography)
+create participant "author1:Author" as A
+ F-->> A  : «create»
 
- create "profile1:Profile" as P
- A -> P : create(name, country, birthday)
 
- A --> F : author1
- F --> R : author1
 
  R -> R : exists(author1)
- deactivate A
 
 
 alt author already exists
@@ -59,9 +54,5 @@ deactivate C
 
 UI -->> Administrator :  success
 deactivate UI
-
-
-participant "country: Country"
-participant "birthday: LocalDate"
 
 @enduml

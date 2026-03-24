@@ -247,7 +247,7 @@ public class PublicationSampleDTO_US027 {
         return new PublicationSampleDTO_US027(
                 publicationSample.getBibliographicalData().getTitle(),
                 publicationSample.getBibliographicalData().getAuthors().stream()
-                        .map(a -> a.getProfile().getName())
+                        .map(a -> a.getName())
                         .toList(),
                 publicationSample.getBibliographicalData().getGenres().stream()
                         .map(Genre::getGenreType)

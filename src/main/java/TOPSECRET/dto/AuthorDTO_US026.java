@@ -23,6 +23,6 @@ public record AuthorDTO_US026(
             throw new IllegalArgumentException("author cannot be null");
         }
 
-        return new AuthorDTO_US026(author.getProfile().getName());
+        return new AuthorDTO_US026(author.getName());
     }
 }

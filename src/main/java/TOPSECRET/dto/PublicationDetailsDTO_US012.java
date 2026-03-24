@@ -66,7 +66,7 @@ public class PublicationDetailsDTO_US012 {
      * This method extracts the following information from the publication:
      * <ul>
      *   <li>Title from the bibliographical data</li>
-     *   <li>Author names from the authors' profiles</li>
+     *   <li>Author names from the authors' data</li>
      *   <li>Publication type (binding type) from the edition</li>
      *   <li>Code (ISBN) from the edition</li>
      * </ul>
@@ -81,7 +81,7 @@ public class PublicationDetailsDTO_US012 {
         List<String> authorsDTO = new ArrayList<>();
 
         for (Author author : listOfAuthors) {
-            authorsDTO.add(author.getProfile().getName());
+            authorsDTO.add(author.getName());
         }
 
         String typeDTO = String.valueOf(publication.getEdition().getPublicationType().getMediaFormat());

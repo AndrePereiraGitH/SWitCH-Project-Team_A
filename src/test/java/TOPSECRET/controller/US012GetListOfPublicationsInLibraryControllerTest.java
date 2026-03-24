@@ -5,7 +5,6 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.*;
 
 import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationDetailsDTO_US012;
 import TOPSECRET.repository.ILibraryRepository;
@@ -184,11 +183,9 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     }
 
     private Author createMockAuthor(String authorName) {
-        Profile profile = mock(Profile.class);
-        when(profile.getName()).thenReturn(authorName);
-
         Author author = mock(Author.class);
-        when(author.getProfile()).thenReturn(profile);
+
+        when(author.getName()).thenReturn(authorName);
 
         return author;
     }

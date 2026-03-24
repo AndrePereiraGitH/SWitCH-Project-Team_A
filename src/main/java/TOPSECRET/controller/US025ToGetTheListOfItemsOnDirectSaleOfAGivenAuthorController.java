@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.repository.AuthorRepositoryMem;
+import TOPSECRET.repository.IAuthorRepository;
 import TOPSECRET.repository.IListingRepository;
 
 import java.util.List;
@@ -17,20 +17,20 @@ import java.util.List;
  */
 public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
-    private final AuthorRepositoryMem authorRepositoryMem;
+    private final IAuthorRepository IAuthorRepository;
     private final IListingRepository listingRepository;
 
     public US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
-            AuthorRepositoryMem authorRepositoryMem,
+            IAuthorRepository IAuthorRepository,
             IListingRepository listingRepository) {
 
-        if (authorRepositoryMem == null)
+        if (IAuthorRepository == null)
             throw new IllegalArgumentException("AuthorRepository cannot be null");
 
         if (listingRepository == null)
             throw new IllegalArgumentException("ListingRepository cannot be null");
 
-        this.authorRepositoryMem = authorRepositoryMem;
+        this.IAuthorRepository = IAuthorRepository;
         this.listingRepository = listingRepository;
     }
 
@@ -40,7 +40,7 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      * @return list of AuthorDTO_US025 representing all authors
      */
     public List<AuthorDTO_US025> getAllAuthors() {
-        return AuthorDTO_US025.fromAuthors(authorRepositoryMem.getAllAuthors());
+        return AuthorDTO_US025.fromAuthors(IAuthorRepository.getAllAuthors());
     }
 
     /**

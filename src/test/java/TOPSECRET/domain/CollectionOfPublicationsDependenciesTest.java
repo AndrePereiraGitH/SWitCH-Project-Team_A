@@ -75,8 +75,7 @@ class CollectionOfPublicationsDependenciesTest {
         Profile profile = new Profile("John Doe", country, LocalDate.of(1980, 4, 29));
 
         Author author = new Author(
-                profile,
-                "Test author for testing"
+                "John Doe", country, LocalDate.of(1980, 4, 29),"Test author for testing"
         );
 
         Publisher publisher = new Publisher(

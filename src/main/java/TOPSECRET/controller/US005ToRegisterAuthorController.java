@@ -3,15 +3,15 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
-import TOPSECRET.repository.AuthorRepositoryMem;
+import TOPSECRET.repository.IAuthorRepository;
 import java.time.LocalDate;
 
 /**
  * Application controller responsible for registering a new {@link Author} in the system.
  *
- * <p>This controller coordinates access to the {@link AuthorRepositoryMem}.
+ * <p>This controller coordinates access to the {@link IAuthorRepository}.
  * The {@link AuthorFactory} is responsible for creating {@link Author} instances,
- * while the {@link AuthorRepositoryMem} enforces uniqueness and handles persistence.
+ * while the {@link IAuthorRepository} enforces uniqueness and handles persistence.
  *
  * <p>It does not contain business logic and does not validate input data beyond
  * its own constructor dependency check. Its responsibility is limited to delegation,
@@ -19,19 +19,19 @@ import java.time.LocalDate;
  */
 
 public class US005ToRegisterAuthorController {
-    private final AuthorRepositoryMem _authorRepositoryMem;
+    private final IAuthorRepository _I_authorRepository;
 
-    public US005ToRegisterAuthorController(AuthorRepositoryMem authorRepositoryMem) {
-        if (authorRepositoryMem == null) {
+    public US005ToRegisterAuthorController(IAuthorRepository IAuthorRepository) {
+        if (IAuthorRepository == null) {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
         }
 
-        this._authorRepositoryMem = authorRepositoryMem;
+        this._I_authorRepository = IAuthorRepository;
     }
 
     public Author register(String name, Country country, LocalDate dateOfBirth, String biography) {
         // Delegates author creation and persistence to the repository
-        return _authorRepositoryMem.createAndAddAuthor(name, country, dateOfBirth, biography);
+        return _I_authorRepository.createAndAddAuthor(name, country, dateOfBirth, biography);
     }
 
 }

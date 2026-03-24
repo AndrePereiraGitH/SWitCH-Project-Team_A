@@ -3,7 +3,6 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -19,10 +18,9 @@ import static org.mockito.Mockito.when;
  * <p>Covers constructor field initialization, single-object conversion via
  * {@link BibliographicalDataDTO_US024#toDTO(BibliographicalData)}, bulk conversion
  * via {@link BibliographicalDataDTO_US024#toDTOS(List)}, and null-input guarding.
- * Domain dependencies are replaced with Mockito doubles to isolate DTO mapping logic.</p>
+ * Domain dependencies are replaced with test doubles to isolate DTO mapping logic.</p>
  */
 class BibliographicalDataDTO_US024Test {
-
 
     /**
      * Verifies that the constructor correctly assigns all provided values
@@ -52,8 +50,8 @@ class BibliographicalDataDTO_US024Test {
      * <p>Expected mappings:</p>
      * <ul>
      *   <li>{@code _publicationTitle} ← {@code getTitle()}</li>
-     *   <li>{@code _authors} ← each author's {@code getProfile().getName()}</li>
-     *   <li>{@code _publicationGenre} ← each genre's {@code getTitle()}</li>
+     *   <li>{@code _authors} ← each author's {@code getName()}</li>
+     *   <li>{@code _publicationGenre} ← each genre's {@code getGenreType()}</li>
      * </ul>
      */
     @Test
@@ -120,13 +118,13 @@ class BibliographicalDataDTO_US024Test {
     // -------------------------------------------------------------------------
 
     /**
-     * Creates a mocked {@link BibliographicalData} that returns the given title,
-     * author list, and genre list.
+     * Creates a test double for {@link BibliographicalData} that returns the given
+     * title, author list, and genre list.
      *
      * @param title       the value returned by {@code getTitle()}
-     * @param authorNames the names used to build mocked {@link Author} objects
-     * @param genreNames  the titles used to build mocked {@link Genre} objects
-     * @return a configured {@link BibliographicalData} mock
+     * @param authorNames the names used to build {@link Author} test doubles
+     * @param genreNames  the types used to build {@link Genre} test doubles
+     * @return a configured {@link BibliographicalData} test double
      */
     private BibliographicalData createMockBibliographicalData(
             String title,
@@ -136,19 +134,19 @@ class BibliographicalDataDTO_US024Test {
         List<Author> authors = createMockAuthors(authorNames);
         List<Genre> genres = createMockGenres(genreNames);
 
-        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
-        when(bibliographicalData.getTitle()).thenReturn(title);
-        when(bibliographicalData.getAuthors()).thenReturn(authors);
-        when(bibliographicalData.getGenres()).thenReturn(genres);
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        when(bdDouble.getTitle()).thenReturn(title);
+        when(bdDouble.getAuthors()).thenReturn(authors);
+        when(bdDouble.getGenres()).thenReturn(genres);
 
-        return bibliographicalData;
+        return bdDouble;
     }
 
     /**
-     * Creates a list of mocked {@link Author} objects from the given names.
+     * Creates a list of {@link Author} test doubles from the given names.
      *
-     * @param authorNames the names to convert into mocked authors
-     * @return a list of configured {@link Author} mocks
+     * @param authorNames the names to convert into {@link Author} test doubles
+     * @return a list of configured {@link Author} test doubles
      */
     private List<Author> createMockAuthors(List<String> authorNames) {
         return authorNames.stream()
@@ -157,54 +155,40 @@ class BibliographicalDataDTO_US024Test {
     }
 
     /**
-     * Creates a mocked {@link Author} whose {@link Profile} returns the given name.
+     * Creates an {@link Author} test double whose {@code getName()} returns
+     * the given name.
      *
-     * @param authorName the value returned by {@code getProfile().getName()}
-     * @return a configured {@link Author} mock
+     * @param authorName the value returned by {@code getName()}
+     * @return a configured {@link Author} test double
      */
     private Author createMockAuthor(String authorName) {
-        Profile profile = createMockProfile(authorName);
-
-        Author author = mock(Author.class);
-        when(author.getProfile()).thenReturn(profile);
-
-        return author;
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.getName()).thenReturn(authorName);
+        return authorDouble;
     }
 
     /**
-     * Creates a mocked {@link Profile} that returns the given name.
+     * Creates a list of {@link Genre} test doubles from the given types.
      *
-     * @param name the value returned by {@code getName()}
-     * @return a configured {@link Profile} mock
+     * @param genreTypes the types to convert into {@link Genre} test doubles
+     * @return a list of configured {@link Genre} test doubles
      */
-    private Profile createMockProfile(String name) {
-        Profile profile = mock(Profile.class);
-        when(profile.getName()).thenReturn(name);
-        return profile;
-    }
-
-    /**
-     * Creates a list of mocked {@link Genre} objects from the given titles.
-     *
-     * @param genreTitles the titles to convert into mocked genres
-     * @return a list of configured {@link Genre} mocks
-     */
-    private List<Genre> createMockGenres(List<String> genreTitles) {
-        return genreTitles.stream()
+    private List<Genre> createMockGenres(List<String> genreTypes) {
+        return genreTypes.stream()
                 .map(this::createMockGenre)
                 .toList();
     }
 
     /**
-     * Creates a mocked {@link Genre} that returns the given title.
+     * Creates a {@link Genre} test double whose {@code getGenreType()} returns
+     * the given type.
      *
-     * @param genreTitle the value returned by {@code getTitle()}
-     * @return a configured {@link Genre} mock
+     * @param genreType the value returned by {@code getGenreType()}
+     * @return a configured {@link Genre} test double
      */
-    private Genre createMockGenre(String genreTitle) {
-        Genre genre = mock(Genre.class);
-        when(genre.getGenreType()).thenReturn(genreTitle);
-        return genre;
+    private Genre createMockGenre(String genreType) {
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenreType()).thenReturn(genreType);
+        return genreDouble;
     }
-
 }

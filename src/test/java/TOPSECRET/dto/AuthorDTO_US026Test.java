@@ -1,7 +1,6 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author;
-import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,15 +28,12 @@ class AuthorDTO_US026Test {
         AuthorDTO_US026 result = AuthorDTO_US026.fromAuthor(authorDouble);
 
         // assert
-        assertEquals(authorDouble.getProfile().getName(), result.name());
+        assertEquals(authorDouble.getName(), result.name());
     }
 
     private Author createAuthorDouble() {
-        Profile profileDouble = mock(Profile.class);
-        when(profileDouble.getName()).thenReturn("Rodolph");
-
         Author authorDouble = mock(Author.class);
-        when(authorDouble.getProfile()).thenReturn(profileDouble);
+        when(authorDouble.getName()).thenReturn("Rodolph");
 
         return  authorDouble;
 

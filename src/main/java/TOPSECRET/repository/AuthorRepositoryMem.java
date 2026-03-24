@@ -4,30 +4,36 @@ import TOPSECRET.domain.Author;
 import TOPSECRET.domain.AuthorFactory;
 import TOPSECRET.domain.Country;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
- * Repository responsible for storing and managing {@link Author} instances.
+ * In-memory repository responsible for storing and managing {@link Author} entities.
  *
- * <p>This class follows the Repository pattern: it acts as an in-memory collection
- * of {@link Author} objects, delegating creation to an {@link AuthorFactory} and
- * enforcing uniqueness before persisting.
+ * <p>In the context of Domain-Driven Design (DDD), {@link Author} is an entity,
+ * meaning it is uniquely identified by its identity rather than by its attributes.
+ *
+ * <p>This class follows the Repository pattern, acting as an in-memory collection
+ * of {@link Author} entities. It delegates entity creation to an
+ * {@link AuthorFactory} and ensures that no duplicate authors are stored.
  *
  * <p><b>Responsibilities:</b>
  * <ul>
- *   <li>Delegate author creation to {@link AuthorFactory}</li>
- *   <li>Enforce that no duplicate authors are added</li>
- *   <li>Provide read access to the current collection of authors</li>
+ *   <li>Delegate the creation of {@link Author} entities to {@link AuthorFactory}</li>
+ *   <li>Ensure uniqueness of {@link Author} entities before adding them to the repository</li>
+ *   <li>Provide read-only access to the current collection of authors</li>
  * </ul>
  *
- * <p><b>What this class does NOT do:</b> it does not validate the arguments passed
- * to {@link #createAndAddAuthor} — that responsibility belongs to {@link AuthorFactory}
- * and the {@link Author} constructor.
+ * <p><b>Non-responsibilities:</b>
+ * <ul>
+ *   <li>Does not validate input arguments passed to {@link #createAndAddAuthor};
+ *       validation is handled by {@link AuthorFactory} and the {@link Author} entity itself</li>
+ * </ul>
+ *
+ * <p>This implementation stores data in memory and is intended for testing
+ * or simple application contexts where persistence is not required.
  */
-public class AuthorRepositoryMem implements AuthorRepository, Serializable {
+public class AuthorRepositoryMem implements IAuthorRepository {
     private final List<Author> _authors = new ArrayList<>();
     private final AuthorFactory _authorFactory;
 

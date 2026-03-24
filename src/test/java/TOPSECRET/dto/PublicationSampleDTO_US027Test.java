@@ -5,7 +5,6 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.Profile;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ class PublicationSampleDTO_US027Test {
 
         // Arrange
         Author author = mock(Author.class);
-        Profile profile = mock(Profile.class);
         Publisher  publisher = mock(Publisher.class);
         PublicationType pubType = mock(PublicationType.class);
         Code code = mock(Code.class);
@@ -54,8 +52,7 @@ class PublicationSampleDTO_US027Test {
 
         when(bd.getTitle()).thenReturn("Clean Code");
         when(bd.getAuthors()).thenReturn(List.of(author));
-        when(author.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Robert C. Martin");
+        when(author.getName()).thenReturn("Robert C. Martin");
         when(genre.getGenreType()).thenReturn("Programming");
         when(bd.getGenres()).thenReturn(List.of(genre));
 

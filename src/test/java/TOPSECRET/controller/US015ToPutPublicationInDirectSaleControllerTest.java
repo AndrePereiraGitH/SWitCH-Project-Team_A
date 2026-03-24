@@ -31,9 +31,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         PublicationSample pubSample1Double = mock(PublicationSample.class);
         PublicationSample pubSample2Double = mock(PublicationSample.class);
         BibliographicalData bd1Double = mock(BibliographicalData.class);
-        BibliographicalData bd2Double = mock(BibliographicalData.class);;
+        BibliographicalData bd2Double = mock(BibliographicalData.class);
         Author authorDouble = mock(Author.class);
-        Profile authorProfileDouble = mock(Profile.class);
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
         User ownerDouble = mock(User.class);
@@ -59,8 +58,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Author Name
         when(bd1Double.getAuthors()).thenReturn(List.of(authorDouble));
         when(bd2Double.getAuthors()).thenReturn(List.of(authorDouble));
-        when(authorDouble.getProfile()).thenReturn(authorProfileDouble);
-        when(authorProfileDouble.getName()).thenReturn("author name");
+        when(authorDouble.getName()).thenReturn("author name");
 
         // Genre
         when(bd1Double.getGenres()).thenReturn(List.of(genre1Double));

@@ -110,7 +110,7 @@ public class AuctionRepositoryMem implements IAuctionRepository{
                 .anyMatch( item ->
                         item.getBibliographicalData()
                                 .getAuthors().stream()
-                                .anyMatch(a -> a.getProfile().getName().equals(author.name()))
+                                .anyMatch(a -> a.getName().equals(author.name()))
                 )
         ).toList();
 

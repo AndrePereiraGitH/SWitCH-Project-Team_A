@@ -41,7 +41,7 @@ public class PublicationSampleDTO_US016 {
         return new PublicationSampleDTO_US016(
                 publicationSample.getBibliographicalData().getTitle(),
                 publicationSample.getBibliographicalData().getAuthors().stream()
-                        .map(a -> a.getProfile().getName())
+                        .map(a -> a.getName())
                         .toList(),
                 publicationSample.getBibliographicalData().getOriginalLanguage(),
                 publicationSample.getBibliographicalData().getGenres().stream()

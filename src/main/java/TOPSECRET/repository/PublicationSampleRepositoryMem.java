@@ -175,7 +175,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         BibliographicalData bd = ps.getBibliographicalData();
 
         List<String> authorNames = bd.getAuthors().stream()
-                .map(a -> a.getProfile().getName())
+                .map(a -> a.getName())
                 .toList();
 
         List<String> genreTypes = bd.getGenres().stream()

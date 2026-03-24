@@ -8,50 +8,39 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-
 /**
  * Unit tests for the {@link AuthorFactory} class.
  *
  * <p>This test class verifies the creation behaviour of {@link AuthorFactory},
  * ensuring that {@link Author} instances are constructed correctly and that
- * the factory performs the expected input normalization before delegating
- * object creation to the {@link Author} constructors.
+ * the factory performs the expected input normalisation before delegating
+ * object creation to the {@link Author} constructor.
  *
  * <p><b>Test double strategy:</b> {@link Author} construction is intercepted using
  * Mockito {@code mockConstruction(Author.class)}. This allows the tests to verify
  * that the factory invokes the {@link Author} constructor while avoiding execution
- * of the real constructor logic. Collaborators such as {@link Country} and
- * {@link Profile} are replaced with Mockito mocks created via
- * {@code mock(Class)} to isolate the factory from its dependencies.
+ * of the real constructor logic. The {@link Country} collaborator is replaced with
+ * a test double created via {@code mock(Class)} to isolate the factory from its
+ * dependencies.
  *
  * <p><b>What is tested:</b>
  * <ul>
- *   <li>Invocation of the {@link Author} constructor when creating authors</li>
- *   <li>Normalization of input values (trimming of name and biography)</li>
- *   <li>Forwarding of arguments such as {@link Country}, {@link Profile},
- *       and {@link java.time.LocalDate} to the {@link Author} constructor</li>
- *   <li>Behaviour of both factory methods:
- *       {@link AuthorFactory#create(String, Country, java.time.LocalDate, String)}
- *       and
- *       {@link AuthorFactory#createWithExistingProfile(Profile, String)}</li>
+ *   <li>Invocation of the {@link Author} constructor exactly once per factory call</li>
+ *   <li>Normalisation of input values (trimming of name and biography)</li>
+ *   <li>Forwarding of {@code null} name and biography values without modification</li>
+ *   <li>Forwarding of {@link Country} and {@link java.time.LocalDate} arguments
+ *       to the {@link Author} constructor unchanged</li>
  * </ul>
  *
  * <p><b>What is NOT tested here:</b> the internal validation or domain behaviour
- * implemented inside {@link Author} or {@link Profile}. Those classes have their
- * own dedicated unit tests. This test class focuses solely on verifying that the
- * {@link AuthorFactory} correctly prepares and forwards data to the {@link Author}
- * constructors.
+ * implemented inside {@link Author}. That class has its own dedicated unit tests.
+ * This test class focuses solely on verifying that {@link AuthorFactory} correctly
+ * prepares and forwards data to the {@link Author} constructor.
  */
 
 class AuthorFactoryTest {
 
     private final Country country = mock(Country.class);
-    private final Profile profile = mock(Profile.class);
-
-
-    // =====================
-    // Constants
-    // =====================
 
     private static final String rawName = "  John  ";
     private static final String expectedName = "John";
@@ -67,179 +56,69 @@ class AuthorFactoryTest {
 
     @Test
     void createShouldCallAuthorConstructorOnce() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
+        AuthorFactory authorFactory = new AuthorFactory();
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
-
-            // ACT
-            authorFActory.create(expectedName, country, dob, expectedBio);
-
-            // ASSERT
+            authorFactory.create(expectedName, country, dob, expectedBio);
             assertEquals(1, mocked.constructed().size());
         }
     }
 
     @Test
     void createShouldTrimName() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
+        AuthorFactory authorFactory = new AuthorFactory();
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
-                         when(profile.getName()).thenReturn(expectedName);
-
-                         when(mock.getProfile()).thenReturn(profile);
+                         when(mock.getName()).thenReturn(expectedName);
                      })) {
-
-            // ACT
-            Author author = authorFActory.create(rawName, country, dob, expectedBio);
-
-            // ASSERT
-            assertEquals(expectedName, author.getProfile().getName());
+            Author author = authorFactory.create(rawName, country, dob, expectedBio);
+            assertEquals(expectedName, author.getName());
         }
     }
 
     @Test
     void createShouldForwardNullNameUnchanged() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
+        AuthorFactory authorFactory = new AuthorFactory();
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
-
-            // ACT
-            authorFActory.create(null, country, dob, expectedBio);
-
-            // ASSERT
+            authorFactory.create(null, country, dob, expectedBio);
             assertEquals(1, mocked.constructed().size());
         }
     }
 
     @Test
     void createShouldTrimBiography() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
+        AuthorFactory authorFactory = new AuthorFactory();
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(expectedBio);
                      })) {
-
-            // ACT
-            Author author = authorFActory.create(expectedName, country, dob, rawBio);
-
-            // ASSERT
+            Author author = authorFactory.create(expectedName, country, dob, rawBio);
             assertEquals(expectedBio, author.getBiography());
         }
     }
 
     @Test
     void createShouldForwardNullBiographyUnchanged() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
+        AuthorFactory authorFactory = new AuthorFactory();
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(null);
                      })) {
-
-            // ACT
-            Author author = authorFActory.create(expectedName, country, dob, null);
-
-            // ASSERT
+            Author author = authorFactory.create(expectedName, country, dob, null);
             assertNull(author.getBiography());
         }
     }
 
     @Test
     void createShouldForwardCountryAndDobUnchanged() {
-
-        // ARRANGE
-        final Country expectedCountry = country;
-        final LocalDate expectedDob = dob;
-        AuthorFactory authorFActory = new AuthorFactory();
-
+        AuthorFactory authorFactory = new AuthorFactory();
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
-
-                         Profile profile = mock(Profile.class);
-                         when(profile.getCountry()).thenReturn(expectedCountry);
-                         when(profile.getBirthday()).thenReturn(expectedDob);
-
-                         when(mock.getProfile()).thenReturn(profile);
+                         when(mock.getCountry()).thenReturn(country);
+                         when(mock.getDateOfBirth()).thenReturn(dob);
                      })) {
-
-            // ACT
-            Author author = authorFActory.create(expectedName, expectedCountry, expectedDob, expectedBio);
-
-            // ASSERT
-            assertSame(expectedCountry, author.getProfile().getCountry());
-            assertSame(expectedDob, author.getProfile().getBirthday());
-        }
-    }
-
-    // ========================================
-    // createAuthorWithExistingProfile(Profile, String)
-    // ========================================
-
-    @Test
-    void createAuthorWithExistingProfile_shouldCallConstructorOnce() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
-        try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
-
-            // ACT
-            authorFActory.createWithExistingProfile(profile, expectedBio);
-
-            // ASSERT
-            assertEquals(1, mocked.constructed().size());
-        }
-    }
-
-    @Test
-    void createWithExistingProfile_shouldTrimBiography() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
-        try (MockedConstruction<Author> mocked =
-                     mockConstruction(Author.class, (mock, context) -> {
-                         when(mock.getBiography()).thenReturn(expectedBio);
-                         when(mock.getProfile()).thenReturn(profile);
-                     })) {
-
-            // ACT
-            Author author = authorFActory.createWithExistingProfile(profile, rawBio);
-
-            // ASSERT
-            assertSame(profile, author.getProfile());
-            assertEquals(expectedBio, author.getBiography());
-        }
-    }
-    @Test
-    void createWithExistingProfile_shouldForwardNullBiography() {
-
-        // ARRANGE
-        AuthorFactory authorFActory = new AuthorFactory();
-
-        try (MockedConstruction<Author> mocked =
-                     mockConstruction(Author.class, (mock, context) -> {
-                         when(mock.getBiography()).thenReturn(null);
-                         when(mock.getProfile()).thenReturn(profile);
-                     })) {
-
-            // ACT
-            Author author = authorFActory.createWithExistingProfile(profile, null);
-
-            // ASSERT
-            assertSame(profile, author.getProfile());
-            assertNull(author.getBiography());
+            Author author = authorFactory.create(expectedName, country, dob, expectedBio);
+            assertSame(country, author.getCountry());
+            assertSame(dob, author.getDateOfBirth());
         }
     }
 }
