@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.AuctionStatus;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;

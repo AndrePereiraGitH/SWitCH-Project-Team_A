@@ -2,8 +2,6 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.UserRole;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class User {

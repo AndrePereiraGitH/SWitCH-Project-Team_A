@@ -2,7 +2,6 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.repository.AppraisalEntityRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

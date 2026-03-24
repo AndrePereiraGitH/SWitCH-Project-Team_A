@@ -2,6 +2,10 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Address;
+import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
