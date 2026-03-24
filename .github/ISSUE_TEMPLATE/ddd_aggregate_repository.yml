@@ -24,3 +24,10 @@ body:
         - [ ] **No Leakage:** Database-specific annotations (e.g., JPA/Hibernate) do not bleed into the Domain classes.
         - [ ] **Consistency Check:** Repository ensures the state in the database perfectly mirrors the state of the Aggregate Root after an operation.
         - [ ] **Exception Translation:** Infrastructure-specific exceptions (SQL, Connection) are caught or translated if necessary to prevent leaking to the UI.
+  - type: textarea
+    id: infrastructure-notes
+    attributes:
+      label: "Infrastructure Details"
+      placeholder: "Mention specific database constraints, mapper details, or performance considerations here..."
+    validations:
+      required: false

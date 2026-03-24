@@ -1,4 +1,3 @@
----
 name: "DDD <Aggregate Name> - Design Refactor"
 description: "Architecture & Design phase for a Domain Aggregate"
 title: "[DDD] Design: <Aggregate Name>"
@@ -29,3 +28,10 @@ body:
         - [ ] **Zero Leakage:** No business/domain logic exists in the Controller.
         - [ ] **Persistence Ignorance:** No database or framework-specific logic exists in the Domain Layer.
         - [ ] **Invariant Protection:** The Aggregate Root is the sole entry point for state changes, ensuring all business rules are satisfied before returning.
+  - type: textarea
+    id: design-references
+    attributes:
+      label: "Design Artifacts & Links"
+      placeholder: "Paste links to Mermaid diagrams, LucidChart, or add specific design notes here..."
+    validations:
+      required: false

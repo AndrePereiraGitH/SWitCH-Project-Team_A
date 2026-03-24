@@ -34,3 +34,10 @@ body:
 
         ### Repository Contract
         - [ ] **Interface Definition:** Located in `domain/<aggregateName>/`.
+  - type: textarea
+    id: domain-implementation-notes
+    attributes:
+      label: "Implementation Details"
+      placeholder: "List any specific Value Objects or Business Rules addressed in this PR..."
+    validations:
+      required: false
