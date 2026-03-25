@@ -1,0 +1,48 @@
+name: "DDD Restructure -- <US_NUMBER>"
+description: "Parent issue: Full DDD restructure of a User Story across all layers"
+title: "DDD restructure: Refactor <US_NUMBER>"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Overview
+        This is the parent issue tracking the full DDD restructure of User Story `<US_NUMBER>`. 
+        It encompasses all layers of the application that must be refactored to comply with the **Domain-Driven Design (DDD)** principles established during the previous aggregate refactoring.
+
+
+        ---
+
+        ## Business Goal
+        Explain what this User Story represents and why it requires a full DDD restructure.
+
+        ---
+
+        ## Sub-Issues
+
+        | Layer          | Issue                                              | Status |
+        |----------------|----------------------------------------------------|--------|
+        | Design         | `DDD restructure: Refactor <US_NUMBER> design`     | [ ]    |
+        | Domain         | `DDD restructure: Refactor <US_NUMBER> domain`     | [ ]    |
+        | Repository     | `DDD restructure: Refactor <US_NUMBER> repository` | [ ]    |
+        | Controller     | `DDD restructure: Refactor <US_NUMBER> controller` | [ ]    |
+
+        ## Acceptance Criteria
+        - [ ] All sub-issues are completed and closed.
+        - [ ] Design artifacts (SSD, SD, CD) are reviewed and approved.
+        - [ ] Domain Layer complies with DDD boundaries and invariants.
+        - [ ] Repository Layer correctly bridges the Domain and Infrastructure without leaking business logic.
+        - [ ] Controller Layer orchestrates domain operations without containing business logic.
+        - [ ] Test coverage ≥ 95% across all layers.
+        - [ ] All changes are reviewed and approved by the team (at least one team member).
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, blockers, or references. -->
+    validations:
+      required: true

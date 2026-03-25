@@ -1,0 +1,67 @@
+name: "Design Refactor -- DDD"
+description: "Sub-issue: Redesign a User Story's architecture to comply with DDD principles"
+title: "DDD restructure: Refactor <US_NUMBER> design"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Aggregate Overview
+        This issue tracks the design review and restructure of User Story `<US_NUMBER>` 
+        to align with the **Domain-Driven Design (DDD)** principles established during the previous aggregate refactoring.
+
+        >  **Implementation is blocked** until all updated design artifacts below are reviewed and approved.
+
+        ---
+
+        ## Business Goal
+        Explain what design decisions need to be revisited and why they must change to respect DDD principles.
+
+        ---
+
+        ## Class Diagram Checklist
+        - [ ] **Aggregate Root** — clearly identified with its encapsulated invariants.
+        - [ ] **Value Objects** — modeled for all attributes (avoiding Primitive Obsession).
+        - [ ] **Internal Entities** — hidden within the aggregate boundary; not accessible externally.
+        - [ ] **Domain Factory** — defined for complex instantiation logic.
+        - [ ] **Repository Interface** — defined within the Domain Layer (contract only).
+        - [ ] **External References** — all external aggregates referenced by **ID (Value Object)** only — no direct object references.
+
+        ---
+
+        ## Boundary & Integrity Checklist
+        - [ ] **Zero Leakage** — no business or domain logic exists in the Controller.
+        - [ ] **Persistence Ignorance** — no database or framework-specific logic exists in the Domain Layer.
+        - [ ] **Invariant Protection** — the Aggregate Root is the sole entry point for state changes.
+
+        ---
+
+        ## Breaking Changes
+        <!-- List any structural or design decisions that may impact existing aggregates or the broader architecture. -->
+
+        >  Breaking change: _describe what was removed/changed and what needs to be updated across the codebase._
+
+        ---
+
+        ## Acceptance Criteria
+        - [ ] SSD covers the main success scenario.
+        - [ ] SD is consistent with the SSD and reflects the chosen design.
+        - [ ] CD includes all classes involved, their relationships, and respects DDD boundaries.
+        - [ ] No direct references to other aggregate objects — only IDs (Value Objects) are used.
+        - [ ] Diagrams are reviewed and approved by the team (at least one team member).
+
+        ---
+
+        ## Design Artifacts & Links
+        <!-- Paste links to PlantUML files, diagrams, or add specific design notes here. -->
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, blockers, or references. -->
+    validations:
+      required: true
