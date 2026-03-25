@@ -59,18 +59,18 @@ class LibraryDependenciesTest {
 
         //BibliographicalData
 
-        BibliographicalDataFactory BDfactory = new BibliographicalDataFactory();
+        BibliographicalDataFactory bdFactory = new BibliographicalDataFactory();
 
-        BibliographicalData data1 = BDfactory.create(
+        BibliographicalData data1 = bdFactory.create(
                 "Title1", List.of(author1), Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), List.of(genre1), "Some text 1"
         );
-        BibliographicalData data2 = BDfactory.create(
+        BibliographicalData data2 = bdFactory.create(
                 "Title2", List.of(author2), Locale.ENGLISH,
                 LocalDate.of(2021, 2, 2), List.of(genre2), "Some text 2"
         );
 
-        BibliographicalData data3 = BDfactory.create(
+        BibliographicalData data3 = bdFactory.create(
                 "Title3", List.of(author3), Locale.ENGLISH,
                 LocalDate.of(2022, 3, 3), List.of(genre3), "Some text 3"
         );

@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class IBibliographicalDataRepositoryMemTest {
+class BibliographicalDataRepositoryMemTest {
 
     // =====================================================
     // =================== SetUP ===========================
@@ -48,7 +49,7 @@ class IBibliographicalDataRepositoryMemTest {
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
         // Act
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
         original.add(bd3Double);                                                           // Modifies the original list
 
         // Assert
@@ -73,7 +74,7 @@ class IBibliographicalDataRepositoryMemTest {
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
         // Act
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory, empty);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, empty);
 
         // Assert
         assertTrue(repo.getAllPublicationsBD().isEmpty());
@@ -86,7 +87,7 @@ class IBibliographicalDataRepositoryMemTest {
         // Arrange
         List<BibliographicalData> original = List.of(bd1Double, bd2Double);
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
 
         // Act
         List<BibliographicalData> result = repo.getAllPublicationsBD();
@@ -102,7 +103,7 @@ class IBibliographicalDataRepositoryMemTest {
         // Arrange
         List<BibliographicalData> original = List.of(bd1Double, bd2Double);
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
 
         // Act
         List<BibliographicalData> result = repo.getAllPublicationsBD();
@@ -116,7 +117,7 @@ class IBibliographicalDataRepositoryMemTest {
         // Arrange
         List<BibliographicalData> original = List.of(bd1Double, bd2Double);
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
 
         // Act
         List<BibliographicalData> first = repo.getAllPublicationsBD();
@@ -143,7 +144,7 @@ class IBibliographicalDataRepositoryMemTest {
         String chunksOfText = "this describes the book or magazine";
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem bdRepository = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository bdRepository = new BibliographicalDataRepositoryMem(factory);
 
 
         when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText)).thenReturn(BibliographicalDataDouble);
@@ -164,7 +165,7 @@ class IBibliographicalDataRepositoryMemTest {
         // Arrange
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<Author> authors = List.of(mock(Author.class));
         List<Genre> genres = List.of(mock(Genre.class));
@@ -190,7 +191,7 @@ class IBibliographicalDataRepositoryMemTest {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<Genre> genres = List.of(mock(Genre.class));
 
@@ -215,7 +216,7 @@ class IBibliographicalDataRepositoryMemTest {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<Author> authors = List.of(mock(Author.class));
 
@@ -240,7 +241,7 @@ class IBibliographicalDataRepositoryMemTest {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<Author> authors = List.of(mock(Author.class));
         List<Genre> genres = List.of(mock(Genre.class));
