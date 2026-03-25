@@ -1,0 +1,60 @@
+name: "DDD <Aggregate Name> - Controller Refactor"
+description: "Sub-issue: Restructure the Controller layer of a User Story to comply with DDD boundaries"
+title: "[DDD] Controller: <Aggregate Name>"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Aggregate Overview
+        This issue tracks the Controller and Application Layer restructure of the `<Aggregate Name>` aggregate to comply with the **Domain-Driven Design (DDD)** principles established during the previous refactoring.
+
+        ---
+
+        ## Business Goal
+        Explain what orchestration logic needs to be restructured and why it must change to respect DDD boundaries.
+
+
+        ---
+
+        ## Key Application Invariants
+        - The Controller depends on the Repository Interface (Domain Layer), not the implementation (Infrastructure).
+        - The Controller never instantiates Domain Entities directly via `new` — it always uses the Factory.
+        - No `if/else` statements or loops that evaluate business rules or invariants exist in the Controller.
+        - The Controller never modifies an Aggregate's internal state directly — it calls named domain methods.
+        - Request data is converted into Value Objects or primitive parameters before passing to the Domain.
+        - Domain objects are never returned directly — they are always mapped to DTOs.
+
+        ---
+
+        ## Breaking Changes
+        <!-- List any structural changes that may impact other aggregates or the broader architecture. -->
+
+
+        ---
+
+        ## Acceptance Criteria
+        - [ ] Controller depends on the Repository Interface, not the concrete implementation.
+        - [ ] Controller uses the Factory for all Domain object instantiation — no direct `new` calls.
+        - [ ] No business or domain logic exists in the Controller.
+        - [ ] Request data is mapped to Value Objects or primitives before reaching the Domain.
+        - [ ] Domain objects are never exposed directly — always mapped to DTOs.
+        - [ ] Code is documented with JavaDoc.
+        - [ ] Test coverage ≥ 95%.
+        - [ ] Changes are reviewed and approved by the team (at least one team member).
+
+        ---
+
+        ## Implementation Details
+        <!-- Add any specific details, blockers, or extra work done here. -->
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, blockers, or references. -->
+    validations:
+      required: true
