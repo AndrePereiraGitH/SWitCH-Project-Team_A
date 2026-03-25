@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.AuctionItemDTO_US024;
 import TOPSECRET.dto.BibliographicalDataDTO_US024;
-import TOPSECRET.repository.BibliographicalDataRepositoryMem;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.repository.IAuctionRepository;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
 
-    private BibliographicalDataRepositoryMem _bdRepo;
+    private IBibliographicalDataRepository _bdRepo;
     private IAuctionRepository _aucRepo;
 
     /**
@@ -29,7 +29,7 @@ public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
      * @param _aucRepo the repository used to access auction-related data
      */
     public US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(
-            BibliographicalDataRepositoryMem _bdRepo,
+            IBibliographicalDataRepository _bdRepo,
             IAuctionRepository _aucRepo) {
         this._bdRepo = _bdRepo;
         this._aucRepo = _aucRepo;

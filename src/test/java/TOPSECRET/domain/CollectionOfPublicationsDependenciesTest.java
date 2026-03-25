@@ -73,7 +73,7 @@ class CollectionOfPublicationsDependenciesTest {
     {
         // Create Bibliographical data for publication
 
-        BibliographicalDataFactory BDfactory = new BibliographicalDataFactory();
+        BibliographicalDataFactory bdFactory = new BibliographicalDataFactory();
 
         Country country = new Country("PORTUGAL");
 
@@ -89,7 +89,7 @@ class CollectionOfPublicationsDependenciesTest {
                 new Contact("912345678", "351", null, null)
         );
 
-        BibliographicalData bibliographicalData = BDfactory.create(
+        BibliographicalData bibliographicalData = bdFactory.create(
                 "Test Title",
                 List.of(author),
                 Locale.ENGLISH,
