@@ -34,7 +34,7 @@ public class US014ToGetPublicationTypeListController {
     public US014ToGetPublicationTypeListController(IPublicationTypeRepository publicationTypeRepository) {
 
         if(publicationTypeRepository==null){
-            throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null");
+            throw new IllegalArgumentException("IPublicationTypeRepository cannot be null");
         }
 
         this.publicationTypeRepository = publicationTypeRepository;
