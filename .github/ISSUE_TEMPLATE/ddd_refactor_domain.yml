@@ -1,5 +1,5 @@
 name: "DDD <Aggregate Name> - Domain Refactor"
-description: "Subissue: Restructure the Domain Layer of a User Story to comply with DDD boundaries"
+description: "Sub-issue: Restructure the Domain Layer of a User Story to comply with DDD boundaries"
 title: "DDD restructure: Refactor <US_NUMBER> domain"
 labels: ["sprint4"]
 projects: ["MiteLovers"]

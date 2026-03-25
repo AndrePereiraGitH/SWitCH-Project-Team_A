@@ -1,6 +1,6 @@
 name: "DDD <Aggregate Name> - Controller Refactor"
 description: "Sub-issue: Restructure the Controller layer of a User Story to comply with DDD boundaries"
-title: "[DDD] Controller: <Aggregate Name>"
+title: "DDD restructure: Refactor <US_NUMBER> controller"
 labels: ["sprint4"]
 projects: ["MiteLovers"]
 assignees: []
@@ -18,7 +18,6 @@ body:
         ## Business Goal
         Explain what orchestration logic needs to be restructured and why it must change to respect DDD boundaries.
 
-
         ---
 
         ## Key Application Invariants
@@ -34,6 +33,7 @@ body:
         ## Breaking Changes
         <!-- List any structural changes that may impact other aggregates or the broader architecture. -->
 
+        > Breaking change: _describe what was removed/changed and what needs to be updated across the codebase._
 
         ---
 

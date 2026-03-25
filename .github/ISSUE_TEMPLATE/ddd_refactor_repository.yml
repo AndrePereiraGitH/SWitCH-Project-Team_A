@@ -13,8 +13,6 @@ body:
         ## Aggregate Overview
         This issue tracks the Repository and Infrastructure Layer restructure of the `<Aggregate Name>` aggregate to comply with the **Domain-Driven Design (DDD)** principles established during the previous refactoring.
 
-      
-
         ---
 
         ## Business Goal
@@ -70,3 +68,4 @@ body:
         <!-- Any extra context, design decisions, blockers, or references. -->
     validations:
       required: true
+      
