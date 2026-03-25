@@ -7,7 +7,7 @@ import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.PublicationTypeRepositoryMem;
+import TOPSECRET.repository.IPublicationTypeRepository;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
@@ -60,7 +60,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
@@ -144,7 +144,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
