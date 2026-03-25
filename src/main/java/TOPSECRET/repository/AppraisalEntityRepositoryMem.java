@@ -25,7 +25,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
 
     private List<AppraisalEntity> _appraisalEntities;
     private GenreRepositoryMem _genreRepository;
-    private PublicationTypeRepositoryMem _publicationTypeRepository;
+    private IPublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityFactory _appraisalEntityFactory;
 
     /**
@@ -36,7 +36,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
      */
     public AppraisalEntityRepositoryMem (
             GenreRepositoryMem genreRepository,
-            PublicationTypeRepositoryMem publicationTypeRepository,
+            IPublicationTypeRepository publicationTypeRepository,
             AppraisalEntityFactory appraisalEntityFactory) {
 
         if (genreRepository == null) {
@@ -44,7 +44,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
         }
 
         if (publicationTypeRepository == null) {
-            throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null.");
+            throw new IllegalArgumentException("IPublicationTypeRepository cannot be null.");
         }
 
         this._appraisalEntities = new ArrayList<>();
