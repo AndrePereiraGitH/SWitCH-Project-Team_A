@@ -1,4 +1,4 @@
-name: "DDD <Aggregate Name> - Controller Refactor"
+name: "DDD Refactor -- Controller Layer"
 description: "Sub-issue: Restructure the Controller layer of a User Story to comply with DDD boundaries"
 title: "DDD restructure: Refactor <US_NUMBER> controller"
 labels: ["sprint4"]

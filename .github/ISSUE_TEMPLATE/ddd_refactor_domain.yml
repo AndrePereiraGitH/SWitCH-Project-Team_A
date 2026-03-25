@@ -1,4 +1,4 @@
-name: "DDD <Aggregate Name> - Domain Refactor"
+name: "DDD Refactor -- Domain Layer"
 description: "Sub-issue: Restructure the Domain Layer of a User Story to comply with DDD boundaries"
 title: "DDD restructure: Refactor <US_NUMBER> domain"
 labels: ["sprint4"]

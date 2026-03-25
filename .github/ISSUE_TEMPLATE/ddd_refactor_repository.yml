@@ -1,4 +1,4 @@
-name: "DDD <Aggregate Name> - Repository Refactor"
+name: "DDD Refactor -- Repository Layer"
 description: "Sub-issue: Restructure the Repository and Infrastructure layer of an aggregate to comply with DDD boundaries"
 title: "DDD restructure: Refactor <US_NUMBER> repository"
 labels: ["sprint4"]
@@ -68,4 +68,3 @@ body:
         <!-- Any extra context, design decisions, blockers, or references. -->
     validations:
       required: true
-      

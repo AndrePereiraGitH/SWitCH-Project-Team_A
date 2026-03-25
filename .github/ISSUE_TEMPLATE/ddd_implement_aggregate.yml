@@ -1,4 +1,4 @@
-name: "Implementation x aggregate -- DDD refactoring"
+name: "DDD Refactor -- Aggregate Implementation"
 description: "Main issue for a Domain Aggregate implementation"
 title: "DDD refactoring -- Implementation <Aggregate Name> aggregate"
 labels: ["sprint4"]
