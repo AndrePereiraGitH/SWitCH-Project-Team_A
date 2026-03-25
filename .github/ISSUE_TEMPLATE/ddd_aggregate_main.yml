@@ -1,13 +1,15 @@
+.github/ISSUE_TEMPLATE/ddd_aggregate_main.yml
 name: "Implementation x aggregate -- DDD refactoring"
 description: "Main issue for a Domain Aggregate implementation"
 title: "[DDD] Aggregate: <Aggregate Name>"
 labels: ["sprint4"]
 projects: ["MiteLovers"]
 assignees: []
-
 body:
-  - type: markdown
+  - type: textarea
+    id: issue-details
     attributes:
+      label: "Issue Details"
       value: |
         ## Aggregate Overview
         This issue tracks the complete implementation of the `<Aggregate Name>` aggregate following **Domain-Driven Design (DDD)** principles.
@@ -30,10 +32,21 @@ body:
         - The aggregate must maintain transactional consistency.
 
         ---
-  - type: textarea
-    id: business-context
-    attributes:
-      label: "Business Goal & Context"
-      placeholder: "Describe the 'Why' behind this aggregate..."
+
+        ## Business Goal & Context
+        <!-- Describe the 'Why' behind this aggregate -->
+
+        ---
+
+        ## Sub-issues
+        - [ ] Design:
+        - [ ] Domain:
+        - [ ] Repository:
+        - [ ] Controller:
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, decisions, blockers, or references -->
     validations:
       required: true
