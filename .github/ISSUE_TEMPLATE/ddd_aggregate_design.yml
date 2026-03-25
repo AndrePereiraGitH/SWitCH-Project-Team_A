@@ -1,4 +1,3 @@
-.github/ISSUE_TEMPLATE/ddd_aggregate_design.yml
 name: "DDD <Aggregate Name> - Design Refactor"
 description: "Architecture & Design phase for a Domain Aggregate"
 title: "[DDD] Design: <Aggregate Name>"

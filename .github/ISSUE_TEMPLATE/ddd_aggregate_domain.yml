@@ -1,4 +1,3 @@
-.github/ISSUE_TEMPLATE/ddd_aggregate_domain.yml
 name: "DDD <Aggregate Name> - Domain Refactor"
 description: "Implementation of the Domain Layer (Entities, VOs, and Invariants)"
 title: "[DDD] Domain: <Aggregate Name>"
