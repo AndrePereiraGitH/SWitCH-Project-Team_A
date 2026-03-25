@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationTypeDTO_US014;
-import TOPSECRET.repository.PublicationTypeRepositoryMem;
+import TOPSECRET.repository.IPublicationTypeRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,7 +17,7 @@ class US014ToGetPublicationTypeListControllerTest {
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
 
         // Arrange
-        PublicationTypeRepositoryMem repository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository repository = mock(PublicationTypeRepositoryMem.class);
 
         when(repository.getAllPublicationTypes()).thenReturn(List.of());
 
@@ -38,7 +38,7 @@ class US014ToGetPublicationTypeListControllerTest {
     void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
 
         // Arrange
-        PublicationTypeRepositoryMem repository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository repository = mock(PublicationTypeRepositoryMem.class);
 
         PublicationTypeFactory factory = new PublicationTypeFactory();
 
@@ -70,7 +70,7 @@ class US014ToGetPublicationTypeListControllerTest {
     void getAllPublicationTypesMultiplePublicationTypesReturnsListDTOs() {
 
         // Arrange
-        PublicationTypeRepositoryMem repository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository repository = mock(PublicationTypeRepositoryMem.class);
 
         PublicationTypeFactory factory = new PublicationTypeFactory();
 
