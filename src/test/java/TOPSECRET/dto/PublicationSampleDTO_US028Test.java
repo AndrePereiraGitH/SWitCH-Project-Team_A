@@ -62,7 +62,7 @@ class PublicationSampleDTO_US028Test {
         when(edition.getCode()).thenReturn(code);
         when(code.toString()).thenReturn("9780132350884");
         when(edition.getPublicationType()).thenReturn(pubType);
-        when(pubType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubType.getMediaFormat()).thenReturn("Book");
         when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition.getPublisher()).thenReturn(publisher);
         when(publisher.getName()).thenReturn("Prentice Hall");
@@ -183,7 +183,7 @@ class PublicationSampleDTO_US028Test {
         assertEquals("FOR_SALE", dto.getPublicationStatus());
         assertEquals("3rd", dto.getEditionNumber());
         assertEquals("9780132350884", dto.getCode());
-        assertEquals("BOOK", dto.getMediaFormat());
+        assertEquals("Book", dto.getMediaFormat());
         assertEquals("en", dto.getEditionLanguage());
         assertEquals("Prentice Hall", dto.getPublisherName());
         assertEquals("LIKE_NEW", dto.getCondition());

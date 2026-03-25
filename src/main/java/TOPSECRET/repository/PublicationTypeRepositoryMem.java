@@ -1,7 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 
@@ -23,7 +21,7 @@ import java.util.List;
  * from being added to the internal collection.
  */
 
-public class PublicationTypeRepository {
+public class PublicationTypeRepositoryMem implements IPublicationTypeRepository {
 
     /**
      * Internal list that stores all created publication types.
@@ -32,9 +30,9 @@ public class PublicationTypeRepository {
     PublicationTypeFactory _factory;
 
     /**
-     * Constructs an empty {@code PublicationTypeRepository}.
+     * Constructs an empty {@code PublicationTypeRepositoryMem}.
      */
-    public PublicationTypeRepository(PublicationTypeFactory factory) {
+    public PublicationTypeRepositoryMem(PublicationTypeFactory factory) {
         this._factory = factory;
     }
 
@@ -42,13 +40,11 @@ public class PublicationTypeRepository {
      * Creates a new {@link PublicationType} using {@link PublicationTypeFactory}.
      *
      * @param mediaFormat   the media format of the publication (e.g., book, magazine)
-     * @param typeOfBinding the type of binding (e.g., hardback, paperback)
-     * @param details       additional details describing the publication type
      * @return a newly created {@link PublicationType} instance
      */
-    public PublicationType create(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
+    public PublicationType create(String mediaFormat)
     {
-        PublicationType p1 = _factory.create(mediaFormat, typeOfBinding, details);
+        PublicationType p1 = _factory.create(mediaFormat);
         return p1;
     }
 
@@ -70,7 +66,14 @@ public class PublicationTypeRepository {
         if (pubType == null) {
             return false;
         }
-        return !_publicationTypes.contains(pubType); // Returns true if the publication type does not already exist in the list and false if it does
+
+        String newFormat = pubType.getMediaFormat().trim();
+
+        boolean exists = _publicationTypes.stream()
+                .anyMatch(p -> p.getMediaFormat().trim()
+                        .equalsIgnoreCase(newFormat));
+
+        return !exists; // Returns true if the publication type does not already exist in the list and false if it does
     }
 
 
@@ -107,33 +110,19 @@ public class PublicationTypeRepository {
      * Finds an existing PublicationType by its attributes.
      *
      * @param mediaFormat   Media format of the publication.
-     * @param typeOfBinding Type of binding.
-     * @param details       Additional details describing the publication type.
      * @return Existing PublicationType domain object.
      * @throws IllegalArgumentException if attributes are invalid or not found.
      */
-    public PublicationType findByAttributes(MediaFormat mediaFormat,
-                                                   TypeOfBinding typeOfBinding,
-                                                   String details) {
+    public PublicationType findByAttributes(String mediaFormat) {
 
         // Validate input parameters
         if (mediaFormat == null) {
             throw new IllegalArgumentException("MediaFormat cannot be null.");
         }
 
-        if (typeOfBinding == null) {
-            throw new IllegalArgumentException("TypeOfBinding cannot be null.");
-        }
-
-        if (details == null || details.isBlank()) {
-            throw new IllegalArgumentException("Details cannot be null or blank.");
-        }
-
 
         for (PublicationType pt : _publicationTypes) {
-            if (pt.getMediaFormat() == mediaFormat &&
-                    pt.getTypeOfBinding() == typeOfBinding &&
-                    pt.getDetails().equalsIgnoreCase(details)) {
+            if (pt.getMediaFormat().equals(mediaFormat)) {
                 return pt;
             }
         }

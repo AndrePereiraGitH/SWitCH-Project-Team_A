@@ -4,10 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
+
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.PublicationTypeRepository;
+import TOPSECRET.repository.PublicationTypeRepositoryMem;
 
 /**
  * Unit tests for {@link US002ToRegisterPubTypeController}.
@@ -25,7 +24,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     /**
      * Repository and controller instance used for testing.
      */
-    PublicationTypeRepository repo = new PublicationTypeRepository(new PublicationTypeFactory());
+    PublicationTypeRepositoryMem repo = new PublicationTypeRepositoryMem(new PublicationTypeFactory());
     US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
     /**
@@ -36,9 +35,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     void createAndAddPublicationTypesToRepository()
     {
         PublicationType pt1 = controller.RegisterPubType(
-                MediaFormat.BOOK,
-                TypeOfBinding.PAPERBACK,
-                "Book with gold engravings"
+                "Book"
         );
 
         assertEquals(1, repo.getAllPublicationTypes().size());
@@ -56,27 +53,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     @Test
     void shouldThrowExceptionWhenMediaFormatIsInvalid()
     {
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(null, TypeOfBinding.HARDBACK, "detail"));
-        assertEquals(0, repo.getAllPublicationTypes().size());
-    }
-
-    /**
-     * Invalid Type Of Binding
-     */
-    @Test
-    void shouldThrowExceptionWhenTypeOfBindingIsInvalid()
-    {
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, null, "detail"));
-        assertEquals(0, repo.getAllPublicationTypes().size());
-    }
-
-    /**
-     * Invalid details
-     */
-    @Test
-    void shouldThrowExceptionWhenDetailsAreInvalids()
-    {
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, ""));
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(null));
         assertEquals(0, repo.getAllPublicationTypes().size());
     }
 
@@ -86,9 +63,9 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     @Test
     void shouldThrowExceptionWhenAddingDuplicatePublicationTypes()
     {
-        PublicationType pt1 = controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "detail");
+        PublicationType pt1 = controller.RegisterPubType("Book");
 
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(MediaFormat.BOOK, TypeOfBinding.HARDBACK, "detail"));
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType("Book"));
     }
 
 }

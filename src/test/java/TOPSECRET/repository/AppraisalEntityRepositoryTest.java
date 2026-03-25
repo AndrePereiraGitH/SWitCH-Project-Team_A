@@ -1,8 +1,6 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
@@ -33,7 +31,7 @@ class AppraisalEntityRepositoryTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
@@ -47,12 +45,10 @@ class AppraisalEntityRepositoryTest {
 
         PublicationTypeDTO_US004 publicationDTO = mock(PublicationTypeDTO_US004.class);
 
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding binding = TypeOfBinding.HARDBACK;
+        String mediaFormat = "Book";
 
         when(publicationDTO.getMediaFormat()).thenReturn(mediaFormat);
-        when(publicationDTO.getTypeOfBinding()).thenReturn(binding);
-        when(publicationDTO.getDetails()).thenReturn("Special Edition");
+
 
         List<GenreDetailsDTO_US004> genreDTOs = List.of(genreDTO);
         List<PublicationTypeDTO_US004> publicationDTOs = List.of(publicationDTO);
@@ -62,7 +58,7 @@ class AppraisalEntityRepositoryTest {
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
         when(publicationTypeRepository.findByAttributes(
-                mediaFormat, binding, "Special Edition"))
+                mediaFormat))
                 .thenReturn(publicationType);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
@@ -103,7 +99,7 @@ class AppraisalEntityRepositoryTest {
 
         // Arrange
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
@@ -116,12 +112,9 @@ class AppraisalEntityRepositoryTest {
 
         PublicationTypeDTO_US004 publicationDTO = mock(PublicationTypeDTO_US004.class);
 
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding binding = TypeOfBinding.HARDBACK;
+        String mediaFormat = "Book";
 
         when(publicationDTO.getMediaFormat()).thenReturn(mediaFormat);
-        when(publicationDTO.getTypeOfBinding()).thenReturn(binding);
-        when(publicationDTO.getDetails()).thenReturn("Special Edition");
 
         List<GenreDetailsDTO_US004> genreDTOs = List.of(genreDTO);
         List<PublicationTypeDTO_US004> publicationDTOs = List.of(publicationDTO);
@@ -131,7 +124,7 @@ class AppraisalEntityRepositoryTest {
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
         when(publicationTypeRepository.findByAttributes(
-                mediaFormat, binding, "Special Edition"))
+                mediaFormat))
                 .thenReturn(publicationType);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
@@ -178,7 +171,7 @@ class AppraisalEntityRepositoryTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
@@ -204,7 +197,7 @@ class AppraisalEntityRepositoryTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        PublicationTypeRepositoryMem publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =

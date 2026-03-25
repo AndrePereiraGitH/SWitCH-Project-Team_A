@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -27,15 +25,13 @@ class PublicationTypeFactoryTest {
 
     @Test
     void mockConstructsPublicationType() {
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.HARDBACK;
-        String details = "details";
+        String mediaFormat = "Book";
 
         try (MockedConstruction<PublicationType> mocked =
                      mockConstruction(PublicationType.class)) {
 
             PublicationTypeFactory sut = new PublicationTypeFactory();
-            PublicationType result = sut.create(mediaFormat, typeOfBinding, details);
+            PublicationType result = sut.create(mediaFormat);
 
             // Verify a single instance was constructed
             assertEquals(1, mocked.constructed().size());
