@@ -6,7 +6,7 @@ import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
 
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.PublicationTypeRepositoryMem;
+import TOPSECRET.repository.IPublicationTypeRepository;
 
 /**
  * Unit tests for {@link US002ToRegisterPubTypeController}.
@@ -24,7 +24,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     /**
      * Repository and controller instance used for testing.
      */
-    PublicationTypeRepositoryMem repo = new PublicationTypeRepositoryMem(new PublicationTypeFactory());
+    IPublicationTypeRepository repo = new PublicationTypeRepositoryMem(new PublicationTypeFactory());
     US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
     /**
