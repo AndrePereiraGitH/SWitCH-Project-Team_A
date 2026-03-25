@@ -1,15 +1,18 @@
+.github/ISSUE_TEMPLATE/ddd_aggregate_repository.yml
 name: "DDD <Aggregate Name> - Repository Refactor"
 description: "Infrastructure layer implementation for Aggregate persistence"
 title: "[DDD] Repository: <Aggregate Name>"
 labels: ["sprint4"]
 projects: ["MiteLovers"]
 assignees: []
-
 body:
-  - type: markdown
+  - type: textarea
+    id: issue-details
     attributes:
+      label: "Issue Details"
       value: |
-        ##  Repository Implementation (Infrastructure)
+        ## Repository Implementation (Infrastructure)
+
         > **Constraint:** This layer must bridge the gap between the Domain Model and the Database without introducing side effects.
 
         ### Implementation Checklist
@@ -17,11 +20,15 @@ body:
         - [ ] **Aggregate-Centric:** The repository only handles the **Aggregate Root**; internal entities are never accessed or saved independently.
         - [ ] **Atomic Persistence:** Verified that saving the Root persists the entire entity tree (cascading saves/updates) in a single operation.
         - [ ] **Zero Business Logic:** Confirmed that the repository contains no `if/else` logic related to domain invariants.
-        
-  - type: textarea
-    id: infrastructure-notes
-    attributes:
-      label: "Infrastructure Details"
-      placeholder: "Mention specific database constraints, mapper details, or performance considerations here..."
+
+        ---
+
+        ## Infrastructure Details
+        <!-- Mention specific database constraints, mapper details, or performance considerations here -->
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, or references -->
     validations:
-      required: false
+      required: true

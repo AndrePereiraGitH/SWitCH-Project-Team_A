@@ -1,28 +1,36 @@
+.github/ISSUE_TEMPLATE/ddd_aggregate_controller.yml
 name: "DDD <Aggregate Name> - Controller Refactor"
 description: "Application/API layer orchestration for a Domain Aggregate"
 title: "[DDD] Controller: <Aggregate Name>"
 labels: ["sprint4"]
 projects: ["MiteLovers"]
 assignees: []
-
 body:
-  - type: markdown
+  - type: textarea
+    id: issue-details
     attributes:
+      label: "Issue Details"
       value: |
         ## Controller Refactoring (Application Interface)
+
         ### Implementation Checklist
         - [ ] **Dependency Inversion:** Controller depends on the **Repository Interface** (Domain Layer), not the implementation (Infrastructure).
         - [ ] **Encapsulation:** Controller never instantiates Domain Entities directly via `new`; it uses the **Factory**.
         - [ ] **Logic-Free Zone:** Verified zero `if/else` statements or loops that evaluate business rules or invariants.
         - [ ] **State Integrity:** The Controller never modifies an Aggregate's internal state directly; it calls a named domain method.
+
         ### DTO
         - [ ] **Input:** Request data is converted into Value Objects or primitive parameters before passing to the Domain.
         - [ ] **Output:** Domain objects are never returned directly; they are mapped to specific Response DTOs to prevent leaking the domain model.
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: "Implementation Notes"
-      placeholder: "Add any specific details or blockers regarding this refactor..."
+
+        ---
+
+        ## Implementation Notes
+        <!-- Add any specific details, blockers, or extra work done -->
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, or references -->
     validations:
-      required: false
-      
+      required: true
