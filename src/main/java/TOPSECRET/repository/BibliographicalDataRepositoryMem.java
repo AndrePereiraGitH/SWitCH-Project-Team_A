@@ -1,6 +1,9 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -31,7 +34,7 @@ import java.util.Locale;
  * </p>
  */
 
-public class BibliographicalDataRepository {
+public class BibliographicalDataRepositoryMem implements IBibliographicalDataRepository {
 
     private BibliographicalDataFactory _bibliographicalDataFactory;
 
@@ -52,12 +55,12 @@ public class BibliographicalDataRepository {
      * @throws NullPointerException if {@code bdList} is {@code null}
      */
 
-    public BibliographicalDataRepository(BibliographicalDataFactory bibliographicalDataFactory, List<BibliographicalData> bdList) {
+    public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory, List<BibliographicalData> bdList) {
         _bdList = new ArrayList<>(bdList);// throws automatically NullPointerException if bdList = null
         _bibliographicalDataFactory = bibliographicalDataFactory;
     }
 
-    public BibliographicalDataRepository(BibliographicalDataFactory bibliographicalDataFactory) {
+    public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory) {
         _bdList = new ArrayList<>();
         _bibliographicalDataFactory = bibliographicalDataFactory;
     }
@@ -73,6 +76,8 @@ public class BibliographicalDataRepository {
      * @return the created BibliographicalData
      * @throws IllegalArgumentException if title, authors, genres or chunksOfText is null
      */
+
+    @Override
     public BibliographicalData createAndAdd(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
                                             List<Genre> genres, String chunksOfText) throws InstanceAlreadyExistsException
     {
@@ -112,9 +117,11 @@ public class BibliographicalDataRepository {
      */
 
     // Get all publications --------------------------------------------------------------------------------------------
+    @Override
     public List<BibliographicalData> getAllPublicationsBD() {
         return List.copyOf(_bdList);
     }
+
 }
 
 

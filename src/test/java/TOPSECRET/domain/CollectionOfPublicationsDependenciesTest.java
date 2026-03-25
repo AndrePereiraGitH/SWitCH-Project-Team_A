@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
@@ -70,6 +72,9 @@ class CollectionOfPublicationsDependenciesTest {
     private PublicationSample createValidPublication()
     {
         // Create Bibliographical data for publication
+
+        BibliographicalDataFactory BDfactory = new BibliographicalDataFactory();
+
         Country country = new Country("PORTUGAL");
 
         Profile profile = new Profile("John Doe", country, LocalDate.of(1980, 4, 29));
@@ -84,7 +89,7 @@ class CollectionOfPublicationsDependenciesTest {
                 new Contact("912345678", "351", null, null)
         );
 
-        BibliographicalData bibliographicalData = new BibliographicalData(
+        BibliographicalData bibliographicalData = BDfactory.create(
                 "Test Title",
                 List.of(author),
                 Locale.ENGLISH,
@@ -272,7 +277,7 @@ class CollectionOfPublicationsDependenciesTest {
         CollectionOfPublications collection = createBaseCollection();
 
         // Act & Assert — null comparison must return false, not crash
-        assertNotEquals(collection, null);
+        assertNotEquals(null, collection);
     }
 
     // equals must return false when compared to a completely different type.
@@ -282,7 +287,7 @@ class CollectionOfPublicationsDependenciesTest {
         CollectionOfPublications collection = createBaseCollection();
 
         // Act & Assert — a String is not a CollectionOfPublications
-        assertNotEquals(collection, "uma string qualquer");
+        assertNotEquals("uma string qualquer", collection);
     }
 
     // Two collections with the same name and owner but different genre must not be equal.

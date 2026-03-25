@@ -1,11 +1,12 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.dto.AuctionItemDTO_US024;
 import TOPSECRET.dto.BibliographicalDataDTO_US024;
-import TOPSECRET.repository.BibliographicalDataRepository;
+import TOPSECRET.repository.BibliographicalDataRepositoryMem;
 import TOPSECRET.repository.IAuctionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     // Fields
     // -------------------------------------------------------------------------
 
-    private BibliographicalDataRepository bdRepository;
+    private BibliographicalDataRepositoryMem bdRepository;
     private IAuctionRepository auctionRepository;
 
     // -------------------------------------------------------------------------
@@ -42,7 +43,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
      */
     @BeforeEach
     void setUp() {
-        bdRepository = mock(BibliographicalDataRepository.class);
+        bdRepository = mock(BibliographicalDataRepositoryMem.class);
         auctionRepository = mock(IAuctionRepository.class);
     }
 
@@ -85,7 +86,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         // Arrange
         US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
                 new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
-        BibliographicalDataRepository bdRepoDouble = mock(BibliographicalDataRepository.class);
+        BibliographicalDataRepositoryMem bdRepoDouble = mock(BibliographicalDataRepositoryMem.class);
         when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
 
         // Act

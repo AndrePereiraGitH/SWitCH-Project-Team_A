@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
@@ -8,7 +9,7 @@ import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.BibliographicalDataDTO_US023;
 import TOPSECRET.dto.PublicationSampleDTO_US023;
-import TOPSECRET.repository.BibliographicalDataRepository;
+import TOPSECRET.repository.BibliographicalDataRepositoryMem;
 import TOPSECRET.repository.IListingRepository;
 import TOPSECRET.repository.IPublicationSampleRepository;
 import TOPSECRET.repository.ListingRepositoryMem;
@@ -34,7 +35,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     private List<Listing> listListingsDouble;
     private Listing listing1Double;
     private Listing listing2Double;
-    private BibliographicalDataRepository bdRepoDouble;
+    private BibliographicalDataRepositoryMem bdRepoDouble;
     private List<BibliographicalData> listBDDouble;
     private BibliographicalData bd1Double;
     private BibliographicalData bd2Double;
@@ -52,7 +53,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         pubSample1Double = mock(PublicationSample.class);
         pubSample2Double = mock(PublicationSample.class);
 
-        bdRepoDouble = mock(BibliographicalDataRepository.class);
+        bdRepoDouble = mock(BibliographicalDataRepositoryMem.class);
         bd1Double = mock(BibliographicalData.class);
         bd2Double = mock(BibliographicalData.class);
         listBDDouble= List.of(bd1Double,bd2Double);
