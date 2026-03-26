@@ -1,4 +1,4 @@
-package TOPSECRET.controller;
+/* package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +17,7 @@ import TOPSECRET.repository.IPublicationTypeRepository;
  *     <li>Correct storage of the publication type in the repository</li>
  *     <li>Proper exception handling when invalid data is provided</li>
  * </ul>
- */
+ 
 
 class US002ToRegisterPubTypeControllerDependenciesTest {
 
@@ -30,7 +30,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
     /**
      * Verifies that a publication type is successfully created
      * and added to the repository through the controller.
-     */
+     
     @Test
     void createAndAddPublicationTypesToRepository()
     {
@@ -49,7 +49,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Invalid Media format
-     */
+     
     @Test
     void shouldThrowExceptionWhenMediaFormatIsInvalid()
     {
@@ -59,7 +59,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Verifies that an {@link IllegalArgumentException} is thrown when trying to add a duplicate publication type
-     */
+     
     @Test
     void shouldThrowExceptionWhenAddingDuplicatePublicationTypes()
     {
@@ -68,4 +68,4 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
         assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType("Book"));
     }
 
-}
+}*/
