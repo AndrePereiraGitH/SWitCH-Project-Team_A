@@ -23,7 +23,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Repository and controller instance used for testing.
-     */
+     
     IPublicationTypeRepository repo = new PublicationTypeRepositoryMem(new PublicationTypeFactory());
     US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 

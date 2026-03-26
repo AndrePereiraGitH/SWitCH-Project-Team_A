@@ -124,6 +124,5 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
 
         throw new IllegalArgumentException("PublicationType not found.");
     }
-}
 
 }
