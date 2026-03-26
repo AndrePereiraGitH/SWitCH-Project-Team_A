@@ -31,7 +31,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
@@ -60,7 +60,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
@@ -98,7 +98,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
                         mock(GenreRepositoryMem.class),
-                        mock(PublicationTypeRepositoryMem.class),
+                        mock(IPublicationTypeRepository.class),
                         mock(AppraisalEntityRepository.class)
                 );
 
@@ -122,7 +122,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
                         mock(GenreRepositoryMem.class),
-                        mock(PublicationTypeRepositoryMem.class),
+                        mock(IPublicationTypeRepository.class),
                         mock(AppraisalEntityRepository.class)
                 );
 
@@ -144,7 +144,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
