@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
@@ -180,9 +180,8 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(code.toString()).thenReturn("C");
         PublicationType type = mock(PublicationType.class);
         when(edition.getPublicationType()).thenReturn(type);
-        MediaFormat format = mock(MediaFormat.class);
+        String format = "Book";
         when(type.getMediaFormat()).thenReturn(format);
-        when(format.toString()).thenReturn("F");
         when(edition.getEditionLanguage()).thenReturn(Locale.US);
         Publisher pub = mock(Publisher.class);
         when(edition.getPublisher()).thenReturn(pub);

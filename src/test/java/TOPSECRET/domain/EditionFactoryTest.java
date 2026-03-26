@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -9,6 +10,8 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for the {@link EditionFactory} class.
  *
@@ -26,11 +29,18 @@ class EditionFactoryTest {
 // Mocks
 // -------------------------
 
-    private final PublicationType validPublicationType = mock(PublicationType.class);
-    private final Code validCode = mock(Code.class);
+    private PublicationType validPublicationType;
+    private Code validCode;
     private final PhysicalAttributes validPhysicalAttributes = mock(PhysicalAttributes.class);
     private final Publisher validPublisher = mock(Publisher.class);
 
+    @BeforeEach
+    void setUp() {
+        validPublicationType = mock(PublicationType.class);
+        when(validPublicationType.getMediaFormat()).thenReturn("Book");
+        validCode = mock(Code.class);
+        when(validCode.getIsbn13()).thenReturn("9781234567890");
+    }
     
 // -------------------------
 // Tests

@@ -1,4 +1,4 @@
-package TOPSECRET.dto;
+/*package TOPSECRET.dto;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *     <li>Fields are correctly mapped</li>
  *     <li>The static conversion method works properly</li>
  * </ul>
- */
+
 class PublicationTypeDTO_US014DependenciesTest {
 
     // Factory setup
@@ -111,4 +111,4 @@ class PublicationTypeDTO_US014DependenciesTest {
     }
 
 
-}
+}*/

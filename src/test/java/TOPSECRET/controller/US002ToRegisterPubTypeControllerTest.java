@@ -1,9 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.PublicationTypeRepository;
+import TOPSECRET.repository.IPublicationTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
@@ -16,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>This test class verifies the behavior of the controller responsible
  * for registering new {@link PublicationType} objects. The repository
  * dependency is mocked using Mockito to isolate the controller logic
- * and verify interactions with the {@link PublicationTypeRepository}.
+ * and verify interactions with the {@link IPublicationTypeRepository}.
  */
 
 class US002ToRegisterPubTypeControllerTest {
@@ -24,7 +22,7 @@ class US002ToRegisterPubTypeControllerTest {
     /**
      * Mock repository used to simulate persistence behavior.
      */
-    PublicationTypeRepository repo;
+    IPublicationTypeRepository repo;
 
     /**
      * Controller instance under test.
@@ -34,13 +32,13 @@ class US002ToRegisterPubTypeControllerTest {
     /**
      * Initializes the test environment before each test execution.
      *
-     * <p>A mocked {@link PublicationTypeRepository} is created and injected
+     * <p>A mocked {@link IPublicationTypeRepository} is created and injected
      * into the controller to isolate the controller from the persistence layer.
      */
     @BeforeEach
     void setup()
     {
-        repo = mock(PublicationTypeRepository.class);
+        repo = mock(IPublicationTypeRepository.class);
         controller = new US002ToRegisterPubTypeController(repo);
     }
 
@@ -50,18 +48,16 @@ class US002ToRegisterPubTypeControllerTest {
     @Test
     void registerPublicationTypeControllerDelegatesToRepository()
     {
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.PAPERBACK;
-        String details = "details test";
+        String mediaFormat = "Book";
 
         PublicationType expected = mock(PublicationType.class);
 
-        when(repo.create(mediaFormat, typeOfBinding, details)).thenReturn(expected);
+        when(repo.create(mediaFormat)).thenReturn(expected);
 
-        PublicationType result = controller.RegisterPubType(mediaFormat, typeOfBinding, details);
+        PublicationType result = controller.RegisterPubType(mediaFormat);
 
         assertEquals(expected, result);
-//        verify(repo, times(1)).create(mediaFormat, typeOfBinding, details);
+//        verify(repo, times(1)).create(mediaFormat);
 //        verify(repo, times(1)).addToList(result);
 //        verifyNoMoreInteractions(repo);
     }
@@ -78,45 +74,14 @@ class US002ToRegisterPubTypeControllerTest {
     @Test
     void shouldThrowExceptionWhenMediaFormatIsInvalid()
     {
-        MediaFormat mediaFormat = null;
-        TypeOfBinding typeOfBinding = TypeOfBinding.PAPERBACK;
-        String details = "details test";
+        String mediaFormat = null;
 
-        when(repo.create(mediaFormat, typeOfBinding, details)).thenThrow(new IllegalArgumentException());
+        when(repo.create(mediaFormat)).thenThrow(new IllegalArgumentException());
 
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(mediaFormat, typeOfBinding, details));
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(mediaFormat));
     }
 
-    /**
-     * Invalid Type Of Binding
-     */
-    @Test
-    void shouldThrowExceptionWhenTypeOfBindingIsInvalid()
-    {
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = null;
-        String details = "details test";
 
-        when(repo.create(mediaFormat, typeOfBinding, details)).thenThrow(new IllegalArgumentException());
-
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(mediaFormat, typeOfBinding, details));
-    }
-
-    /**
-     * Invalid Details
-     */
-    @Test
-    void shouldThrowExceptionWhenDetailsAreInvalid() {
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.PAPERBACK;
-        String details = null;
-
-        when(repo.create(mediaFormat, typeOfBinding, details)).thenThrow(new IllegalArgumentException());
-
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(mediaFormat, typeOfBinding, details));
-//        verify(repo, times(1)).create(mediaFormat, typeOfBinding, details);
-//        verifyNoMoreInteractions(repo);
-    }
 
     /**
      * Registering a duplicate publication type should create, but not add
@@ -124,16 +89,14 @@ class US002ToRegisterPubTypeControllerTest {
     @Test
     void registerDuplicatePublicationTypeShouldCreateThenThrowWhenAdding()
     {
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding typeOfBinding = TypeOfBinding.PAPERBACK;
-        String details = "details test";
+        String mediaFormat = "Book";
 
         PublicationType expected = mock(PublicationType.class);
 
-        when(repo.create(mediaFormat, typeOfBinding, details)).thenReturn(expected);
+        when(repo.create(mediaFormat)).thenReturn(expected);
         doThrow(new IllegalArgumentException()).when(repo).addToList(expected);
 
-        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(mediaFormat, typeOfBinding, details));
+        assertThrows(IllegalArgumentException.class, () -> controller.RegisterPubType(mediaFormat));
 //        verify(repo, times(1)).create(mediaFormat, typeOfBinding, details);
 //        verify(repo, times(1)).addToList(expected);
 //        verifyNoMoreInteractions(repo);

@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 
@@ -28,7 +29,7 @@ public class PublicationSampleFactory {
      */
 
     public PublicationSample create(BibliographicalData bibliographicalData, User userName,
-                                                     PublicationStatus publicationStatus, Edition edition, Condition condition){
+                                    PublicationStatus publicationStatus, Edition edition, Condition condition){
 
         return new PublicationSample(bibliographicalData, userName, publicationStatus, edition, condition);
     }

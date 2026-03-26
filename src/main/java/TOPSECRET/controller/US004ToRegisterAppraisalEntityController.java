@@ -8,7 +8,7 @@ import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.PublicationTypeRepository;
+import TOPSECRET.repository.IPublicationTypeRepository;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import java.util.List;
 public class US004ToRegisterAppraisalEntityController {
 
     private GenreRepositoryMem _genreRepository;
-    private PublicationTypeRepository _publicationTypeRepository;
+    private IPublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityRepository _appraisalEntityRepository;
 
     /**
@@ -49,7 +49,7 @@ public class US004ToRegisterAppraisalEntityController {
      */
     public US004ToRegisterAppraisalEntityController(
             GenreRepositoryMem genreRepository,
-            PublicationTypeRepository publicationTypeRepository,
+            IPublicationTypeRepository publicationTypeRepository,
             AppraisalEntityRepository appraisalEntityRepository) {
 
         if (genreRepository == null) {
@@ -57,7 +57,7 @@ public class US004ToRegisterAppraisalEntityController {
         }
 
         if (publicationTypeRepository == null) {
-            throw new IllegalArgumentException("PublicationTypeRepository cannot be null.");
+            throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null.");
         }
 
         if (appraisalEntityRepository == null) {
@@ -99,7 +99,7 @@ public class US004ToRegisterAppraisalEntityController {
      * </p>
      * <ol>
      *     <li>Requests the list of {@link PublicationType} domain objects from
-     *         the {@link PublicationTypeRepository}.</li>
+     *         the {@link IPublicationTypeRepository}.</li>
      *     <li>Creates a new list to avoid exposing the original domain collection.</li>
      *     <li>Converts each {@link PublicationType} domain object into a
      *         {@link PublicationTypeDTO_US004}.</li>

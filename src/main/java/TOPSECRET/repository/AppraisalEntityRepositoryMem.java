@@ -25,7 +25,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
 
     private List<AppraisalEntity> _appraisalEntities;
     private GenreRepositoryMem _genreRepository;
-    private PublicationTypeRepository _publicationTypeRepository;
+    private IPublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityFactory _appraisalEntityFactory;
 
     /**
@@ -36,7 +36,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
      */
     public AppraisalEntityRepositoryMem (
             GenreRepositoryMem genreRepository,
-            PublicationTypeRepository publicationTypeRepository,
+            IPublicationTypeRepository publicationTypeRepository,
             AppraisalEntityFactory appraisalEntityFactory) {
 
         if (genreRepository == null) {
@@ -44,7 +44,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
         }
 
         if (publicationTypeRepository == null) {
-            throw new IllegalArgumentException("PublicationTypeRepository cannot be null.");
+            throw new IllegalArgumentException("IPublicationTypeRepository cannot be null.");
         }
 
         this._appraisalEntities = new ArrayList<>();
@@ -97,9 +97,7 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
         for (PublicationTypeDTO_US004 dto : selectedPublicationTypesDTO) {
             PublicationType publicationType =
                     _publicationTypeRepository.findByAttributes(
-                            dto.getMediaFormat(),
-                            dto.getTypeOfBinding(),
-                            dto.getDetails()
+                            dto.getMediaFormat()
                     );
             publicationTypes.add(publicationType);
         }

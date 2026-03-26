@@ -1,10 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.BibliographicalData;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Listing;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.dto.*;
-import TOPSECRET.repository.BibliographicalDataRepository;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.repository.IListingRepository;
 import TOPSECRET.repository.IPublicationSampleRepository;
 
@@ -12,12 +12,12 @@ import java.util.List;
 
 public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
-    private final BibliographicalDataRepository _bdRepo;
+    private final IBibliographicalDataRepository _bdRepo;
     private final IListingRepository _listingRepo;
     private final IPublicationSampleRepository _pubSampleRepo;
 
     // ====== Constructor ==============================================================================================
-    public US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(BibliographicalDataRepository bdRepo,
+    public US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(IBibliographicalDataRepository bdRepo,
                                                                              IListingRepository listingRepo,
                                                                              IPublicationSampleRepository pubSampleRepo) {
         this._bdRepo = bdRepo;

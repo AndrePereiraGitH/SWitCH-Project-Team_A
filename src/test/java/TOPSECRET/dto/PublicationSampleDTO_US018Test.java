@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.BibliographicalData;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.PublicationSample;
 import TOPSECRET.domain.User;

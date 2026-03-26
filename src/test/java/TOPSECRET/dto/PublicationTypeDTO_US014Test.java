@@ -1,7 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;
@@ -19,17 +17,14 @@ class PublicationTypeDTO_US014Test {
         // Arrange
         PublicationTypeFactory factory = new PublicationTypeFactory();
         PublicationType pt = mock(PublicationType.class);
-        when(pt.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        when(pt.getTypeOfBinding()).thenReturn(TypeOfBinding.PAPERBACK);
-        when(pt.getDetails()).thenReturn("Paperback");
+        when(pt.getMediaFormat()).thenReturn("Book");
 
         // Act
         PublicationTypeDTO_US014 dto = new PublicationTypeDTO_US014(pt);
 
         // Assert
-        assertEquals("BOOK", dto.getMediaFormat());
-        assertEquals("PAPERBACK", dto.getTypeOfBinding());
-        assertEquals("Paperback", dto.getDetails());
+        assertEquals("Book", dto.getMediaFormat());
+
     }
 
     @Test
@@ -47,9 +42,7 @@ class PublicationTypeDTO_US014Test {
         // Arrange
         PublicationType pT = mock(PublicationType.class);
 
-        when(pT.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        when(pT.getTypeOfBinding()).thenReturn(TypeOfBinding.PAPERBACK);
-        when(pT.getDetails()).thenReturn("Paperback");
+        when(pT.getMediaFormat()).thenReturn("Book");
 
         // Act
         List<PublicationTypeDTO_US014> result =
@@ -60,8 +53,7 @@ class PublicationTypeDTO_US014Test {
 
         PublicationTypeDTO_US014 dto = result.get(0);
 
-        assertEquals("PAPERBACK", dto.getTypeOfBinding());
-        assertEquals("Paperback", dto.getDetails());
+        assertEquals("Book", dto.getMediaFormat());
     }
 
     @Test
@@ -70,13 +62,9 @@ class PublicationTypeDTO_US014Test {
         PublicationType pT1 = mock(PublicationType.class);
         PublicationType pT2 = mock(PublicationType.class);
 
-        when(pT1.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        when(pT1.getTypeOfBinding()).thenReturn(TypeOfBinding.PAPERBACK);
-        when(pT1.getDetails()).thenReturn("Paperback");
+        when(pT1.getMediaFormat()).thenReturn("Book");
 
-        when(pT2.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        when(pT2.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
-        when(pT2.getDetails()).thenReturn("Hardback");
+        when(pT2.getMediaFormat()).thenReturn("Magazine");
 
         // Act
         List<PublicationTypeDTO_US014> result =
