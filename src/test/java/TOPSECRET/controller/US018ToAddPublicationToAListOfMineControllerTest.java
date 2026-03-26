@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;

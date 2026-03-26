@@ -1,0 +1,72 @@
+name: "DDD Refactor -- Aggregate Implementation"
+description: "Main issue for a Domain Aggregate implementation"
+title: "DDD refactoring -- Implementation <Aggregate Name> aggregate"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Aggregate Overview
+        This issue tracks the complete implementation of the `<Aggregate Name>` aggregate following **Domain-Driven Design (DDD)** principles.
+
+        The aggregate serves as a **consistency boundary**, ensuring all business invariants are enforced within the domain layer.
+
+        ---
+
+        ## Business Goal
+        Explain what this aggregate represents in the business domain and why it is essential.
+
+        ---
+
+        ## Required Files
+
+        Each aggregate package under `domain/` must include the following files:
+
+        | File / Class                        | Description                                              | Status |
+        |-------------------------------------|----------------------------------------------------------|--------|
+        | `<AggregateName>.java`              | Aggregate root domain class + owned entities             | [ ]    |
+        | `<AggregateName>Factory.java`       | Factory responsible for creating instances               | [ ]    |
+        | `I<AggregateName>Repository.java`   | Repository interface (omit if no repository)             | [ ]    |
+
+        > All files must live under `src/domain/<aggregateName>/` following the project's DDD-layered structure.
+
+        ---
+
+        ## Key Domain Invariants
+        - The aggregate must always remain in a valid state.
+        - Internal entities cannot exist without the Aggregate Root.
+        - All business rules must be enforced within the Aggregate Root.
+        - External aggregates must be referenced only by ID (Value Object).
+        - The aggregate must maintain transactional consistency.
+
+        ---
+
+        ## Breaking Changes
+        <!-- List any breaking changes introduced by this implementation. -->
+
+        > Breaking change: _describe what was removed/changed and what needs to be updated across the codebase._
+
+        ---
+
+        ## Acceptance Criteria
+        - [ ] `<Domain Class Name>` correctly reflects the updated domain rules and OOD best practices.
+        - [ ] Any impacted classes or tests are updated accordingly.
+        - [ ] All edge cases are covered by unit tests.
+        - [ ] Test coverage ≥ 95%.
+        - [ ] Code is documented with JavaDoc.
+        - [ ] Changes are reviewed and approved by the team (at least one team member).
+        - [ ] Marker interface from `src/ddd/` is correctly implemented (`AggregateRoot`, `DomainEntity`, `ValueObject`, or `DomainID`).
+        - [ ] Aggregate ID is a Value Object placed in `domain/valueobjects/`.
+        - [ ] No direct references to other aggregate objects — only IDs (Value Objects) are used.
+        - [ ] Repository implementation (if any) lives under `src/repository/`.
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, decisions, blockers, or references. -->
+    validations:
+      required: true

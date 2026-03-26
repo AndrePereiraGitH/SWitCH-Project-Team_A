@@ -18,8 +18,6 @@ import java.util.List;
 public class PublicationTypeDTO_US014 {
 
     public String _mediaFormat;
-    public String _typeOfBinding;
-    public String _details;
 
     /**
      * Creates a DTO from a PublicationType domain object.
@@ -32,9 +30,7 @@ public class PublicationTypeDTO_US014 {
             throw new IllegalArgumentException("PublicationTypeDTO cannot be null");
         }
 
-        this._mediaFormat = publicationType.getMediaFormat().name();
-        this._typeOfBinding = publicationType.getTypeOfBinding().name();
-        this._details = publicationType.getDetails();
+        this._mediaFormat = publicationType.getMediaFormat();
     }
 
     /**
@@ -72,11 +68,7 @@ public class PublicationTypeDTO_US014 {
         return _mediaFormat;
     }
     public void setMediaFormat(String mediaFormat) {}
-    public String getTypeOfBinding() {
-        return _typeOfBinding;
-    }
-    public String getDetails() {
-        return _details;
-    }
+
 }
+
 

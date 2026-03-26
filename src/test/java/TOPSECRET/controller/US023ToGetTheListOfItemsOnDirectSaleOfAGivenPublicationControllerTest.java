@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
@@ -8,7 +9,7 @@ import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.BibliographicalDataDTO_US023;
 import TOPSECRET.dto.PublicationSampleDTO_US023;
-import TOPSECRET.repository.BibliographicalDataRepository;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.repository.IListingRepository;
 import TOPSECRET.repository.IPublicationSampleRepository;
 import TOPSECRET.repository.ListingRepositoryMem;
@@ -34,7 +35,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     private List<Listing> listListingsDouble;
     private Listing listing1Double;
     private Listing listing2Double;
-    private BibliographicalDataRepository bdRepoDouble;
+    private IBibliographicalDataRepository bdRepoDouble;
     private List<BibliographicalData> listBDDouble;
     private BibliographicalData bd1Double;
     private BibliographicalData bd2Double;
@@ -52,7 +53,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         pubSample1Double = mock(PublicationSample.class);
         pubSample2Double = mock(PublicationSample.class);
 
-        bdRepoDouble = mock(BibliographicalDataRepository.class);
+        bdRepoDouble = mock(IBibliographicalDataRepository.class);
         bd1Double = mock(BibliographicalData.class);
         bd2Double = mock(BibliographicalData.class);
         listBDDouble= List.of(bd1Double,bd2Double);
@@ -74,7 +75,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(edition1Double.getEditionNumber()).thenReturn("1st");
         when(edition1Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
         when(edition1Double.getPublicationType()).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubTypeDouble.getMediaFormat()).thenReturn("Book");
         when(edition1Double.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition1Double.getPublisher()).thenReturn(publisherDouble);
         when(publisherDouble.getName()).thenReturn("publisher name");
@@ -90,7 +91,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(edition2Double.getEditionNumber()).thenReturn("1st");
         when(edition2Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
         when(edition2Double.getPublicationType()).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubTypeDouble.getMediaFormat()).thenReturn("Book");
         when(edition2Double.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition2Double.getPublisher()).thenReturn(publisherDouble);
         when(publisherDouble.getName()).thenReturn("publisher name");
@@ -106,7 +107,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(edition2Double.getEditionNumber()).thenReturn("1st");
         when(edition2Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
         when(edition2Double.getPublicationType()).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubTypeDouble.getMediaFormat()).thenReturn("Book");
         when(edition2Double.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition2Double.getPublisher()).thenReturn(publisherDouble);
         when(publisherDouble.getName()).thenReturn("publisher name");

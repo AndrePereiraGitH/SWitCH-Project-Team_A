@@ -1,0 +1,70 @@
+name: "DDD Refactor -- Repository Layer"
+description: "Sub-issue: Restructure the Repository and Infrastructure layer of an aggregate to comply with DDD boundaries"
+title: "DDD restructure: Refactor <US_NUMBER> repository"
+labels: ["sprint4"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Aggregate Overview
+        This issue tracks the Repository and Infrastructure Layer restructure of the `<Aggregate Name>` aggregate to comply with the **Domain-Driven Design (DDD)** principles established during the previous refactoring.
+
+        ---
+
+        ## Business Goal
+        Explain what persistence logic needs to be restructured and why it must change to respect DDD boundaries.
+
+        ---
+
+        ## Required Files
+
+        Each aggregate must include the following infrastructure file:
+
+        | File / Class                             | Description                                                        | Status |
+        |------------------------------------------|--------------------------------------------------------------------|--------|
+        | `<AggregateName>Repository.java`         | Concrete repository implementation bridging Domain and Database    | [ ]    |
+
+        > The implementation must live under `src/repository/` and strictly follow the interface defined in `domain/<aggregateName>/`.
+
+        ---
+
+        ## Key Infrastructure Invariants
+        - The repository must strictly follow the contract defined in `domain/<aggregateName>/`.
+        - Only the Aggregate Root is handled — internal entities are never persisted independently.
+        - Saving the Root must persist the entire entity tree in a single atomic operation.
+        - No domain invariant logic (`if/else`) exists in the repository.
+        - No domain or business logic leaks into the Infrastructure Layer.
+
+        ---
+
+        ## Breaking Changes
+        <!-- List any structural changes that may impact other aggregates or the broader architecture. -->
+
+        > Breaking change: _describe what was removed/changed and what needs to be updated across the codebase._
+
+        ---
+
+        ## Acceptance Criteria
+        - [ ] Repository implementation strictly follows the interface defined in `domain/<aggregateName>/`.
+        - [ ] Only the Aggregate Root is persisted — no direct access to internal entities.
+        - [ ] Persistence is atomic — saving the Root persists the entire entity tree in a single operation.
+        - [ ] No business or domain logic exists in the repository.
+        - [ ] Code is documented with JavaDoc.
+        - [ ] Test coverage ≥ 95%.
+        - [ ] Changes are reviewed and approved by the team (at least one team member).
+
+        ---
+
+        ## Infrastructure Details
+        <!-- Mention specific database constraints, mapper details, or performance considerations here. -->
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, blockers, or references. -->
+    validations:
+      required: true

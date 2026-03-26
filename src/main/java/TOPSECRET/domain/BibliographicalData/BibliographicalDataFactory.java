@@ -1,4 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.BibliographicalData;
+
+import TOPSECRET.domain.Author;
+import TOPSECRET.domain.Genre;
 
 import java.time.LocalDate;
 import java.util.List;

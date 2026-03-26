@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
@@ -79,7 +80,7 @@ class PublicationDetailsDTO_US012Test {
         assertEquals(result.authorName,authorsName);
         assertEquals(expectedTitle, result.pubTitle);
         assertEquals(expectedCode, result.code);
-        assertEquals(result.publicationType,MediaFormat.BOOK.toString());
+        assertEquals("Book", result.publicationType);
 
     }
 
@@ -121,8 +122,8 @@ class PublicationDetailsDTO_US012Test {
         assertEquals(2, result.size());
         assertEquals(title1, result.get(0).pubTitle);
         assertEquals(title2, result.get(1).pubTitle);
-        assertEquals(result.get(0).publicationType,MediaFormat.BOOK.toString());
-        assertEquals(result.get(1).publicationType,MediaFormat.BOOK.toString());
+        assertEquals("Book", result.get(0).publicationType);
+        assertEquals("Book", result.get(1).publicationType);
         assertEquals(code1, result.get(0).code);
         assertEquals(code2, result.get(1).code);
         assertEquals(result.get(0).authorName,authors1);
@@ -167,7 +168,7 @@ class PublicationDetailsDTO_US012Test {
 
     private Edition createMockEdition(String code) {
         PublicationType publicationTypeDouble = mock(PublicationType.class);
-        when(publicationTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationTypeDouble.getMediaFormat()).thenReturn("Book");
 
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);

@@ -31,18 +31,14 @@ class PublicationTypeDTO_US004Test {
     void shouldCreateDTOWithValidValues() {
 
         // ARRANGE
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding binding = TypeOfBinding.HARDBACK;
-        String details = "Standard";
+        String mediaFormat = "Book";
 
         // ACT
         PublicationTypeDTO_US004 dto =
-                new PublicationTypeDTO_US004(mediaFormat, binding, details);
+                new PublicationTypeDTO_US004(mediaFormat);
 
         // ASSERT
         assertEquals(mediaFormat, dto.getMediaFormat());
-        assertEquals(binding, dto.getTypeOfBinding());
-        assertEquals(details, dto.getDetails());
     }
 
     /**
@@ -51,48 +47,13 @@ class PublicationTypeDTO_US004Test {
     @Test
     void shouldThrowExceptionWhenMediaFormatIsNull() {
 
-        // ARRANGE
-        TypeOfBinding binding = TypeOfBinding.HARDBACK;
-
         // ACT + ASSERT
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new PublicationTypeDTO_US004(null, binding, "details")
+                () -> new PublicationTypeDTO_US004(null)
         );
     }
 
-    /**
-     * Ensures an exception is thrown when TypeOfBinding is null.
-     */
-    @Test
-    void shouldThrowExceptionWhenTypeOfBindingIsNull() {
-
-        // ARRANGE
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-
-        // ACT + ASSERT
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new PublicationTypeDTO_US004(mediaFormat, null, "details")
-        );
-    }
-
-    /**
-     * Ensures an exception is thrown when details are null.
-     */
-    @Test
-    void shouldThrowExceptionWhenDetailsIsNull() {
-
-        // ARRANGE
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding binding = TypeOfBinding.HARDBACK;
-
-        // ACT + ASSERT
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new PublicationTypeDTO_US004(mediaFormat, binding, null)
-        );
-    }
 
     /**
      * Ensures domain PublicationType objects are correctly converted into DTO objects.
@@ -103,9 +64,8 @@ class PublicationTypeDTO_US004Test {
         // ARRANGE
         PublicationType publicationTypeMock = mock(PublicationType.class);
 
-        when(publicationTypeMock.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        when(publicationTypeMock.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
-        when(publicationTypeMock.getDetails()).thenReturn("Standard");
+        when(publicationTypeMock.getMediaFormat()).thenReturn("Book");
+
 
         // ACT
         List<PublicationTypeDTO_US004> result =
@@ -118,9 +78,8 @@ class PublicationTypeDTO_US004Test {
 
         PublicationTypeDTO_US004 dto = result.get(0);
 
-        assertEquals(MediaFormat.BOOK, dto.getMediaFormat());
-        assertEquals(TypeOfBinding.HARDBACK, dto.getTypeOfBinding());
-        assertEquals("Standard", dto.getDetails());
+        assertEquals("Book", dto.getMediaFormat());
+
     }
 
     /**
