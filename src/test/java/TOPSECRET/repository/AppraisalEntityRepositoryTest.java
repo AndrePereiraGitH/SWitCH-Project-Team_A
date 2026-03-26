@@ -31,7 +31,7 @@ class AppraisalEntityRepositoryTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
@@ -99,7 +99,7 @@ class AppraisalEntityRepositoryTest {
 
         // Arrange
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
@@ -171,7 +171,7 @@ class AppraisalEntityRepositoryTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
@@ -197,7 +197,7 @@ class AppraisalEntityRepositoryTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         AppraisalEntityRepository sut =
