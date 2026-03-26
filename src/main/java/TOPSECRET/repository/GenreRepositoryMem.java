@@ -14,6 +14,16 @@ public class GenreRepositoryMem implements IGenreRepository {
     private final List<Genre> _genres = new ArrayList<>();
     private final GenreFactory _genreFactory;
 
+    /**
+     * Constructs a new {@code GenreRepositoryMem} with the provided {@link GenreFactory}.
+     *
+     * <p>The factory is used to delegate the creation of {@link Genre} instances
+     * within this repository.</p>
+     *
+     * @param genreFactory the factory responsible for creating {@link Genre} objects;
+     *                     must not be {@code null}
+     * @throws IllegalArgumentException if {@code genreFactory} is {@code null}
+     */
     public GenreRepositoryMem(GenreFactory genreFactory) {
         if (genreFactory == null) {
             throw new IllegalArgumentException("GenreFactory cannot be null");
@@ -23,14 +33,12 @@ public class GenreRepositoryMem implements IGenreRepository {
 
 
     // ----------------------------- US003 starts -------------------------------
+
     /**
-     * Creates a new Genre using the factory and adds it to the repository.
-     *
-     * @param genreType the type of genre to create
-     * @return the created Genre
-     * @throws IllegalArgumentException if the genre already exists
+     * {@inheritDoc}
      */
-    public Genre createAndAdd    (String genreType) {
+    @Override
+    public Genre createAndAdd(String genreType) {
         Genre genre = _genreFactory.create(genreType);
         if (!exists(genre)) {
             this._genres.add(genre);  // Add the genre that was passed in
@@ -41,10 +49,11 @@ public class GenreRepositoryMem implements IGenreRepository {
     // ----------------------------- US003 starts -------------------------------
 
     // ----------------------------- US004 starts -------------------------------
+
     /**
-     * Adds a Genre to the repository.
-     * @param genre Genre to add
+     * {@inheritDoc}
      */
+    @Override
     public void add(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
@@ -57,12 +66,9 @@ public class GenreRepositoryMem implements IGenreRepository {
     }
 
     /**
-     * US004
-     * Finds a Genre by title.
-     * @param title Genre title to search.
-     * @return Existing Genre domain object.
-     * @throws IllegalArgumentException if title is null, blank or not found.
+     * {@inheritDoc}
      */
+    @Override
     public Genre findByTitle(String title) {
 
         if (title == null || title.isBlank()) {
@@ -80,21 +86,25 @@ public class GenreRepositoryMem implements IGenreRepository {
     // ----------------------------- US013 starts -------------------------------
 
     /**
-     * Returns the complete list of official genres available in the system.
-     * <p>
-     * The returned list is an unmodifiable defensive copy of the repository's
-     * internal collection, protecting the repository's internal state from
-     * external modifications.
-     * </p>
-     *
-     * @return an unmodifiable list of all official genres; may be empty if no genres have been registered
+     * {@inheritDoc}
      */
+    @Override
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
 
+    /**
+     * Checks whether a genre already exists in the genre collection.
+     *
+     * <p>Iterates through the internal list of genres and compares each element
+     * with the provided genre using the {@link Genre#equals(Object)} method.</p>
+     *
+     * @param genre the genre to check; must not be {@code null}
+     * @return {@code true} if the genre already exists in the collection;
+     * {@code false} otherwise
+     */
     private boolean exists(Genre genre) {
-        for (Genre existingGenre : this._genres) {   
+        for (Genre existingGenre : this._genres) {
             if (genre.equals(existingGenre)) {
                 return true;
             }
@@ -102,8 +112,5 @@ public class GenreRepositoryMem implements IGenreRepository {
         return false;
     }
     // ----------------------------- US013 ends -------------------------------
-
-
-
 }
 
