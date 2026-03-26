@@ -12,25 +12,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Repository responsible for storing and providing access to {@link BibliographicalData}.
- *
+ * In-memory implementation of {@link IBibliographicalDataRepository}.
  * <p>
- * This repository maintains an internal list of bibliographical records and offers
- * read‑only access to the stored publications. The internal collection is defensively
- * copied to ensure that external modifications do not affect the repository state.
+ * This repository stores {@link BibliographicalData} instances in an internal list and
+ * provides operations for creating and retrieving bibliographical data records.
  * </p>
- *
- * <h2>Responsibilities</h2>
- * <ul>
- *     <li>Store an initial collection of {@code BibliographicalData} objects</li>
- *     <li>Provide read‑only access to all stored publications</li>
- * </ul>
- *
- * <h2>Immutability</h2>
  * <p>
- * The repository does not expose its internal list directly. Methods returning collections
- * always provide unmodifiable copies to preserve encapsulation and prevent unintended
- * external changes.
+ * Bibliographical data records are created through a {@link BibliographicalDataFactory}
+ * and are kept only during the application's runtime.
  * </p>
  */
 
@@ -43,40 +32,32 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
     // Constructor -----------------------------------------------------------------------------------------------------
 
     /**
-     * Creates a new repository with an initial collection of bibliographical records.
+     * Constructs an in-memory bibliographical data repository with the given factory
+     * and initial list of bibliographical data.
      *
-     * <p>
-     * The provided list is defensively copied to guarantee that subsequent modifications
-     * to the original list do not affect the repository.
-     * </p>
-     *
-     * @param bdList the initial list of {@link BibliographicalData} to store;
-     *               must not be {@code null}
-     * @throws NullPointerException if {@code bdList} is {@code null}
+     * @param bibliographicalDataFactory the factory used to create {@link BibliographicalData} instances
+     * @param bdList the initial list of bibliographical data to populate the repository
      */
-
     public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory, List<BibliographicalData> bdList) {
         _bdList = new ArrayList<>(bdList);// throws automatically NullPointerException if bdList = null
         _bibliographicalDataFactory = bibliographicalDataFactory;
     }
 
+
+    /**
+     * Constructs an empty in-memory bibliographical data repository with the given factory.
+     *
+     * @param bibliographicalDataFactory the factory used to create {@link BibliographicalData} instances
+     */
     public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory) {
         _bdList = new ArrayList<>();
         _bibliographicalDataFactory = bibliographicalDataFactory;
     }
-    /**
-     * Creates a new BibliographicalData and adds it to the repository.
-     *
-     * @param title the title of the publication (must not be null)
-     * @param authors the list of authors (must not be null)
-     * @param originalLanguage the original language of the publication
-     * @param publicationDate the publication date
-     * @param genres the list of genres (must not be null)
-     * @param chunksOfText the textual content (must not be null)
-     * @return the created BibliographicalData
-     * @throws IllegalArgumentException if title, authors, genres or chunksOfText is null
-     */
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BibliographicalData createAndAdd(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
                                             List<Genre> genres, String chunksOfText) throws InstanceAlreadyExistsException
@@ -105,18 +86,12 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Returns an unmodifiable view of all stored bibliographical publications.
-     *
-     * <p>
-     * The returned list is a read‑only copy, ensuring that callers cannot modify
-     * the internal repository state.
-     * </p>
-     *
-     * @return an unmodifiable list containing all {@link BibliographicalData} records
-     */
+
 
     // Get all publications --------------------------------------------------------------------------------------------
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<BibliographicalData> getAllPublicationsBD() {
         return List.copyOf(_bdList);

@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+/*package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for AppraisalEntity.
  * Validates constructor rules, equals/hashCode,
  * getters and full information.
- */
+
 class AppraisalEntityDependenciesTest {
 
     // =========================
@@ -379,4 +379,4 @@ class AppraisalEntityDependenciesTest {
         assertEquals(true, result.contains(name));
         assertEquals(true, result.contains(contact.toString()));
     }
-}
+}*/

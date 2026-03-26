@@ -16,34 +16,21 @@ import java.util.List;
 
 public class PublicationTypeDTO_US004 {
 
-    private MediaFormat _mediaFormat;
-    private TypeOfBinding _typeOfBinding;
-    private String _details;
+    private String _mediaFormat;
 
 
 // --------------------------------- US004 starts ---------------------------------
     /**
      * Creates a PublicationTypeDTO.
-     * @param typeOfBinding Type of binding.
-     * @param details Additional details.
      */
-    public PublicationTypeDTO_US004(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details) {
+    public PublicationTypeDTO_US004(String mediaFormat) {
 
         if (mediaFormat == null) {
             throw new IllegalArgumentException("MediaFormat cannot be null.");
         }
 
-        if (typeOfBinding == null) {
-            throw new IllegalArgumentException("TypeOfBinding cannot be null.");
-        }
-
-        if (details == null || details.isBlank()) {
-            throw new IllegalArgumentException("Details cannot be null or blank.");
-        }
-
         this._mediaFormat = mediaFormat;
-        this._typeOfBinding = typeOfBinding;
-        this._details = details;
+
     }
 
     /**
@@ -61,9 +48,7 @@ public class PublicationTypeDTO_US004 {
 
             result.add(
                     new PublicationTypeDTO_US004(
-                            type.getMediaFormat(),
-                            type.getTypeOfBinding(),
-                            type.getDetails()
+                            type.getMediaFormat()
                     )
             );
         }
@@ -75,24 +60,9 @@ public class PublicationTypeDTO_US004 {
      * Returns the media format.
      * @return MediaFormat
      */
-    public MediaFormat getMediaFormat() {
+    public String getMediaFormat() {
         return _mediaFormat;
     }
 
-    /**
-     * Returns the type of binding.
-     * @return TypeOfBinding.
-     */
-    public TypeOfBinding getTypeOfBinding() {
-        return _typeOfBinding;
-    }
-
-    /**
-     * Returns publication details.
-     * @return Publication details.
-     */
-    public String getDetails() {
-        return _details;
-    }
     // --------------------------------- US004 ends ---------------------------------
 }

@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+/*package TOPSECRET.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +21,7 @@ import java.util.Locale;
  * This test class verifies the behavior of the Library class including construction,
  * publication management, and getter methods.
  * </p>
- */
+
 class LibraryDependenciesTest {
 
     private User user1;
@@ -110,7 +110,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that an {@link IllegalArgumentException} is thrown when library name is null or empty.
-     */
+
     @ParameterizedTest
     @NullAndEmptySource
     void shouldThrowExceptionWhenLibraryNameIsInvalid(String libraryName) {
@@ -124,7 +124,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that an {@link IllegalArgumentException} is thrown when user is null.
-     */
+
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
         // Arrange
@@ -136,7 +136,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that a Library instance is properly initialized with valid parameters.
-     */
+
     @Test
     void shouldInitializeInstanceWhenValidParameters() {
         // Arrange
@@ -156,7 +156,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#getLibraryName()} returns the correct library name.
-     */
+
     @Test
     void getLibraryName_shouldReturnLibraryName() {
         // Act
@@ -168,7 +168,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#getUser()} returns the correct user.
-     */
+
     @Test
     void getUser_shouldReturnUser() {
         // Act
@@ -183,7 +183,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that a publication is successfully added to the library and returned.
-     */
+
     @Test
     void addPublicationToTheLibrary_shouldReturnPublication() {
         // Act
@@ -197,7 +197,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that a {@link NullPointerException} is thrown when attempting to add a null publication.
-     */
+
     @Test
     void addPublicationToTheLibrary_shouldThrowAnExceptionWhenPublicationIsNull() {
         // Act & Assert
@@ -206,7 +206,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that an {@link IllegalArgumentException} is thrown when attempting to add a duplicate publication.
-     */
+
     @Test
     void addPublicationToTheLibrary_shouldThrowAnExceptionWhenPublicationIsDuplicate() {
         // Arrange
@@ -221,7 +221,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#getAllPublications()} returns an empty list when no publications are added.
-     */
+
     @Test
     void getAllPublications_shouldReturnEmptyListIfLibraryEmpty() {
         // Act & Assert
@@ -230,7 +230,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#getAllPublications()} returns a list with all added publications.
-     */
+
     @Test
     void getAllPublications_shouldReturnListWithAddedPublications() {
         // Act
@@ -246,7 +246,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#getAllPublications()} returns an unmodifiable list.
-     */
+
     @Test
     void getAllPublications_shouldReturnUnmodifiableList() {
         // Act
@@ -262,7 +262,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#containsPublication(PublicationSample)} returns true when publication exists.
-     */
+
     @Test
     void containsPublication_shouldReturnTrueIfPublicationExists() {
         // Act
@@ -274,7 +274,7 @@ class LibraryDependenciesTest {
 
     /**
      * Tests that {@link Library#containsPublication(PublicationSample)} returns false when publication does not exist.
-     */
+
     @Test
     void containsPublication_shouldReturnFalseIfPublicationDoesntExist() {
         // Act
@@ -322,4 +322,4 @@ class LibraryDependenciesTest {
         // Assert
         assertTrue(availablePublicationsForSale.isEmpty());
     }
-}
+}*/

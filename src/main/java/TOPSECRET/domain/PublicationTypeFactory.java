@@ -1,21 +1,17 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 
 public class PublicationTypeFactory {
 
     /**
-     * Creates new publication types after validating inputs such as media format, type of binding and details
+     * Creates new publication types after validating inputs such as media format.
      *
      * @param mediaFormat can be a book or a magazine
-     * @param typeOfBinding examples include, hardback, paperback, saddle stitching, etc
-     * @param details any extra details necessary to describe the publication type
      * @return a new publication type
      */
 
-    public PublicationType create(MediaFormat mediaFormat, TypeOfBinding typeOfBinding, String details)
+    public PublicationType create(String mediaFormat)
     {
-        return new PublicationType(mediaFormat, typeOfBinding, details);
+        return new PublicationType(mediaFormat);
     }
 }

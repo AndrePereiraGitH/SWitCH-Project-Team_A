@@ -75,7 +75,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(edition1Double.getEditionNumber()).thenReturn("1st");
         when(edition1Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
         when(edition1Double.getPublicationType()).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubTypeDouble.getMediaFormat()).thenReturn("Book");
         when(edition1Double.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition1Double.getPublisher()).thenReturn(publisherDouble);
         when(publisherDouble.getName()).thenReturn("publisher name");
@@ -91,7 +91,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(edition2Double.getEditionNumber()).thenReturn("1st");
         when(edition2Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
         when(edition2Double.getPublicationType()).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubTypeDouble.getMediaFormat()).thenReturn("Book");
         when(edition2Double.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition2Double.getPublisher()).thenReturn(publisherDouble);
         when(publisherDouble.getName()).thenReturn("publisher name");
@@ -107,7 +107,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(edition2Double.getEditionNumber()).thenReturn("1st");
         when(edition2Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
         when(edition2Double.getPublicationType()).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(pubTypeDouble.getMediaFormat()).thenReturn("Book");
         when(edition2Double.getEditionLanguage()).thenReturn(Locale.ENGLISH);
         when(edition2Double.getPublisher()).thenReturn(publisherDouble);
         when(publisherDouble.getName()).thenReturn("publisher name");

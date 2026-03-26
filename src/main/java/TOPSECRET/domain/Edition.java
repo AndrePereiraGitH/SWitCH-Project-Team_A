@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Enum.MediaFormat;
+
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
@@ -58,7 +58,7 @@ public class Edition {
     private static void validateCode(Code code, PublicationType publicationType, LocalDate date) {
         int year = date.getYear();
 
-        if (publicationType.getMediaFormat() == MediaFormat.BOOK) {
+        if (publicationType.getMediaFormat().equals("Book")) {
             if (year >= 2007) {
                 if (code.getIsbn13() == null || code.getIsbn13().isBlank()) {
                     throw new IllegalArgumentException(
@@ -72,7 +72,7 @@ public class Edition {
             }
             // Before 1970: no code required, nothing to validate
 
-        } else if (publicationType.getMediaFormat() == MediaFormat.MAGAZINE) {
+        } else if (publicationType.getMediaFormat().equals("Magazine")) {
             if (year >= 1976) {
                 if (code.getIssn() == null || code.getIssn().isBlank()) {
                     throw new IllegalArgumentException(

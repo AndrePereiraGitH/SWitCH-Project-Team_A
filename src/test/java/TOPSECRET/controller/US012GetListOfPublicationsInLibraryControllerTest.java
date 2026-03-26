@@ -128,14 +128,14 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         PublicationDetailsDTO_US012 dto1 = result.get(0);
         assertEquals(expectedTitle1, dto1.pubTitle);
         assertEquals(expectedCode1, dto1.code);
-        assertEquals(MediaFormat.BOOK.toString(), dto1.publicationType);
+        assertEquals("Book", dto1.publicationType);
         assertIterableEquals(expectedAuthors1, dto1.authorName);
 
         // Verify second DTO
         PublicationDetailsDTO_US012 dto2 = result.get(1);
         assertEquals(expectedTitle2, dto2.pubTitle);
         assertEquals(expectedCode2, dto2.code);
-        assertEquals(MediaFormat.BOOK.toString(), dto2.publicationType);
+        assertEquals("Book", dto2.publicationType);
         assertIterableEquals(expectedAuthors2, dto2.authorName);
     }
     // -------------------------------------------------------------------------
@@ -155,7 +155,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
 
     private Edition createMockEdition(String code) {
         PublicationType publicationTypeDouble = mock(PublicationType.class);
-        when(publicationTypeDouble.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationTypeDouble.getMediaFormat()).thenReturn("Book");
 
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);
