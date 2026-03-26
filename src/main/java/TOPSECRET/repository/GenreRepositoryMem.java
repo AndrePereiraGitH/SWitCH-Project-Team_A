@@ -10,7 +10,7 @@ import java.util.List;
  * Delegates the creation of Genre instances to {@link GenreFactory}.
  * NOTE: Returns an unmodifiable copy of the internal list.
  */
-public class GenreRepositoryMem implements GenreRepository{
+public class GenreRepositoryMem implements IGenreRepository {
     private final List<Genre> _genres = new ArrayList<>();
     private final GenreFactory _genreFactory;
 
@@ -45,7 +45,7 @@ public class GenreRepositoryMem implements GenreRepository{
      * Adds a Genre to the repository.
      * @param genre Genre to add
      */
-    public void addGenre(Genre genre) {
+    public void add(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }
@@ -79,6 +79,16 @@ public class GenreRepositoryMem implements GenreRepository{
     // ----------------------------- US004 ends -------------------------------
     // ----------------------------- US013 starts -------------------------------
 
+    /**
+     * Returns the complete list of official genres available in the system.
+     * <p>
+     * The returned list is an unmodifiable defensive copy of the repository's
+     * internal collection, protecting the repository's internal state from
+     * external modifications.
+     * </p>
+     *
+     * @return an unmodifiable list of all official genres; may be empty if no genres have been registered
+     */
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
