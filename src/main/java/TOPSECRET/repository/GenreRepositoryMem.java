@@ -10,10 +10,20 @@ import java.util.List;
  * Delegates the creation of Genre instances to {@link GenreFactory}.
  * NOTE: Returns an unmodifiable copy of the internal list.
  */
-public class GenreRepositoryMem implements GenreRepository{
+public class GenreRepositoryMem implements IGenreRepository {
     private final List<Genre> _genres = new ArrayList<>();
     private final GenreFactory _genreFactory;
 
+    /**
+     * Constructs a new {@code GenreRepositoryMem} with the provided {@link GenreFactory}.
+     *
+     * <p>The factory is used to delegate the creation of {@link Genre} instances
+     * within this repository.</p>
+     *
+     * @param genreFactory the factory responsible for creating {@link Genre} objects;
+     *                     must not be {@code null}
+     * @throws IllegalArgumentException if {@code genreFactory} is {@code null}
+     */
     public GenreRepositoryMem(GenreFactory genreFactory) {
         if (genreFactory == null) {
             throw new IllegalArgumentException("GenreFactory cannot be null");
@@ -23,14 +33,12 @@ public class GenreRepositoryMem implements GenreRepository{
 
 
     // ----------------------------- US003 starts -------------------------------
+
     /**
-     * Creates a new Genre using the factory and adds it to the repository.
-     *
-     * @param genreType the type of genre to create
-     * @return the created Genre
-     * @throws IllegalArgumentException if the genre already exists
+     * {@inheritDoc}
      */
-    public Genre createAndAdd    (String genreType) {
+    @Override
+    public Genre createAndAdd(String genreType) {
         Genre genre = _genreFactory.create(genreType);
         if (!exists(genre)) {
             this._genres.add(genre);  // Add the genre that was passed in
@@ -41,11 +49,12 @@ public class GenreRepositoryMem implements GenreRepository{
     // ----------------------------- US003 starts -------------------------------
 
     // ----------------------------- US004 starts -------------------------------
+
     /**
-     * Adds a Genre to the repository.
-     * @param genre Genre to add
+     * {@inheritDoc}
      */
-    public void addGenre(Genre genre) {
+    @Override
+    public void add(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }
@@ -57,12 +66,9 @@ public class GenreRepositoryMem implements GenreRepository{
     }
 
     /**
-     * US004
-     * Finds a Genre by title.
-     * @param title Genre title to search.
-     * @return Existing Genre domain object.
-     * @throws IllegalArgumentException if title is null, blank or not found.
+     * {@inheritDoc}
      */
+    @Override
     public Genre findByTitle(String title) {
 
         if (title == null || title.isBlank()) {
@@ -79,12 +85,26 @@ public class GenreRepositoryMem implements GenreRepository{
     // ----------------------------- US004 ends -------------------------------
     // ----------------------------- US013 starts -------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
 
+    /**
+     * Checks whether a genre already exists in the genre collection.
+     *
+     * <p>Iterates through the internal list of genres and compares each element
+     * with the provided genre using the {@link Genre#equals(Object)} method.</p>
+     *
+     * @param genre the genre to check; must not be {@code null}
+     * @return {@code true} if the genre already exists in the collection;
+     * {@code false} otherwise
+     */
     private boolean exists(Genre genre) {
-        for (Genre existingGenre : this._genres) {   
+        for (Genre existingGenre : this._genres) {
             if (genre.equals(existingGenre)) {
                 return true;
             }
@@ -92,8 +112,5 @@ public class GenreRepositoryMem implements GenreRepository{
         return false;
     }
     // ----------------------------- US013 ends -------------------------------
-
-
-
 }
 
