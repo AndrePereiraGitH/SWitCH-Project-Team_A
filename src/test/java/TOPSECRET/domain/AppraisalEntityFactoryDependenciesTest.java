@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+/*package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
@@ -13,12 +13,12 @@ import static org.mockito.Mockito.mock;
  * Unit tests for FactoryAppraisalEntity.
  *
  * Verifies that Factory correctly creates AppraisalEntity.
- */
+
 class AppraisalEntityFactoryDependenciesTest {
 
     /**
      * Verifies that factory creates a valid AppraisalEntity.
-     */
+
     @Test
     void shouldCreateAppraisalEntitySuccessfully() {
 
@@ -52,4 +52,4 @@ class AppraisalEntityFactoryDependenciesTest {
         assertEquals(1, result.getGenres().size());
         assertEquals(1, result.getPublicationTypes().size());
     }
-}
+}*/

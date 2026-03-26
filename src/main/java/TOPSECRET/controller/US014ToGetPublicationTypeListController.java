@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.PublicationType;
 
 import TOPSECRET.dto.PublicationTypeDTO_US014;
-import TOPSECRET.repository.PublicationTypeRepository;
+import TOPSECRET.repository.IPublicationTypeRepository;
 
 import java.util.List;
 /**
@@ -23,7 +23,7 @@ public class US014ToGetPublicationTypeListController {
      * Repository responsible for storing and providing
      * access to PublicationType domain objects.
      */
-    private final PublicationTypeRepository publicationTypeRepository;
+    private final IPublicationTypeRepository publicationTypeRepository;
 
     /**
      * Creates a new controller instance.
@@ -31,10 +31,10 @@ public class US014ToGetPublicationTypeListController {
      * @param publicationTypeRepository the repository that provides
      *                                  publication type data
      */
-    public US014ToGetPublicationTypeListController(PublicationTypeRepository publicationTypeRepository) {
+    public US014ToGetPublicationTypeListController(IPublicationTypeRepository publicationTypeRepository) {
 
         if(publicationTypeRepository==null){
-            throw new IllegalArgumentException("PublicationTypeRepository cannot be null");
+            throw new IllegalArgumentException("IPublicationTypeRepository cannot be null");
         }
 
         this.publicationTypeRepository = publicationTypeRepository;

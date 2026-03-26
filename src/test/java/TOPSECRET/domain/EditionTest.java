@@ -44,7 +44,7 @@ class EditionTest {
     void shouldThrow_WhenEditionNumber_IsNull() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -61,7 +61,7 @@ class EditionTest {
     void shouldThrow_WhenEditionNumber_IsBlank() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -77,7 +77,7 @@ class EditionTest {
     void shouldThrow_WhenPhysicalAttributes_IsNull() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -106,7 +106,7 @@ class EditionTest {
     void shouldThrow_WhenPublisher_IsNull() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -122,7 +122,7 @@ class EditionTest {
     void shouldThrow_WhenEditionLanguage_IsNull() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -138,7 +138,7 @@ class EditionTest {
     void shouldThrow_WhenEditionDate_IsNull() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -166,7 +166,7 @@ class EditionTest {
     void constructor_bookAfter2007_withIsbn13_succeeds(int year) {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act + Assert
         assertDoesNotThrow(() ->
@@ -182,7 +182,7 @@ class EditionTest {
         // Arrange
         Code code = mock(Code.class);
         when(code.getIsbn13()).thenReturn(null);
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -204,7 +204,7 @@ class EditionTest {
     void constructor_book1970to2006_withIsbn10_succeeds(int year) {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act + Assert
         assertDoesNotThrow(() ->
@@ -220,7 +220,7 @@ class EditionTest {
         // Arrange
         Code code = mock(Code.class);
         when(code.getIsbn10()).thenReturn(null);
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -242,7 +242,7 @@ class EditionTest {
     void constructor_bookBefore1970_noCodeRequired_succeeds(int year) {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act + Assert
         assertDoesNotThrow(() ->
@@ -260,7 +260,7 @@ class EditionTest {
     void constructor_magazineAfter1976_withIssn_succeeds(int year) {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.MAGAZINE);
+        when(publicationType.getMediaFormat()).thenReturn("Magazine");
         Code codeWithIssn = Code.fromIssn("0378-5955");
 
         // Act + Assert
@@ -277,7 +277,7 @@ class EditionTest {
         // Arrange
         Code code = mock(Code.class);
         when(code.getIssn()).thenReturn(null);
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.MAGAZINE);
+        when(publicationType.getMediaFormat()).thenReturn("Magazine");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -299,7 +299,7 @@ class EditionTest {
     void constructor_magazineBefore1976_noCodeRequired_succeeds(int year) {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.MAGAZINE);
+        when(publicationType.getMediaFormat()).thenReturn("Magazine");
 
         // Act + Assert
         assertDoesNotThrow(() ->
@@ -316,7 +316,7 @@ class EditionTest {
     void shouldReturnEditionNumber() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,
@@ -334,7 +334,7 @@ class EditionTest {
     void shouldReturnCode() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,
@@ -352,7 +352,7 @@ class EditionTest {
     void shouldReturnPublicationType() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,
@@ -370,7 +370,7 @@ class EditionTest {
     void shouldReturnPublisher() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,
@@ -388,7 +388,7 @@ class EditionTest {
     void shouldReturnEditionLanguage() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,
@@ -406,7 +406,7 @@ class EditionTest {
     void shouldReturnEditionDate() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         LocalDate expectedDate = LocalDate.of(2020, 1, 1);
         Edition edition = new Edition("1st", codeWithIsbn13,
@@ -428,7 +428,7 @@ class EditionTest {
     void equals_sameReference_returnsTrue() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         Edition e = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,
                 validPublisher, Locale.ENGLISH,
@@ -445,7 +445,7 @@ class EditionTest {
     void equals_twoIdenticalEditions_returnsTrue() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -467,7 +467,7 @@ class EditionTest {
     void equals_differentEditionNumber_returnsFalse() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -489,7 +489,7 @@ class EditionTest {
     void equals_differentCode_returnsFalse() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
         LocalDate date2 = LocalDate.of(2001, 1, 1);
 
@@ -513,7 +513,7 @@ class EditionTest {
 
         // Arrange
         PhysicalAttributes otherPhysicalAttributes = mock(PhysicalAttributes.class);
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -536,8 +536,8 @@ class EditionTest {
 
         // Arrange
         PublicationType otherPublicationType = mock(PublicationType.class);
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
-        when(otherPublicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
+        when(otherPublicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -560,7 +560,7 @@ class EditionTest {
 
         // Arrange
         Publisher otherPublisher = mock(Publisher.class);
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -582,7 +582,7 @@ class EditionTest {
     void equals_differentLocale_returnsFalse() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -604,7 +604,7 @@ class EditionTest {
     void equals_differentDate_returnsFalse() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn(MediaFormat.BOOK);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationType,

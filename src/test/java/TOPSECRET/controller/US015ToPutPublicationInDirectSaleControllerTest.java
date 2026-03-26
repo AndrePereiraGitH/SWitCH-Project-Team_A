@@ -41,7 +41,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         Edition edition1Double = mock(Edition.class);
         Edition edition2Double = mock(Edition.class);
         PublicationType pubTypeDouble = mock(PublicationType.class);
-        MediaFormat mediaFormatDouble = mock(MediaFormat.class);
+        String mediaFormatDouble = "BOOK";
         Locale language1Double = mock(Locale.class);
         Locale language2Double = mock(Locale.class);
         Publisher publisherDouble = mock(Publisher.class);
@@ -92,7 +92,6 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         when(edition1Double.getPublicationType()).thenReturn(pubTypeDouble);
         when(edition2Double.getPublicationType()).thenReturn(pubTypeDouble);
         when(pubTypeDouble.getMediaFormat()).thenReturn(mediaFormatDouble);
-        when(mediaFormatDouble.toString()).thenReturn("BOOK");
 
         // Edition Language
         when(edition1Double.getEditionLanguage()).thenReturn(language1Double);

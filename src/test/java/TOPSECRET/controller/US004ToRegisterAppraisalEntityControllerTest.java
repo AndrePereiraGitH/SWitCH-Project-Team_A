@@ -1,15 +1,13 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.MediaFormat;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 import TOPSECRET.repository.AppraisalEntityRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.PublicationTypeRepository;
+import TOPSECRET.repository.IPublicationTypeRepository;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +31,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
@@ -62,7 +60,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
@@ -74,12 +72,10 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         PublicationType type = mock(PublicationType.class);
 
-        MediaFormat mediaFormat = MediaFormat.BOOK;
-        TypeOfBinding binding = TypeOfBinding.HARDBACK;
+        String mediaFormat = "Book";
+
 
         when(type.getMediaFormat()).thenReturn(mediaFormat);
-        when(type.getTypeOfBinding()).thenReturn(binding);
-        when(type.getDetails()).thenReturn("Special");
 
         when(publicationTypeRepository.getAllPublicationTypes())
                 .thenReturn(List.of(type));
@@ -90,8 +86,6 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ASSERT
         assertEquals(mediaFormat, result.get(0).getMediaFormat());
-        assertEquals(binding, result.get(0).getTypeOfBinding());
-        assertEquals("Special", result.get(0).getDetails());
     }
 
     /**
@@ -104,7 +98,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
                         mock(GenreRepositoryMem.class),
-                        mock(PublicationTypeRepository.class),
+                        mock(IPublicationTypeRepository.class),
                         mock(AppraisalEntityRepository.class)
                 );
 
@@ -128,7 +122,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
                         mock(GenreRepositoryMem.class),
-                        mock(PublicationTypeRepository.class),
+                        mock(IPublicationTypeRepository.class),
                         mock(AppraisalEntityRepository.class)
                 );
 
@@ -150,7 +144,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         // ARRANGE
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        PublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepository.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =

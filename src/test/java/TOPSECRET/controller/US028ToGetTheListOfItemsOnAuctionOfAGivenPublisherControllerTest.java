@@ -178,9 +178,8 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         when(code.toString()).thenReturn("C");
         PublicationType type = mock(PublicationType.class);
         when(edition.getPublicationType()).thenReturn(type);
-        MediaFormat format = mock(MediaFormat.class);
+        String format = "Book";
         when(type.getMediaFormat()).thenReturn(format);
-        when(format.toString()).thenReturn("F");
         when(edition.getEditionLanguage()).thenReturn(Locale.US);
         Publisher pub = mock(Publisher.class);
         when(edition.getPublisher()).thenReturn(pub);
