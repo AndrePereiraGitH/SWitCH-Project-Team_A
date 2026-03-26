@@ -17,7 +17,7 @@ class US014ToGetPublicationTypeListControllerTest {
     void getAllPublicationTypesWhenRepositoryIsEmptyReturnsEmptyList() {
 
         // Arrange
-        IPublicationTypeRepository repository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository repository = mock(IPublicationTypeRepository.class);
 
         when(repository.getAllPublicationTypes()).thenReturn(List.of());
 
@@ -38,7 +38,7 @@ class US014ToGetPublicationTypeListControllerTest {
     void getAllPublicationTypesOnePublicationTypeReturnsOneDTO() {
 
         // Arrange
-        IPublicationTypeRepository repository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository repository = mock(IPublicationTypeRepository.class);
 
         PublicationTypeFactory factory = new PublicationTypeFactory();
 
@@ -70,7 +70,7 @@ class US014ToGetPublicationTypeListControllerTest {
     void getAllPublicationTypesMultiplePublicationTypesReturnsListDTOs() {
 
         // Arrange
-        IPublicationTypeRepository repository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository repository = mock(IPublicationTypeRepository.class);
 
         PublicationTypeFactory factory = new PublicationTypeFactory();
 
