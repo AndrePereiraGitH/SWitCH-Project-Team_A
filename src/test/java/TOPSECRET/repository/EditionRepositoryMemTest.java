@@ -69,7 +69,7 @@ class EditionRepositoryMemTest {
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
         when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition);
-        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
         List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
@@ -89,7 +89,7 @@ class EditionRepositoryMemTest {
                 .thenReturn(edition1);
         when(editionFactoryDouble.create("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition2);
-        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
         repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
@@ -108,7 +108,7 @@ class EditionRepositoryMemTest {
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
         when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition);
-        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
         repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act & Assert
@@ -129,7 +129,7 @@ class EditionRepositoryMemTest {
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
         when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition);
-        EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
         List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
