@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType;
@@ -11,5 +12,5 @@ import java.util.Locale;
 
 public interface EditionRepository {
     List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType,
-                                      Publisher publisher, Locale editionLanguage, LocalDate editionDate);
+                                      Publisher publisher, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding);
 }

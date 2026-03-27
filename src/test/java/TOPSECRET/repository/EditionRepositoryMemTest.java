@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType;
@@ -65,12 +66,13 @@ class EditionRepositoryMemTest {
     void shouldReturnListWithOneEdition_whenAddingFirstEdition() {
         // Arrange
         Edition edition = mock(Edition.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition);
         EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
-        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -82,15 +84,16 @@ class EditionRepositoryMemTest {
         // Arrange
         Edition edition1 = mock(Edition.class);
         Edition edition2 = mock(Edition.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition1);
-        when(editionFactoryDouble.create("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1)))
+        when(editionFactoryDouble.create("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition2);
         EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
-        List<Edition> result = repository.createAndAddEdition("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1));
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+        List<Edition> result = repository.createAndAddEdition("2nd", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2021, 1, 1), typeOfBindingDouble);
 
         // Assert
         assertEquals(2, result.size());
@@ -102,14 +105,15 @@ class EditionRepositoryMemTest {
     void shouldThrowWhenAddingDuplicateEdition() {
         // Arrange
         Edition edition = mock(Edition.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition);
         EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)));
+                repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble));
     }
     /**
      * Verifies that the list returned by {@link EditionRepositoryMem#createAndAddEdition}
@@ -122,12 +126,13 @@ class EditionRepositoryMemTest {
     void shouldReturnUnmodifiableList() {
         // Arrange
         Edition edition = mock(Edition.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1)))
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
                 .thenReturn(edition);
         EditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
-        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1));
+        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Edition.class)));

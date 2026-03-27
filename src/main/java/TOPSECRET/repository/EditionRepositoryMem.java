@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType;
@@ -28,8 +29,8 @@ public class EditionRepositoryMem implements EditionRepository {
         this._editionFactory = editionFactory;
     }
 
-    public List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType, Publisher publisher, Locale editionLanguage, LocalDate editionDate){
-      Edition newEdition = _editionFactory.create(editionNumber, code, physicalAttributes, publicationType, publisher, editionLanguage, editionDate);
+    public List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType, Publisher publisher, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding){
+      Edition newEdition = _editionFactory.create(editionNumber, code, physicalAttributes, publicationType, publisher, editionLanguage, editionDate, typeOfBinding);
       if ( _editions.contains(newEdition)){
           throw new IllegalArgumentException("Edition already exists");
       }
