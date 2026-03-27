@@ -1,0 +1,64 @@
+@startuml
+
+hide footbox
+autonumber
+
+title US004 - Get Publication Types
+
+note over Administrator, UI#E3F2FD
+<b>Navigation</b>
+---
+
+[[1.MainDiagram.puml Return to Main Diagram]]
+
+end note
+
+participant Administrator
+participant ":UI004" as UI
+participant ":US004ToRegisterAppraisalEntityController" as Controller
+participant ":PublicationTypeRepository" as PubTypeRepo
+participant "allPublicationTypeList: List<PublicationType>"
+participant ":PublicationTypeDTO" as PubTypeMapper
+participant "listOfPublicationTypDTO:List<PubTypeDTO>" as PubTypeDTO
+participant ":PublicationType" as PublicationType
+participant "PublicationType: PubTypeDTO" as PDTO
+
+UI -> Controller : getAllPublicationTypes()
+activate Controller
+
+Controller -> PubTypeRepo : getAllPublicationTypes()
+activate PubTypeRepo
+PubTypeRepo -->> "allPublicationTypeList: List<PublicationType>" **: <<create>>
+PubTypeRepo --> Controller : List<PublicationType>
+deactivate PubTypeRepo
+
+Controller -> PubTypeMapper : publicationTypeToDTO(List<PublicationType>)
+activate PubTypeMapper
+
+PubTypeMapper -->> PubTypeDTO **: <<create>>
+
+loop for each publicationType in the list
+    PubTypeMapper -> PublicationType: getTypeOfBinding()
+    activate PublicationType
+    PublicationType --> PubTypeMapper: typeOfBinding
+    deactivate PublicationType
+
+    PubTypeMapper -> PublicationType: getDetails()
+    activate PublicationType
+    PublicationType --> PubTypeMapper: details
+    deactivate PublicationType
+
+    PubTypeMapper -->> PDTO **: <<create>>
+
+    PubTypeMapper -> PubTypeMapper: listOfPubTypeDTO.add(PublicationTypeDTO)
+end
+
+PubTypeMapper --> Controller : List<PublicationTypeDTO>
+deactivate PubTypeMapper
+
+Controller --> UI : List<PublicationTypeDTO>
+deactivate Controller
+
+UI --> Administrator : Display available Publication Types
+
+@enduml
