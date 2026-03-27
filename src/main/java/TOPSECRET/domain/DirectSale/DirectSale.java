@@ -1,4 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.DirectSale;
+
+import TOPSECRET.domain.Listing;
+import TOPSECRET.domain.User;
 
 import java.util.List;
 import java.util.Objects;
