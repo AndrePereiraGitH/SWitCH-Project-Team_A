@@ -1,0 +1,58 @@
+@startuml
+hide footbox
+autonumber
+
+title US004 - Get Genres
+
+note over Administrator, UI#E3F2FD
+<b>Navigation</b>
+---
+
+[[1.MainDiagram.puml Return to Main Diagram]]
+
+end note
+
+participant Administrator
+participant ":UI004" as UI
+participant ":US004ToRegisterAppraisalEntityController" as Controller
+participant ":GenreRepository" as GenreRepo
+participant "allGenreList: List<Genre>" as allGenreList
+participant ":GenreDTO" as GenreMapper
+participant "listOfGenreDTO: List<GenreDTO>" as GenreDTO
+participant ":Genre" as Genre
+participant "genreDTO: GenreDetailsDTO" as GDTO
+
+UI -> Controller : getAllGenres()
+activate Controller
+
+Controller -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo -->> allGenreList **: <<create>>
+GenreRepo --> Controller : allGenreList
+deactivate GenreRepo
+
+Controller -> GenreMapper : genreToDTO(allGenreList)
+activate GenreMapper
+
+GenreMapper -->> GenreDTO **: <<create>>
+
+loop for each genre in the list
+    GenreMapper -> Genre: getTitle()
+    activate Genre
+    Genre --> GenreMapper: title
+    deactivate Genre
+
+    GenreMapper -->> GDTO **: <<create>>
+
+    GenreMapper -> GenreMapper: listOfGenreDTO.add(genreDTO)
+end
+
+GenreMapper --> Controller : List<GenreDTO>
+deactivate GenreMapper
+
+Controller --> UI : List<GenreDTO>
+deactivate Controller
+
+UI --> Administrator : Display available Genres
+
+@enduml

@@ -27,6 +27,7 @@ participant "PublicationType: PubTypeDTO" as PDTO
 
 participant ":AppraisalEntityRepository" as AppraisalRepo
 participant ":FactoryAppraisalEntity" as FactoryAppraisalEntity
+participant "apEn : AppraisalEntity" as AppraisalEntity
 
 
 ' --- Start ---
@@ -47,7 +48,7 @@ activate Controller
 
 Controller -> GenreRepo : getAllGenres()
 activate GenreRepo
-GenreRepo -->> allGenreList **: create()
+GenreRepo -->> allGenreList **: <<create>>
 GenreRepo --> Controller : allGenreList
 deactivate GenreRepo
 
@@ -55,7 +56,7 @@ Controller -> GenreMapper : genreToDTO(allGenreList)
 activate GenreMapper
 
 ' ----- Loop ----
-GenreMapper --> GenreDTO** : create()
+GenreMapper -->> GenreDTO** : <<create>>
 
     loop for each genre in the list
         GenreMapper -> Genre: getTitle()
@@ -63,7 +64,7 @@ GenreMapper --> GenreDTO** : create()
         Genre --> GenreMapper: title
         deactivate Genre
 
-        GenreMapper -> GDTO **: createDTO(title)
+        GenreMapper -->> GDTO **: <<create>>
 
         GenreMapper -> GenreMapper: listOfGenreDTO.add(genreDTO)
     end
@@ -81,6 +82,7 @@ deactivate UI
 
 Administrator -> UI : Selected one or more Genres
 activate UI
+
 ' =========================
 ' Get Publication Types (DTO)
 ' =========================
@@ -89,7 +91,7 @@ activate Controller
 
 Controller -> PubTypeRepo : getAllPublicationTypes()
 activate PubTypeRepo
-PubTypeRepo -->> "allPublicationTypeList: List<PublicationType>" **: create()
+PubTypeRepo -->> "allPublicationTypeList: List<PublicationType>" **: <<create>>
 PubTypeRepo --> Controller : List<PublicationType>
 deactivate PubTypeRepo
 
@@ -97,7 +99,7 @@ Controller -> PubTypeMapper : publicationTypeToDTO(List<PublicationType>)
 activate PubTypeMapper
 
 ' ----- Loop ----
-PubTypeMapper -->> PubTypeDTO** : create()
+PubTypeMapper -->> PubTypeDTO** : <<create>>
 
     loop for each publicationType in the list
         PubTypeMapper -> PublicationType: getTypeOfBinding()
@@ -110,7 +112,7 @@ PubTypeMapper -->> PubTypeDTO** : create()
         PublicationType --> PubTypeMapper: details
         deactivate PublicationType
 
-        PubTypeMapper --> PDTO **: createDTO(typeOfBinding, details)
+        PubTypeMapper -->> PDTO **: <<create>>
 
         PubTypeMapper -> PubTypeMapper: listOfPubTypeDTO.add(PublicationTypeDTO)
     end
@@ -128,6 +130,7 @@ deactivate UI
 
 Administrator -> UI : Selected one or more Publication Types
 activate UI
+
 ' =========================
 ' Register Appraisal Entity
 ' =========================
@@ -142,8 +145,8 @@ Controller -> Controller : validate selectedPublicationTypesDTO not empty
     loop for each genreDTO in selectedGenresDTO
         Controller -> GenreRepo : dtoToGenre(selecteGenresDTO)
         activate GenreRepo
-        GenreRepo--> Controller : Genre
-        deactivate
+        GenreRepo --> Controller : Genre
+        deactivate GenreRepo
     end
 
 ' --- Convert selectedPublicationTypesDTO ---
@@ -151,7 +154,7 @@ Controller -> Controller : validate selectedPublicationTypesDTO not empty
         Controller -> PubTypeRepo : dtoToPublicationType(selectedPublicationTypesDTO)
         activate PubTypeRepo
         PubTypeRepo --> Controller : PublicationType
-        deactivate
+        deactivate PubTypeRepo
     end
 
 Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, genres, publicationTypes)
@@ -159,8 +162,9 @@ activate AppraisalRepo
 
 AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genres, publicationType)
 activate FactoryAppraisalEntity
-create "apEn : AppraisalEntity" as AppraisalEntity
-FactoryAppraisalEntity --> AppraisalEntity : create()
+
+FactoryAppraisalEntity -->> AppraisalEntity **: <<create>>
+
 FactoryAppraisalEntity --> AppraisalRepo : apEn
 deactivate FactoryAppraisalEntity
 
@@ -175,7 +179,5 @@ deactivate Controller
 
 UI ---> Administrator : Success
 deactivate UI
-
-
 
 @enduml
