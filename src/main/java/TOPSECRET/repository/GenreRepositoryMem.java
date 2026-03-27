@@ -54,21 +54,6 @@ public class GenreRepositoryMem implements IGenreRepository {
      * {@inheritDoc}
      */
     @Override
-    public void add(Genre genre) {
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
-        if (exists(genre)) {
-            throw new IllegalArgumentException("Genre already exists");
-        }
-
-        _genres.add(genre);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Genre findByTitle(String title) {
 
         if (title == null || title.isBlank()) {
