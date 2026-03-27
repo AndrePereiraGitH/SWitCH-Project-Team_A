@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +58,8 @@ class EditionFactoryTest {
                 validPublicationType,
                 validPublisher,
                 Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
+                LocalDate.of(2020, 1, 1),
+                TypeOfBinding.HARDBACK
         );
 
         assertNotNull(edition);
@@ -76,7 +78,8 @@ class EditionFactoryTest {
                 validPublicationType,
                 validPublisher,
                 Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
+                LocalDate.of(2020, 1, 1),
+                TypeOfBinding.HARDBACK
         );
 
         assertNotNull(edition);
@@ -94,7 +97,8 @@ class EditionFactoryTest {
                 validPublicationType,
                 validPublisher,
                 Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
+                LocalDate.of(2020, 1, 1),
+                TypeOfBinding.HARDBACK
         );
 
         assertNotNull(edition);
@@ -113,7 +117,8 @@ class EditionFactoryTest {
                 validPublicationType,
                 validPublisher,
                 Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1)
+                LocalDate.of(2020, 1, 1),
+                TypeOfBinding.HARDBACK
         );
 
         assertEquals("1st", edition.getEditionNumber());

@@ -1,21 +1,26 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.DirectSale.DirectSale;
+import TOPSECRET.domain.DirectSale.DirectSaleFactory;
+import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * In-memory implementation of {@link DirectSaleRepository}, responsible for storing
- * and managing {@link DirectSale} instances.
+ * In-memory implementation of {@link IDirectSaleRepository}.
  * <p>
- * A DirectSale represents a buyer's cart, containing one or more {@link Listing}
- * objects selected for direct purchase. This repository provides operations to
- * create, store, and verify the existence of DirectSale objects.
+ * This repository stores {@link DirectSale} instances in an internal list and
+ * provides operations for creating, storing, and verifying direct sales.
+ * </p>
+ * <p>
+ * Direct sales are created through a {@link DirectSaleFactory} and are kept only
+ * during the application's runtime.
  * </p>
  */
 
-public class DirectSaleRepositoryMem implements DirectSaleRepository {
+public class DirectSaleRepositoryMem implements IDirectSaleRepository {
 
     private List<DirectSale> _directSaleList;
     private DirectSaleFactory _directSaleFactory;
@@ -24,26 +29,22 @@ public class DirectSaleRepositoryMem implements DirectSaleRepository {
     // Constructors
 
     /**
-     * Creates a new DirectSaleRepository with an empty internal list of direct sales.
-     * The repository will use the provided factory to create new DirectSale instances.
+     * Constructs an in-memory direct sale repository with the given factory.
      *
-     * @param directSaleFactory the factory responsible for creating DirectSale objects
+     * @param directSaleFactory the factory used to create {@link DirectSale} instances
      */
-
     public DirectSaleRepositoryMem(DirectSaleFactory directSaleFactory) {
         this._directSaleFactory = directSaleFactory;
         this._directSaleList = new ArrayList<>();
     }
 
+
     /**
-     * Creates a new DirectSaleRepository initialized with an existing list of direct sales.
-     * A defensive copy of the provided list is created to preserve encapsulation and prevent
-     * external modifications from affecting the repository's internal state.
+     * Constructs an in-memory direct sale repository with an initial list of direct sales.
      *
      * @param directSaleList the initial list of direct sales to populate the repository
-     * @param directSaleFactory the factory responsible for creating DirectSale objects
+     * @param directSaleFactory the factory used to create {@link DirectSale} instances
      */
-
     public DirectSaleRepositoryMem(List<DirectSale> directSaleList, DirectSaleFactory directSaleFactory) {
         this._directSaleList = new ArrayList<>(directSaleList);
         this._directSaleFactory = directSaleFactory;
@@ -51,30 +52,22 @@ public class DirectSaleRepositoryMem implements DirectSaleRepository {
 
     //============================================================================================================
 
-    /**
-     * Creates a new {@link DirectSale} for the given buyer and listings,
-     * stores it in the repository, and returns it.
-     *
-     * @param listings the listings included in the direct sale
-     * @param buyer the user performing the purchase
-     * @return the newly created DirectSale
-     * @throws IllegalArgumentException if the factory rejects the input or
-     *                                  if the created DirectSale already exists
-     */
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public DirectSale createAndAdd(List<Listing> listings, User buyer) {
         DirectSale directSale = _directSaleFactory.create(listings, buyer);
         add(directSale);
         return directSale;
     }
 
-    /**
-     * Checks whether a given {@link DirectSale} already exists in the repository.
-     *
-     * @param dirSale the DirectSale to check
-     * @return true if the DirectSale already exists, false otherwise
-     */
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean exists(DirectSale dirSale) {
         for (DirectSale directSale : _directSaleList) {
             if (dirSale.equals(directSale)) {
@@ -84,19 +77,11 @@ public class DirectSaleRepositoryMem implements DirectSaleRepository {
         return false;
     }
 
-    /**
-     * Adds a {@link DirectSale} to the repository, throwing an exception if it already exists.
-     * <p>
-     * This method performs a duplicate check using {@link #exists(DirectSale)}.
-     * If the direct sale is already present, an {@link IllegalArgumentException} is thrown.
-     * Otherwise, the direct sale is added.
-     * </p>
-     *
-     * @param directSale the DirectSale instance to be added
-     * @throws IllegalArgumentException if the direct sale already exists in the repository
-     *                                  or if {@code directSale} is null
-     */
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void add(DirectSale directSale) {
         if (directSale == null) {
             throw new IllegalArgumentException("DirectSale cannot be null");
