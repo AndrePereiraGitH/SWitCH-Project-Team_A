@@ -48,19 +48,6 @@ public class PublicationSampleID implements DomainID {
     }
 
     /**
-     * Returns the hash code for this {@code PublicationSampleID}.
-     *
-     * <p>Consistent with {@link #equals(Object)}: two instances that are equal
-     * will always return the same hash code.</p>
-     *
-     * @return the hash code derived from the underlying ID value
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(pubSampleID);
-    }
-
-    /**
      * Returns the underlying string value of this ID.
      *
      * @return the ID value; never {@code null} or blank
