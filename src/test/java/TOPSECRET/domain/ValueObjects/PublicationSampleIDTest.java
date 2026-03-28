@@ -33,9 +33,11 @@ class PublicationSampleIDTest {
     @Test
     public void shouldReturnFalseWhenTheIDs_areDifferent(){
         //Arrange
+        PublicationSampleID id1 = new PublicationSampleID(pubSampleID_1);
+        PublicationSampleID id2 = new PublicationSampleID(pubSampleID_2);
 
         //Act
-        boolean result = pubSampleID_1.equals(pubSampleID_2);
+        boolean result = id1.equals(id2);
 
         //Assert
         assertFalse(result);
@@ -44,12 +46,51 @@ class PublicationSampleIDTest {
     @Test
     public void shouldReturnTrueWhenTheIDs_areEqual(){
         //Arrange
+        PublicationSampleID id1 = new PublicationSampleID(pubSampleID_1);
+        PublicationSampleID id2 = new PublicationSampleID(pubSampleID_1);
 
         //Act
-        boolean result = pubSampleID_1.equals(pubSampleID_1);
+        boolean result = id1.equals(id2);
 
         //Assert
         assertTrue(result);
+    }
+
+    @Test
+    public void shouldReturnFalseWhenComparedToNull() {
+        //Arrange
+        PublicationSampleID id = new PublicationSampleID(pubSampleID_1);
+
+        //Act
+        boolean result = id.equals(null);
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenComparedToItself() {
+        //Arrange
+
+        //Act
+        PublicationSampleID id = new PublicationSampleID(pubSampleID_1);
+
+        //Assert
+        assertEquals(id, id);
+    }
+
+
+
+    @Test
+    public void getId_shouldReturnPublicationID(){
+        //Arrange
+
+        //Act
+        PublicationSampleID id = new PublicationSampleID(pubSampleID_1);
+        String result = id.getID();
+
+        //Assert
+        assertEquals(result,pubSampleID_1);
     }
 
 }
