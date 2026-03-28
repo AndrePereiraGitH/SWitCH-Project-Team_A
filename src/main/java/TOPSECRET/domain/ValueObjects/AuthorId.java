@@ -28,6 +28,10 @@ public class AuthorId implements DomainID {
         this._authorId = authorId;
     }
 
+    public String getId() {
+        return _authorId;
+    }
+
     /**
      * Compares this author ID with another object for equality.
      * <p>
