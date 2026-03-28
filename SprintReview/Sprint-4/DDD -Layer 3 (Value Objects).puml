@@ -1,0 +1,292 @@
+@startuml MiteLovers_Layer3_Complete
+
+  hide circle
+  skinparam defaultFontName Arial
+  skinparam defaultFontSize 11
+  skinparam shadowing false
+  skinparam classAttributeIconSize 0
+  skinparam padding 12
+  skinparam ArrowColor #37474F
+  skinparam ArrowThickness 1.3
+  skinparam ArrowFontSize 10
+  skinparam ArrowFontColor #37474F
+
+  skinparam class {
+      BackgroundColor<<Root>>           #546E7A
+      BorderColor<<Root>>               #37474F
+      HeaderBackgroundColor<<Root>>     #37474F
+      HeaderFontColor<<Root>>           #FFFFFF
+      FontColor<<Root>>                 #FFFFFF
+      stereotypeFontColor<<Root>>       #FFFFFF
+
+      BackgroundColor<<Internal>>       #B0BEC5
+      BorderColor<<Internal>>           #78909C
+      HeaderBackgroundColor<<Internal>> #78909C
+      HeaderFontColor<<Internal>>       #FFFFFF
+      FontColor<<Internal>>             #263238
+
+      BackgroundColor<<VO>>             #ECEFF1
+      BorderColor<<VO>>                 #90A4AE
+      HeaderBackgroundColor<<VO>>       #90A4AE
+      HeaderFontColor<<VO>>             #FFFFFF
+      FontColor<<VO>>                   #37474F
+  }
+
+  skinparam package {
+      BackgroundColor  #E0F2F1
+      BorderColor      #004D40
+      BorderThickness  2
+      FontColor        #004D40
+      FontStyle        Bold
+      FontSize         11
+  }
+
+  ' ============================================================
+  ' SHARED VALUE OBJECTS
+  ' ============================================================
+
+  package "«Shared»" #FFFDE7 {
+      class Price <<VO>> {
+          - amount : double
+          - currency : String
+      }
+  }
+
+  package "VOs" #FFF8E1 {
+      class Profile <<VO>>
+      class Contact <<VO>>
+      class Email   <<VO>>
+      class Address <<VO>>
+      Contact "1" *-- "1" Email   : has
+      Contact "1" *-- "1" Address : has
+  }
+
+  ' ============================================================
+  ' ID VALUE OBJECTS (outside aggregates)
+  ' ============================================================
+
+  class CountryId <<VO>> {
+      - countryName : String
+  }
+  class GenreId <<VO>> {
+      - genreType : String
+  }
+  class PublicationTypeId <<VO>> {
+      - mediaFormat : String
+  }
+  class AuthorId <<VO>> {
+      - id : UUID
+  }
+  class PublisherId <<VO>> {
+      - vatNumber : String
+  }
+  class EditionId <<VO>> {
+      - id : UUID
+  }
+  class BibliographicalDataId <<VO>> {
+      - id : UUID
+  }
+  class PublicationSampleId <<VO>> {
+      - id : UUID
+  }
+  class UserId <<VO>> {
+      - username : String
+  }
+  class LibraryId <<VO>> {
+      - id : UUID
+  }
+  class CollectionId <<VO>> {
+      - id : UUID
+  }
+  class ListingId <<VO>> {
+      - id : UUID
+  }
+  class AuctionId <<VO>> {
+      - id : UUID
+  }
+  class DirectSaleId <<VO>> {
+      - id : UUID
+  }
+  class TransactionId <<VO>> {
+      - id : UUID
+  }
+  class AppraisalEntityId <<VO>> {
+      - name : String
+  }
+
+  ' ============================================================
+  ' AGGREGATES
+  ' ============================================================
+
+  package "«Aggregate» Country" {
+      class Country <<Root>>
+      class City <<Internal>>
+      City "1..*" --> "1" Country : belongs to
+  }
+  Country "1" -- "1" CountryId : id
+
+  package "«Aggregate» Genre" {
+      class Genre <<Root>>
+  }
+  Genre "1" -- "1" GenreId : id
+
+  package "«Aggregate» PublicationType" {
+      class PublicationType <<Root>>
+  }
+  PublicationType "1" -- "1" PublicationTypeId : id
+
+  package "«Aggregate» Author" {
+      class Author <<Root>>
+  }
+  Author "1" -- "1" AuthorId : id
+
+  package "«Aggregate» Publisher" {
+      class Publisher <<Root>>
+      Publisher "1" --> "1" Contact : has
+  }
+  Publisher "1" -- "1" PublisherId : id
+
+  package "«Aggregate» Edition" {
+      class Edition <<Root>>
+      class Code <<VO>> {
+          - isbn10 : String
+          - isbn13 : String
+          - issn : String
+      }
+      class PhysicalAttributes <<VO>> {
+          - weight : double
+          - numberOfPages : int
+      }
+      class Dimensions <<VO>> {
+          - height : double
+          - width : double
+          - depth : double
+      }
+      Edition "1" *-- "0..1" Code               : has
+      Edition "1" *-- "1"    PhysicalAttributes  : has
+      PhysicalAttributes "1" *-- "1" Dimensions  : has
+  }
+  Edition "1" -- "1" EditionId : id
+
+  package "«Aggregate» BibliographicalData" {
+      class BibliographicalData <<Root>>
+  }
+  BibliographicalData "1" -- "1" BibliographicalDataId : id
+
+  package "«Aggregate» PublicationSample" {
+      class PublicationSample <<Root>>
+  }
+  PublicationSample "1" -- "1" PublicationSampleId : id
+
+  package "«Aggregate» User" {
+      class User <<Root>>
+      User "1" --> "1" Profile : has
+      User "1" --> "1" Contact : has
+  }
+  User "1" -- "1" UserId : id
+
+  package "«Aggregate» Library" {
+      class Library <<Root>>
+  }
+  Library "1" -- "1" LibraryId : id
+
+  package "«Aggregate» CollectionOfPublications" {
+      class CollectionOfPublications <<Root>>
+  }
+  CollectionOfPublications "1" -- "1" CollectionId : id
+
+  package "«Aggregate» AppraisalEntity" {
+      class AppraisalEntity <<Root>>
+  }
+  AppraisalEntity "1" -- "1" AppraisalEntityId : id
+
+  package "«Aggregate» Listing" {
+      class Listing <<Root>>
+      class Picture <<VO>>
+      Listing "1" *-- "*" Picture : has
+      Listing "1" --> "1" Price   : has
+  }
+  Listing "1" -- "1" ListingId : id
+
+  package "«Aggregate» Auction" {
+      class Auction <<Root>>
+      class Bid <<Internal>>
+      Auction "1" *-- "*" Bid   : receives
+      Auction "1" --> "1" Price : startingPrice
+      Auction "1" --> "1" Price : buyoutPrice
+  }
+  Auction "1" -- "1" AuctionId : id
+
+  package "«Aggregate» DirectSale" {
+      class DirectSale <<Root>>
+  }
+  DirectSale "1" -- "1" DirectSaleId : id
+
+  package "«Aggregate» Transaction" {
+      class Transaction <<Root>>
+      Transaction "1" --> "1" Price : finalPrice
+  }
+  Transaction "1" -- "1" TransactionId : id
+
+  ' ============================================================
+  ' CROSS-AGGREGATE REFERENCES (via ID VOs)
+  ' ============================================================
+
+  ' --- Country ---
+  Address  "*" --> "1" CountryId : located in
+  Profile  "*" --> "1" CountryId : from
+  Author   "*" --> "1" CountryId : from
+
+  ' --- Edition ---
+  Edition "*" --> "1" PublisherId       : published by
+  Edition "*" --> "1" PublicationTypeId : has
+
+  ' --- BibliographicalData ---
+  BibliographicalData "*"   --> "1..*" AuthorId : written by
+  BibliographicalData "*"   --> "1..*" GenreId  : classified by
+
+  ' --- PublicationSample ---
+  PublicationSample "*" --> "1"  UserId               : registered by
+  PublicationSample "*" --> "1"  EditionId             : has
+  PublicationSample "*" --> "1"  BibliographicalDataId : has
+  PublicationSample "*" --> "*"  AppraisalEntityId     : appraised by
+
+  ' --- Library ---
+  Library "0..1" --> "1"    UserId              : belongs to
+  Library "1"    --> "0..*" PublicationSampleId : contains
+
+  ' --- CollectionOfPublications ---
+  CollectionOfPublications "*" --> "1"    UserId              : owner
+  CollectionOfPublications "*" --> "1"    GenreId             : has
+  CollectionOfPublications "*" --> "0..*" PublicationSampleId : contains
+
+  ' --- AppraisalEntity ---
+  AppraisalEntity "1" --> "1..*" PublicationTypeId : qualified to appraise
+  AppraisalEntity "1" --> "1..*" GenreId           : accepts
+  AppraisalEntity "*" <-- "1"   UserId             : registered by
+
+  note on link
+      Only users with
+      Administrator role
+  end note
+
+  ' --- Listing ---
+  Listing "*" --> "1"    UserId              : created by
+  Listing "1" --> "1..*" PublicationSampleId : includes
+
+  ' --- Auction ---
+  Auction "1" --> "1" ListingId : based on
+  Bid     "*" --> "1" UserId    : placed by
+  User "1" --> "*" AuctionId    : bids in
+
+  ' --- DirectSale ---
+  DirectSale "*" --> "1..*" ListingId : has
+  DirectSale "*" --> "1"    UserId    : purchased by
+
+  ' --- Transaction ---
+  Transaction "1" --> "0..1" AuctionId    : originated from
+  Transaction "1" --> "0..1" DirectSaleId : originated from
+  Transaction "1" --> "1"    UserId       : buyer
+  Transaction "1" --> "*" UserId          : sellers
+
+@enduml
