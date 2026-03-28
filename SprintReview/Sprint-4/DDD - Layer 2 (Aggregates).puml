@@ -1,0 +1,187 @@
+@startuml MiteLovers_Layer2_Aggregates
+
+  hide circle
+  skinparam defaultFontName Arial
+  skinparam defaultFontSize 11
+  skinparam shadowing false
+  skinparam classAttributeIconSize 0
+  skinparam padding 8
+  skinparam ArrowColor #37474F
+  skinparam ArrowThickness 1.3
+  skinparam ArrowFontSize 10
+  skinparam ArrowFontColor #37474F
+
+
+  skinparam class {
+      BackgroundColor<<Root>>           #546E7A
+      BorderColor<<Root>>               #37474F
+      HeaderBackgroundColor<<Root>>     #37474F
+      HeaderFontColor<<Root>>           #FFFFFF
+      FontColor<<Root>>                 #FFFFFF
+      stereotypeFontColor<<Root>>       #FFFFFF
+
+      BackgroundColor<<Internal>>       #B0BEC5
+      BorderColor<<Internal>>           #78909C
+      HeaderBackgroundColor<<Internal>> #78909C
+      HeaderFontColor<<Internal>>       #FFFFFF
+      FontColor<<Internal>>             #263238
+  }
+
+  skinparam package {
+      BackgroundColor  #E0F2F1
+      BorderColor      #004D40
+      BorderThickness  2
+      FontColor        #004D40
+      FontStyle        Bold
+      FontSize         11
+  }
+
+  ' ============================================================
+  ' AGGREGATES
+  ' ============================================================
+
+  package "«Aggregate» Genre" {
+      class Genre <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Author" {
+      class Author <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Publisher" {
+      class Publisher <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Edition" {
+      class Edition <<Root>> {
+      }
+  }
+
+  package "«Aggregate» BibliographicalData" {
+      class BibliographicalData <<Root>> {
+      }
+  }
+
+  package "«Aggregate» PublicationSample" {
+      class PublicationSample <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Library" {
+      class Library <<Root>> {
+      }
+  }
+
+  package "«Aggregate» CollectionOfPublications" {
+      class CollectionOfPublications <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Country" {
+      class Country <<Root>> {
+      }
+      class City <<Internal>>
+      Country "1" <-- "1..*" City : belongs to a
+  }
+
+  package "«Aggregate» User" {
+      class User <<Root>> {
+      }
+  }
+
+  package "«Aggregate» AppraisalEntity" {
+      class AppraisalEntity <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Listing" {
+      class Listing <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Auction" {
+      class Auction <<Root>> {
+      }
+      class Bid <<Internal>>
+      Auction "1" *-- "*" Bid : receives
+  }
+
+  package "«Aggregate» DirectSale" {
+      class DirectSale <<Root>> {
+      }
+  }
+
+  package "«Aggregate» Transaction" {
+      class Transaction <<Root>> {
+      }
+  }
+
+  package "«Aggregate» PublicationType" {
+      class PublicationType <<Root>> {
+      }
+  }
+
+  ' ============================================================
+  ' RELAÇÕES
+  ' ============================================================
+
+  ' --- User ---
+  User "1" <-- "0..1" Library                            : belongs to
+  User "1" <-- "*" CollectionOfPublications              : belongs to
+
+  ' --- PublicationSample ---
+  PublicationSample "*" --> "1" User                     : registered by
+  PublicationSample "*" --> "1" Edition                  : has
+  PublicationSample "*" --> "1" BibliographicalData      : has
+  PublicationSample "*" <-- "*" AppraisalEntity          : appraised by
+
+  ' --- BibliographicalData ---
+  BibliographicalData "*" --> "1..*" Genre               : classified by
+
+  ' --- Edition ---
+  Edition "*" --> "1" Publisher                          : published by
+  Edition "*" --> "1" PublicationType                    : has
+
+  ' --- CollectionOfPublications ---
+
+  ' --- AppraisalEntity ---
+  User "1" <-- "*" AppraisalEntity                       : is registered by
+
+  note on link
+        Only users with
+        Administrator role
+    end note
+
+  AppraisalEntity "1" --> "1..*" PublicationType         : qualified to appraise
+  AppraisalEntity "1" --> "1..*" Genre                   : has
+
+
+  ' --- Listing ---
+  Listing "*" --> "1" User                                  : created by
+
+  ' --- Auction ---
+  Auction "1" --> "1" Listing                            : based on
+  User "1" --> "*" Auction
+
+  ' --- DirectSale ---
+  DirectSale "0..1" --> "1..*" Listing                   : has
+  DirectSale "0..1" --> "1" User                         : belongs to
+
+  ' --- Transaction ---
+  Transaction "0..1" --> "0..1" Auction                  : originates from
+  Transaction "0..1" --> "0..1" DirectSale               : originates from
+
+  ' --- Country ---
+  Author "*" --> "1" Country                             : from
+
+  BibliographicalData "1" --> "1..*" Author              : has
+
+  CollectionOfPublications "*" --> "1" Genre             : has
+  Listing "1" --> "1..*" PublicationSample               : includes
+  CollectionOfPublications "*" --> "*" PublicationSample : contains
+  Bid "*" --> "1" User                                   : placed by
+
+@enduml
