@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Author;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockConstruction;
 
 import java.time.LocalDate;
 
+import TOPSECRET.domain.Country;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 /**

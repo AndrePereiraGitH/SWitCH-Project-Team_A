@@ -1,6 +1,6 @@
 package TOPSECRET.domain.BibliographicalData;
 
-import TOPSECRET.domain.Author;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Genre;
 
 import javax.management.InstanceAlreadyExistsException;
