@@ -1,6 +1,5 @@
 package TOPSECRET.domain.ValueObjects;
 
-import TOPSECRET.domain.Author.Author;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
