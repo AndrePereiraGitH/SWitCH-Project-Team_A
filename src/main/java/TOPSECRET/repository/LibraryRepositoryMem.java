@@ -2,7 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.LibraryFactory;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User;
 
 import javax.management.InstanceAlreadyExistsException;

@@ -3,8 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Enum.*;
 
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.dto.PublicationDetailsDTO_US012;

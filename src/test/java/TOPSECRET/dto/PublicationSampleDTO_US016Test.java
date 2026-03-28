@@ -3,6 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

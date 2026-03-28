@@ -2,6 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 
 import java.util.ArrayList;
 import java.util.List;

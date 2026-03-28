@@ -2,13 +2,13 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.ILibraryRepository;
-import TOPSECRET.repository.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;

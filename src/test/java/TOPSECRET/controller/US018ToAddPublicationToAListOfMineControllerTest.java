@@ -2,11 +2,12 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
 import TOPSECRET.repository.ILibraryRepository;
-import TOPSECRET.repository.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import org.junit.jupiter.api.Test;
 

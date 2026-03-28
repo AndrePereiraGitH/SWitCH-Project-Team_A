@@ -1,10 +1,10 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.repository.GenreRepositoryMem;
 import TOPSECRET.repository.IListingRepository;
-import TOPSECRET.repository.ListingRepositoryMem;
+
 import java.util.List;
 
 /**

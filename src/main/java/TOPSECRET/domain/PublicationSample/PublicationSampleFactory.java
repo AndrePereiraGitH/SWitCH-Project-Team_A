@@ -1,8 +1,11 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.User;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
 
 /**
  * Factory responsible for creating {@link PublicationSample} instances.

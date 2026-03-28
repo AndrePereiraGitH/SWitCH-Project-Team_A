@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.CollectionOfPublicationsFactory;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;

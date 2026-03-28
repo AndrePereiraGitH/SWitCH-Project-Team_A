@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

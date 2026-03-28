@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 
 import java.util.ArrayList;
 import java.util.List;

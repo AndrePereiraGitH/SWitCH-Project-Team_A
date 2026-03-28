@@ -2,6 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.DirectSale.DirectSale;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

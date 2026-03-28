@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
 import java.util.List;
