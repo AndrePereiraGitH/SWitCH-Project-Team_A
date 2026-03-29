@@ -24,7 +24,11 @@ class LibraryIdTest {
 
     @Test
     void givenValidId_whenGetId_thenReturnsCorrectId() {
+         // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+        // Act
+        String result = libraryId.getId();
+        // Assert
         assertEquals("lib-001", libraryId.getId());
     }
 
@@ -34,25 +38,31 @@ class LibraryIdTest {
 
     @Test
     void givenNullId_whenConstructing_thenThrowsIllegalArgumentException() {
+        // Act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new LibraryId(null)
         );
+        // Assert
         assertEquals("LibraryId must be a valid String.", ex.getMessage());
     }
 
     @Test
     void givenBlankId_whenConstructing_thenThrowsIllegalArgumentException() {
+        // Act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new LibraryId("   ")
         );
+         // Assert
         assertEquals("LibraryId must be a valid String.", ex.getMessage());
     }
 
     @Test
     void givenEmptyId_whenConstructing_thenThrowsIllegalArgumentException() {
+        // Act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new LibraryId("")
         );
+        // Assert
         assertEquals("LibraryId must be a valid String.", ex.getMessage());
     }
 
@@ -62,33 +72,43 @@ class LibraryIdTest {
 
     @Test
     void givenSameInstance_whenEquals_thenReturnsTrue() {
+        // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+        // Act + Assert
         assertEquals(libraryId, libraryId);
     }
 
     @Test
     void givenTwoIdsWithSameValue_whenEquals_thenReturnsTrue() {
+        // Arrange
         LibraryId first = new LibraryId("lib-001");
         LibraryId second = new LibraryId("lib-001");
+        // Assert
         assertEquals(first, second);
     }
 
     @Test
     void givenTwoIdsWithDifferentValues_whenEquals_thenReturnsFalse() {
+        // Arrange
         LibraryId first = new LibraryId("lib-001");
         LibraryId second = new LibraryId("lib-002");
+        // Assert
         assertNotEquals(first, second);
     }
 
     @Test
     void givenNull_whenEquals_thenReturnsFalse() {
+        // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+        // Assert
         assertNotEquals(null, libraryId);
     }
 
     @Test
     void givenDifferentType_whenEquals_thenReturnsFalse() {
+        // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+        // Assert
         assertNotEquals("lib-001", libraryId);
     }
 
@@ -98,13 +118,17 @@ class LibraryIdTest {
 
     @Test
     void givenValidId_whenToString_thenReturnsRawId() {
+        // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+        // Assert
         assertEquals("lib-001", libraryId.toString());
     }
 
     @Test
     void givenValidId_whenToStringAndGetId_thenBothMatch() {
+        // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+       // Assert
         assertEquals(libraryId.getId(), libraryId.toString());
     }
 
@@ -114,7 +138,9 @@ class LibraryIdTest {
 
     @Test
     void givenValidId_whenGetIdCalledMultipleTimes_thenAlwaysReturnsSameValue() {
+        // Arrange
         LibraryId libraryId = new LibraryId("lib-001");
+        // Assert
         assertEquals(libraryId.getId(), libraryId.getId());
     }
 }
