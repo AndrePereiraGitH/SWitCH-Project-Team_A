@@ -1,8 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.Genre.Genre;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
