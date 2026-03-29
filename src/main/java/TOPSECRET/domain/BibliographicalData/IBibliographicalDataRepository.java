@@ -1,7 +1,7 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;

@@ -3,6 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Profile;
 import org.junit.jupiter.api.Test;
 

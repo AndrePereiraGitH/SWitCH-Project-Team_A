@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Genre.Genre;
+
 import java.util.List;
 
 /**

@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.GenreFactory;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.GenreFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

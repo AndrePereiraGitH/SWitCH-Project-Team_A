@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.Genre.GenreFactory;
+import TOPSECRET.domain.Genre.Genre;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -48,7 +50,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     @Test
     void shouldCreateCollectionSuccessfully() {
         // Arrange
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
         User user = createValidUser();
 
         // Act — factory creates the collection by calling the domain constructor
@@ -70,7 +72,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     @Test
     void shouldThrowWhenNameIsNull() {
         // Arrange
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
         User user = createValidUser();
 
         // Act & Assert — null name must throw (caught by the constructor)
@@ -95,7 +97,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     @Test
     void shouldThrowWhenUserIsNull() {
         // Arrange
-        Genre genre = new Genre("Fiction");
+        Genre genre = new GenreFactory().create("Fiction");
 
         // Act & Assert — null user must throw (caught by the constructor)
         assertThrows(IllegalArgumentException.class,

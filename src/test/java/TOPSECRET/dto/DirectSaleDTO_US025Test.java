@@ -6,6 +6,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.Profile;

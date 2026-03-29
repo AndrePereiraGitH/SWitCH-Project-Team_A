@@ -2,7 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

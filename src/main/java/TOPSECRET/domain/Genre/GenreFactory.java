@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Genre;
 
 public class GenreFactory {
     /**

@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import TOPSECRET.repository.*;
 import org.junit.jupiter.api.BeforeEach;

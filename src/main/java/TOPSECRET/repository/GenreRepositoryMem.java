@@ -1,6 +1,8 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.GenreFactory;
+import TOPSECRET.domain.Genre.IGenreRepository;
 
 import java.util.ArrayList;
 import java.util.List;

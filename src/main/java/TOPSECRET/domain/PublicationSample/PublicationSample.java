@@ -2,11 +2,10 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleID;

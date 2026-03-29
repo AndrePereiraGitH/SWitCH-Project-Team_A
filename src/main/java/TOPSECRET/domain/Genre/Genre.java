@@ -1,15 +1,19 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Genre;
 
 import java.util.Objects;
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import java.util.UUID;
 
 /**
  * Represents a literary genre (e.g. "Drama", "Science Fiction").
  * Stores the genre name and ensures it is never null or blank.
  */
-public class Genre {
+public class Genre implements AggregateRoot<GenreID>{
 
     // --------------------------------- US003 starts ---------------------------------
 
+    private final GenreID _id ;
     private String _genreType;
 
     /**
@@ -23,10 +27,32 @@ public class Genre {
             throw new IllegalArgumentException("Genre type cannot be null or blank");
         }
         this._genreType = genreType;
+        this._id = new GenreID(UUID.randomUUID().toString());
     }
 
     // --------------------------------- US003 ends ---------------------------------
+    /**
+     * Returns the unique identifier of this Genre.
+     *
+     * @return the GenreID identifying this genre; never null
+     */
+    @Override
+    public GenreID id() {
+        return _id;
+    }
 
+    /**
+     * Determines whether this Genre has the same identity as another object.
+     *
+     * @param object the object to compare identity with
+     * @return true if object is a Genre with an equal GenreID; false otherwise
+     */
+    @Override
+    public boolean sameIdentityAs(Object object) {
+        if (object instanceof Genre other)
+            return _id.equals(other._id);
+        return false;
+    }
     // --------------------------------- US004 starts ---------------------------------
     /**
      * Returns the genre title.
