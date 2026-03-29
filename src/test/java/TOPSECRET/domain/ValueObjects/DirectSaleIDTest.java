@@ -23,7 +23,10 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldCreateValidID() {
+        //Arrange
         DirectSaleID id = new DirectSaleID("1234");
+
+        //Assert
         assertEquals("1234", id.getID());
     }
 
@@ -34,6 +37,7 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldThrowExceptionWhenIDIsNull() {
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             new DirectSaleID(null);
         });
@@ -46,6 +50,7 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldThrowExceptionWhenIDIsBlank() {
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             new BibliographicalDataID("   ");
         });
@@ -58,9 +63,11 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldBeEqualWhenIDsAreSame() {
+        //Arrange
         DirectSaleID id1 = new DirectSaleID("1234");
         DirectSaleID id2 = new DirectSaleID("1234");
 
+        //Assert
         assertEquals(id1, id2);
     }
 
@@ -71,9 +78,11 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
+        //Arrange
         DirectSaleID id1 = new DirectSaleID("1234");
         DirectSaleID id2 = new DirectSaleID("5678");
 
+        //Assert
         assertNotEquals(id1, id2);
     }
 
@@ -83,7 +92,10 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldNotBeEqualToNull() {
+        //Arrange
         DirectSaleID id = new DirectSaleID("1234");
+
+        //Assert
         assertNotEquals(null, id);
     }
 
@@ -94,9 +106,11 @@ class DirectSaleIDTest {
      */
     @Test
     void shouldNotBeEqualToDifferentClass() {
+        //Arrange
         DirectSaleID id = new DirectSaleID("1234");
         String other = "1234";
 
+        //Assert
         assertNotEquals(other, id);
     }
 
@@ -106,7 +120,10 @@ class DirectSaleIDTest {
      */
     @Test
     void getterShouldReturnCorrectID() {
+        //Arrange
         DirectSaleID id = new DirectSaleID("1234");
+
+        //Assert
         assertEquals("1234", id.getID());
     }
 
@@ -117,9 +134,11 @@ class DirectSaleIDTest {
      */
     @Test
     void hashCodeShouldBeEqualForSameID() {
+        //Arrange
         DirectSaleID id1 = new DirectSaleID("1234");
         DirectSaleID id2 = new DirectSaleID("1234");
 
+        //Assert
         assertEquals(id1.hashCode(), id2.hashCode());
     }
 

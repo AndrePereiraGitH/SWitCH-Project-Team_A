@@ -24,7 +24,10 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldCreateValidID() {
+        //Arrange
         BibliographicalDataID id = new BibliographicalDataID("1234");
+
+        //Assert
         assertEquals("1234", id.getID());
     }
 
@@ -35,6 +38,7 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldThrowExceptionWhenIDIsNull() {
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             new BibliographicalDataID(null);
         });
@@ -47,6 +51,7 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldThrowExceptionWhenIDIsBlank() {
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             new BibliographicalDataID("   ");
         });
@@ -59,9 +64,11 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldBeEqualWhenIDsAreSame() {
+        //Arrange
         BibliographicalDataID id1 = new BibliographicalDataID("1234");
         BibliographicalDataID id2 = new BibliographicalDataID("1234");
 
+        //Assert
         assertEquals(id1, id2);
     }
 
@@ -72,9 +79,11 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
+        //Arrange
         BibliographicalDataID id1 = new BibliographicalDataID("1234");
         BibliographicalDataID id2 = new BibliographicalDataID("5678");
 
+        //Assert
         assertNotEquals(id1, id2);
     }
 
@@ -84,7 +93,10 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldNotBeEqualToNull() {
+        //Arrange
         BibliographicalDataID id = new BibliographicalDataID("1234");
+
+        //Assert
         assertNotEquals(null, id);
     }
 
@@ -95,9 +107,11 @@ class BibliographicalDataIDTest {
      */
     @Test
     void shouldNotBeEqualToDifferentClass() {
+        //Arrange
         BibliographicalDataID id = new BibliographicalDataID("1234");
         String other = "1234";
 
+        //Assert
         assertNotEquals(other, id);
     }
 
@@ -107,7 +121,10 @@ class BibliographicalDataIDTest {
      */
     @Test
     void getterShouldReturnCorrectID() {
+        //Arrange
         BibliographicalDataID id = new BibliographicalDataID("1234");
+
+        //Assert
         assertEquals("1234", id.getID());
     }
 
@@ -118,9 +135,11 @@ class BibliographicalDataIDTest {
      */
     @Test
     void hashCodeShouldBeEqualForSameID() {
+        //Arrange
         BibliographicalDataID id1 = new BibliographicalDataID("1234");
         BibliographicalDataID id2 = new BibliographicalDataID("1234");
 
+        //Assert
         assertEquals(id1.hashCode(), id2.hashCode());
     }
 
