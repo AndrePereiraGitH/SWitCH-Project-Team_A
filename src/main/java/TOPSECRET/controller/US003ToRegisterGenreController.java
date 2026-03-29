@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 /**

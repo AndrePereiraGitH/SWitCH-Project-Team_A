@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Author;
+import TOPSECRET.domain.Author.Author;
 
 /**
  * Data Transfer Object (DTO) for author data used in use case US026.

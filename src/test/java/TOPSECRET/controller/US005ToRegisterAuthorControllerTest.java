@@ -4,9 +4,9 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 
-import TOPSECRET.domain.Author;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Country;
-import TOPSECRET.repository.IAuthorRepository;
+import TOPSECRET.domain.Author.IAuthorRepository;
 import org.junit.jupiter.api.Test;
 /**
  * Unit tests for the {@link US005ToRegisterAuthorController} application controller.

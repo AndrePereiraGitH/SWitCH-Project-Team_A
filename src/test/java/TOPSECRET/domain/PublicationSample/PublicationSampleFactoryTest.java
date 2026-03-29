@@ -1,8 +1,10 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 

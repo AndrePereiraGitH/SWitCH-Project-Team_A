@@ -1,9 +1,15 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.User;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -218,5 +224,49 @@ class PublicationSampleTest {
 
         //Assert
         assertFalse(sample.hasGenre(genre));
+    }
+
+    @Test
+    void addPublicationToLibrary_shouldAssociateThePublicationToALibrary(){
+        //Arrange
+        PublicationSample publicationSample =
+                new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,anyEdition, anyCondition);
+        LibraryId id = new LibraryId(UUID.randomUUID().toString());
+
+        //Act
+        LibraryId libID = publicationSample.addPublicationToLibrary(id);
+
+        //Assert
+        assertEquals(id,libID);
+    }
+
+    @Test
+    void getLibraryID_shouldReturnID_whenALibraryIsAssociated(){
+        //Arrange
+        PublicationSample publicationSample =
+                new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,anyEdition, anyCondition);
+        LibraryId id = new LibraryId(UUID.randomUUID().toString());
+        publicationSample.addPublicationToLibrary(id);
+
+        //Act
+        LibraryId libID = publicationSample.getLibraryID();
+
+        //Assert
+        assertEquals(id,libID);
+
+    }
+
+    @Test
+    void getLibraryID_shouldReturnNull_whenNoLibraryAssociated(){
+        //Arrange
+        PublicationSample publicationSample =
+                new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,anyEdition, anyCondition);
+
+        //Act
+        LibraryId libID = publicationSample.getLibraryID();
+
+        //Assert
+        assertNull(libID);
+
     }
 }

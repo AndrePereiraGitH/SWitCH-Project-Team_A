@@ -1,10 +1,12 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,14 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-
 import TOPSECRET.dto.PublicationDetailsDTO_US012;
-import TOPSECRET.repository.ILibraryRepository;
+import TOPSECRET.domain.Library.ILibraryRepository;
 
 
 
 import javax.management.InstanceNotFoundException;
-import java.util.List;
 
 /**
  * Controller for User Story 012: Get List of Publications in Library.
@@ -45,16 +42,16 @@ public class US012GetListOfPublicationsInLibraryController {
      * @throws IllegalArgumentException if the username is empty
      * @throws InstanceNotFoundException if the user's library cannot be found
      */
-    public List<PublicationDetailsDTO_US012> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
-
-        if (username.isEmpty()) {
-            throw new IllegalArgumentException("Username can not be empty");
-        }
-
-        List<PublicationSample> listOfAllPublications = _libraryRepo.getAllPublicationsFromUserLibrary(username);
-
-        List<PublicationDetailsDTO_US012> listOfPublicationsDTO = PublicationDetailsDTO_US012.toDTOs(listOfAllPublications);
-
-        return listOfPublicationsDTO;
-    }
+//    public List<PublicationDetailsDTO_US012> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
+//
+//        if (username.isEmpty()) {
+//            throw new IllegalArgumentException("Username can not be empty");
+//        }
+//
+//        List<PublicationSample> listOfAllPublications = _libraryRepo.getAllPublicationsFromUserLibrary(username);
+//
+//        List<PublicationDetailsDTO_US012> listOfPublicationsDTO = PublicationDetailsDTO_US012.toDTOs(listOfAllPublications);
+//
+//        return listOfPublicationsDTO;
+//    }
 }

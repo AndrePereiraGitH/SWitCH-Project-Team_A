@@ -1,6 +1,8 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
@@ -14,11 +16,11 @@ public interface CollectionOfPublicationsRepository {
     CollectionOfPublications createIfNotExists(User user, String name, Genre genre);
 
     // US018
-    boolean addPublicationToCollection(User user, Library userLibrary,
-                                       CollectionOfPublications collection,
-                                       PublicationSample publication);
+  //  boolean addPublicationToCollection(User user, Library userLibrary,
+//                                       CollectionOfPublications collection,
+//                                       PublicationSample publication);
 
-    boolean addCollectionToRepo(CollectionOfPublications collection);
+  //  boolean addCollectionToRepo(CollectionOfPublications collection);
 
     List<CollectionOfPublications> getUserCollections(User user);
 

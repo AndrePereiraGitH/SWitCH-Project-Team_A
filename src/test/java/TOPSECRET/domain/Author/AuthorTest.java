@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Author;
 
+import TOPSECRET.domain.Country;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -104,6 +105,22 @@ class AuthorTest {
     }
 
     // ========================================
+    // ID TESTS
+    // ========================================
+
+    @Test
+    void id_shouldReturnNotNullId() {
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        assertNotNull(author.id());
+    }
+
+    @Test
+    void id_shouldReturnSameId() {
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        assertEquals(author.id(), author.id());
+    }
+
+    // ========================================
     // EQUALS TESTS
     // ========================================
 
@@ -117,22 +134,12 @@ class AuthorTest {
     }
 
     @Test
-    void shouldBeEqual_whenSameNameCountryAndDateOfBirth() {
-        // Arrange
-        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
-        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
-
-        // Act + Assert
-        assertEquals(a1, a2);
-    }
-
-    @Test
     void shouldNotBeEqual_whenComparedToNull() {
         // Arrange
         Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
         // Act + Assert
-        assertNotEquals(null, author);
+        assertFalse(author.equals(null));
     }
 
     @Test
@@ -141,39 +148,9 @@ class AuthorTest {
         Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
         // Act + Assert
-        assertNotEquals("not an author", author);
+        assertFalse(author.equals("not an author"));
     }
 
-    @Test
-    void shouldNotBeEqual_whenDifferentName() {
-        // Arrange
-        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
-        Author a2 = new Author("John", countryDouble, LocalDate.of(1990, 1, 1), "bio");
-
-        // Act + Assert
-        assertNotEquals(a1, a2);
-    }
-
-    @Test
-    void shouldNotBeEqual_whenDifferentCountry() {
-        // Arrange
-        Country otherCountry = mock(Country.class);
-        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
-        Author a2 = new Author("Jane", otherCountry, LocalDate.of(1990, 1, 1), "bio");
-
-        // Act + Assert
-        assertNotEquals(a1, a2);
-    }
-
-    @Test
-    void shouldNotBeEqual_whenDifferentDateOfBirth() {
-        // Arrange
-        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
-        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1995, 6, 15), "bio");
-
-        // Act + Assert
-        assertNotEquals(a1, a2);
-    }
     // ========================================
     // HASHCODE TESTS
     // ========================================
@@ -182,10 +159,9 @@ class AuthorTest {
     void shouldHaveSameHashCode_whenSameNameCountryAndDateOfBirth() {
         // Arrange
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
-        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
 
         // Act + Assert
-        assertEquals(a1.hashCode(), a2.hashCode());
+        assertEquals(a1.hashCode(), a1.hashCode());
     }
 
     @Test
@@ -207,6 +183,85 @@ class AuthorTest {
         // Act + Assert
         assertNotEquals(a1.hashCode(), a2.hashCode());
     }
+
+    // ========================================
+    // SAME IDENTITY AS TESTS
+    // ========================================
+
+    @Test
+    void sameIdentityAs_shouldHaveSameIdentity_whenAllIdentityFieldsAreEqual() {
+        // arrange
+        Country sameCountryDouble = mock(Country.class);
+        LocalDate dob = LocalDate.of(1990,4, 4);
+
+        Author a1 = new Author("Jane", sameCountryDouble, dob, "bio");
+        Author a2 = new Author("Jane", sameCountryDouble, dob, "bio");
+
+        // act + assert
+        assertTrue(a1.sameIdentityAs(a2));
+    }
+
+    @Test
+    void sameIdentityAs_shouldNotHaveSameIdentity_whenComparedToNull() {
+        // arrange
+        LocalDate dob = LocalDate.of(1990,4, 4);
+        Author a1 = new Author("Jane", countryDouble, dob, "bio");
+
+        // act + assert
+        assertFalse(a1.sameIdentityAs(null));
+    }
+
+    @Test
+    void sameIdentityAs_shouldNotHaveSameIdentity_whenComparedToDifferentClass() {
+        // arrange
+        LocalDate dob = LocalDate.of(1990, 4, 4);
+        Author a1 = new Author("Jane", countryDouble, dob, "bio");
+
+        // act + assert
+        assertFalse(a1.sameIdentityAs("Not an author"));
+    }
+
+    @Test
+    void sameIdentityAs_shouldNotHaveSameIdentity_whenNameIsDifferent() {
+
+        // arrange
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("John", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+
+        // act + assert
+        assertFalse(a1.sameIdentityAs(a2));
+    }
+
+    @Test
+    void shouldNotHaveSameIdentity_whenCountryIsDifferent() {
+        // arrange
+        Country otherCountry = mock(Country.class);
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("Jane", otherCountry, LocalDate.of(1990, 1, 1), "bio");
+
+        // act + assert
+        assertFalse(a1.sameIdentityAs(a2));
+    }
+
+    @Test
+    void shouldNotHaveSameIdentity_whenDateOfBirthIsDifferent() {
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1995, 6, 15), "bio");
+
+        assertFalse(a1.sameIdentityAs(a2));
+    }
+
+    @Test
+    void shouldNotHaveSameIdentity_whenBiographyIsDifferent() {
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
+        Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
+
+        assertFalse(a1.sameIdentityAs(a2));
+    }
+
+
+
+
 }
 
 

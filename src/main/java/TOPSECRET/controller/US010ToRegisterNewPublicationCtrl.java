@@ -4,9 +4,9 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User;
-import TOPSECRET.repository.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import javax.management.InstanceAlreadyExistsException;
 

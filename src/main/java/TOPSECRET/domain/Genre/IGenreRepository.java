@@ -1,6 +1,4 @@
-package TOPSECRET.repository;
-
-import TOPSECRET.domain.Genre;
+package TOPSECRET.domain.Genre;
 
 import java.util.List;
 
