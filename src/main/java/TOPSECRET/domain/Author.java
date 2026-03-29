@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Country.Country;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -31,7 +33,7 @@ public class Author {
     private final LocalDate _dateOfBirth;
     private final String _biography;
 
-    protected Author(String name, Country country,LocalDate dateOfBirth, String  biography) {
+    protected Author(String name, Country country, LocalDate dateOfBirth, String  biography) {
         if ( name ==null || name.isBlank()){
             throw new IllegalArgumentException("Name cannot be null or blank");
         }

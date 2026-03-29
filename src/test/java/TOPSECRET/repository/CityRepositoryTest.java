@@ -2,8 +2,8 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.City;
 import TOPSECRET.domain.CityFactory;
-import TOPSECRET.domain.Country;
-import TOPSECRET.domain.CountryFactory;
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.CountryFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

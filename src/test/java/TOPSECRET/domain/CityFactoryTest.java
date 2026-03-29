@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.CountryFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +23,8 @@ class CityFactoryTest {
 
     private final CityFactory anyFactory = new CityFactory();
 
-    private final Country anyCountry = new Country("Portugal");
+    private final CountryFactory countryFactory = new CountryFactory();
+    private final Country anyCountry = countryFactory.create("Portugal");
 
     private final String anyCityName = "Braga";
 

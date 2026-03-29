@@ -2,23 +2,23 @@ package TOPSECRET.controller;
 
 import static org.junit.jupiter.api.Assertions.*; //importante para os assertEquals, assertThrows, etc
 
-import TOPSECRET.domain.Country;
-import TOPSECRET.repository.CountryRepository;
-import TOPSECRET.domain.CountryFactory;
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.repository.CountryRepositoryMem;
+import TOPSECRET.domain.Country.CountryFactory;
 import org.junit.jupiter.api.BeforeEach; //BeforeEach é um méto.do executado sempre antes de cada teste. Import para poder ser usado
 import org.junit.jupiter.api.Test; //Para marcar métodos de teste
 
 class US007ToRegisterCountryControllerDependenciesTest {
 
     private US007ToRegisterCountryController controller; //declaração de Objetos para ser usados no teste
-    private CountryRepository repository; //declaração de Objetos para ser usados no teste
+    private CountryRepositoryMem repository; //declaração de Objetos para ser usados no teste
     private CountryFactory countryFactory;
 
 
     @BeforeEach //BeforeEach é um méto.do executado sempre antes de cada teste. Garante isolamento entre testes
     void preparation(){ //Méto.do para preparação
         countryFactory = new CountryFactory();
-        repository = new CountryRepository(countryFactory); //Cria um novo repositório do tipo "CountryRepository" e injeta a factory
+        repository = new CountryRepositoryMem(countryFactory); //Cria um novo repositório do tipo "CountryRepository" e injeta a factory
         controller = new US007ToRegisterCountryController(repository);//Cria um novo controller e insere-o no repositório ("repository") criado acima
     }
 

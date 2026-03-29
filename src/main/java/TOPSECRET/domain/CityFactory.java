@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Country.Country;
+
 /**
  * Factory responsible for creating {@link City} domain objects.
  * <p>
