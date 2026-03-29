@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +65,7 @@ class US011AddPublicationToLibraryControllerTest {
         List<PublicationSample> publicationsInLibrary = List.of(publication1);
         List<PublicationSample> expectedList = List.of(publication2, publication3);
 
-        when(libraryMock.getAllPublications()).thenReturn(publicationsInLibrary);
+        when(pubSampleRepositoryMock.getAllPublications()).thenReturn(publicationsInLibrary);
         when(pubSampleRepositoryMock.getListOfDifferentPublications(publicationsInLibrary)).thenReturn(expectedList);
 
         List<PublicationSample> result = controller.getListOfOtherPublications();
@@ -90,7 +90,7 @@ class US011AddPublicationToLibraryControllerTest {
         List<PublicationSample> emptyLibrary = List.of();
         List<PublicationSample> allPublications = List.of(publication1, publication2, publication3);
 
-        when(libraryMock.getAllPublications()).thenReturn(emptyLibrary);
+        when(pubSampleRepositoryMock.getAllPublications()).thenReturn(emptyLibrary);
         when(pubSampleRepositoryMock.getListOfDifferentPublications(emptyLibrary)).thenReturn(allPublications);
 
         List<PublicationSample> result = controller.getListOfOtherPublications();
@@ -113,7 +113,7 @@ class US011AddPublicationToLibraryControllerTest {
         List<PublicationSample> libraryPublications = List.of(publication1, publication2, publication3);
         List<PublicationSample> emptyList = List.of();
 
-        when(libraryMock.getAllPublications()).thenReturn(libraryPublications);
+        when(pubSampleRepositoryMock.getAllPublications()).thenReturn(libraryPublications);
         when(pubSampleRepositoryMock.getListOfDifferentPublications(libraryPublications)).thenReturn(emptyList);
 
         List<PublicationSample> result = controller.getListOfOtherPublications();
@@ -137,7 +137,7 @@ class US011AddPublicationToLibraryControllerTest {
         List<PublicationSample> libraryList = List.of(publication1);
         List<PublicationSample> unmodifiableResult = List.of(publication2);
 
-        when(libraryMock.getAllPublications()).thenReturn(libraryList);
+        when(pubSampleRepositoryMock.getAllPublications()).thenReturn(libraryList);
         when(pubSampleRepositoryMock.getListOfDifferentPublications(libraryList)).thenReturn(unmodifiableResult);
 
         List<PublicationSample> result = controller.getListOfOtherPublications();

@@ -8,7 +8,6 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
-import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
@@ -190,28 +189,28 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public PublicationSample PublicationSampleDtoToDomain(
-            Library userLibrary,
-            PublicationSampleDTO_US018 dto) {
-
-        if (userLibrary == null)
-            throw new IllegalArgumentException("Library cannot be null");
-
-        if (dto == null)
-            throw new IllegalArgumentException("DTO cannot be null");
-
-        for (PublicationSample publication : userLibrary.getAllPublications()) {
-
-            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
-                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
-                    && publication.getOwner().getUserName().equals(dto.getOwnerUsername())) {
-
-                return publication;
-            }
-        }
-
-        throw new IllegalArgumentException("Publication not found in user's library");
-    }
+//    public PublicationSample PublicationSampleDtoToDomain(
+//            Library userLibrary,
+//            PublicationSampleDTO_US018 dto) {
+//
+//        if (userLibrary == null)
+//            throw new IllegalArgumentException("Library cannot be null");
+//
+//        if (dto == null)
+//            throw new IllegalArgumentException("DTO cannot be null");
+//
+//        for (PublicationSample publication : userLibrary.getAllPublications()) {
+//
+//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
+//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
+//                    && publication.getOwner().getUserName().equals(dto.getOwnerUsername())) {
+//
+//                return publication;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("Publication not found in user's library");
+//    }
 
     // ------------------------------------------ ends --------------------------------------------
 

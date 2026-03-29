@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 
-import TOPSECRET.domain.Library;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.repository.PublicationSampleRepositoryMem;
 
@@ -19,10 +19,9 @@ public class US011AddPublicationToLibraryController {
         this.publicationSampleRepositoryMem = publicationSampleRepositoryMem; //Associa as dependências ao controller (low coupling - controller não cria nada)
     }
 
-    // Call by the UI and response
     public List<PublicationSample> getListOfOtherPublications(){
         //Get publications in user library
-        List<PublicationSample> listOfPublicationsInLibrary = library.getAllPublications(); //Get all Publications
+        List<PublicationSample> listOfPublicationsInLibrary = publicationSampleRepositoryMem.getAllPublications(); //Get all Publications
 
         //Get publications not in library
         List<PublicationSample> listOfDifferentPublications = publicationSampleRepositoryMem.getListOfDifferentPublications(listOfPublicationsInLibrary);
@@ -32,11 +31,10 @@ public class US011AddPublicationToLibraryController {
         return listOfDifferentPublications;
     }
 
-    //Method for adding a publication to the Library
     public boolean addPublicationToLib(PublicationSample publicationSample){
         if (publicationSample == null)
             throw new IllegalArgumentException("Publication cannot be null");
-        library.addPublication(publicationSample); //The value is "true" if the publication is added
+        publicationSampleRepositoryMem.add(publicationSample); //The value is "true" if the publication is added
         return true;
     } //Está a perguntar à Library se conseguiu adicionar e devolve a mesma resposta
 }

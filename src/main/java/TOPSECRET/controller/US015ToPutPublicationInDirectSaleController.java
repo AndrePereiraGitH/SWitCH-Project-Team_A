@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -79,12 +80,12 @@ public class US015ToPutPublicationInDirectSaleController {
      * @return a list of {@link PublicationSampleDTO_US015} representing the available publications
      */
 
-    public List<PublicationSampleDTO_US015> findLibraryPublicationsAvailableForSale() {
-        List<PublicationSample> available = _library.findLibraryPublicationsAvailableForSale();
-        return available.stream()
-                .map(PublicationSampleDTO_US015::toDTO)
-                .toList();
-    }
+//    public List<PublicationSampleDTO_US015> findLibraryPublicationsAvailableForSale() {
+//        List<PublicationSample> available = _library.findLibraryPublicationsAvailableForSale();
+//        return available.stream()
+//                .map(PublicationSampleDTO_US015::toDTO)
+//                .toList();
+//    }
 
     /**
      * Creates a direct sale listing for the selected publication sample.

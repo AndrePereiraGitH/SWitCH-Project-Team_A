@@ -19,7 +19,7 @@ public class LibraryId implements DomainID {
         if (id != null && !id.isBlank())
             this._id = id;
         else
-            throw new IllegalArgumentException("ID must be a valid String.");
+            throw new IllegalArgumentException("LibraryId must be a valid String.");
     }
 
     public String getId() {
@@ -42,11 +42,9 @@ public class LibraryId implements DomainID {
         if (this == object)
             return true;
 
-        if (object instanceof LibraryId) {
-            LibraryId libraryId = (LibraryId) object;
+        if (object instanceof LibraryId libraryId) {
 
-            if (this._id.equals(libraryId._id))
-                return true;
+            return this._id.equals(libraryId._id);
         }
         return false;
     }

@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
@@ -85,7 +85,7 @@ public interface IPublicationSampleRepository {
      * @return a {@link List} of matching {@link PublicationSample} instances;
      *         never {@code null}, but may be empty if no matches are found
      */
-    List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
+  //  List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the
@@ -107,7 +107,7 @@ public interface IPublicationSampleRepository {
      * @param dto         the DTO carrying the data to convert; must not be null
      * @return the corresponding {@link PublicationSample} domain object
      */
-    PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
+   // PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the

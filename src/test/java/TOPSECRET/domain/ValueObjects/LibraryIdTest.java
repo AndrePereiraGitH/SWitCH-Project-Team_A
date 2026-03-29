@@ -37,7 +37,7 @@ class LibraryIdTest {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new LibraryId(null)
         );
-        assertEquals("ID must be a valid String.", ex.getMessage());
+        assertEquals("LibraryId must be a valid String.", ex.getMessage());
     }
 
     @Test
@@ -45,7 +45,7 @@ class LibraryIdTest {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new LibraryId("   ")
         );
-        assertEquals("ID must be a valid String.", ex.getMessage());
+        assertEquals("LibraryId must be a valid String.", ex.getMessage());
     }
 
     @Test
@@ -53,7 +53,7 @@ class LibraryIdTest {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new LibraryId("")
         );
-        assertEquals("ID must be a valid String.", ex.getMessage());
+        assertEquals("LibraryId must be a valid String.", ex.getMessage());
     }
 
     // -------------------------------------------------------------------------
