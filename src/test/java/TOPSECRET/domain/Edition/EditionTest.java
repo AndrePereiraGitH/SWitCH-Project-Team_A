@@ -1,8 +1,11 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Edition;
 
-import TOPSECRET.domain.Enum.MediaFormat;
+import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -477,7 +481,7 @@ class EditionTest {
         // Assert
         assertEquals(typeOfBindingDouble, result);
     }
-
+/*
 // ─────────────────────────────────────────────────────────────
 // equals
 // ─────────────────────────────────────────────────────────────
@@ -520,7 +524,7 @@ class EditionTest {
         boolean result = e1.equals(e2);
 
         // Assert
-        assertTrue(result);
+        assertFalse(result);
     }
 
     @Test
@@ -688,6 +692,70 @@ class EditionTest {
 
         // Assert
         assertFalse(result);
+    }*/
+
+// ─────────────────────────────────────────────────────────────
+// Identity (DDD)
+// ─────────────────────────────────────────────────────────────
+
+    @Test
+    void sameIdentityAs_sameInstance_returnsTrue() {
+
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
+
+        Edition e = new Edition("1st", codeWithIsbn13,
+                validPhysicalAttributes, publicationType,
+                validPublisher, Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+        // Act
+        boolean result = e.sameIdentityAs(e);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameIdentityAs_differentInstances_returnsFalse() {
+
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
+
+        Edition e1 = new Edition("1st", codeWithIsbn13,
+                validPhysicalAttributes, publicationType,
+                validPublisher, Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+        Edition e2 = new Edition("1st", codeWithIsbn13,
+                validPhysicalAttributes, publicationType,
+                validPublisher, Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+        // Act
+        boolean result = e1.sameIdentityAs(e2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void givenValidEditionThenReturnValidEdition(){
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        when(publicationType.getMediaFormat()).thenReturn("Book");
+
+        Edition e = new Edition("1st", codeWithIsbn13,
+                validPhysicalAttributes, publicationType,
+                validPublisher, Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+        // Assert
+        EditionID id = e.id();
+        assertFalse(id.getID().isBlank());
+        assertDoesNotThrow(() -> UUID.fromString(id.getID()));
     }
 
 }

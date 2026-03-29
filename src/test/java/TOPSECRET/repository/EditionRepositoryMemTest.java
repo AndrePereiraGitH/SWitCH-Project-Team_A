@@ -1,6 +1,9 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.Edition.EditionFactory;
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;

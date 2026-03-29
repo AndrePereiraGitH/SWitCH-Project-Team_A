@@ -2,6 +2,7 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.Library;
