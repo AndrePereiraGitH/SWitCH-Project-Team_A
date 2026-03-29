@@ -1,8 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.DirectSale;
 
-import TOPSECRET.domain.DirectSale.DirectSale;
-import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Listing;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -27,11 +27,6 @@ class DirectSaleTest {
     }
 
     // Tests to constructor --------------------------------------------------------------------------------------------
-    @Test
-    void emptyConstructor_createsInstance() {
-        DirectSale ds = new DirectSale();
-        assertNotNull(ds);
-    }
 
     @Test
     void validConstructor_createsInstance() {

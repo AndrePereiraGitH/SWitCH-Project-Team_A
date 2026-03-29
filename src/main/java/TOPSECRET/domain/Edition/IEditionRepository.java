@@ -1,4 +1,4 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.Edition;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.TypeOfBinding;
@@ -15,6 +15,7 @@ import java.util.Locale;
  * <p>
  * Defines the contract for creating and storing editions in the system.
  */
+
 public interface IEditionRepository {
     /**
      * Creates a new {@link Edition} with the given data and adds it to the repository.

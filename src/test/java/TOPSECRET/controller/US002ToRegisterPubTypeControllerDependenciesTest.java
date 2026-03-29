@@ -6,7 +6,7 @@ import TOPSECRET.domain.PublicationTypeFactory;
 import org.junit.jupiter.api.Test;
 
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.IPublicationTypeRepository;
+import TOPSECRET.repository.PublicationTypeRepositoryMem;
 
 /**
  * Unit tests for {@link US002ToRegisterPubTypeController}.
@@ -17,20 +17,20 @@ import TOPSECRET.repository.IPublicationTypeRepository;
  *     <li>Correct storage of the publication type in the repository</li>
  *     <li>Proper exception handling when invalid data is provided</li>
  * </ul>
- 
+
 
 class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Repository and controller instance used for testing.
-     
+
     IPublicationTypeRepository repo = new PublicationTypeRepositoryMem(new PublicationTypeFactory());
     US002ToRegisterPubTypeController controller = new US002ToRegisterPubTypeController(repo);
 
     /**
      * Verifies that a publication type is successfully created
      * and added to the repository through the controller.
-     
+
     @Test
     void createAndAddPublicationTypesToRepository()
     {
@@ -49,7 +49,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Invalid Media format
-     
+
     @Test
     void shouldThrowExceptionWhenMediaFormatIsInvalid()
     {
@@ -59,7 +59,7 @@ class US002ToRegisterPubTypeControllerDependenciesTest {
 
     /**
      * Verifies that an {@link IllegalArgumentException} is thrown when trying to add a duplicate publication type
-     
+
     @Test
     void shouldThrowExceptionWhenAddingDuplicatePublicationTypes()
     {

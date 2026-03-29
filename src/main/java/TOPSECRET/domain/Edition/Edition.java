@@ -1,13 +1,18 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Edition;
 
 
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,9 @@ import java.util.Objects;
  * <p>
  * All fields are mandatory and validated upon construction.
  */
-public class Edition {
+public class Edition implements AggregateRoot<EditionID> {
 
+    private final EditionID _editionID;
     private final String _editionNumber;
     private final Code _code;
     private final PhysicalAttributes _physicalAttributes;
@@ -33,23 +39,26 @@ public class Edition {
     /**
      * Creates a new {@code Edition} instance with the specified attributes.
      * <p>
-     * All arguments are mandatory and are validated during construction.
+     * All arguments are mandatory and validated during construction.
      * The edition number must not be blank, and the remaining attributes
-     * must not be null. The publication code is also validated according
+     * must not be null. The identification code is validated according
      * to the publication type and edition date.
      *
      * @param editionNumber the edition number that identifies this edition
-     * @param code the identification code of the edition
+     * @param code the identification code of the edition (ISBN/ISSN)
      * @param physicalAttributes the physical attributes of the edition
      * @param publicationType the publication type of the edition
      * @param publisher the publisher responsible for the edition
      * @param editionLanguage the language of the edition
      * @param editionDate the publication date of the edition
      * @param typeOfBinding the type of binding of the edition
-     * @throws IllegalArgumentException if the edition number is blank,
-     *                                  if any mandatory argument is null,
-     *                                  or if the code is invalid for the
-     *                                  given publication type and date
+     *
+     * @throws IllegalArgumentException if:
+     * <ul>
+     *   <li>the edition number is null or blank</li>
+     *   <li>any mandatory argument is null</li>
+     *   <li>the identification code is invalid for the given publication type and date</li>
+     * </ul>
      */
     protected Edition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType,
                       Publisher publisher, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding) {
@@ -70,6 +79,7 @@ public class Edition {
         }
         validateCode(code, publicationType, editionDate);
 
+        this._editionID = new EditionID(UUID.randomUUID().toString());
         this._editionNumber = editionNumber;
         this._code = code;
         this._physicalAttributes = physicalAttributes;
@@ -161,27 +171,27 @@ public class Edition {
     }
 
     /**
-     * Compares this edition with another object for equality.
-     * <p>
-     * Two {@code Edition} objects are considered equal if all their
-     * fields are equal.
+     * Returns the unique identifier of this edition.
      *
-     * @param o the object to compare with
-     * @return {@code true} if the objects are of the same class and
-     * all fields are equal; {@code false} otherwise
+     * @return the edition ID
      */
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Edition edition = (Edition) o;
-        return Objects.equals(_editionNumber, edition._editionNumber)
-                && Objects.equals(_code, edition._code)
-                && Objects.equals(_physicalAttributes, edition._physicalAttributes)
-                && Objects.equals(_publicationType, edition._publicationType)
-                && Objects.equals(_publisher, edition._publisher)
-                && Objects.equals(_editionLanguage, edition._editionLanguage)
-                && Objects.equals(_editionDate, edition._editionDate)
-                && Objects.equals(_typeOfBinding, edition._typeOfBinding);
+    public EditionID id(){
+        return _editionID;
+    }
+
+    /**
+     * Checks if two Edition objects share the same identity.
+     *
+     * @param o the object to compare
+     * @return {@code true} if both have the same EditionID; {@code false} otherwise
+     */
+
+    @Override
+    public boolean sameIdentityAs(Object o){
+        if(o == null || getClass() != o.getClass()) return false;
+        Edition that = (Edition) o;
+        return Objects.equals(_editionID, that._editionID);
     }
 }
