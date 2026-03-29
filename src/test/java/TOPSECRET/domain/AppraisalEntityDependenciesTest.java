@@ -379,4 +379,5 @@ class AppraisalEntityDependenciesTest {
         assertEquals(true, result.contains(name));
         assertEquals(true, result.contains(contact.toString()));
     }
-}*/
+}
+*/
