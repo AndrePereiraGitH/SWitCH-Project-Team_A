@@ -1,0 +1,106 @@
+@startuml MiteLovers_Layer1_Entities
+
+  hide circle
+  skinparam defaultFontName Arial
+  skinparam defaultFontSize 11
+  skinparam shadowing false
+  skinparam classAttributeIconSize 0
+  skinparam padding 8
+  skinparam ArrowColor #37474F
+  skinparam ArrowThickness 1.3
+
+  skinparam class {
+      BackgroundColor<<E>> #546E7A
+      BorderColor<<E>> #37474F
+      HeaderBackgroundColor<<E>> #37474F
+      HeaderFontColor<<E>> #FFFFFF
+      FontColor<<E>> #FFFFFF
+      stereotypeFontColor<<E>> #FFFFFF
+
+  }
+
+  ' ============================================================
+  ' ENTITIES
+  ' ============================================================
+
+  class AppraisalEntity <<E>>
+  class PublicationSample <<E>>
+  class Publisher <<E>>
+  class Author <<E>>
+  class Listing <<E>>
+  class Auction <<E>>
+  class Bid <<E>>
+  class DirectSale <<E>>
+  class Transaction <<E>>
+  class User <<E>>
+  class Library <<E>>
+  class Edition <<E>>
+  class CollectionOfPublications <<E>>
+  class Genre <<E>>
+  class BibliographicalData <<E>>
+  class Country <<E>>
+  class City <<E>>
+  class PublicationType <<E>>
+
+
+  ' ============================================================
+  ' RELAÇÕES
+  ' ============================================================
+
+  ' --- User aggregate ---
+  User "1" <-- "0..1" Library                        : belongs to
+  User "1" <-- "*" CollectionOfPublications          : belongs to
+
+  ' --- PublicationSample ---
+  PublicationSample "*" --> "1" User                  : registered by
+  PublicationSample "*" --> "1" Edition               : has
+  PublicationSample "*" --> "1" BibliographicalData   : has
+  PublicationSample "*" --> "*" AppraisalEntity       : appraised by
+
+  ' --- BibliographicalData ---
+  BibliographicalData "*" --> "1..*" Author           : has
+  BibliographicalData "*" --> "1..*" Genre            : classified by
+
+  ' --- Edition ---
+  Edition "*" --> "1" Publisher                       : published by
+  Edition "*" --> "1" PublicationType : has
+
+  ' --- CollectionOfPublications ---
+  CollectionOfPublications "*" --> "*" PublicationSample : contains
+  CollectionOfPublications "*" --> "1" Genre             : has
+
+  ' --- AppraisalEntity ---
+  User "1" <-- "*" AppraisalEntity                    : is registered by
+
+  note on link
+        Only users with
+        Administrator role
+    end note
+
+  AppraisalEntity "1" --> "1..*" PublicationType      : qualified to appraise
+  AppraisalEntity "*" --> "1..*" Genre                   : has
+
+  ' --- Listing ---
+  Listing "*" --> "1" User                            : created by
+  Listing "1" --> "1..*" PublicationSample            : includes
+
+
+  ' --- Auction (cart for bidding) ---
+  Auction "1" --> "1" Listing                         : based on
+  Auction "1" *-- "*" Bid                             : belongs to
+  Bid "*" --> "1" User                                : placed by
+
+  ' --- DirectSale (cart for buying) ---
+  DirectSale "0..1" --> "1..*" Listing                   : has
+  DirectSale "0..1" --> "1" User                          : belongs to
+
+  ' --- Transaction ---
+  Transaction "0..1" --> "0..1" Auction                  : originated from
+  Transaction "0..1" --> "0..1" DirectSale               : originated from
+
+  ' --- Country ---
+  Country "1" <-- "1..*" City                       : belongs to a
+  Author "*" --> "1" Country                        : is from
+
+
+  @enduml

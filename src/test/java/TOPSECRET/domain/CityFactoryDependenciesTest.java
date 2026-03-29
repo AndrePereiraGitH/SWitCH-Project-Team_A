@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.repository.CityRepository;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class CityFactoryDependenciesTest {
 
     //Arrange repeatable variables
-    Country anyCountry = new Country("Estonia");
+    CountryFactory countryFactory = new CountryFactory();
+    Country anyCountry = countryFactory.create("Estonia");
     String anyCityName = "Talin";
     City anyCity = new City(anyCountry, anyCityName);
 

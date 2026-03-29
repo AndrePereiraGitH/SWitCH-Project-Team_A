@@ -42,12 +42,12 @@ class GenreRepositoryMemTest {
         when(genre.getGenreType()).thenReturn(genreType);
         when(genreFactory.create(genreType)).thenReturn(genre);
 
-        IGenreRepository IGenreRepository = new GenreRepositoryMem(genreFactory);
-        IGenreRepository.createAndAdd(genreType);
+        IGenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
+        genreRepository.createAndAdd(genreType);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> IGenreRepository.createAndAdd(genreType));
+                () -> genreRepository.createAndAdd(genreType));
     }
 
     @Test

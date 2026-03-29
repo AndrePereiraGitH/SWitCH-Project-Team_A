@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author;
 import TOPSECRET.domain.AuthorFactory;
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.Country.Country;
 import TOPSECRET.repository.IAuthorRepository;
 import java.time.LocalDate;
 

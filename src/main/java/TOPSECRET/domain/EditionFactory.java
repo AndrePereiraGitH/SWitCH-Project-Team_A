@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
@@ -17,7 +18,7 @@ import java.util.Locale;
  */
 public class EditionFactory {
     public Edition create(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType,
-                          Publisher publisher, Locale editionLanguage, LocalDate editionDate){
-        return new Edition(editionNumber== null ? null : editionNumber.trim(), code, physicalAttributes, publicationType, publisher, editionLanguage, editionDate);
+                          Publisher publisher, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding){
+        return new Edition(editionNumber== null ? null : editionNumber.trim(), code, physicalAttributes, publicationType, publisher, editionLanguage, editionDate, typeOfBinding);
     }
 }

@@ -2,6 +2,9 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 
+import TOPSECRET.domain.DirectSale.DirectSale;
+import TOPSECRET.domain.DirectSale.DirectSaleFactory;
+import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +43,9 @@ class DirectSaleRepositoryMemTest {
 
     @Test
     void createAndAdd_createsAndAddsDirectSale() {
+
         // Arrange
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act
         DirectSale result = dsRepo.createAndAdd(listings, buyerDouble);
@@ -54,7 +58,7 @@ class DirectSaleRepositoryMemTest {
     @Test
     void createAndAdd_ThrowsWhenDuplicate() {
         // Arrange
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
         dsRepo.add(dsDouble);                                     // first add
 
         // Act + Assert
@@ -67,7 +71,7 @@ class DirectSaleRepositoryMemTest {
         // Arrange
         when(dsFactoryDouble.create(listings, buyerDouble)).thenThrow(new IllegalArgumentException("Invalid listings"));
 
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
@@ -97,7 +101,7 @@ class DirectSaleRepositoryMemTest {
         when(dsFactoryDouble.create(listings, null))
                 .thenThrow(new IllegalArgumentException("Buyer cannot be null"));
 
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -112,7 +116,7 @@ class DirectSaleRepositoryMemTest {
 
         when(dsFactoryDouble.create(listings, buyerDouble)).thenReturn(ds1).thenReturn(ds2);
 
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act
         DirectSale r1 = dsRepo.createAndAdd(listings, buyerDouble);
@@ -129,7 +133,7 @@ class DirectSaleRepositoryMemTest {
     @Test
     void exists_returnsTrue() {
         // Arrange
-        DirectSaleRepository repo = new DirectSaleRepositoryMem(new ArrayList<>(List.of(dsDouble)),dsFactoryDouble);
+        IDirectSaleRepository repo = new DirectSaleRepositoryMem(new ArrayList<>(List.of(dsDouble)),dsFactoryDouble);
 
         // Act
         boolean result = repo.exists(dsDouble);
@@ -141,7 +145,7 @@ class DirectSaleRepositoryMemTest {
     @Test
     void exists_returnsFalse() {
         // Arrange
-        DirectSaleRepository repo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);        // Repo doesn't contain any ds
+        IDirectSaleRepository repo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);        // Repo doesn't contain any ds
 
         // Act
         boolean result = repo.exists(dsDouble);
@@ -155,7 +159,7 @@ class DirectSaleRepositoryMemTest {
         // Arrange
         List<DirectSale> externalList = new ArrayList<>();                    // Creates an empty external list of DirectSale
 
-        DirectSaleRepository repo = new DirectSaleRepositoryMem(externalList, dsFactoryDouble);   // Creates the repository using the external list
+        IDirectSaleRepository repo = new DirectSaleRepositoryMem(externalList, dsFactoryDouble);   // Creates the repository using the external list
 
         externalList.add(dsDouble);                                           // Modifies the external list after the repository was created
 
@@ -172,7 +176,7 @@ class DirectSaleRepositoryMemTest {
     @Test
     void add_addsWhenNotExists() {
         // Arrange
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act
         dsRepo.add(dsDouble);
@@ -184,7 +188,7 @@ class DirectSaleRepositoryMemTest {
     @Test
     void add_throwsExceptionWhenExists() {
         // Arrange
-        DirectSaleRepository repo = new DirectSaleRepositoryMem(new ArrayList<>(List.of(dsDouble)), dsFactoryDouble);
+        IDirectSaleRepository repo = new DirectSaleRepositoryMem(new ArrayList<>(List.of(dsDouble)), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repo.add(dsDouble));
@@ -193,7 +197,7 @@ class DirectSaleRepositoryMemTest {
     @Test
     void add_throwsExceptionWhenNull() {
         // Arrange
-        DirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
+        IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> dsRepo.add(null));

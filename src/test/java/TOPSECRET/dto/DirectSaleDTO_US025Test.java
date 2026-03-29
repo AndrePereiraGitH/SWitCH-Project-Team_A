@@ -2,6 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.ValueObjects.Price;

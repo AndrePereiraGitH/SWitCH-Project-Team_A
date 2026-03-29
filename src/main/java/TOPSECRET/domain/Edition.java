@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 
+import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
@@ -18,7 +19,6 @@ import java.util.Objects;
  * <p>
  * All fields are mandatory and validated upon construction.
  */
-
 public class Edition {
 
     private final String _editionNumber;
@@ -28,13 +28,34 @@ public class Edition {
     private final Publisher _publisher;
     private final Locale _editionLanguage;
     private final LocalDate _editionDate;
+    private final TypeOfBinding _typeOfBinding;
 
+    /**
+     * Creates a new {@code Edition} instance with the specified attributes.
+     * <p>
+     * All arguments are mandatory and are validated during construction.
+     * The edition number must not be blank, and the remaining attributes
+     * must not be null. The publication code is also validated according
+     * to the publication type and edition date.
+     *
+     * @param editionNumber the edition number that identifies this edition
+     * @param code the identification code of the edition
+     * @param physicalAttributes the physical attributes of the edition
+     * @param publicationType the publication type of the edition
+     * @param publisher the publisher responsible for the edition
+     * @param editionLanguage the language of the edition
+     * @param editionDate the publication date of the edition
+     * @param typeOfBinding the type of binding of the edition
+     * @throws IllegalArgumentException if the edition number is blank,
+     *                                  if any mandatory argument is null,
+     *                                  or if the code is invalid for the
+     *                                  given publication type and date
+     */
     protected Edition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType,
-                      Publisher publisher, Locale editionLanguage, LocalDate editionDate) {
+                      Publisher publisher, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding) {
         if (editionNumber == null || editionNumber.isBlank()) {
             throw new IllegalArgumentException("Edition Number cannot be blank");
         }
-
         if (physicalAttributes == null || publicationType == null || publisher == null) {
             throw new IllegalArgumentException("Physical Attributes, publication type and/or publisher cannot be null");
         }
@@ -43,6 +64,9 @@ public class Edition {
         }
         if (editionDate == null) {
             throw new IllegalArgumentException("Edition date cannot be null");
+        }
+        if (typeOfBinding == null) {
+            throw new IllegalArgumentException("TypeOfBinding cannot be null");
         }
         validateCode(code, publicationType, editionDate);
 
@@ -53,8 +77,32 @@ public class Edition {
         this._publisher = publisher;
         this._editionLanguage = editionLanguage;
         this._editionDate = editionDate;
+        this._typeOfBinding = typeOfBinding;
     }
 
+    /**
+     * Validates the identification code according to the publication type
+     * and publication year.
+     * <p>
+     * For books:
+     * <ul>
+     *   <li>published in 2007 or later, an ISBN-13 is required;</li>
+     *   <li>published between 1970 and 2006, an ISBN-10 is required;</li>
+     *   <li>published before 1970, no code is required.</li>
+     * </ul>
+     *
+     * For magazines:
+     * <ul>
+     *   <li>published in 1976 or later, an ISSN is required;</li>
+     *   <li>published before 1976, no code is required.</li>
+     * </ul>
+     *
+     * @param code the code to validate
+     * @param publicationType the type of publication
+     * @param date the publication date used to determine the applicable rules
+     * @throws IllegalArgumentException if the required code for the given
+     *                                  publication type and year is missing
+     */
     private static void validateCode(Code code, PublicationType publicationType, LocalDate date) {
         int year = date.getYear();
 
@@ -108,6 +156,10 @@ public class Edition {
         return _editionDate;
     }
 
+    public TypeOfBinding getTypeOfBinding() {
+        return _typeOfBinding;
+    }
+
     /**
      * Compares this edition with another object for equality.
      * <p>
@@ -129,6 +181,7 @@ public class Edition {
                 && Objects.equals(_publicationType, edition._publicationType)
                 && Objects.equals(_publisher, edition._publisher)
                 && Objects.equals(_editionLanguage, edition._editionLanguage)
-                && Objects.equals(_editionDate, edition._editionDate);
+                && Objects.equals(_editionDate, edition._editionDate)
+                && Objects.equals(_typeOfBinding, edition._typeOfBinding);
     }
 }

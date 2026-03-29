@@ -24,14 +24,6 @@ public interface IGenreRepository {
        Genre createAndAdd(String genreType);
 
     /**
-     * Adds an existing genre to the repository if it does not already exist.
-     *
-     * @param genre the genre to add
-     * @throws IllegalArgumentException if {@code genre} is {@code null} or already exists
-     */
-        void add(Genre genre);
-
-    /**
      * Returns the genre matching the given title.
      *
      * <p>This method searches the repository's internal collection and returns
