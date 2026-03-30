@@ -78,8 +78,10 @@ public class City {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof City city)) return false;
-        return Objects.equals(_country, city._country) && Objects.equals(_cityName, city._cityName);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        City city = (City) o;
+        return Objects.equals(cityID, city.cityID);
     }
 
     @Override
