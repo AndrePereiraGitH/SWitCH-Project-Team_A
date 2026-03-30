@@ -481,7 +481,7 @@ class EditionTest {
         // Assert
         assertEquals(typeOfBindingDouble, result);
     }
-/*
+
 // ─────────────────────────────────────────────────────────────
 // equals
 // ─────────────────────────────────────────────────────────────
@@ -505,7 +505,7 @@ class EditionTest {
     }
 
     @Test
-    void equals_twoIdenticalEditions_returnsTrue() {
+    void equals_twoIdenticalEditions_returnsFalse() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -692,7 +692,7 @@ class EditionTest {
 
         // Assert
         assertFalse(result);
-    }*/
+    }
 
 // ─────────────────────────────────────────────────────────────
 // Identity (DDD)
@@ -718,7 +718,7 @@ class EditionTest {
     }
 
     @Test
-    void sameAs_differentInstances_returnsFalse() {
+    void sameAs_differentInstances_returnsTrue() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -738,7 +738,7 @@ class EditionTest {
         boolean result = e1.sameAs(e2);
 
         // Assert
-        assertFalse(result);
+        assertTrue(result);
     }
 
     @Test
@@ -754,6 +754,7 @@ class EditionTest {
 
         // Assert
         EditionID id = e.id();
+        assertNotNull(id);
         assertFalse(id.getID().isBlank());
         assertDoesNotThrow(() -> UUID.fromString(id.getID()));
     }

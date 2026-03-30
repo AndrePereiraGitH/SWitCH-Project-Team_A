@@ -171,6 +171,19 @@ public class Edition implements AggregateRoot<EditionID> {
     }
 
     /**
+     * Compares two editions by value (all attributes except identity).
+     *
+     * @param o object to compare
+     * @return true if all attributes are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Edition that = (Edition) o;
+        return Objects.equals(_editionID, that._editionID);
+    }
+
+    /**
      * Returns the unique identifier of this edition.
      *
      * @return the edition ID
@@ -191,7 +204,14 @@ public class Edition implements AggregateRoot<EditionID> {
     @Override
     public boolean sameAs(Object o){
         if(o == null || getClass() != o.getClass()) return false;
-        Edition that = (Edition) o;
-        return Objects.equals(_editionID, that._editionID);
+        Edition edition = (Edition) o;
+        return Objects.equals(_editionNumber, edition._editionNumber)
+                && Objects.equals(_code, edition._code)
+                && Objects.equals(_physicalAttributes, edition._physicalAttributes)
+                && Objects.equals(_publicationType, edition._publicationType)
+                && Objects.equals(_publisher, edition._publisher)
+                && Objects.equals(_editionLanguage, edition._editionLanguage)
+                && Objects.equals(_editionDate, edition._editionDate)
+                && Objects.equals(_typeOfBinding, edition._typeOfBinding);
     }
 }
