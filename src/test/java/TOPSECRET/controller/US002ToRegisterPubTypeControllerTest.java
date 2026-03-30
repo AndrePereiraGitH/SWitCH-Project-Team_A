@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.IPublicationTypeRepository;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;

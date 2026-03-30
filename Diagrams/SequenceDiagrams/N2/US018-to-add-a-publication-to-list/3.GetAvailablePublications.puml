@@ -1,0 +1,96 @@
+@startuml
+
+hide footbox
+autonumber
+
+title US018 - Get Available Publications
+
+note over UI, Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+participant ":UI018" as UI
+participant ":AddCollectionOfPublicationsController" as Controller
+participant ":CollectionOfPublicationsRepository" as CollectionRepo
+participant ":LibraryRepository" as LibraryRepo
+participant ":CollectionOfPublications" as CP
+participant ":Library" as Library
+
+participant ":PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant ":PublicationSample" as PublicationSample
+participant ":BibliographicalDataRepository" as BibliographicalDataRepo
+participant ":BibliographicalData" as BibliographicalData
+participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+
+UI -> Controller : getAvailablePublications(collectionDTO)
+activate Controller
+
+Controller -> CollectionRepo : findById(collectionDTO.id)
+activate CollectionRepo
+CollectionRepo --> Controller : userCollection
+deactivate CollectionRepo
+
+Controller -> LibraryRepo : findById(username)
+activate LibraryRepo
+LibraryRepo --> Controller : userLibrary
+deactivate LibraryRepo
+
+Controller -> Library : getAllPublications()
+activate Library
+Library --> Controller : allUserPublications
+deactivate Library
+
+Controller -> CP : getPublications(userCollection)
+activate CP
+CP --> Controller : publicationsInCollection
+deactivate CP
+
+Controller -> Controller : diff(allUserPublications,\npublicationsInCollection)
+
+Controller -> PublicationSampleMapper : toDTO(publicationAvailable)
+activate PublicationSampleMapper
+
+PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
+
+loop for each publicationSample
+    PublicationSampleMapper -> PublicationSample : getId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : id
+    deactivate PublicationSample
+
+    PublicationSampleMapper -> PublicationSample : getBibliographicalDataId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : bibliographicalDataId
+    deactivate PublicationSample
+
+    PublicationSampleMapper -> BibliographicalDataRepo : findById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> PublicationSampleMapper : bibliographicalData
+    deactivate BibliographicalDataRepo
+
+    PublicationSampleMapper -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> PublicationSampleMapper : title
+    deactivate BibliographicalData
+
+    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+
+    PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
+end
+
+PublicationSampleMapper --> Controller : listOfAvailablePublicationDTO
+deactivate PublicationSampleMapper
+
+Controller --> UI : listOfAvailablePublicationDTO
+deactivate Controller
+
+@enduml

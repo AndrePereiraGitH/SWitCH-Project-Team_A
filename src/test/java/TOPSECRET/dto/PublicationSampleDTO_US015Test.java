@@ -9,7 +9,7 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

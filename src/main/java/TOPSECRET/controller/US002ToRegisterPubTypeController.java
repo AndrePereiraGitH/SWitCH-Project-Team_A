@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicationType;
-import TOPSECRET.repository.IPublicationTypeRepository;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 /**
  * Controller responsible for handling the use case of registering a new {@link PublicationType}.

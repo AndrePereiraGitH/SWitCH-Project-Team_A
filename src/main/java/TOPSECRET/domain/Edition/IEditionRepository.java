@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 
 import java.time.LocalDate;
 import java.util.List;

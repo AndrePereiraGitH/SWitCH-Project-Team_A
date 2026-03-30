@@ -2,7 +2,7 @@
 
 hide footbox
 autonumber
-title US004 - Register Appraisal Entity (DTO + Mapper)
+title US004 - Register Appraisal Entity (DTO + Mapper + DDD)
 
 actor Administrator
 participant ":UI004" as UI
@@ -10,24 +10,24 @@ participant ":US004ToRegisterAppraisalEntityController" as Controller
 
 participant ":GenreRepository" as GenreRepo
 participant "allGenreList: List<Genre>" as allGenreList
-
-participant ":GenreDTO" as GenreMapper
-
+participant ":GenreMapper" as GenreMapper
 participant "listOfGenreDTO: List<GenreDTO>" as GenreDTO
 participant ":Genre" as Genre
-participant "genreDTO: GenreDetailsDTO" as GDTO
+participant "genreDTO: GenreDTO" as GDTO
+' participant "genreId: GenreId" as GenreId
 
-participant ":PublicationTypeRepository" as PubTypeRepo
-participant "allPublicationTypeList: List<PublicationType>"
-participant ":PublicationTypeDTO" as PubTypeMapper
-
-participant "listOfPublicationTypDTO:List<PubTypeDTO>" as PubTypeDTO
+participant ":PublicationTypeRepository" as PublicationTypeRepo
+participant "allPublicationTypeList: List<PublicationType>" as allPublicationTypeList
+participant ":PublicationTypeMapper" as PublicationTypeMapper
+participant "listOfPublicationTypeDTO: List<PublicationTypeDTO>" as PublicationTypeDTO
 participant ":PublicationType" as PublicationType
-participant "PublicationType: PubTypeDTO" as PDTO
+participant "publicationTypeDTO: PublicationTypeDTO" as PDTO
+' participant "publicationTypeId: PublicationTypeId" as PublicationTypeId
 
 participant ":AppraisalEntityRepository" as AppraisalRepo
 participant ":FactoryAppraisalEntity" as FactoryAppraisalEntity
 participant "apEn : AppraisalEntity" as AppraisalEntity
+participant "appraisalId: AppraisalEntityId" as AppraisalId
 
 
 ' --- Start ---
@@ -48,28 +48,28 @@ activate Controller
 
 Controller -> GenreRepo : getAllGenres()
 activate GenreRepo
-GenreRepo -->> allGenreList **: <<create>>
-GenreRepo --> Controller : allGenreList
+GenreRepo -->> allGenreList ** : <<create>>
+GenreRepo --> Controller : List<Genre>
 deactivate GenreRepo
 
-Controller -> GenreMapper : genreToDTO(allGenreList)
+Controller -> GenreMapper : toDTO(allGenreList)
 activate GenreMapper
+GenreMapper -->> GenreDTO ** : <<create>>
 
-' ----- Loop ----
-GenreMapper -->> GenreDTO** : <<create>>
+loop for each genre in the list
+    GenreMapper -> Genre : getId()
+    activate Genre
+    Genre --> GenreMapper : id
+    deactivate Genre
 
-    loop for each genre in the list
-        GenreMapper -> Genre: getTitle()
-        activate Genre
-        Genre --> GenreMapper: title
-        deactivate Genre
+    GenreMapper -> Genre : getTitle()
+    activate Genre
+    Genre --> GenreMapper : title
+    deactivate Genre
 
-        GenreMapper -->> GDTO **: <<create>>
-
-        GenreMapper -> GenreMapper: listOfGenreDTO.add(genreDTO)
-    end
-
-' ----- End loop ----
+    GenreMapper -->> GDTO ** : <<create>>
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+end
 
 GenreMapper --> Controller : List<GenreDTO>
 deactivate GenreMapper
@@ -89,38 +89,33 @@ activate UI
 UI -> Controller : getAllPublicationTypes()
 activate Controller
 
-Controller -> PubTypeRepo : getAllPublicationTypes()
-activate PubTypeRepo
-PubTypeRepo -->> "allPublicationTypeList: List<PublicationType>" **: <<create>>
-PubTypeRepo --> Controller : List<PublicationType>
-deactivate PubTypeRepo
+Controller -> PublicationTypeRepo : getAllPublicationTypes()
+activate PublicationTypeRepo
+PublicationTypeRepo -->> allPublicationTypeList ** : <<create>>
+PublicationTypeRepo --> Controller : List<PublicationType>
+deactivate PublicationTypeRepo
 
-Controller -> PubTypeMapper : publicationTypeToDTO(List<PublicationType>)
-activate PubTypeMapper
+Controller -> PublicationTypeMapper : toDTO(allPublicationTypeList)
+activate PublicationTypeMapper
+PublicationTypeMapper -->> PublicationTypeDTO ** : <<create>>
 
-' ----- Loop ----
-PubTypeMapper -->> PubTypeDTO** : <<create>>
+loop for each publicationType in the list
+    PublicationTypeMapper -> PublicationType : getId()
+    activate PublicationType
+    PublicationType --> PublicationTypeMapper : id
+    deactivate PublicationType
 
-    loop for each publicationType in the list
-        PubTypeMapper -> PublicationType: getTypeOfBinding()
-        activate PublicationType
-        PublicationType --> PubTypeMapper: typeOfBinding
-        deactivate PublicationType
+    PublicationTypeMapper -> PublicationType : getMediaFormat()
+    activate PublicationType
+    PublicationType --> PublicationTypeMapper : mediaFormat
+    deactivate PublicationType
 
-        PubTypeMapper -> PublicationType: getDetails()
-        activate PublicationType
-        PublicationType --> PubTypeMapper: details
-        deactivate PublicationType
+    PublicationTypeMapper -->> PDTO ** : <<create>>
+    PublicationTypeMapper -> PublicationTypeMapper : listOfPublicationTypeDTO.add(publicationTypeDTO)
+end
 
-        PubTypeMapper -->> PDTO **: <<create>>
-
-        PubTypeMapper -> PubTypeMapper: listOfPubTypeDTO.add(PublicationTypeDTO)
-    end
-
-' ----- End loop ----
-
-PubTypeMapper --> Controller : List<PublicationTypeDTO>
-deactivate PubTypeMapper
+PublicationTypeMapper --> Controller : List<PublicationTypeDTO>
+deactivate PublicationTypeMapper
 
 Controller --> UI : List<PublicationTypeDTO>
 deactivate Controller
@@ -137,38 +132,37 @@ activate UI
 UI -> Controller : registerAppraisalEntity(name, contact, selectedGenresDTO, selectedPublicationTypesDTO)
 activate Controller
 
-' --- Validate selections ---
-Controller -> Controller : validate selectedGenresDTO not empty
-Controller -> Controller : validate selectedPublicationTypesDTO not empty
+Controller -> Controller : validateSelectedGenres(selectedGenresDTO)
+Controller -> Controller : validateSelectedPublicationTypes(selectedPublicationTypesDTO)
 
-' --- Convert selectedGenresDTO ---
-    loop for each genreDTO in selectedGenresDTO
-        Controller -> GenreRepo : dtoToGenre(selecteGenresDTO)
-        activate GenreRepo
-        GenreRepo --> Controller : Genre
-        deactivate GenreRepo
-    end
+loop for each genreDTO in selectedGenresDTO
+    Controller -> GenreRepo : findById(genreDTO.id)
+    activate GenreRepo
+    GenreRepo --> Controller : Genre
+    deactivate GenreRepo
+end
 
-' --- Convert selectedPublicationTypesDTO ---
-    loop for each PubTypeDTO in selectedPublicationTypesDTO
-        Controller -> PubTypeRepo : dtoToPublicationType(selectedPublicationTypesDTO)
-        activate PubTypeRepo
-        PubTypeRepo --> Controller : PublicationType
-        deactivate PubTypeRepo
-    end
+loop for each publicationTypeDTO in selectedPublicationTypesDTO
+    Controller -> PublicationTypeRepo : findById(publicationTypeDTO.id)
+    activate PublicationTypeRepo
+    PublicationTypeRepo --> Controller : PublicationType
+    deactivate PublicationTypeRepo
+end
 
 Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, genres, publicationTypes)
 activate AppraisalRepo
 
-AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genres, publicationType)
+AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genres, publicationTypes)
 activate FactoryAppraisalEntity
 
-FactoryAppraisalEntity -->> AppraisalEntity **: <<create>>
+FactoryAppraisalEntity -->> AppraisalId ** : <<create>>
+FactoryAppraisalEntity -->> AppraisalEntity **: <<create>> (appraisalId, name, contact, genres, publicationTypes)
 
 FactoryAppraisalEntity --> AppraisalRepo : apEn
 deactivate FactoryAppraisalEntity
 
-AppraisalRepo -> AppraisalRepo: exists(apEn)
+AppraisalRepo -> AppraisalRepo : exists(apEn)
+AppraisalRepo --> AppraisalRepo : false
 AppraisalRepo -> AppraisalRepo : add(apEn)
 
 AppraisalRepo --> Controller : apEn

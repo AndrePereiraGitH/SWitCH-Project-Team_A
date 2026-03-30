@@ -1,71 +1,77 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.PublicationTypeFactory;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
+import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
+import TOPSECRET.domain.PublicationType.PublicationType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * In-memory implementation of {@link IPublicationTypeRepository}.
+ * In-memory repository for managing {@link PublicationType} instances.
+ *
  * <p>
- * This repository manages {@link PublicationType} instances using an internal list.
- * It relies on a {@link PublicationTypeFactory} to create new objects and ensures
- * that only valid and unique publication types are stored.
- *
- * <p><b>Main responsibilities:</b>
- * <ul>
- *     <li>Create {@link PublicationType} instances via factory</li>
- *     <li>Validate publication types before insertion</li>
- *     <li>Store unique publication types in memory</li>
- *     <li>Provide read-only access to stored data</li>
- * </ul>
- *
- * <p>This implementation does not allow {@code null} or duplicate entries
- * (based on media format, case-insensitive).
+ * Responsible for creating, storing, and retrieving publication types.
+ * Ensures that no duplicate media formats are stored.
+ * </p>
  */
 public class PublicationTypeRepositoryMem implements IPublicationTypeRepository {
 
-    /**
-     * Internal list that stores all created publication types.
-     */
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
-
-    /**
-     * Factory used to instantiate {@link PublicationType} objects.
-     */
     private final PublicationTypeFactory _factory;
 
+
     /**
-     * Constructs a {@code PublicationTypeRepositoryMem} with the given factory.
+     * Creates a new repository instance.
      *
-     * @param factory the factory used to create PublicationType instances
+     * @param factory factory used to create PublicationType instances
      */
     public PublicationTypeRepositoryMem(PublicationTypeFactory factory) {
         this._factory = factory;
     }
 
     /**
-     * {@inheritDoc}
+     * Creates and stores a new PublicationType.
+     *
+     * @param mediaFormat publication format
+     * @return created PublicationType
+     * @throws IllegalArgumentException if media format is invalid or already exists
      */
-   
-    public PublicationType create(String mediaFormat) {
-        return _factory.create(mediaFormat);
+    @Override
+    public PublicationType create (String mediaFormat) {
+
+        if (mediaFormat == null || mediaFormat.isBlank()) {
+            throw new IllegalArgumentException("Media format can't be null or blank.");
+        }
+
+        PublicationType pt = _factory.create(mediaFormat);
+        return save(pt);
     }
 
     /**
-     * Validates a {@link PublicationType} instance.
-     * <p>
-     * A publication type is valid if:
-     * <ul>
-     *     <li>It is not {@code null}</li>
-     *     <li>No existing publication type has the same media format (case-insensitive)</li>
-     * </ul>
+     * Saves a PublicationType in the repository.
      *
-     * @param pubType the publication type to validate
-     * @return {@code true} if valid; {@code false} otherwise
+     * @param pubType publication type to save
+     * @return saved PublicationType
+     * @throws IllegalArgumentException if publication type is invalid or duplicated
      */
-    private boolean validatePublicationType(PublicationType pubType) {
+    private PublicationType save(PublicationType pubType) {
+        if (!isValid(pubType)) {
+            throw new IllegalArgumentException("Publication type already exists or is invalid.");
+        }
+
+        _publicationTypes.add(pubType);
+        return pubType;
+    }
+
+
+    /**
+     * Validates if a PublicationType can be added.
+     *
+     * @param pubType publication type to validate
+     * @return true if valid and not duplicated, false otherwise
+     */
+    private boolean isValid(PublicationType pubType) {
         if (pubType == null) {
             return false;
         }
@@ -78,14 +84,13 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
     }
 
     /**
-     * {@inheritDoc}
+     * Validates if a PublicationType can be added.
      *
-     * @throws IllegalArgumentException if the publication type is {@code null}
-     *                                  or already exists
+     * @param pubType publication type to validate
+     * @return true if valid and not duplicated, false otherwise
      */
-    
     public PublicationType addToList(PublicationType pubType) {
-        if (!validatePublicationType(pubType)) {
+        if (!isValid(pubType)) {
             throw new IllegalArgumentException("Publication type already exists or is null");
         }
 
@@ -93,36 +98,35 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
         return pubType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
 
+    /**
+     * Returns all stored PublicationTypes.
+     *
+     * @return unmodifiable list of publication types
+     */
     public List<PublicationType> getAllPublicationTypes() {
         return List.copyOf(_publicationTypes);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IllegalArgumentException if the media format is {@code null}
-     *                                  or no matching PublicationType is found
-     */
 
+    /**
+     * Finds a PublicationType by media format.
+     *
+     * @param mediaFormat publication format
+     * @return matching PublicationType
+     * @throws IllegalArgumentException if input is invalid or not found
+     */
     public PublicationType findByAttributes(String mediaFormat) {
 
-        // Validate input parameters
-        if (mediaFormat == null) {
-            throw new IllegalArgumentException("MediaFormat cannot be null.");
+        if (mediaFormat == null || mediaFormat.isBlank()) {
+            throw new IllegalArgumentException("MediaFormat can't be null.");
         }
 
-
-        for (PublicationType pt : _publicationTypes) {
-            if (pt.getMediaFormat().equalsIgnoreCase(mediaFormat)) {
-                return pt;
-            }
-        }
-
-        throw new IllegalArgumentException("PublicationType not found.");
+        return _publicationTypes.stream()
+                .filter(pt -> pt.getMediaFormat().trim()
+                        .equalsIgnoreCase(mediaFormat.trim()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("PublicationType not found."));
     }
 
 }

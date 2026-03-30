@@ -3,7 +3,7 @@ package TOPSECRET.domain.Edition;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.EditionID;

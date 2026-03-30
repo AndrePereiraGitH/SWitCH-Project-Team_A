@@ -1,6 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.AppraisalEntity;
 
+import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -10,23 +12,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the AppraisalEntityFactory.
+ * Unit tests for {@link AppraisalEntityFactory}.
  *
- * <p>This test uses Mockito's {@code MockedConstruction} to intercept
- * the instantiation of {@code AppraisalEntity}.
+ * <p>
+ * Validates that the factory correctly creates AppraisalEntity
+ * instances by invoking the constructor.
+ * </p>
  *
- * <p>The constructor call is replaced by a mock, allowing the test to:
- * <ul>
- *     <li>Verify that the constructor was invoked</li>
- *     <li>Define behavior using {@code when(...).thenReturn(...)}</li>
- * </ul>
+ * <p>
+ * Uses {@code mockConstruction} to intercept object creation
+ * and verify that a new instance is created.
+ * </p>
  */
 class AppraisalEntityFactoryTest {
 
-    /**
-     * Ensures that the factory method calls the AppraisalEntity constructor
-     * and returns the mocked instance with the defined behavior.
-     */
     @Test
     void shouldCallAppraisalEntityConstructor() {
 
@@ -43,17 +42,18 @@ class AppraisalEntityFactoryTest {
                         when(mock.getName()).thenReturn("apEn");
             })) {
 
+            // ACT
             AppraisalEntity entity = factory.create(
                     "apEn",
                     contact,
-                    List.of(genre),
-                    List.of(type)
+                    List.of(type),
+                    List.of(genre)
             );
 
-            // Verify if the constructor was called
+            // ASSERT
             assertEquals(1, mocked.constructed().size());
-
             assertEquals("apEn", entity.getName());
+            assertSame(mocked.constructed().get(0), entity);
         }
 
     }

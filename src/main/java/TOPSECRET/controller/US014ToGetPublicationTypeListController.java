@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 
 import TOPSECRET.dto.PublicationTypeDTO_US014;
-import TOPSECRET.repository.IPublicationTypeRepository;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 
 import java.util.List;
 /**

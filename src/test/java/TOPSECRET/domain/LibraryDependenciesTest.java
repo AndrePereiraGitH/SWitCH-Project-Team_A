@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

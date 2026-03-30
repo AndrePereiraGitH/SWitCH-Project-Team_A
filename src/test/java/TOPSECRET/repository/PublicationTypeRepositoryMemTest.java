@@ -1,23 +1,28 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.PublicationTypeFactory;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
+import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Test with mocks for {@link IPublicationTypeRepository}
- * Used mock for {@link PublicationTypeFactory}
+ * Unit tests for {@link PublicationTypeRepositoryMem}.
+ *
+ * <p>
+ * Validates creation, duplication rules, retrieval,
+ * and validation of PublicationType entities.
+ * </p>
+ *
+ * <p>
+ * Uses a mocked factory to isolate repository behavior.
+ * </p>
  */
 class PublicationTypeRepositoryMemTest {
 
-    /**
-     * Initial setup for tests
-     * Creation of PublicationTypeRepositoryMem object
-     * Creation of {@link PublicationTypeFactory} mock
-     */
+
     PublicationTypeFactory factory;
     IPublicationTypeRepository repo;
 
@@ -28,10 +33,6 @@ class PublicationTypeRepositoryMemTest {
         repo = new PublicationTypeRepositoryMem(factory);
     }
 
-    /**
-     * Creating publication types should delegate creation to factory
-     */
-
     @Test
     void shouldThrowExceptionWhenAddingNullPublicationType(){
         assertThrows(IllegalArgumentException.class, () -> repo.addToList(null));
@@ -40,69 +41,70 @@ class PublicationTypeRepositoryMemTest {
     @Test
     void createPublicationTypeDelegatesToFactory()
     {
+        // ARRANGE
         String mediaFormat = "Book";
 
         PublicationType expected = mock(PublicationType.class);
-
+        when(expected.getMediaFormat()).thenReturn(mediaFormat);
         when(factory.create(mediaFormat)).thenReturn(expected);
 
+        // ACT
         PublicationType actual = repo.create(mediaFormat);
 
+        // ASSERT
         assertEquals(expected, actual);
-//        verify(factory,  times(1)).create(mediaFormat);
-//        verifyNoMoreInteractions(factory);
+        verify(factory).create(mediaFormat);
     }
 
-    /**
-     * Creating an invalid publication type should throw when creating
-     */
+
     @Test
     void invalidPublicationShouldThrowWhenCreating()
     {
+        // ARRANGE
         String mediaFormat = "Book";
-
         when(factory.create(mediaFormat)).thenThrow(new IllegalArgumentException());
 
+        // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () -> repo.create(mediaFormat));
-//        verify(factory, times(1)).create(mediaFormat, typeOfBinding, details);
-//        verifyNoMoreInteractions(factory);
     }
 
     @Test
     void shouldNotAddDuplicatedIgnoringCaseAndSpaces(){
-        // Arrange
-        IPublicationTypeRepository repo = new PublicationTypeRepositoryMem(factory);
 
+        // ARRANGE
         PublicationType pt1 = mock(PublicationType.class);
         when(pt1.getMediaFormat()).thenReturn("Book");
+
         PublicationType pt2 = mock(PublicationType.class);
         when(pt2.getMediaFormat()).thenReturn("   bOoK   ");
 
         repo.addToList(pt1);
 
-        // Assert & Act
+        // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () -> repo.addToList(pt2));
     }
 
     @Test
     void addToListShouldReturnPublicationType(){
-        // Arrange
+
+        // ARRANGE
         IPublicationTypeRepository repo = new PublicationTypeRepositoryMem(factory);
 
         PublicationType pt = mock(PublicationType.class);
         when(pt.getMediaFormat()).thenReturn("BOOK");
 
-        // Act
+        // ACT
         PublicationType result = repo.addToList(pt);
 
-        // Assert
+        // ASSERT
         assertNotNull(result);
         assertEquals(pt, result);
     }
 
     @Test
     void shouldAddDifferentPublicationTypes(){
-        // Arrange
+
+        // ARRANGE
         IPublicationTypeRepository repo = new PublicationTypeRepositoryMem(factory);
 
         PublicationType pt1 = mock(PublicationType.class);
@@ -113,39 +115,39 @@ class PublicationTypeRepositoryMemTest {
 
         repo.addToList(pt1);
 
-        // Act & Assert
+        // ACT + ASSERT
         assertDoesNotThrow(() -> repo.addToList(pt2));
     }
 
     @Test
     void shouldFindPublicationTypeByAttributes(){
-        // Arrange
+        // ARRANGE
         PublicationType pt = mock(PublicationType.class);
         when(pt.getMediaFormat()).thenReturn("BOOK");
 
         repo.addToList(pt);
 
-        // Act
+        // ACT
         PublicationType result = repo.findByAttributes("BOOK");
 
-        // Assert
+        // ASSERT
         assertEquals(pt, result);
     }
 
     @Test
     void shouldThrowWhenPublicationTypeNotFound(){
-        // Act & Assert
+
+        // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findByAttributes("MAGAZINE"));
     }
 
     @Test
     void shouldThrowWhenMediaFormatIsNull(){
-        // Act & Assert
+
+        // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findByAttributes(null));
     }
-
-
 
 }

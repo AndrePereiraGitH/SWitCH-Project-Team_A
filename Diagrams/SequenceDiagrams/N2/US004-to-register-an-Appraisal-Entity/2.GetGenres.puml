@@ -4,55 +4,59 @@ autonumber
 
 title US004 - Get Genres
 
-note over Administrator, UI#E3F2FD
-<b>Navigation</b>
+note over UI, Controller #E3F2FD
+<b>Fragment</b>
 ---
-
-[[1.MainDiagram.puml Return to Main Diagram]]
-
+This diagram is a fragment of the main sequence diagram.
 end note
 
-participant Administrator
+note over UI, Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
 participant ":UI004" as UI
 participant ":US004ToRegisterAppraisalEntityController" as Controller
 participant ":GenreRepository" as GenreRepo
 participant "allGenreList: List<Genre>" as allGenreList
-participant ":GenreDTO" as GenreMapper
-participant "listOfGenreDTO: List<GenreDTO>" as GenreDTO
+participant ":GenreMapper" as GenreMapper
+participant "listOfGenreDTO: List<GenreDTO>" as listOfGenreDTO
 participant ":Genre" as Genre
-participant "genreDTO: GenreDetailsDTO" as GDTO
+participant "genreDTO: GenreDTO" as genreDTO
 
 UI -> Controller : getAllGenres()
 activate Controller
 
 Controller -> GenreRepo : getAllGenres()
 activate GenreRepo
-GenreRepo -->> allGenreList **: <<create>>
+GenreRepo -->> allGenreList ** : <<create>>
 GenreRepo --> Controller : allGenreList
 deactivate GenreRepo
 
-Controller -> GenreMapper : genreToDTO(allGenreList)
+Controller -> GenreMapper : toDTO(allGenreList)
 activate GenreMapper
+GenreMapper -->> listOfGenreDTO ** : <<create>>
 
-GenreMapper -->> GenreDTO **: <<create>>
-
-loop for each genre in the list
-    GenreMapper -> Genre: getTitle()
+loop for each genre in allGenreList
+    GenreMapper -> Genre : getId()
     activate Genre
-    Genre --> GenreMapper: title
+    Genre --> GenreMapper : id
     deactivate Genre
 
-    GenreMapper -->> GDTO **: <<create>>
+    GenreMapper -> Genre : getTitle()
+    activate Genre
+    Genre --> GenreMapper : title
+    deactivate Genre
 
-    GenreMapper -> GenreMapper: listOfGenreDTO.add(genreDTO)
+    GenreMapper -->> genreDTO ** : <<create>>
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
 end
 
-GenreMapper --> Controller : List<GenreDTO>
+GenreMapper --> Controller : listOfGenreDTO
 deactivate GenreMapper
 
-Controller --> UI : List<GenreDTO>
+Controller --> UI : listOfGenreDTO
 deactivate Controller
-
-UI --> Administrator : Display available Genres
 
 @enduml
