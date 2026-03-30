@@ -4,7 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class US018ToAddPublicationToAListOfMineController {
 
-    private final CollectionOfPublicationsRepository collectionRepo;
+    private final ICollectionOfPublicationsRepository collectionRepo;
     private final ILibraryRepository libraryRepo;
     private final IPublicationSampleRepository publicationSampleRepo;
 
@@ -61,7 +61,7 @@ public class US018ToAddPublicationToAListOfMineController {
      */
     public US018ToAddPublicationToAListOfMineController(
             User user,
-            CollectionOfPublicationsRepository collectionRepo,
+            ICollectionOfPublicationsRepository collectionRepo,
             ILibraryRepository libraryRepo,
             IPublicationSampleRepository publicationSampleRepo) {
 
@@ -199,4 +199,3 @@ public class US018ToAddPublicationToAListOfMineController {
         return result;
     }
 }
-

@@ -12,22 +12,22 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link US020PublicListByGenreController}.
- * Has {@link GenreRepositoryMem} and {@link CollectionOfPublicationsRepository} as dependencies to be mocked
+ * Has {@link GenreRepositoryMem} and {@link ICollectionOfPublicationsRepository} as dependencies to be mocked
  */
 
 class US020PublicListByGenreControllerTest {
 
     /**
      * Initial setup for tests
-     * Creates mocks for {@link CollectionOfPublicationsRepository}. and {@link GenreRepositoryMem}.
+     * Creates mocks for {@link ICollectionOfPublicationsRepository}. and {@link GenreRepositoryMem}.
      */
-    CollectionOfPublicationsRepository collectionRepo;
+    ICollectionOfPublicationsRepository collectionRepo;
     US020PublicListByGenreController controller;
     GenreRepositoryMem genreRepo;
 
     @BeforeEach
     void setup() {
-        collectionRepo = mock(CollectionOfPublicationsRepository.class);
+        collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         genreRepo = mock(GenreRepositoryMem.class);
         controller = new US020PublicListByGenreController(genreRepo, collectionRepo);
     }

@@ -29,7 +29,7 @@ import java.util.Optional;
  * {@link CollectionOfPublicationsFactory} to create new ones. The factory is injected
  * via the constructor so it can be replaced with a mock in unit tests.
  */
-public class CollectionOfPublicationsRepositoryMem implements CollectionOfPublicationsRepository{
+public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPublicationsRepository {
 
     // the internal list that holds all collections — shared across all user stories
     private List<CollectionOfPublications> _collectionOfPublicationsList = new ArrayList<>();
