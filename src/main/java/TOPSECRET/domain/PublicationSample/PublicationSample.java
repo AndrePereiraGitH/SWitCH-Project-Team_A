@@ -7,8 +7,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User;
-import TOPSECRET.domain.ValueObjects.LibraryId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -25,10 +24,10 @@ import java.util.UUID;
 public class PublicationSample implements AggregateRoot<PublicationSampleID> {
 
     private final PublicationSampleID _pubSampleID;
-    private final BibliographicalData _bd; // Implement ID
-    private final User _owner; // Implement ID
+    private final BibliographicalDataID _bdID;
+    private final UserId _ownerID;
     private PublicationStatus _publicationStatus;
-    private final Edition _edition; // Implement ID
+    private final EditionID _editionID; // Implement ID
     private final Condition _condition;
     private LibraryId _libraryID;
 //    private CollectionOfPublicationsID _collecOfPubID;
@@ -37,28 +36,28 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     // Constructor
     // -------------------------------------------------------------------------
 
-    /**
-     * Creates a new {@code PublicationSample} with the given attributes.
-     *
-     * @param bd                  the bibliographical data of the publication; must not be null
-     * @param owner               the user who owns this copy; must not be null
-     * @param publicationStatus   the initial publication status; must not be null
-     * @param edition             the edition of the publication; must not be null
-     * @param condition           the physical condition of this copy; must not be null
-     * @throws IllegalArgumentException if any argument is null
-     */
-    protected PublicationSample(BibliographicalData bd, User owner, PublicationStatus publicationStatus,
-                                Edition edition, Condition condition) {
-        if (bd == null || owner == null || publicationStatus == null || edition == null || condition == null) {
+//    /**
+//     * Creates a new {@code PublicationSample} with the given attributes.
+//     *
+//     * @param bd                  the bibliographical data of the publication; must not be null
+//     * @param owner               the user who owns this copy; must not be null
+//     * @param publicationStatus   the initial publication status; must not be null
+//     * @param edition             the edition of the publication; must not be null
+//     * @param condition           the physical condition of this copy; must not be null
+//     * @throws IllegalArgumentException if any argument is null
+//     */
+    protected PublicationSample(BibliographicalDataID bdID, UserId ownerID, PublicationStatus publicationStatus,
+                                EditionID editionID, Condition condition) {
+        if (bdID == null || ownerID == null || publicationStatus == null || editionID == null || condition == null) {
             throw new IllegalArgumentException("All criteria must be filled");
         }
 
         _pubSampleID = new PublicationSampleID(UUID.randomUUID().toString());
         _libraryID = null;
-        _bd = bd;
-        _owner = owner;
+        _bdID = bdID;
+        _ownerID = ownerID;
         _publicationStatus = publicationStatus;
-        _edition = edition;
+        _editionID = editionID;
         _condition = condition;
     }
 
@@ -71,8 +70,8 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      *
      * @return the {@link BibliographicalData} of this publication
      */
-    public BibliographicalData getBibliographicalData() {
-        return _bd;
+    public BibliographicalDataID getBibliographicalData() {
+        return _bdID;
     }
 
     /**
@@ -80,8 +79,8 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      *
      * @return the {@link User} owner of this publication
      */
-    public User getOwner() {
-        return _owner;
+    public UserId getOwner() {
+        return _ownerID;
     }
 
     /**
@@ -98,8 +97,8 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      *
      * @return the {@link Edition} of this publication
      */
-    public Edition getEdition() {
-        return _edition;
+    public EditionID getEdition() {
+        return _editionID;
     }
 
     /**
@@ -152,9 +151,9 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      * @return {@code true} if the bibliographical data contains the specified genre;
      *         {@code false} otherwise
      */
-    public boolean hasGenre(Genre genre) {
-        return _bd.hasGenre(genre);
-    }
+//    public boolean hasGenre(Genre genre) {
+//        return _bdID.hasGenre(genre);
+//    }
 
     /**
      * Retrieves the full set of details associated with this publication.
@@ -172,10 +171,10 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      */
     public PublicationSample.PublicationDetails getDetails() {
         return new PublicationSample.PublicationDetails(
-                _bd,
-                _owner,
+                _bdID,
+                _ownerID,
                 _publicationStatus,
-                _edition,
+                _editionID,
                 _condition
         );
     }
@@ -203,14 +202,22 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      *         with equal identifiers; {@code false} otherwise
      */
 
-    // This has to change - sameAs compares the attributes not the id
-    //  Equals compares the ID
     @Override
     public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PublicationSample that = (PublicationSample) o;
+        return Objects.equals(_bdID, that._bdID) && Objects.equals(_ownerID, that._ownerID) &&
+                _publicationStatus == that._publicationStatus && Objects.equals(_editionID, that._editionID) &&
+                _condition == that._condition && Objects.equals(_libraryID, that._libraryID);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PublicationSample that = (PublicationSample) o;
         return Objects.equals(_pubSampleID, that._pubSampleID);
     }
+
 
     // -------------------------------------------------------------------------
     // Inner types
@@ -232,10 +239,10 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      * @param condition           the physical condition of the publication
      */
     public record PublicationDetails(
-            BibliographicalData bibliographicalData,
-            User owner,
+            BibliographicalDataID bibliographicalData,
+            UserId owner,
             PublicationStatus publicationStatus,
-            Edition edition,
+            EditionID edition,
             Condition condition
     ) {
     }

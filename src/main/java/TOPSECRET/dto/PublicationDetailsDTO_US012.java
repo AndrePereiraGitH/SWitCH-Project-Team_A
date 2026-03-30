@@ -49,16 +49,16 @@ public class PublicationDetailsDTO_US012 {
      * @return a list of PublicationDetailsDTO_US012 objects containing the converted data
      * @see #toDTO(PublicationSample)
      */
-    public static List<PublicationDetailsDTO_US012> toDTOs(List<PublicationSample> publications) {
-        List<PublicationDetailsDTO_US012> listOfPublicationsDTO = new ArrayList<>();
-
-        for (PublicationSample pub : publications) {
-            PublicationDetailsDTO_US012 pubDTO = toDTO(pub);
-            listOfPublicationsDTO.add(pubDTO);
-        }
-
-        return listOfPublicationsDTO;
-    }
+//    public static List<PublicationDetailsDTO_US012> toDTOs(List<PublicationSample> publications) {
+//        List<PublicationDetailsDTO_US012> listOfPublicationsDTO = new ArrayList<>();
+//
+//        for (PublicationSample pub : publications) {
+//            PublicationDetailsDTO_US012 pubDTO = toDTO(pub);
+//            listOfPublicationsDTO.add(pubDTO);
+//        }
+//
+//        return listOfPublicationsDTO;
+//    }
 
     /**
      * Converts a single PublicationSample domain object to a DTO.
@@ -75,20 +75,20 @@ public class PublicationDetailsDTO_US012 {
      * @param publication the PublicationSample object to convert
      * @return a PublicationDetailsDTO_US012 containing the extracted publication details
      */
-    public static PublicationDetailsDTO_US012 toDTO(PublicationSample publication) {
-        String titleDTO = publication.getBibliographicalData().getTitle();
-        List<Author> listOfAuthors = publication.getBibliographicalData().getAuthors();
-        List<String> authorsDTO = new ArrayList<>();
-
-        for (Author author : listOfAuthors) {
-            authorsDTO.add(author.getName());
-        }
-
-        String typeDTO = String.valueOf(publication.getEdition().getPublicationType().getMediaFormat());
-        String codeDTO = String.valueOf(publication.getEdition().getCode());
-
-        PublicationDetailsDTO_US012 pubDTO = new PublicationDetailsDTO_US012(titleDTO, authorsDTO, codeDTO, typeDTO);
-
-        return pubDTO;
-    }
+//    public static PublicationDetailsDTO_US012 toDTO(PublicationSample publication) {
+//        String titleDTO = publication.getBibliographicalData().getTitle();
+//        List<Author> listOfAuthors = publication.getBibliographicalData().getAuthors();
+//        List<String> authorsDTO = new ArrayList<>();
+//
+//        for (Author author : listOfAuthors) {
+//            authorsDTO.add(author.getName());
+//        }
+//
+//        String typeDTO = String.valueOf(publication.getEdition().getPublicationType().getMediaFormat());
+//        String codeDTO = String.valueOf(publication.getEdition().getCode());
+//
+//        PublicationDetailsDTO_US012 pubDTO = new PublicationDetailsDTO_US012(titleDTO, authorsDTO, codeDTO, typeDTO);
+//
+//        return pubDTO;
+//    }
 }

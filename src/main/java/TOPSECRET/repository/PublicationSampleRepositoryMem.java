@@ -9,6 +9,9 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -53,18 +56,18 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public PublicationSample createAndAdd(BibliographicalData bibliographicalData, User userName, PublicationStatus status, Edition edition, Condition condition) throws InstanceAlreadyExistsException {
+    public PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataID, UserId userID, PublicationStatus status, EditionID editionID, Condition condition) throws InstanceAlreadyExistsException {
 
-        if(bibliographicalData == null){
+        if(bibliographicalDataID == null){
             throw new IllegalArgumentException("Bibliographical Data cannot be null");
         }
-        if(userName == null){
+        if(userID == null){
             throw new IllegalArgumentException("User Name cannot be null");
         }
         if(status == null){
             throw new IllegalArgumentException("Publication Status cannot be null");
         }
-        if(edition == null){
+        if(editionID == null){
             throw new IllegalArgumentException("Edition cannot be null");
         }
         if(condition == null){
@@ -72,7 +75,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         }
 
 
-        PublicationSample newPublicationSample = _publicationSampleFactory.create(bibliographicalData, userName, status, edition, condition);
+        PublicationSample newPublicationSample = _publicationSampleFactory.create(bibliographicalDataID, userID, status, editionID, condition);
 
         allPublicationsInSystem.add(newPublicationSample);
 
@@ -118,18 +121,18 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
-
-        if (pubsDto == null || pubsDto.isEmpty()) {
-            throw new IllegalArgumentException("list of PublicationSampleDTO cannot be null or empty");
-        }
-
-        List<PublicationSample> matched = allPublicationsInSystem.stream()
-                .filter(ps -> pubsDto.stream().anyMatch(dto -> matches(ps, dto)))
-                .toList();
-
-        return matched;
-    }
+//    public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
+//
+//        if (pubsDto == null || pubsDto.isEmpty()) {
+//            throw new IllegalArgumentException("list of PublicationSampleDTO cannot be null or empty");
+//        }
+//
+//        List<PublicationSample> matched = allPublicationsInSystem.stream()
+//                .filter(ps -> pubsDto.stream().anyMatch(dto -> matches(ps, dto)))
+//                .toList();
+//
+//        return matched;
+//    }
 
     /**
      * Determines whether a {@link PublicationSample} matches the criteria defined in a
@@ -143,24 +146,24 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      * @param dto the DTO containing the filter criteria; must not be {@code null}
      * @return {@code true} if all fields match; {@code false} otherwise
      */
-    private static boolean matches(PublicationSample ps, PublicationSampleDTO_US016 dto) {
-        BibliographicalData bd = ps.getBibliographicalData();
-
-        List<String> authorNames = bd.getAuthors().stream()
-                .map(a -> a.getName())
-                .toList();
-
-        List<String> genreTypes = bd.getGenres().stream()
-                .map(Genre::getGenreType)
-                .toList();
-
-        return Objects.equals(bd.getTitle(), dto.getTitle())
-                && Objects.equals(authorNames, dto.getAuthorName())
-                && Objects.equals(bd.getOriginalLanguage(), dto.getLanguage())
-                && Objects.equals(genreTypes, dto.getGenreType())
-                && Objects.equals(ps.getOwner().getUserName(), dto.getOwnerName())
-                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
-    }
+//    private static boolean matches(PublicationSample ps, PublicationSampleDTO_US016 dto) {
+//        BibliographicalData bd = ps.getBibliographicalData();
+//
+//        List<String> authorNames = bd.getAuthors().stream()
+//                .map(a -> a.getName())
+//                .toList();
+//
+//        List<String> genreTypes = bd.getGenres().stream()
+//                .map(Genre::getGenreType)
+//                .toList();
+//
+//        return Objects.equals(bd.getTitle(), dto.getTitle())
+//                && Objects.equals(authorNames, dto.getAuthorName())
+//                && Objects.equals(bd.getOriginalLanguage(), dto.getLanguage())
+//                && Objects.equals(genreTypes, dto.getGenreType())
+//                && Objects.equals(ps.getOwner().getUserName(), dto.getOwnerName())
+//                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
+//    }
 
     /**
      * {@inheritDoc}
@@ -219,33 +222,33 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher){
-
-        List<PublicationSample> pubSamplesList = new ArrayList<>();
-
-        if (listings == null) {
-            throw new IllegalArgumentException("List of listings cannot be null");
-        }
-        if (publisher == null) {
-            throw new IllegalArgumentException("Publisher cannot be null");
-        }
-        for (Listing listing : listings) {
-            if (listing == null)
-                throw new IllegalArgumentException("Listings cannot contain null elements");
-        }
-
-        for (Listing listing : listings) {
-            for  (PublicationSample pubSample : listing.getItems()) {
-
-                if (pubSample == null) {
-                    throw new IllegalArgumentException("Listings must not contain null PublicationSample items");
-                }
-
-                if(pubSample.getEdition().getPublisher().equals(publisher)){
-                    pubSamplesList.add(pubSample);
-                }
-            }
-        }
-        return List.copyOf(pubSamplesList);
-    }
+//    public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher){
+//
+//        List<PublicationSample> pubSamplesList = new ArrayList<>();
+//
+//        if (listings == null) {
+//            throw new IllegalArgumentException("List of listings cannot be null");
+//        }
+//        if (publisher == null) {
+//            throw new IllegalArgumentException("Publisher cannot be null");
+//        }
+//        for (Listing listing : listings) {
+//            if (listing == null)
+//                throw new IllegalArgumentException("Listings cannot contain null elements");
+//        }
+//
+//        for (Listing listing : listings) {
+//            for  (PublicationSample pubSample : listing.getItems()) {
+//
+//                if (pubSample == null) {
+//                    throw new IllegalArgumentException("Listings must not contain null PublicationSample items");
+//                }
+//
+//                if(pubSample.getEdition().getPublisher().equals(publisher)){
+//                    pubSamplesList.add(pubSample);
+//                }
+//            }
+//        }
+//        return List.copyOf(pubSamplesList);
+//    }
 }

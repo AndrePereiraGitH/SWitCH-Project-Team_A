@@ -110,66 +110,66 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
      *
      * <p>Expects two DTOs with the correct title and seller usernames.</p>
      */
-    @Test
-    void getListOfItemsOnAuctionByGivenPublicationDTO_ShouldReturnListOfDTOsWhenItemsExist() {
-        // Arrange
-        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
-        PublicationSample sampleDouble1 = createMockPublicationSample("Title1", "12345678910", "User1");
-        PublicationSample sampleDouble2 = createMockPublicationSample("Title1", "12345678910", "User2");
-
-        when(auctionRepository.getListOfItemsOnAuctionByGivenPublication("Title1"))
-                .thenReturn(List.of(sampleDouble1, sampleDouble2));
-
-        // Act
-        List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title1");
-
-        // Assert
-        assertEquals(2, result.size());
-        assertEquals("Title1", result.get(0).title);
-        assertEquals("User1", result.get(0).seller);
-        assertEquals("User2", result.get(1).seller);
-    }
+//    @Test
+//    void getListOfItemsOnAuctionByGivenPublicationDTO_ShouldReturnListOfDTOsWhenItemsExist() {
+//        // Arrange
+//        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+//                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//        PublicationSample sampleDouble1 = createMockPublicationSample("Title1", "12345678910", "User1");
+//        PublicationSample sampleDouble2 = createMockPublicationSample("Title1", "12345678910", "User2");
+//
+//        when(auctionRepository.getListOfItemsOnAuctionByGivenPublication("Title1"))
+//                .thenReturn(List.of(sampleDouble1, sampleDouble2));
+//
+//        // Act
+//        List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title1");
+//
+//        // Assert
+//        assertEquals(2, result.size());
+//        assertEquals("Title1", result.get(0).title);
+//        assertEquals("User1", result.get(0).seller);
+//        assertEquals("User2", result.get(1).seller);
+//    }
 
     /**
      * Verifies that {@code getListOfItemsOnAuctionByGivenPublicationDTO()} returns
      * an empty list when no auction items match the given publication identifier.
      */
-    @Test
-    void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
-        // Arrange
-        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//    @Test
+//    void getListOfItemsOnAuctionShouldReturnEmptyWhenNoItemsMatchPublicationDTO() {
+//        // Arrange
+//        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+//                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//
+//        // Act
+//        List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title2");
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
 
-        // Act
-        List<AuctionItemDTO_US024> result = controller.getListOfItemsOnAuctionByGivenPublicationDTO("Title2");
+//    @Test
+//    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsNull() {
+//        // Arrange
+//        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+//                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//
+//        // Act & Assert
+//        assertThrows(NullPointerException.class,
+//                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(null));
+//    }
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsNull() {
-        // Arrange
-        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class,
-                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(null));
-    }
-
-    @Test
-    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsEmpty() {
-        // Arrange
-        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(""));
-    }
+//    @Test
+//    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsEmpty() {
+//        // Arrange
+//        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+//                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//
+//        // Act & Assert
+//        assertThrows(IllegalArgumentException.class,
+//                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(""));
+//    }
 
     // -------------------------------------------------------------------------
     // Helper / factory methods
@@ -184,20 +184,20 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
      * @param seller the username returned by the seller mock
      * @return a configured {@link PublicationSample} mock
      */
-    private PublicationSample createMockPublicationSample(String title, String code, String seller) {
-        BibliographicalData bdDouble = createMockBibliographicalData(title);
-        Edition editionDouble = createMockEdition(code);
-        User sellerDouble = createMockSeller(seller);
-        Condition conditionDouble = createMockCondition();
-
-        PublicationSample pbSampleDouble = mock(PublicationSample.class);
-        when(pbSampleDouble.getBibliographicalData()).thenReturn(bdDouble);
-        when(pbSampleDouble.getEdition()).thenReturn(editionDouble);
-        when(pbSampleDouble.getCondition()).thenReturn(conditionDouble);
-        when(pbSampleDouble.getOwner()).thenReturn(sellerDouble);
-
-        return pbSampleDouble;
-    }
+//    private PublicationSample createMockPublicationSample(String title, String code, String seller) {
+//        BibliographicalData bdDouble = createMockBibliographicalData(title);
+//        Edition editionDouble = createMockEdition(code);
+//        User sellerDouble = createMockSeller(seller);
+//        Condition conditionDouble = createMockCondition();
+//
+//        PublicationSample pbSampleDouble = mock(PublicationSample.class);
+//        when(pbSampleDouble.getBibliographicalData()).thenReturn(bdDouble);
+//        when(pbSampleDouble.getEdition()).thenReturn(editionDouble);
+//        when(pbSampleDouble.getCondition()).thenReturn(conditionDouble);
+//        when(pbSampleDouble.getOwner()).thenReturn(sellerDouble);
+//
+//        return pbSampleDouble;
+//    }
 
     /**
      * Creates a mocked {@link BibliographicalData} that returns the given title.

@@ -2,10 +2,12 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
@@ -33,17 +35,17 @@ public interface IPublicationSampleRepository {
      * Creates a new {@link PublicationSample} from the provided attributes,
      * persists it in the repository, and returns the created instance.
      *
-     * @param bibliographicalData the bibliographical metadata of the publication; must not be null
-     * @param user                the user who owns this copy; must not be null
-     * @param status              the initial publication status; must not be null
-     * @param edition             the edition of the publication; must not be null
-     * @param condition           the physical condition of this copy; must not be null
+     * @param bibliographicalDataID the ID of the bibliographical metadata of the publication; must not be null
+     * @param userID                the ID of the user who owns this copy; must not be null
+     * @param status                the initial publication status; must not be null
+     * @param editionID             the ID of the edition of the publication; must not be null
+     * @param condition             the physical condition of this copy; must not be null
      * @return the newly created and persisted {@link PublicationSample}
      * @throws InstanceAlreadyExistsException if an equivalent publication sample
      *                                        already exists in the repository
      */
-    PublicationSample createAndAdd(BibliographicalData bibliographicalData, User user, PublicationStatus status,
-                                   Edition edition, Condition condition) throws InstanceAlreadyExistsException;
+    PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataID, UserId userID, PublicationStatus status,
+                                   EditionID editionID, Condition condition) throws InstanceAlreadyExistsException;
 
     /**
      * Adds an already constructed {@link PublicationSample} to the repository.
@@ -97,7 +99,7 @@ public interface IPublicationSampleRepository {
      * @return a {@link List} of matching {@link PublicationSample} instances;
      *         never {@code null}, but may be empty if no matches are found
      */
-    List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher);
+//    List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher);
 
     /**
      * Converts a {@link PublicationSampleDTO_US018} transfer object into a domain

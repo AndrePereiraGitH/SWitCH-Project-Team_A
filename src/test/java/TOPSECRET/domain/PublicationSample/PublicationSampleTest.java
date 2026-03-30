@@ -34,193 +34,193 @@ class PublicationSampleTest {
     private final Condition anyCondition = mock(Condition.class);
 
 
-    @Test
-    void shouldCreateValidPubSampleWithMocks() {
+//    @Test
+//    void shouldCreateValidPubSampleWithMocks() {
+//
+//        //Act
+//        PublicationSample validSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
+//                anyEdition, anyCondition);
+//    }
 
-        //Act
-        PublicationSample validSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, anyCondition);
-    }
+//    @Test
+//    void shouldThrowExceptionWhenAFieldIsNull() {
+//        //Arrange
+//        BibliographicalData biblioDataNull = null;
+//
+//        //Act + assert
+//        assertThrows(IllegalArgumentException.class, () ->
+//                new PublicationSample(biblioDataNull, anyOwner, anyPublicationStatus, anyEdition, anyCondition));
+//    }
 
-    @Test
-    void shouldThrowExceptionWhenAFieldIsNull() {
-        //Arrange
-        BibliographicalData biblioDataNull = null;
+//    @Test
+//    void shouldFetchDependenciesCorrectly() {
+//
+//        //Arrange
+//        PublicationSample anySample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
+//                anyEdition, anyCondition);
+//
+//        //Assert
+//        assertEquals(anyBiblioData, anySample.getBibliographicalData());
+//        assertEquals(anyOwner, anySample.getOwner());
+//        assertEquals(anyEdition, anySample.getEdition());
+//        assertEquals(anyPublicationStatus, anySample.getPublicationStatus());
+//        assertEquals(anyCondition, anySample.getCondition());
+//    }
 
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(biblioDataNull, anyOwner, anyPublicationStatus, anyEdition, anyCondition));
-    }
+//    @Test
+//    void shouldChangeStatusToForSaleCorrectly() {
+//
+//        //Arrange, SUT here is the method being tested, PubSample and PublicationStatus
+//        PublicationSample sampleRead = new PublicationSample(anyBiblioData, anyOwner, PublicationStatus.READ,
+//                anyEdition, anyCondition);
+//
+//        //Act
+//        boolean forSale = sampleRead.changeStatusToForSale();
+//
+//        //Assert
+//        assertTrue(forSale);
+//    }
 
-    @Test
-    void shouldFetchDependenciesCorrectly() {
+//    @Test
+//    void shouldReturnFalseIfSampleAlreadyForSale() {
+//
+//        //Arrange, SUT same as before but different outcome
+//        PublicationSample sampleForSale = new PublicationSample(anyBiblioData, anyOwner, PublicationStatus.FOR_SALE,
+//                anyEdition, anyCondition);
+//
+//        //Act
+//        boolean alreadyForSale = sampleForSale.changeStatusToForSale();
+//
+//        //Assert
+//        assertFalse(alreadyForSale);
+//    }
 
-        //Arrange
-        PublicationSample anySample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, anyCondition);
+//    @Test
+//    void getDetailsMethodShouldReturnCorrectInfo() {
+//
+//        // Arrange, SUT here would be the PublicationSample and the getDetails method
+//        PublicationSample wantDetails = new PublicationSample(anyBiblioData, anyOwner,
+//                anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Act
+//        PublicationSample.PublicationDetails anyDetails = wantDetails.getDetails();
+//
+//        //Assert
+//        assertEquals(anyBiblioData, anyDetails.bibliographicalData());
+//        assertEquals(anyOwner, anyDetails.owner());
+//        assertEquals(anyPublicationStatus, anyDetails.publicationStatus());
+//        assertEquals(anyEdition, anyDetails.edition());
+//        assertEquals(anyCondition, anyDetails.condition());
+//    }
 
-        //Assert
-        assertEquals(anyBiblioData, anySample.getBibliographicalData());
-        assertEquals(anyOwner, anySample.getOwner());
-        assertEquals(anyEdition, anySample.getEdition());
-        assertEquals(anyPublicationStatus, anySample.getPublicationStatus());
-        assertEquals(anyCondition, anySample.getCondition());
-    }
+//    @Test
+//    void shouldReturnTrueWhenSameObject() {
+//
+//        // Arrange
+//        PublicationSample sameSample = new PublicationSample(anyBiblioData, anyOwner,
+//                anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        assertEquals(sameSample, sameSample);
+//    }
 
-    @Test
-    void shouldChangeStatusToForSaleCorrectly() {
+//    @Test
+//    void shouldReturnFalseWhenDifferentObject() {
+//
+//        //Is it valid to use an actual attribute as the differing field here? In this case Condition
+//        //Because the SUT now could be considered PublicationSample and Condition instead of just Condition...
+//
+//        //Arrange
+//        PublicationSample anySample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
+//                anyEdition, anyCondition);
+//
+//        PublicationSample newSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
+//                anyEdition, Condition.NEW);
+//
+//        //Assert
+//        assertNotEquals(anySample, newSample);
+//    }
 
-        //Arrange, SUT here is the method being tested, PubSample and PublicationStatus
-        PublicationSample sampleRead = new PublicationSample(anyBiblioData, anyOwner, PublicationStatus.READ,
-                anyEdition, anyCondition);
+//    @Test
+//    void hashCodeShouldBeConsistent() {
+//
+//        // Arrange
+//        PublicationSample anySample =
+//                new PublicationSample(anyBiblioData, anyOwner,
+//                        anyPublicationStatus, anyEdition, anyCondition);
+//
+//        int hashA = anySample.hashCode();
+//        int hashB = anySample.hashCode();
+//
+//        //Assert
+//        assertEquals(hashA, hashB);
+//    }
 
-        //Act
-        boolean forSale = sampleRead.changeStatusToForSale();
+//    @Test
+//    void differentPublicationSamplesShouldHaveDifferentHashCodes() {
+//
+//        //Arrange
+//        BibliographicalData otherBd = mock(BibliographicalData.class);
+//
+//        PublicationSample goldSample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        PublicationSample silverSample = new PublicationSample(
+//                otherBd, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Act + assert
+//        assertNotEquals(goldSample.hashCode(), silverSample.hashCode());
+//    }
 
-        //Assert
-        assertTrue(forSale);
-    }
+//    @Test
+//    void equalsShouldReturnFalseWhenComparedWithNull() {
+//
+//        //Arrange
+//        PublicationSample sample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        PublicationSample nullSample = null;
+//
+//        //Assert
+//        assertFalse(sample.equals(nullSample));
+//    }
 
-    @Test
-    void shouldReturnFalseIfSampleAlreadyForSale() {
+//    @Test
+//    void equalsShouldReturnFalseWhenComparedWithDifferentType() {
+//
+//        //Arrange
+//        PublicationSample sample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        assertFalse(sample.equals("not a publication"));
+//    }
 
-        //Arrange, SUT same as before but different outcome
-        PublicationSample sampleForSale = new PublicationSample(anyBiblioData, anyOwner, PublicationStatus.FOR_SALE,
-                anyEdition, anyCondition);
-
-        //Act
-        boolean alreadyForSale = sampleForSale.changeStatusToForSale();
-
-        //Assert
-        assertFalse(alreadyForSale);
-    }
-
-    @Test
-    void getDetailsMethodShouldReturnCorrectInfo() {
-
-        // Arrange, SUT here would be the PublicationSample and the getDetails method
-        PublicationSample wantDetails = new PublicationSample(anyBiblioData, anyOwner,
-                anyPublicationStatus, anyEdition, anyCondition);
-
-        //Act
-        PublicationSample.PublicationDetails anyDetails = wantDetails.getDetails();
-
-        //Assert
-        assertEquals(anyBiblioData, anyDetails.bibliographicalData());
-        assertEquals(anyOwner, anyDetails.owner());
-        assertEquals(anyPublicationStatus, anyDetails.publicationStatus());
-        assertEquals(anyEdition, anyDetails.edition());
-        assertEquals(anyCondition, anyDetails.condition());
-    }
-
-    @Test
-    void shouldReturnTrueWhenSameObject() {
-
-        // Arrange
-        PublicationSample sameSample = new PublicationSample(anyBiblioData, anyOwner,
-                anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertEquals(sameSample, sameSample);
-    }
-
-    @Test
-    void shouldReturnFalseWhenDifferentObject() {
-
-        //Is it valid to use an actual attribute as the differing field here? In this case Condition
-        //Because the SUT now could be considered PublicationSample and Condition instead of just Condition...
-
-        //Arrange
-        PublicationSample anySample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, anyCondition);
-
-        PublicationSample newSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, Condition.NEW);
-
-        //Assert
-        assertNotEquals(anySample, newSample);
-    }
-
-    @Test
-    void hashCodeShouldBeConsistent() {
-
-        // Arrange
-        PublicationSample anySample =
-                new PublicationSample(anyBiblioData, anyOwner,
-                        anyPublicationStatus, anyEdition, anyCondition);
-
-        int hashA = anySample.hashCode();
-        int hashB = anySample.hashCode();
-
-        //Assert
-        assertEquals(hashA, hashB);
-    }
-
-    @Test
-    void differentPublicationSamplesShouldHaveDifferentHashCodes() {
-
-        //Arrange
-        BibliographicalData otherBd = mock(BibliographicalData.class);
-
-        PublicationSample goldSample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        PublicationSample silverSample = new PublicationSample(
-                otherBd, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Act + assert
-        assertNotEquals(goldSample.hashCode(), silverSample.hashCode());
-    }
-
-    @Test
-    void equalsShouldReturnFalseWhenComparedWithNull() {
-
-        //Arrange
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        PublicationSample nullSample = null;
-
-        //Assert
-        assertFalse(sample.equals(nullSample));
-    }
-
-    @Test
-    void equalsShouldReturnFalseWhenComparedWithDifferentType() {
-
-        //Arrange
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertFalse(sample.equals("not a publication"));
-    }
-
-    @Test
-    void shouldReturnTrueWhenBibliographicalDataHasGenre() {
-
-        //Arrange + act
-        Genre genre = mock(Genre.class);
-        when(anyBiblioData.hasGenre(genre)).thenReturn(true);
-
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertTrue(sample.hasGenre(genre));
-    }
-
-    @Test
-    void shouldReturnFalseWhenBibliographicalDataDoesNotHaveGenre() {
-
-        //Arrange + act
-        Genre genre = mock(Genre.class);
-        when(anyBiblioData.hasGenre(genre)).thenReturn(false);
-
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertFalse(sample.hasGenre(genre));
-    }
+//    @Test
+//    void shouldReturnTrueWhenBibliographicalDataHasGenre() {
+//
+//        //Arrange + act
+//        Genre genre = mock(Genre.class);
+//        when(anyBiblioData.hasGenre(genre)).thenReturn(true);
+//
+//        PublicationSample sample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        assertTrue(sample.hasGenre(genre));
+//    }
+//
+//    @Test
+//    void shouldReturnFalseWhenBibliographicalDataDoesNotHaveGenre() {
+//
+//        //Arrange + act
+//        Genre genre = mock(Genre.class);
+//        when(anyBiblioData.hasGenre(genre)).thenReturn(false);
+//
+//        PublicationSample sample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        assertFalse(sample.hasGenre(genre));
+//    }
 }

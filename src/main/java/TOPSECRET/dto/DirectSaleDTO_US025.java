@@ -46,55 +46,55 @@ public class DirectSaleDTO_US025 {
      * @param ds The direct sale containing the item.
      * @return A new instance of DirectSaleDTO_US025.
      */
-    public static DirectSaleDTO_US025 fromItemAndDirectSale(PublicationSample item, DirectSale ds) {
-
-        // Publication title
-        String title = item.getBibliographicalData().getTitle();
-
-        // Authors' names
-        List<String> authors = new ArrayList<>();
-        for (Author a : item.getBibliographicalData().getAuthors()) {
-            authors.add(a.getName());
-        }
-
-        // Total price
-        BigDecimal price = BigDecimal.ZERO;
-        for (Listing listing : ds.getListings()) {
-            price = price.add(listing.getPrice().getPrice());
-        }
-
-        // Listing title
-        String listingTitle;
-        if (ds.getListings().size() == 1) {
-            listingTitle = ds.getListings().get(0).getListingTitle();
-        } else {
-            listingTitle = "Pack of " + ds.getListings().size() + " listings";
-        }
-
-        // Seller
-        String seller = "";
-        for (Listing listing : ds.getListings()) {
-            seller = listing.getSeller().getUserName();
-        }
-
-        return new DirectSaleDTO_US025(title, authors, price, listingTitle, seller);
-    }
+//    public static DirectSaleDTO_US025 fromItemAndDirectSale(PublicationSample item, DirectSale ds) {
+//
+//        // Publication title
+//        String title = item.getBibliographicalData().getTitle();
+//
+//        // Authors' names
+//        List<String> authors = new ArrayList<>();
+//        for (Author a : item.getBibliographicalData().getAuthors()) {
+//            authors.add(a.getName());
+//        }
+//
+//        // Total price
+//        BigDecimal price = BigDecimal.ZERO;
+//        for (Listing listing : ds.getListings()) {
+//            price = price.add(listing.getPrice().getPrice());
+//        }
+//
+//        // Listing title
+//        String listingTitle;
+//        if (ds.getListings().size() == 1) {
+//            listingTitle = ds.getListings().get(0).getListingTitle();
+//        } else {
+//            listingTitle = "Pack of " + ds.getListings().size() + " listings";
+//        }
+//
+//        // Seller
+//        String seller = "";
+//        for (Listing listing : ds.getListings()) {
+//            seller = listing.getSeller().getUserName();
+//        }
+//
+//        return new DirectSaleDTO_US025(title, authors, price, listingTitle, seller);
+//    }
 
     /**
      * Creates a list of DTOs for all items in the given direct sale.
      *
-     * @param ds The direct sale containing multiple listings and items.
+//     * @param ds The direct sale containing multiple listings and items.
      * @return List of DirectSaleDTO_US025 representing all items.
      */
-    public static List<DirectSaleDTO_US025> fromDirectSale(DirectSale ds) {
-        List<DirectSaleDTO_US025> dtos = new ArrayList<>();
-        for (Listing listing : ds.getListings()) {
-            for (PublicationSample item : listing.getItems()) {
-                dtos.add(fromItemAndDirectSale(item, ds));
-            }
-        }
-        return dtos;
-    }
+//    public static List<DirectSaleDTO_US025> fromDirectSale(DirectSale ds) {
+//        List<DirectSaleDTO_US025> dtos = new ArrayList<>();
+//        for (Listing listing : ds.getListings()) {
+//            for (PublicationSample item : listing.getItems()) {
+//                dtos.add(fromItemAndDirectSale(item, ds));
+//            }
+//        }
+//        return dtos;
+//    }
 
     // ----- GETTERS -----
     public String getTitle() { return publicationTitle; }

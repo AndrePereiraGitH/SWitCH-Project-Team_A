@@ -52,16 +52,16 @@ public class AuctionItemDTO_US024 {
      * @return a {@link List} of {@code AuctionItemDTO_US024} in the same order
      *         as the input; never {@code null}, but may be empty
      */
-    public static List<AuctionItemDTO_US024> toDTOs(List<PublicationSample> listOfItemsOnAuctionByPublication) {
-
-        List<AuctionItemDTO_US024> listAuctionItemDTO = new ArrayList<>();
-
-        for (PublicationSample item : listOfItemsOnAuctionByPublication) {
-            listAuctionItemDTO.add(toDTO(item));
-        }
-
-        return listAuctionItemDTO;
-    }
+//    public static List<AuctionItemDTO_US024> toDTOs(List<PublicationSample> listOfItemsOnAuctionByPublication) {
+//
+//        List<AuctionItemDTO_US024> listAuctionItemDTO = new ArrayList<>();
+//
+//        for (PublicationSample item : listOfItemsOnAuctionByPublication) {
+//            listAuctionItemDTO.add(toDTO(item));
+//        }
+//
+//        return listAuctionItemDTO;
+//    }
 
     /**
      * Converts a single {@link PublicationSample} domain object into an
@@ -81,13 +81,13 @@ public class AuctionItemDTO_US024 {
      * @return a new {@code AuctionItemDTO_US024} populated with data from
      *         the given {@link PublicationSample}
      */
-    public static AuctionItemDTO_US024 toDTO(PublicationSample publicationSample) {
-
-        String titleDTO = publicationSample.getBibliographicalData().getTitle();
-        String codeDTO = publicationSample.getEdition().getCode().toString();
-        String conditionDTO = publicationSample.getCondition().getDescription();
-        String sellerDTO = publicationSample.getOwner().getUserName();
-
-        return new AuctionItemDTO_US024(titleDTO, codeDTO, conditionDTO, sellerDTO);
-    }
+//    public static AuctionItemDTO_US024 toDTO(PublicationSample publicationSample) {
+//
+//        String titleDTO = publicationSample.getBibliographicalData().getTitle();
+//        String codeDTO = publicationSample.getEdition().getCode().toString();
+//        String conditionDTO = publicationSample.getCondition().getDescription();
+//        String sellerDTO = publicationSample.getOwner().getUserName();
+//
+//        return new AuctionItemDTO_US024(titleDTO, codeDTO, conditionDTO, sellerDTO);
+//    }
 }

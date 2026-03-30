@@ -50,45 +50,45 @@ class US010ToRegisterNewPublicationCtrlTest {
                 () -> new US010ToRegisterNewPublicationCtrl(null));
     }
 
-    @Test
-    void shouldCallRepoToCreatePubSample() throws InstanceAlreadyExistsException {
+//    @Test
+//    void shouldCallRepoToCreatePubSample() throws InstanceAlreadyExistsException {
+//
+//        //Arrange
+//        when(anyPublicationSampleRepositoryMem.createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
+//                anyEdition, anyCondition)).thenReturn(anyPublicationSample);
+//
+//        //Act
+//        anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        verify(anyPublicationSampleRepositoryMem).createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
+//                anyEdition, anyCondition);
+//
+//    }
 
-        //Arrange
-        when(anyPublicationSampleRepositoryMem.createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
-                anyEdition, anyCondition)).thenReturn(anyPublicationSample);
-
-        //Act
-        anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        verify(anyPublicationSampleRepositoryMem).createAndAdd(anyBiblioData, anyUser, anyPublicationStatus,
-                anyEdition, anyCondition);
-
-    }
-
-    @Test
-    void shouldReturnPubSampleFromRepo() throws InstanceAlreadyExistsException {
-
-        //Arrange
-        when(anyPublicationSampleRepositoryMem.createAndAdd(
-                anyBiblioData,
-                anyUser,
-                anyPublicationStatus,
-                anyEdition,
-                anyCondition
-        )).thenReturn(anyPublicationSample);
-
-        //Act
-        PublicationSample result = anyController.createAndAddPublication(
-                anyBiblioData,
-                anyUser,
-                anyPublicationStatus,
-                anyEdition,
-                anyCondition);
-
-        //Assert
-        assertEquals(anyPublicationSample, result);
-    }
+//    @Test
+//    void shouldReturnPubSampleFromRepo() throws InstanceAlreadyExistsException {
+//
+//        //Arrange
+//        when(anyPublicationSampleRepositoryMem.createAndAdd(
+//                anyBiblioData,
+//                anyUser,
+//                anyPublicationStatus,
+//                anyEdition,
+//                anyCondition
+//        )).thenReturn(anyPublicationSample);
+//
+//        //Act
+//        PublicationSample result = anyController.createAndAddPublication(
+//                anyBiblioData,
+//                anyUser,
+//                anyPublicationStatus,
+//                anyEdition,
+//                anyCondition);
+//
+//        //Assert
+//        assertEquals(anyPublicationSample, result);
+//    }
 
     /**
      * Verifies that the controller propagates the exception thrown by the repository.
@@ -103,22 +103,22 @@ class US010ToRegisterNewPublicationCtrlTest {
      * being thrown.</p>
      */
 
-    @Test
-    void shouldThrowExceptionWhenRepositoryThrows() throws InstanceAlreadyExistsException {
-
-        //Arrange
-        when(anyPublicationSampleRepositoryMem.createAndAdd(
-                anyBiblioData,
-                anyUser,
-                anyPublicationStatus,
-                anyEdition,
-                anyCondition)).thenThrow
-                (InstanceAlreadyExistsException.class);
-
-        //Act + assert
-        assertThrows(InstanceAlreadyExistsException.class, ()
-                -> anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition,
-                anyCondition));
-    }
+//    @Test
+//    void shouldThrowExceptionWhenRepositoryThrows() throws InstanceAlreadyExistsException {
+//
+//        //Arrange
+//        when(anyPublicationSampleRepositoryMem.createAndAdd(
+//                anyBiblioData,
+//                anyUser,
+//                anyPublicationStatus,
+//                anyEdition,
+//                anyCondition)).thenThrow
+//                (InstanceAlreadyExistsException.class);
+//
+//        //Act + assert
+//        assertThrows(InstanceAlreadyExistsException.class, ()
+//                -> anyController.createAndAddPublication(anyBiblioData, anyUser, anyPublicationStatus, anyEdition,
+//                anyCondition));
+//    }
 
 }

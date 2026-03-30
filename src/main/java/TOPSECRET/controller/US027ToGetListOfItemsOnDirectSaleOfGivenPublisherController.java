@@ -72,17 +72,17 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * @return a list of {@link PublicationSampleDTO_US027} associated with the given publisher
      */
 
-    public List<PublicationSampleDTO_US027> findListOfItemsOnDirectSaleByPublisher(Publisher publisher) {
-
-        // Gets all the listings for direct sale
-        List<Listing> listOfListings = _listingRepo.findAllDirectSaleListings();
-
-        // Gets all the publication samples related to the that publisher
-        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
-
-        // Converts to DTOs
-        List<PublicationSampleDTO_US027> listOfPublicationSampleDTO = PublicationSampleDTO_US027.toDTOs(listOfItems);
-
-        return listOfPublicationSampleDTO;
-    }
+//    public List<PublicationSampleDTO_US027> findListOfItemsOnDirectSaleByPublisher(Publisher publisher) {
+//
+//        // Gets all the listings for direct sale
+//        List<Listing> listOfListings = _listingRepo.findAllDirectSaleListings();
+//
+//        // Gets all the publication samples related to the that publisher
+//        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
+//
+//        // Converts to DTOs
+//        List<PublicationSampleDTO_US027> listOfPublicationSampleDTO = PublicationSampleDTO_US027.toDTOs(listOfItems);
+//
+//        return listOfPublicationSampleDTO;
+//    }
 }

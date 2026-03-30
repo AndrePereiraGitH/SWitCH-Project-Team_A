@@ -49,7 +49,7 @@ public interface IListingRepository {
      * @return a list of publication samples in direct-sale listings with the given genre
      * @throws IllegalArgumentException if {@code genre} is {@code null}
      */
-    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre);
+//    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre);
 
     /**
      * Returns all publication samples in direct-sale listings that are associated with the given author.
@@ -58,7 +58,7 @@ public interface IListingRepository {
      * @return a list of publication samples in direct-sale listings associated with the given author
      * @throws IllegalArgumentException if {@code author} is {@code null}
      */
-    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author);
+//    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author);
 
     /**
      * Returns the complete list of listings stored in the repository.

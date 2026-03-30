@@ -68,23 +68,23 @@ public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
      *         auction items for the specified publication;
      *         returns an empty list if no items are found
      */
-    public List<AuctionItemDTO_US024> getListOfItemsOnAuctionByGivenPublicationDTO(
-            String bdPublicationDTO) {
-
-        if(bdPublicationDTO == null){
-            throw new NullPointerException("The publication can not be null");
-        }
-
-        if(bdPublicationDTO.isEmpty()){
-            throw new IllegalArgumentException("The publication can not be empty");
-        }
-
-        List<PublicationSample> listOfItemsOnAuctionByPublication =
-                _aucRepo.getListOfItemsOnAuctionByGivenPublication(bdPublicationDTO);
-
-        List<AuctionItemDTO_US024> listAuctionItemDTO =
-                AuctionItemDTO_US024.toDTOs(listOfItemsOnAuctionByPublication);
-
-        return listAuctionItemDTO;
-    }
+//    public List<AuctionItemDTO_US024> getListOfItemsOnAuctionByGivenPublicationDTO(
+//            String bdPublicationDTO) {
+//
+//        if(bdPublicationDTO == null){
+//            throw new NullPointerException("The publication can not be null");
+//        }
+//
+//        if(bdPublicationDTO.isEmpty()){
+//            throw new IllegalArgumentException("The publication can not be empty");
+//        }
+//
+//        List<PublicationSample> listOfItemsOnAuctionByPublication =
+//                _aucRepo.getListOfItemsOnAuctionByGivenPublication(bdPublicationDTO);
+//
+//        List<AuctionItemDTO_US024> listAuctionItemDTO =
+//                AuctionItemDTO_US024.toDTOs(listOfItemsOnAuctionByPublication);
+//
+//        return listAuctionItemDTO;
+//    }
 }

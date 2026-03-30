@@ -76,17 +76,17 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
      */
 
 
-    public List<PublicationSampleDTO_US028> findListOfItemsOnAuctionByPublisher(Publisher publisher) {
-
-        // Gets all the listings for auction
-        List<Listing> listOfListings = _listingRepo.findAllAuctionListings();
-
-        // Gets all the publication samples related to the that publisher
-        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
-
-        // Converts to DTOs
-        List<PublicationSampleDTO_US028> listOfPublicationSampleDTO = PublicationSampleDTO_US028.toDTOs(listOfItems);
-
-        return listOfPublicationSampleDTO;
-    }
+//    public List<PublicationSampleDTO_US028> findListOfItemsOnAuctionByPublisher(Publisher publisher) {
+//
+//        // Gets all the listings for auction
+//        List<Listing> listOfListings = _listingRepo.findAllAuctionListings();
+//
+//        // Gets all the publication samples related to the that publisher
+//        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
+//
+//        // Converts to DTOs
+//        List<PublicationSampleDTO_US028> listOfPublicationSampleDTO = PublicationSampleDTO_US028.toDTOs(listOfItems);
+//
+//        return listOfPublicationSampleDTO;
+//    }
 }

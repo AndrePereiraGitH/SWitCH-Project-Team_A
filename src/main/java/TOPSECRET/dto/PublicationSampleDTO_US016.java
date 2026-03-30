@@ -34,23 +34,23 @@ public class PublicationSampleDTO_US016 {
     /**
      * Maps a {@link PublicationSample} domain object to a {@link PublicationSampleDTO_US016}.
      *
-     * @param publicationSample the domain object to convert
+//     * @param publicationSample the domain object to convert
      * @return a DTO containing the fields required by US016
      */
-    public static PublicationSampleDTO_US016 toDTO(PublicationSample publicationSample) {
-        return new PublicationSampleDTO_US016(
-                publicationSample.getBibliographicalData().getTitle(),
-                publicationSample.getBibliographicalData().getAuthors().stream()
-                        .map(a -> a.getName())
-                        .toList(),
-                publicationSample.getBibliographicalData().getOriginalLanguage(),
-                publicationSample.getBibliographicalData().getGenres().stream()
-                        .map(Genre::getGenreType)
-                        .toList(),
-                publicationSample.getOwner().getUserName(),
-                publicationSample.getCondition().getDescription()
-        );
-    }
+//    public static PublicationSampleDTO_US016 toDTO(PublicationSample publicationSample) {
+//        return new PublicationSampleDTO_US016(
+//                publicationSample.getBibliographicalData().getTitle(),
+//                publicationSample.getBibliographicalData().getAuthors().stream()
+//                        .map(a -> a.getName())
+//                        .toList(),
+//                publicationSample.getBibliographicalData().getOriginalLanguage(),
+//                publicationSample.getBibliographicalData().getGenres().stream()
+//                        .map(Genre::getGenreType)
+//                        .toList(),
+//                publicationSample.getOwner().getUserName(),
+//                publicationSample.getCondition().getDescription()
+//        );
+//    }
 
     public String getTitle() {
         return title;

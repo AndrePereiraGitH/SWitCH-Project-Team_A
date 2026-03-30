@@ -4,6 +4,7 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class Listing {
     private final SaleType _saleType;
     private final Price _price;
     private final String _shortDescription;
-    private final User _seller;
+    private final UserId _seller;
     private final List<Picture> _pictures;
 
     /**
@@ -163,7 +164,7 @@ public class Listing {
      *
      * @return the user who is selling the items
      */
-    public User getSeller() {
+    public UserId getSeller() {
         return _seller;
     }
 

@@ -27,27 +27,27 @@ public class PublicationSampleDTO_US018 {
      * Converts domain PublicationSample objects
      * into DTOs for US018.
      *
-     * @param publications list of PublicationSample
+//     * @param publications list of PublicationSample
      * @return list of PublicationSampleDTO_US018
      */
-    public static List<PublicationSampleDTO_US018> publicationToDTO(
-            List<PublicationSample> publications) {
-
-        List<PublicationSampleDTO_US018> result = new ArrayList<>();
-
-        for (PublicationSample p : publications) {
-
-            result.add(
-                    new PublicationSampleDTO_US018(
-                            p.getBibliographicalData().getTitle(),
-                            p.getEdition().getEditionNumber(),
-                            p.getOwner().getUserName()
-                    )
-            );
-        }
-
-        return result;
-    }
+//    public static List<PublicationSampleDTO_US018> publicationToDTO(
+//            List<PublicationSample> publications) {
+//
+//        List<PublicationSampleDTO_US018> result = new ArrayList<>();
+//
+//        for (PublicationSample p : publications) {
+//
+//            result.add(
+//                    new PublicationSampleDTO_US018(
+//                            p.getBibliographicalData().getTitle(),
+//                            p.getEdition().getEditionNumber(),
+//                            p.getOwner().getUserName()
+//                    )
+//            );
+//        }
+//
+//        return result;
+//    }
 
     public String getTitle() {
         return title;
