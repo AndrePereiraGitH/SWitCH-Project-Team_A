@@ -2,10 +2,14 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
-import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
@@ -39,9 +43,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     }
 
     /**
-     * Returns an immutable copy of all {@link PublicationSample} instances currently held in the repository.
-     *
-     * @return an unmodifiable list of all publication samples; never {@code null}
+     * {@inheritDoc}
      */
     public List<PublicationSample> getAllPublications() { //getter to obtain list of all publications in the system
         return List.copyOf(allPublicationsInSystem);
@@ -49,15 +51,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
 
     /**
-     * Creates a new PublicationSample and adds it to the repository.
-     *
-     * @param bibliographicalData the bibliographical data of the publication (must not be null)
-     * @param userName the owner of the publication (must not be null)
-     * @param status the publication status (must not be null)
-     * @param edition the edition of the publication (must not be null)
-     * @param condition the condition of the publication (must not be null)
-     * @return the created PublicationSample
-     * @throws IllegalArgumentException if any required argument is null
+     * {@inheritDoc}
      */
     public PublicationSample createAndAdd(BibliographicalData bibliographicalData, User userName, PublicationStatus status, Edition edition, Condition condition) throws InstanceAlreadyExistsException {
 
@@ -77,6 +71,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             throw new IllegalArgumentException("Condition cannot be null");
         }
 
+
         PublicationSample newPublicationSample = _publicationSampleFactory.create(bibliographicalData, userName, status, edition, condition);
 
         allPublicationsInSystem.add(newPublicationSample);
@@ -85,23 +80,14 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     }
 
     /**
-     * Adds a {@link PublicationSample} to the repository.
-     * <p>
-     * <b>Note:</b> This method is intended for testing purposes only
-     * and should not be used in production code.
-     * </p>
-     *
-     * @param publicationSample the publication sample to add; should not be {@code null}
+     * {@inheritDoc}
      */
     public void add(PublicationSample publicationSample){
         allPublicationsInSystem.add(publicationSample);
     }
 
     /**
-     * Checks whether the given {@link PublicationSample} already exists in the repository.
-     *
-     * @param pub the publication sample to look up; must not be {@code null}
-     * @return {@code true} if the repository contains an equal publication sample; {@code false} otherwise
+     * {@inheritDoc}
      */
     public boolean isExistent(PublicationSample pub){
         for(PublicationSample publication: allPublicationsInSystem){
@@ -113,13 +99,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     }
 
     /**
-     * Returns all publication samples in the repository that are <em>not</em> present
-     * in the given library list.
-     *
-     * @param listOfPublicationsInLibrary the publications already owned by the user;
-     *                                    must not be {@code null}
-     * @return an immutable list of publication samples absent from the provided library;
-     *         never {@code null}, but may be empty
+     * {@inheritDoc}
      */
     public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary){
         List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
@@ -136,16 +116,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
 
     /**
-     * Retrieves all {@link PublicationSample} instances that match at least one of the
-     * provided {@link PublicationSampleDTO_US016} criteria.
-     * <p>
-     * Matching is performed across title, authors, language, genres, owner username,
-     * and physical condition. See {@link #matches(PublicationSample, PublicationSampleDTO_US016)}.
-     * </p>
-     *
-     * @param pubsDto the list of DTOs to match against; must not be {@code null} or empty
-     * @return a list of matching {@link PublicationSample} instances; never {@code null}, but may be empty
-     * @throws IllegalArgumentException if {@code pubsDto} is {@code null} or empty
+     * {@inheritDoc}
      */
     public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
 
@@ -192,19 +163,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     }
 
     /**
-     * Returns all publication samples associated with the given list of listings
-     * that correspond to the specified publication.
-     *
-     * <p>This method iterates through each listing in the provided list and inspects
-     * its associated {@link PublicationSample} objects. Only the samples whose
-     * bibliographical data matches the given {@code publication} are included in
-     * the result.</p>
-     *
-     * @param listings the listings whose publication samples should be inspected;
-     *                 must not be {@code null}
-     * @param publication the publication to match against; must not be {@code null}
-     * @return a list of publication samples belonging to the given listings and
-     *         matching the specified publication; never {@code null}, but may be empty
+     * {@inheritDoc}
      */
     public List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication){
 
@@ -227,58 +186,38 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return List.copyOf(pubSamplesList);
     }
 
-    // --------------------------------------- US018 stars ----------------------------------------
+    // --------------------------------------- US018 starts ----------------------------------------
 
     /**
-     * Converts a PublicationSampleDTO_US018 into
-     * its corresponding PublicationSample domain object.
-     *
-     * @param userLibrary the user's library
-     * @param dto the selected publication DTO
-     * @return matching PublicationSample
-     * @throws IllegalArgumentException if not found
+     * {@inheritDoc}
      */
-    public PublicationSample PublicationSampleDtoToDomain(
-            Library userLibrary,
-            PublicationSampleDTO_US018 dto) {
-
-        if (userLibrary == null)
-            throw new IllegalArgumentException("Library cannot be null");
-
-        if (dto == null)
-            throw new IllegalArgumentException("DTO cannot be null");
-
-        for (PublicationSample publication : userLibrary.getAllPublications()) {
-
-            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
-                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
-                    && publication.getOwner().getUserName().equals(dto.getOwnerUsername())) {
-
-                return publication;
-            }
-        }
-
-        throw new IllegalArgumentException("Publication not found in user's library");
-    }
+//    public PublicationSample PublicationSampleDtoToDomain(
+//            Library userLibrary,
+//            PublicationSampleDTO_US018 dto) {
+//
+//        if (userLibrary == null)
+//            throw new IllegalArgumentException("Library cannot be null");
+//
+//        if (dto == null)
+//            throw new IllegalArgumentException("DTO cannot be null");
+//
+//        for (PublicationSample publication : userLibrary.getAllPublications()) {
+//
+//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
+//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
+//                    && publication.getOwner().getUserName().equals(dto.getOwnerUsername())) {
+//
+//                return publication;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("Publication not found in user's library");
+//    }
 
     // ------------------------------------------ ends --------------------------------------------
 
     /**
-     * Retrieves all {@link PublicationSample} items that belong to the given {@link Publisher}
-     * across a collection of {@link Listing} objects.
-     *
-     * <p>This method iterates through each listing and inspects all publication samples
-     * associated with it. A publication sample is included in the result if the publisher
-     * of its edition matches the publisher provided as argument.</p>
-     *
-     * <p>The returned list is immutable, ensuring that callers cannot modify the internal
-     * collection of results.</p>
-     *
-     * @param listings  the list of listings to search through; must not be {@code null}
-     * @param publisher the publisher whose items should be selected; must not be {@code null}
-     * @return an immutable list containing all publication samples whose edition publisher
-     *         matches the specified publisher
-     * @throws NullPointerException if {@code listings} or {@code publisher} is {@code null}
+     * {@inheritDoc}
      */
     public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher){
 

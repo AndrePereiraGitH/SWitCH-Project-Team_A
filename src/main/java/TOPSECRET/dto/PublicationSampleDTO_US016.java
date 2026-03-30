@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 
 import java.util.List;
 import java.util.Locale;

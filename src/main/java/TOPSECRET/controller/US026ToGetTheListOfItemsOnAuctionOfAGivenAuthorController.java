@@ -1,10 +1,10 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.Author;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.repository.IAuthorRepository;
+import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.repository.IAuctionRepository;
 
 import java.util.ArrayList;

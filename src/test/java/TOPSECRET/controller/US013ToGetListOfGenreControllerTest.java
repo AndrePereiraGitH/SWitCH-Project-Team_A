@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.GenreDTO_US013;
 import TOPSECRET.repository.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,10 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Enum.*;
+import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType;
 import org.junit.jupiter.api.Test;

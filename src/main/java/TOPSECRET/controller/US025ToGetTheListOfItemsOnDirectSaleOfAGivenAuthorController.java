@@ -1,8 +1,10 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.repository.IAuthorRepository;
+import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.repository.IListingRepository;
 
 import java.util.List;

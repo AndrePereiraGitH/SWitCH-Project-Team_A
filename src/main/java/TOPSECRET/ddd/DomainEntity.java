@@ -4,5 +4,5 @@ public interface DomainEntity <ID extends DomainID>  {
 
     ID id();
 
-    boolean sameIdentityAs(Object object);
+    boolean sameAs(Object object);
 }

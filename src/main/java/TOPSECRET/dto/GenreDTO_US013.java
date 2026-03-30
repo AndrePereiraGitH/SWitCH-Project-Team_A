@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 
 public class GenreDTO_US013 {
     public final String genreName;

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import TOPSECRET.domain.CollectionOfPublications;
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;

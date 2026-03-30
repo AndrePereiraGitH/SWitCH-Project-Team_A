@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
@@ -127,26 +128,26 @@ public class CollectionOfPublicationsRepositoryMem implements CollectionOfPublic
      * @param publication the publication to add
      * @return true if added successfully, false if any validation fails
      */
-    public boolean addPublicationToCollection(User user,
-                                              Library userLibrary,
-                                              CollectionOfPublications collection,
-                                              PublicationSample publication) {
-
-        if (user == null || userLibrary == null || collection == null || publication == null) {
-            return false;
-        }
-        if (!user.equals(collection.getOwner())) {
-            return false;
-        }
-        if (!user.equals(userLibrary.getUser())) {
-            return false;
-        }
-        if (!userLibrary.containsPublication(publication)) {
-            return false;
-        }
-
-        return collection.addPublication(publication);
-    }
+//    public boolean addPublicationToCollection(User user,
+//                                              Library userLibrary,
+//                                              CollectionOfPublications collection,
+//                                              PublicationSample publication) {
+//
+//        if (user == null || userLibrary == null || collection == null || publication == null) {
+//            return false;
+//        }
+//        if (!user.equals(collection.getOwner())) {
+//            return false;
+//        }
+//        if (!user.equals(userLibrary.getUser())) {
+//            return false;
+//        }
+//        if (!userLibrary.containsPublication(publication)) {
+//            return false;
+//        }
+//
+//        return collection.addPublication(publication);
+//    }
 
     /**
      * Adds a collection directly to the repository — US018.

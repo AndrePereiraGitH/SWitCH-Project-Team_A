@@ -1,16 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Enum.*;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import static java.util.Locale.ENGLISH;
-import static org.junit.jupiter.api.Assertions.*;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 
 /**
  * Unit tests for {@link PublicationSampleDTO_US016}.

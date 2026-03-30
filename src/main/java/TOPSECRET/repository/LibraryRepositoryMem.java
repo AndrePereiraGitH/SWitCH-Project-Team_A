@@ -1,14 +1,14 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.LibraryFactory;
-import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationSample;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.Library.LibraryFactory;
+import TOPSECRET.domain.Library.Library;
+
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,37 +41,33 @@ public class LibraryRepositoryMem implements ILibraryRepository {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Library createAndAdd(String libraryName, User owner) throws InstanceAlreadyExistsException {
+    public Library createAndAdd(String libraryName, UserId userId) throws InstanceAlreadyExistsException {
         if (libraryName == null) {
             throw new IllegalArgumentException("Library name can not be null");
         }
         if (libraryName.isEmpty()) {
             throw new IllegalArgumentException("Library name must have one or more characters");
         }
-        if (owner == null) {
-            throw new IllegalArgumentException("Owner can not be null");
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId can not be null");
         }
-        if (verifyIfUserHasALibrary(owner)) {
+        if (verifyIfUserHasALibrary(userId)) {
             throw new InstanceAlreadyExistsException("The user already has a library");
         }
-        Library newLibrary = _libraryFactory.create(libraryName, owner);
-        _libraries.put(owner.getUserName(), newLibrary);
+        Library newLibrary = _libraryFactory.create(libraryName, userId);
+        _libraries.put(userId.getUsername(), newLibrary);
         return newLibrary;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Library getLibraryOfUser(String username) throws InstanceNotFoundException {
-        if (username == null) {
+
+    public Library getLibraryOfUser(UserId userId) throws InstanceNotFoundException {
+        if (userId == null) {
             throw new NullPointerException("Username cannot be null");
         }
-        if (username.isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be empty");
-        }
-        Library library = _libraries.get(username);
+        Library library = _libraries.get(userId.getUsername());
         if (library == null) {
             throw new InstanceNotFoundException("This user does not have a library");
         }
@@ -81,25 +77,10 @@ public class LibraryRepositoryMem implements ILibraryRepository {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public List<PublicationSample> getAllPublicationsFromUserLibrary(String username) throws InstanceNotFoundException {
-        Library userLibrary = getLibraryOfUser(username);
-        return userLibrary.getAllPublications();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean verifyIfUserHasALibrary(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User can not be null");
+    public boolean verifyIfUserHasALibrary(UserId userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("UserID can not be null");
         }
-        for (Library library : _libraries.values()) {
-            if (library.getUser().equals(user)) {
-                return true;
-            }
-        }
-        return false;
+        return _libraries.containsKey(userId.getUsername());
     }
 }

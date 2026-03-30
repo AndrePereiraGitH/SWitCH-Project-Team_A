@@ -2,9 +2,11 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.repository.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;

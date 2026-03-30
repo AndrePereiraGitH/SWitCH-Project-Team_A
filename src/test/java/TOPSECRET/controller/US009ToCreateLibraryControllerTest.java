@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.repository.ILibraryRepository;
+import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.repository.UserRepositoryMem;
 import org.junit.jupiter.api.Test;
 
@@ -87,8 +88,8 @@ class US009ToCreateLibraryControllerTest {
         String libraryName = "mylib";
         String username = "User1";
 
-        User userDouble = mock(User.class);
-        when(userDouble.getUserName()).thenReturn(username);
+        UserId userDouble = mock(UserId.class);
+        when(userDouble.getUsername()).thenReturn(username);
 
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
         when(userRepositoryMemDouble.exists(username)).thenReturn(true);
@@ -119,7 +120,7 @@ class US009ToCreateLibraryControllerTest {
         //Arrange
         String libraryName = "mylib";
 
-        User userDouble = mock(User.class);
+        UserId userDouble = mock(UserId.class);
 
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
 
@@ -150,8 +151,8 @@ class US009ToCreateLibraryControllerTest {
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
         when(userRepositoryMemDouble.exists(username)).thenReturn(true);
 
-        User userDouble = mock(User.class);
-        when(userDouble.getUserName()).thenReturn(username);
+        UserId userDouble = mock(UserId.class);
+        when(userDouble.getUsername()).thenReturn(username);
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
@@ -180,8 +181,8 @@ class US009ToCreateLibraryControllerTest {
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
         when(userRepositoryMemDouble.exists(username)).thenReturn(false);
 
-        User userDouble = mock(User.class);
-        when(userDouble.getUserName()).thenReturn(username);
+        UserId userDouble = mock(UserId.class);
+        when(userDouble.getUsername()).thenReturn(username);
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
