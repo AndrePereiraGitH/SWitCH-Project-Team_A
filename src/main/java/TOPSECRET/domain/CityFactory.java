@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CityID;
 
 /**
  * Factory responsible for creating {@link City} domain objects.
@@ -29,9 +30,8 @@ public class CityFactory {
      * @throws IllegalArgumentException if any domain constraint is violated
      */
 
-    public City create(Country country, String cityName) {
+    public City create(Country country, String cityName, CityID cityID) {
 
-        return new City(country, cityName);
+        return new City(country, cityName, cityID);
     }
-
 }

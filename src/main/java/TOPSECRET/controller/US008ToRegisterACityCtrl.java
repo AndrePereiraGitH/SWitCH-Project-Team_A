@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.City;
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.repository.CityRepository;
 
 /**
@@ -35,10 +36,10 @@ public class US008ToRegisterACityCtrl {
         this._cityRepository = cityRepository;
     }
 
-    public City registerNewCity(Country country1, String cityName1) {
+    public City registerNewCity(Country country1, String cityName1, CityID cityID1) {
 
 
-        return _cityRepository.createAndAdd(country1, cityName1);
+        return _cityRepository.createAndAdd(country1, cityName1, cityID1);
 
     }
 }
