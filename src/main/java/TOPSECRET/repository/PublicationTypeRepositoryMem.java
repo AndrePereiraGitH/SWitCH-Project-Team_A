@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contract for managing {@link PublicationType} objects.
+ * In-memory implementation of {@link IPublicationTypeRepository}.
  *
  * <p>
- * Defines operations for creating, storing, and retrieving publication types.
- * Ensures validation of input data and prevention of duplicates.
+ * Stores publication types in a local collection.
+ * Responsible for delegating creation to the factory
+ * and enforcing validation rules such as uniqueness.
  * </p>
  */
 public class PublicationTypeRepositoryMem implements IPublicationTypeRepository {
@@ -22,22 +23,16 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
 
 
     /**
-     * Creates a new repository instance.
+     * Creates a new in-memory repository.
      *
-     * @param factory factory used to create PublicationType instances
+     * @param factory factory used to create {@link PublicationType} instances
      */
     public PublicationTypeRepositoryMem(PublicationTypeFactory factory) {
         this._factory = factory;
     }
 
     /**
-     * Creates a new publication type and stores it in the repository.
-     *
-     * @param mediaFormat the media format of the publication type;
-     *                    must not be null or blank
-     * @return the newly created {@link PublicationType} instance
-     * @throws IllegalArgumentException if {@code mediaFormat} is null or blank,
-     *                                  or if the publication type already exists
+     * {@inheritDoc}
      */
     @Override
     public PublicationType create (String mediaFormat) {
@@ -86,11 +81,9 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
     }
 
     /**
-     * Validates if a PublicationType can be added.
-     *
-     * @param pubType publication type to validate
-     * @return true if valid and not duplicated, false otherwise
+     * {@inheritDoc}
      */
+    @Override
     public PublicationType addToList(PublicationType pubType) {
         if (!isValid(pubType)) {
             throw new IllegalArgumentException("Publication type already exists or is null");
@@ -102,22 +95,18 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
 
 
     /**
-     * Returns all stored PublicationTypes.
-     *
-     * @return unmodifiable list of publication types
+     * {@inheritDoc}
      */
+    @Override
     public List<PublicationType> getAllPublicationTypes() {
         return List.copyOf(_publicationTypes);
     }
 
 
     /**
-     * Finds a PublicationType by media format.
-     *
-     * @param mediaFormat publication format
-     * @return matching PublicationType
-     * @throws IllegalArgumentException if input is invalid or not found
+     * {@inheritDoc}
      */
+    @Override
     public PublicationType findByAttributes(String mediaFormat) {
 
         if (mediaFormat == null || mediaFormat.isBlank()) {
