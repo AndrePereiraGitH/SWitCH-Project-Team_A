@@ -35,7 +35,11 @@ class CountryFactoryTest {
      */
     @Test
     void create_validCountry() {
+
+        //Act
         Country country = factory.create("Portugal");
+
+        //Assert
         assertNotNull(country);
     }
 
@@ -44,7 +48,11 @@ class CountryFactoryTest {
      */
     @Test
     void create_returnsCorrectCountryName() {
+
+        //Act
         Country country = factory.create("Portugal");
+
+        //Assert
         assertEquals("Portugal", country.getCountryName());
     }
 
@@ -54,7 +62,11 @@ class CountryFactoryTest {
      */
     @Test
     void create_generatesDeterministicID() {
+
+        //Act
         Country country = factory.create("Portugal");
+
+        //Assert
         assertEquals("PORTUGAL", country.getCountryID().getCountryID());
     }
 
@@ -64,8 +76,12 @@ class CountryFactoryTest {
      */
     @Test
     void create_sameNameGeneratesSameID() {
+
+        //Act
         Country country1 = factory.create("Portugal");
         Country country2 = factory.create("Portugal");
+
+        //Assert
         assertEquals(country1.getCountryID(), country2.getCountryID());
     }
 
@@ -75,8 +91,12 @@ class CountryFactoryTest {
      */
     @Test
     void create_differentNameGeneratesDifferentID() {
+
+        //Act
         Country country1 = factory.create("Portugal");
         Country country2 = factory.create("France");
+
+        //Assert
         assertNotEquals(country1.getCountryID(), country2.getCountryID());
     }
 
@@ -86,6 +106,8 @@ class CountryFactoryTest {
      */
     @Test
     void create_nullCountryName() {
+
+        //Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(null));
     }
@@ -96,6 +118,8 @@ class CountryFactoryTest {
      */
     @Test
     void create_blankCountryName() {
+
+        //Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create("   "));
     }
@@ -106,6 +130,8 @@ class CountryFactoryTest {
      */
     @Test
     void create_invalidCountryName() {
+
+        //Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create("Mordor"));
     }

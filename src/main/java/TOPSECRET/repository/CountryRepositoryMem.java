@@ -28,7 +28,7 @@ import java.util.Optional;
  */
 public class CountryRepositoryMem implements ICountryRepository {
 
-    private final List<Country> registeredCountries = new ArrayList<>();
+    private final List<Country> registeredCountries;
     private final CountryFactory countryFactory;
 
     /**
@@ -43,27 +43,7 @@ public class CountryRepositoryMem implements ICountryRepository {
             throw new IllegalArgumentException("CountryFactory cannot be null");
         }
         this.countryFactory = countryFactory;
-    }
-
-    /**
-     * Checks whether the given {@link Country} is not already registered.
-     * <p>
-     * Duplicate detection is performed by country name (case-insensitive),
-     * since two entries representing the same real-world country should not
-     * coexist, even if they carry different {@link CountryID} values.
-     * </p>
-     *
-     * @param country the {@link Country} to check
-     * @return {@code true} if no country with the same name exists; {@code false} otherwise
-     */
-    private boolean isANewCountry(Country country) {
-        for (Country registered : registeredCountries) {
-            if (registered.getCountryName()
-                    .equalsIgnoreCase(country.getCountryName())) {
-                return false;
-            }
-        }
-        return true;
+        this.registeredCountries = new ArrayList<>();
     }
 
     /**
@@ -114,5 +94,26 @@ public class CountryRepositoryMem implements ICountryRepository {
         return registeredCountries.stream()
                 .filter(c -> c.getCountryID().equals(countryID))
                 .findFirst();
+    }
+
+    /**
+     * Checks whether the given {@link Country} is not already registered.
+     * <p>
+     * Duplicate detection is performed by country name (case-insensitive),
+     * since two entries representing the same real-world country should not
+     * coexist, even if they carry different {@link CountryID} values.
+     * </p>
+     *
+     * @param country the {@link Country} to check
+     * @return {@code true} if no country with the same name exists; {@code false} otherwise
+     */
+    private boolean isANewCountry(Country country) {
+        for (Country registered : registeredCountries) {
+            if (registered.getCountryName()
+                    .equalsIgnoreCase(country.getCountryName())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
