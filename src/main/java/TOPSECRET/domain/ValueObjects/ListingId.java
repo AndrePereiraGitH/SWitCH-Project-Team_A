@@ -29,25 +29,12 @@ public final class ListingId implements DomainID {
      */
     public ListingId(String listingId) {
         if (listingId == null || listingId.isBlank() || listingId.isEmpty())
-            throw new IllegalArgumentException("Valor de parâmetro 'id' não pode ser nulo ou vazio.");
+            throw new IllegalArgumentException("Listing ID cannot be null or empty.");
         else
             this._listingId = listingId;
     }
 
     // --------------------------------------------------------------------------------
-
-    /**
-     * Generates a new {@code ListingId} with a randomly created UUID string.
-     * <p>
-     * This factory method is the preferred way to create new identifiers
-     * for Listing aggregate roots.
-     * </p>
-     *
-     * @return a new {@code ListingId} instance with a unique UUID string
-     */
-    public static ListingId newId() {
-        return new ListingId(UUID.randomUUID().toString());
-    }
 
     /**
      * Returns the underlying UUID string of this identifier.

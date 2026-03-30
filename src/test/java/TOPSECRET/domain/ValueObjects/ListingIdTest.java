@@ -54,16 +54,6 @@ class ListingIdTest {
         assertNotEquals(id1, id2);
     }
 
-    @Test
-    void newIdShouldGenerateDifferentIds() {
-        // Arrange + Act
-        ListingId id1 = ListingId.newId();
-        ListingId id2 = ListingId.newId();
-
-        // Assert
-        assertNotEquals(id1, id2);
-    }
-
     // ========== CONSTRUCTOR VALIDATION TESTS =========
     @Test
     void idShouldReturnTheExactUUIDPassedToConstructor() {

@@ -40,18 +40,6 @@ class AuctionIdTest {
         assertEquals(uuid, auctionId.getId());
     }
 
-    // ========== NEW ID METHOD TESTS ==========
-
-    @Test
-    void newIdShouldGenerateDifferentIds() {
-        // Act
-        AuctionId id1 = AuctionId.newId();
-        AuctionId id2 = AuctionId.newId();
-
-        // Assert
-        assertNotEquals(id1, id2);
-    }
-
     // ========== GET ID METHOD TESTS ==========
 
     @Test

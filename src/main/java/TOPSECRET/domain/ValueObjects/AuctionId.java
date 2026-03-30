@@ -31,19 +31,10 @@ public final class AuctionId implements DomainID {
         if (id != null && !id.isBlank() && !id.isEmpty())
             this.auc_id = id;
         else
-            throw new IllegalArgumentException("Valor de parâmetro 'id' não pode ser nulo ou vazio.");
+            throw new IllegalArgumentException("Auction ID cannot be null or empty.");
     }
 
     // --------------------------------------------------------------------------------
-
-    /**
-     * Generates a new {@code AuctionId} with a randomly created UUID string.
-     *
-     * @return a new {@code AuctionId} instance
-     */
-    public static AuctionId newId() {
-        return new AuctionId(UUID.randomUUID().toString());
-    }
 
     /**
      * Returns the underlying UUID string value of this identifier.
