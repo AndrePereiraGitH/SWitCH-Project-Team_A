@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.User;
-import TOPSECRET.repository.ILibraryRepository;
+import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.repository.UserRepositoryMem;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -53,15 +53,15 @@ public class US009ToCreateLibraryController {
      * </p>
      *
      * @param libraryName the name of the library to create; must not be empty
-     * @param user the user who will own the library; must exist in the system
+     * @param userId the user who will own the library; must exist in the system
      * @return {@code true} if the library was successfully created, {@code false} if the user does not exist
      * @throws InstanceAlreadyExistsException if the user already has a library
      * @throws IllegalArgumentException if the library name is empty or null
      */
 
-    public boolean createAndAddLibrary(String libraryName, User user) throws InstanceAlreadyExistsException {
-        if(isUserExistent(user)){
-            _libraryRepository.createAndAdd(libraryName,user);
+    public boolean createAndAddLibrary(String libraryName, UserId userId) throws InstanceAlreadyExistsException {
+        if(isUserExistent(userId)){
+            _libraryRepository.createAndAdd(libraryName,userId);
             return true;
         }
         return false;
@@ -70,12 +70,12 @@ public class US009ToCreateLibraryController {
     /**
      * Checks whether the specified user exists in the user repository.
      *
-     * @param user the user to check for existence
+     * @param userId the user to check for existence
      * @return {@code true} if the user exists in the repository, {@code false} otherwise
      */
 
-    public boolean isUserExistent(User user){
-        String username = user.getUserName();
+    public boolean isUserExistent(UserId userId){
+        String username = userId.getUsername();
         boolean result = _userRepositoryMem.exists(username);
         return result;
     }

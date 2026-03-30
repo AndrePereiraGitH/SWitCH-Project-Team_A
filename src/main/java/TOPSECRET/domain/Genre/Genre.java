@@ -1,0 +1,88 @@
+package TOPSECRET.domain.Genre;
+
+import java.util.Objects;
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import java.util.UUID;
+
+/**
+ * Represents a literary genre (e.g. "Drama", "Science Fiction").
+ * Stores the genre name and ensures it is never null or blank.
+ */
+public class Genre implements AggregateRoot<GenreID>{
+
+    // --------------------------------- US003 starts ---------------------------------
+
+    private final GenreID _id ;
+    private String _genreType;
+
+    /**
+     * Creates a Genre with the given name.
+     *
+     * @param genreType the genre name; must not be null or blank
+     * @throws IllegalArgumentException if genreType is null or blank
+     */
+    protected Genre(String genreType) {
+        if (genreType == null || genreType.isBlank()) {
+            throw new IllegalArgumentException("Genre type cannot be null or blank");
+        }
+        this._genreType = genreType;
+        this._id = new GenreID(UUID.randomUUID().toString());
+    }
+
+    // --------------------------------- US003 ends ---------------------------------
+    /**
+     * Returns the unique identifier of this Genre.
+     *
+     * @return the GenreID identifying this genre; never null
+     */
+    @Override
+    public GenreID id() {
+        return _id;
+    }
+
+    /**
+     * Determines whether this Genre has the same identity as another object.
+     *
+     * @param object the object to compare identity with
+     * @return true if object is a Genre with an equal GenreID; false otherwise
+     */
+    @Override
+    public boolean sameIdentityAs(Object object) {
+        if (object instanceof Genre other)
+            return _id.equals(other._id);
+        return false;
+    }
+    // --------------------------------- US004 starts ---------------------------------
+    /**
+     * Returns the genre title.
+     * @return Genre title.
+     */
+    public String getGenreType() {
+        return _genreType;
+    }
+
+    /**
+     * Compares two Genre objects based on their title.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Genre)) return false;
+        Genre genre = (Genre) o;
+        return _genreType.equalsIgnoreCase(genre._genreType);
+    }
+
+    /**
+     * Generates hash code based on genre title.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(_genreType.toLowerCase());
+    }
+
+    // --------------------------------- US004 ends ---------------------------------
+
+}
+
+

@@ -1,8 +1,8 @@
 //package TOPSECRET.controller;
 //
 //
-//import TOPSECRET.domain.Author;
-//import TOPSECRET.domain.AuthorFactory;
+//import TOPSECRET.domain.Author.Author;
+//import TOPSECRET.domain.Author.AuthorFactory;
 //import TOPSECRET.domain.Country.Country;
 //import TOPSECRET.domain.Profile;
 //import TOPSECRET.repository.AuthorRepository;

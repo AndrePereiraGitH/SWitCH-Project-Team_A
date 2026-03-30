@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.Genre.Genre;
 
 /**
  * Data Transfer Object (DTO) that carries genre information to the UI — US017.

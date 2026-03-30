@@ -1,12 +1,15 @@
 package TOPSECRET.domain.BibliographicalData;
 
-import TOPSECRET.domain.Author;
-import TOPSECRET.domain.Genre;
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents the literary information of a publication (book, magazine, others).
@@ -24,8 +27,9 @@ import java.util.Objects;
  */
 
 
-public class BibliographicalData {
+public class BibliographicalData implements AggregateRoot<BibliographicalDataID> {
 
+    private final BibliographicalDataID _bibliographicalDataID;
     private final String _title;
     private final List<Author> _authors;
     private final Locale _originalLanguage;
@@ -64,6 +68,7 @@ public class BibliographicalData {
             throw new IllegalArgumentException("Genres list cannot be empty");
         }
 
+        this._bibliographicalDataID = new BibliographicalDataID(UUID.randomUUID().toString());
         this._title = title;
         this._authors = List.copyOf(authors);
         this._originalLanguage = originalLanguage;
@@ -195,6 +200,24 @@ public class BibliographicalData {
                 _genres,
                 _chunksOfText
         );
+    }
+
+    @Override
+    public BibliographicalDataID id() { return _bibliographicalDataID; }
+
+    /**
+     * Determines whether this bibliographical data shares the same identity
+     * as the given object, based solely on {@link BibliographicalDataID}.
+     *
+     * @param o the object to compare against
+     * @return {@code true} if both objects are {@code BibliographicalData} instances
+     *         with equal identifiers; {@code false} otherwise
+     */
+    @Override
+    public boolean sameIdentityAs(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BibliographicalData that = (BibliographicalData) o;
+        return Objects.equals(_bibliographicalDataID, that._bibliographicalDataID);
     }
 
     public record BibliographicalDataDetails(

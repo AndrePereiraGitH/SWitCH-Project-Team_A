@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.repository.IAuthorRepository;
+import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.repository.AuctionRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

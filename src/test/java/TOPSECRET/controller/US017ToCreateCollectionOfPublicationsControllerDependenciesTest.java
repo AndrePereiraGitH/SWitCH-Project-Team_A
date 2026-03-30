@@ -6,6 +6,8 @@ import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Profile;
 import TOPSECRET.dto.GenreDTO_US017;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;

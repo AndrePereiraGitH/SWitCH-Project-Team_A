@@ -1,8 +1,8 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User;
 import org.junit.jupiter.api.Test;
 

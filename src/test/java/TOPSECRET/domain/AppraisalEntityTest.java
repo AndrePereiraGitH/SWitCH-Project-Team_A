@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Genre.Genre;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,0 +1,54 @@
+package TOPSECRET.domain.Genre;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Unit tests for {@link GenreFactory}.
+ * Verifies that the factory correctly creates Genre instances
+ * and throws exceptions for invalid inputs.
+ */
+class GenreFactoryTest {
+
+    private final GenreFactory genreFactory = new GenreFactory(); //Sempre que chamo genreFactory crio um novo objeto
+
+
+    @Test
+    void ensureFactoryCreatesGenreSuccessfully() {
+        // Arrange
+        String genreType = "Ergodic literature";
+
+        // Act
+        Genre genre = genreFactory.create(genreType);
+
+        // Assert
+        assertNotNull(genre);
+    }
+
+
+    @Test
+    void ensureFactoryCreatesGenreWithCorrectType() {
+        // Arrange
+        String genreType = "Ergodic literature";
+
+        // Act
+        Genre genre = genreFactory.create(genreType);
+
+        // Assert
+        assertEquals(genreType, genre.getGenreType());
+    }
+
+    @Test
+    void ensureFactoryThrowsExceptionWithNullGenreType() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(null));
+    }
+
+    @Test
+    void ensureFactoryThrowsExceptionWithBlankGenreType() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create("   "));
+    }
+
+}

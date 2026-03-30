@@ -1,14 +1,12 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.CollectionOfPublications;
-import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationSample;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
-import TOPSECRET.dto.PublicationSampleDTO_US018;
 import TOPSECRET.repository.CollectionOfPublicationsRepository;
-import TOPSECRET.repository.ILibraryRepository;
-import TOPSECRET.repository.IPublicationSampleRepository;
+import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -109,26 +107,26 @@ public class US018ToAddPublicationToAListOfMineController {
      * @throws IllegalArgumentException if selectedCollectionDTO is null
      * @throws InstanceNotFoundException if the user's library does not exist
      */
-    public List<PublicationSampleDTO_US018> getPublicationsForCollection(
-            CollectionOfPublicationsDTO_US018 selectedCollectionDTO) throws InstanceNotFoundException {
-
-        if (selectedCollectionDTO == null) {
-            throw new IllegalArgumentException("selectedCollectionDTO cannot be null");
-        }
-
-        CollectionOfPublications userCollectionSelected =
-                collectionRepo.collectionDTOToDomain(selectedCollectionDTO);
-
-        Library userLibrary = libraryRepo.getLibraryOfUser(user.getUserName());
-
-        List<PublicationSample> allUserPublications = userLibrary.getAllPublications();
-
-        List<PublicationSample> publicationsInCollection = userCollectionSelected.getPublications();
-
-        List<PublicationSample> publicationAvailable = diff(allUserPublications, publicationsInCollection);
-
-        return PublicationSampleDTO_US018.publicationToDTO(publicationAvailable);
-    }
+//    public List<PublicationSampleDTO_US018> getPublicationsForCollection(
+//            CollectionOfPublicationsDTO_US018 selectedCollectionDTO) throws InstanceNotFoundException {
+//
+//        if (selectedCollectionDTO == null) {
+//            throw new IllegalArgumentException("selectedCollectionDTO cannot be null");
+//        }
+//
+//        CollectionOfPublications userCollectionSelected =
+//                collectionRepo.collectionDTOToDomain(selectedCollectionDTO);
+//
+//        Library userLibrary = libraryRepo.getLibraryOfUser(user.getUserName());
+//
+//        List<PublicationSample> allUserPublications = userLibrary.getAllPublications();
+//
+//        List<PublicationSample> publicationsInCollection = userCollectionSelected.getPublications();
+//
+//        List<PublicationSample> publicationAvailable = diff(allUserPublications, publicationsInCollection);
+//
+//        return PublicationSampleDTO_US018.publicationToDTO(publicationAvailable);
+//    }
 
     /**
      * Adds one or more selected publications to the selected collection.
@@ -142,42 +140,42 @@ public class US018ToAddPublicationToAListOfMineController {
      * @throws IllegalArgumentException if inputs are null or empty
      * @throws InstanceNotFoundException if the user's library does not exist
      */
-    public boolean addPublicationToCollection(
-            CollectionOfPublicationsDTO_US018 collectionSelectedDTO,
-            List<PublicationSampleDTO_US018> selectedPublicationDTO) throws InstanceNotFoundException {
-
-        if (collectionSelectedDTO == null) {
-            throw new IllegalArgumentException("collectionSelectedDTO cannot be null");
-        }
-        if (selectedPublicationDTO == null || selectedPublicationDTO.isEmpty()) {
-            throw new IllegalArgumentException("selectedPublicationDTO cannot be null or empty");
-        }
-
-        Library userLibrary = libraryRepo.getLibraryOfUser(user.getUserName());
-
-        CollectionOfPublications userCollection =
-                collectionRepo.collectionDTOToDomain(collectionSelectedDTO);
-
-        boolean success = true;
-
-        for (PublicationSampleDTO_US018 pubDto : selectedPublicationDTO) {
-
-            PublicationSample publicationSample =
-                    publicationSampleRepo.PublicationSampleDtoToDomain(userLibrary, pubDto);
-
-            boolean added = collectionRepo.addPublicationToCollection(
-                    user,
-                    userLibrary,
-                    userCollection,
-                    publicationSample
-            );
-
-            if (!added) {
-                success = false;
-            }
-        }
-        return success;
-    }
+//    public boolean addPublicationToCollection(
+//            CollectionOfPublicationsDTO_US018 collectionSelectedDTO,
+//            List<PublicationSampleDTO_US018> selectedPublicationDTO) throws InstanceNotFoundException {
+//
+//        if (collectionSelectedDTO == null) {
+//            throw new IllegalArgumentException("collectionSelectedDTO cannot be null");
+//        }
+//        if (selectedPublicationDTO == null || selectedPublicationDTO.isEmpty()) {
+//            throw new IllegalArgumentException("selectedPublicationDTO cannot be null or empty");
+//        }
+//
+//        Library userLibrary = libraryRepo.getLibraryOfUser(user.getUserName());
+//
+//        CollectionOfPublications userCollection =
+//                collectionRepo.collectionDTOToDomain(collectionSelectedDTO);
+//
+//        boolean success = true;
+//
+//        for (PublicationSampleDTO_US018 pubDto : selectedPublicationDTO) {
+//
+//            PublicationSample publicationSample =
+//                    publicationSampleRepo.PublicationSampleDtoToDomain(userLibrary, pubDto);
+//
+//            boolean added = collectionRepo.addPublicationToCollection(
+//                    user,
+//                    userLibrary,
+//                    userCollection,
+//                    publicationSample
+//            );
+//
+//            if (!added) {
+//                success = false;
+//            }
+//        }
+//        return success;
+//    }
 
     /**
      * Computes the difference between two publication lists.
