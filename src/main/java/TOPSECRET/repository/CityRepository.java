@@ -58,8 +58,8 @@ public class CityRepository {
      * @return the newly created {@link City}
      * @throws IllegalArgumentException if the city already exists or if any domain constraint is violated
      */
-    public City createAndAdd(Country _country, String _cityName, CityID _cityID) {
-        City newCity = _cityFactory.create(_country, _cityName,  _cityID);
+    public City createAndAdd(Country _country, String _cityName) {
+        City newCity = _cityFactory.create(_country, _cityName);
 
 
         if (!existsByName(newCity)) {

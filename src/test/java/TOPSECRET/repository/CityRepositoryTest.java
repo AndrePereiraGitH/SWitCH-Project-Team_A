@@ -35,7 +35,6 @@ class CityRepositoryTest {
 
     // Mocked city returned by factory
     private final City anyCity = mock(City.class);
-    private final CityID anyCityID = mock(CityID.class);
 
     @Test
     void shouldCreateAndAddCity() {
@@ -43,10 +42,10 @@ class CityRepositoryTest {
         // Arrange
         CityRepository repository = new CityRepository(cityFactory);
 
-        when(cityFactory.create(anyCountry, anyName, anyCityID)).thenReturn(anyCity);
+        when(cityFactory.create(anyCountry, anyName)).thenReturn(anyCity);
 
         // Act
-        City result = repository.createAndAdd(anyCountry, anyName, anyCityID);
+        City result = repository.createAndAdd(anyCountry, anyName);
 
         // Assert
         assertEquals(anyCity, result);
@@ -58,13 +57,13 @@ class CityRepositoryTest {
         // Arrange
         CityRepository repository = new CityRepository(cityFactory);
 
-        when(cityFactory.create(anyCountry, anyName, anyCityID)).thenReturn(anyCity);
+        when(cityFactory.create(anyCountry, anyName)).thenReturn(anyCity);
 
-        repository.createAndAdd(anyCountry, anyName, anyCityID);
+        repository.createAndAdd(anyCountry, anyName);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(anyCountry, anyName, anyCityID));
+                () -> repository.createAndAdd(anyCountry, anyName));
     }
 
     @Test
@@ -73,12 +72,12 @@ class CityRepositoryTest {
         // Arrange
         CityRepository repository = new CityRepository(cityFactory);
 
-        when(cityFactory.create(null, anyName, anyCityID))
+        when(cityFactory.create(null, anyName))
                 .thenThrow(new IllegalArgumentException());
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(null, anyName, anyCityID));
+                () -> repository.createAndAdd(null, anyName));
     }
 
     @Test
@@ -87,12 +86,12 @@ class CityRepositoryTest {
         // Arrange
         CityRepository repository = new CityRepository(cityFactory);
 
-        when(cityFactory.create(anyCountry, anyName, anyCityID)).thenReturn(anyCity);
+        when(cityFactory.create(anyCountry, anyName)).thenReturn(anyCity);
 
-        repository.createAndAdd(anyCountry, anyName, anyCityID);
+        repository.createAndAdd(anyCountry, anyName);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(anyCountry, anyName, anyCityID));
+                () -> repository.createAndAdd(anyCountry, anyName));
     }
 }

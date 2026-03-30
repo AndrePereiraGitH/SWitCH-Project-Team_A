@@ -30,8 +30,8 @@ public class CityFactory {
      * @throws IllegalArgumentException if any domain constraint is violated
      */
 
-    public City create(Country country, String cityName, CityID cityID) {
+    public City create(Country country, String cityName) {
 
-        return new City(country, cityName, cityID);
+        return new City(country, cityName);
     }
 }

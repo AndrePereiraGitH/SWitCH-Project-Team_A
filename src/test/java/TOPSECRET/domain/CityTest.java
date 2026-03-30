@@ -31,10 +31,9 @@ class CityTest {
         // Arrange
         Country country = mock(Country.class);
         String cityName = "Porto";
-        CityID cityID = mock(CityID.class);
 
         // Act
-        City city = new City(country, cityName, cityID);
+        City city = new City(country, cityName);
 
         // Assert
         assertNotNull(city);
@@ -45,11 +44,10 @@ class CityTest {
 
         // Arrange
         String cityName = "Lisbon";
-        CityID cityID = mock(CityID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City(null, cityName, cityID));
+                () -> new City(null, cityName));
     }
 
     @Test
@@ -57,11 +55,10 @@ class CityTest {
 
         // Arrange
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City(country, null, cityID));
+                () -> new City(country, null));
     }
 
     @Test
@@ -69,11 +66,10 @@ class CityTest {
 
         // Arrange
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City(country, "", cityID));
+                () -> new City(country, ""));
     }
 
     @Test
@@ -81,8 +77,7 @@ class CityTest {
 
         // Arrange
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
-        City city = new City(country, "Florence", cityID);
+        City city = new City(country, "Florence");
 
         // Act
         String result = city.getCityName();
@@ -96,8 +91,7 @@ class CityTest {
 
         // Arrange
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
-        City city = new City(country, "Oslo", cityID);
+        City city = new City(country, "Oslo");
 
         // Act
         Country result = city.getCityCountry();
@@ -110,10 +104,9 @@ class CityTest {
     void equals_shouldReturnTrueForEqualCities() {
 
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
-        City cityA = new City(country, "Helsinki", cityID);
-        City cityB = new City(country, "Helsinki", cityID);
+        City cityA = new City(country, "Helsinki");
+        City cityB = new City(country, "Helsinki");
 
         assertEquals(cityA, cityB);
     }
@@ -122,10 +115,9 @@ class CityTest {
     void equals_shouldReturnFalseWhenCityNamesDiffer() {
 
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
-        City cityA = new City(country, "Lisbon", cityID);
-        City cityB = new City(country, "Porto", cityID);
+        City cityA = new City(country, "Lisbon");
+        City cityB = new City(country, "Porto");
 
         assertNotEquals(cityA, cityB);
     }
@@ -134,10 +126,9 @@ class CityTest {
     void hashCode_shouldBeEqualForEqualCities() {
 
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
-        City cityA = new City(country, "Portland", cityID);
-        City cityB = new City(country, "Portland", cityID);
+        City cityA = new City(country, "Portland");
+        City cityB = new City(country, "Portland");
 
         assertEquals(cityA.hashCode(), cityB.hashCode());
     }
@@ -145,10 +136,9 @@ class CityTest {
     @Test
     void differentCitiesShouldHaveDifferentHashCodes() {
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
-        City city1 = new City(country, "Lisbon", cityID);
-        City city2 = new City(country, "Porto",  cityID);
+        City city1 = new City(country, "Lisbon");
+        City city2 = new City(country, "Porto");
 
         assertNotEquals(city1.hashCode(), city2.hashCode());
     }
@@ -158,9 +148,8 @@ class CityTest {
 
         //Arrange
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
-        City city = new City(country, "Lisbon", cityID);
+        City city = new City(country, "Lisbon");
 
         //Assert
         assertFalse(city.equals(null));
@@ -171,9 +160,8 @@ class CityTest {
 
         //Arrange
         Country country = mock(Country.class);
-        CityID cityID = mock(CityID.class);
 
-        City city = new City(country, "Lisbon", cityID);
+        City city = new City(country, "Lisbon");
 
         //Assert
         assertFalse(city.equals("NotACity"));

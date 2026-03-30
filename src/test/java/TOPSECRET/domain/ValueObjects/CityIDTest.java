@@ -16,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class CityIDTest {
 
-    /**
-     * Tests if a CityID is successfully created
-     * when a valid non-null and non-blank string is provided.
-     */
     @Test
     void shouldCreateValidID() {
         // Arrange
@@ -29,10 +25,6 @@ class CityIDTest {
         assertEquals("C1", id.getCityID());
     }
 
-    /**
-     * Tests if the constructor throws IllegalArgumentException
-     * when the provided ID is null.
-     */
     @Test
     void shouldThrowExceptionWhenIDIsNull() {
         // Act & Assert
@@ -41,10 +33,6 @@ class CityIDTest {
         });
     }
 
-    /**
-     * Tests if the constructor throws IllegalArgumentException
-     * when the provided ID is blank.
-     */
     @Test
     void shouldThrowExceptionWhenIDIsBlank() {
         // Act & Assert
@@ -53,10 +41,6 @@ class CityIDTest {
         });
     }
 
-    /**
-     * Tests if two CityID objects are considered equal
-     * when they contain the same ID value.
-     */
     @Test
     void shouldBeEqualWhenIDsAreSame() {
         // Arrange
@@ -67,10 +51,6 @@ class CityIDTest {
         assertEquals(id1, id2);
     }
 
-    /**
-     * Tests if two CityID objects are not equal
-     * when they contain different ID values.
-     */
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
         // Arrange
@@ -81,9 +61,6 @@ class CityIDTest {
         assertNotEquals(id1, id2);
     }
 
-    /**
-     * Tests if a CityID object is not equal to null.
-     */
     @Test
     void shouldNotBeEqualToNull() {
         // Arrange
@@ -93,10 +70,6 @@ class CityIDTest {
         assertNotEquals(null, id);
     }
 
-    /**
-     * Tests if a CityID object is not equal
-     * to an object of a different class.
-     */
     @Test
     void shouldNotBeEqualToDifferentClass() {
         // Arrange
@@ -107,9 +80,6 @@ class CityIDTest {
         assertNotEquals(other, id);
     }
 
-    /**
-     * Tests if the getCityID() method returns the correct ID value.
-     */
     @Test
     void getterShouldReturnCorrectID() {
         // Arrange
@@ -119,10 +89,6 @@ class CityIDTest {
         assertEquals("C1", id.getCityID());
     }
 
-    /**
-     * Tests if two equal CityID objects
-     * produce the same hash code.
-     */
     @Test
     void hashCodeShouldBeEqualForSameID() {
         // Arrange
