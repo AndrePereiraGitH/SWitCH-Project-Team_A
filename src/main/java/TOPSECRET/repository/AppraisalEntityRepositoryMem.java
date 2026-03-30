@@ -5,6 +5,7 @@ import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
@@ -33,7 +34,7 @@ import java.util.List;
 public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository {
 
     private List<AppraisalEntity> _appraisalEntities;
-    private GenreRepositoryMem _genreRepository;
+    private IGenreRepository _genreRepository;
     private IPublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityFactory _appraisalEntityFactory;
 
@@ -47,7 +48,7 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
      * @throws IllegalArgumentException if any dependency is null
      */
     public AppraisalEntityRepositoryMem (
-            GenreRepositoryMem genreRepository,
+            IGenreRepository genreRepository,
             IPublicationTypeRepository publicationTypeRepository,
             AppraisalEntityFactory appraisalEntityFactory) {
 
@@ -66,19 +67,25 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
     }
 
     /**
-     * Creates and stores a new AppraisalEntity.
+     * Creates a new AppraisalEntity and stores it in the repository.
      *
-     * <p>
-     * Converts DTOs into domain objects, validates inputs,
-     * and ensures no duplicate entity exists.
+             * <p>
+     * Converts provided DTOs into domain objects and ensures that
+     * all required data is valid before creation.
      * </p>
-     *
-     * @param name entity name
-     * @param contact contact information
-     * @param selectedGenresDTO list of selected genres (DTO)
-     * @param selectedPublicationTypesDTO list of selected publication types (DTO)
-     * @return the created AppraisalEntity
-     * @throws IllegalArgumentException if inputs are invalid or entity already exists
+            *
+            * @param name the name of the appraisal entity;
+     *             must not be null or blank
+     * @param contact the contact information of the entity;
+     *                must not be null
+            * @param selectedGenresDTO list of selected genres (DTO);
+     *                          must not be null or empty
+     * @param selectedPublicationTypesDTO list of selected publication types (DTO);
+     *                                    must not be null or empty
+     * @return the newly created {@link AppraisalEntity}
+     * @throws IllegalArgumentException if any argument is invalid,
+     *                                  if referenced domain objects do not exist,
+     *                                  or if an entity with the same name and contact already exists
      */
     public AppraisalEntity createAndAdd(String name,
             Contact contact,

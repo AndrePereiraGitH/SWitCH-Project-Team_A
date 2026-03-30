@@ -6,6 +6,7 @@ import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
@@ -36,7 +37,7 @@ class AppraisalEntityRepositoryMemTest {
     void shouldCreateAndAddAppraisalEntitySuccessfully() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
@@ -82,7 +83,7 @@ class AppraisalEntityRepositoryMemTest {
     void shouldThrowExceptionWhenEntityAlreadyExists() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
@@ -129,7 +130,7 @@ class AppraisalEntityRepositoryMemTest {
     void shouldThrowExceptionWhenGenresAreNull() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
@@ -154,7 +155,7 @@ class AppraisalEntityRepositoryMemTest {
     void shouldThrowExceptionWhenPublicationTypesAreEmpty() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 

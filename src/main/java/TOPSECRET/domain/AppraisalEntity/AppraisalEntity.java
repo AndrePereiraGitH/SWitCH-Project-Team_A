@@ -71,7 +71,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
             throw new IllegalArgumentException("At least one Genre is required.");
         }
 
-        this._apEnId = AppraisalEntityId.generate();
+        this._apEnId = new AppraisalEntityId(UUID.randomUUID().toString());
         this._name = name;
         this._contact = contact;
         this._publicationTypes = publicationTypes;
@@ -114,10 +114,10 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     public String toString () {
 
         return "AppraisalEntity{" +
-                "identidade:" + _apEnId +
+                "identity:" + _apEnId +
                 "name:" + _name + '\'' +
                 ", contact:" + _contact +
-                ", publicationType:" + _publicationTypes +
+                ", publication type:" + _publicationTypes +
                 ", genre:" + _genres +
                 '}';
     }
@@ -172,19 +172,16 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
      */
     @Override
     public boolean sameAs(Object obj) {
-        if (obj instanceof AppraisalEntity){
-            AppraisalEntity newObj = (AppraisalEntity) obj;
-
-            if (
-                    this._name.equals(newObj._name) &&
-                    this._contact.equals(newObj._contact) &&
-                    this._genres.equals(newObj._genres) &&
-                    this._publicationTypes.equals(newObj._publicationTypes)
-            )
-                return true;
-
+        if (!(obj instanceof AppraisalEntity)) {
+            return false;
         }
-        return false;
+
+        AppraisalEntity newObj = (AppraisalEntity) obj;
+
+        return this._name.equals(newObj._name) &&
+                this._contact.equals(newObj._contact) &&
+                this._genres.equals(newObj._genres) &&
+                this._publicationTypes.equals(newObj._publicationTypes);
     }
 }
 

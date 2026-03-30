@@ -31,16 +31,6 @@ public class AppraisalEntityId implements DomainID {
 
 
     /**
-     * Generates a new AppraisalEntityId with a random UUID.
-     *
-     * @return a new AppraisalEntityId
-     */
-    public static AppraisalEntityId generate() {
-        return new AppraisalEntityId(UUID.randomUUID().toString());
-    }
-
-
-    /**
      * Compares this object with another for equality.
      *
      * @param object the object to compare
@@ -75,8 +65,7 @@ public class AppraisalEntityId implements DomainID {
      *
      * @return id as string
      */
-    @Override
-    public String toString() {
+    public String getId() {
         return ap_id;
     }
 }

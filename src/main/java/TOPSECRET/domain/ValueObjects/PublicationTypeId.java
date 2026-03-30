@@ -32,16 +32,6 @@ public class PublicationTypeId implements DomainID {
 
 
     /**
-     * Generates a new PublicationTypeId with a random UUID.
-     *
-     * @return a new PublicationTypeId
-     */
-    public static PublicationTypeId generate() {
-        return new PublicationTypeId(UUID.randomUUID().toString());
-    }
-
-
-    /**
      * Compares this object with another for equality.
      *
      * @param object the object to compare
@@ -75,8 +65,7 @@ public class PublicationTypeId implements DomainID {
      *
      * @return id as string
      */
-    @Override
-    public String toString() {
+    public String getId() {
         return pbType_id;
     }
 

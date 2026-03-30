@@ -5,6 +5,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Domain entity representing a Publication Type.
@@ -43,7 +44,7 @@ public class PublicationType implements AggregateRoot<PublicationTypeId>  {
             throw new IllegalArgumentException("Media format can't be null or empty.");
         }
 
-        this.pub_id = PublicationTypeId.generate();
+        this.pub_id = new PublicationTypeId(UUID.randomUUID().toString());
         this._mediaFormat = mediaFormat;
     }
 

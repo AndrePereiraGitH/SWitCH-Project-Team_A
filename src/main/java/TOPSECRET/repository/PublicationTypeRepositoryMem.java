@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * In-memory repository for managing {@link PublicationType} instances.
+ * Contract for managing {@link PublicationType} objects.
  *
  * <p>
- * Responsible for creating, storing, and retrieving publication types.
- * Ensures that no duplicate media formats are stored.
+ * Defines operations for creating, storing, and retrieving publication types.
+ * Ensures validation of input data and prevention of duplicates.
  * </p>
  */
 public class PublicationTypeRepositoryMem implements IPublicationTypeRepository {
@@ -31,11 +31,13 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
     }
 
     /**
-     * Creates and stores a new PublicationType.
+     * Creates a new publication type and stores it in the repository.
      *
-     * @param mediaFormat publication format
-     * @return created PublicationType
-     * @throws IllegalArgumentException if media format is invalid or already exists
+     * @param mediaFormat the media format of the publication type;
+     *                    must not be null or blank
+     * @return the newly created {@link PublicationType} instance
+     * @throws IllegalArgumentException if {@code mediaFormat} is null or blank,
+     *                                  or if the publication type already exists
      */
     @Override
     public PublicationType create (String mediaFormat) {

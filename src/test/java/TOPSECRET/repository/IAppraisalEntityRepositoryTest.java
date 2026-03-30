@@ -93,7 +93,7 @@ class IAppraisalEntityRepositoryTest {
 
         // Arrange
         GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         IAppraisalEntityRepository sut =

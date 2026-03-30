@@ -5,6 +5,9 @@ import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -148,6 +151,52 @@ class PublicationTypeRepositoryMemTest {
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findByAttributes(null));
+    }
+
+    @Test
+    void shouldReturnAllPublicationTypes() {
+
+        // ARRANGE
+        PublicationType pt = mock(PublicationType.class);
+        when(pt.getMediaFormat()).thenReturn("Book");
+
+        repo.addToList(pt);
+
+        // ACT
+        List<PublicationType> result = repo.getAllPublicationTypes();
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertEquals(pt, result.get(0));
+    }
+
+    @Test
+    void shouldFindPublicationTypeIgnoringCaseAndSpaces() {
+
+        // ARRANGE
+        PublicationType pt = mock(PublicationType.class);
+        when(pt.getMediaFormat()).thenReturn("   Book   ");
+
+        repo.addToList(pt);
+
+        // ACT
+        PublicationType result = repo.findByAttributes("book");
+
+        // ASSERT
+        assertEquals(pt, result);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMediaFormatIsBlank() {
+
+        // ACT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.findByAttributes("   ")
+        );
+
+        // ASSERT
+        assertEquals("MediaFormat can't be null.", exception.getMessage());
     }
 
 }
