@@ -27,6 +27,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
 
     // one shared factory instance — the factory has no state, so it is safe to reuse across tests
     private final CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
+    private final GenreFactory genreFactory = new GenreFactory();
 
     // helper — builds a valid User so we don't repeat this setup in every test
     private User createValidUser() {
@@ -50,7 +51,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     @Test
     void shouldCreateCollectionSuccessfully() {
         // Arrange
-        Genre genre = new GenreFactory().create("Fiction");
+        Genre genre = genreFactory.create("Fiction");
         User user = createValidUser();
 
         // Act — factory creates the collection by calling the domain constructor
@@ -72,7 +73,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     @Test
     void shouldThrowWhenNameIsNull() {
         // Arrange
-        Genre genre = new GenreFactory().create("Fiction");
+        Genre genre = genreFactory.create("Fiction");
         User user = createValidUser();
 
         // Act & Assert — null name must throw (caught by the constructor)
@@ -97,7 +98,7 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     @Test
     void shouldThrowWhenUserIsNull() {
         // Arrange
-        Genre genre = new GenreFactory().create("Fiction");
+        Genre genre = genreFactory.create("Fiction");
 
         // Act & Assert — null user must throw (caught by the constructor)
         assertThrows(IllegalArgumentException.class,

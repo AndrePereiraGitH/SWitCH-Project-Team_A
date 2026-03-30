@@ -13,40 +13,68 @@ class GenreIDTest {
     // A valid ID must be accepted and stored correctly
     @Test
     void shouldCreateGenreIDWithValidValue() {
-        GenreID genreID = new GenreID("1");
+        //Arrange
+        String id = "1";
 
+        //Act
+        GenreID genreID = new GenreID(id);
+
+        //Assert
         assertNotNull(genreID);
     }
 
     // getID() must return the value that was passed in
     @Test
     void shouldReturnCorrectID() {
-        GenreID genreID = new GenreID("genre-123");
+        //Arrange
+        String id = "genre-123";
 
-        assertEquals("genre-123", genreID.getID());
+        //Act
+        GenreID genreID = new GenreID(id);
+
+        //Assert
+        assertEquals(id, genreID.getID());
     }
 
     // Null must be rejected
     @Test
     void shouldThrowWhenIDIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> new GenreID(null));
+
+        //Arrange
+        String id = null;
+
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new GenreID(id));
     }
 
     // Blank string must be rejected
     @Test
     void shouldThrowWhenIDIsBlank() {
-        assertThrows(IllegalArgumentException.class, () -> new GenreID("   "));
+
+        //Arrange
+        String id = "     ";
+
+        //Act & Asser
+        assertThrows(IllegalArgumentException.class, () -> new GenreID(id));
     }
 
     // Empty string must be rejected
     @Test
     void shouldThrowWhenIDIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> new GenreID(""));
+        //Arrange
+        String id = "";
+
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new GenreID(id));
     }
 
     // Two GenreIDs with the same value must be equal
     @Test
     void shouldBeEqualWhenSameValue() {
+        //Arrange
+        String id = "1";
+
+        //Act
         GenreID id1 = new GenreID("1");
         GenreID id2 = new GenreID("1");
 
@@ -56,9 +84,15 @@ class GenreIDTest {
     // Two GenreIDs with different values must not be equal
     @Test
     void shouldNotBeEqualWhenDifferentValue() {
-        GenreID id1 = new GenreID("1");
-        GenreID id2 = new GenreID("2");
+        //Arrange
+        String firstId = "1";
+        String secondId = "2";
 
+        //Act
+        GenreID id1 = new GenreID(firstId);
+        GenreID id2 = new GenreID(secondId);
+
+        //Assert
         assertNotEquals(id1, id2);
     }
 
