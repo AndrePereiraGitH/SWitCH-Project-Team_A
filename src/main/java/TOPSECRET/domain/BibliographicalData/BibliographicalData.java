@@ -214,7 +214,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      *         with equal identifiers; {@code false} otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object o) {
+    public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         BibliographicalData that = (BibliographicalData) o;
         return Objects.equals(_bibliographicalDataID, that._bibliographicalDataID);

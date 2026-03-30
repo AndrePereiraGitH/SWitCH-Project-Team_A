@@ -3,7 +3,6 @@ package TOPSECRET.domain.Library;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -122,36 +121,36 @@ class LibraryTest {
     }
 
     // -------------------------------------------------------------------------
-    // sameIdentityAs()
+    // sameAs()
     // -------------------------------------------------------------------------
 
     @Test
-    void givenSameInstanceWhenSameIdentityAsThenReturnsTrue() {
+    void givenSameInstanceWhenSameAsThenReturnsTrue() {
         UserId userDouble = createMockUser("Nome1");
         Library library = new Library("My Library", userDouble);
-        assertTrue(library.sameIdentityAs(library));
+        assertTrue(library.sameAs(library));
     }
 
     @Test
-    void givenTwoLibrariesWithDifferentIdsWhenSameIdentityAsThenReturnsFalse() {
+    void givenTwoLibrariesWithDifferentIdsWhenSameAsThenReturnsFalse() {
         UserId userDouble = createMockUser("Nome1");
         Library first  = new Library("Library A", userDouble);
         Library second = new Library("Library B", userDouble);
-        assertFalse(first.sameIdentityAs(second));
+        assertFalse(first.sameAs(second));
     }
 
     @Test
-    void givenNullWhenSameIdentityAsThenReturnsFalse() {
+    void givenNullWhenSameAsThenReturnsFalse() {
         UserId userDouble = createMockUser("Nome1");
         Library library = new Library("My Library", userDouble);
-        assertFalse(library.sameIdentityAs(null));
+        assertFalse(library.sameAs(null));
     }
 
     @Test
-    void givenDifferentTypeWhenSameIdentityAsThenReturnsFalse() {
+    void givenDifferentTypeWhenSameAsThenReturnsFalse() {
         UserId userDouble = createMockUser("Nome1");
         Library library = new Library("My Library", userDouble);
-        assertFalse(library.sameIdentityAs(new Object()));
+        assertFalse(library.sameAs(new Object()));
     }
 
     // -------------------------------------------------------------------------

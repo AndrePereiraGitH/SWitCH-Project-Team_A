@@ -149,7 +149,7 @@ public class Author implements AggregateRoot<AuthorId> {
      *         name, country, date of birth, and biography; {@code false} otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object object) {
+    public boolean sameAs(Object object) {
 
         if (object instanceof Author) {
             Author oAuthor = (Author) object;

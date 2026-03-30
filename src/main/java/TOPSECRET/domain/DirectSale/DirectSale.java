@@ -106,7 +106,7 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
      *         with equal identifiers; {@code false} otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object o) {
+    public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         DirectSale that = (DirectSale) o;
         return Objects.equals(_directSaleID, that._directSaleID);
