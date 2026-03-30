@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.City;
 import TOPSECRET.domain.CityFactory;
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CityID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +58,8 @@ public class CityRepository {
      * @return the newly created {@link City}
      * @throws IllegalArgumentException if the city already exists or if any domain constraint is violated
      */
-    public City createAndAdd(Country _country, String _cityName) {
-        City newCity = _cityFactory.create(_country, _cityName);
+    public City createAndAdd(Country _country, String _cityName, CityID _cityID) {
+        City newCity = _cityFactory.create(_country, _cityName,  _cityID);
 
 
         if (!existsByName(newCity)) {

@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
+import TOPSECRET.domain.ValueObjects.CityID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,13 +28,13 @@ class CityFactoryTest {
     private final Country anyCountry = countryFactory.create("Portugal");
 
     private final String anyCityName = "Braga";
-
+    private final CityID anyCityID = new CityID("12345");
 
     @Test
     void shouldCreateValidCity() {
 
         //Arrange
-        City city = anyFactory.create(anyCountry, anyCityName);
+        City city = anyFactory.create(anyCountry, anyCityName,  anyCityID);
 
         //Assert
         assertNotNull(city);
@@ -46,7 +47,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(null, anyCityName));
+                () -> anyFactory.create(null, anyCityName,  anyCityID));
     }
 
     @Test
@@ -54,7 +55,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountry, null));
+                () -> anyFactory.create(anyCountry, null,  anyCityID));
     }
 
     @Test
@@ -62,6 +63,6 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountry, ""));
+                () -> anyFactory.create(anyCountry, "", anyCityID));
     }
 }

@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
+import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.repository.CityRepository;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,8 @@ class CityFactoryDependenciesTest {
     CountryFactory countryFactory = new CountryFactory();
     Country anyCountry = countryFactory.create("Estonia");
     String anyCityName = "Talin";
-    City anyCity = new City(anyCountry, anyCityName);
+    CityID anyCityID = new CityID(anyCityName);
+    City anyCity = new City(anyCountry, anyCityName, anyCityID);
 
     CityFactory anyCityFactory = new CityFactory();
     CityRepository anyCityRepo = new CityRepository(anyCityFactory);
@@ -37,7 +39,7 @@ class CityFactoryDependenciesTest {
     void createValidCity() {
 
         //Act
-        City createdCity = anyCityFactory.create(anyCountry, anyCityName);
+        City createdCity = anyCityFactory.create(anyCountry, anyCityName, anyCityID);
 
         //Assert
         assertNotNull(anyCity);
@@ -52,7 +54,7 @@ class CityFactoryDependenciesTest {
 
         //Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyCityFactory.create(null, "Braga"));
+                () -> anyCityFactory.create(null, "Braga", new CityID("12345")));
     }
 
 
@@ -64,6 +66,6 @@ class CityFactoryDependenciesTest {
 
         //Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyCityFactory.create(anyCountry, ""));
+                () -> anyCityFactory.create(anyCountry, "", new CityID("12345")));
     }
 }

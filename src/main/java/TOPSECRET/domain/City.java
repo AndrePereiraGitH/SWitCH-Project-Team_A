@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CityID;
 
 import java.util.Objects;
 
@@ -11,6 +12,15 @@ import java.util.Objects;
  * within the same package.
  */
 public class City {
+
+    /**
+     * Unique identifier of the city.
+     * <p>
+     * This ID distinguishes this City entity from all others,
+     * even if they share the same attributes.
+     * It is immutable and defined at creation time.
+     */
+    private final CityID _cityID;
 
     /**
      * The country this city belongs to.
@@ -33,7 +43,7 @@ public class City {
      * @throws IllegalArgumentException if country is null or cityName is null/blank
      */
 
-    protected City(Country country, String cityName) {
+    protected City(Country country, String cityName,  CityID cityID) {
         if (cityName == null || cityName.isBlank()) {
             throw new IllegalArgumentException("A city name cannot be left blank");
         }
@@ -42,8 +52,13 @@ public class City {
             throw new IllegalArgumentException("Country cannot be left blank");
         }
 
+        if (cityID == null) {
+            throw new IllegalArgumentException("City ID cannot be left blank");
+        }
+
         _country = country;
         _cityName = cityName;
+        _cityID = cityID;
     }
 
     /**
