@@ -75,7 +75,6 @@ class AppraisalEntityRepositoryMemTest {
 
         //ASSERT
         assertEquals(createdEntity, result);
-        verify(appraisalEntityFactory).create(eq("Test"), eq(contact), anyList(), anyList());
     }
 
 

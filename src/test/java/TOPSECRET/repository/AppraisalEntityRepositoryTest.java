@@ -1,6 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-class IAppraisalEntityRepositoryTest {
+class AppraisalEntityRepositoryTest {
 
 
     @Test

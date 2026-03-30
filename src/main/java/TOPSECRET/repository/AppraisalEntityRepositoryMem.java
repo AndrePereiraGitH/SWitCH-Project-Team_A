@@ -16,18 +16,19 @@ import java.util.List;
 
 
 /**
- * In-memory repository for managing {@link AppraisalEntity} instances.
+ * In-memory implementation of {@link IAppraisalEntityRepository}.
  *
  * <p>
- * Responsible for creating and storing AppraisalEntity objects,
- * converting DTOs into domain objects and enforcing business rules.
+ * Stores {@link AppraisalEntity} instances in a local collection.
+ * Responsible for converting DTOs into domain objects,
+ * delegating creation to the factory, and enforcing business rules.
  * </p>
  *
  * <p>
  * Ensures:
  * <ul>
- *     <li>Selected genres and publication types exist</li>
- *     <li>No duplicate entities exist with same name and contact</li>
+ *     <li>Referenced genres and publication types exist</li>
+ *     <li>No duplicate entities exist with the same name and contact</li>
  * </ul>
  * </p>
  */
@@ -60,6 +61,10 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
             throw new IllegalArgumentException("PublicationTypeRepository cannot be null.");
         }
 
+        if (appraisalEntityFactory == null) {
+            throw new IllegalArgumentException("AppraisalEntityFactory cannot be null.");
+        }
+
         this._appraisalEntities = new ArrayList<>();
         this._genreRepository = genreRepository;
         this._publicationTypeRepository = publicationTypeRepository;
@@ -67,26 +72,9 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
     }
 
     /**
-     * Creates a new AppraisalEntity and stores it in the repository.
-     *
-             * <p>
-     * Converts provided DTOs into domain objects and ensures that
-     * all required data is valid before creation.
-     * </p>
-            *
-            * @param name the name of the appraisal entity;
-     *             must not be null or blank
-     * @param contact the contact information of the entity;
-     *                must not be null
-            * @param selectedGenresDTO list of selected genres (DTO);
-     *                          must not be null or empty
-     * @param selectedPublicationTypesDTO list of selected publication types (DTO);
-     *                                    must not be null or empty
-     * @return the newly created {@link AppraisalEntity}
-     * @throws IllegalArgumentException if any argument is invalid,
-     *                                  if referenced domain objects do not exist,
-     *                                  or if an entity with the same name and contact already exists
+     * {@inheritDoc}
      */
+    @Override
     public AppraisalEntity createAndAdd(String name,
             Contact contact,
             List<GenreDetailsDTO_US004> selectedGenresDTO,
