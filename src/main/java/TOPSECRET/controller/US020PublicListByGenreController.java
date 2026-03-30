@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 import java.util.List;
@@ -15,14 +15,14 @@ import java.util.List;
  * This controller coordinates access to:
  * <ul>
  *     <li>{@link GenreRepositoryMem} – to retrieve available genres</li>
- *     <li>{@link CollectionOfPublicationsRepository} – to retrieve public collections by genre</li>
+ *     <li>{@link ICollectionOfPublicationsRepository} – to retrieve public collections by genre</li>
  * </ul>
  */
 
 public class US020PublicListByGenreController {
 
     private final GenreRepositoryMem _genreRepository;
-    private final CollectionOfPublicationsRepository _collectionRepo;
+    private final ICollectionOfPublicationsRepository _collectionRepo;
 
     /**
      * Constructs the controller with the required repositories.
@@ -30,7 +30,7 @@ public class US020PublicListByGenreController {
      * @param genreRepository repository used to retrieve genres
      * @param collectionRepo  repository used to retrieve collections filtered by genre
      */
-    public US020PublicListByGenreController(GenreRepositoryMem genreRepository, CollectionOfPublicationsRepository collectionRepo)
+    public US020PublicListByGenreController(GenreRepositoryMem genreRepository, ICollectionOfPublicationsRepository collectionRepo)
     {
         this._genreRepository = genreRepository;
         this._collectionRepo = collectionRepo;

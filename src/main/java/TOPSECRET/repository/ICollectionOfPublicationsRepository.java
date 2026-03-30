@@ -10,7 +10,7 @@ import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
 
-public interface CollectionOfPublicationsRepository {
+public interface ICollectionOfPublicationsRepository {
 
     // US017
     CollectionOfPublications createIfNotExists(User user, String name, Genre genre);

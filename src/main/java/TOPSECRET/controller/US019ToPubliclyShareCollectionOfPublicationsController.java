@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -13,15 +13,15 @@ import java.util.List;
  * Controller for US019: Publicly share a user's collection of publications.
  * <p>
  * This controller orchestrates the retrieval of a user's {@link CollectionOfPublications} from the
- * {@link CollectionOfPublicationsRepository}, converts them into {@link CollectionOfPublicationsDTO_US019}
+ * {@link ICollectionOfPublicationsRepository}, converts them into {@link CollectionOfPublicationsDTO_US019}
  * for presentation, and handles the request to share a selected collection.
  * </p>
  */
 public class US019ToPubliclyShareCollectionOfPublicationsController {
 
-    CollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem;
+    ICollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem;
 
-    public US019ToPubliclyShareCollectionOfPublicationsController(CollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem) {
+    public US019ToPubliclyShareCollectionOfPublicationsController(ICollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem) {
         this.collectionOfPublicationsRepositoryMem = collectionOfPublicationsRepositoryMem;
     }
 

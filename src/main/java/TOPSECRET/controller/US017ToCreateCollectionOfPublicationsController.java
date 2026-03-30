@@ -4,7 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User;
 import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class US017ToCreateCollectionOfPublicationsController {
 
     // the controller needs these two to do its job — both are injected so they can be mocked in tests
     private final GenreRepositoryMem genreRepository;
-    private final CollectionOfPublicationsRepository collectionRepository;
+    private final ICollectionOfPublicationsRepository collectionRepository;
 
     /**
      * Creates the controller with the required repositories.
@@ -38,7 +38,7 @@ public class US017ToCreateCollectionOfPublicationsController {
      */
     public US017ToCreateCollectionOfPublicationsController(
             GenreRepositoryMem genreRepository,
-            CollectionOfPublicationsRepository collectionRepository
+            ICollectionOfPublicationsRepository collectionRepository
     ) {
         // both are required — without them the controller can't do anything
         if (genreRepository == null || collectionRepository == null) {
