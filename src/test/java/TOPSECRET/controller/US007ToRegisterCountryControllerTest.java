@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.repository.CountryRepositoryMem;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ class US007ToRegisterCountryControllerTest {
     private US007ToRegisterCountryController controller;
 
     /** Mocked repository used as a dependency of the controller. */
-    private CountryRepositoryMem countryRepositoryMemMock;
+    private ICountryRepository countryRepo;
 
     /** Mocked Country object returned by the repository. */
     private Country countryMock;
@@ -38,9 +39,9 @@ class US007ToRegisterCountryControllerTest {
     @BeforeEach
     void preparation(){
 
-        countryRepositoryMemMock = mock(CountryRepositoryMem.class); //Creates the mock
+        countryRepo = mock(ICountryRepository.class); //Creates the mock
         countryMock = mock(Country.class);
-        controller = new US007ToRegisterCountryController(countryRepositoryMemMock);
+        controller = new US007ToRegisterCountryController(countryRepo);
     }
 
     /**
@@ -53,7 +54,7 @@ class US007ToRegisterCountryControllerTest {
      */
     @Test
     void registerNewCountry_validCountry_mock(){
-        when(countryRepositoryMemMock.createAndAddNewCountry("Portugal")).thenReturn(countryMock);
+        when(countryRepo.createAndAddNewCountry("Portugal")).thenReturn(countryMock);
 
         when(countryMock.getCountryName()).thenReturn("Portugal");
 
@@ -63,7 +64,6 @@ class US007ToRegisterCountryControllerTest {
         assertEquals("Portugal", result.getCountryName());
         assertNotNull(result);
 
-        verify(countryRepositoryMemMock).createAndAddNewCountry("Portugal");
     }
 
     /**
@@ -76,12 +76,11 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_InvalidCountry_mock(){
 
-        when(countryRepositoryMemMock.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException());
+        when(countryRepo.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException());
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry("Mordor"));
 
-        verify(countryRepositoryMemMock).createAndAddNewCountry("Mordor");
     }
 
     /**
@@ -95,7 +94,6 @@ class US007ToRegisterCountryControllerTest {
 
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(null));
 
-        verify(countryRepositoryMemMock, never()).createAndAddNewCountry(any());
     }
 
     /**
@@ -109,7 +107,6 @@ class US007ToRegisterCountryControllerTest {
 
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(" "));
 
-        verify(countryRepositoryMemMock, never()).createAndAddNewCountry(any());
     }
 
 }

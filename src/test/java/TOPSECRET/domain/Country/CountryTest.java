@@ -22,7 +22,9 @@ class CountryTest {
      */
     @Test
     void constructor_validCountry() {
+        //Act
         Country country = new Country("Portugal");
+        //Assert
         assertNotNull(country);
     }
 
@@ -32,7 +34,7 @@ class CountryTest {
      */
     @Test
     void constructor_nullCountryName() {
-
+        //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> new Country(null));
@@ -46,7 +48,7 @@ class CountryTest {
      */
     @Test
     void constructor_blankCountryName() {
-
+        //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> new Country("   "));
@@ -60,7 +62,7 @@ class CountryTest {
      */
     @Test
     void constructor_invalidCountryName() {
-
+        //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> new Country("Mordor"));
@@ -74,7 +76,7 @@ class CountryTest {
      */
     @Test
     void constructor_misspelledCountryName() {
-
+        //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> new Country("Portug"));
@@ -91,9 +93,12 @@ class CountryTest {
      */
     @Test
     void getCountryName_returnsCorrectName() {
+        //Arrange
         Country country = new Country("Portugal");
-
-        assertEquals("Portugal", country.getCountryName());
+        //Act
+        String result = country.getCountryName();
+        //Assert
+        assertEquals("Portugal", result);
     }
 
     /**
@@ -101,10 +106,12 @@ class CountryTest {
      */
     @Test
     void getCountryID_returnsCorrectID() {
-
+        //Arrange
         Country country = new Country("Portugal");
-
-        assertEquals("PORTUGAL", country.getCountryID().getCountryID());
+        //Act
+        String result = country.getCountryID().getCountryID();
+        //Assert
+        assertEquals("PORTUGAL", result);
     }
 
     // -------------------------------------------------------------------------
@@ -116,8 +123,9 @@ class CountryTest {
      */
     @Test
     void equals_sameObject() {
+        //Arrange
         Country country = new Country("Portugal");
-
+        //Act + Assert
         assertTrue(country.equals(country));
     }
 
@@ -127,9 +135,10 @@ class CountryTest {
      */
     @Test
     void equals_sameCountryID() {
+        //Arrange
         Country country1 = new Country("Portugal");
         Country country2 = new Country("Portugal");
-
+        //Act + Assert
         assertTrue(country1.equals(country2));
     }
 
@@ -139,9 +148,10 @@ class CountryTest {
      */
     @Test
     void equals_differentCountryID() {
+        //Arrange
         Country country1 = new Country("Portugal");
         Country country2 = new Country("France");
-
+        //Act + Assert
         assertFalse(country1.equals(country2));
     }
 
@@ -150,8 +160,9 @@ class CountryTest {
      */
     @Test
     void equals_nullObject() {
+        //Arrange
         Country country = new Country("Portugal");
-
+        //Act + Assert
         assertFalse(country.equals(null));
     }
 
@@ -160,8 +171,9 @@ class CountryTest {
      */
     @Test
     void equals_differentClass() {
+        //Arrange
         Country country = new Country("Portugal");
-
+        //Act + Assert
         assertFalse(country.equals("Portugal"));
     }
 }

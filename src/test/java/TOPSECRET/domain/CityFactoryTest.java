@@ -28,13 +28,12 @@ class CityFactoryTest {
     private final Country anyCountry = countryFactory.create("Portugal");
 
     private final String anyCityName = "Braga";
-    private final CityID anyCityID = new CityID("12345");
 
     @Test
     void shouldCreateValidCity() {
 
         //Arrange
-        City city = anyFactory.create(anyCountry, anyCityName,  anyCityID);
+        City city = anyFactory.create(anyCountry, anyCityName);
 
         //Assert
         assertNotNull(city);
@@ -47,7 +46,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(null, anyCityName,  anyCityID));
+                () -> anyFactory.create(null, anyCityName));
     }
 
     @Test
@@ -55,7 +54,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountry, null,  anyCityID));
+                () -> anyFactory.create(anyCountry, null));
     }
 
     @Test
@@ -63,6 +62,6 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountry, "", anyCityID));
+                () -> anyFactory.create(anyCountry, ""));
     }
 }

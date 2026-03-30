@@ -21,7 +21,10 @@ class CountryIDTest {
      */
     @Test
     void constructor_validID() {
+        //Assert + Act
         CountryID id = new CountryID("PORTUGAL");
+
+        //Assert
         assertNotNull(id);
     }
 
@@ -31,6 +34,7 @@ class CountryIDTest {
      */
     @Test
     void constructor_nullID() {
+        //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> new CountryID(null));
@@ -44,6 +48,7 @@ class CountryIDTest {
      */
     @Test
     void constructor_blankID() {
+        //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> new CountryID("   "));
@@ -60,8 +65,12 @@ class CountryIDTest {
      */
     @Test
     void getCountryID_returnsCorrectID() {
+        //Arrange
         CountryID id = new CountryID("PORTUGAL");
-        assertEquals("PORTUGAL", id.getCountryID());
+        //Act
+        String result = id.getCountryID();
+        //Assert
+        assertEquals("PORTUGAL", result);
     }
 
     // -------------------------------------------------------------------------
@@ -73,7 +82,9 @@ class CountryIDTest {
      */
     @Test
     void equals_sameObject() {
+        //Arrange
         CountryID id = new CountryID("PORTUGAL");
+        //Act + Assert
         assertTrue(id.equals(id));
     }
 
@@ -83,8 +94,10 @@ class CountryIDTest {
      */
     @Test
     void equals_sameID() {
+        //Arrange
         CountryID id1 = new CountryID("PORTUGAL");
         CountryID id2 = new CountryID("PORTUGAL");
+        //Act + Assert
         assertTrue(id1.equals(id2));
     }
 
@@ -94,8 +107,10 @@ class CountryIDTest {
      */
     @Test
     void equals_differentID() {
+        //Arrange
         CountryID id1 = new CountryID("PORTUGAL");
         CountryID id2 = new CountryID("FRANCE");
+        //Act + Assert
         assertFalse(id1.equals(id2));
     }
 
@@ -104,7 +119,9 @@ class CountryIDTest {
      */
     @Test
     void equals_nullObject() {
+        //Arrange
         CountryID id = new CountryID("PORTUGAL");
+        //Act + Assert
         assertFalse(id.equals(null));
     }
 
@@ -113,7 +130,9 @@ class CountryIDTest {
      */
     @Test
     void equals_differentClass() {
+        //Arrange
         CountryID id = new CountryID("PORTUGAL");
+        //Act + Assert
         assertFalse(id.equals("PORTUGAL"));
     }
 }

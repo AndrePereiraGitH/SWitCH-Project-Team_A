@@ -36,10 +36,10 @@ public class US008ToRegisterACityCtrl {
         this._cityRepository = cityRepository;
     }
 
-    public City registerNewCity(Country country1, String cityName1, CityID cityID1) {
+    public City registerNewCity(Country country1, String cityName1) {
 
 
-        return _cityRepository.createAndAdd(country1, cityName1, cityID1);
+        return _cityRepository.createAndAdd(country1, cityName1);
 
     }
 }

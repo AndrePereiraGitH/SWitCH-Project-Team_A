@@ -29,7 +29,6 @@ class US008ToRegisterACityCtrlTest {
     private final String anyCityName = "Salamanca";
     private final City anyCity = mock(City.class);
     private final Country anyCountry = mock(Country.class);
-    private final CityID anyCityID = mock(CityID.class);
 
     @Test
     void shouldThrowWhenRepositoryIsNull() {
@@ -50,10 +49,10 @@ class US008ToRegisterACityCtrlTest {
         // Arrange
         US008ToRegisterACityCtrl controller = new US008ToRegisterACityCtrl(anyCityRepository);
 
-        when(anyCityRepository.createAndAdd(anyCountry, anyCityName, anyCityID)).thenReturn(anyCity);
+        when(anyCityRepository.createAndAdd(anyCountry, anyCityName)).thenReturn(anyCity);
 
         // Act, but I am not sure if this is valid to use later when asserting
-        City result = controller.registerNewCity(anyCountry, anyCityName, anyCityID);
+        City result = controller.registerNewCity(anyCountry, anyCityName);
 
         // Assert
         assertEquals(anyCity, result);
@@ -66,10 +65,10 @@ class US008ToRegisterACityCtrlTest {
         US008ToRegisterACityCtrl controller = new US008ToRegisterACityCtrl(anyCityRepository);
         Country nullCountry = null;
 
-        when(anyCityRepository.createAndAdd(nullCountry, anyCityName, anyCityID))
+        when(anyCityRepository.createAndAdd(nullCountry, anyCityName))
                 .thenThrow(new IllegalArgumentException());
 
         //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCity(nullCountry, anyCityName, anyCityID));
+        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCity(nullCountry, anyCityName));
     }
 }

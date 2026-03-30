@@ -1,9 +1,7 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.Country;
 
-import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.Country.CountryFactory;
-import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.repository.CountryRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,8 +44,11 @@ class ICountryRepositoryTest {
      */
     @Test
     void createAndAddNewCountry_validCountry() {
+
+        //Act
         Country country = repository.createAndAddNewCountry("Portugal");
 
+        //Assert
         assertNotNull(country);
         assertEquals(1, repository.getAllCountries().size());
     }
@@ -57,8 +58,11 @@ class ICountryRepositoryTest {
      */
     @Test
     void createAndAddNewCountry_returnsCorrectCountryName() {
+
+        //Act
         Country country = repository.createAndAddNewCountry("Portugal");
 
+        //Assert
         assertEquals("Portugal", country.getCountryName());
     }
 
@@ -68,8 +72,11 @@ class ICountryRepositoryTest {
      */
     @Test
     void createAndAddNewCountry_returnsCountryWithDeterministicID() {
+
+        //Act
         Country country = repository.createAndAddNewCountry("Portugal");
 
+        //Assert
         assertEquals("PORTUGAL", country.getCountryID().getCountryID());
     }
 
@@ -78,6 +85,8 @@ class ICountryRepositoryTest {
      */
     @Test
     void createAndAddNewCountry_invalidCountry() {
+
+        // Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.createAndAddNewCountry("Mordor"));
     }
@@ -87,6 +96,8 @@ class ICountryRepositoryTest {
      */
     @Test
     void createAndAddNewCountry_nullCountry() {
+
+        // Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.createAndAddNewCountry(null));
     }
@@ -96,8 +107,11 @@ class ICountryRepositoryTest {
      */
     @Test
     void createAndAddNewCountry_duplicateCountry() {
+
+        //Arrange
         repository.createAndAddNewCountry("Portugal");
 
+        //Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.createAndAddNewCountry("Portugal"));
     }
@@ -111,7 +125,12 @@ class ICountryRepositoryTest {
      */
     @Test
     void getAllCountries_emptyRepository() {
-        assertEquals(0, repository.getAllCountries().size());
+
+        //Arrange + Act
+        List<Country> result = repository.getAllCountries();
+
+        //Assert
+        assertEquals(0, result.size());
     }
 
     /**
@@ -119,10 +138,14 @@ class ICountryRepositoryTest {
      */
     @Test
     void getAllCountries_returnsReadOnlyList() {
+
+        //Arrange
         repository.createAndAddNewCountry("Portugal");
 
+        //Act
         List<Country> list = repository.getAllCountries();
 
+        //Assert
         assertThrows(UnsupportedOperationException.class,
                 () -> list.add(null));
     }
@@ -136,11 +159,15 @@ class ICountryRepositoryTest {
      */
     @Test
     void findByID_existingID() {
+
+        //Arrange
         Country country = repository.createAndAddNewCountry("Portugal");
         CountryID id = country.getCountryID();
 
+        //Act
         Optional<Country> result = repository.findByID(id);
 
+        //Assert
         assertTrue(result.isPresent());
         assertEquals(country, result.get());
     }
@@ -150,10 +177,14 @@ class ICountryRepositoryTest {
      */
     @Test
     void findByID_nonExistingID() {
+
+        //Arrange
         CountryID id = new CountryID("FRANCE");
 
+        //Act
         Optional<Country> result = repository.findByID(id);
 
+        //Assert
         assertFalse(result.isPresent());
     }
 }
