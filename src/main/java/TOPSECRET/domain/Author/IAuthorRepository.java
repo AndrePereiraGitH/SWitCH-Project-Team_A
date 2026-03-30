@@ -1,6 +1,5 @@
 package TOPSECRET.domain.Author;
 
-import TOPSECRET.domain.Author;
 import TOPSECRET.domain.Country.Country;
 
 import java.time.LocalDate;
