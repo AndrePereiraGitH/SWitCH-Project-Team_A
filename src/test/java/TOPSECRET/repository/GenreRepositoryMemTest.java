@@ -42,6 +42,7 @@ class GenreRepositoryMemTest {
         String genreType = "Fantasy";
         when(genre.getGenreType()).thenReturn(genreType);
         when(genreFactory.create(genreType)).thenReturn(genre);
+        when(genre.sameAs(genre)).thenReturn(true); // mock must confirm it's a duplicate
 
         IGenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
         genreRepository.createAndAdd(genreType);
