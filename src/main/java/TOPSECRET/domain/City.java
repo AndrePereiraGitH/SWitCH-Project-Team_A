@@ -1,8 +1,12 @@
 package TOPSECRET.domain;
 
-import java.util.Objects;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.CityID;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a city within a specific country.
@@ -11,6 +15,8 @@ import java.util.Objects;
  * within the same package.
  */
 public class City {
+
+    private final CityID cityID;
 
     /**
      * The country this city belongs to.
@@ -44,6 +50,7 @@ public class City {
 
         _country = country;
         _cityName = cityName;
+        this.cityID = new CityID(UUID.randomUUID().toString());
     }
 
     /**
@@ -64,14 +71,34 @@ public class City {
         return _cityName;
     }
 
+    public CityID id() {
+        return cityID;
+    }
+
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof City city)) return false;
-        return Objects.equals(_country, city._country) && Objects.equals(_cityName, city._cityName);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        City city = (City) o;
+        return Objects.equals(cityID, city.cityID);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(_country, _cityName);
+    }
+
+    public boolean sameAs(Object object) {
+
+        if (object instanceof City) {
+            City oCity = (City) object;
+
+            if (
+                    this._country.equals(oCity._country) &&
+                            this._cityName.equals(oCity._cityName))
+                return true;
+        }
+        return false;
     }
 }

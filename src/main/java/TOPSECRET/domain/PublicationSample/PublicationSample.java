@@ -203,7 +203,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      *         with equal identifiers; {@code false} otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object o) {
+    public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PublicationSample that = (PublicationSample) o;
         return Objects.equals(_pubSampleID, that._pubSampleID);

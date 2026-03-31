@@ -7,7 +7,7 @@ import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.Genre;
@@ -30,7 +32,8 @@ class CollectionOfPublicationsFactoryDependenciesTest {
 
     // helper — builds a valid User so we don't repeat this setup in every test
     private User createValidUser() {
-        Country country = new Country("PORTUGAL");
+        CountryFactory countryFactory = new CountryFactory();
+        Country country = countryFactory.create("Portugal");
         return new User(
                 "validUser",
                 new Contact("912345678", "351", null, null),

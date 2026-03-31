@@ -1,8 +1,7 @@
 package TOPSECRET.domain.Author;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.ddd.DomainID;
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 
 import java.time.LocalDate;
@@ -150,7 +149,7 @@ public class Author implements AggregateRoot<AuthorId> {
      *         name, country, date of birth, and biography; {@code false} otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object object) {
+    public boolean sameAs(Object object) {
 
         if (object instanceof Author) {
             Author oAuthor = (Author) object;

@@ -7,6 +7,7 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
 

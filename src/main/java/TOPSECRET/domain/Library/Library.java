@@ -107,7 +107,7 @@ public class Library implements AggregateRoot<LibraryId> {
      * {@code false} otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object object) {
+    public boolean sameAs(Object object) {
         if (object instanceof Library other)
             return _id.equals(other._id);
         return false;

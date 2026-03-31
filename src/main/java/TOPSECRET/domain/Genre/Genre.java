@@ -48,7 +48,7 @@ public class Genre implements AggregateRoot<GenreID>{
      * @return true if object is a Genre with an equal GenreID; false otherwise
      */
     @Override
-    public boolean sameIdentityAs(Object object) {
+    public boolean sameAs(Object object) {
         if (object instanceof Genre other)
             return _id.equals(other._id);
         return false;

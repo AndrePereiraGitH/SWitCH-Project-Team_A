@@ -2,8 +2,8 @@
 
 import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationTypeFactory;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

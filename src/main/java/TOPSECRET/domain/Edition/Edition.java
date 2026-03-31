@@ -3,7 +3,7 @@ package TOPSECRET.domain.Edition;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.EditionID;
@@ -189,7 +189,7 @@ public class Edition implements AggregateRoot<EditionID> {
      */
 
     @Override
-    public boolean sameIdentityAs(Object o){
+    public boolean sameAs(Object o){
         if(o == null || getClass() != o.getClass()) return false;
         Edition that = (Edition) o;
         return Objects.equals(_editionID, that._editionID);

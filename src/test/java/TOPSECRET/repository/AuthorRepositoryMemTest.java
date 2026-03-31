@@ -3,7 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.Country.Country;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

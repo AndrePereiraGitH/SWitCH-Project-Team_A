@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Author;
 
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.Country.Country;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -189,7 +189,7 @@ class AuthorTest {
     // ========================================
 
     @Test
-    void sameIdentityAs_shouldHaveSameIdentity_whenAllIdentityFieldsAreEqual() {
+    void sameIdentityAs_shouldHaveSameIdentity_whenAllFieldsAreEqual() {
         // arrange
         Country sameCountryDouble = mock(Country.class);
         LocalDate dob = LocalDate.of(1990,4, 4);
@@ -198,38 +198,38 @@ class AuthorTest {
         Author a2 = new Author("Jane", sameCountryDouble, dob, "bio");
 
         // act + assert
-        assertTrue(a1.sameIdentityAs(a2));
+        assertTrue(a1.sameAs(a2));
     }
 
     @Test
-    void sameIdentityAs_shouldNotHaveSameIdentity_whenComparedToNull() {
+    void sameIdentityAs_shouldNotHaveSame_whenComparedToNull() {
         // arrange
         LocalDate dob = LocalDate.of(1990,4, 4);
         Author a1 = new Author("Jane", countryDouble, dob, "bio");
 
         // act + assert
-        assertFalse(a1.sameIdentityAs(null));
+        assertFalse(a1.sameAs(null));
     }
 
     @Test
-    void sameIdentityAs_shouldNotHaveSameIdentity_whenComparedToDifferentClass() {
+    void sameIdentityAs_shouldNotHaveSame_whenComparedToDifferentClass() {
         // arrange
         LocalDate dob = LocalDate.of(1990, 4, 4);
         Author a1 = new Author("Jane", countryDouble, dob, "bio");
 
         // act + assert
-        assertFalse(a1.sameIdentityAs("Not an author"));
+        assertFalse(a1.sameAs("Not an author"));
     }
 
     @Test
-    void sameIdentityAs_shouldNotHaveSameIdentity_whenNameIsDifferent() {
+    void sameIdentityAs_shouldNotHaveSame_whenNameIsDifferent() {
 
         // arrange
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
         Author a2 = new Author("John", countryDouble, LocalDate.of(1990, 1, 1), "bio");
 
         // act + assert
-        assertFalse(a1.sameIdentityAs(a2));
+        assertFalse(a1.sameAs(a2));
     }
 
     @Test
@@ -240,7 +240,7 @@ class AuthorTest {
         Author a2 = new Author("Jane", otherCountry, LocalDate.of(1990, 1, 1), "bio");
 
         // act + assert
-        assertFalse(a1.sameIdentityAs(a2));
+        assertFalse(a1.sameAs(a2));
     }
 
     @Test
@@ -248,7 +248,7 @@ class AuthorTest {
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
         Author a2 = new Author("Jane", countryDouble, LocalDate.of(1995, 6, 15), "bio");
 
-        assertFalse(a1.sameIdentityAs(a2));
+        assertFalse(a1.sameAs(a2));
     }
 
     @Test
@@ -256,7 +256,7 @@ class AuthorTest {
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
         Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
 
-        assertFalse(a1.sameIdentityAs(a2));
+        assertFalse(a1.sameAs(a2));
     }
 
 

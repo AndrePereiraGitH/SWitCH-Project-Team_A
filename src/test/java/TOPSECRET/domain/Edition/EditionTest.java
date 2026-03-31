@@ -2,7 +2,7 @@ package TOPSECRET.domain.Edition;
 
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.EditionID;
@@ -711,14 +711,14 @@ class EditionTest {
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
-        boolean result = e.sameIdentityAs(e);
+        boolean result = e.sameAs(e);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void sameIdentityAs_differentInstances_returnsFalse() {
+    void sameAs_differentInstances_returnsFalse() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -735,7 +735,7 @@ class EditionTest {
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
-        boolean result = e1.sameIdentityAs(e2);
+        boolean result = e1.sameAs(e2);
 
         // Assert
         assertFalse(result);

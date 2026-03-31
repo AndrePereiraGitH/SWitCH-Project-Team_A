@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
 
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
 
 import java.util.ArrayList;
 import java.util.List;

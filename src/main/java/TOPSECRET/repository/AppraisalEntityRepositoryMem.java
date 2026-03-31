@@ -1,41 +1,55 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.AppraisalEntity;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
+import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.AppraisalEntityFactory;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * US004
+ * In-memory implementation of {@link IAppraisalEntityRepository}.
  *
- * Repository responsible for storing AppraisalEntity objects.
+ * <p>
+ * Stores {@link AppraisalEntity} instances in a local collection.
+ * Responsible for converting DTOs into domain objects,
+ * delegating creation to the factory, and enforcing business rules.
+ * </p>
  *
- * Responsibilities:
- * - Convert selected Genre and PublicationType DTOs into existing domain objects.
- * - Use FactoryAppraisalEntity to create new AppraisalEntity instances.
- * - Prevent duplicates based on name and contact.
+ * <p>
+ * Ensures:
+ * <ul>
+ *     <li>Referenced genres and publication types exist</li>
+ *     <li>No duplicate entities exist with the same name and contact</li>
+ * </ul>
+ * </p>
  */
-public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
+public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository {
 
     private List<AppraisalEntity> _appraisalEntities;
-    private GenreRepositoryMem _genreRepository;
+    private IGenreRepository _genreRepository;
     private IPublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityFactory _appraisalEntityFactory;
 
+
     /**
-     * Constructor.
+     * Creates a new repository instance.
      *
-     * @param genreRepository Repository containing existing Genre domain objects.
-     * @param publicationTypeRepository Repository containing existing PublicationType domain objects.
+     * @param genreRepository repository for retrieving Genre objects
+     * @param publicationTypeRepository repository for retrieving PublicationType objects
+     * @param appraisalEntityFactory factory used to create AppraisalEntity instances
+     * @throws IllegalArgumentException if any dependency is null
      */
     public AppraisalEntityRepositoryMem (
-            GenreRepositoryMem genreRepository,
+            IGenreRepository genreRepository,
             IPublicationTypeRepository publicationTypeRepository,
             AppraisalEntityFactory appraisalEntityFactory) {
 
@@ -44,7 +58,11 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
         }
 
         if (publicationTypeRepository == null) {
-            throw new IllegalArgumentException("IPublicationTypeRepository cannot be null.");
+            throw new IllegalArgumentException("PublicationTypeRepository cannot be null.");
+        }
+
+        if (appraisalEntityFactory == null) {
+            throw new IllegalArgumentException("AppraisalEntityFactory cannot be null.");
         }
 
         this._appraisalEntities = new ArrayList<>();
@@ -54,27 +72,10 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
     }
 
     /**
-     * US004
-     *
-     * Creates and stores a new AppraisalEntity.
-     *
-     * Steps:
-     * 1. Converts selected Genre DTOs into existing Genre domain objects.
-     * 2. Converts selected PublicationType DTOs into existing PublicationType domain objects.
-     * 3. Uses FactoryAppraisalEntity to create the AppraisalEntity instance.
-     * 4. Validates that no existing entity shares the same name and contact.
-     * 5. Stores the entity in the repository.
-     *
-     * @param name Name of the AppraisalEntity.
-     * @param contact Contact of the AppraisalEntity.
-     * @param selectedGenresDTO List of selected Genre DTOs.
-     * @param selectedPublicationTypesDTO List of selected PublicationType DTOs.
-     * @return The created AppraisalEntity.
-     *
-     * @throws IllegalArgumentException if entity already exists or if any DTO does not match existing domain objects.
+     * {@inheritDoc}
      */
-    public AppraisalEntity createAndAddAppraisalEntity(
-            String name,
+    @Override
+    public AppraisalEntity createAndAdd(String name,
             Contact contact,
             List<GenreDetailsDTO_US004> selectedGenresDTO,
             List<PublicationTypeDTO_US004> selectedPublicationTypesDTO) {
@@ -90,15 +91,17 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
         List<Genre> genres = new ArrayList<>();
         for (GenreDetailsDTO_US004 dto : selectedGenresDTO) {
             Genre genre = _genreRepository.findByTitle(dto.getTitle());
+            if (genre == null) {
+                throw new IllegalArgumentException("Genre not found.");
+            }
             genres.add(genre);
         }
 
         List<PublicationType> publicationTypes = new ArrayList<>();
         for (PublicationTypeDTO_US004 dto : selectedPublicationTypesDTO) {
             PublicationType publicationType =
-                    _publicationTypeRepository.findByAttributes(
-                            dto.getMediaFormat()
-                    );
+                    _publicationTypeRepository.findByAttributes(dto.getMediaFormat());
+
             publicationTypes.add(publicationType);
         }
 
@@ -108,21 +111,18 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
 
 
         AppraisalEntity apEn =
-                _appraisalEntityFactory.create(name, contact, genres, publicationTypes);
+                _appraisalEntityFactory.create(name, contact, publicationTypes, genres);
 
         _appraisalEntities.add(apEn);
         return apEn;
     }
 
     /**
-     * US004
+     * Checks if an AppraisalEntity already exists with the same name and contact.
      *
-     * Verifies if an AppraisalEntity already exists
-     * with the same name and contact.
-     *
-     * @param name Name to verify.
-     * @param contact Contact to verify.
-     * @return true if entity exists, false otherwise.
+     * @param name entity name
+     * @param contact contact information
+     * @return true if a matching entity exists, false otherwise
      */
     private boolean existsByNameAndContact(String name, Contact contact) {
 
@@ -136,4 +136,5 @@ public class AppraisalEntityRepositoryMem implements AppraisalEntityRepository {
 
         return false;
     }
+
 }

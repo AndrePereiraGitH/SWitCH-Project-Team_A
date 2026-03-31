@@ -3,10 +3,13 @@
 //import TOPSECRET.domain.*;
 //import TOPSECRET.domain.Author.Author;
 //import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+//import TOPSECRET.domain.Edition.Edition;
 //import TOPSECRET.domain.Enum.PublicationStatus;
 //import TOPSECRET.domain.Enum.SaleType;
+//import TOPSECRET.domain.Genre.Genre;
 //import TOPSECRET.domain.Library.Library;
 //import TOPSECRET.domain.PublicationSample.PublicationSample;
+//import TOPSECRET.domain.PublicationType.PublicationType;
 //import TOPSECRET.domain.ValueObjects.*;
 //import TOPSECRET.dto.PublicationSampleDTO_US015;
 //import org.junit.jupiter.api.BeforeEach;
