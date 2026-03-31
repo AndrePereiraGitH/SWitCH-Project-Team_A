@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryID;
 import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
 import TOPSECRET.repository.AuctionRepositoryMem;
@@ -47,7 +47,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         // arrange
         String name = "author1";
-        String country = "Portugal";
+        CountryID country = mock(CountryID.class);
         LocalDate birthday = LocalDate.of(1999, 6,1);
         String biography = "this is a biography";
 
@@ -55,8 +55,8 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         LocalDate birthday2 = LocalDate.of(1980, 6,1);
         String biography2 = "this is a biography2";
 
-        Author author1 = createMockAuthor(name, country, birthday, biography);
-        Author author2 = createMockAuthor(name2, country, birthday2, biography2);
+        Author author1 = createAuthorDouble(name, country, birthday, biography);
+        Author author2 = createAuthorDouble(name2, country, birthday2, biography2);
 
         when(IAuthorRepository.getAllAuthors()).thenReturn(List.of(author1, author2));
 
@@ -97,15 +97,14 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     }
 
-    private Author createMockAuthor(String name, String country, LocalDate dateOfBirth, String biography) {
-        Country countryDouble = mock(Country.class);
-        when(countryDouble.getCountryName()).thenReturn(country);
+    private Author createAuthorDouble(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
+        CountryID countryIdDouble = mock(CountryID.class);
 
         Author authorDouble = mock(Author.class);
 
         when(authorDouble.getName()).thenReturn(name);
         when(authorDouble.getDateOfBirth()).thenReturn(dateOfBirth);
-        when(authorDouble.getCountry()).thenReturn(countryDouble);
+        when(authorDouble.getCountryID()).thenReturn(countryIdDouble);
         when(authorDouble.getBiography()).thenReturn(biography);
 
         return authorDouble;

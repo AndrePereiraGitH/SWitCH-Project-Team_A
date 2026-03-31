@@ -3,7 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class AuthorRepositoryMemTest {
 
     private final AuthorFactory authorFactory = mock(AuthorFactory.class);
-    private final Country country = mock(Country.class);
+    private final CountryID countryID = mock(CountryID.class);
     private final String name = "João";
     String validBio = "bio";
 
@@ -57,32 +57,32 @@ class AuthorRepositoryMemTest {
     void shouldDelegateCreationToFactoryAndAddToList() {
         // Arrange
         Author mockAuthor = mock(Author.class);
-        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
+        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
         IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
 
         // Act
-        Author result = IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+        Author result = IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
 
         // Assert
         assertSame(mockAuthor, result);
-        verify(authorFactory).create(name, country, LocalDate.of(1978, 5, 12), validBio);
+        verify(authorFactory).create(name, countryID, LocalDate.of(1978, 5, 12), validBio);
     }
 
     @Test
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         // Arrange
         Author mockAuthor = mock(Author.class);
-        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
+        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
 
         IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
-        IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+        IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio)
+                () -> IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio)
         );
 
         assertEquals("Author already exists", exception.getMessage());
@@ -110,10 +110,10 @@ class AuthorRepositoryMemTest {
         IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
         Author mockAuthor = mock(Author.class);
 
-        when(authorFactory.create(name, country, LocalDate.of(1978, 5, 12), validBio))
+        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
 
-        IAuthorRepository.createAndAddAuthor(name, country, LocalDate.of(1978, 5, 12), validBio);
+        IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
 
         // Act
         List<Author> result1 = IAuthorRepository.getAllAuthors();

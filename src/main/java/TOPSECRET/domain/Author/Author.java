@@ -1,9 +1,8 @@
 package TOPSECRET.domain.Author;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-
+import TOPSECRET.domain.ValueObjects.CountryID;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,26 +13,26 @@ import java.util.UUID;
  * An Author is defined by:
  * <ul>
  *     <li>A name identifying the author</li>
- *     <li>A {@link Country} of origin</li>
+ *     <li>A {@link CountryID} of origin</li>
  *     <li>A date of birth</li>
  *     <li>A textual biography describing the author</li>
  * </ul>
  *
  * <p><b>Invariant:</b> An Author must always have a non-blank name, a non-null
- * {@link Country}, a non-null date of birth, and a non-blank biography.</p>
+ * {@link CountryID}, a non-null date of birth, and a non-blank biography.</p>
  *
  * <p>
- * The constructor performs validation to guarantee that no invalid Author
+ * The constructor performs validates these rules to ensure that no invalid Author
  * instances are created, preserving domain integrity.
  * </p>
  *
  * <p><b>Equality:</b> Two authors are considered equal if they share the same
- * name, {@link Country}, and date of birth. Biography is excluded from equality.</p>
+ * {@link AuthorId}.</p>
  */
 public class Author implements AggregateRoot<AuthorId> {
     private final AuthorId _id;
     private final String _name;
-    private final Country _country;
+    private final CountryID _countryID;
     private final LocalDate _dateOfBirth;
     private final String _biography;
 
@@ -41,27 +40,27 @@ public class Author implements AggregateRoot<AuthorId> {
      * Creates a new {@code Author} instance.
      *
      * <p>An author must always have a non-null and non-blank name, a non-null
-     * {@link Country}, a non-null date of birth, and a non-null and non-blank
+     * {@link CountryID}, a non-null date of birth, and a non-null and non-blank
      * biography. These validations are enforced at construction time to ensure
      * that no invalid {@code Author} instances are created.</p>
      *
      * <p>A unique {@link AuthorId} is automatically generated when the author is created.</p>
      *
      * @param name the author's name
-     * @param country the author's country of origin
+     * @param countryID the author's country of origin
      * @param dateOfBirth the author's date of birth
      * @param biography the author's biography
      *
      * @throws IllegalArgumentException if {@code name} is null or blank
-     * @throws IllegalArgumentException if {@code country} is null
+     * @throws IllegalArgumentException if {@code countryID} is null
      * @throws IllegalArgumentException if {@code dateOfBirth} is null
      * @throws IllegalArgumentException if {@code biography} is null or blank
      */
-    protected Author(String name, Country country,LocalDate dateOfBirth, String  biography) {
+    protected Author(String name, CountryID countryID, LocalDate dateOfBirth, String  biography) {
         if ( name ==null || name.isBlank()){
             throw new IllegalArgumentException("Name cannot be null or blank");
         }
-        if (country == null){
+        if (countryID == null){
             throw new IllegalArgumentException("Country cannot be null");
         }
         if (dateOfBirth == null){
@@ -71,7 +70,7 @@ public class Author implements AggregateRoot<AuthorId> {
             throw new IllegalArgumentException("Biography cannot be null or blank");
         this._id = new AuthorId(UUID.randomUUID().toString());
         this._name= name;
-        this._country = country;
+        this._countryID = countryID;
         this._dateOfBirth = dateOfBirth;
         this._biography = biography;
 
@@ -86,8 +85,8 @@ public class Author implements AggregateRoot<AuthorId> {
         return _name;
     }
 
-    public Country getCountry() {
-        return _country;
+    public CountryID getCountryID() {
+        return _countryID;
     }
 
     public LocalDate getDateOfBirth() {
@@ -134,15 +133,14 @@ public class Author implements AggregateRoot<AuthorId> {
     }
 
     /**
-     * Checks whether this author has the same domain identity as another object.
+     * Checks whether this author has the same business identity as another object.
      *
-     * <p>Two {@code Author} objects are considered to have the same identity if
-     * the given object is also an {@code Author} and both objects have the same
+     * <p>Two {@code Author} objects are considered to represent the same author
+     * if the given object is also an {@code Author} and both objects have the same
      * name, country, date of birth, and biography.</p>
      *
-     * <p>This method represents domain identity comparison and is distinct from
-     * {@link #equals(Object)}, which is based solely on the unique identifier
-     * ({@link AuthorId}).</p>
+     * <p>This method is distinct from {@link #equals(Object)}, which is based
+     * solely on the unique identifier ({@link AuthorId}).</p>
      *
      * @param object the object to compare with this author
      * @return {@code true} if the given object is an {@code Author} with the same
@@ -156,7 +154,7 @@ public class Author implements AggregateRoot<AuthorId> {
 
             if (
                     this._name.equals(oAuthor._name) &&
-                            this._country.equals(oAuthor._country) &&
+                            this._countryID.equals(oAuthor._countryID) &&
                             this._dateOfBirth.equals(oAuthor._dateOfBirth) &&
                             this._biography.equals(oAuthor._biography)
             )

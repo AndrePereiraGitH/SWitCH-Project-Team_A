@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Author;
 
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
  *
  * <p>This test class verifies the construction and equality behaviour of {@link Author}.
  *
- * <p><b>Test double strategy:</b> {@link Country} is replaced with a test double
+ * <p><b>Test double strategy:</b> {@link CountryID} is replaced with a test double
  * via {@code mock(Country.class)} declared as a field. Because JUnit 5 creates a
  * new instance of the test class before each test method, the double is automatically
  * fresh for every test — no {@code @BeforeEach} or {@code @ExtendWith} required.
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.mock;
  *       different country, different date of birth</li>
  * </ul>
  *
- * <p><b>What is NOT tested here:</b> the internal behaviour of {@link Country}.
+ * <p><b>What is NOT tested here:</b> the internal behaviour of {@link CountryID}.
  * That class has its own dedicated test class. The test double exists purely to
  * isolate {@link Author} from that dependency.
  */
 class AuthorTest {
 
-    Country countryDouble = mock(Country.class);
+    CountryID countryDouble = mock(CountryID.class);
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -45,7 +45,7 @@ class AuthorTest {
 
         // Assert
         assertEquals("Jane", author.getName());
-        assertSame(countryDouble, author.getCountry());
+        assertSame(countryDouble, author.getCountryID());
         assertEquals(LocalDate.of(1990, 1, 1), author.getDateOfBirth());
         assertEquals("valid bio", author.getBiography());
     }
@@ -151,6 +151,31 @@ class AuthorTest {
         assertFalse(author.equals("not an author"));
     }
 
+    @Test
+    void shouldNotBeEquals_whenComparedDifferentId() {
+        // Arrange
+        Author author = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author author2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+
+        // Act + Assert
+        assertNotEquals(author.id(), author2.id());
+
+    }
+
+    @Test
+    void shouldBeEqual_whenComparedToDifferentInstanceWithSameId() throws Exception {
+        // arrange
+        Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
+        Author a2 = new Author("John", countryDouble, LocalDate.of(2000, 2, 2), "other bio");
+
+        java.lang.reflect.Field idField = Author.class.getDeclaredField("_id");
+        idField.setAccessible(true);
+        idField.set(a2, a1.id());
+
+        // act + assert
+        assertEquals(a1, a2);
+    }
+
     // ========================================
     // HASHCODE TESTS
     // ========================================
@@ -189,9 +214,9 @@ class AuthorTest {
     // ========================================
 
     @Test
-    void sameIdentityAs_shouldHaveSameIdentity_whenAllFieldsAreEqual() {
+    void sameAs_shouldHaveSameIdentity_whenAllFieldsAreEqual() {
         // arrange
-        Country sameCountryDouble = mock(Country.class);
+        CountryID sameCountryDouble = mock(CountryID.class);
         LocalDate dob = LocalDate.of(1990,4, 4);
 
         Author a1 = new Author("Jane", sameCountryDouble, dob, "bio");
@@ -202,7 +227,7 @@ class AuthorTest {
     }
 
     @Test
-    void sameIdentityAs_shouldNotHaveSame_whenComparedToNull() {
+    void sameAs_shouldNotHaveSame_whenComparedToNull() {
         // arrange
         LocalDate dob = LocalDate.of(1990,4, 4);
         Author a1 = new Author("Jane", countryDouble, dob, "bio");
@@ -212,7 +237,7 @@ class AuthorTest {
     }
 
     @Test
-    void sameIdentityAs_shouldNotHaveSame_whenComparedToDifferentClass() {
+    void sameAs_shouldNotHaveSame_whenComparedToDifferentClass() {
         // arrange
         LocalDate dob = LocalDate.of(1990, 4, 4);
         Author a1 = new Author("Jane", countryDouble, dob, "bio");
@@ -222,7 +247,7 @@ class AuthorTest {
     }
 
     @Test
-    void sameIdentityAs_shouldNotHaveSame_whenNameIsDifferent() {
+    void sameAs_shouldNotHaveSame_whenNameIsDifferent() {
 
         // arrange
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
@@ -233,9 +258,9 @@ class AuthorTest {
     }
 
     @Test
-    void shouldNotHaveSameIdentity_whenCountryIsDifferent() {
+    void sameAs_shouldNotHaveSameIdentity_whenCountryIsDifferent() {
         // arrange
-        Country otherCountry = mock(Country.class);
+        CountryID otherCountry = mock(CountryID.class);
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
         Author a2 = new Author("Jane", otherCountry, LocalDate.of(1990, 1, 1), "bio");
 
@@ -244,7 +269,7 @@ class AuthorTest {
     }
 
     @Test
-    void shouldNotHaveSameIdentity_whenDateOfBirthIsDifferent() {
+    void sameAs_shouldNotHaveSameIdentity_whenDateOfBirthIsDifferent() {
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
         Author a2 = new Author("Jane", countryDouble, LocalDate.of(1995, 6, 15), "bio");
 
@@ -252,16 +277,10 @@ class AuthorTest {
     }
 
     @Test
-    void shouldNotHaveSameIdentity_whenBiographyIsDifferent() {
+    void sameAs_shouldNotHaveSameIdentity_whenBiographyIsDifferent() {
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio one");
         Author a2 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio two");
 
         assertFalse(a1.sameAs(a2));
     }
-
-
-
-
 }
-
-
