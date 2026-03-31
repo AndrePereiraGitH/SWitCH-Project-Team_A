@@ -134,33 +134,43 @@ public class User implements AggregateRoot<UserId> {
      *         {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(_userName, user._userName);
+    public boolean equals(Object obj) {
+                if (this == obj) return true;
+    
+                if (obj instanceof User) {
+                    User other = (User) obj;
+                    if (this._id.equals(other._id))
+                        return true;
+        }
+        return false;
     }
 
-    /**
-     * Indicates whether this {@code User} is the same entity as another object,
-     * based on their unique {@link UserId}.
-     *
-     * @param object the object to compare with
-     * @return {@code true} if the given object is a {@code User} with the same {@link UserId};
-     *         {@code false} otherwise
-     */
+  /**
+ * Indicates whether this {@code User} is the same entity as another object,
+ * based on their business attributes.
+ *
+ * @param obj the object to compare with
+ * @return {@code true} if the given object is a {@code User} with the same
+ *         business attributes; {@code false} otherwise
+ */
     @Override
-    public boolean sameAs(Object object) {
-        if (object instanceof User other)
-            return _id.equals(other._id);
+    public boolean sameAs(Object obj) {
+        if (!(obj instanceof User)) {
         return false;
+        }
+
+    User other = (User) obj;
+
+    return this._userName.equals(other._userName) &&
+            this._contact.equals(other._contact) &&
+            this._profile.equals(other._profile) &&
+            this._userRole.equals(other._userRole);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_userName);
+        return Objects.hash(_id);
     }
-
 
 }
 
