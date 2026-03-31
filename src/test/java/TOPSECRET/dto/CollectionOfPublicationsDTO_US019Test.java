@@ -2,7 +2,7 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

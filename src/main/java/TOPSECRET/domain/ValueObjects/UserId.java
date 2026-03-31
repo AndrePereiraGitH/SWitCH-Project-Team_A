@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
-public class UserId {
+import TOPSECRET.ddd.DomainID;
+
+public class UserId implements DomainID {
     /**
      * Value Object representing a unique identifier for a User.
      * <p>

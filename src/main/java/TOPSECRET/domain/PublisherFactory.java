@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.ValueObjects.Contact;
+
 /**
  * Factory responsible for creating {@link Publisher} instances.
  *

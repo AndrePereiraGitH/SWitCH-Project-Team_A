@@ -1,12 +1,23 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.User;
 
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for the {@link UserFactory}.
+ * <p>
+ * This test class verifies the behaviour of {@code UserFactory} regarding:
+ * </p>
+ * <ul>
+ *     <li>Creation — verifies that the factory delegates construction to {@link User}</li>
+ * </ul>
+ */
 class UserFactoryTest {
 
     @Test

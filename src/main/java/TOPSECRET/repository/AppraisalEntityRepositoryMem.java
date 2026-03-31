@@ -3,11 +3,13 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 
@@ -88,21 +90,24 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
             throw new IllegalArgumentException("PublicationTypes cannot be null or empty.");
         }
 
-        List<Genre> genres = new ArrayList<>();
+        List<GenreID> genres = new ArrayList<>();
         for (GenreDetailsDTO_US004 dto : selectedGenresDTO) {
             Genre genre = _genreRepository.findByTitle(dto.getTitle());
             if (genre == null) {
                 throw new IllegalArgumentException("Genre not found.");
             }
-            genres.add(genre);
+            genres.add(genre.id());
         }
 
-        List<PublicationType> publicationTypes = new ArrayList<>();
+        List<PublicationTypeId> publicationTypes = new ArrayList<>();
         for (PublicationTypeDTO_US004 dto : selectedPublicationTypesDTO) {
             PublicationType publicationType =
                     _publicationTypeRepository.findByAttributes(dto.getMediaFormat());
+            if (publicationType == null) {
+                throw new IllegalArgumentException("PublicationType not found.");
+            }
 
-            publicationTypes.add(publicationType);
+            publicationTypes.add(publicationType.id());
         }
 
         if (existsByNameAndContact(name, contact)) {

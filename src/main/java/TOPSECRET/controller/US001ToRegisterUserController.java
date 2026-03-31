@@ -1,16 +1,16 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.repository.UserRepository;
+import TOPSECRET.domain.User.IUserRepository;
 
 public class US001ToRegisterUserController {
 
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
 
     // Constructor
-    public US001ToRegisterUserController(UserRepository userRepository) {
+    public US001ToRegisterUserController(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

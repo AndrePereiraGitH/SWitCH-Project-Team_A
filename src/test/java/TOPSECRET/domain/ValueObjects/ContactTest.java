@@ -1,6 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 
-import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.domain.City;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -144,6 +144,49 @@ class ContactTest {
         // ASSERT
         assertFalse(result);
     }
+
+    @Test
+    void shouldReturnFalseWhenExtensionIsNullInFirstContactButNotInSecond() {
+
+        // Arrange
+        Contact contact1 = new Contact();
+        Contact contact2 = new Contact(null, "351", null, null);
+
+        // Act
+        boolean result = contact1.equals(contact2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenOneExtensionIsNullViaEmptyConstructor() {
+
+        // Arrange
+        Contact contact1 = new Contact();
+        Contact contact2 = createContact("912345678", "351", null, null);
+
+        // Act
+        boolean result = contact1.equals(contact2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnTrueWhenBothExtensionsAreNullViaEmptyConstructor() {
+
+        // Arrange
+        Contact contact1 = new Contact();
+        Contact contact2 = new Contact();
+
+        // Act
+        boolean result = contact1.equals(contact2);
+
+        // Assert
+        assertTrue(result);
+    }
+
 
     // Test getEmail
     @Test

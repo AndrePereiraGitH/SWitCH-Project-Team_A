@@ -2,7 +2,7 @@ package TOPSECRET.domain.DirectSale;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.DirectSaleID;
 
 import java.util.List;
