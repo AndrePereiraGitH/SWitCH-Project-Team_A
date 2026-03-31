@@ -174,20 +174,11 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
         AppraisalEntity newObj = (AppraisalEntity) obj;
 
-        if (!this._name.equals(newObj._name)) {
-            return false;
-        }
-        if (!this._contact.equals(newObj ._contact)){
-            return false;
-        }
-        if (!this._genreId.equals(newObj ._genreId)){
-            return false;
-        }
-        if (!this._publicationTypeId.equals(newObj ._publicationTypeId)){
-            return false;
-        }
+        return  this._name.equals(newObj._name) &&
+                this._contact.equals(newObj._contact) &&
+                this._genreId.equals(newObj._genreId) &&
+                this._publicationTypeId.equals(newObj._publicationTypeId);
 
-        return true;
     }
 }
 
