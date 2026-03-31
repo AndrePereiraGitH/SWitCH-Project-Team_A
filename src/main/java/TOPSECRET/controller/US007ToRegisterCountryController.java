@@ -1,23 +1,48 @@
-package TOPSECRET.controller; //Define o "package" onde a classe está localizada
+package TOPSECRET.controller;
 
-import TOPSECRET.domain.Country;
-import TOPSECRET.repository.CountryRepository; //import de classes para o Java saber que existem
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.ICountryRepository;
 
-public class US007ToRegisterCountryController { //Define uma classe pública
+/**
+ * Controller responsible for handling the registration of a new country in the system.
+ * <p>
+ * Corresponds to User Story US007: As an Administrator, I want to register
+ * a new country in the System.
+ * </p>
+ */
+public class US007ToRegisterCountryController {
 
-    private final CountryRepository _countryRepository; //Um atributo da classe (final - não pode ser alterado)
+    /** Repository used to persist and manage {@link Country} instances. */
+    private final ICountryRepository _countryRepository;
 
-    public US007ToRegisterCountryController(CountryRepository countryRepository) { // Construtor da classe. Recebe o repositório, não o cria
-        this._countryRepository = countryRepository; // this é referência ao atributo desta classe
+    /**
+     * Constructs a new {@code US007ToRegisterCountryController} with the given repository.
+     *
+     * @param countryRepository the repository used to store countries;
+     *                          must not be {@code null}
+     */
+    public US007ToRegisterCountryController(ICountryRepository countryRepository) {
+        this._countryRepository = countryRepository;
     }
 
-    //Being called by the UI - "registerNewCountry (countryName)"
-
-    public Country registerNewCountry (String _countryName) { //Méto.do público que recebe uma String e retorna um objeto tipo Country
-
-        if (_countryName == null || _countryName.isBlank()){ //Vai validar, com o if, se o _countryName for null ou estiver em branco
-            throw new IllegalArgumentException("Country name cannot be null or blank"); //caso o if seja true, "throw new ..." é lançar uma exceção caso o nome seja inválido. Protege o domínio
+    /**
+     * Registers a new country in the system.
+     * <p>
+     * Called by the UI with the name of the country to be registered.
+     * Validates that the name is not {@code null} or blank before
+     * delegating to the repository.
+     * </p>
+     *
+     * @param _countryName the name of the country to register;
+     *                     must not be {@code null} or blank
+     * @return the newly registered {@link Country}
+     * @throws IllegalArgumentException if {@code _countryName} is {@code null},
+     *                                  blank, invalid, or already registered
+     */
+    public Country registerNewCountry(String _countryName) {
+        if (_countryName == null || _countryName.isBlank()) {
+            throw new IllegalArgumentException("Country name cannot be null or blank");
         }
-        return _countryRepository.createAndAddNewCountry(_countryName); //caso o if seja false, o _countryName não é null nem está em branco, o controller chama o repositório para criar um objeto "Country" e adicionar à lista/base de dados. Objeto Country é retornado
+        return _countryRepository.createAndAddNewCountry(_countryName);
     }
 }

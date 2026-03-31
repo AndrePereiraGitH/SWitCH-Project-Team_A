@@ -1,8 +1,7 @@
 package TOPSECRET.domain.Author;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.ddd.DomainID;
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 
 import java.time.LocalDate;

@@ -1,0 +1,84 @@
+@startuml
+
+hide footbox
+autonumber
+title US018 - Add Publication to Collection (Main)
+
+actor User
+participant ":UI018" as UI
+participant ":AddCollectionOfPublicationsController" as Controller
+participant ":CollectionOfPublicationRepository" as CollectionRepo
+participant ":PublicationSampleRepository" as PublicationSampleRepo
+
+' --- Start ---
+User -> UI : I want to add a publication\nto one of my collections
+activate UI
+
+' =========================
+' Get User Collections
+' =========================
+UI -> Controller : getUserCollections(user)
+activate Controller
+
+ref over UI, Controller
+[[2.GetUserCollections.puml Get User Collections]]
+end ref
+
+Controller --> UI : listOfCollectionsDTO
+deactivate Controller
+
+UI --> User : Select collection
+deactivate UI
+
+User -> UI : Selected collection
+activate UI
+
+' =========================
+' Get Available Publications
+' =========================
+UI -> Controller : getAvailablePublications\n(collectionDTO)
+activate Controller
+
+ref over UI, Controller
+[[3.GetAvailablePublications.puml Get Available Publications]]
+end ref
+
+Controller --> UI : listOfAvailablePublicationDTO
+deactivate Controller
+
+UI --> User : Select publication(s)
+deactivate UI
+
+User -> UI : Selected publications
+activate UI
+
+' =========================
+' Add Publication (FULL)
+' =========================
+UI -> Controller : addPublicationToCollection\n(collectionDTO, selectedPublicationDTO)
+activate Controller
+
+Controller -> CollectionRepo : findById(collectionDTO.id)
+activate CollectionRepo
+CollectionRepo --> Controller : userCollection
+deactivate CollectionRepo
+
+loop for each publicationSampleDTO
+    Controller -> PublicationSampleRepo : findById(publicationSampleDTO.id)
+    activate PublicationSampleRepo
+    PublicationSampleRepo --> Controller : publicationSample
+    deactivate PublicationSampleRepo
+end
+
+Controller -> CollectionRepo : addPublicationToCollection\n(userCollection, publicationSample)
+activate CollectionRepo
+CollectionRepo --> Controller : true
+deactivate CollectionRepo
+
+Controller --> UI : Success
+deactivate Controller
+
+UI --> User : Success
+deactivate UI
+
+@enduml

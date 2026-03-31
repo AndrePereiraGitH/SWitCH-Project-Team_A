@@ -1,0 +1,66 @@
+@startuml
+hide footbox
+autonumber
+
+title US018 - Get User Collections
+
+note over UI, Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+participant ":UI018" as UI
+participant ":AddCollectionOfPublicationsController" as Controller
+participant ":CollectionOfPublicationsRepository" as CollectionRepo
+participant "userCollections : List<CollectionOfPublications>" as userCollections
+participant ":CollectionOfPublicationsMapper" as CollectionMapper
+participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
+participant ":CollectionOfPublications" as CP
+participant "collectionDTO: CollectionOfPublicationsDTO" as collectionDTO
+
+UI -> Controller : getUserCollections(user)
+activate Controller
+
+Controller -> CollectionRepo : getUserCollections(user)
+activate CollectionRepo
+
+CollectionRepo -> CollectionRepo : isFromUser(user)
+CollectionRepo -->> userCollections ** : <<create>>
+CollectionRepo --> Controller : userCollections
+deactivate CollectionRepo
+
+Controller -> CollectionMapper : toDTO(userCollections)
+activate CollectionMapper
+
+CollectionMapper -->> listOfCollectionsDTO ** : <<create>>
+
+loop for each collection in userCollections
+    CollectionMapper -> CP : getId()
+    activate CP
+    CP --> CollectionMapper : id
+    deactivate CP
+
+    CollectionMapper -> CP : getCollectionName()
+    activate CP
+    CP --> CollectionMapper : collectionName
+    deactivate CP
+
+    CollectionMapper -->> collectionDTO ** : <<create>>
+
+    CollectionMapper -> CollectionMapper : listOfCollectionsDTO.add(collectionDTO)
+end
+
+CollectionMapper --> Controller : listOfCollectionsDTO
+deactivate CollectionMapper
+
+Controller --> UI : listOfCollectionsDTO
+deactivate Controller
+
+@enduml

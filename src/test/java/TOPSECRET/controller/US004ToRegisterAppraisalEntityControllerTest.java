@@ -1,20 +1,21 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
-import TOPSECRET.repository.AppraisalEntityRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.IPublicationTypeRepository;
-
+import TOPSECRET.domain.Genre.IGenreRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
@@ -31,9 +32,9 @@ class US004ToRegisterAppraisalEntityControllerTest {
     void shouldReturnAllGenresAsDTOs() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
-        AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
+        IAppraisalEntityRepository appraisalRepo = mock(IAppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
@@ -60,9 +61,9 @@ class US004ToRegisterAppraisalEntityControllerTest {
     void shouldReturnAllPublicationTypesAsDTOs() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
-        AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
+        IAppraisalEntityRepository appraisalRepo = mock(IAppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
@@ -100,7 +101,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 new US004ToRegisterAppraisalEntityController(
                         mock(GenreRepositoryMem.class),
                         mock(IPublicationTypeRepository.class),
-                        mock(AppraisalEntityRepository.class)
+                        mock(IAppraisalEntityRepository.class)
                 );
 
         // ACT + ASSERT
@@ -124,7 +125,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 new US004ToRegisterAppraisalEntityController(
                         mock(GenreRepositoryMem.class),
                         mock(IPublicationTypeRepository.class),
-                        mock(AppraisalEntityRepository.class)
+                        mock(IAppraisalEntityRepository.class)
                 );
 
         // ACT + ASSERT
@@ -144,9 +145,9 @@ class US004ToRegisterAppraisalEntityControllerTest {
     void shouldDelegateRegistrationToRepository() {
 
         // ARRANGE
-        GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
-        AppraisalEntityRepository appraisalRepo = mock(AppraisalEntityRepository.class);
+        IAppraisalEntityRepository appraisalRepo = mock(IAppraisalEntityRepository.class);
 
         US004ToRegisterAppraisalEntityController sut =
                 new US004ToRegisterAppraisalEntityController(
@@ -162,7 +163,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
 
         AppraisalEntity expected = mock(AppraisalEntity.class);
 
-        when(appraisalRepo.createAndAddAppraisalEntity(
+        when(appraisalRepo.createAndAdd(
                 eq("Test"),
                 eq(contact),
                 anyList(),

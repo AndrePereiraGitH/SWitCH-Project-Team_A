@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.CountryFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -19,9 +21,12 @@ class ProfileTest {
     @Test
     void shouldCreateProfileWithValidData() {
         // Arrange & Act
+        CountryFactory countryFactory = new CountryFactory();
+        Country country = countryFactory.create("Portugal");
+
         Profile profile = new Profile(
                 "Test User",
-                new Country("Portugal"),
+                country,
                 LocalDate.of(2000, 5, 10)
         );
 
@@ -37,9 +42,12 @@ class ProfileTest {
     // A profile without a name makes no sense — null must be rejected.
     @Test
     void shouldFailWhenNameIsNull() {
+        //Arrange
+        Country country = new CountryFactory().create("Spain");
+
         // Act & Assert — null name must throw
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile(null, new Country("Spain"), LocalDate.now());
+            new Profile(null, country, LocalDate.now());
         });
     }
 
@@ -47,9 +55,12 @@ class ProfileTest {
     // The check uses isBlank(), which catches both null and whitespace-only strings.
     @Test
     void shouldFailWhenNameIsBlank() {
+        //Arrange
+        Country country = new CountryFactory().create("France");
+
         // Act & Assert — blank name (only spaces) must throw
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("   ", new Country("France"), LocalDate.now());
+            new Profile("   ", country, LocalDate.now());
         });
     }
 
@@ -65,9 +76,12 @@ class ProfileTest {
     // Birthday is also required — a profile with no birthday is not valid.
     @Test
     void shouldFailWhenBirthdayIsNull() {
+        //Arrange
+        Country country = new CountryFactory().create("Germany");
+
         // Act & Assert — null birthday must throw
         assertThrows(IllegalArgumentException.class, () -> {
-            new Profile("Valid Name", new Country("Germany"), null);
+            new Profile("Valid Name", country, null);
         });
     }
 
@@ -80,7 +94,9 @@ class ProfileTest {
     @Test
     void equals_shouldBeFalse_whenNull() {
         // Arrange & Act & Assert
-        Profile p = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Country country = new CountryFactory().create("Portugal");
+
+        Profile p = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
         assertFalse(p.equals(null));
     }
 
@@ -88,7 +104,8 @@ class ProfileTest {
     @Test
     void equals_shouldBeFalse_whenDifferentClass() {
         // Arrange & Act & Assert
-        Profile p = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Country country = new CountryFactory().create("Portugal");
+        Profile p = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
         assertFalse(p.equals("not a profile"));
     }
 
@@ -96,8 +113,10 @@ class ProfileTest {
     @Test
     void equals_shouldBeTrue_whenSameData() {
         // Arrange — two separate objects with the same data
-        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
-        Profile b = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Country country = new CountryFactory().create("Portugal");
+
+        Profile a = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
 
         // Assert — same data must mean equal
         assertEquals(a, b);
@@ -107,7 +126,8 @@ class ProfileTest {
     @Test
     void equals_shouldBeTrue_whenSameReference() {
         // Arrange
-        Profile p = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Country country = new CountryFactory().create("Portugal");
+        Profile p = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
 
         // Assert — same reference must be equal to itself
         assertTrue(p.equals(p));
@@ -117,8 +137,10 @@ class ProfileTest {
     @Test
     void equals_shouldBeFalse_whenNameDiffers() {
         // Arrange
-        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
-        Profile b = new Profile("Bruno", new Country("Portugal"), LocalDate.of(1990, 1, 1));
+        Country country = new CountryFactory().create("Portugal");
+
+        Profile a = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Bruno", country, LocalDate.of(1990, 1, 1));
 
         // Assert — different name means not equal
         assertNotEquals(a, b);
@@ -129,8 +151,11 @@ class ProfileTest {
     @Test
     void equals_shouldBeFalse_whenCountryDiffers() {
         // Arrange — same name and birthday, only country differs
-        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
-        Profile b = new Profile("Ana", new Country("Spain"), LocalDate.of(1990, 1, 1));
+        Country country1 = new CountryFactory().create("Portugal");
+        Country country2 = new CountryFactory().create("Spain");
+
+        Profile a = new Profile("Ana", country1, LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", country2, LocalDate.of(1990, 1, 1));
 
         // Assert — different country means not equal
         assertNotEquals(a, b);
@@ -141,8 +166,10 @@ class ProfileTest {
     @Test
     void equals_shouldBeFalse_whenBirthdayDiffers() {
         // Arrange — same name and country, only birthday differs
-        Profile a = new Profile("Ana", new Country("Portugal"), LocalDate.of(1990, 1, 1));
-        Profile b = new Profile("Ana", new Country("Portugal"), LocalDate.of(2000, 6, 15));
+        Country country = new CountryFactory().create("Portugal");
+
+        Profile a = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", country, LocalDate.of(2000, 6, 15));
 
         // Assert — different birthday means not equal
         assertNotEquals(a, b);

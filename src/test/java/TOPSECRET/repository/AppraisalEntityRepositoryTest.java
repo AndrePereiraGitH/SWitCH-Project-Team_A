@@ -1,9 +1,13 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
+import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.Contact;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.dto.GenreDetailsDTO_US004;
 import TOPSECRET.dto.PublicationTypeDTO_US004;
 
@@ -15,18 +19,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link AppraisalEntityRepository}.
- *
- * SUT: AppraisalEntityRepository
- * Dependencies are mocked to isolate repository behavior.
- */
+
 class AppraisalEntityRepositoryTest {
 
-    /**
-     * Ensures a new AppraisalEntity is created and stored successfully
-     * when valid input is provided.
-     */
+
     @Test
     void shouldCreateAndAddAppraisalEntitySuccessfully() {
 
@@ -35,7 +31,7 @@ class AppraisalEntityRepositoryTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
-        AppraisalEntityRepository sut =
+        IAppraisalEntityRepository sut =
                 new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
@@ -47,15 +43,14 @@ class AppraisalEntityRepositoryTest {
         PublicationTypeDTO_US004 publicationDTO = mock(PublicationTypeDTO_US004.class);
 
         String mediaFormat = "Book";
-
         when(publicationDTO.getMediaFormat()).thenReturn(mediaFormat);
-
 
         List<GenreDetailsDTO_US004> genreDTOs = List.of(genreDTO);
         List<PublicationTypeDTO_US004> publicationDTOs = List.of(publicationDTO);
 
         Genre genre = mock(Genre.class);
         PublicationType publicationType = mock(PublicationType.class);
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
         when(publicationTypeRepository.findByAttributes(
@@ -63,6 +58,7 @@ class AppraisalEntityRepositoryTest {
                 .thenReturn(publicationType);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
+        when(createdEntity.getId()).thenReturn(id);
         when(createdEntity.getName()).thenReturn("Test");
         when(createdEntity.getContact()).thenReturn(contact);
 
@@ -79,7 +75,7 @@ class AppraisalEntityRepositoryTest {
 
             // ACT
             AppraisalEntity result =
-                    sut.createAndAddAppraisalEntity(
+                    sut.createAndAdd(
                             "Test",
                             contact,
                             List.of(genreDTO),
@@ -91,10 +87,6 @@ class AppraisalEntityRepositoryTest {
         }
     }
 
-    /**
-     * Ensures an exception is thrown when an AppraisalEntity
-     * with the same name and contact already exists.
-     */
     @Test
     void shouldThrowExceptionWhenEntityAlreadyExists() {
 
@@ -103,7 +95,7 @@ class AppraisalEntityRepositoryTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
-        AppraisalEntityRepository sut =
+        IAppraisalEntityRepository sut =
                 new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
@@ -122,6 +114,7 @@ class AppraisalEntityRepositoryTest {
 
         Genre genre = mock(Genre.class);
         PublicationType publicationType = mock(PublicationType.class);
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
         when(publicationTypeRepository.findByAttributes(
@@ -129,6 +122,7 @@ class AppraisalEntityRepositoryTest {
                 .thenReturn(publicationType);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
+        when(createdEntity.getId()).thenReturn(id);
         when(createdEntity.getName()).thenReturn("Test");
         when(createdEntity.getContact()).thenReturn(contact);
 
@@ -146,7 +140,7 @@ class AppraisalEntityRepositoryTest {
             ).thenReturn(createdEntity);
 
             // First creation (should succeed)
-            sut.createAndAddAppraisalEntity(
+            sut.createAndAdd(
                     "Test",
                     contact,
                     genreDTOs,
@@ -155,7 +149,7 @@ class AppraisalEntityRepositoryTest {
 
             // ACT + ASSERT
             assertThrows(IllegalArgumentException.class, () ->
-                    sut.createAndAddAppraisalEntity(
+                    sut.createAndAdd(
                             "Test",
                             contact,
                             genreDTOs,
@@ -164,9 +158,6 @@ class AppraisalEntityRepositoryTest {
         }
     }
 
-    /**
-     * Ensures exception is thrown when Genre DTO list is null.
-     */
     @Test
     void shouldThrowExceptionWhenGenresAreNull() {
 
@@ -175,14 +166,15 @@ class AppraisalEntityRepositoryTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
-        AppraisalEntityRepository sut =
+        IAppraisalEntityRepository sut =
                 new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
         Contact contact = mock(Contact.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                sut.createAndAddAppraisalEntity(
+                sut.createAndAdd(
                         "Test",
                         contact,
                         null,
@@ -190,9 +182,7 @@ class AppraisalEntityRepositoryTest {
                 ));
     }
 
-    /**
-     * Ensures an exception is thrown when the publication type DTO list is empty.
-     */
+
     @Test
     void shouldThrowExceptionWhenPublicationTypesAreEmpty() {
 
@@ -201,17 +191,18 @@ class AppraisalEntityRepositoryTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
-        AppraisalEntityRepository sut =
+        IAppraisalEntityRepository sut =
                 new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, appraisalEntityFactory);
 
         Contact contact = mock(Contact.class);
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
 
         GenreDetailsDTO_US004 genreDTO = mock(GenreDetailsDTO_US004.class);
         when(genreDTO.getTitle()).thenReturn("Fantasy");
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                sut.createAndAddAppraisalEntity(
+                sut.createAndAdd(
                         "Test",
                         contact,
                         List.of(genreDTO),

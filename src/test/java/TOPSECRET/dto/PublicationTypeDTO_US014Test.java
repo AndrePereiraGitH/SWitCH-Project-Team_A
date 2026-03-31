@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.PublicationTypeFactory;
-import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

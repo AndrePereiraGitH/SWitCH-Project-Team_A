@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Author;
 
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.Country.Country;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
