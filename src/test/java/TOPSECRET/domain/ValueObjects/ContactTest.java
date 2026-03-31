@@ -150,7 +150,7 @@ class ContactTest {
 
         // Arrange
         Contact contact1 = new Contact();
-        Contact contact2 = new Contact(null, "351", null, null); // _phoneNum é null, _extension não é null
+        Contact contact2 = new Contact(null, "351", null, null);
 
         // Act
         boolean result = contact1.equals(contact2);
