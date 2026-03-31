@@ -82,19 +82,6 @@ public class Contact implements ValueObject {
                 ", e-mail: " + _email +
                 ", address: " + _location;
     }
-
-    /**
-     * Indicates whether some other object is equal to this {@code Contact}.
-     * <p>
-     * Two {@code Contact} instances are considered equal if all their fields
-     * (phone number, extension, email, and address) are equal.
-     * Supports {@code null} values in any field.
-     * </p>
-     *
-     * @param obj the object to compare with
-     * @return {@code true} if the given object is a {@code Contact} with the same fields;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

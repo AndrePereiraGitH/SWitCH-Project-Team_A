@@ -149,7 +149,7 @@ class ContactTest {
     void shouldReturnFalseWhenExtensionIsNullInFirstContactButNotInSecond() {
 
         // Arrange
-        Contact contact1 = new Contact(); // _phoneNum e _extension são null
+        Contact contact1 = new Contact();
         Contact contact2 = new Contact(null, "351", null, null); // _phoneNum é null, _extension não é null
 
         // Act

@@ -61,18 +61,6 @@ public class Address implements ValueObject {
     public String toString() {
         return street + ", no. " + number + ", " + zipCode + ", " + city.getCityName();
     }
-
-    /**
-     * Indicates whether some other object is equal to this {@code Address}.
-     * <p>
-     * Two {@code Address} instances are considered equal if all their fields
-     * (street, number, zip code, and city) are equal.
-     * </p>
-     *
-     * @param o the object to compare with
-     * @return {@code true} if the given object is an {@code Address} with the same fields;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
