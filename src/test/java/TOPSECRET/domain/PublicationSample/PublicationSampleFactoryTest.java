@@ -1,10 +1,10 @@
 package TOPSECRET.domain.PublicationSample;
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -18,9 +18,9 @@ class PublicationSampleFactoryTest {
 
         // Arrange
 
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
-        User userDouble = mock(User.class);
-        Edition editionDouble = mock(Edition.class);
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        UserId userIdDouble = mock(UserId.class);
+        EditionID editionIdDouble = mock(EditionID.class);
 
         PublicationStatus status = PublicationStatus.READ;
         Condition condition = Condition.NEW;
@@ -35,10 +35,10 @@ class PublicationSampleFactoryTest {
 
             // Act
             PublicationSample result = factory.create(
-                    bdDouble,
-                    userDouble,
+                    bdIdDouble,
+                    userIdDouble,
                     status,
-                    editionDouble,
+                    editionIdDouble,
                     condition
             );
 

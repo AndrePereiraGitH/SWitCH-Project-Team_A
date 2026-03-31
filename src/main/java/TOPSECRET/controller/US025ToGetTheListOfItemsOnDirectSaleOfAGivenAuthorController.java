@@ -53,10 +53,10 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      * @return list of DirectSaleDTO_US025 representing the author's items
      * @throws IllegalArgumentException if the author is null
      */
-    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
-        if (author == null) {
-            throw new IllegalArgumentException("Author cannot be null");
-        }
-        return listingRepository.getListOfItemsOnDirectSaleOfAGivenAuthor(author);
-    }
+//    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
+//        if (author == null) {
+//            throw new IllegalArgumentException("Author cannot be null");
+//        }
+//        return listingRepository.getListOfItemsOnDirectSaleOfAGivenAuthor(author);
+//    }
 }

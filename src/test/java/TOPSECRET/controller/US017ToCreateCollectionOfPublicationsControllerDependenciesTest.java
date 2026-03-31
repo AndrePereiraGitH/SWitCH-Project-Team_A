@@ -12,7 +12,7 @@ import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 import TOPSECRET.repository.CollectionOfPublicationsRepositoryMem;
 import TOPSECRET.repository.GenreRepositoryMem;
 
@@ -41,7 +41,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
 
     // shared between tests — reset before each test by @BeforeEach
     private GenreRepositoryMem genreRepository;
-    private CollectionOfPublicationsRepository collectionRepository;
+    private ICollectionOfPublicationsRepository collectionRepository;
     private US017ToCreateCollectionOfPublicationsController controller;
 
     // runs before each test — builds real objects so tests work with the full system, not mocks
@@ -133,7 +133,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     void shouldThrowWhenUserIsNull() {
         // Arrange — valid genre, but no user
         GenreRepositoryMem genreRepo = new GenreRepositoryMem(new GenreFactory());
-        CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepositoryMem(new CollectionOfPublicationsFactory());
+        ICollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepositoryMem(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
         Genre genre = new GenreFactory().create("Fiction");
@@ -153,7 +153,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     void shouldThrowWhenGenreIsNull() {
         // Arrange — valid user, but no genre
         GenreRepositoryMem genreRepo = new GenreRepositoryMem(new GenreFactory());
-        CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepositoryMem(new CollectionOfPublicationsFactory());
+        ICollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepositoryMem(new CollectionOfPublicationsFactory());
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
         User user = createValidUser();
@@ -172,7 +172,7 @@ class US017ToCreateCollectionOfPublicationsControllerDependenciesTest {
     @Test
     void shouldThrowWhenGenreRepositoryIsNull() {
         // Arrange — only provide the collection repo; genre repo is null on purpose
-        CollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepositoryMem(new CollectionOfPublicationsFactory());
+        ICollectionOfPublicationsRepository collectionRepo = new CollectionOfPublicationsRepositoryMem(new CollectionOfPublicationsFactory());
 
         // Act & Assert — null genre repo must fail at construction time
         assertThrows(

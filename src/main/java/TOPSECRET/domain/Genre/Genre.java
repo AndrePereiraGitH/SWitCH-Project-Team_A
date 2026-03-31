@@ -50,7 +50,7 @@ public class Genre implements AggregateRoot<GenreID>{
     @Override
     public boolean sameAs(Object object) {
         if (object instanceof Genre other)
-            return _id.equals(other._id);
+            return _genreType.equalsIgnoreCase(other._genreType);
         return false;
     }
     // --------------------------------- US004 starts ---------------------------------
@@ -69,8 +69,8 @@ public class Genre implements AggregateRoot<GenreID>{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Genre)) return false;
-        Genre genre = (Genre) o;
-        return _genreType.equalsIgnoreCase(genre._genreType);
+        Genre other = (Genre) o;
+        return _id.equals(other._id); //compares by ID
     }
 
     /**
@@ -78,7 +78,7 @@ public class Genre implements AggregateRoot<GenreID>{
      */
     @Override
     public int hashCode() {
-        return Objects.hash(_genreType.toLowerCase());
+        return Objects.hash(_id); // natches equals() which uses _id
     }
 
     // --------------------------------- US004 ends ---------------------------------

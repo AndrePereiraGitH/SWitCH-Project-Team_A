@@ -139,16 +139,16 @@ class US012GetListOfPublicationsInLibraryControllerTest {
     // Test helpers
     // -------------------------------------------------------------------------
 
-    private PublicationSample createMockPublicationSample(String title, List<String> authors, String code) {
-        BibliographicalData bibliographicalDataDouble = createMockBibliographicalData(title, authors);
-        Edition editionDouble = createMockEdition(code);
-
-        PublicationSample publicationSample = mock(PublicationSample.class);
-        when(publicationSample.getBibliographicalData()).thenReturn(bibliographicalDataDouble);
-        when(publicationSample.getEdition()).thenReturn(editionDouble);
-
-        return publicationSample;
-    }
+//    private PublicationSample createMockPublicationSample(String title, List<String> authors, String code) {
+//        BibliographicalData bibliographicalDataDouble = createMockBibliographicalData(title, authors);
+//        Edition editionDouble = createMockEdition(code);
+//
+//        PublicationSample publicationSample = mock(PublicationSample.class);
+//        when(publicationSample.getBibliographicalData()).thenReturn(bibliographicalDataDouble);
+//        when(publicationSample.getEdition()).thenReturn(editionDouble);
+//
+//        return publicationSample;
+//    }
 
     private Edition createMockEdition(String code) {
         PublicationType publicationTypeDouble = mock(PublicationType.class);

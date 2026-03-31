@@ -1,78 +1,383 @@
 package TOPSECRET.domain.PublicationSample;
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
 
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for {@link PublicationSample} using mocked dependencies.
- *
- * <p>This test suite verifies the behavior of {@link PublicationSample}
- * while isolating it from the internal logic of its dependencies
- * ({@link BibliographicalData}, {@link User}, {@link Edition}, etc.).</p>
- *
- * <p>Mockito is used to create mock objects so that only the logic
- * inside {@link PublicationSample} is tested.</p>
- */
 
 class PublicationSampleTest {
 
-    //Mocks for collaborators
-    private final BibliographicalData anyBiblioData = mock(BibliographicalData.class);
-    private final User anyOwner = mock(User.class);
-    private final Edition anyEdition = mock(Edition.class);
+    // =========================================================================
+    // Test Doubles (Collaborators)
+    // =========================================================================
+
+    private final BibliographicalDataID bdID = mock(BibliographicalDataID.class);
+    private final UserId ownerID = mock(UserId.class);
+    private final EditionID editionID = mock(EditionID.class);
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final Condition anyCondition = mock(Condition.class);
 
 
+    // =========================================================================
+    // Constructor
+    // =========================================================================
+
     @Test
-    void shouldCreateValidPubSampleWithMocks() {
+    void shouldCreateValidPubSample() {
 
         //Act
-        PublicationSample validSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, anyCondition);
+        PublicationSample validSample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+        assertNotNull(validSample);
     }
 
     @Test
-    void shouldThrowExceptionWhenAFieldIsNull() {
+    void shouldThrowExceptionWhen_BibliographicalDataID_isNull() {
         //Arrange
-        BibliographicalData biblioDataNull = null;
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(biblioDataNull, anyOwner, anyPublicationStatus, anyEdition, anyCondition));
+                new PublicationSample(null, ownerID, anyPublicationStatus, editionID, anyCondition));
     }
 
     @Test
-    void shouldFetchDependenciesCorrectly() {
+    void shouldThrowExceptionWhen_UserID_isNull() {
+        //Arrange
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new PublicationSample(bdID, null, anyPublicationStatus, editionID, anyCondition));
+    }
+
+    @Test
+    void shouldThrowExceptionWhen_publicationStatus_isNull() {
+        //Arrange
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new PublicationSample(bdID, ownerID, null, editionID, anyCondition));
+    }
+
+    @Test
+    void shouldThrowExceptionWhen_editionID_isNull() {
+        //Arrange
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new PublicationSample(bdID, ownerID, anyPublicationStatus, null, anyCondition));
+    }
+
+    @Test
+    void shouldThrowExceptionWhen_condition_isNull() {
+        //Arrange
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new PublicationSample(bdID, ownerID, anyPublicationStatus, editionID, null));
+    }
+
+
+    // =========================================================================
+    // Getters
+    // =========================================================================
+
+    @Test
+    void getBibliographicalDataID_shouldReturnBibliographicalDataID() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, anyCondition);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+        when(bdID.getID()).thenReturn("123");
+
+        // Act
+        BibliographicalDataID bdID_real = anySample.getBibliographicalDataID();
 
         //Assert
-        assertEquals(anyBiblioData, anySample.getBibliographicalData());
-        assertEquals(anyOwner, anySample.getOwner());
-        assertEquals(anyEdition, anySample.getEdition());
-        assertEquals(anyPublicationStatus, anySample.getPublicationStatus());
-        assertEquals(anyCondition, anySample.getCondition());
+        assertEquals(bdID,bdID_real);
     }
+
+    @Test
+    void getUserID_shouldReturnUserID() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+
+        // Act
+        UserId userID_real = anySample.getOwnerID();
+
+        //Assert
+        assertEquals(ownerID,userID_real);
+    }
+
+    @Test
+    void getPublicationStatus_shouldReturnPublicationStatus() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+
+        // Act
+        PublicationStatus realStatus = anySample.getPublicationStatus();
+
+        //Assert
+        assertEquals(anyPublicationStatus,realStatus);
+    }
+
+    @Test
+    void getEditionID_shouldReturnEditionID() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+
+        // Act
+        EditionID editionID_real = anySample.getEditionID();
+
+        //Assert
+        assertEquals(editionID_real,editionID);
+    }
+
+    @Test
+    void getCondition_shouldReturnCondition() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+
+        // Act
+        Condition realCondition = anySample.getCondition();
+
+        //Assert
+        assertEquals(realCondition,anyCondition);
+    }
+
+    @Test
+    void getLibraryID_shouldReturnLibraryID() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        anySample.addPublicationToLibrary(libraryIdDouble);
+
+
+        // Act
+        LibraryId libraryID_real = anySample.getLibraryID();
+
+        //Assert
+        assertEquals(libraryID_real, libraryIdDouble);
+    }
+
+    @Test
+    void getCollecOfPubID_shouldReturnCollectionOfPublicationsID() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        anySample.addPublicationToLibrary(libraryIdDouble);
+
+        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        anySample.addPublicationToCollection(collectionOfPublicationsIdDouble);
+
+
+        // Act
+        CollectionOfPublicationsID collectionOfPublicationsID_real = anySample.getCollecOfPubID();
+
+        //Assert
+        assertEquals(collectionOfPublicationsID_real, collectionOfPublicationsIdDouble);
+    }
+
+    @Test
+    void getDetailsMethodShouldReturnCorrectInfo() {
+
+        // Arrange, SUT here would be the PublicationSample and the getDetails method
+        PublicationSample wantDetails = new PublicationSample(bdID, ownerID,
+                anyPublicationStatus, editionID, anyCondition);
+
+        //Act
+        PublicationSample.PublicationDetails anyDetails = wantDetails.getDetails();
+
+        //Assert
+        assertEquals(bdID, anyDetails.bibliographicalData());
+        assertEquals(ownerID, anyDetails.owner());
+        assertEquals(anyPublicationStatus, anyDetails.publicationStatus());
+        assertEquals(editionID, anyDetails.edition());
+        assertEquals(anyCondition, anyDetails.condition());
+    }
+
+    @Test
+    void id_ShouldNotBeNull(){
+        //Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        //Act
+        PublicationSampleID id = sample.id();
+
+        //Assert
+        assertNotNull(id);
+    }
+
+
+    // =========================================================================
+    // Library Assignment
+    // =========================================================================
+
+    @Test
+    void givenValidLibraryId_whenAddPublicationToLibrary_thenLibraryIsAssigned() {
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+
+        //Act
+        LibraryId result = sample.addPublicationToLibrary(libraryIdDouble);
+
+        // Assert
+        assertEquals(libraryIdDouble, result);
+    }
+
+    @Test
+    void givenNullLibraryId_whenAddPublicationToLibrary_thenThrowsNullPointerException() {
+        // Act
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+
+        //Act + Assert
+        assertThrows(NullPointerException.class, () ->
+                sample.addPublicationToLibrary(null));
+    }
+
+    @Test
+    void givenAlreadyAssignedLibrary_whenAddPublicationToLibrary_thenThrowsIllegalArgumentException() {
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()))
+        );
+    }
+
+
+    // =========================================================================
+    // Collection Assignment
+    // =========================================================================
+
+    @Test
+    void givenValidCollection_whenAddPublicationToCollection_thenCollectionIsAssigned() {
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
+
+        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+
+        // Act
+        CollectionOfPublicationsID result = sample.addPublicationToCollection(collectionOfPublicationsIdDouble);
+
+        // Assert
+        assertEquals(collectionOfPublicationsIdDouble, result);
+    }
+
+    @Test
+    void givenNullCollection_whenAddPublicationToCollection_thenThrowsNullPointerException() {
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
+
+        //Act + Assert
+        assertThrows(NullPointerException.class, () ->
+                sample.addPublicationToCollection(null)
+        );
+    }
+
+    @Test
+    void givenAlreadyAssignedCollection_whenAddPublicationToCollection_thenThrowsIllegalArgumentException() {
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+        sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
+
+        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+
+        sample.addPublicationToCollection(new CollectionOfPublicationsID(UUID.randomUUID().toString()));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                sample.addPublicationToCollection(new CollectionOfPublicationsID(UUID.randomUUID().toString()))
+        );
+    }
+
+    @Test
+    void givenNoLibraryAssigned_whenAddPublicationToCollection_thenThrowsIllegalArgumentException() {
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+
+        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                sample.addPublicationToCollection(collectionOfPublicationsIdDouble)
+        );
+    }
+
+
+    // =========================================================================
+    // Status Change
+    // =========================================================================
 
     @Test
     void shouldChangeStatusToForSaleCorrectly() {
 
-        //Arrange, SUT here is the method being tested, PubSample and PublicationStatus
-        PublicationSample sampleRead = new PublicationSample(anyBiblioData, anyOwner, PublicationStatus.READ,
-                anyEdition, anyCondition);
+        //Arrange
+        PublicationSample sampleRead = new PublicationSample(bdID, ownerID, PublicationStatus.READ,
+                editionID, anyCondition);
 
         //Act
         boolean forSale = sampleRead.changeStatusToForSale();
@@ -84,9 +389,9 @@ class PublicationSampleTest {
     @Test
     void shouldReturnFalseIfSampleAlreadyForSale() {
 
-        //Arrange, SUT same as before but different outcome
-        PublicationSample sampleForSale = new PublicationSample(anyBiblioData, anyOwner, PublicationStatus.FOR_SALE,
-                anyEdition, anyCondition);
+
+        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.FOR_SALE,
+                editionID, anyCondition);
 
         //Act
         boolean alreadyForSale = sampleForSale.changeStatusToForSale();
@@ -95,81 +400,96 @@ class PublicationSampleTest {
         assertFalse(alreadyForSale);
     }
 
-    @Test
-    void getDetailsMethodShouldReturnCorrectInfo() {
 
-        // Arrange, SUT here would be the PublicationSample and the getDetails method
-        PublicationSample wantDetails = new PublicationSample(anyBiblioData, anyOwner,
-                anyPublicationStatus, anyEdition, anyCondition);
+    // =========================================================================
+    // Equality and Identity (sameAs / equals)
+    // =========================================================================
+
+    @Test
+    void sameAs_shouldReturnTrue_WhenTwoObjectsAreTheSame() {
+
+        // Arrange
+
+        PublicationSample sample1 = new PublicationSample(bdID, ownerID,
+                anyPublicationStatus, editionID, anyCondition);
+
+        PublicationSample sample2 = new PublicationSample(bdID, ownerID,
+                anyPublicationStatus, editionID, anyCondition);
+
 
         //Act
-        PublicationSample.PublicationDetails anyDetails = wantDetails.getDetails();
+        boolean result = sample1.sameAs(sample2);
 
         //Assert
-        assertEquals(anyBiblioData, anyDetails.bibliographicalData());
-        assertEquals(anyOwner, anyDetails.owner());
-        assertEquals(anyPublicationStatus, anyDetails.publicationStatus());
-        assertEquals(anyEdition, anyDetails.edition());
-        assertEquals(anyCondition, anyDetails.condition());
+        assertTrue(result);
     }
 
     @Test
-    void shouldReturnTrueWhenSameObject() {
+    void sameAs_shouldReturnFalse_WhenTwoObjectsAreDifferent() {
 
         // Arrange
-        PublicationSample sameSample = new PublicationSample(anyBiblioData, anyOwner,
-                anyPublicationStatus, anyEdition, anyCondition);
+        EditionID editionID2 = mock(EditionID.class);
+
+        PublicationSample sample1 = new PublicationSample(bdID, ownerID,
+                anyPublicationStatus, editionID, anyCondition);
+
+        PublicationSample sample2 = new PublicationSample(bdID, ownerID,
+                anyPublicationStatus, editionID2, anyCondition);
+
+
+        //Act
+        boolean result = sample1.sameAs(sample2);
 
         //Assert
-        assertEquals(sameSample, sameSample);
+        assertFalse(result);
     }
 
     @Test
-    void shouldReturnFalseWhenDifferentObject() {
-
-        //Is it valid to use an actual attribute as the differing field here? In this case Condition
-        //Because the SUT now could be considered PublicationSample and Condition instead of just Condition...
-
-        //Arrange
-        PublicationSample anySample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, anyCondition);
-
-        PublicationSample newSample = new PublicationSample(anyBiblioData, anyOwner, anyPublicationStatus,
-                anyEdition, Condition.NEW);
-
-        //Assert
-        assertNotEquals(anySample, newSample);
-    }
-
-    @Test
-    void hashCodeShouldBeConsistent() {
+    void sameAs_shouldReturnFalse_WhenObjectIsOfDifferentType() {
 
         // Arrange
-        PublicationSample anySample =
-                new PublicationSample(anyBiblioData, anyOwner,
-                        anyPublicationStatus, anyEdition, anyCondition);
+        PublicationSample sample = new PublicationSample(bdID, ownerID,
+                anyPublicationStatus, editionID, anyCondition);
 
-        int hashA = anySample.hashCode();
-        int hashB = anySample.hashCode();
+        Object differentType = new Object();
 
-        //Assert
-        assertEquals(hashA, hashB);
+        // Act
+        boolean result = sample.sameAs(differentType);
+
+        // Assert
+        assertFalse(result);
+
     }
 
     @Test
-    void differentPublicationSamplesShouldHaveDifferentHashCodes() {
+    void equal_shouldReturnTrue_WhenIDsAreEqual() {
 
         //Arrange
-        BibliographicalData otherBd = mock(BibliographicalData.class);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
 
-        PublicationSample goldSample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+        //Act
+        boolean result = anySample.equals(anySample);
 
-        PublicationSample silverSample = new PublicationSample(
-                otherBd, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+        //Assert
+        assertTrue(result);
+    }
 
-        //Act + assert
-        assertNotEquals(goldSample.hashCode(), silverSample.hashCode());
+    @Test
+    void equal_shouldReturnFalse_WhenIDsAreDifferent() {
+
+        //Arrange
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+        PublicationSample newSample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+                editionID, anyCondition);
+
+        //Act
+        boolean result = anySample.equals(newSample);
+
+        //Assert
+        assertFalse(result);
     }
 
     @Test
@@ -177,7 +497,7 @@ class PublicationSampleTest {
 
         //Arrange
         PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
 
         PublicationSample nullSample = null;
 
@@ -185,42 +505,33 @@ class PublicationSampleTest {
         assertFalse(sample.equals(nullSample));
     }
 
-    @Test
-    void equalsShouldReturnFalseWhenComparedWithDifferentType() {
 
-        //Arrange
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertFalse(sample.equals("not a publication"));
-    }
-
-    @Test
-    void shouldReturnTrueWhenBibliographicalDataHasGenre() {
-
-        //Arrange + act
-        Genre genre = mock(Genre.class);
-        when(anyBiblioData.hasGenre(genre)).thenReturn(true);
-
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertTrue(sample.hasGenre(genre));
-    }
-
-    @Test
-    void shouldReturnFalseWhenBibliographicalDataDoesNotHaveGenre() {
-
-        //Arrange + act
-        Genre genre = mock(Genre.class);
-        when(anyBiblioData.hasGenre(genre)).thenReturn(false);
-
-        PublicationSample sample = new PublicationSample(
-                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
-
-        //Assert
-        assertFalse(sample.hasGenre(genre));
-    }
+//
+//    @Test
+//    void shouldReturnTrueWhenBibliographicalDataHasGenre() {
+//
+//        //Arrange + act
+//        Genre genre = mock(Genre.class);
+//        when(anyBiblioData.hasGenre(genre)).thenReturn(true);
+//
+//        PublicationSample sample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        assertTrue(sample.hasGenre(genre));
+//    }
+//
+//    @Test
+//    void shouldReturnFalseWhenBibliographicalDataDoesNotHaveGenre() {
+//
+//        //Arrange + act
+//        Genre genre = mock(Genre.class);
+//        when(anyBiblioData.hasGenre(genre)).thenReturn(false);
+//
+//        PublicationSample sample = new PublicationSample(
+//                anyBiblioData, anyOwner, anyPublicationStatus, anyEdition, anyCondition);
+//
+//        //Assert
+//        assertFalse(sample.hasGenre(genre));
+//    }
 }

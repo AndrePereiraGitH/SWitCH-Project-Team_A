@@ -239,29 +239,29 @@ public class PublicationSampleDTO_US027 {
      * @return a DTO containing the relevant publication information
      */
 
-    public static PublicationSampleDTO_US027 toDTO(PublicationSample publicationSample) {
-
-        if  (publicationSample == null) {
-            throw new NullPointerException("Publication sample can not be null");
-        }
-        return new PublicationSampleDTO_US027(
-                publicationSample.getBibliographicalData().getTitle(),
-                publicationSample.getBibliographicalData().getAuthors().stream()
-                        .map(a -> a.getName())
-                        .toList(),
-                publicationSample.getBibliographicalData().getGenres().stream()
-                        .map(Genre::getGenreType)
-                        .toList(),
-                publicationSample.getOwner().getUserName(),
-                publicationSample.getPublicationStatus().toString(),
-                publicationSample.getEdition().getEditionNumber(),
-                publicationSample.getEdition().getCode().toString(),
-                publicationSample.getEdition().getPublicationType().getMediaFormat().toString(),
-                publicationSample.getEdition().getEditionLanguage().toString(),
-                publicationSample.getEdition().getPublisher().getName(),
-                publicationSample.getCondition().toString()
-        );
-    }
+//    public static PublicationSampleDTO_US027 toDTO(PublicationSample publicationSample) {
+//
+//        if  (publicationSample == null) {
+//            throw new NullPointerException("Publication sample can not be null");
+//        }
+//        return new PublicationSampleDTO_US027(
+//                publicationSample.getBibliographicalData().getTitle(),
+//                publicationSample.getBibliographicalData().getAuthors().stream()
+//                        .map(a -> a.getName())
+//                        .toList(),
+//                publicationSample.getBibliographicalData().getGenres().stream()
+//                        .map(Genre::getGenreType)
+//                        .toList(),
+//                publicationSample.getOwner().getUserName(),
+//                publicationSample.getPublicationStatus().toString(),
+//                publicationSample.getEdition().getEditionNumber(),
+//                publicationSample.getEdition().getCode().toString(),
+//                publicationSample.getEdition().getPublicationType().getMediaFormat().toString(),
+//                publicationSample.getEdition().getEditionLanguage().toString(),
+//                publicationSample.getEdition().getPublisher().getName(),
+//                publicationSample.getCondition().toString()
+//        );
+//    }
 
     /**
      * Converts a list of {@link PublicationSample} entities into a list of
@@ -273,28 +273,28 @@ public class PublicationSampleDTO_US027 {
      * {@link IllegalArgumentException} is thrown.</p>
      *
      * <p>Each non-null element in the list is converted using
-     * {@link #toDTO(PublicationSample)}, and the order of elements is preserved.</p>
+//     * {@link #toDTO(PublicationSample)}, and the order of elements is preserved.</p>
      *
      * @param listOfItems the list of publication samples to convert; must not be {@code null}
      * @return a list of DTOs corresponding to the given publication samples; never {@code null}
      * @throws IllegalArgumentException if {@code listOfItems} is {@code null} or contains {@code null} elements
      */
 
-    public static List<PublicationSampleDTO_US027> toDTOs(List<PublicationSample> listOfItems) {
-
-        if  (listOfItems == null) {
-            throw new NullPointerException("List of items can not be null");
-        }
-
-        List<PublicationSampleDTO_US027> listOfPublicationSampleDTO = new ArrayList<>();
-
-        for (PublicationSample pubSample : listOfItems) {
-            if (pubSample == null) {
-                throw new IllegalArgumentException("List of items must not contain null elements");
-            }
-            listOfPublicationSampleDTO.add(toDTO(pubSample));
-        }
-
-        return List.copyOf(listOfPublicationSampleDTO);
-    }
+//    public static List<PublicationSampleDTO_US027> toDTOs(List<PublicationSample> listOfItems) {
+//
+//        if  (listOfItems == null) {
+//            throw new NullPointerException("List of items can not be null");
+//        }
+//
+//        List<PublicationSampleDTO_US027> listOfPublicationSampleDTO = new ArrayList<>();
+//
+//        for (PublicationSample pubSample : listOfItems) {
+//            if (pubSample == null) {
+//                throw new IllegalArgumentException("List of items must not contain null elements");
+//            }
+//            listOfPublicationSampleDTO.add(toDTO(pubSample));
+//        }
+//
+//        return List.copyOf(listOfPublicationSampleDTO);
+//    }
 }

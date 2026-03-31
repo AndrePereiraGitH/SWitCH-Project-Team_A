@@ -1,10 +1,10 @@
 package TOPSECRET.domain.PublicationSample;
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 /**
  * Factory responsible for creating {@link PublicationSample} instances.
@@ -21,19 +21,18 @@ public class PublicationSampleFactory {
     /**
      * Creates a new {@link PublicationSample} instance.
      *
-     * @param bibliographicalData the bibliographical data associated with the publication
-     * @param userName the owner of the publication sample
+     * @param bibliographicalDataID the ID of the bibliographical data associated with the publication
+     * @param userID the ID of the owner of the publication sample
      * @param publicationStatus the current status of the publication
-     * @param edition the edition details of the publication
+     * @param editionID the ID of the edition details of the publication
      * @param condition the physical condition of the publication
      * @return a newly created {@code PublicationSample}
      * @throws IllegalArgumentException if any of the provided arguments are {@code null}
      */
+    public PublicationSample create(BibliographicalDataID bibliographicalDataID, UserId userID,
+                                    PublicationStatus publicationStatus, EditionID editionID, Condition condition){
 
-    public PublicationSample create(BibliographicalData bibliographicalData, User userName,
-                                    PublicationStatus publicationStatus, Edition edition, Condition condition){
-
-        return new PublicationSample(bibliographicalData, userName, publicationStatus, edition, condition);
+        return new PublicationSample(bibliographicalDataID, userID, publicationStatus, editionID, condition);
     }
 
 }

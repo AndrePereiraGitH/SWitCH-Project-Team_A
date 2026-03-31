@@ -4,7 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
@@ -20,19 +20,19 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link US019ToPubliclyShareCollectionOfPublicationsController}.
  *
  * These tests verify the controller's behaviour in isolation using mock doubles
- * for {@link CollectionOfPublicationsRepository}, ensuring the controller
+ * for {@link ICollectionOfPublicationsRepository}, ensuring the controller
  * correctly delegates to its dependencies without testing their internal logic.
  */
 class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
 
-    CollectionOfPublicationsRepository repo = mock(CollectionOfPublicationsRepository.class);
+    ICollectionOfPublicationsRepository repo = mock(ICollectionOfPublicationsRepository.class);
 
 
     @Test
     void testConstructor() {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
 
         // Act
         US019ToPubliclyShareCollectionOfPublicationsController controller =
@@ -45,8 +45,8 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void requestAllCollectionOfPublications_shouldReturnEmptyList_ifUserHasNoCollections() {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
         User ownerDouble = mock(User.class);
 
         when(repoDouble.getAllCollectionOfPublicationsByUser(ownerDouble))
@@ -74,8 +74,8 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void requestAllCollectionOfPublications_shouldReturnList_forUserWithCollections() {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
         User ownerDouble = mock(User.class);
 
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
@@ -105,8 +105,8 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void requestAllCollectionOfPublications_shouldThrow_ifUserIsNull() {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
         US019ToPubliclyShareCollectionOfPublicationsController controller =
                 new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
 
@@ -128,7 +128,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void shareCollectionOfPublications_shouldReturnTrue_ifCollectionExists() throws Exception {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble = mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble = mock(ICollectionOfPublicationsRepository.class);
 
         CollectionOfPublicationsDTO_US019 dtoDouble = mock(CollectionOfPublicationsDTO_US019.class);
 
@@ -150,8 +150,8 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void shareCollectionOfPublications_shouldThrow_ifCollectionIsNull() {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
         US019ToPubliclyShareCollectionOfPublicationsController controller =
                 new US019ToPubliclyShareCollectionOfPublicationsController(repoDouble);
 
@@ -175,8 +175,8 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     void shareCollectionOfPublications_shouldThrow_ifCollectionNotFound()
             throws Exception {
         // Arrange
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
         CollectionOfPublicationsDTO_US019 dtoDouble =
                 mock(CollectionOfPublicationsDTO_US019.class);
 

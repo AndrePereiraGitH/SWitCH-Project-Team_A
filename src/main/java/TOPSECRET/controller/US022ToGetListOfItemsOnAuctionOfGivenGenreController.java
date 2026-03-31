@@ -57,15 +57,15 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
      * @param genre the genre used as filter
      * @return list of AuctionDTO_US022 matching the genre
      */
-    public List<AuctionDTO_US022> getListOfItemsOnAuctionGivenGenre(Genre genre) {
-
-        if (genre == null) {
-            throw new IllegalArgumentException("genre cannot be null");
-        }
-
-        List<Auction> auctions =
-                auctionRepository.getListOfItemsOnAuctionGivenGenre(genre);
-
-        return AuctionDTO_US022.fromDomainList(auctions);
-    }
+//    public List<AuctionDTO_US022> getListOfItemsOnAuctionGivenGenre(Genre genre) {
+//
+//        if (genre == null) {
+//            throw new IllegalArgumentException("genre cannot be null");
+//        }
+//
+//        List<Auction> auctions =
+//                auctionRepository.getListOfItemsOnAuctionGivenGenre(genre);
+//
+//        return AuctionDTO_US022.fromDomainList(auctions);
+//    }
 }

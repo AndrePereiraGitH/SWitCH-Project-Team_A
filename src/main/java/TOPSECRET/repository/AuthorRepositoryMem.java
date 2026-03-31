@@ -3,7 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,33 +11,28 @@ import java.util.List;
 /**
  * In-memory repository responsible for storing and managing {@link Author} entities.
  *
- * <p>In the context of Domain-Driven Design (DDD), {@link Author} is an entity,
- * meaning it is uniquely identified by its identity rather than by its attributes.
+ * <p>This class is an in-memory implementation of {@link IAuthorRepository}.
+ * It follows the Repository pattern by providing a collection-like abstraction
+ * over stored {@link Author} entities.</p>
  *
- * <p>This class follows the Repository pattern, acting as an in-memory collection
- * of {@link Author} entities. It delegates entity creation to an
- * {@link AuthorFactory} and ensures that no duplicate authors are stored.
+ * <p>Author creation is delegated to {@link AuthorFactory}, while this repository
+ * is responsible for storing created authors and preventing duplicates from being
+ * added.</p>
  *
- * <p><b>Responsibilities:</b>
- * <ul>
- *   <li>Delegate the creation of {@link Author} entities to {@link AuthorFactory}</li>
- *   <li>Ensure uniqueness of {@link Author} entities before adding them to the repository</li>
- *   <li>Provide read-only access to the current collection of authors</li>
- * </ul>
- *
- * <p><b>Non-responsibilities:</b>
- * <ul>
- *   <li>Does not validate input arguments passed to {@link #createAndAddAuthor};
- *       validation is handled by {@link AuthorFactory} and the {@link Author} entity itself</li>
- * </ul>
- *
- * <p>This implementation stores data in memory and is intended for testing
- * or simple application contexts where persistence is not required.
+ * <p>This implementation is intended for testing or simple application contexts
+ * where persistent storage is not required.</p>
  */
 public class AuthorRepositoryMem implements IAuthorRepository {
+
     private final List<Author> _authors = new ArrayList<>();
     private final AuthorFactory _authorFactory;
 
+    /**
+     * Creates a new in-memory author repository.
+     *
+     * @param authorFactory the factory used to create {@link Author} instances
+     * @throws IllegalArgumentException if {@code authorFactory} is {@code null}
+     */
     public AuthorRepositoryMem(AuthorFactory authorFactory) {
         if (authorFactory == null) {
             throw new IllegalArgumentException("AuthorFactory cannot be null");
@@ -45,9 +40,14 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         this._authorFactory = authorFactory;
     }
 
-    public Author createAndAddAuthor(String name, Country country, LocalDate dateOfBirth, String biography) {
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if an author with the same identity already exists
+     */
+    public Author createAndAddAuthor(String name, CountryID countryID, LocalDate dateOfBirth, String biography) {
         // Creates Author
-        Author author = _authorFactory.create(name, country, dateOfBirth, biography);
+        Author author = _authorFactory.create(name, countryID, dateOfBirth, biography);
         if (!exists(author)) {
             this._authors.add(author);  // Add the author that was passed in
             return author;
@@ -55,6 +55,16 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         throw new IllegalArgumentException("Author already exists");
     }
 
+    /**
+     * Checks whether the given author already exists in the repository.
+     *
+     * <p>An author is considered to exist if another stored {@link Author}
+     * is equal to it according to {@link Author#equals(Object)}.</p>
+     *
+     * @param author the author to search for
+     * @return {@code true} if the author already exists in the repository;
+     *         {@code false} otherwise
+     */
     private boolean exists(Author author) {
         for (Author newAuthor : this._authors) {
             if (author.equals(newAuthor)) {
@@ -64,6 +74,9 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public List<Author> getAllAuthors() {
         return List.copyOf(this._authors);
     }

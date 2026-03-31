@@ -7,7 +7,7 @@ import TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.repository.CollectionOfPublicationsRepository;
+import TOPSECRET.repository.ICollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 import org.junit.jupiter.api.Test;
@@ -46,8 +46,8 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     @Test
     void shouldThrowExceptionWhenGenreRepositoryIsNull() {
         // Arrange — only provide the collection repo; genre repo is null on purpose
-        CollectionOfPublicationsRepository collectionRepoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository collectionRepoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
 
         // Act & Assert — passing null must fail at construction time
         assertThrows(IllegalArgumentException.class,
@@ -86,7 +86,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(
-                        genreRepoDouble, mock(CollectionOfPublicationsRepository.class));
+                        genreRepoDouble, mock(ICollectionOfPublicationsRepository.class));
 
         // Act — controller fetches genres and converts them to DTOs
         List<GenreDTO_US017> result = controller.getAllGenres();
@@ -107,7 +107,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
         US017ToCreateCollectionOfPublicationsController controller =
                 new US017ToCreateCollectionOfPublicationsController(
-                        genreRepoDouble, mock(CollectionOfPublicationsRepository.class));
+                        genreRepoDouble, mock(ICollectionOfPublicationsRepository.class));
 
         // Act — controller gets genres (none exist)
         List<GenreDTO_US017> result = controller.getAllGenres();
@@ -157,8 +157,8 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         Genre genreDouble = mock(Genre.class);
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
 
-        CollectionOfPublicationsRepository collectionRepoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository collectionRepoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
         when(collectionRepoDouble.createIfNotExists(userDouble, "Favorites", genreDouble))
                 .thenReturn(collectionDouble);
 
@@ -185,8 +185,8 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         User userDouble = mock(User.class);
         Genre genreDouble = mock(Genre.class);
 
-        CollectionOfPublicationsRepository repoDouble =
-                mock(CollectionOfPublicationsRepository.class);
+        ICollectionOfPublicationsRepository repoDouble =
+                mock(ICollectionOfPublicationsRepository.class);
 
         when(repoDouble.createIfNotExists(userDouble, "Favorites", genreDouble))
                 .thenThrow(new IllegalArgumentException("Collection already exists"));
@@ -212,6 +212,6 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     private US017ToCreateCollectionOfPublicationsController createController() {
         return new US017ToCreateCollectionOfPublicationsController(
                 mock(GenreRepositoryMem.class),
-                mock(CollectionOfPublicationsRepository.class));
+                mock(ICollectionOfPublicationsRepository.class));
     }
 }

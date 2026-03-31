@@ -5,6 +5,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Listing {
     private final SaleType _saleType;
     private final Price _price;
     private final String _shortDescription;
-    private final User _seller;
+    private final UserId _seller;
     private final List<Picture> _pictures;
 
     /**
@@ -74,7 +75,7 @@ public class Listing {
         _saleType = saleType;
         _price = price;
         _shortDescription = shortDescription;
-        _seller = items.get(0).getOwner();
+        _seller = items.get(0).getOwnerID();
         _pictures = List.copyOf(pictures);
 
         if(checkIfItemIsAlreadyInAListing()){
@@ -164,7 +165,7 @@ public class Listing {
      *
      * @return the user who is selling the items
      */
-    public User getSeller() {
+    public UserId getSeller() {
         return _seller;
     }
 

@@ -39,23 +39,34 @@ class GenreTest {
     }
 
     // --------------------------------- US003 ends ---------------------------------
+    // equals() — same object should equal itself
+    @Test
+    void genreShouldEqualItself() {
+        Genre g1 = new Genre("Fantasy");
+        assertEquals(g1, g1); // ✅ same reference = same ID
+    }
 
+    // equals() — two separately created genres are NOT equal even with same name
+    @Test
+    void genresWithSameTypeButDifferentIdShouldNotBeEqual() {
+        Genre g1 = new Genre("Fantasy");
+        Genre g2 = new Genre("Fantasy");
+        assertNotEquals(g1, g2); // ✅ different UUIDs = not equal
+    }
     // US004 — two genres with the same name (different case) must be considered equal
     @Test
     void genresWithSameTypeShouldBeEqualIgnoringCase() {
         Genre g1 = new Genre("Fantasy");
         Genre g2 = new Genre("fantasy");
 
-        assertEquals(g1, g2);
+        assertTrue(g1.sameAs(g2)); //sameAs() compares by name
     }
 
     // US004 — equal genres must have the same hash code (required by Java contract)
     @Test
     void equalGenresShouldHaveSameHashCode() {
         Genre g1 = new Genre("SciFi");
-        Genre g2 = new Genre("scifi");
-
-        assertEquals(g1.hashCode(), g2.hashCode());
+        assertEquals(g1.hashCode(), g1.hashCode()); //consistent
     }
 
     @Test

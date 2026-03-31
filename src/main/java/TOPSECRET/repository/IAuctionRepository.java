@@ -45,7 +45,7 @@ public interface IAuctionRepository {
      * @return a list of auctions that contain at least one item with the given genre
      * @throws IllegalArgumentException if {@code genre} is {@code null}
      */
-    List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre);
+//    List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre);
 
     /**
      * Returns the list of auctions containing at least one item whose publication
@@ -55,7 +55,7 @@ public interface IAuctionRepository {
      * @return a list of auctions that contain at least one item by the given author
      * @throws IllegalArgumentException if {@code author} is {@code null} or its name is blank
      */
-    List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author);
+//    List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author);
 
     /**
      * Retrieves all {@link PublicationSample} instances currently on auction
@@ -75,5 +75,5 @@ public interface IAuctionRepository {
      *         bibliographical title matches {@code publicationDTO};
      *         never {@code null}, but may be empty if no matches are found
      */
-    List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO);
+//    List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO);
 }

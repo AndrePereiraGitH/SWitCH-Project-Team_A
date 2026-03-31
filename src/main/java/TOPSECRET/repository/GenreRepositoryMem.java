@@ -92,9 +92,8 @@ public class GenreRepositoryMem implements IGenreRepository {
      */
     private boolean exists(Genre genre) {
         for (Genre existingGenre : this._genres) {
-            if (genre.equals(existingGenre)) {
+            if (genre.sameAs(existingGenre)) //uses sameAs() for duplicate test
                 return true;
-            }
         }
         return false;
     }
