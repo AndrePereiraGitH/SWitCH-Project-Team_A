@@ -24,7 +24,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     private final BibliographicalDataID _bdID;
     private final UserId _ownerID;
     private PublicationStatus _publicationStatus;
-    private final EditionID _editionID; // Implement ID
+    private final EditionID _editionID;
     private final Condition _condition;
     private LibraryId _libraryID;
     private CollectionOfPublicationsID _collecOfPubID;

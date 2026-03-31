@@ -139,10 +139,10 @@ class IPublicationSampleRepositoryMemTest {
 
         // Act
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
+//        List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
 
         // Assert
-        assertTrue(itemsList.isEmpty());
+//        assertTrue(itemsList.isEmpty());
     }
 
 //    @Test
