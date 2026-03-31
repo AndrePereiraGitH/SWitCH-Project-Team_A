@@ -6,7 +6,7 @@ import TOPSECRET.domain.ValueObjects.Address;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
-import TOPSECRET.domain.User.UserRepository;
+import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.Email;
 import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
  */
 class UserRepositoryMemTest {
 
-    private UserRepository userRepository; // interface type
+    private IUserRepository userRepository; // interface type
     private UserFactory userFactory;
 
     // --- MOCKED DEPENDENCIES ---

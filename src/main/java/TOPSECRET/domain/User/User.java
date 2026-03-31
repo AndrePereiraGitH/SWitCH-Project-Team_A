@@ -31,11 +31,11 @@ import java.util.UUID;
  */
 public class User implements AggregateRoot<UserId> {
 
+    private UserId _id;
     private String _userName;
     private Contact _contact;
     private Profile _profile;
     private UserRole _userRole;
-    private UserId _id;
 
     /**
      * Constructs a new {@code User} with the given attributes.
@@ -126,11 +126,11 @@ public class User implements AggregateRoot<UserId> {
     /**
      * Indicates whether some other object is equal to this {@code User}.
      * <p>
-     * Two {@code User} instances are considered equal if they share the same username.
+     * Two {@code User} instances are considered equal if they share the same unique identifier.
      * </p>
      *
-     * @param o the object to compare with
-     * @return {@code true} if the given object is a {@code User} with the same username;
+     * @param obj the object to compare with
+     * @return {@code true} if the given object is a {@code User} with the same ID;
      *         {@code false} otherwise
      */
     @Override

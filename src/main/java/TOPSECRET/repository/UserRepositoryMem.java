@@ -5,12 +5,12 @@ import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
-import TOPSECRET.domain.User.UserRepository;
+import TOPSECRET.domain.User.IUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserRepositoryMem implements UserRepository {
+public class UserRepositoryMem implements IUserRepository {
 
     private List<User> _userList;
     private UserFactory _userFactory;

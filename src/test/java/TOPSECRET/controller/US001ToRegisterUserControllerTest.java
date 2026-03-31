@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
-import TOPSECRET.domain.User.UserRepository;
+import TOPSECRET.domain.User.IUserRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +24,7 @@ class US001ToRegisterUserControllerTest {
     void shouldRegisterUserSuccessfully() {
 
         // ARRANGE
-        UserRepository repository = mock(UserRepository.class);
+        IUserRepository repository = mock(IUserRepository.class);
 
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(repository);
@@ -60,7 +60,7 @@ class US001ToRegisterUserControllerTest {
         // ARRANGE
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(
-                        mock(UserRepository.class)
+                        mock(IUserRepository.class)
                 );
 
         // ACT + ASSERT
@@ -84,7 +84,7 @@ class US001ToRegisterUserControllerTest {
         // ARRANGE
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(
-                        mock(UserRepository.class)
+                        mock(IUserRepository.class)
                 );
 
         // ACT + ASSERT
@@ -108,7 +108,7 @@ class US001ToRegisterUserControllerTest {
         // ARRANGE
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(
-                        mock(UserRepository.class)
+                        mock(IUserRepository.class)
                 );
 
         // ACT + ASSERT
@@ -132,7 +132,7 @@ class US001ToRegisterUserControllerTest {
         // ARRANGE
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(
-                        mock(UserRepository.class)
+                        mock(IUserRepository.class)
                 );
 
         // ACT + ASSERT
