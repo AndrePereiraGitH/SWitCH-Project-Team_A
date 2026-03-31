@@ -2,9 +2,10 @@ package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.GenreID;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -37,8 +38,8 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     AppraisalEntityId _apEnId;
     private String _name;
     private Contact _contact;
-    private List<PublicationType> _publicationTypes;
-    private List<Genre> _genres;
+    private List<PublicationTypeId> _publicationTypeId;
+    private List<GenreID> _genreId;
 
 
     /**
@@ -46,36 +47,31 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
      *
      * @param name name of the entity
      * @param contact contact information
-     * @param publicationTypes list of publication types
-     * @param genres list of genres
+     * @param publicationTypeId list of publication types
+     * @param genreId list of genres
      * @throws IllegalArgumentException if any argument is invalid
      */
     protected AppraisalEntity(String name,
                               Contact contact,
-                              List<PublicationType> publicationTypes,
-                              List<Genre> genres) {
-
+                              List<PublicationTypeId> publicationTypeId,
+                              List<GenreID> genreId) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("AppraisalEntity name can't be null or empty.");
         }
-
         if (contact == null) {
             throw new IllegalArgumentException("Contact can't be null.");
         }
-
-        if (publicationTypes == null || publicationTypes.isEmpty()) {
+        if (publicationTypeId == null || publicationTypeId.isEmpty()) {
             throw new IllegalArgumentException("At least one PublicationType is required.");
         }
-
-        if (genres == null || genres.isEmpty()) {
+        if (genreId == null || genreId.isEmpty()) {
             throw new IllegalArgumentException("At least one Genre is required.");
         }
-
         this._apEnId = new AppraisalEntityId(UUID.randomUUID().toString());
         this._name = name;
         this._contact = contact;
-        this._publicationTypes = publicationTypes;
-        this._genres = genres;
+        this._publicationTypeId = publicationTypeId;
+        this._genreId = genreId;
     }
 
 
@@ -92,12 +88,12 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         return _contact;
     }
 
-    public List<PublicationType> getPublicationTypes() {
-        return _publicationTypes;
+    public List<PublicationTypeId> getPublicationTypeId() {
+        return _publicationTypeId;
     }
 
-    public List<Genre> getGenres() {
-        return _genres;
+    public List<GenreID> getGenreId() {
+        return _genreId;
     }
 
     public AppraisalEntityId identity(){
@@ -117,8 +113,8 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
                 "identity:" + _apEnId +
                 "name:" + _name + '\'' +
                 ", contact:" + _contact +
-                ", publication type:" + _publicationTypes +
-                ", genre:" + _genres +
+                ", publication type:" + _publicationTypeId +
+                ", genre:" + _genreId +
                 '}';
     }
 
@@ -178,10 +174,20 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
         AppraisalEntity newObj = (AppraisalEntity) obj;
 
-        return this._name.equals(newObj._name) &&
-                this._contact.equals(newObj._contact) &&
-                this._genres.equals(newObj._genres) &&
-                this._publicationTypes.equals(newObj._publicationTypes);
+        if (!this._name.equals(newObj._name)) {
+            return false;
+        }
+        if (!this._contact.equals(newObj ._contact)){
+            return false;
+        }
+        if (!this._genreId.equals(newObj ._genreId)){
+            return false;
+        }
+        if (!this._publicationTypeId.equals(newObj ._publicationTypeId)){
+            return false;
+        }
+
+        return true;
     }
 }
 
