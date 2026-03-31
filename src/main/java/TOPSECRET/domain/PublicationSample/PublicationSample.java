@@ -1,12 +1,9 @@
 package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.User;
 import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.Objects;
@@ -30,30 +27,31 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     private final EditionID _editionID; // Implement ID
     private final Condition _condition;
     private LibraryId _libraryID;
-//    private CollectionOfPublicationsID _collecOfPubID;
+    private CollectionOfPublicationsID _collecOfPubID;
 
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 
-//    /**
-//     * Creates a new {@code PublicationSample} with the given attributes.
-//     *
-//     * @param bd                  the bibliographical data of the publication; must not be null
-//     * @param owner               the user who owns this copy; must not be null
-//     * @param publicationStatus   the initial publication status; must not be null
-//     * @param edition             the edition of the publication; must not be null
-//     * @param condition           the physical condition of this copy; must not be null
-//     * @throws IllegalArgumentException if any argument is null
-//     */
+    /**
+     * Creates a new {@code PublicationSample} with the given attributes.
+     *
+     * @param bdID                the bibliographical data ID of the publication; must not be null
+     * @param ownerID             the ID of the user who owns this copy; must not be null
+     * @param publicationStatus   the initial publication status; must not be null
+     * @param editionID           the ID of the edition of the publication; must not be null
+     * @param condition           the physical condition of this copy; must not be null
+     * @throws IllegalArgumentException if any argument is null
+     */
     protected PublicationSample(BibliographicalDataID bdID, UserId ownerID, PublicationStatus publicationStatus,
                                 EditionID editionID, Condition condition) {
         if (bdID == null || ownerID == null || publicationStatus == null || editionID == null || condition == null) {
-            throw new IllegalArgumentException("All criteria must be filled");
+            throw new IllegalArgumentException("All criteria must not be null");
         }
 
         _pubSampleID = new PublicationSampleID(UUID.randomUUID().toString());
         _libraryID = null;
+        _collecOfPubID = null;
         _bdID = bdID;
         _ownerID = ownerID;
         _publicationStatus = publicationStatus;
@@ -65,53 +63,38 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     // Getters
     // -------------------------------------------------------------------------
 
-    /**
-     * Returns the bibliographical data associated with this publication.
-     *
-     * @return the {@link BibliographicalData} of this publication
-     */
-    public BibliographicalDataID getBibliographicalData() {
+
+    public BibliographicalDataID getBibliographicalDataID() {
         return _bdID;
     }
 
-    /**
-     * Returns the user who owns this publication copy.
-     *
-     * @return the {@link User} owner of this publication
-     */
-    public UserId getOwner() {
+
+    public UserId getOwnerID() {
         return _ownerID;
     }
 
-    /**
-     * Returns the current publication status of this copy.
-     *
-     * @return the {@link PublicationStatus} of this publication
-     */
+
     public PublicationStatus getPublicationStatus() {
         return _publicationStatus;
     }
 
-    /**
-     * Returns the edition associated with this publication copy.
-     *
-     * @return the {@link Edition} of this publication
-     */
-    public EditionID getEdition() {
+
+    public EditionID getEditionID() {
         return _editionID;
     }
 
-    /**
-     * Returns the physical condition of this publication copy.
-     *
-     * @return the {@link Condition} of this publication
-     */
+
     public Condition getCondition() {
         return _condition;
     }
 
+
     public LibraryId getLibraryID(){
         return _libraryID;
+    }
+
+    public CollectionOfPublicationsID getCollecOfPubID(){
+        return _collecOfPubID;
     }
 
     // -------------------------------------------------------------------------
@@ -138,10 +121,45 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
      *
      * @param libraryId the {@link LibraryId} of the library to associate with; must not be null
      * @return the provided {@link LibraryId} after assignment
+     * @throws IllegalArgumentException if this copy is already assigned to a library
+     * @throws NullPointerException if {@code libraryId} is null
      */
     public LibraryId addPublicationToLibrary(LibraryId libraryId) {
+        if(libraryId == null){
+            throw new NullPointerException("LibraryID can not be null");
+        }
+        if(_libraryID != null){
+            throw new IllegalArgumentException("Already assigned to a library");
+        }
+
         _libraryID = libraryId;
         return libraryId;
+    }
+
+
+    /**
+     * Associates this publication copy with the given collection of publications.
+     *
+     * @param collectionOfPublicationsID the {@link CollectionOfPublicationsID} to associate with; must not be null
+     * @return the provided {@link CollectionOfPublicationsID} after assignment
+     * @throws IllegalArgumentException if this copy is already assigned to a collection
+     * @throws NullPointerException if {@code collectionOfPublicationsID} is null
+     */
+    public CollectionOfPublicationsID addPublicationToCollection(CollectionOfPublicationsID collectionOfPublicationsID){
+        if(collectionOfPublicationsID == null){
+            throw new NullPointerException("CollectionOfPublicationsID can not be null");
+        }
+        if(_collecOfPubID != null){
+            throw new IllegalArgumentException("Already assigned to a collection of publications");
+        }
+
+        if(_libraryID == null){
+            throw new IllegalArgumentException("Publication must belong to a library before" +
+                    " being assigned to a collection.");
+        }
+
+        _collecOfPubID = collectionOfPublicationsID;
+        return collectionOfPublicationsID;
     }
 
     /**
@@ -183,33 +201,21 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     // Identity (AggregateRoot)
     // -------------------------------------------------------------------------
 
-    /**
-     * Returns the unique identifier of this publication copy.
-     *
-     * @return the {@link PublicationSampleID} of this instance
-     */
     @Override
     public PublicationSampleID id() {
         return _pubSampleID;
     }
 
-    /**
-     * Determines whether this publication copy shares the same identity
-     * as the given object, based solely on {@link PublicationSampleID}.
-     *
-     * @param o the object to compare against
-     * @return {@code true} if both objects are {@code PublicationSample} instances
-     *         with equal identifiers; {@code false} otherwise
-     */
 
     @Override
     public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PublicationSample that = (PublicationSample) o;
         return Objects.equals(_bdID, that._bdID) && Objects.equals(_ownerID, that._ownerID) &&
-                _publicationStatus == that._publicationStatus && Objects.equals(_editionID, that._editionID) &&
-                _condition == that._condition && Objects.equals(_libraryID, that._libraryID);
+                Objects.equals(_editionID, that._editionID) &&
+                _condition == that._condition;
     }
+
 
     @Override
     public boolean equals(Object o) {

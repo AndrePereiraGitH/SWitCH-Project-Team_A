@@ -74,7 +74,7 @@ public class Listing {
         _saleType = saleType;
         _price = price;
         _shortDescription = shortDescription;
-        _seller = items.get(0).getOwner();
+        _seller = items.get(0).getOwnerID();
         _pictures = List.copyOf(pictures);
 
         if(checkIfItemIsAlreadyInAListing()){

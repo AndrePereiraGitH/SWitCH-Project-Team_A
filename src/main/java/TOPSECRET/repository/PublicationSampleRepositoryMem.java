@@ -181,7 +181,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
         for (Listing listing : listings) {
             for  (PublicationSample pubSample : listing.getItems()) {
-                if(pubSample.getBibliographicalData().equals(publication)){
+                if(pubSample.getBibliographicalDataID().equals(publication)){
                     pubSamplesList.add(pubSample);
                 }
             }
