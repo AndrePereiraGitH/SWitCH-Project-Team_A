@@ -68,9 +68,7 @@ public class CollectionOfPublicationsID implements DomainID {
      * @return the collection ID as a {@link String}
      */
 
-    @Override
-    public String toString() {
-        // change to getID?
+    public String getId() {
 
         return collectionOfPub_id;
     }

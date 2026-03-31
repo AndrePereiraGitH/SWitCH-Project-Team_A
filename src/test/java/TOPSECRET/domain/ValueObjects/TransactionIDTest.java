@@ -71,13 +71,13 @@ class TransactionIDTest {
     }
 
     @Test
-    void toStringShouldReturnTransactionId() {
+    void getIdShouldReturnTransactionId() {
 
         //Arrange
         TransactionID id = new TransactionID("turnMeIntoString");
 
         //Act
-        assertEquals("turnMeIntoString", id.toString());
+        assertEquals("turnMeIntoString", id.getId());
     }
 
     @Test

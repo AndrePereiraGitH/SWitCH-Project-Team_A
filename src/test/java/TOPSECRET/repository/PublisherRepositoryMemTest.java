@@ -1,6 +1,6 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Publisher;
 import TOPSECRET.domain.PublisherFactory;
 import org.junit.jupiter.api.BeforeEach;

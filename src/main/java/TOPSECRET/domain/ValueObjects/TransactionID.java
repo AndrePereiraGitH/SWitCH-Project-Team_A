@@ -67,9 +67,7 @@ public class TransactionID implements DomainID {
      * @return the transaction ID as a {@link String}
      */
 
-    @Override
-    public String toString() {
-        // change to getID?
+    public String getId() {
 
         return transaction_id;
     }

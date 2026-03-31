@@ -40,18 +40,6 @@ class BidIdTest {
         assertEquals(uuid, bidId.getId());
     }
 
-    // ========== NEW ID METHOD TESTS ==========
-
-    @Test
-    void newIdShouldGenerateDifferentIds() {
-        // Act
-        BidId id1 = BidId.newId();
-        BidId id2 = BidId.newId();
-
-        // Assert
-        assertNotEquals(id1, id2);
-    }
-
     // ========== ID METHOD TESTS ==========
 
     @Test

@@ -5,7 +5,7 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.Test;
 
 

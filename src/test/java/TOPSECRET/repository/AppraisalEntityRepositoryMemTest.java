@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;

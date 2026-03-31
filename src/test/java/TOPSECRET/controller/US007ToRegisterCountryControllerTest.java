@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  *
  * <p>This test class uses Mockito to isolate the System Under Test (SUT),
  * which is the {@link US007ToRegisterCountryController}. All collaborators
- * such as {@link CountryRepositoryMem} and {@link Country} are mocked in order
+ * such as {@link ICountryRepository} and {@link Country} are mocked in order
  * to ensure that only the controller logic is being tested.</p>
  */
 class US007ToRegisterCountryControllerTest {
@@ -32,7 +32,7 @@ class US007ToRegisterCountryControllerTest {
     /**
      * Prepares the test environment before each test execution.
      *
-     * <p>This method initializes the mocks for {@link CountryRepositoryMem}
+     * <p>This method initializes the mocks for {@link ICountryRepository}
      * and {@link Country}, and injects the mocked repository into the
      * controller being tested.</p>
      */
@@ -54,10 +54,12 @@ class US007ToRegisterCountryControllerTest {
      */
     @Test
     void registerNewCountry_validCountry_mock(){
+        //Arrange
         when(countryRepo.createAndAddNewCountry("Portugal")).thenReturn(countryMock);
 
         when(countryMock.getCountryName()).thenReturn("Portugal");
 
+        //Act
         Country result = controller.registerNewCountry("Portugal");
 
         //assert
@@ -76,7 +78,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_InvalidCountry_mock(){
 
-        when(countryRepo.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException());
+        when(countryRepo.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry("Mordor"));
@@ -92,8 +94,13 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_nullCountry_mock(){
 
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(null));
+        //Arrange + Act + Assert
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,
+                        () -> controller.registerNewCountry(null));
 
+        assertEquals("Country name cannot be null or blank", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(null));
     }
 
     /**
@@ -105,8 +112,27 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_blankCountry_mock(){
 
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(" "));
+        // Arrange + Act + Assert
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,
+                        () -> controller.registerNewCountry("   "));
 
+        assertEquals("Country name cannot be null or blank", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(" "));
+    }
+    /**
+     * Tests that attempting to register a duplicate country causes
+     * the repository exception to propagate.
+     */
+    @Test
+    void registerNewCountry_duplicateCountry() {
+        // Arrange
+        when(countryRepo.createAndAddNewCountry("Portugal"))
+                .thenThrow(new IllegalArgumentException("Country is already registered"));
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerNewCountry("Portugal"));
     }
 
 }

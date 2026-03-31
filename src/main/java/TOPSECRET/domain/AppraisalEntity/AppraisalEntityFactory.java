@@ -1,6 +1,6 @@
 package TOPSECRET.domain.AppraisalEntity;
 
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 

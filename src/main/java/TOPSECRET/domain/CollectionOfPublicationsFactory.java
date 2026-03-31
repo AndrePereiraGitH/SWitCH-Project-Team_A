@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.User.User;
 
 /**
  * Factory for creating {@link CollectionOfPublications} objects — US017.

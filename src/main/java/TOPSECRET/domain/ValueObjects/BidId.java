@@ -34,22 +34,9 @@ public final class BidId implements DomainID {
         if (id != null  && !id.isBlank() && !id.isEmpty())
             this.bid_id = id;
         else
-            throw new IllegalArgumentException("Valor de parâmetro 'id' não pode ser nulo ou vazio.");
+            throw new IllegalArgumentException("Bid ID cannot be null or empty.");
     }
     // --------------------------------------------------------------------------------
-
-    /**
-     * Generates a new {@code BidId} with a randomly created UUID string.
-     * <p>
-     * This factory method is the preferred way to create new identifiers
-     * for Bid entities inside the Auction aggregate.
-     * </p>
-     *
-     * @return a new {@code BidId} instance
-     */
-    public static BidId newId() {
-         return new BidId(UUID.randomUUID().toString());
-    }
 
     /**
      * Returns the underlying UUID string value of this identifier.

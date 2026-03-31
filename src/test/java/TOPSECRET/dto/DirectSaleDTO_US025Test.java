@@ -5,11 +5,12 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.*;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.ValueObjects.CityID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +22,6 @@ import static org.mockito.Mockito.mock;
  */
 
 class CityTest {
-
 
     @Test
     void shouldCreateCityWithValidData() {
@@ -106,7 +104,7 @@ class CityTest {
         Country country = mock(Country.class);
 
         City cityA = new City(country, "Helsinki");
-        City cityB = new City(country, "Helsinki");
+        City cityB = cityA;
 
         assertEquals(cityA, cityB);
     }

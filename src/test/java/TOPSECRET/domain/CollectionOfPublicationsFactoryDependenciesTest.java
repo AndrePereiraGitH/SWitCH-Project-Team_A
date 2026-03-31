@@ -3,6 +3,10 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.User.UserFactory;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.Genre;
 import org.junit.jupiter.api.Test;
@@ -34,12 +38,13 @@ class CollectionOfPublicationsFactoryDependenciesTest {
     private User createValidUser() {
         CountryFactory countryFactory = new CountryFactory();
         Country country = countryFactory.create("Portugal");
-        return new User(
-                "validUser",
+        UserFactory userFactory = new UserFactory();
+        User user = userFactory.create("validUser",
                 new Contact("912345678", "351", null, null),
                 new Profile("User Name", country, LocalDate.of(1990, 1, 1)),
-                UserRole.NORMAL_USER
-        );
+                UserRole.NORMAL_USER);
+
+        return user;
     }
 
 

@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.repository.UserRepository;
+import TOPSECRET.domain.User.UserRepository;
 
 public class US001ToRegisterUserController {
 

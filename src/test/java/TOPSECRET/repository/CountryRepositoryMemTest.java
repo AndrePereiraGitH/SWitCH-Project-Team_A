@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class CountryRepositoryMemTest {
 
     /** System Under Test: the repository responsible for storing countries. */
-    private CountryRepositoryMem repository;
+    private ICountryRepository repository;
 
     /** Mocked collaborator responsible for creating Country objects. */
     private CountryFactory factoryMock;

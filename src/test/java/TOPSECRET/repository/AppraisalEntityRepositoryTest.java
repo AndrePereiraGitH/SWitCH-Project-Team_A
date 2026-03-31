@@ -3,7 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;

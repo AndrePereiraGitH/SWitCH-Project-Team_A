@@ -4,9 +4,11 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.GenreFactory;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.ValueObjects.Profile;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.User.UserFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

@@ -77,7 +77,7 @@ class CollectionOfPublicationsIDTest {
         CollectionOfPublicationsID id = new CollectionOfPublicationsID("goToString");
 
         //Act
-        assertEquals("goToString", id.toString());
+        assertEquals("goToString", id.getId());
     }
 
     @Test
