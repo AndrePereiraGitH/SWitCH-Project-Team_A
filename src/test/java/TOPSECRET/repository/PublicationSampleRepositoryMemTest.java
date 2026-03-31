@@ -3,7 +3,6 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.User.User;
@@ -11,99 +10,497 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import javax.management.InstanceAlreadyExistsException;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-class IPublicationSampleRepositoryMemTest {
+class PublicationSampleRepositoryMemTest {
 
-    // ===========================================================
-    // ======================== Set Up ===========================
-    // ===========================================================
-
-    Listing listing1Double;
-    Listing listing2Double;
-    Listing listing3Double;
-    PublicationSample pubSample1Double;
-    PublicationSample pubSample2Double;
-    PublicationSample pubSample3Double;
-    PublicationSample pubSample4Double;
-    BibliographicalData bd1Double;
-    BibliographicalData bd2Double;
-    BibliographicalData bd3Double;
-    Publisher publisher1Double;
-    Publisher publisher2Double;
-    PublicationSampleFactory factory;
+    private PublicationSampleFactory factory;
+    private BibliographicalDataID bibliographicalDataID_Double;
+    private EditionID editionID_Double;
+    private UserId userID_Double;
 
     @BeforeEach
-    void setUp() {
-
-        listing1Double = mock(Listing.class);                                           // contains pubSample1
-        listing2Double = mock(Listing.class);                                           // contains pubSample2
-        listing3Double = mock(Listing.class);                                           // contains pubSample3 e 4
-
-        pubSample1Double = mock(PublicationSample.class);                               // contains bd1
-        pubSample2Double = mock(PublicationSample.class);                               // contains bd2
-        pubSample3Double = mock(PublicationSample.class);                               // contains bd3
-        pubSample4Double = mock(PublicationSample.class);                               // contains bd1
-
-        bd1Double = mock(BibliographicalData.class);
-        bd2Double = mock(BibliographicalData.class);
-        bd3Double = mock(BibliographicalData.class);
-
-        Edition edition1Double = mock(Edition.class);
-        Edition edition2Double = mock(Edition.class);
-
-        // listings
-        when(listing1Double.getItems()).thenReturn(List.of(pubSample1Double));
-        when(listing2Double.getItems()).thenReturn(List.of(pubSample2Double));
-        when(listing3Double.getItems()).thenReturn(List.of(pubSample3Double, pubSample4Double));
-
-        when(listing1Double.getItems()).thenReturn(List.of(pubSample1Double));
-        when(listing2Double.getItems()).thenReturn(List.of(pubSample2Double));
-        when(listing3Double.getItems()).thenReturn(List.of(pubSample3Double, pubSample4Double));
-
-//        // pubSample1
-//        when(pubSample1Double.getBibliographicalData()).thenReturn(bd1Double);
-//
-//        // pubSample2
-//        when(pubSample2Double.getBibliographicalData()).thenReturn(bd2Double);
-//
-//        // pubSample3
-//        when(pubSample3Double.getBibliographicalData()).thenReturn(bd3Double);
-//
-//        // pubSample4
-//        when(pubSample4Double.getBibliographicalData()).thenReturn(bd1Double);
-
-        // Publisher
-        publisher1Double = mock(Publisher.class);
-        publisher2Double = mock(Publisher.class);
-
-//        when(pubSample1Double.getEdition()).thenReturn(edition1Double);
-//        when(pubSample2Double.getEdition()).thenReturn(edition2Double);
-//        when(pubSample3Double.getEdition()).thenReturn(edition1Double);
-//        when(pubSample4Double.getEdition()).thenReturn(edition2Double);
-
-        when(edition1Double.getPublisher()).thenReturn(publisher1Double);
-        when(edition2Double.getPublisher()).thenReturn(publisher2Double);
-
-        //Factory
+    void setUp(){
         factory = mock(PublicationSampleFactory.class);
+        userID_Double = createDoubleUserID();
+        editionID_Double = createDoubleEditionID();
+        bibliographicalDataID_Double = createDoubleBibliographicalDataID();
+
+    }
+
+    // ===========================================================
+    // ========== Tests for Constructor ==========================
+    // ===========================================================
+
+    @Test
+    void constructor_shouldCreateRepository_whenValidFactoryIsProvided() {
+        // Act + Assert
+        assertDoesNotThrow(() -> new PublicationSampleRepositoryMem(factory));
+    }
+
+    @Test
+    void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> new PublicationSampleRepositoryMem(null));
     }
 
 
     // ===========================================================
-    // ===== Tests for  findItemsByListingAndPublication =========
+    // ============== Tests for createAndAdd =====================
+    // ===========================================================
+
+    @Test
+    void createAndAdd_shouldReturnThePublicationSampleCreatedByFactory() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        when(factory.create(bibliographicalDataID_Double,userID_Double, PublicationStatus.READ, editionID_Double,Condition.NEW)).thenReturn(pbSample);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        PublicationSample result =
+                repo.createAndAdd(
+                        bibliographicalDataID_Double,userID_Double, PublicationStatus.READ, editionID_Double,Condition.NEW);
+
+        // Assert
+        assertSame(pbSample, result);
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenBibliographicalDataIDIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(null, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW));
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenUserIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(bibliographicalDataID_Double,null, PublicationStatus.READ, editionID_Double, Condition.NEW));
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenStatusIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(bibliographicalDataID_Double,userID_Double, null, editionID_Double, Condition.NEW));
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenEditionIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(bibliographicalDataID_Double,userID_Double, PublicationStatus.READ,null, Condition.NEW));
+    }
+
+    @Test
+    void createAndAdd_shouldThrowException_whenConditionIsNull() {
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.createAndAdd(bibliographicalDataID_Double,userID_Double, PublicationStatus.READ,editionID_Double, null));
+    }
+
+    // ===========================================================
+    // ========== Tests for save =================================
+    // ===========================================================
+
+    @Test
+    void save_shouldReturnTheSamePublicationSample() {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        PublicationSample result = repo.save(pbSample);
+
+        // Assert
+        assertSame(pbSample, result);
+    }
+
+    @Test
+    void save_shouldAddPublicationSampleToRepository() {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        repo.save(pbSample);
+
+        // Assert
+        assertTrue(repo.isExistent(pbSample));
+    }
+
+    @Test
+    void save_shouldThrowException_whenPublicationSampleAlreadyExists() {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(pbSample);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.save(pbSample));
+    }
+
+    @Test
+    void save_shouldThrowException_whenPublicationSampleIsNull() {
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.save(null));
+    }
+
+    @Test
+    void save_shouldAllowSavingMultipleDifferentPublicationSamples() {
+        // Arrange
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+
+        // Assert
+        List<PublicationSample> all = repo.getAllPublications();
+        assertEquals(2, all.size());
+        assertTrue(all.contains(pbSample_1));
+        assertTrue(all.contains(pbSample_2));
+    }
+
+    @Test
+    void save_shouldNotAddDuplicate_whenExceptionIsThrown() {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(pbSample);
+
+        assertThrows(IllegalArgumentException.class, () -> repo.save(pbSample));
+
+        assertEquals(1, repo.getAllPublications().size());
+    }
+
+    // ===========================================================
+    // ========== Tests for getAllPublications ===================
+    // ===========================================================
+
+    @Test
+    void getAllPublications_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublications();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllPublications_shouldReturnListWithOneElement_whenOnePublicationWasAdded() throws InstanceAlreadyExistsException {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublications();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(pbSample, result.get(0));
+    }
+
+    @Test
+    void getAllPublications_shouldReturnAllElements_whenMultiplePublicationsWereAdded() throws InstanceAlreadyExistsException {
+        // Arrange
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublications();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pbSample_1));
+        assertTrue(result.contains(pbSample_2));
+    }
+
+    @Test
+    void getAllPublications_shouldReturnImmutableList() throws InstanceAlreadyExistsException {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublications();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(PublicationSample.class)));
+    }
+
+
+    // ===========================================================
+    // ========== Tests for findById =============================
+    // ===========================================================
+
+    @Test
+    void findById_shouldThrowException_whenIdIsNull() {
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repo.findById(null));
+    }
+
+    @Test
+    void findById_shouldReturnPublicationSample_whenIdExists() throws InstanceAlreadyExistsException {
+        // Arrange
+        PublicationSampleID id = mock(PublicationSampleID.class);
+        PublicationSample pbSample = mock(PublicationSample.class);
+        when(pbSample.id()).thenReturn(id);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+
+        // Act
+        Optional<PublicationSample> result = repo.findById(id);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(pbSample, result.get());
+    }
+
+    @Test
+    void findById_shouldReturnEmptyOptional_whenIdDoesNotExist() {
+        // Arrange
+        PublicationSampleID id = mock(PublicationSampleID.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        Optional<PublicationSample> result = repo.findById(id);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findById_shouldReturnCorrectSample_whenMultipleSamplesExist() throws InstanceAlreadyExistsException {
+        // Arrange
+        PublicationSampleID id_1 = mock(PublicationSampleID.class);
+        PublicationSampleID id_2 = mock(PublicationSampleID.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(pbSample_1.id()).thenReturn(id_1);
+        when(pbSample_2.id()).thenReturn(id_2);
+
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+
+        // Act
+        Optional<PublicationSample> result = repo.findById(id_2);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(pbSample_2, result.get());
+    }
+
+
+    // ===========================================================
+    // ========== Tests for isExistent ===========================
+    // ===========================================================
+
+    @Test
+    void isExistent_returnsTrue_WhenRepoContainsSamePublicationSample() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        when(factory.create(bibliographicalDataID_Double,userID_Double, PublicationStatus.READ, editionID_Double,Condition.NEW)).thenReturn(pbSample);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        repo.createAndAdd(bibliographicalDataID_Double,userID_Double, PublicationStatus.READ, editionID_Double,Condition.NEW);
+
+        //Act
+        boolean result = repo.isExistent(pbSample);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isExistent_shouldReturnFalse_whenPublicationSampleDoesNotExist() {
+        // Arrange
+        PublicationSample pbSample = mock(PublicationSample.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        boolean result = repo.isExistent(pbSample);
+
+        // Assert
+        assertFalse(result);
+    }
+
+
+    @Test
+    void isExistent_returnsFalse_whenEmptyRepo() {
+
+        // Arrange
+        PublicationSample psDouble = mock(PublicationSample.class);
+
+        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(psFactory);
+
+        // Act + Assert
+        assertFalse(repo.isExistent(psDouble));
+
+    }
+
+    @Test
+    void isExistent_shouldThrowException_whenPublicationSampleIsNull() {
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.isExistent(null));
+    }
+
+
+    // ===========================================================
+    // ===== Tests for getListOfDifferentPublications ============
+    // ===========================================================
+
+//    @Test
+//    void getListOfDifferentPublications_whenLibraryContainsSome_returnsOnlyMissingOnes() {
+//        PublicationSample p1 = mock(PublicationSample.class);
+//        PublicationSample p2 = mock(PublicationSample.class);
+//        PublicationSample p3 = mock(PublicationSample.class);
+//
+//        // repo: p1, p2, p3
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        repo.add(p1);
+//        repo.add(p2);
+//        repo.add(p3);
+//
+//        // library tem p2
+//        List<PublicationSample> library = List.of(p2);
+//
+//        List<PublicationSample> result = repo.getListOfDifferentPublications(library);
+//
+//        // deve devolver p1 e p3
+//        assertEquals(2, result.size());
+//        assertTrue(result.contains(p1));
+//        assertTrue(result.contains(p3));
+//        assertFalse(result.contains(p2));
+//    }
+//
+//    @Test
+//    void getListOfDifferentPublications_whenLibraryContainsAll_returnsEmpty() {
+//        PublicationSample p1 = mock(PublicationSample.class);
+//        PublicationSample p2 = mock(PublicationSample.class);
+//
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        repo.add(p1);
+//        repo.add(p2);
+//
+//        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of(p1, p2));
+//
+//        assertTrue(result.isEmpty());
+//    }
+//
+//    @Test
+//    void getListOfDifferentPublications_whenLibraryContainsNone_returnsAllRepoPublications() {
+//        PublicationSample p1 = mock(PublicationSample.class);
+//        PublicationSample p2 = mock(PublicationSample.class);
+//
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        repo.add(p1);
+//        repo.add(p2);
+//
+//        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());
+//
+//        assertEquals(2, result.size());
+//        assertEquals(List.of(p1, p2), result); // mesma ordem do repo
+//    }
+//
+//    @Test
+//    void getListOfDifferentPublications_returnsImmutableCopy() {
+//        PublicationSample p1 = mock(PublicationSample.class);
+//
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        repo.add(p1);
+//
+//        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());
+//
+//        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(PublicationSample.class)));
+//    }
+
+
+    // ===========================================================
+    // ===== Tests for findItemsByListingAndPublication ==========
     // ===========================================================
 
 //    @Test
@@ -133,18 +530,18 @@ class IPublicationSampleRepositoryMemTest {
 //        assertTrue(itemsList.isEmpty());
 //    }
 
-    @Test
-    void findItemsByListingAndPublication_ShouldReturnEmptyListWhenListingsEmpty() {
-        // Arrange
-        List<Listing> listOfListings = List.of();
-
-        // Act
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//    @Test
+//    void findItemsByListingAndPublication_ShouldReturnEmptyListWhenListingsEmpty() {
+//        // Arrange
+//        List<Listing> listOfListings = List.of();
+//
+//        // Act
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 //        List<PublicationSample> itemsList = repo.findItemsByListingAndPublication(listOfListings, bd1Double);
-
-        // Assert
+//
+//        // Assert
 //        assertTrue(itemsList.isEmpty());
-    }
+//    }
 
 //    @Test
 //    void findItemsByListingAndPublication_ShouldReturnImmutableList() {
@@ -159,7 +556,6 @@ class IPublicationSampleRepositoryMemTest {
 //        assertThrows(UnsupportedOperationException.class, () -> itemsList.add(pubSample1Double));
 //    }
 
-    // Test for listings with more than 1 item (listing3)
 //    @Test
 //    void findItemsByListingAndPublication_ShouldHandleMultipleSamplesInListing() {
 //        // Arrange
@@ -173,8 +569,9 @@ class IPublicationSampleRepositoryMemTest {
 //        assertTrue(itemsList.contains(pubSample4Double));
 //    }
 
+
     // ===========================================================
-    // ===== Tests for  findItemsByListingAndPublisher ===========
+    // ===== Tests for findItemsByListingAndPublisher ============
     // ===========================================================
 
 //    @Test
@@ -233,7 +630,6 @@ class IPublicationSampleRepositoryMemTest {
 //        assertThrows(UnsupportedOperationException.class,
 //                () -> result.add(pubSample2Double));
 //    }
-
 
 //    @Test
 //    void findItemsByListingAndPublisher_ShouldThrowExceptionWhenListingsIsNull() {
@@ -302,7 +698,122 @@ class IPublicationSampleRepositoryMemTest {
 //                () -> repo.findItemsByListingAndPublisher(listings, publisher1Double));
 //    }
 
-    // US018 STARTS MOCK TESTS -------------------------------------------------------
+
+    // ===========================================================
+    // ===== Tests for getPublicationsByDTO ======================
+    // ===========================================================
+
+//    @Test
+//    void getPublicationByDTO_shouldThrow_whenDTOList_Empty() {
+//
+//        // arrange
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        List<PublicationSampleDTO_US016> pubsDTOList = new ArrayList<>();
+//
+//        // act + assert
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(pubsDTOList));
+//
+//        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
+//    }
+//
+//    @Test
+//    void getPublicationByDTO_shouldThrow_whenDTOList_Null() {
+//
+//        //Arrange
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//
+//        // act + assert
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(null));
+//
+//        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
+//    }
+//
+//    @Test
+//    void getPublicationByDTO_shouldReturn_EmptyList_whenNoPublicationSampleMatchesDTO() {
+//
+//        // arrange
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        List<PublicationSample> matchedList = List.of();
+//
+//
+//        PublicationSampleDTO_US016 dtoDouble1 = mock(PublicationSampleDTO_US016.class);
+//        PublicationSampleDTO_US016 dtoDouble2 = mock(PublicationSampleDTO_US016.class);
+//        List<PublicationSampleDTO_US016> dtoList = List.of(dtoDouble1, dtoDouble2);
+//
+//        // act
+//        List<PublicationSample> result = repo.getPublicationsByDTO(dtoList);
+//
+//        // assert
+//        assertEquals(0, result.size());
+//
+//    }
+
+//    @Test
+//    void getPublicationsByDTO_allFieldsMatch_returnsPublication() {
+//        //Arrange
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//
+//        PublicationSample ps = mockPublicationSample(
+//                "Title",
+//                List.of("Author1"),
+//                Locale.ENGLISH,
+//                List.of("Genre1"),
+//                "owner",
+//                "New"
+//        );
+//        repo.add(ps);
+//
+//        PublicationSampleDTO_US016 dto = mockDto(
+//                "Title",
+//                List.of("Author1"),
+//                Locale.ENGLISH,
+//                List.of("Genre1"),
+//                "owner",
+//                "New"
+//        );
+//
+//        //Act
+//        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
+//
+//        //Assert
+//        assertEquals(1, result.size());
+//        assertSame(ps, result.get(0));
+//    }
+//
+//    @Test
+//    void getPublicationsByDTO_authorOrderDifferent_returnsEmpty_becauseListEqualsIsOrderSensitive() {
+//        //Arrange
+//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+//        PublicationSample ps = mockPublicationSample(
+//                "Title",
+//                List.of("Author1", "Author2"),
+//                Locale.ENGLISH,
+//                List.of("Genre1"),
+//                "owner",
+//                "New"
+//        );
+//        repo.add(ps);
+//
+//        PublicationSampleDTO_US016 dto = mockDto(
+//                "Title",
+//                List.of("Author2", "Author1"),
+//                Locale.ENGLISH,
+//                List.of("Genre1"),
+//                "owner",
+//                "New"
+//        );
+//
+//        //Act
+//        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
+//
+//        //Arrange
+//        assertTrue(result.isEmpty());
+//    }
+
+
+    // ===========================================================
+    // ===== Tests for US018 - PublicationSampleDtoToDomain ======
+    // ===========================================================
 
     /**
      * Ensures exception is thrown when library is null.
@@ -402,384 +913,30 @@ class IPublicationSampleRepositoryMemTest {
 //                () -> repo.PublicationSampleDtoToDomain(library, dto));
 //    }
 
-    // US018 ENDS --------------------------------------------------------------------------
 
-    //============================================================
-    // TESTING CREATE AND ADD WITH FACTORY
-//    @Test
-//    void shouldReturnValidNewPublicationSampleWithFactory () throws InstanceAlreadyExistsException {
-//
-//        // Arrange
-//        PublicationSample publicationSampleDouble = mock(PublicationSample.class);
-//        BibliographicalData bdDouble = mock(BibliographicalData.class);
-//        User ownerDouble = mock(User.class);
-//        PublicationStatus status = PublicationStatus.READ;
-//        Edition eDouble = mock(Edition.class);
-//        Condition condition = Condition.LIKE_NEW;
-//
-//        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-//        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(factory);
-//
-//
-////        when(factory.create(bdDouble, ownerDouble, status, eDouble, condition)).thenReturn(publicationSampleDouble);
-//
-//        // Act
-////        PublicationSample result = publicationSampleRepositoryMem.createAndAdd(bdDouble, ownerDouble, status, eDouble, condition);
-//
-//        // Assert
-//        verify(factory).create(bdDouble, ownerDouble, status, eDouble, condition);
-//        assertEquals(publicationSampleDouble, result);
-//        assertTrue(publicationSampleRepositoryMem.getAllPublications().contains(publicationSampleDouble));
-//        assertEquals(1, publicationSampleRepositoryMem.getAllPublications().size());
-//    }
-
-//    @Test
-//    void createAndAdd_shouldThrowException_whenBibliographicalDataIsNull() {
-//        // Arrange
-//
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-//
-//        User user = mock(User.class);
-//        Edition edition = mock(Edition.class);
-//
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                repo.createAndAdd(
-//                        null,
-//                        user,
-//                        PublicationStatus.READ,
-//                        edition,
-//                        Condition.NEW
-//                )
-//        );
-//
-//        verify(factory, never()).create(any(), any(), any(), any(), any());
-//    }
-
-//    @Test
-//    void createAndAdd_shouldThrowException_whenUserIsNull() {
-//        // Arrange
-//
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-//
-//        BibliographicalData bd = mock(BibliographicalData.class);
-//        Edition edition = mock(Edition.class);
-//
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                repo.createAndAdd(
-//                        bd,
-//                        null,
-//                        PublicationStatus.READ,
-//                        edition,
-//                        Condition.NEW
-//                )
-//        );
-//
-//        verify(factory, never()).create(any(), any(), any(), any(), any());
-//    }
-
-//    @Test
-//    void createAndAdd_shouldThrowException_whenStatusIsNull() {
-//        // Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-//
-//        BibliographicalData bd = mock(BibliographicalData.class);
-//        User user = mock(User.class);
-//        Edition edition = mock(Edition.class);
-//
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                repo.createAndAdd(
-//                        bd,
-//                        user,
-//                        null,
-//                        edition,
-//                        Condition.NEW
-//                )
-//        );
-//
-//        verify(factory, never()).create(any(), any(), any(), any(), any());
-//    }
-
-//    @Test
-//    void createAndAdd_shouldThrowException_whenEditionIsNull() {
-//        // Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-//
-//        BibliographicalData bd = mock(BibliographicalData.class);
-//        User user = mock(User.class);
-//
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                repo.createAndAdd(
-//                        bd,
-//                        user,
-//                        PublicationStatus.READ,
-//                        null,
-//                        Condition.NEW
-//                )
-//        );
-//
-//        verify(factory, never()).create(any(), any(), any(), any(), any());
-//    }
-
-//    @Test
-//    void createAndAdd_shouldThrowException_whenConditionIsNull() {
-//        // Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
-//
-//        BibliographicalData bd = mock(BibliographicalData.class);
-//        User user = mock(User.class);
-//        Edition edition = mock(Edition.class);
-//
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                repo.createAndAdd(
-//                        bd,
-//                        user,
-//                        PublicationStatus.READ,
-//                        edition,
-//                        null
-//                )
-//        );
-//
-//        verify(factory, never()).create(any(), any(), any(), any(), any());
-//    }
-
-//    @Test
-//    void getPublicationByDTO_shouldThrow_whenDTOList_Empty() {
-//
-//        // arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//        List<PublicationSampleDTO_US016> pubsDTOList = new ArrayList<>();
-//
-//        // act + assert
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(pubsDTOList));
-//
-//        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
-//    }
-//
-//    @Test
-//    void getPublicationByDTO_shouldThrow_whenDTOList_Null() {
-//
-//        //Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        // act + assert
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(null));
-//
-//        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
-//    }
-//
-//    @Test
-//    void getPublicationByDTO_shouldReturn_EmptyList_whenNoPublicationSampleMatchesDTO() {
-//
-//        // arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//        List<PublicationSample> matchedList = List.of();
-//
-//
-//        PublicationSampleDTO_US016 dtoDouble1 = mock(PublicationSampleDTO_US016.class);
-//        PublicationSampleDTO_US016 dtoDouble2 = mock(PublicationSampleDTO_US016.class);
-//        List<PublicationSampleDTO_US016> dtoList = List.of(dtoDouble1, dtoDouble2);
-//
-//        // act
-//        List<PublicationSample> result = repo.getPublicationsByDTO(dtoList);
-//
-//        // assert
-//        assertEquals(0, result.size());
-//
-//    }
+    // ===========================================================
+    // =================== Helper Methods ========================
+    // ===========================================================
 
 
-//    @Test
-//    void getPublicationsByDTO_allFieldsMatch_returnsPublication() {
-//        //Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSample ps = mockPublicationSample(
-//                "Title",
-//                List.of("Author1"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//        repo.add(ps);
-//
-//        PublicationSampleDTO_US016 dto = mockDto(
-//                "Title",
-//                List.of("Author1"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//
-//        //Act
-//        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
-//
-//        //Assert
-//        assertEquals(1, result.size());
-//        assertSame(ps, result.get(0));
-//    }
-//
-//
-//    @Test
-//    void getPublicationsByDTO_authorOrderDifferent_returnsEmpty_becauseListEqualsIsOrderSensitive() {
-//        //Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//        PublicationSample ps = mockPublicationSample(
-//                "Title",
-//                List.of("Author1", "Author2"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//        repo.add(ps);
-//
-//        PublicationSampleDTO_US016 dto = mockDto(
-//                "Title",
-//                List.of("Author2", "Author1"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//
-//        //Act
-//        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
-//
-//        //Arrange
-//        assertTrue(result.isEmpty());
-//    }
-
-    @Test
-    void isExistent_returnsTrue_WhenRepoContainsSamePublicationSample() {
-
-        // arrange
-        PublicationSample psDouble1 = mock(PublicationSample.class);
-        PublicationSample psDouble2 = mock(PublicationSample.class);
-
-        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(psFactory);
-
-        publicationSampleRepositoryMem.add(psDouble1);
-        publicationSampleRepositoryMem.add(psDouble2);
-
-        // act + assert
-
-        assertTrue(publicationSampleRepositoryMem.isExistent(psDouble1));
-
+    private static BibliographicalDataID createDoubleBibliographicalDataID(){
+        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
+        when(bdID.getID()).thenReturn(UUID.randomUUID().toString());
+        return bdID;
     }
 
-    @Test
-    void isExistent_returnsFalse_WhenRepoDoeNotContainPublicationSample() {
-
-        // arrange
-        PublicationSample psDouble1 = mock(PublicationSample.class);
-        PublicationSample psDouble2 = mock(PublicationSample.class);
-
-        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(psFactory);
-
-        publicationSampleRepositoryMem.add(psDouble1);
-
-        // act + assert
-        assertFalse(publicationSampleRepositoryMem.isExistent(psDouble2));
-
+    private static UserId createDoubleUserID(){
+        UserId userID = mock(UserId.class);
+        when(userID.getUsername()).thenReturn(UUID.randomUUID().toString());
+        return userID;
     }
 
-    @Test
-    void isExistent_returnsFalse_whenEmptyRepo() {
-
-        // arrange
-        PublicationSample psDouble = mock(PublicationSample.class);
-
-        PublicationSampleFactory psFactory = mock(PublicationSampleFactory.class);
-        IPublicationSampleRepository publicationSampleRepositoryMem = new PublicationSampleRepositoryMem(psFactory);
-
-        // act + assert
-        assertFalse(publicationSampleRepositoryMem.isExistent(psDouble));
-
+    private static EditionID createDoubleEditionID(){
+        EditionID editionID = mock(EditionID.class);
+        when(editionID.getID()).thenReturn(UUID.randomUUID().toString());
+        return editionID;
     }
 
-    @Test
-    void getListOfDifferentPublications_whenLibraryContainsSome_returnsOnlyMissingOnes() {
-        PublicationSample p1 = mock(PublicationSample.class);
-        PublicationSample p2 = mock(PublicationSample.class);
-        PublicationSample p3 = mock(PublicationSample.class);
-
-        // repo: p1, p2, p3
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.add(p1);
-        repo.add(p2);
-        repo.add(p3);
-
-        // library tem p2
-        List<PublicationSample> library = List.of(p2);
-
-        List<PublicationSample> result = repo.getListOfDifferentPublications(library);
-
-        // deve devolver p1 e p3
-        assertEquals(2, result.size());
-        assertTrue(result.contains(p1));
-        assertTrue(result.contains(p3));
-        assertFalse(result.contains(p2));
-    }
-
-    @Test
-    void getListOfDifferentPublications_whenLibraryContainsAll_returnsEmpty() {
-        PublicationSample p1 = mock(PublicationSample.class);
-        PublicationSample p2 = mock(PublicationSample.class);
-
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.add(p1);
-        repo.add(p2);
-
-        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of(p1, p2));
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getListOfDifferentPublications_whenLibraryContainsNone_returnsAllRepoPublications() {
-        PublicationSample p1 = mock(PublicationSample.class);
-        PublicationSample p2 = mock(PublicationSample.class);
-
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.add(p1);
-        repo.add(p2);
-
-        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());
-
-        assertEquals(2, result.size());
-        assertEquals(List.of(p1, p2), result); // mesma ordem do repo
-    }
-
-    @Test
-    void getListOfDifferentPublications_returnsImmutableCopy() {
-        PublicationSample p1 = mock(PublicationSample.class);
-
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.add(p1);
-
-        List<PublicationSample> result = repo.getListOfDifferentPublications(List.of());
-
-        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(PublicationSample.class)));
-    }
 
 
     private static PublicationSample mockPublicationSample(

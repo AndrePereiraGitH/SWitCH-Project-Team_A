@@ -117,7 +117,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         // Repositories
         when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(listListingsDouble);
-        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble,bd1Double)).thenReturn(List.of(pubSample1Double));
+//        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble,bd1Double)).thenReturn(List.of(pubSample1Double));
         when(bdRepoDouble.getAllPublicationsBD()).thenReturn(listBDDouble);
     }
 
@@ -148,7 +148,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenNoItemsFound() {
 
         // Arrange
-        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd1Double)).thenReturn(List.of());
+//        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd1Double)).thenReturn(List.of());
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
@@ -166,8 +166,8 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     void findListOfItemsOnDirectSale_ShouldReturnAllItem_WhenMultipleSamplesExist() {
 
         // Arrange
-        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd1Double))
-                .thenReturn(List.of(pubSample1Double, pubSample2Double));
+//        when(pubSampleRepoDouble.findItemsByListingAndPublication(listListingsDouble, bd1Double))
+//                .thenReturn(List.of(pubSample1Double, pubSample2Double));
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
