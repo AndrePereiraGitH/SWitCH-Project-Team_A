@@ -6,6 +6,7 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.dto.BibliographicalDataDTO_US023;

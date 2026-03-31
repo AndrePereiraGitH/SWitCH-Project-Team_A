@@ -4,7 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
@@ -83,7 +83,7 @@ class AppraisalEntityRepositoryMemTest {
 
         // ARRANGE
         IGenreRepository genreRepository = mock(IGenreRepository.class);
-        IPublicationTypeRepository publicationTypeRepository = mock(PublicationTypeRepositoryMem.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         AppraisalEntityFactory appraisalEntityFactory = mock(AppraisalEntityFactory.class);
 
         IAppraisalEntityRepository sut =
@@ -149,6 +149,40 @@ class AppraisalEntityRepositoryMemTest {
         );
     }
 
+    @Test
+    void shouldThrowExceptionWhenPublicationTypeNotFound() {
+
+        // ARRANGE
+        IGenreRepository genreRepository = mock(IGenreRepository.class);
+        IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
+        AppraisalEntityFactory factory = mock(AppraisalEntityFactory.class);
+
+        IAppraisalEntityRepository sut =
+                new AppraisalEntityRepositoryMem(genreRepository, publicationTypeRepository, factory);
+
+        Contact contact = mock(Contact.class);
+
+        GenreDetailsDTO_US004 genreDTO = mock(GenreDetailsDTO_US004.class);
+        when(genreDTO.getTitle()).thenReturn("Fantasy");
+
+        PublicationTypeDTO_US004 publicationDTO = mock(PublicationTypeDTO_US004.class);
+        when(publicationDTO.getMediaFormat()).thenReturn("Book");
+
+        Genre genre = mock(Genre.class);
+        when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
+
+        when(publicationTypeRepository.findByAttributes("Book")).thenReturn(null);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                sut.createAndAdd(
+                        "Test",
+                        contact,
+                        List.of(genreDTO),
+                        List.of(publicationDTO)
+                )
+        );
+    }
 
     @Test
     void shouldThrowExceptionWhenPublicationTypesAreEmpty() {

@@ -1,8 +1,8 @@
 package TOPSECRET.domain.AppraisalEntity;
 
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.List;
 
@@ -27,8 +27,8 @@ public class AppraisalEntityFactory {
      */
     public AppraisalEntity create(String name,
                                   Contact contact,
-                                  List<PublicationType> publicationTypes,
-                                  List<Genre> genres)
+                                  List<PublicationTypeId> publicationTypes,
+                                  List<GenreID> genres)
             {
 
             return new AppraisalEntity(

@@ -1,8 +1,8 @@
 package TOPSECRET.domain.AppraisalEntity;
 
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -33,8 +33,8 @@ class AppraisalEntityFactoryTest {
         AppraisalEntityFactory factory = new AppraisalEntityFactory();
 
         Contact contact = mock(Contact.class);
-        Genre genre = mock(Genre.class);
-        PublicationType type = mock(PublicationType.class);
+        GenreID genre = mock(GenreID.class);
+        PublicationTypeId type = mock(PublicationTypeId.class);
 
         try (MockedConstruction<AppraisalEntity> mocked =
                 mockConstruction(AppraisalEntity.class,

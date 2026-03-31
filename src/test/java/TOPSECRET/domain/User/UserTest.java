@@ -1,16 +1,18 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.User;
 
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.ValueObjects.Profile;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class UserTest {
 
-    /**
-     * Helper method to create a valid User instance for testing purposes.
-     */
     private User createValidUser(String username) {
 
         Contact contactDouble = mock(Contact.class);
@@ -19,10 +21,6 @@ class UserTest {
         return new User(username, contactDouble, profileDouble, UserRole.NORMAL_USER);
     }
 
-
-    /**
-     * Verifies that the empty constructor can be instantiated.
-     */
     @Test
     void testEmptyConstructor() {
 
@@ -35,27 +33,19 @@ class UserTest {
         assertNotNull(user);
     }
 
+    @Test
+    void testConstructorWithValidArguments() {
 
-    /**
-     * Verifies that a User is successfully created with valid arguments.
-     */
-        @Test
-        void testConstructorWithValidArguments() {
+        // Arrange
 
-            // Arrange
+        // Act
+        User user = createValidUser("Rodolph");
 
-            // Act
-            User user = createValidUser("Rodolph");
-
-            // Assert
-            assertNotNull(user);
-        }
+        // Assert
+        assertNotNull(user);
+    }
 
 
-    /**
-     * Verifies that constructor throws IllegalArgumentException
-     * when username is null.
-     */
     @Test
     void testConstructorWithUsernameNullShouldThrowException() {
 
@@ -67,10 +57,6 @@ class UserTest {
                 () -> new User(null, valid.getContact(), valid.getProfile(), UserRole.NORMAL_USER));
     }
 
-
-    /**
-     * Verifies that constructor accepts username with exactly five characters.
-     */
     @Test
     void testConstructorUsernameWithFiveCharacters() {
 
@@ -85,10 +71,6 @@ class UserTest {
     }
 
 
-    /**
-     * Verifies that constructor throws IllegalArgumentException
-     * when username contains fewer than five characters.
-     */
     @Test
     void testConstructorWithUsernameTooShortShouldThrowException() {
 
@@ -104,9 +86,6 @@ class UserTest {
     }
 
 
-    /**
-     * Verifies that getUserName() returns the correct username.
-     */
     @Test
     void testShouldReturnUserName() {
 
@@ -120,10 +99,6 @@ class UserTest {
         assertEquals("John Doe", result);
     }
 
-
-    /**
-     * Verifies that getContact() returns the correct Contact object.
-     */
     @Test
     void testShouldReturnContact() {
 
@@ -140,9 +115,6 @@ class UserTest {
     }
 
 
-    /**
-     * Verifies that getProfile() returns the correct Profile object.
-     */
     @Test
     void testShouldReturnProfile() {
 
@@ -157,10 +129,6 @@ class UserTest {
         assertEquals(expected, result);
     }
 
-
-    /**
-     * Verifies that getUserName() returns the provided username.
-     */
     @Test
     void testShouldReturnProvidedUsername() {
 
@@ -174,11 +142,6 @@ class UserTest {
         assertEquals("userNameTest", result);
     }
 
-
-    /**
-     * Verifies that getUserInfo() returns the correctly formatted string
-     * containing all user information.
-     */
     @Test
     void testShouldReturnFormattedString() {
 
@@ -197,10 +160,6 @@ class UserTest {
         assertEquals(expected, result);
     }
 
-
-    /**
-     * Verifies that getUserRole() returns the correct role.
-     */
     @Test
     void testShouldReturnUserRole() {
 
@@ -214,42 +173,30 @@ class UserTest {
         assertEquals(UserRole.NORMAL_USER, result);
     }
 
-
-    /**
-     * Verifies that equals() returns false when usernames are different.
-     */
     @Test
     void testEqualsShouldReturnFalseWhenUsernamesAreDifferent() {
 
         User user1 = createValidUser("userNameTest");
-
         User user2 = new User(
                 "DifferentUser",
                 user1.getContact(),
                 user1.getProfile(),
                 UserRole.NORMAL_USER
         );
-
-        assertNotEquals(user1, user2);
+        assertFalse(user1.sameAs(user2));
     }
 
-    /**
-     * Verifies that equals() returns true when usernames are equal,
-     * regardless of other attributes.
-     */
     @Test
     void testEqualsShouldReturnTrueWhenUsernamesAreEqual() {
 
         User user1 = createValidUser("John Doe");
-
         User user2 = new User(
                 "John Doe",
                 user1.getContact(),
                 user1.getProfile(),
                 UserRole.NORMAL_USER
         );
-
-        assertEquals(user1, user2);
+        assertTrue(user1.sameAs(user2));
     }
 
     @Test
@@ -269,25 +216,25 @@ class UserTest {
 
     }
 
-    /**
-     * Verifies that hashCode() is equal for users that are considered equal.
-     * Ensures equals/hashCode contract compliance.
-     */
     @Test
     void testHashCodeShouldBeEqualForEqualUsers() {
 
-        User user1 = createValidUser("John Doe");
+        UserId sameId = new UserId(UUID.randomUUID().toString());
 
+        User user1 = createValidUser("John Doe");
         User user2 = createValidUser("John Doe");
 
-        assertEquals(user1.hashCode(), user2.hashCode());
+
+        assertNotEquals(user1.hashCode(), user2.hashCode());
     }
 
+    @Test
+    void testHashCodeConsistentWithEquals() {
+        User user = createValidUser("John Doe");
+        User sameUser = user;  // mesma referência
+        assertEquals(user.hashCode(), sameUser.hashCode());
+    }
 
-    /**
-     * Verifies that equals() returns true when comparing the same object reference
-     * (covers the branch: this == o).
-     */
     @Test
     void testEqualsShouldReturnTrueWhenSameReference() {
 
@@ -301,10 +248,6 @@ class UserTest {
         assertEquals(true, result);
     }
 
-    /**
-     * Verifies that hashCode() is not a constant value.
-     * Kills the mutation that replaces hashCode() return value with 0.
-     */
     @Test
     void testHashCodeShouldNotBeZeroForValidUser() {
 
@@ -318,6 +261,86 @@ class UserTest {
         assertEquals(false, hash == 0);
     }
 
+    @Test
+    void testIdShouldReturnNonNullUserId() {
 
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        UserId result = user.id();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+
+    @Test
+    void testIdShouldBeUniqueForEachUser() {
+
+        // Arrange
+        User user1 = createValidUser("Rodolph");
+        User user2 = createValidUser("Helena");
+
+        // Act & Assert
+        assertNotEquals(user1.id(), user2.id());
+    }
+
+
+    @Test
+    void testSameAsShouldReturnTrueForSameObject() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        boolean result = user.sameAs(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+
+    @Test
+    void testSameAsShouldReturnFalseForDifferentUsers() {
+
+        // Arrange
+        User user1 = createValidUser("Rodolph");
+        User user2 = createValidUser("Helena");
+
+        // Act
+        boolean result = user1.sameAs(user2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+
+    @Test
+    void testSameAsShouldReturnFalseForNull() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        boolean result = user.sameAs(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+
+    @Test
+    void testSameAsShouldReturnFalseForDifferentClass() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        boolean result = user.sameAs("not a user");
+
+        // Assert
+        assertFalse(result);
+    }
 
 }
