@@ -5,9 +5,8 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-
+import TOPSECRET.domain.User.User;
+import TOPSECRET.repository.IPublicationSampleRepository;
 import javax.management.InstanceAlreadyExistsException;
 
 public class US010ToRegisterNewPublicationCtrl {

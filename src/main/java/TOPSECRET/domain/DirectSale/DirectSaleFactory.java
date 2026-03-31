@@ -2,7 +2,7 @@ package TOPSECRET.domain.DirectSale;
 
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 import java.util.List;
 

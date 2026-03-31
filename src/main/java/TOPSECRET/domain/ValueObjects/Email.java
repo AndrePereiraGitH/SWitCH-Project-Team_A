@@ -1,12 +1,14 @@
 package TOPSECRET.domain.ValueObjects;
 
+import TOPSECRET.ddd.ValueObject;
+
 import java.util.regex.Pattern;
 
 /**
  * Represents an email address split into a username and a domain.
  * This class validates both parts before creating an Email object.
  */
-public class Email {
+public class Email implements ValueObject {
 
     // The part before the '@' symbol (e.g. "john.doe")
     private String userName;

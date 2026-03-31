@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Profile;
-import TOPSECRET.repository.UserRepository;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.Profile;
+import TOPSECRET.domain.User.UserRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

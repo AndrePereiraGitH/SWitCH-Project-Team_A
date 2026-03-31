@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Edition;
 
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Publisher;

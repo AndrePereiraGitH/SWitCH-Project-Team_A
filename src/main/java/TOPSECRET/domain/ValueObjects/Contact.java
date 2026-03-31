@@ -1,14 +1,38 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 
-import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.ddd.ValueObject;
 
-public class Contact {
+/**
+ * Value Object representing the contact information of a user,
+ * composed of a phone number, extension, email, and address.
+ * <p>
+ * A {@code Contact} is considered equal to another if all its fields match.
+ * The only required field at construction time is the extension — all other
+ * fields are optional and may be {@code null}.
+ * </p>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ *     Contact contact = new Contact("987654321", "351", email, address);
+ * </pre>
+ */
+public class Contact implements ValueObject {
 
     private String _phoneNum;
     private String _extension;
     private Email _email;
     private Address _location;
 
+
+    /**
+     * Constructs a new {@code Contact} with the given attributes.
+     *
+     * @param phoneNum  the phone number; may be {@code null}
+     * @param extension the country/area extension code; must not be {@code null}
+     * @param email     the email address; may be {@code null}
+     * @param location  the physical address; may be {@code null}
+     * @throws IllegalArgumentException if {@code extension} is {@code null}
+     */
     // Constructor
     public Contact(String phoneNum, String extension, Email email, Address location) {
 
@@ -22,7 +46,7 @@ public class Contact {
         this._location = location;
     }
 
-    // Empty Constructor
+    // Empty Constructor for framework compatibility
     public Contact () {
 
     }
@@ -59,6 +83,18 @@ public class Contact {
                 ", address: " + _location;
     }
 
+    /**
+     * Indicates whether some other object is equal to this {@code Contact}.
+     * <p>
+     * Two {@code Contact} instances are considered equal if all their fields
+     * (phone number, extension, email, and address) are equal.
+     * Supports {@code null} values in any field.
+     * </p>
+     *
+     * @param obj the object to compare with
+     * @return {@code true} if the given object is a {@code Contact} with the same fields;
+     *         {@code false} otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

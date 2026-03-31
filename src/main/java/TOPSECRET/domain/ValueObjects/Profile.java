@@ -1,15 +1,21 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 
+import TOPSECRET.ddd.ValueObject;
 import TOPSECRET.domain.Country.Country;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * Holds the personal data of a user: name, country, and date of birth.
- * All three fields are required and cannot change after the profile is created.
+ * Value Object representing the personal profile of a user,
+ * composed of a name, country, and date of birth.
+ * <p>
+ * A {@code Profile} is immutable — all fields are set at construction time
+ * and cannot be changed. Two profiles are considered equal if all their
+ * fields have the same values.
+ * </p>
  */
-public class Profile {
+public class Profile implements ValueObject{
 
     private final String _name;
     private final Country _country;
@@ -53,11 +59,16 @@ public class Profile {
      */
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
         if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Profile profile = (Profile) o;
         return Objects.equals(_name, profile._name)
                 && Objects.equals(_country, profile._country)
                 && Objects.equals(_birthday, profile._birthday);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_name, _country, _birthday);
     }
 }

@@ -1,7 +1,7 @@
 package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;

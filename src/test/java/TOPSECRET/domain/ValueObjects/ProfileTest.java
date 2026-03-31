@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
@@ -173,6 +173,30 @@ class ProfileTest {
 
         // Assert — different birthday means not equal
         assertNotEquals(a, b);
+    }
+
+    @Test
+    void hashCode_shouldBeEqual_whenSameData() {
+
+        // Arrange
+        Country country = new CountryFactory().create("Portugal");
+
+        Profile a = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
+        Profile b = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
+
+        // Assert
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+    
+    @Test
+    void hashCode_shouldNotBeZero_forValidProfile() {
+
+        // Arrange
+        Country country = new CountryFactory().create("Portugal");
+        Profile p = new Profile("Ana", country, LocalDate.of(1990, 1, 1));
+
+        // Assert
+        assertNotEquals(0, p.hashCode());
     }
 
 }

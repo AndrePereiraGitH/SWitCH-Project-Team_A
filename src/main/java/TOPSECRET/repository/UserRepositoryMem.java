@@ -1,9 +1,11 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.Contact;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.Profile;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.User.UserFactory;
+import TOPSECRET.domain.User.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

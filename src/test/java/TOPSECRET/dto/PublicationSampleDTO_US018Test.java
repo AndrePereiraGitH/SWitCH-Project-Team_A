@@ -3,7 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.function.Executable;

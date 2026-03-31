@@ -1,6 +1,9 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.User;
 
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.ValueObjects.Profile;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -302,8 +305,7 @@ class UserTest {
     }
 
     /**
-     * Verifies that hashCode() is not a constant value.
-     * Kills the mutation that replaces hashCode() return value with 0.
+     * Verifies that hashCode() returns a non-zero value for a valid User.
      */
     @Test
     void testHashCodeShouldNotBeZeroForValidUser() {
@@ -318,6 +320,104 @@ class UserTest {
         assertEquals(false, hash == 0);
     }
 
+    /**
+     * Verifies that id() returns a non-null UserId after construction.
+     */
+    @Test
+    void testIdShouldReturnNonNullUserId() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        UserId result = user.id();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    /**
+     * Verifies that two different User instances have different UserId values,
+     * ensuring that each User gets a unique auto-generated identifier.
+     */
+    @Test
+    void testIdShouldBeUniqueForEachUser() {
+
+        // Arrange
+        User user1 = createValidUser("Rodolph");
+        User user2 = createValidUser("Helena");
+
+        // Act & Assert
+        assertNotEquals(user1.id(), user2.id());
+    }
+
+    /**
+     * Verifies that sameAs() returns true when comparing a User
+     * with itself, as they share the same UserId.
+     */
+    @Test
+    void testSameAsShouldReturnTrueForSameObject() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        boolean result = user.sameAs(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    /**
+     * Verifies that sameAs() returns false when comparing two different
+     * User instances, as each has a distinct auto-generated UserId.
+     */
+    @Test
+    void testSameAsShouldReturnFalseForDifferentUsers() {
+
+        // Arrange
+        User user1 = createValidUser("Rodolph");
+        User user2 = createValidUser("Helena");
+
+        // Act
+        boolean result = user1.sameAs(user2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    /**
+     * Verifies that sameAs() returns false when compared with null.
+     */
+    @Test
+    void testSameAsShouldReturnFalseForNull() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        boolean result = user.sameAs(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    /**
+     * Verifies that sameAs() returns false when compared with
+     * an object of a different class.
+     */
+    @Test
+    void testSameAsShouldReturnFalseForDifferentClass() {
+
+        // Arrange
+        User user = createValidUser("Rodolph");
+
+        // Act
+        boolean result = user.sameAs("not a user");
+
+        // Assert
+        assertFalse(result);
+    }
 
 
 }

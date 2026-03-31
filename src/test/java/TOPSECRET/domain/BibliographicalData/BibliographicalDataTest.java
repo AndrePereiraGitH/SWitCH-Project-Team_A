@@ -2,7 +2,7 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.Profile;
+import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

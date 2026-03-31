@@ -1,9 +1,8 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.User;
 
-import TOPSECRET.domain.Contact;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.Profile;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.ValueObjects.Profile;
 
 public interface UserRepository {
 

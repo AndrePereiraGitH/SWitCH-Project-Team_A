@@ -5,6 +5,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Code;
 import org.junit.jupiter.api.Test;
 
