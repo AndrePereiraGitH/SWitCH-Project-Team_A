@@ -4,6 +4,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 
 
+import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleID;
@@ -32,8 +33,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     // These fields make up the collection — all defined in US017
     private final CollectionOfPublicationsID _id;
     private String _collectionName;                            // the name the user picks for the collection
-    private GenreID _collectionGenre;                            // the genre chosen from the available list
-    private List<PublicationSampleID> _publicationSampleIDS; // the publications inside — starts empty (US018 adds them)
+    private GenreID _collectionGenreId;                            // the genre chosen from the available list
     //now communicates only with IDs
 
     private final UserId _ownerId;                                       // the user who created and owns this collection
@@ -45,115 +45,70 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      * <p>All three parameters are required. The collection starts with no publications
      * and is always private. These are both US017 rules.
      *
-     * @param collectionName  name chosen by the user for the collection
-     * @param collectionGenre genre chosen by the user
-     * @param user            the user who owns the collection
-     * @throws IllegalArgumentException if name is null or blank, or if genre or user is null
+     * @param collectionName    name chosen by the userId for the collection
+     * @param collectionGenreId genre chosen by the userId
+     * @param userId            the userId who owns the collection
+     * @throws IllegalArgumentException if name is null or blank, or if genre or userId is null
      */
-    protected CollectionOfPublications(String collectionName, GenreID collectionGenre, UserId user) {
+    protected CollectionOfPublications(String collectionName, GenreID collectionGenreId, UserId userId) {
 
         // name cannot be null or blank — a collection must always have a name
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
         }
 
-        // genre cannot be null — US017 requires the user to pick a genre
-        if (collectionGenre == null) {
+        // genre cannot be null — US017 requires the userId to pick a genre
+        if (collectionGenreId == null) {
             throw new IllegalArgumentException("Collection genre cannot be null.");
         }
 
-        // owner cannot be null — every collection belongs to a user
-        if (user == null) {
+        // owner cannot be null — every collection belongs to a userId
+        if (userId == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
 
         this._id = new CollectionOfPublicationsID(UUID.randomUUID().toString());
         this._collectionName = collectionName;
-        this._collectionGenre = collectionGenre;
+        this._collectionGenreId = collectionGenreId;
         this._isPrivate = true;            // US017 rule: always private when created; US019 allows making it public
-        this._ownerId = user;
-        this._publicationSampleIDS = new ArrayList<>(); // starts empty — publications are added in US018
+        this._ownerId = userId;
     }
 
-    /** Returns the name of the collection. */
     public String getCollectionName() {
         return _collectionName;
     }
 
-    /** Returns true if the collection is private, false if it is public. */
-    public boolean getIsPrivate() { return _isPrivate; }
-
-    /** Returns the genre of the collection. */
-    public GenreID getCollectionGenre() { return _collectionGenre; }
-
-    /** Returns the user who owns the collection. */
-    public UserId getOwner() { return _ownerId; }
-
-    /**
-     * Returns the list of publications in this collection — US017 / US018.
-     *
-     * <p>A copy is returned instead of the real internal list.
-     * This means callers can read the list but cannot change what is inside the collection.
-     * This protects the collection's data from being changed from outside the class.
-     *
-     * @return a copy of the publications list
-     */
-    public List<PublicationSampleID> getPublications() {
-        return new ArrayList<>(_publicationSampleIDS); // defensive copy — the real list stays safe
+    public boolean getIsPrivate() {
+        return _isPrivate;
     }
 
-    /**
-     * Two collections are equal if they have the same name (ignoring case), genre, owner,
-     * privacy flag, and publications.
-     *
-     * <p>This is needed so Java can compare collections by their data, not by memory address.
-     * Without this, two collections with the exact same content would look different to Java.
-     * The duplicate check in the repository (US017) depends on this working correctly.
-     */
+    public GenreID getCollectionGenre() {
+        return _collectionGenreId;
+    }
+
+    public UserId getOwner() {
+        return _ownerId;
+    }
+
     @Override
     public boolean equals(Object obj) {
 
-        // same object in memory — definitely equal
-        if (this == obj) return true;
+        if (this == obj)
+            return true;
 
-        // instanceof returns false for null and for different types — safe check
-        if (!(obj instanceof CollectionOfPublications)) return false;
+        if (obj instanceof CollectionOfPublications) {
+            CollectionOfPublications newObj = (CollectionOfPublications) obj;
 
-        CollectionOfPublications other = (CollectionOfPublications) obj;
-
-        return _collectionName.equalsIgnoreCase(other._collectionName) // names typed by users may differ in case
-                && _collectionGenre.equals(other._collectionGenre)
-                && Objects.equals(_ownerId, other._ownerId)
-                && _isPrivate == other._isPrivate
-                && _publicationSampleIDS.equals(other._publicationSampleIDS);
+            if (this._id.equals(newObj._id))
+                return true;
+        }
+        return false;
     }
 
-    /**
-     * Returns the unique identifier of this collection of publications.
-     *
-     * @return the {@link CollectionOfPublicationsID} associated with this collection
-     */
     public CollectionOfPublicationsID id() {
         return _id;
     }
 
-    /**
-     * Determines whether this collection is logically equivalent to another object.
-     * <p>
-     * Two {@code CollectionOfPublications} instances are considered the same if:
-     * <ul>
-     *     <li>Their collection names are equal</li>
-     *     <li>Their collection genres are equal</li>
-     *     <li>Their privacy status is identical</li>
-     *     <li>Their publication sample ID lists are equal</li>
-     * </ul>
-     * <p>
-     * This method compares domain-specific attributes rather than object identity.
-     *
-     * @param obj the object to compare with
-     * @return {@code true} if the given object represents the same collection;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean sameAs(Object obj) {
         if (!(obj instanceof CollectionOfPublications)) {
@@ -162,11 +117,9 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
 
         CollectionOfPublications newObj = (CollectionOfPublications) obj;
 
-        return  this._collectionName.equals(newObj._collectionName) &&
-                this._collectionGenre.equals(newObj._collectionGenre) &&
-                this._isPrivate == newObj._isPrivate &&
-                this._publicationSampleIDS.equals(newObj._publicationSampleIDS);
-
+        return this._collectionName.equals(newObj._collectionName) &&
+                this._collectionGenreId.equals(newObj._collectionGenreId) &&
+                this._isPrivate == newObj._isPrivate;
     }
 
     /**
@@ -180,50 +133,11 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     public int hashCode() {
         return Objects.hash(
                 _collectionName.toLowerCase(), // must match equalsIgnoreCase — lowercase makes them consistent
-                _collectionGenre,
+                _collectionGenreId,
                 _ownerId,
-                _isPrivate,
-                _publicationSampleIDS
+                _isPrivate
         );
     }
-
-    // ============================== end US017 ==============================
-
-
-    // ============================== US018 ==============================
-
-    /**
-     * Adds a publication to the collection — US018.
-     *
-     * <p>Null publications are ignored. Duplicate publications are also ignored —
-     * the same publication can only appear once in a collection.
-     *
-     * @param publication the publication to add
-     * @return true if added, false if null or already in the collection
-     */
-    public boolean addPublication(PublicationSampleID publication) {
-
-        if (publication == null) return false;
-
-        if (_publicationSampleIDS.contains(publication)) {
-            return false; // already in the list — no duplicates allowed
-        }
-
-        _publicationSampleIDS.add(publication);
-        return true;
-    }
-
-    /**
-     * Checks if a publication is already in the collection — US018.
-     *
-     * @param publication the publication to look for
-     * @return true if it exists, false otherwise
-     */
-    public boolean containsPublication(PublicationSample publication) {
-        return _publicationSampleIDS.contains(publication);
-    }
-
-    // ============================== end US018 ==============================
 
 
     // ============================== US019 ==============================

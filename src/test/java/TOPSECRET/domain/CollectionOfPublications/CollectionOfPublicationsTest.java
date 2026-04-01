@@ -110,7 +110,6 @@ class CollectionOfPublicationsTest {
         assertEquals(mockGenre, result.getCollectionGenre());
         assertEquals(mockUser, result.getOwner());
         assertTrue(result.getIsPrivate());          // US017 rule: always private at creation
-        assertTrue(result.getPublications().isEmpty()); // US017 rule: starts with no publications
     }
 
     // ============================== end US017 ==============================

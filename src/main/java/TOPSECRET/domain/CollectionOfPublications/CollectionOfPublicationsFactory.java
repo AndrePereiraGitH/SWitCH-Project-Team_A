@@ -29,13 +29,13 @@ public class CollectionOfPublicationsFactory {
      * A static method cannot be mocked, so making it an instance method is a deliberate choice.
      *
      * @param name  name chosen by the user for the collection; must not be null or blank
-     * @param genre genre chosen by the user; must not be null
+     * @param genreId genre chosen by the user; must not be null
      * @param user  the user who owns the collection; must not be null
      * @return a new private {@code CollectionOfPublications} with no publications
      * @throws IllegalArgumentException if any argument is null or if name is blank
      */
     // instance method on purpose — so it can be injected and mocked in tests (static methods cannot be mocked)
-    public CollectionOfPublications create(String name, GenreID genre, UserId user) {
-        return new CollectionOfPublications(name, genre, user);
+    public CollectionOfPublications create(String name, GenreID genreId, UserId user) {
+        return new CollectionOfPublications(name, genreId, user);
     }
 }
