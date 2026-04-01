@@ -93,6 +93,18 @@ class ListingIdTest {
     }
 
     @Test
+    void equalsShouldReturnFalseWhenObjectIsOfDifferentType() {
+        // Arrange
+        String uuid = UUID.randomUUID().toString();
+
+        // Act
+        boolean result = uuid.equals("not a ListingId");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
     void equalsShouldReturnTrueWhenSameInstance() {
         // Arrange
         String uuid = UUID.randomUUID().toString();

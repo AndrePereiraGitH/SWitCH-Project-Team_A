@@ -1,12 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.DirectSale.DirectSale;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,13 +33,13 @@ public class DirectSaleDTO_US025 {
         this.seller = seller;
     }
 
-    /**
-     * Creates a DTO from a given item and its associated direct sale.
-     *
-     * @param item The item to map.
-     * @param ds The direct sale containing the item.
-     * @return A new instance of DirectSaleDTO_US025.
-     */
+//    /**
+//     * Creates a DTO from a given item and its associated direct sale.
+//     *
+//     * @param item The item to map.
+//     * @param ds The direct sale containing the item.
+//     * @return A new instance of DirectSaleDTO_US025.
+//     */
 //    public static DirectSaleDTO_US025 fromItemAndDirectSale(PublicationSample item, DirectSale ds) {
 //
 //        // Publication title
@@ -80,12 +74,12 @@ public class DirectSaleDTO_US025 {
 //        return new DirectSaleDTO_US025(title, authors, price, listingTitle, seller);
 //    }
 
-    /**
-     * Creates a list of DTOs for all items in the given direct sale.
-     *
+//    /**
+//     * Creates a list of DTOs for all items in the given direct sale.
+//     *
 //     * @param ds The direct sale containing multiple listings and items.
-     * @return List of DirectSaleDTO_US025 representing all items.
-     */
+//     * @return List of DirectSaleDTO_US025 representing all items.
+//     */
 //    public static List<DirectSaleDTO_US025> fromDirectSale(DirectSale ds) {
 //        List<DirectSaleDTO_US025> dtos = new ArrayList<>();
 //        for (Listing listing : ds.getListings()) {

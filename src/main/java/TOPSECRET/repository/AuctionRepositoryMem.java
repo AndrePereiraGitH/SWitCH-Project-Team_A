@@ -1,11 +1,10 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.AuctionFactory;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Auction.Auction;
+import TOPSECRET.domain.Auction.AuctionFactory;
+import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
@@ -23,11 +22,14 @@ import java.util.List;
  * during the application's runtime.
  * </p>
  */
-public class AuctionRepositoryMem implements IAuctionRepository{
+public class AuctionRepositoryMem implements IAuctionRepository {
 
     private static List<Auction> _auctionsList;
     private final AuctionFactory _factoryAuction;
 
+    // ============================================================
+    // ================ CONSTRUCTOR ===============================
+    // ============================================================
 
     /**
      * Constructs an in-memory auction repository with the given auction factory.
@@ -42,30 +44,38 @@ public class AuctionRepositoryMem implements IAuctionRepository{
         _auctionsList = new ArrayList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Auction> getAllAuctions() {
-        return _auctionsList;
-    }
+    // ============================================================
+
 
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyoutPrice) throws InstanceAlreadyExistsException {
+    public Auction createAndAdd(ListingId listingId, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyoutPrice)
+            throws InstanceAlreadyExistsException {
 
-        Auction auction = _factoryAuction.create(listing, initialDate, finalDate, buyoutPrice);
+        Auction auction = _factoryAuction.create(listingId, initialDate, finalDate, initialPrice, buyoutPrice);
 
         if (isExistent(auction)) {
-            throw new InstanceAlreadyExistsException("this auction already exists");
+            throw new InstanceAlreadyExistsException("This auction already exists");
         }
 
         _auctionsList.add(auction);
 
         return auction;
+    }
+
+    private boolean isExistent(Auction auction) {
+        return _auctionsList.contains(auction);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Auction> getAllAuctions() {
+        return List.copyOf(_auctionsList);
     }
 
 
@@ -118,12 +128,6 @@ public class AuctionRepositoryMem implements IAuctionRepository{
 //
 //        return authorAuctions;
 //    }
-
-    private boolean isExistent(Auction auction) {
-        return _auctionsList.contains(auction);
-    }
-
-
 
 
     // US024 -------------------------------------------------------------------------------------------------------------

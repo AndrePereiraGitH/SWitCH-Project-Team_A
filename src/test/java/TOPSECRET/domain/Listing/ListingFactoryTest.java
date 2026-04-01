@@ -1,9 +1,10 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Listing;
 
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -19,15 +20,22 @@ class ListingFactoryTest {
 
     @Test
     void create_returnsNewConstructedListingInstance() {
+
         String listingTitle = "listing title";
-        PublicationSample publicationDouble = mock(PublicationSample.class);
-        List<PublicationSample> items = List.of(publicationDouble);
+
+        PublicationSampleID pubSample1ID = new PublicationSampleID("pub1");
+        PublicationSampleID pubSample2ID = new PublicationSampleID("pub2");
+        List<PublicationSampleID> itemsIdList = List.of(pubSample1ID, pubSample2ID);
+
         SaleType saleType = SaleType.AUCTION;
 
         Price listingPrice = mock(Price.class);
         when(listingPrice.getPrice()).thenReturn(new BigDecimal("35.0"));
 
         String shortDescription = "this is a description";
+
+        UserId sellerId = new UserId("seller1");
+
         Picture pic = mock(Picture.class);
         List<Picture> pictures = List.of(pic);
 
@@ -39,7 +47,7 @@ class ListingFactoryTest {
             ListingFactory listingFactory = new ListingFactory();
 
             // act
-            Listing listing = listingFactory.create(listingTitle, items, saleType, listingPrice, shortDescription, pictures);
+            Listing listing = listingFactory.create(listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures);
 
             // assert
             assertNotNull(listing);

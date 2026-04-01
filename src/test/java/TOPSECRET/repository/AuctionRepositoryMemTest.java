@@ -1,16 +1,16 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Auction.Auction;
+import TOPSECRET.domain.Auction.AuctionFactory;
+import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.dto.AuthorDTO_US026;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,103 +27,104 @@ import static org.mockito.Mockito.when;
  */
 class AuctionRepositoryMemTest {
 
-    private Author author1;
-    private Author author2;
-    private PublicationSample sample1;
-    private PublicationSample sample2;
+//    private Author author1;
+//    private Author author2;
+//    private PublicationSample sample1;
+//    private PublicationSample sample2;
     private Auction auction1;
     private Auction auction2;
     private Auction auction3;
     private AuctionFactory auctionFactory;
-
+    private LocalDateTime initialDate;
+    private LocalDateTime finalDate;
+    private Price initialPrice;
+    private Price buyOutPrice;
+    private ListingId listingId;
 
 
     @BeforeEach
     void setup(){
-        author1 = createMockAuthor("Rodolph");
-        author2 = createMockAuthor("Adolf");
+//        author1 = createMockAuthor("Rodolph");
+//        author2 = createMockAuthor("Adolf");
 
 //        sample1 = createMockPublicationSample("First title", List.of(author1));
 //        sample2 = createMockPublicationSample("Second title", List.of(author2));
 
-        auction1 = createMockAuction(List.of(sample1, sample2));
-        auction2 = createMockAuction(List.of(sample1));
-        auction3 = createMockAuction(List.of(sample2));
+        auction1 = createMockAuction();
+        auction2 = createMockAuction();
+        auction3 = createMockAuction();
 
         auctionFactory = mock(AuctionFactory.class);
 
+        initialDate = LocalDateTime.now();
+        finalDate = initialDate.plusDays(1);
+
+        initialPrice = new Price (new BigDecimal("10.00"));
+        buyOutPrice = new Price (new BigDecimal("100.00"));
+
+        listingId = new ListingId ("listingId");
     }
 
-//    @Test
-//    void getAllAuctions_shouldReturn_ListOfAllAuctionsInRepo() throws InstanceAlreadyExistsException {
-//        //Arrange
-//        IAuctionRepository auctionRepository = instantiateAuctionRepository();
-//
-//        //Act
-//        List<Auction> result = auctionRepository.getAllAuctions();
-//
-//        //Assert
-//        assertEquals(3, result.size());
-//    }
+    @Test
+    void getAllAuctions_shouldReturnListOfAllAuctionsInRepo() throws InstanceAlreadyExistsException {
+        //Arrange
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
-//    @Test
-//    void createAndAdd_throws_whenAuctionAlreadyExists() throws InstanceAlreadyExistsException {
-//        //arrange
-//        Listing listing = mock(Listing.class);
-//        Price buyOutPrice = mock(Price.class);
-//        LocalDateTime initial = LocalDateTime.now();
-//        LocalDateTime end = initial.plusDays(1);
-//        IAuctionRepository auctionRepository = instantiateAuctionRepository();
-//
-//        when(auctionFactory.create(listing, initial, end, buyOutPrice)).thenReturn(auction1);
-//
-//        // act + assert
-//        InstanceAlreadyExistsException exception = assertThrows(InstanceAlreadyExistsException.class, () -> auctionRepository.createAndAdd(listing, initial, end, buyOutPrice));
-//
-//        assertEquals("this auction already exists", exception.getMessage());
-//
-//    }
+        //Act
+        List<Auction> result = auctionRepository.getAllAuctions();
 
-//    @Test
-//    void createAndAdd_addsAndReturnsAuction_whenAuctionDoesNotExist() throws Exception {
-//        // arrange
-//        Listing listing = mock(Listing.class);
-//        Price buyOut = mock(Price.class);
-//        IAuctionRepository auctionRepository = instantiateAuctionRepository();
-//
-//        LocalDateTime initial = LocalDateTime.now();
-//        LocalDateTime end = initial.plusDays(4);
-//
-//        Auction created = mock(Auction.class);
-//
-//        when(auctionFactory.create(listing, initial, end, buyOut)).thenReturn(created);
-//
-//        int beforeSize = auctionRepository.getAllAuctions().size();
-//
-//        // act
-//        Auction result = auctionRepository.createAndAdd(listing, initial, end, buyOut);
-//
-//        // assert
-//        assertSame(created, result);
-//
-//        List<Auction> all = auctionRepository.getAllAuctions();
-//        assertEquals(beforeSize + 1, all.size());
-//        assertTrue(all.contains(created));
-//
-//
-//    }
+        //Assert
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void createAndAdd_shouldThrowsWhenAuctionAlreadyExists() throws InstanceAlreadyExistsException {
+        //arrange
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
+
+        when(auctionFactory.create(listingId, initialDate, finalDate, initialPrice, buyOutPrice)).thenReturn(auction1);
+
+        // act + assert
+        InstanceAlreadyExistsException exception = assertThrows(InstanceAlreadyExistsException.class,
+                () -> auctionRepository.createAndAdd(listingId, initialDate, finalDate, initialPrice ,buyOutPrice));
+
+        assertEquals("This auction already exists", exception.getMessage());
+
+    }
+
+    @Test
+    void createAndAdd_addsAndReturnsAuction_whenAuctionDoesNotExist() throws Exception {
+        // arrange
+        IAuctionRepository auctionRepository = instantiateAuctionRepository();
+
+        Auction created = mock(Auction.class);
+
+        when(auctionFactory.create(listingId, initialDate, finalDate, initialPrice, buyOutPrice)).thenReturn(created);
+
+        int beforeSize = auctionRepository.getAllAuctions().size();
+
+        // act
+        Auction result = auctionRepository.createAndAdd(listingId, initialDate, finalDate, initialPrice, buyOutPrice);
+
+        // assert
+        assertSame(created, result);
+
+        List<Auction> all = auctionRepository.getAllAuctions();
+        assertEquals(beforeSize + 1, all.size());
+        assertTrue(all.contains(created));
+    }
 
 
     // US024 getListOfItemsOnAuctionByGivenPublication -----------------------------------------------------------------
-    /**
-     * Verifies that {@code getListOfItemsOnAuctionByGivenPublication()} returns
-     * only the {@link PublicationSample} instances whose title matches the given
-     * publication title, across multiple auctions.
-     *
-     * <p>Setup: three auctions containing a mix of "First title" and "Second title"
-     * samples. Querying for "First title" should return exactly two matches —
-     * one from {@code auction1} and one from {@code auction2}.</p>
-     */
+//    /**
+//     * Verifies that {@code getListOfItemsOnAuctionByGivenPublication()} returns
+//     * only the {@link PublicationSample} instances whose title matches the given
+//     * publication title, across multiple auctions.
+//     *
+//     * <p>Setup: three auctions containing a mix of "First title" and "Second title"
+//     * samples. Querying for "First title" should return exactly two matches —
+//     * one from {@code auction1} and one from {@code auction2}.</p>
+//     */
 //    @Test
 //    void ensure_getListOfItemsOnAuctionByGivenPublication_returnAList() throws InstanceAlreadyExistsException {
 //        // Arrange
@@ -138,15 +139,15 @@ class AuctionRepositoryMemTest {
 //        assertEquals("First title", listOfItemsOnAuction.get(0).getBibliographicalData().getTitle());
 //        assertEquals("First title", listOfItemsOnAuction.get(1).getBibliographicalData().getTitle());
 //    }
-
-    /**
-     * Verifies that {@code getListOfItemsOnAuctionByGivenPublication()} returns
-     * an empty list when no auction contains a sample matching the given title.
-     *
-     * <p>Setup: three auctions containing only "First title" and "Second title"
-     * samples. Querying for the non-existent "Third title" should yield an
-     * empty, non-{@code null} list.</p>
-     */
+//
+//    /**
+//     * Verifies that {@code getListOfItemsOnAuctionByGivenPublication()} returns
+//     * an empty list when no auction contains a sample matching the given title.
+//     *
+//     * <p>Setup: three auctions containing only "First title" and "Second title"
+//     * samples. Querying for the non-existent "Third title" should yield an
+//     * empty, non-{@code null} list.</p>
+//     */
 //    @Test
 //    void shouldReturnAnEmptyListWhenAuctionDoesNotHaveThePublication() throws InstanceAlreadyExistsException {
 //        // Arrange
@@ -160,7 +161,7 @@ class AuctionRepositoryMemTest {
 //        assertEquals(0, listOfItemsOnAuction.size());
 //        assertTrue(listOfItemsOnAuction.isEmpty());
 //    }
-
+//
 //    @Test
 //    void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsNull() throws InstanceAlreadyExistsException {
 //        // Arrange
@@ -172,7 +173,7 @@ class AuctionRepositoryMemTest {
 //                auctionRepository.getListOfItemsOnAuctionByGivenPublication(null));
 //
 //    }
-
+//
 //    @Test
 //    void ensure_getListOfItemsOnAuctionByGivenPublication_throwsExceptionWhenPublicationIsEmpty() throws InstanceAlreadyExistsException {
 //        // Arrange
@@ -198,7 +199,7 @@ class AuctionRepositoryMemTest {
 //
 //        assertEquals("Author cannot be null or blank", exception.getMessage());
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenAuthor_shouldThrows_ifAuthorDTOisBlank() throws InstanceAlreadyExistsException {
 //        // arrange
@@ -211,7 +212,7 @@ class AuctionRepositoryMemTest {
 //
 //        assertEquals("Author cannot be null or blank", exception.getMessage());
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenAuthor_noMatchesAuctions_returnsEmpty() throws InstanceAlreadyExistsException {
 //        // arrange
@@ -226,7 +227,7 @@ class AuctionRepositoryMemTest {
 //        assertEquals(0, result.size());
 //
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction() throws InstanceAlreadyExistsException {
 //        // arrange
@@ -240,7 +241,7 @@ class AuctionRepositoryMemTest {
 //        // assert
 //        assertEquals(2, result.size());
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction_ensuresTitle() throws InstanceAlreadyExistsException {
 //        // arrange
@@ -257,7 +258,7 @@ class AuctionRepositoryMemTest {
 //
 //
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenAuthor_auctionHasMatchingAuthor_returnsThatAuction_ensuresSameAuction() throws InstanceAlreadyExistsException {
 //        // arrange
@@ -273,7 +274,7 @@ class AuctionRepositoryMemTest {
 //        assertSame(auction3, result.get(1));
 //        assertFalse(result.contains(auction2));
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenGenreShouldThrowExceptionWhenGenreIsNull() throws InstanceAlreadyExistsException {
 //        IAuctionRepository auctionRepository = instantiateAuctionRepository();
@@ -283,7 +284,7 @@ class AuctionRepositoryMemTest {
 //                auctionRepository.getListOfItemsOnAuctionGivenGenre(null)
 //        );
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenGenreNoMatchesReturnsEmptyList() throws InstanceAlreadyExistsException {
 //
@@ -299,7 +300,7 @@ class AuctionRepositoryMemTest {
 //        assertNotNull(result);
 //        assertTrue(result.isEmpty());
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenGenreOneAuctionMatchesReturnsOneAuction() throws InstanceAlreadyExistsException {
 //
@@ -320,7 +321,7 @@ class AuctionRepositoryMemTest {
 //        assertEquals(1, result.size());
 //        assertSame(auction, result.get(0));
 //    }
-
+//
 //    @Test
 //    void getListOfItemsOnAuctionGivenGenreMultipleAuctionsMatchReturnsAll() throws InstanceAlreadyExistsException {
 //
@@ -355,34 +356,35 @@ class AuctionRepositoryMemTest {
     // Helper / factory methods
     // -------------------------------------------------------------------------
 
-    private AuctionRepositoryMem instantiateAuctionRepository() throws InstanceAlreadyExistsException {
-        AuctionRepositoryMem repo = new AuctionRepositoryMem(auctionFactory);
+    private IAuctionRepository instantiateAuctionRepository() throws InstanceAlreadyExistsException {
+        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
 
-        Listing listingDouble1 = mock(Listing.class);
-        Listing listingDouble2 = mock(Listing.class);
-        Listing listingDouble3 = mock(Listing.class);
-        Price priceDouble = mock(Price.class);
-
-        when(auctionFactory.create(any(), any(), any(), any()))
+        when(auctionFactory.create(any(), any(), any(), any(), any()))
                 .thenReturn(auction1)
                 .thenReturn(auction2)
                 .thenReturn(auction3);
 
-        repo.createAndAdd(listingDouble1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), priceDouble);
-        repo.createAndAdd(listingDouble2, LocalDateTime.now(), LocalDateTime.now().plusDays(1), priceDouble);
-        repo.createAndAdd(listingDouble3, LocalDateTime.now(), LocalDateTime.now().plusDays(1), priceDouble);
+        ListingId listingId1 = new ListingId("listingId1");
+        ListingId listingId2 = new ListingId("listingId2");
+        ListingId listingId3 = new ListingId("listingId3");
+        Price initialPrice = new Price(new BigDecimal("10.00"));
+        Price buyoutPrice = new Price(new BigDecimal("100.00"));
+
+        repo.createAndAdd(listingId1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), initialPrice,  buyoutPrice);
+        repo.createAndAdd(listingId2, LocalDateTime.now(), LocalDateTime.now().plusDays(1), initialPrice,  buyoutPrice);
+        repo.createAndAdd(listingId3, LocalDateTime.now(), LocalDateTime.now().plusDays(1), initialPrice,  buyoutPrice);
 
         return repo;
     }
 
-    /**
-     * Creates a mocked {@link PublicationSample} whose bibliographical data
-     * returns the given title.
-     *
-     * @param title the value to be returned by
-     *              {@code getBibliographicalData().getTitle()}
-     * @return a configured {@link PublicationSample} mock
-     */
+//    /**
+//     * Creates a mocked {@link PublicationSample} whose bibliographical data
+//     * returns the given title.
+//     *
+//     * @param title the value to be returned by
+//     *              {@code getBibliographicalData().getTitle()}
+//     * @return a configured {@link PublicationSample} mock
+//     */
 //    private PublicationSample createMockPublicationSample(String title, List<Author> author) {
 //        BibliographicalData bd = mock(BibliographicalData.class);
 //        when(bd.getTitle()).thenReturn(title);
@@ -395,29 +397,26 @@ class AuctionRepositoryMemTest {
 //    }
 
     /**
-     * Creates a mocked {@link Auction} whose {@link Listing} returns
-     * the given list of {@link PublicationSample} items.
+     * Creates a mocked {@link Auction} related to a {@link ListingId}.
      *
-     * @param items the items to be returned by {@code getListing().getItems()}
      * @return a configured {@link Auction} mock
      */
-    private Auction createMockAuction(List<PublicationSample> items) {
-        Listing listing = mock(Listing.class);
-        when(listing.getItems()).thenReturn(items);
+    private Auction createMockAuction() {
+        ListingId listingId = new ListingId("listingId");
 
         Auction auction = mock(Auction.class);
-        when(auction.getListing()).thenReturn(listing);
+        when(auction.getListingId()).thenReturn(listingId);
 
         return auction;
     }
 
-    private Author createMockAuthor(String authorName) {
-        Author authorDouble = mock(Author.class);
-
-        when(authorDouble.getName()).thenReturn(authorName);
-
-        return authorDouble;
-    }
+//    private Author createMockAuthor(String authorName) {
+//        Author authorDouble = mock(Author.class);
+//
+//        when(authorDouble.getName()).thenReturn(authorName);
+//
+//        return authorDouble;
+//    }
 
 //    private PublicationSample createMockPublicationSampleWithGenre(Genre genre) {
 //

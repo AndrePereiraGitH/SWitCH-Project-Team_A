@@ -1,10 +1,8 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.Auction;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.dto.AuthorDTO_US026;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
@@ -18,24 +16,34 @@ import java.util.List;
  */
 public interface IAuctionRepository {
 
+    /**
+     * Creates a new {@link Auction} and adds it to the repository if no auction
+     * already exists for the given listing.
+     *
+     * <p>This method delegates all invariant validation to the {@link Auction}
+     * constructor. If an auction for the given listing already exists, the method
+     * does not create a new instance and instead throws an exception.</p>
+     *
+     * @param listingId the identifier of the listing associated with the auction (must not be {@code null})
+     * @param initialDate the auction start date and time (must not be {@code null})
+     * @param finalDate the auction end date and time (must not be {@code null})
+     * @param initialPrice the initial price of the auction (must not be {@code null})
+     * @param buyoutPrice the buyout price that immediately closes the auction if matched (can be {@code null})
+     *
+     * @return the newly created {@link Auction}
+     *
+     * @throws IllegalArgumentException if any parameter violates the invariants of {@link Auction}
+     * @throws InstanceAlreadyExistsException if an auction for the given listing already exists
+     */
+
+    Auction createAndAdd(ListingId listingId, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyoutPrice) throws InstanceAlreadyExistsException;
 
     /**
      * Returns the complete list of available auctions.
      *
-     * @return a list containing all auctions
+     * @return a copy of the list containing all auctions
      */
     List<Auction> getAllAuctions();
-
-    /**
-     * Creates a new auction and adds it to the repository if it does not already exist.
-     *
-     * @param listing the listing associated with the auction
-     * @param initialDate the auction start date and time
-     * @param finalDate the auction end date and time
-     * @param buyoutPrice the buyout price of the auction
-     * @return {@code true} if the auction was created and added, {@code false} if it already exists
-     */
-    Auction createAndAdd(Listing listing, LocalDateTime initialDate, LocalDateTime finalDate, Price buyoutPrice) throws InstanceAlreadyExistsException;
 
     /**
      * Returns the list of auctions containing at least one item whose publication

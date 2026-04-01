@@ -1,12 +1,10 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.Listing;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -26,7 +24,7 @@ public interface IListingRepository {
      * Creates a new listing and adds it to the repository if it does not already exist.
      *
      * @param listingTitle the title of the listing
-     * @param items the publication samples associated with the listing
+     * @param itemsId the publication samples IDs associated with the listing
      * @param saleType the type of sale for the listing
      * @param price the price defined for the listing
      * @param shortDescription a short description of the listing
@@ -35,10 +33,11 @@ public interface IListingRepository {
      * @throws InstanceAlreadyExistsException if an equivalent listing already exists
      */
     Listing createAndAdd(String listingTitle,
-                         List<PublicationSample> items,
+                         List<PublicationSampleID> itemsId,
                          SaleType saleType,
                          Price price,
                          String shortDescription,
+                         UserId sellerId,
                          List<Picture> pictures) throws InstanceAlreadyExistsException;
 
 
@@ -97,6 +96,5 @@ public interface IListingRepository {
      *         never {@code null}, but may be empty if no such listings exist
      */
     List<Listing> findAllAuctionListings();
-
 
 }

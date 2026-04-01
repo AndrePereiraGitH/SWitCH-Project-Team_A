@@ -1,11 +1,9 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.dto.*;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.repository.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import java.util.List;

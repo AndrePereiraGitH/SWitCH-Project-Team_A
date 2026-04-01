@@ -2,8 +2,6 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 
-import java.util.UUID;
-
 /**
  * Value Object representing the unique identity of an Auction.
  * <p>

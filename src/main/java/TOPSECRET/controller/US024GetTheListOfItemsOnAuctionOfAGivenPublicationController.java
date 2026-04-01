@@ -5,7 +5,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.dto.AuctionItemDTO_US024;
 import TOPSECRET.dto.BibliographicalDataDTO_US024;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.repository.IAuctionRepository;
+import TOPSECRET.domain.Auction.IAuctionRepository;
 
 import java.util.List;
 

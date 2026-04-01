@@ -10,7 +10,7 @@ import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.dto.AuctionItemDTO_US024;
 import TOPSECRET.dto.BibliographicalDataDTO_US024;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.repository.IAuctionRepository;
+import TOPSECRET.domain.Auction.IAuctionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -160,7 +160,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 //        assertThrows(NullPointerException.class,
 //                () -> controller.getListOfItemsOnAuctionByGivenPublicationDTO(null));
 //    }
-
+//
 //    @Test
 //    void ensure_getListOfItemsOnAuctionByGivenPublicationDTO_throwsExceptionWhenPublicationDTOIsEmpty() {
 //        // Arrange
@@ -176,15 +176,15 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     // Helper / factory methods
     // -------------------------------------------------------------------------
 
-    /**
-     * Creates a fully mocked {@link PublicationSample} with the supplied
-     * title, edition code, and seller username.
-     *
-     * @param title  the publication title returned by the bibliographical data mock
-     * @param code   the edition code returned by the edition mock
-     * @param seller the username returned by the seller mock
-     * @return a configured {@link PublicationSample} mock
-     */
+//    /**
+//     * Creates a fully mocked {@link PublicationSample} with the supplied
+//     * title, edition code, and seller username.
+//     *
+//     * @param title  the publication title returned by the bibliographical data mock
+//     * @param code   the edition code returned by the edition mock
+//     * @param seller the username returned by the seller mock
+//     * @return a configured {@link PublicationSample} mock
+//     */
 //    private PublicationSample createMockPublicationSample(String title, String code, String seller) {
 //        BibliographicalData bdDouble = createMockBibliographicalData(title);
 //        Edition editionDouble = createMockEdition(code);
