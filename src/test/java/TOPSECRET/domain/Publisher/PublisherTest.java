@@ -1,6 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Publisher;
 
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +18,11 @@ import static org.mockito.Mockito.*;
  * <p>The tests cover:</p>
  * <ul>
  *     <li>Successful creation with valid data</li>
- *     <li>Validation of blank name and VAT number</li>
+ *     <li>Validation of null and blank name and VAT number</li>
  *     <li>Getter behaviour</li>
- *     <li>Equality and hash code based on VAT number</li>
+ *     <li>Identity via {@link PublisherID}</li>
+ *     <li>Equality and hash code based on {@link PublisherID}</li>
+ *     <li>Business identity via sameAs</li>
  * </ul>
  */
 class PublisherTest {
@@ -34,10 +37,10 @@ class PublisherTest {
         factory = new PublisherFactory();
     }
 
-    /**
-     * Verifies that a Publisher is created successfully
-     * when valid data is provided.
-     */
+    // -------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------
+
     @Test
     void constructorShouldCreatePublisherWhenDataIsValid() {
         // Arrange + Act
@@ -47,9 +50,6 @@ class PublisherTest {
         assertNotNull(result);
     }
 
-    /**
-     * Verifies that an exception is thrown when the name is blank.
-     */
     @Test
     void constructorShouldThrowAnExceptionWhenNameIsBlank() {
         // Arrange
@@ -60,9 +60,13 @@ class PublisherTest {
                 () -> factory.create(blankName, vatNumber, contact));
     }
 
-    /**
-     * Verifies that an exception is thrown when the VAT number is blank.
-     */
+    @Test
+    void constructorShouldThrowAnExceptionWhenNameIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(null, vatNumber, contact));
+    }
+
     @Test
     void constructorShouldThrowAnExceptionWhenVatNumberIsBlank() {
         // Arrange
@@ -73,28 +77,19 @@ class PublisherTest {
                 () -> factory.create(name, blankVatNumber, contact));
     }
 
-    /**
-     * Verifies that getVatNumber returns the VAT number
-     * provided during construction.
-     */
     @Test
-    void getVatNumber_shouldReturnVatNumber() {
-        // Arrange
-        Publisher publisher = factory.create(name, vatNumber, contact);
-
-        // Act
-        String result = publisher.getVatNumber();
-
-        // Assert
-        assertEquals(vatNumber, result);
+    void constructorShouldThrowAnExceptionWhenVatNumberIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(name, null, contact));
     }
 
-    /**
-     * Verifies that getName returns the name
-     * provided during construction.
-     */
+    // -------------------------------------------------------------------------
+    // Getters
+    // -------------------------------------------------------------------------
+
     @Test
-    void getName_shouldReturnName() {
+    void getName_shouldReturnNameProvidedAtConstruction() {
         // Arrange
         Publisher publisher = factory.create(name, vatNumber, contact);
 
@@ -105,12 +100,20 @@ class PublisherTest {
         assertEquals(name, result);
     }
 
-    /**
-     * Verifies that getContact returns the same contact reference
-     * provided during construction.
-     */
     @Test
-    void getContact_shouldReturnContact() {
+    void getVatNumber_shouldReturnVatNumberProvidedAtConstruction() {
+        // Arrange
+        Publisher publisher = factory.create(name, vatNumber, contact);
+
+        // Act
+        String result = publisher.getVatNumber();
+
+        // Assert
+        assertEquals(vatNumber, result);
+    }
+
+    @Test
+    void getContact_shouldReturnContactProvidedAtConstruction() {
         // Arrange
         Publisher publisher = factory.create(name, vatNumber, contact);
 
@@ -121,9 +124,38 @@ class PublisherTest {
         assertEquals(contact, result);
     }
 
-    /**
-     * Verifies that equals returns true for the same instance.
-     */
+    // -------------------------------------------------------------------------
+    // id()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void id_shouldReturnPublisherIDBasedOnVatNumber() {
+        // Arrange
+        Publisher publisher = factory.create(name, vatNumber, contact);
+
+        // Act
+        PublisherID result = publisher.id();
+
+        // Assert
+        assertEquals(new PublisherID(vatNumber), result);
+    }
+
+    @Test
+    void id_shouldNeverReturnNull() {
+        // Arrange
+        Publisher publisher = factory.create(name, vatNumber, contact);
+
+        // Act
+        PublisherID result = publisher.id();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    // -------------------------------------------------------------------------
+    // equals() and hashCode()
+    // -------------------------------------------------------------------------
+
     @Test
     void equals_sameInstance_returnsTrue() {
         // Arrange
@@ -133,9 +165,6 @@ class PublisherTest {
         assertEquals(publisher, publisher);
     }
 
-    /**
-     * Verifies that two publishers with the same VAT number are equal.
-     */
     @Test
     void equals_sameVatNumber_returnsTrue() {
         // Arrange
@@ -146,9 +175,6 @@ class PublisherTest {
         assertEquals(p1, p2);
     }
 
-    /**
-     * Verifies that two publishers with different VAT numbers are not equal.
-     */
     @Test
     void equals_differentVatNumber_returnsFalse() {
         // Arrange
@@ -159,9 +185,6 @@ class PublisherTest {
         assertNotEquals(p1, p2);
     }
 
-    /**
-     * Verifies that equals returns false when compared with null.
-     */
     @Test
     void equals_nullObject_returnsFalse() {
         // Arrange
@@ -171,10 +194,6 @@ class PublisherTest {
         assertFalse(publisher.equals(null));
     }
 
-    /**
-     * Verifies that equals returns false when compared
-     * with an object of a different class.
-     */
     @Test
     void equals_differentClass_returnsFalse() {
         // Arrange
@@ -184,9 +203,7 @@ class PublisherTest {
         assertFalse(publisher.equals("string"));
     }
 
-    /**
-     * Verifies that equal publishers produce the same hash code.
-     */
+
     @Test
     void hashCode_sameVatNumber_sameHashCode() {
         // Arrange
@@ -197,10 +214,6 @@ class PublisherTest {
         assertEquals(p1.hashCode(), p2.hashCode());
     }
 
-    /**
-     * Verifies that publishers with different VAT numbers
-     * produce different hash codes.
-     */
     @Test
     void hashCode_differentVatNumber_differentHashCode() {
         // Arrange
@@ -211,9 +224,64 @@ class PublisherTest {
         assertNotEquals(p1.hashCode(), p2.hashCode());
     }
 
-    /**
-     * Verifies that getPublisherDetails never returns null.
-     */
+    // -------------------------------------------------------------------------
+    // sameAs()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void sameAs_sameVatNumber_returnsTrue() {
+        // Arrange
+        Publisher p1 = factory.create(name, vatNumber, contact);
+        Publisher p2 = factory.create("Other Name", vatNumber, contact);
+
+        // Act
+        boolean result = p1.sameAs(p2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAs_differentVatNumber_returnsFalse() {
+        // Arrange
+        Publisher p1 = factory.create(name, "123456", contact);
+        Publisher p2 = factory.create(name, "789012", contact);
+
+        // Act
+        boolean result = p1.sameAs(p2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void sameAs_null_returnsFalse() {
+        // Arrange
+        Publisher publisher = factory.create(name, vatNumber, contact);
+
+        // Act
+        boolean result = publisher.sameAs(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void sameAs_differentClass_returnsFalse() {
+        // Arrange
+        Publisher publisher = factory.create(name, vatNumber, contact);
+
+        // Act
+        boolean result = publisher.sameAs("string");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // -------------------------------------------------------------------------
+    // getPublisherDetails()
+    // -------------------------------------------------------------------------
+
     @Test
     void getPublisherDetails_ShouldNeverReturnNull() {
         // Arrange
@@ -226,9 +294,6 @@ class PublisherTest {
         assertNotNull(details);
     }
 
-    /**
-     * Verifies that getPublisherDetails returns all fields correctly.
-     */
     @Test
     void getPublisherDetails_ShouldReturnAllFieldsCorrectly() {
         // Arrange
@@ -244,9 +309,6 @@ class PublisherTest {
         assertSame(contact, details.contact());
     }
 
-    /**
-     * Verifies that getPublisherDetails returns a new instance on each call.
-     */
     @Test
     void getPublisherDetails_ReturnsNewInstanceEachTime() {
         // Arrange
@@ -260,9 +322,10 @@ class PublisherTest {
         assertNotSame(d1, d2);
     }
 
-    /**
-     * Verifies that PublisherDetails stores all values correctly.
-     */
+    // -------------------------------------------------------------------------
+    // PublisherDetails record
+    // -------------------------------------------------------------------------
+
     @Test
     void publisherDetails_ShouldStoreValuesCorrectly() {
         // Arrange + Act
@@ -275,9 +338,6 @@ class PublisherTest {
         assertSame(contact, details.contact());
     }
 
-    /**
-     * Verifies that two equal PublisherDetails instances produce the same hash code.
-     */
     @Test
     void publisherDetails_equalObjects_shouldHaveSameHashCode() {
         // Arrange
@@ -291,9 +351,6 @@ class PublisherTest {
         assertEquals(d1.hashCode(), d2.hashCode());
     }
 
-    /**
-     * Verifies that equals and hashCode work correctly for equal PublisherDetails objects.
-     */
     @Test
     void publisherDetails_EqualsAndHashCodeShouldWorkForEqualObjects() {
         // Arrange
@@ -308,9 +365,6 @@ class PublisherTest {
         assertEquals(d1.hashCode(), d2.hashCode());
     }
 
-    /**
-     * Verifies that equals detects inequality between PublisherDetails with different names.
-     */
     @Test
     void publisherDetails_EqualsAndHashCodeShouldDetectDifferentObjects() {
         // Arrange
