@@ -68,7 +68,7 @@
 //        assertNotNull(result);
 //        assertEquals("Favorites", result.getCollectionName());
 //        assertEquals(genre, result.getCollectionGenre());
-//        assertEquals(user, result.getOwner());
+//        assertEquals(user, result.getOwnerId());
 //        assertTrue(result.getIsPrivate());   // US017 rule: always private at creation
 //        assertTrue(result.getPublications().isEmpty()); // starts with no publications
 //    }

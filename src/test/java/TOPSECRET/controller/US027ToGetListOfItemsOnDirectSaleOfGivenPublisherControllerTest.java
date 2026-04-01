@@ -168,7 +168,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(bd.getGenres()).thenReturn(List.of());
 
         User owner = mock(User.class);
-//        when(sample.getOwner()).thenReturn(owner);
+//        when(sample.getOwnerId()).thenReturn(owner);
         when(owner.getUserName()).thenReturn("u");
 
         PublicationStatus status = mock(PublicationStatus.class);

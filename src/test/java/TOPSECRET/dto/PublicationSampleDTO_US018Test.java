@@ -38,7 +38,7 @@ class PublicationSampleDTO_US018Test {
 
 //        when(publication.getBibliographicalData()).thenReturn(bd);
 //        when(publication.getEdition()).thenReturn(edition);
-//        when(publication.getOwner()).thenReturn(owner);
+//        when(publication.getOwnerId()).thenReturn(owner);
 
         when(bd.getTitle()).thenReturn(title);
         when(edition.getEditionNumber()).thenReturn(editionNumber);

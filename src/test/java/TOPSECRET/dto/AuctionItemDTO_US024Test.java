@@ -90,7 +90,7 @@ class AuctionItemDTO_US024Test {
      *
      * @param title  the value returned by {@code getBibliographicalData().getTitle()}
      * @param code   the value returned by {@code getEdition().getCode().toString()}
-     * @param seller the value returned by {@code getOwner().getUserName()}
+     * @param seller the value returned by {@code getOwnerId().getUserName()}
      * @return a configured {@link PublicationSample} mock
      */
     private PublicationSample createMockPublicationSample(String title, String code, String seller) {
@@ -103,7 +103,7 @@ class AuctionItemDTO_US024Test {
 //        when(pbSampleDouble.getBibliographicalData()).thenReturn(bdDouble);
 //        when(pbSampleDouble.getEdition()).thenReturn(editionDouble);
         when(pbSampleDouble.getCondition()).thenReturn(conditionDouble);
-//        when(pbSampleDouble.getOwner()).thenReturn(sellerDouble);
+//        when(pbSampleDouble.getOwnerId()).thenReturn(sellerDouble);
 
         return pbSampleDouble;
     }

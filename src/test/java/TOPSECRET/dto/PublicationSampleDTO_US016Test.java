@@ -46,7 +46,7 @@ class PublicationSampleDTO_US016Test {
         when(genreDouble1.getGenreType()).thenReturn("Fiction");
         when(genreDouble2.getGenreType()).thenReturn("Adventure");
 
-//        when(publicationSampleDouble.getOwner()).thenReturn(owner);
+//        when(publicationSampleDouble.getOwnerId()).thenReturn(owner);
         when(owner.getUserName()).thenReturn("Rodolph");
 
         when(publicationSampleDouble.getCondition()).thenReturn(conditionDouble);

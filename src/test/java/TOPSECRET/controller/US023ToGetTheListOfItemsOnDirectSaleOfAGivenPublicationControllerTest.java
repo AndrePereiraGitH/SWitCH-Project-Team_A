@@ -72,7 +72,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         when(pubSample1Double.getPublicationStatus()).thenReturn(PublicationStatus.READ);
 //        when(pubSample1Double.getEdition()).thenReturn(edition1Double);
-//        when(pubSample1Double.getOwner()).thenReturn(owner1Double);
+//        when(pubSample1Double.getOwnerId()).thenReturn(owner1Double);
         when(owner1Double.getUserName()).thenReturn("owner1");
         when(edition1Double.getEditionNumber()).thenReturn("1st");
         when(edition1Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
@@ -88,7 +88,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         when(pubSample2Double.getPublicationStatus()).thenReturn(PublicationStatus.READ);
 //        when(pubSample2Double.getEdition()).thenReturn(edition1Double);
-//        when(pubSample2Double.getOwner()).thenReturn(owner1Double);
+//        when(pubSample2Double.getOwnerId()).thenReturn(owner1Double);
         when(owner1Double.getUserName()).thenReturn("owner1");
         when(edition2Double.getEditionNumber()).thenReturn("1st");
         when(edition2Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));
@@ -104,7 +104,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         when(pubSample2Double.getPublicationStatus()).thenReturn(PublicationStatus.READ);
 //        when(pubSample2Double.getEdition()).thenReturn(edition1Double);
-//        when(pubSample2Double.getOwner()).thenReturn(owner1Double);
+//        when(pubSample2Double.getOwnerId()).thenReturn(owner1Double);
         when(owner1Double.getUserName()).thenReturn("owner1");
         when(edition2Double.getEditionNumber()).thenReturn("1st");
         when(edition2Double.getCode()).thenReturn(Code.fromIsbn10("1234567890"));

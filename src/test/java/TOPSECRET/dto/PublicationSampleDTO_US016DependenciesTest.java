@@ -41,7 +41,7 @@ class PublicationSampleDTO_US016DependenciesTest {
 //        assertEquals(expectedAuthorsNames, result.getAuthorName());
 //        assertEquals(publicationSample.getBibliographicalData().getOriginalLanguage(), result.getLanguage());
 //        assertEquals(expectedGenres, result.getGenreType());
-//        assertEquals(publicationSample.getOwner().getUserName(), result.getOwnerName());
+//        assertEquals(publicationSample.getOwnerId().getUserName(), result.getOwnerName());
 //        assertEquals(publicationSample.getCondition().getDescription(), result.getCondition());
 //    }
 //

@@ -47,7 +47,7 @@ public class PublicationSampleDTO_US016 {
 //                publicationSample.getBibliographicalData().getGenres().stream()
 //                        .map(Genre::getGenreType)
 //                        .toList(),
-//                publicationSample.getOwner().getUserName(),
+//                publicationSample.getOwnerId().getUserName(),
 //                publicationSample.getCondition().getDescription()
 //        );
 //    }

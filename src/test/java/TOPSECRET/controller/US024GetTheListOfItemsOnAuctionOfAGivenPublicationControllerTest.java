@@ -195,7 +195,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 //        when(pbSampleDouble.getBibliographicalData()).thenReturn(bdDouble);
 //        when(pbSampleDouble.getEdition()).thenReturn(editionDouble);
 //        when(pbSampleDouble.getCondition()).thenReturn(conditionDouble);
-//        when(pbSampleDouble.getOwner()).thenReturn(sellerDouble);
+//        when(pbSampleDouble.getOwnerId()).thenReturn(sellerDouble);
 //
 //        return pbSampleDouble;
 //    }
