@@ -52,10 +52,10 @@ public class US020PublicListByGenreController {
      * @return a list of {@link CollectionOfPublicationsDTO_US020} matching the specified genre
      * @throws IllegalArgumentException if the provided genre is {@code null}
      */
-    public List<CollectionOfPublicationsDTO_US020> getPublicListsByGenre(Genre genre) {
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre can't be null.");
-        }
-        return _collectionRepo.findPublicByGenre(genre);
-    }
+//    public List<CollectionOfPublicationsDTO_US020> getPublicListsByGenre(Genre genre) {
+//        if (genre == null) {
+//            throw new IllegalArgumentException("Genre can't be null.");
+//        }
+//        return _collectionRepo.findPublicByGenre(genre);
+//    }
 }

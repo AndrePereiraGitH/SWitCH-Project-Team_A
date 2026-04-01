@@ -85,19 +85,19 @@ public class US017ToCreateCollectionOfPublicationsController {
      * @return the created {@link CollectionOfPublications}, always private
      * @throws IllegalArgumentException if user or genre is null, or if a duplicate exists
      */
-    public CollectionOfPublications createCollection(
-            String name,
-            Genre selectedGenre,
-            User user
-    ) {
-        // basic guard — the repository also validates, but we check here too before calling it
-        if (user == null || selectedGenre == null) {
-            throw new IllegalArgumentException("Invalid arguments");
-        }
-
-        // delegate to the repository — it handles duplicate detection and creation
-        return collectionRepository.createIfNotExists(user, name, selectedGenre);
-    }
+//    public CollectionOfPublications createCollection(
+//            String name,
+//            Genre selectedGenre,
+//            User user
+//    ) {
+//        // basic guard — the repository also validates, but we check here too before calling it
+//        if (user == null || selectedGenre == null) {
+//            throw new IllegalArgumentException("Invalid arguments");
+//        }
+//
+//        // delegate to the repository — it handles duplicate detection and creation
+//        return collectionRepository.createIfNotExists(user, name, selectedGenre);
+//    }
 
 }
 

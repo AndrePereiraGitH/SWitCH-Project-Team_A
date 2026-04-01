@@ -1,7 +1,7 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 /**
  * Factory for creating {@link CollectionOfPublications} objects — US017.
@@ -35,7 +35,7 @@ public class CollectionOfPublicationsFactory {
      * @throws IllegalArgumentException if any argument is null or if name is blank
      */
     // instance method on purpose — so it can be injected and mocked in tests (static methods cannot be mocked)
-    public CollectionOfPublications create(String name, Genre genre, User user) {
+    public CollectionOfPublications create(String name, GenreID genre, UserId user) {
         return new CollectionOfPublications(name, genre, user);
     }
 }

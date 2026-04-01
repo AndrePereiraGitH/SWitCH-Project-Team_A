@@ -22,27 +22,27 @@ public class CollectionOfPublicationsDTO_US018 {
 
     /**
      * Converts domain collections into DTOs for US018.
-     * @param collections list of domain collections
+//     * @param collections list of domain collections
      * @return list of CollectionOfPublicationsDTO_US018
      */
-    public static List<CollectionOfPublicationsDTO_US018> collectionOfPublicationToDTO (
-            List<CollectionOfPublications> collections) {
-
-        List<CollectionOfPublicationsDTO_US018> result = new ArrayList<>();
-
-        for (CollectionOfPublications cp : collections) {
-
-            result.add(
-                    new CollectionOfPublicationsDTO_US018(
-                            cp.getCollectionName(),
-                            cp.getCollectionGenre().getGenreType(),
-                            cp.getOwner().getUserName()
-                    )
-            );
-        }
-
-        return result;
-    }
+//    public static List<CollectionOfPublicationsDTO_US018> collectionOfPublicationToDTO (
+//            List<CollectionOfPublications> collections) {
+//
+//        List<CollectionOfPublicationsDTO_US018> result = new ArrayList<>();
+//
+//        for (CollectionOfPublications cp : collections) {
+//
+//            result.add(
+//                    new CollectionOfPublicationsDTO_US018(
+//                            cp.getCollectionName(),
+//                            cp.getCollectionGenre().getGenreType(),
+//                            cp.getOwner().getUserName()
+//                    )
+//            );
+//        }
+//
+//        return result;
+//    }
     public String getName() {
         return name;
     }

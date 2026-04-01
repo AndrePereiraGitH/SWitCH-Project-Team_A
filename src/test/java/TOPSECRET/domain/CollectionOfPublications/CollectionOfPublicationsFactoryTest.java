@@ -2,6 +2,8 @@ package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -43,8 +45,8 @@ class CollectionOfPublicationsFactoryTest {
     @Test
     void shouldCreateNonNullCollectionOfPublications() {
         // Arrange — fake Genre and User; the real objects are not needed here
-        Genre genre = mock(Genre.class);
-        User user = mock(User.class);
+        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
 
         // MockedConstruction intercepts every call to new CollectionOfPublications() inside the try block
         // — the factory calls new internally, so this is the only way to isolate it without running the real constructor

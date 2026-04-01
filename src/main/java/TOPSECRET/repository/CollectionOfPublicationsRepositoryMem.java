@@ -4,6 +4,8 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
@@ -84,9 +86,9 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @throws IllegalArgumentException if any parameter is null, or if a duplicate already exists
      */
     public CollectionOfPublications createIfNotExists(
-            User user,
+            UserId user,
             String name,
-            Genre genre) {
+            GenreID genre) {
 
         // all three are required — a collection must have an owner, a name, and a genre
         if (user == null || name == null || genre == null) {
@@ -172,7 +174,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @return list of collections owned by the user
      * @throws IllegalArgumentException if user is null
      */
-    public List<CollectionOfPublications> getUserCollections(User user) {
+    public List<CollectionOfPublications> getUserCollections(UserId user) {
 
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -189,26 +191,26 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @throws IllegalArgumentException  if dto is null
      * @throws InstanceNotFoundException if no matching collection exists
      */
-    public CollectionOfPublications collectionDTOToDomain(
-            CollectionOfPublicationsDTO_US018 dto)
-            throws InstanceNotFoundException {
-
-        if (dto == null) {
-            throw new IllegalArgumentException("DTO cannot be null");
-        }
-
-        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
-
-            if (collection.getCollectionName().equalsIgnoreCase(dto.getName())
-                    && collection.getOwner().getUserName().equals(dto.getOwnerName())) {
-
-                return collection;
-            }
-        }
-        throw new InstanceNotFoundException(
-                "Collection not found for given DTO"
-        );
-    }
+//    public CollectionOfPublications collectionDTOToDomain(
+//            CollectionOfPublicationsDTO_US018 dto)
+//            throws InstanceNotFoundException {
+//
+//        if (dto == null) {
+//            throw new IllegalArgumentException("DTO cannot be null");
+//        }
+//
+//        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
+//
+//            if (collection.getCollectionName().equalsIgnoreCase(dto.getName())
+//                    && collection.getOwner().getUserName().equals(dto.getOwnerName())) {
+//
+//                return collection;
+//            }
+//        }
+//        throw new InstanceNotFoundException(
+//                "Collection not found for given DTO"
+//        );
+//    }
 
     // ============================== end US018 ==============================
 
@@ -222,7 +224,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @return list of collections owned by the user
      * @throws IllegalArgumentException if owner is null
      */
-    public List<CollectionOfPublications> getAllCollectionOfPublicationsByUser(User owner) {
+    public List<CollectionOfPublications> getAllCollectionOfPublicationsByUser(UserId owner) {
 
         if (owner == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -246,24 +248,24 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @return the matching {@link CollectionOfPublications}
      * @throws InstanceNotFoundException if no collection matches
      */
-    public CollectionOfPublications getCollectionByDTO(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
-
-        Optional<CollectionOfPublications> collectionFound = _collectionOfPublicationsList.stream()
-                .filter(c ->
-                        Objects.equals(c.getCollectionName(), collectionDTO.get_name()) &&
-                                Objects.equals(c.getCollectionGenre().getGenreType(), collectionDTO.get_genreName()) &&
-                                Objects.equals(c.getOwner().getUserName(), collectionDTO.getOwnerName())
-                )
-                .findFirst();
-
-        if (collectionFound.isEmpty()) {
-            throw new InstanceNotFoundException("selected collection, does not match any CollectionOfPublications");
-        }
-
-        CollectionOfPublications collection = collectionFound.get();
-
-        return collection;
-    }
+//    public CollectionOfPublications getCollectionByDTO(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
+//
+//        Optional<CollectionOfPublications> collectionFound = _collectionOfPublicationsList.stream()
+//                .filter(c ->
+//                        Objects.equals(c.getCollectionName(), collectionDTO.get_name()) &&
+//                                Objects.equals(c.getCollectionGenre().getGenreType(), collectionDTO.get_genreName()) &&
+//                                Objects.equals(c.getOwner().getUserName(), collectionDTO.getOwnerName())
+//                )
+//                .findFirst();
+//
+//        if (collectionFound.isEmpty()) {
+//            throw new InstanceNotFoundException("selected collection, does not match any CollectionOfPublications");
+//        }
+//
+//        CollectionOfPublications collection = collectionFound.get();
+//
+//        return collection;
+//    }
 
     /**
      * Makes a collection public by setting its private flag to false — US019.
@@ -273,16 +275,16 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @throws IllegalArgumentException  if collectionDTO is null
      * @throws InstanceNotFoundException if no collection matches the provided DTO
      */
-    public boolean makeCollectionOfPublicationsPublic(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
-        if (collectionDTO == null) {
-            throw new IllegalArgumentException("collection dto cannot be null");
-        }
-
-        CollectionOfPublications coll = getCollectionByDTO(collectionDTO);
-
-        coll.set_isPrivate(false);
-        return true;
-    }
+//    public boolean makeCollectionOfPublicationsPublic(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
+//        if (collectionDTO == null) {
+//            throw new IllegalArgumentException("collection dto cannot be null");
+//        }
+//
+//        CollectionOfPublications coll = getCollectionByDTO(collectionDTO);
+//
+//        coll.set_isPrivate(false);
+//        return true;
+//    }
 
     // ============================== end US019 ==============================
 
@@ -296,21 +298,21 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @return list of public collections with the given genre
      * @throws IllegalArgumentException if genre is null or blank
      */
-    public List<CollectionOfPublicationsDTO_US020> findPublicByGenre(Genre genreName) {
-        if (genreName == null || genreName.getGenreType() == null || genreName.getGenreType().isBlank()) {
-            throw new IllegalArgumentException("Genre can't be null.");
-        }
-
-        List<CollectionOfPublicationsDTO_US020> result = new ArrayList<>();
-
-        for (CollectionOfPublications c : _collectionOfPublicationsList) {
-            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre())) {
-                result.add(new CollectionOfPublicationsDTO_US020(c.getCollectionName(), c.getOwner().getUserName()));
-            }
-        }
-
-        return List.copyOf(result);
-    }
+//    public List<CollectionOfPublicationsDTO_US020> findPublicByGenre(Genre genreName) {
+//        if (genreName == null || genreName.getGenreType() == null || genreName.getGenreType().isBlank()) {
+//            throw new IllegalArgumentException("Genre can't be null.");
+//        }
+//
+//        List<CollectionOfPublicationsDTO_US020> result = new ArrayList<>();
+//
+//        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+//            if (!c.getIsPrivate() && genreName.equals(c.getCollectionGenre())) {
+//                result.add(new CollectionOfPublicationsDTO_US020(c.getCollectionName(), c.getOwner().getUserName()));
+//            }
+//        }
+//
+//        return List.copyOf(result);
+//    }
 
     // ============================== end US020 ==============================
 }

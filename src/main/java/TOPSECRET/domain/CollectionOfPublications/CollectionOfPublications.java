@@ -1,13 +1,18 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 
-import TOPSECRET.domain.User.User;
+
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -20,15 +25,18 @@ import java.util.Objects;
  * <p>This class also belongs to US018 (adding publications) and US019 (making it public),
  * but the core structure — name, genre, owner, and the private flag — comes from US017.
  */
-public class CollectionOfPublications {
+public class CollectionOfPublications implements AggregateRoot<CollectionOfPublicationsID> {
 
     // ============================== US017 ==============================
 
-    // These five fields make up the collection — all defined in US017
+    // These fields make up the collection — all defined in US017
+    private final CollectionOfPublicationsID _id;
     private String _collectionName;                            // the name the user picks for the collection
-    private Genre _collectionGenre;                            // the genre chosen from the available list
-    private List<PublicationSample> _collectionOfPublications; // the publications inside — starts empty (US018 adds them)
-    private User _owner;                                       // the user who created and owns this collection
+    private GenreID _collectionGenre;                            // the genre chosen from the available list
+    private List<PublicationSampleID> _publicationSampleIDS; // the publications inside — starts empty (US018 adds them)
+    //now communicates only with IDs
+
+    private final UserId _ownerId;                                       // the user who created and owns this collection
     private boolean _isPrivate;                                // US017 rule: always starts as true (private)
 
     /**
@@ -42,7 +50,7 @@ public class CollectionOfPublications {
      * @param user            the user who owns the collection
      * @throws IllegalArgumentException if name is null or blank, or if genre or user is null
      */
-    protected CollectionOfPublications(String collectionName, Genre collectionGenre, User user) {
+    protected CollectionOfPublications(String collectionName, GenreID collectionGenre, UserId user) {
 
         // name cannot be null or blank — a collection must always have a name
         if (collectionName == null || collectionName.isBlank()) {
@@ -59,11 +67,12 @@ public class CollectionOfPublications {
             throw new IllegalArgumentException("User cannot be null.");
         }
 
+        this._id = new CollectionOfPublicationsID(UUID.randomUUID().toString());
         this._collectionName = collectionName;
         this._collectionGenre = collectionGenre;
         this._isPrivate = true;            // US017 rule: always private when created; US019 allows making it public
-        this._owner = user;
-        this._collectionOfPublications = new ArrayList<>(); // starts empty — publications are added in US018
+        this._ownerId = user;
+        this._publicationSampleIDS = new ArrayList<>(); // starts empty — publications are added in US018
     }
 
     /** Returns the name of the collection. */
@@ -75,10 +84,10 @@ public class CollectionOfPublications {
     public boolean getIsPrivate() { return _isPrivate; }
 
     /** Returns the genre of the collection. */
-    public Genre getCollectionGenre() { return _collectionGenre; }
+    public GenreID getCollectionGenre() { return _collectionGenre; }
 
     /** Returns the user who owns the collection. */
-    public User getOwner() { return _owner; }
+    public UserId getOwner() { return _ownerId; }
 
     /**
      * Returns the list of publications in this collection — US017 / US018.
@@ -89,8 +98,8 @@ public class CollectionOfPublications {
      *
      * @return a copy of the publications list
      */
-    public List<PublicationSample> getPublications() {
-        return new ArrayList<>(_collectionOfPublications); // defensive copy — the real list stays safe
+    public List<PublicationSampleID> getPublications() {
+        return new ArrayList<>(_publicationSampleIDS); // defensive copy — the real list stays safe
     }
 
     /**
@@ -114,9 +123,30 @@ public class CollectionOfPublications {
 
         return _collectionName.equalsIgnoreCase(other._collectionName) // names typed by users may differ in case
                 && _collectionGenre.equals(other._collectionGenre)
-                && Objects.equals(_owner, other._owner)
+                && Objects.equals(_ownerId, other._ownerId)
                 && _isPrivate == other._isPrivate
-                && _collectionOfPublications.equals(other._collectionOfPublications);
+                && _publicationSampleIDS.equals(other._publicationSampleIDS);
+    }
+
+    //JavaDoc
+    public CollectionOfPublicationsID id() {
+        return _id;
+    }
+
+    //JavaDoc
+    @Override
+    public boolean sameAs(Object obj) {
+        if (!(obj instanceof CollectionOfPublications)) {
+            return false;
+        }
+
+        CollectionOfPublications newObj = (CollectionOfPublications) obj;
+
+        return  this._collectionName.equals(newObj._collectionName) &&
+                this._collectionGenre.equals(newObj._collectionGenre) &&
+                this._isPrivate == newObj._isPrivate &&
+                this._publicationSampleIDS.equals(newObj._publicationSampleIDS);
+
     }
 
     /**
@@ -131,9 +161,9 @@ public class CollectionOfPublications {
         return Objects.hash(
                 _collectionName.toLowerCase(), // must match equalsIgnoreCase — lowercase makes them consistent
                 _collectionGenre,
-                _owner,
+                _ownerId,
                 _isPrivate,
-                _collectionOfPublications
+                _publicationSampleIDS
         );
     }
 
@@ -151,15 +181,15 @@ public class CollectionOfPublications {
      * @param publication the publication to add
      * @return true if added, false if null or already in the collection
      */
-    public boolean addPublication(PublicationSample publication) {
+    public boolean addPublication(PublicationSampleID publication) {
 
         if (publication == null) return false;
 
-        if (_collectionOfPublications.contains(publication)) {
+        if (_publicationSampleIDS.contains(publication)) {
             return false; // already in the list — no duplicates allowed
         }
 
-        _collectionOfPublications.add(publication);
+        _publicationSampleIDS.add(publication);
         return true;
     }
 
@@ -170,7 +200,7 @@ public class CollectionOfPublications {
      * @return true if it exists, false otherwise
      */
     public boolean containsPublication(PublicationSample publication) {
-        return _collectionOfPublications.contains(publication);
+        return _publicationSampleIDS.contains(publication);
     }
 
     // ============================== end US018 ==============================
