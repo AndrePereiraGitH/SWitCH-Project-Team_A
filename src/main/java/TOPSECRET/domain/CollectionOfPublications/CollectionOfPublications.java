@@ -63,12 +63,12 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._ownerId = userId;
     }
 
-    public String getCollectionName() {
-        return _collectionName;
-    }
-
     public boolean getIsPrivate() {
         return _isPrivate;
+    }
+
+    public String getCollectionName() {
+        return _collectionName;
     }
 
     public GenreID getCollectionGenre() {
@@ -78,6 +78,25 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     public UserId getOwnerId() {
         return _ownerId;
     }
+
+    public CollectionOfPublicationsID id() {
+        return _id;
+    }
+
+    // ============================== US019 ==============================
+
+    /**
+     * Changes the privacy state of the collection — US019.
+     *
+     * <p>Pass {@code false} to make the collection public, {@code true} to make it private again.
+     *
+     * @param _isPrivate new privacy value
+     */
+    public void set_isPrivate(boolean _isPrivate) {
+        this._isPrivate = _isPrivate;
+    }
+
+    // ============================== end US019 ==============================
 
     @Override
     public boolean equals(Object obj) {
@@ -92,10 +111,6 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
                 return true;
         }
         return false;
-    }
-
-    public CollectionOfPublicationsID id() {
-        return _id;
     }
 
     @Override
@@ -120,21 +135,4 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
                 _isPrivate
         );
     }
-
-
-    // ============================== US019 ==============================
-
-    /**
-     * Changes the privacy state of the collection — US019.
-     *
-     * <p>Pass {@code false} to make the collection public, {@code true} to make it private again.
-     *
-     * @param _isPrivate new privacy value
-     */
-    public void set_isPrivate(boolean _isPrivate) {
-        this._isPrivate = _isPrivate;
-    }
-
-    // ============================== end US019 ==============================
-
 }

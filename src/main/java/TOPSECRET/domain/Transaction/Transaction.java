@@ -157,7 +157,11 @@ public class Transaction implements AggregateRoot<TransactionID> {
         this._paymentDate = paymentDate;
         this._sellersId = sellersId;
         this._status = status;
+    }
 
+    @Override
+    public TransactionID id() {
+        return _id;
     }
 
     @Override
@@ -173,11 +177,6 @@ public class Transaction implements AggregateRoot<TransactionID> {
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public TransactionID id() {
-        return _id;
     }
 
     @Override
