@@ -1,17 +1,11 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 
-
-import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
 import TOPSECRET.domain.ValueObjects.UserId;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 

@@ -1,7 +1,5 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
