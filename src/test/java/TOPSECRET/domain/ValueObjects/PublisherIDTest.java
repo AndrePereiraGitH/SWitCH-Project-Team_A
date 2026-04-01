@@ -12,15 +12,21 @@ class PublisherIDTest {
 
     @Test
     void givenValidId_whenConstructing_thenCreatesSuccessfully() {
-        new PublisherID("123456789");
+        // Act
+        PublisherID publisherID = new PublisherID("123456789");
+
+        // Assert
+        assertNotNull(publisherID);
     }
 
     @Test
     void givenValidId_whenGetId_thenReturnsCorrectId() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
+
         // Act
         String result = publisherID.getId();
+
         // Assert
         assertEquals("123456789", result);
     }
@@ -31,21 +37,19 @@ class PublisherIDTest {
 
     @Test
     void givenNullId_whenConstructing_thenThrowsIllegalArgumentException() {
-        // Act
+        // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new PublisherID(null)
         );
-        // Assert
         assertEquals("PublisherId must be a non empty String", ex.getMessage());
     }
 
     @Test
     void givenBlankId_whenConstructing_thenThrowsIllegalArgumentException() {
-        // Act
+        // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> new PublisherID("   ")
         );
-        // Assert
         assertEquals("PublisherId must be a non empty String", ex.getMessage());
     }
 
@@ -57,6 +61,7 @@ class PublisherIDTest {
     void givenSameInstance_whenEquals_thenReturnsTrue() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
+
         // Act + Assert
         assertEquals(publisherID, publisherID);
     }
@@ -66,7 +71,8 @@ class PublisherIDTest {
         // Arrange
         PublisherID first = new PublisherID("123456789");
         PublisherID second = new PublisherID("123456789");
-        // Assert
+
+        // Act + Assert
         assertEquals(first, second);
     }
 
@@ -75,7 +81,8 @@ class PublisherIDTest {
         // Arrange
         PublisherID first = new PublisherID("123456789");
         PublisherID second = new PublisherID("987654321");
-        // Assert
+
+        // Act + Assert
         assertNotEquals(first, second);
     }
 
@@ -83,7 +90,8 @@ class PublisherIDTest {
     void givenNull_whenEquals_thenReturnsFalse() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
-        // Assert
+
+        // Act + Assert
         assertNotEquals(null, publisherID);
     }
 
@@ -91,7 +99,8 @@ class PublisherIDTest {
     void givenDifferentType_whenEquals_thenReturnsFalse() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
-        // Assert
+
+        // Act + Assert
         assertNotEquals("123456789", publisherID);
     }
 
@@ -103,7 +112,8 @@ class PublisherIDTest {
     void givenValidId_whenToString_thenReturnsRawId() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
-        // Assert
+
+        // Act + Assert
         assertEquals("123456789", publisherID.toString());
     }
 
@@ -111,7 +121,8 @@ class PublisherIDTest {
     void givenValidId_whenToStringAndGetId_thenBothMatch() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
-        // Assert
+
+        // Act + Assert
         assertEquals(publisherID.getId(), publisherID.toString());
     }
 
@@ -123,7 +134,8 @@ class PublisherIDTest {
     void givenValidId_whenGetIdCalledMultipleTimes_thenAlwaysReturnsSameValue() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
-        // Assert
+
+        // Act + Assert
         assertEquals(publisherID.getId(), publisherID.getId());
     }
 }

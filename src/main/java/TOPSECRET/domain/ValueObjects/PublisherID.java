@@ -5,7 +5,7 @@ import TOPSECRET.ddd.DomainID;
 import java.util.Objects;
 
 /**
- * Value Object representing the unique identifier of a {@link TOPSECRET.domain.Publisher} aggregate.
+ * Value Object representing the unique identifier of a {@link Publisher} aggregate.
  *
  * <p>Implements the {@link DomainID} marker interface as required by the DDD-layered structure.
  * Identity is based solely on the underlying {@code String} value, making two instances with
@@ -40,21 +40,39 @@ public class PublisherID implements DomainID {
     }
 
     /**
-     * Compares this {@code PublisherID} to another object for equality.
+     * Indicates whether some other object is equal to this {@code PublisherID}.
      *
-     * <p>Two instances are considered equal if and only if they are of the same type
-     * and hold the same ID value.</p>
+     * <p>Two {@code PublisherID} instances are equal if they share the same
+     * underlying string identifier.</p>
      *
-     * @param o the object to compare with
-     * @return {@code true} if the given object is a {@code PublisherID}
-     *         with the same value; {@code false} otherwise
+     * @param o the reference object with which to compare
+     * @return {@code true} if {@code o} is a {@code PublisherID} with an equal identifier;
+     *         {@code false} otherwise
      */
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PublisherID that = (PublisherID) o;
         return Objects.equals(_publisherID, that._publisherID);
     }
+
+    /**
+     * Returns a hash code value for this {@code PublisherID}, based on its underlying string value.
+     *
+     * @return the hash code of this identifier's value
+     */
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_publisherID);
+    }
+
+    /**
+     * Returns the string representation of this {@code PublisherID}.
+     *
+     * @return the underlying string value of this identifier
+     */
 
     @Override
     public String toString() {
