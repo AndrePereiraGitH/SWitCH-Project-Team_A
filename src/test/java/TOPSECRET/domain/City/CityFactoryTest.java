@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;

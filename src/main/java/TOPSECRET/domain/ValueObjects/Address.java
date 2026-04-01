@@ -1,7 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.City;
+import TOPSECRET.domain.City.City;
 
 import java.util.Objects;
 

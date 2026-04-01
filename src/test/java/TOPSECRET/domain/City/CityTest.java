@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.Country.Country;
 import org.junit.jupiter.api.Test;
@@ -121,14 +121,11 @@ class CityTest {
     }
 
     @Test
-    void hashCode_shouldBeEqualForEqualCities() {
-
+    void hashCode_shouldBeEqualForSameCity() {
         Country country = mock(Country.class);
+        City city = new City(country, "Portland");
 
-        City cityA = new City(country, "Portland");
-        City cityB = new City(country, "Portland");
-
-        assertEquals(cityA.hashCode(), cityB.hashCode());
+        assertEquals(city.hashCode(), city.hashCode());
     }
 
     @Test

@@ -1,6 +1,6 @@
 package TOPSECRET.domain.ValueObjects;
 
-import TOPSECRET.domain.City;
+import TOPSECRET.domain.City.City;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.junit.jupiter.api.Test;

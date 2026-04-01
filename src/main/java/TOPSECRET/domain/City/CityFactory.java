@@ -1,7 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.ValueObjects.CityID;
 
 /**
  * Factory responsible for creating {@link City} domain objects.

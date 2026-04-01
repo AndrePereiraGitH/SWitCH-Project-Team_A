@@ -1,7 +1,7 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.City;
-import TOPSECRET.domain.CityFactory;
+import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 
 
 /**
- * Unit tests for {@link CityRepository}.
+ * Unit tests for {@link CityRepositoryMem}.
  *
  * <p>These tests verify the behavior of creating, adding, and preventing
  * duplicate {@link City} instances. The repository depends on a
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  * observable results of operations (returned values and exceptions)
  * are verified rather than interactions with dependencies.</p>
  */
-class CityRepositoryTest {
+class CityRepositoryMemTest {
 
     // Factories
     private final CityFactory cityFactory = mock(CityFactory.class);
@@ -39,7 +39,7 @@ class CityRepositoryTest {
     void shouldCreateAndAddCity() {
 
         // Arrange
-        CityRepository repository = new CityRepository(cityFactory);
+        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(anyCountry, anyName)).thenReturn(anyCity);
 
@@ -54,9 +54,10 @@ class CityRepositoryTest {
     void shouldThrowWhenCityAlreadyExists() {
 
         // Arrange
-        CityRepository repository = new CityRepository(cityFactory);
+        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(anyCountry, anyName)).thenReturn(anyCity);
+        when(anyCity.sameAs(anyCity)).thenReturn(true);
 
         repository.createAndAdd(anyCountry, anyName);
 
@@ -69,7 +70,7 @@ class CityRepositoryTest {
     void shouldThrowExceptionIfCountryIsNull() {
 
         // Arrange
-        CityRepository repository = new CityRepository(cityFactory);
+        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(null, anyName))
                 .thenThrow(new IllegalArgumentException());
@@ -83,9 +84,10 @@ class CityRepositoryTest {
     void shouldStoreOnlyOneInstanceOfCity() {
 
         // Arrange
-        CityRepository repository = new CityRepository(cityFactory);
+        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(anyCountry, anyName)).thenReturn(anyCity);
+        when(anyCity.sameAs(anyCity)).thenReturn(true);
 
         repository.createAndAdd(anyCountry, anyName);
 
