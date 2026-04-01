@@ -68,17 +68,19 @@ public class Publisher implements AggregateRoot<PublisherID> {
 
     /**
      * Determines whether this {@code Publisher} represents the same business entity
-     * as another object, based on VAT number equality.
+     * as another object, based on name and contact equality.
      *
-     * @param object the object to compare with
-     * @return {@code true} if {@code object} is a {@code Publisher} with the same VAT number;
+     * @param o the object to compare with
+     * @return {@code true} if {@code o} is a {@code Publisher} with the same name and contact;
      *         {@code false} otherwise
      */
 
     @Override
-    public boolean sameAs(Object object) {
-        if (!(object instanceof Publisher other)) return false;
-        return Objects.equals(_vatNumber, other._vatNumber);
+    public boolean sameAs(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Publisher that = (Publisher) o;
+        return Objects.equals(_name, that._name) &&
+                Objects.equals(_contact, that._contact);
     }
 
     /**
