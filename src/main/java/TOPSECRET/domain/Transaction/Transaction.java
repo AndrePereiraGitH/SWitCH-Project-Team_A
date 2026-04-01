@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Transaction;
 
+import TOPSECRET.domain.Auction;
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.TransactionStatus;
 import TOPSECRET.domain.User.User;
