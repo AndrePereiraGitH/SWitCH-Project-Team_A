@@ -128,12 +128,32 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
                 && _publicationSampleIDS.equals(other._publicationSampleIDS);
     }
 
-    //JavaDoc
+    /**
+     * Returns the unique identifier of this collection of publications.
+     *
+     * @return the {@link CollectionOfPublicationsID} associated with this collection
+     */
     public CollectionOfPublicationsID id() {
         return _id;
     }
 
-    //JavaDoc
+    /**
+     * Determines whether this collection is logically equivalent to another object.
+     * <p>
+     * Two {@code CollectionOfPublications} instances are considered the same if:
+     * <ul>
+     *     <li>Their collection names are equal</li>
+     *     <li>Their collection genres are equal</li>
+     *     <li>Their privacy status is identical</li>
+     *     <li>Their publication sample ID lists are equal</li>
+     * </ul>
+     * <p>
+     * This method compares domain-specific attributes rather than object identity.
+     *
+     * @param obj the object to compare with
+     * @return {@code true} if the given object represents the same collection;
+     *         {@code false} otherwise
+     */
     @Override
     public boolean sameAs(Object obj) {
         if (!(obj instanceof CollectionOfPublications)) {
