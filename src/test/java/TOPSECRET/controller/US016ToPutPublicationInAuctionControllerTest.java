@@ -107,8 +107,8 @@
 //        User ownerDouble = mock(User.class);
 //        Condition condition = Condition.LIKE_NEW;
 //
-//        when(p1Double.getOwner()).thenReturn(ownerDouble);
-//        when(p2Double.getOwner()).thenReturn(ownerDouble);
+//        when(p1Double.getOwnerId()).thenReturn(ownerDouble);
+//        when(p2Double.getOwnerId()).thenReturn(ownerDouble);
 //
 //        when(p1Double.getCondition()).thenReturn(condition);
 //        when(p2Double.getCondition()).thenReturn(condition);

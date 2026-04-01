@@ -145,7 +145,7 @@
 //
 //        when(collectionDouble.getCollectionName()).thenReturn("MyCollection");
 //        when(collectionDouble.getCollectionGenre()).thenReturn(genreDouble);
-//        when(collectionDouble.getOwner()).thenReturn(ownerDouble);
+//        when(collectionDouble.getOwnerId()).thenReturn(ownerDouble);
 //
 //        when(genreDouble.getGenreType()).thenReturn("Fantasy");
 //        when(ownerDouble.getUserName()).thenReturn("john");
@@ -209,7 +209,7 @@
 ////
 ////        when(pub1Double.getBibliographicalData()).thenReturn(bdDouble);
 ////        when(pub1Double.getEdition()).thenReturn(editionDouble);
-////        when(pub1Double.getOwner()).thenReturn(ownerDouble);
+////        when(pub1Double.getOwnerId()).thenReturn(ownerDouble);
 ////
 ////        when(bdDouble.getTitle()).thenReturn("Clean Code");
 ////        when(editionDouble.getEditionNumber()).thenReturn("1");

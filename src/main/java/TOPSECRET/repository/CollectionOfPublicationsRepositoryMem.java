@@ -66,7 +66,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
             CollectionOfPublications c = _collectionOfPublicationsList.get(i);
-            if (userId.equals(c.getOwner())
+            if (userId.equals(c.getOwnerId())
                     && c.getCollectionName().equalsIgnoreCase(name) // case-insensitive: "Favorites" == "favorites"
                     && c.getCollectionGenre().equals(genreId)) {
 
@@ -113,7 +113,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         List<CollectionOfPublications> userCollections = new ArrayList<>();
 
         _collectionOfPublicationsList.forEach(collection -> {
-            if (collection.getOwner().equals(ownerId)) {
+            if (collection.getOwnerId().equals(ownerId)) {
                 userCollections.add(collection);
             }
         });

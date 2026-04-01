@@ -41,7 +41,7 @@ public class PublicationSampleDTO_US018 {
 //                    new PublicationSampleDTO_US018(
 //                            p.getBibliographicalData().getTitle(),
 //                            p.getEdition().getEditionNumber(),
-//                            p.getOwner().getUserName()
+//                            p.getOwnerId().getUserName()
 //                    )
 //            );
 //        }

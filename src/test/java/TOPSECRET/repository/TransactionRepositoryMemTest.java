@@ -68,8 +68,6 @@ class TransactionRepositoryMemTest {
         // Assert
         assertEquals(transaction, result);
         assertTrue(repository.getAllTransactions().contains(transaction));
-
-        //is the method getAllTransactions necessary to verify that the "add" part was successful?
     }
 
     @Test
@@ -81,7 +79,7 @@ class TransactionRepositoryMemTest {
                 .thenReturn(transaction);
 
         repository.createAndAddFromAuction(buyer, auction, price, transactionDate,
-                paymentDate, sellers, status); //is pre-existing here
+                paymentDate, sellers, status);
 
         //Act + assert
         assertThrows(InstanceAlreadyExistsException.class, () -> repository.createAndAddFromAuction(

@@ -82,12 +82,12 @@ class DirectSaleDTO_US025Test {
         // --- PUBLICATION SAMPLES ---
         sample1 = mock(PublicationSample.class);
 //        when(sample1.getBibliographicalData()).thenReturn(bd1);
-//        when(sample1.getOwner()).thenReturn(seller1);
+//        when(sample1.getOwnerId()).thenReturn(seller1);
         when(sample1.getPublicationStatus()).thenReturn(PublicationStatus.READ);
 
         sample2 = mock(PublicationSample.class);
 //        when(sample2.getBibliographicalData()).thenReturn(bd2);
-//        when(sample2.getOwner()).thenReturn(seller2);
+//        when(sample2.getOwnerId()).thenReturn(seller2);
         when(sample2.getPublicationStatus()).thenReturn(PublicationStatus.READ);
 
         // --- LISTINGS ---

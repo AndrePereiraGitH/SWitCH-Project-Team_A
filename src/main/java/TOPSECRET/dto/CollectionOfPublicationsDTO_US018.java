@@ -36,7 +36,7 @@ public class CollectionOfPublicationsDTO_US018 {
 //                    new CollectionOfPublicationsDTO_US018(
 //                            cp.getCollectionName(),
 //                            cp.getCollectionGenre().getGenreType(),
-//                            cp.getOwner().getUserName()
+//                            cp.getOwnerId().getUserName()
 //                    )
 //            );
 //        }

@@ -38,7 +38,7 @@
 //
 //        when(collection.getCollectionName()).thenReturn(name);
 //        when(collection.getCollectionGenre()).thenReturn(genreMock);
-//        when(collection.getOwner()).thenReturn(owner);
+//        when(collection.getOwnerId()).thenReturn(owner);
 //
 //        when(genreMock.getGenreType()).thenReturn(genre);
 //        when(owner.getUserName()).thenReturn(ownerName);

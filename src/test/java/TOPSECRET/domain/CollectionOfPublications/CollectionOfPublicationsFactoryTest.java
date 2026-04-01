@@ -54,7 +54,7 @@ class CollectionOfPublicationsFactoryTest {
                                  // configure what the intercepted constructor mock returns when asked
                                  when(mock.getCollectionName()).thenReturn("MyCollection");
                                  when(mock.getCollectionGenre()).thenReturn(genre);
-                                 when(mock.getOwner()).thenReturn(user);
+                                 when(mock.getOwnerId()).thenReturn(user);
                                  when(mock.getIsPrivate()).thenReturn(true); // US017 rule: always private
                              })) {
 
@@ -67,7 +67,7 @@ class CollectionOfPublicationsFactoryTest {
             // this confirms the factory called new and returned the result, not null or something else
             assertEquals("MyCollection", result.getCollectionName());
             assertEquals(genre, result.getCollectionGenre());
-            assertEquals(user, result.getOwner());
+            assertEquals(user, result.getOwnerId());
             assertTrue(result.getIsPrivate()); // US017 rule: the created collection must be private
         }
     }

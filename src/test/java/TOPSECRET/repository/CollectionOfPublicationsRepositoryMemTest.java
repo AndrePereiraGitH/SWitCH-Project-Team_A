@@ -52,8 +52,8 @@ class CollectionOfPublicationsRepositoryMemTest {
         CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
         CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
 
-        when(collection1.getOwner()).thenReturn(user);
-        when(collection2.getOwner()).thenReturn(otherUser);
+        when(collection1.getOwnerId()).thenReturn(user);
+        when(collection2.getOwnerId()).thenReturn(otherUser);
 
         // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
         Field field = CollectionOfPublicationsRepositoryMem.class

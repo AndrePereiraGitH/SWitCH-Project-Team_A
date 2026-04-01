@@ -315,7 +315,7 @@ class ListingTest {
 //    void shouldReturnSellerUsername() {
 //        //Arrange
 //        User userDouble = mock(User.class);
-//        when(pub1.getOwner()).thenReturn(userDouble);
+//        when(pub1.getOwnerId()).thenReturn(userDouble);
 //
 //        //Act
 //        Listing validListing = listingFactory.create(validTitle, List.of(pub1), SaleType.DIRECT_SALE, validPrice, validDescription, validPictures);

@@ -72,7 +72,7 @@
 //        when(collectionDouble.getCollectionName()).thenReturn("My Collection");
 //        when(collectionDouble.getCollectionGenre()).thenReturn(genreDouble);
 //        when(genreDouble.getGenreType()).thenReturn("Fiction");
-//        when(collectionDouble.getOwner()).thenReturn(ownerDouble);
+//        when(collectionDouble.getOwnerId()).thenReturn(ownerDouble);
 //        when(ownerDouble.getUserName()).thenReturn("alice");
 //
 //        // Act

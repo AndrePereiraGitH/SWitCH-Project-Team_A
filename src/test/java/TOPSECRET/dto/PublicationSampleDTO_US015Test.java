@@ -52,7 +52,7 @@ class PublicationSampleDTO_US015Test {
 //        when(pubSample.getEdition()).thenReturn(edition);
         when(pubSample.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(pubSample.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
-//        when(pubSample.getOwner()).thenReturn(owner);
+//        when(pubSample.getOwnerId()).thenReturn(owner);
 
         when(bd.getTitle()).thenReturn("Clean Code");
         when(bd.getAuthors()).thenReturn(List.of(author));
@@ -254,7 +254,7 @@ class PublicationSampleDTO_US015Test {
 //        when(anotherSample.getEdition()).thenReturn(edition);
         when(anotherSample.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(anotherSample.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
-//        when(anotherSample.getOwner()).thenReturn(owner);
+//        when(anotherSample.getOwnerId()).thenReturn(owner);
 
         // Act
 //        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample, anotherSample));

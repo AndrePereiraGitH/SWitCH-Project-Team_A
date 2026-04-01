@@ -28,8 +28,6 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     private final CollectionOfPublicationsID _id;
     private String _collectionName;                            // the name the user picks for the collection
     private GenreID _collectionGenreId;                            // the genre chosen from the available list
-    //now communicates only with IDs
-
     private final UserId _ownerId;                                       // the user who created and owns this collection
     private boolean _isPrivate;                                // US017 rule: always starts as true (private)
 
@@ -46,17 +44,14 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      */
     protected CollectionOfPublications(String collectionName, GenreID collectionGenreId, UserId userId) {
 
-        // name cannot be null or blank — a collection must always have a name
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
         }
 
-        // genre cannot be null — US017 requires the userId to pick a genre
         if (collectionGenreId == null) {
             throw new IllegalArgumentException("Collection genre cannot be null.");
         }
 
-        // owner cannot be null — every collection belongs to a userId
         if (userId == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
@@ -80,7 +75,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _collectionGenreId;
     }
 
-    public UserId getOwner() {
+    public UserId getOwnerId() {
         return _ownerId;
     }
 
@@ -116,13 +111,6 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
                 this._isPrivate == newObj._isPrivate;
     }
 
-    /**
-     * hashCode must match equals — if two collections are equal, they must have the same hashCode.
-     *
-     * <p>We use {@code toLowerCase()} on the name to stay consistent with {@code equalsIgnoreCase} above.
-     * If the hash was based on the original case, two equal collections could get different hash values,
-     * which would break things like HashSets and HashMaps.
-     */
     @Override
     public int hashCode() {
         return Objects.hash(
