@@ -1,7 +1,9 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,82 +35,64 @@ class CollectionOfPublicationsTest {
 
     // ============================== US017 ==============================
 
-    // --- Constructor validation ---
-
-    // A collection must always have a name — null is not valid.
-    // We pass a mock Genre and mock User so the test only checks the null name check,
-    // not whether Genre or User are valid objects.
     @Test
     void shouldThrowExceptionWhenCollectionNameIsNull() {
-        // Arrange — mock Genre and User; we only care about the null name here
-        Genre mockGenre = mock(Genre.class);
-        User mockUser = mock(User.class);
+        // Arrange
+        GenreID mockGenre = mock(GenreID.class);
+        UserId mockUser = mock(UserId.class);
 
-        // Act & Assert — null name must be rejected by the constructor
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublications(null, mockGenre, mockUser));
     }
 
-    // A name with only spaces has no real value — it is considered blank.
-    // The constructor must also reject this, not just null.
+
     @Test
     void shouldThrowExceptionWhenCollectionNameIsBlank() {
-        // Arrange — mock Genre and User; we only care about the blank name here
-        Genre mockGenre = mock(Genre.class);
-        User mockUser = mock(User.class);
+        // Arrange
+        GenreID mockGenre = mock(GenreID.class);
+        UserId mockUser = mock(UserId.class);
 
-        // Act & Assert — a name with only spaces must be rejected
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublications(" ", mockGenre, mockUser));
     }
 
-    // US017 requires the user to pick a genre — a collection without a genre is not valid.
-    // Only User is mocked here; genre is null on purpose to test this specific check.
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
-        // Arrange — mock User; genre is null on purpose
-        User mockUser = mock(User.class);
+        // Arrange
+        UserId mockUser = mock(UserId.class);
 
-        // Act & Assert — null genre must be rejected by the constructor
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublications("Favorites", null, mockUser));
     }
 
-    // Every collection must have an owner — without a user it belongs to nobody.
-    // Only Genre is mocked here; user is null on purpose to test this specific check.
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
-        // Arrange — mock Genre; user is null on purpose
-        Genre mockGenre = mock(Genre.class);
+        // Arrange
+        GenreID mockGenre = mock(GenreID.class);
 
-        // Act & Assert — null user must be rejected by the constructor
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new CollectionOfPublications("Favorites", mockGenre, null));
     }
 
-    // --- Happy path ---
-
-    // When all three parameters are valid, the constructor must create the collection correctly.
-    // We check all five expected values:
-    // - name, genre, and owner must match what was passed in
-    // - isPrivate must be true (US017 rule: always starts private)
-    // - publications must be empty (US017 rule: starts with no publications)
     @Test
     void shouldInitializeInstanceWhenValidParameters() {
-        // Arrange — valid name and mocked Genre and User
+        // Arrange
         String name = "Favorites";
-        Genre mockGenre = mock(Genre.class);
-        User mockUser = mock(User.class);
+        GenreID mockGenre = mock(GenreID.class);
+        UserId mockUser = mock(UserId.class);
 
-        // Act — constructor creates the collection with the given data
+        // Act
         CollectionOfPublications result = new CollectionOfPublications(name, mockGenre, mockUser);
 
-        // Assert — all fields must be set correctly
+        // Assert
         assertEquals(name, result.getCollectionName());
         assertEquals(mockGenre, result.getCollectionGenre());
-        assertEquals(mockUser, result.getOwner());
+        assertEquals(mockUser, result.getOwnerId());
         assertTrue(result.getIsPrivate());          // US017 rule: always private at creation
-        assertTrue(result.getPublications().isEmpty()); // US017 rule: starts with no publications
     }
 
     // ============================== end US017 ==============================

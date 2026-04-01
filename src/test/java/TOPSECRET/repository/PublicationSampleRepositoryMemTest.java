@@ -868,7 +868,7 @@ class PublicationSampleRepositoryMemTest {
 //        when(editionDouble.getEditionNumber()).thenReturn("1");
 //
 //        User ownerDouble = mock(User.class);
-//        when(pubSample1Double.getOwner()).thenReturn(ownerDouble);
+//        when(pubSample1Double.getOwnerId()).thenReturn(ownerDouble);
 //        when(ownerDouble.getUserName()).thenReturn("john");
 //
 //        when(dto.getTitle()).thenReturn("Clean Code");
@@ -901,7 +901,7 @@ class PublicationSampleRepositoryMemTest {
 //        when(pubSample1Double.getEdition().getEditionNumber()).thenReturn("2");
 //
 //        User ownerDouble = mock(User.class);
-//        when(pubSample1Double.getOwner()).thenReturn(ownerDouble);
+//        when(pubSample1Double.getOwnerId()).thenReturn(ownerDouble);
 //        when(ownerDouble.getUserName()).thenReturn("mary");
 //
 //        when(dto.getTitle()).thenReturn("Clean Code");
@@ -973,7 +973,7 @@ class PublicationSampleRepositoryMemTest {
         // owner username
         User ownerDouble = mock(User.class);
         when(ownerDouble.getUserName()).thenReturn(ownerName);
-//        when(ps.getOwner()).thenReturn(ownerDouble);
+//        when(ps.getOwnerId()).thenReturn(ownerDouble);
 
         // condition description
         Condition conditionDouble = mock(Condition.class);

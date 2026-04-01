@@ -176,7 +176,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 //                && Objects.equals(authorNames, dto.getAuthorName())
 //                && Objects.equals(bd.getOriginalLanguage(), dto.getLanguage())
 //                && Objects.equals(genreTypes, dto.getGenreType())
-//                && Objects.equals(ps.getOwner().getUserName(), dto.getOwnerName())
+//                && Objects.equals(ps.getOwnerId().getUserName(), dto.getOwnerName())
 //                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
 //    }
 
@@ -223,7 +223,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 //
 //            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
 //                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
-//                    && publication.getOwner().getUserName().equals(dto.getOwnerUsername())) {
+//                    && publication.getOwnerId().getUserName().equals(dto.getOwnerUsername())) {
 //
 //                return publication;
 //            }

@@ -73,8 +73,8 @@
 //        when(genre2Double.getGenreType()).thenReturn("fantasy");
 //
 //        // Owner
-//        when(pubSample1Double.getOwner()).thenReturn(ownerDouble);
-//        when(pubSample2Double.getOwner()).thenReturn(ownerDouble);
+//        when(pubSample1Double.getOwnerId()).thenReturn(ownerDouble);
+//        when(pubSample2Double.getOwnerId()).thenReturn(ownerDouble);
 //        when(ownerDouble.getUserName()).thenReturn("owner username");
 //
 //        // Publication Status

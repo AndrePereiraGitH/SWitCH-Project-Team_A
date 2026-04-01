@@ -340,7 +340,7 @@
 //        List<PublicationSample> result = pr1.getPublicationsByDTO(pubsDto);
 //
 //        // assert
-//        assertEquals(publication1.getOwner().getUserName(), result.get(0).getOwner().getUserName());
+//        assertEquals(publication1.getOwnerId().getUserName(), result.get(0).getOwnerId().getUserName());
 //    }
 //
 //    @Test
@@ -378,12 +378,12 @@
 //                new PublicationSampleDTO_US018(
 //                        publication1.getBibliographicalData().getTitle(),
 //                        publication1.getEdition().getEditionNumber(),
-//                        publication1.getOwner().getUserName()
+//                        publication1.getOwnerId().getUserName()
 //                );
 //
 //        LibraryFactory libraryFactory = new LibraryFactory();
 //
-//        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
+//        Library library = libraryFactory.create("TestLibrary", publication1.getOwnerId());
 //        library.addPublication(publication1);
 //
 //        // Act
@@ -418,7 +418,7 @@
 //        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(new ArrayList<>(), factory);
 //
 //        LibraryFactory libraryFactory = new LibraryFactory();
-//        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
+//        Library library = libraryFactory.create("TestLibrary", publication1.getOwnerId());
 //
 //        // ACT + ASSERT
 //        assertThrows(IllegalArgumentException.class, () ->
@@ -438,13 +438,13 @@
 //        IPublicationSampleRepositoryMem repo = new IPublicationSampleRepositoryMem(list, factory);
 //
 //        LibraryFactory libraryFactory = new LibraryFactory();
-//        Library library = libraryFactory.create("TestLibrary", publication1.getOwner());
+//        Library library = libraryFactory.create("TestLibrary", publication1.getOwnerId());
 //
 //        PublicationSampleDTO_US018 dto =
 //                new PublicationSampleDTO_US018(
 //                        publication1.getBibliographicalData().getTitle(),
 //                        publication1.getEdition().getEditionNumber(),
-//                        publication1.getOwner().getUserName()
+//                        publication1.getOwnerId().getUserName()
 //                );
 //
 //        // ACT + ASSERT

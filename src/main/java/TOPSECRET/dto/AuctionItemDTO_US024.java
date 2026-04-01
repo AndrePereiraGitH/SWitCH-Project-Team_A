@@ -72,7 +72,7 @@ public class AuctionItemDTO_US024 {
      *   <li><b>title</b> — from {@code getBibliographicalData().getTitle()}</li>
      *   <li><b>code</b> — from {@code getEdition().getCode().toString()}</li>
      *   <li><b>condition</b> — from {@code getCondition().getDescription()}</li>
-     *   <li><b>seller</b> — from {@code getOwner().getUserName()}</li>
+     *   <li><b>seller</b> — from {@code getOwnerId().getUserName()}</li>
      * </ul>
      *
      * @param publicationSample the domain object to convert; must not be
@@ -86,7 +86,7 @@ public class AuctionItemDTO_US024 {
 //        String titleDTO = publicationSample.getBibliographicalData().getTitle();
 //        String codeDTO = publicationSample.getEdition().getCode().toString();
 //        String conditionDTO = publicationSample.getCondition().getDescription();
-//        String sellerDTO = publicationSample.getOwner().getUserName();
+//        String sellerDTO = publicationSample.getOwnerId().getUserName();
 //
 //        return new AuctionItemDTO_US024(titleDTO, codeDTO, conditionDTO, sellerDTO);
 //    }
