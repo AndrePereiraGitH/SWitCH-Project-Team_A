@@ -1,10 +1,11 @@
 package TOPSECRET.domain.Transaction;
 
-import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.TransactionStatus;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.AuctionId;
+import TOPSECRET.domain.ValueObjects.DirectSaleID;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -15,22 +16,26 @@ import static org.mockito.Mockito.*;
 
 class TransactionTest {
 
-    // =========================================================
-    // AUCTION CONSTRUCTOR
+    TransactionFactory transactionFactory;
+
+    @BeforeEach
+    void setUp() {
+        transactionFactory = new TransactionFactory();
+    }
 
     @Test
     void shouldCreateAuctionTransactionSuccessfully() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime now = LocalDateTime.now();
 
         // Act
-        Transaction transaction = new Transaction(
+        Transaction transaction = transactionFactory.createFromAuction(
                 buyer, auction, price, now, now, sellers, TransactionStatus.PENDING
         );
 
@@ -42,15 +47,16 @@ class TransactionTest {
     void shouldThrowWhenAuctionIsNull() {
 
         // Arrange
-        User buyer = mock(User.class);
+        UserId buyer = mock(UserId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime now = LocalDateTime.now();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, null, price, now, now, sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, null, price, now, now, sellers,
+                        TransactionStatus.PENDING)
         );
     }
 
@@ -58,15 +64,16 @@ class TransactionTest {
     void shouldThrowWhenBuyerIsNull_AuctionConstructor() {
 
         // Arrange
-        Auction auction = mock(Auction.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime now = LocalDateTime.now();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(null, auction, price, now, now, sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(null, auction, price, now, now, sellers,
+                        TransactionStatus.PENDING)
         );
     }
 
@@ -74,15 +81,16 @@ class TransactionTest {
     void shouldThrowWhenPriceIsNull_AuctionConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime now = LocalDateTime.now();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, auction, null, now, now, sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, auction, null, now, now, sellers,
+                        TransactionStatus.PENDING)
         );
     }
 
@@ -90,15 +98,16 @@ class TransactionTest {
     void shouldThrowWhenTransactionDateIsNull_AuctionConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, auction, price, null, LocalDateTime.now(), sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, auction, price, null, LocalDateTime.now(),
+                        sellers, TransactionStatus.PENDING)
         );
     }
 
@@ -106,16 +115,17 @@ class TransactionTest {
     void shouldThrowWhenTransactionDateIsFuture_AuctionConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime future = LocalDateTime.now().plusDays(1);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, auction, price, future, LocalDateTime.now(), sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, auction, price, future, LocalDateTime.now(),
+                        sellers, TransactionStatus.PENDING)
         );
     }
 
@@ -123,15 +133,16 @@ class TransactionTest {
     void shouldThrowWhenPaymentDateIsNull_AuctionConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, auction, price, LocalDateTime.now(), null, sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, auction, price, LocalDateTime.now(), null,
+                        sellers, TransactionStatus.PENDING)
         );
     }
 
@@ -139,16 +150,17 @@ class TransactionTest {
     void shouldThrowWhenPaymentDateIsFuture_AuctionConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime future = LocalDateTime.now().plusDays(1);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, auction, price, LocalDateTime.now(), future, sellers, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, auction, price, LocalDateTime.now(), future,
+                        sellers, TransactionStatus.PENDING)
         );
     }
 
@@ -156,13 +168,14 @@ class TransactionTest {
     void shouldThrowWhenSellersIsNull_AuctionConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        Auction auction = mock(Auction.class);
+        UserId buyer = mock(UserId.class);
+        AuctionId auction = mock(AuctionId.class);
         Price price = mock(Price.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, auction, price, LocalDateTime.now(), LocalDateTime.now(), null, TransactionStatus.PENDING)
+                transactionFactory.createFromAuction(buyer, auction, price, LocalDateTime.now(), LocalDateTime.now(), null,
+                        TransactionStatus.PENDING)
         );
     }
 
@@ -173,16 +186,16 @@ class TransactionTest {
     void shouldCreateDirectSaleTransactionSuccessfully() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime now = LocalDateTime.now();
         TransactionStatus status = TransactionStatus.PENDING;
 
         // Act
-        Transaction transaction = new Transaction(
+        Transaction transaction = transactionFactory.createFromDirectSale(
                 buyer, price, directSale, now, now, sellers, status
         );
 
@@ -194,16 +207,17 @@ class TransactionTest {
     void shouldThrowWhenDirectSaleIsNull() {
 
         // Arrange
-        User buyer = mock(User.class);
+        UserId buyer = mock(UserId.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         TransactionStatus status = TransactionStatus.PENDING;
 
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, price, null, LocalDateTime.now(), LocalDateTime.now(), sellers, status)
+                transactionFactory.createFromDirectSale(buyer, price, null, LocalDateTime.now(),
+                        LocalDateTime.now(), sellers, status)
         );
     }
 
@@ -211,15 +225,16 @@ class TransactionTest {
     void shouldThrowWhenBuyerIsNull_DirectSaleConstructor() {
 
         // Arrange
-        DirectSale directSale = mock(DirectSale.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         TransactionStatus status = TransactionStatus.PENDING;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(null, price, directSale, LocalDateTime.now(), LocalDateTime.now(), sellers, status)
+                transactionFactory.createFromDirectSale(null, price, directSale, LocalDateTime.now(),
+                        LocalDateTime.now(), sellers, status)
         );
     }
 
@@ -227,15 +242,16 @@ class TransactionTest {
     void shouldThrowWhenPriceIsNull_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         TransactionStatus status = TransactionStatus.PENDING;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, null, directSale, LocalDateTime.now(), LocalDateTime.now(), sellers, status)
+                transactionFactory.createFromDirectSale(buyer, null, directSale, LocalDateTime.now(),
+                        LocalDateTime.now(), sellers, status)
         );
     }
 
@@ -243,16 +259,17 @@ class TransactionTest {
     void shouldThrowWhenTransactionDateIsNull_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         TransactionStatus status = TransactionStatus.PENDING;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, price, directSale, null, LocalDateTime.now(), sellers, status)
+                transactionFactory.createFromDirectSale(buyer, price, directSale, null,
+                        LocalDateTime.now(), sellers, status)
         );
     }
 
@@ -260,17 +277,18 @@ class TransactionTest {
     void shouldThrowWhenTransactionDateIsFuture_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime future = LocalDateTime.now().plusDays(1);
         TransactionStatus status = TransactionStatus.PENDING;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, price, directSale, future, LocalDateTime.now(), sellers, status)
+                transactionFactory.createFromDirectSale(buyer, price, directSale, future,
+                        LocalDateTime.now(), sellers, status)
         );
     }
 
@@ -278,16 +296,17 @@ class TransactionTest {
     void shouldThrowWhenPaymentDateIsNull_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         TransactionStatus status = TransactionStatus.PENDING;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, price, directSale, LocalDateTime.now(), null, sellers, status)
+                transactionFactory.createFromDirectSale(buyer, price, directSale,
+                        LocalDateTime.now(), null, sellers, status)
         );
     }
 
@@ -295,18 +314,19 @@ class TransactionTest {
     void shouldThrowWhenPaymentDateIsFuture_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
-        List<User> sellers = List.of(seller);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime future = LocalDateTime.now().plusDays(1);
         TransactionStatus status = TransactionStatus.PENDING;
 
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, price, directSale, LocalDateTime.now(), future, sellers, status)
+                transactionFactory.createFromDirectSale(buyer, price, directSale, LocalDateTime.now(),
+                        future, sellers, status)
         );
     }
 
@@ -314,33 +334,34 @@ class TransactionTest {
     void shouldThrowWhenSellersIsNull_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
         TransactionStatus status = TransactionStatus.PENDING;
 
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(buyer, price, directSale, LocalDateTime.now(), LocalDateTime.now(), null, status)
+                transactionFactory.createFromDirectSale(buyer, price, directSale, LocalDateTime.now(),
+                        LocalDateTime.now(), null, status)
         );
     }
 
-    /*@Test
+    @Test
     void shouldThrowWhenStatusIsNull_DirectSaleConstructor() {
 
         // Arrange
-        User buyer = mock(User.class);
-        DirectSale directSale = mock(DirectSale.class);
+        UserId buyer = mock(UserId.class);
+        DirectSaleID directSale = mock(DirectSaleID.class);
         Price price = mock(Price.class);
-        User seller = mock(User.class);
+        UserId seller = mock(UserId.class);
 
-        List<User> sellers = List.of(seller);
+        List<UserId> sellers = List.of(seller);
         LocalDateTime now = LocalDateTime.now();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Transaction(
+                transactionFactory.createFromDirectSale(
                         buyer,
                         price,
                         directSale,
@@ -350,5 +371,5 @@ class TransactionTest {
                         null
                 )
         );
-    }*/
+    }
 }
