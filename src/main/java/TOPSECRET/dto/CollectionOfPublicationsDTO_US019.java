@@ -1,12 +1,12 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 
 
 /**
  * Data Transfer Object for US019 - Publicly Share a Collection of Publications.
  * <p>
- * Carries the display data of a {@link TOPSECRET.domain.CollectionOfPublications}
+ * Carries the display data of a {@link CollectionOfPublications}
  * across application layers, containing only primitive data to avoid exposing domain objects.
  * </p>
  */

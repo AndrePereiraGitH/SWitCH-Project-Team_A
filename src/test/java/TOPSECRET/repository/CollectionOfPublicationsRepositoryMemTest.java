@@ -1,7 +1,7 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.CollectionOfPublicationsFactory;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;

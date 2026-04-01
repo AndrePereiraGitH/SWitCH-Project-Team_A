@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
-import TOPSECRET.repository.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;

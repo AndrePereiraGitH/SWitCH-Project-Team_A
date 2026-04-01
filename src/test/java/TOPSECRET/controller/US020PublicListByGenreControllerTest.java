@@ -1,5 +1,6 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;

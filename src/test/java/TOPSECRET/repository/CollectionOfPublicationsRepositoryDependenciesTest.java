@@ -2,7 +2,7 @@
 //
 //import TOPSECRET.controller.US019ToPubliclyShareCollectionOfPublicationsController;
 //import TOPSECRET.domain.*;
-//import TOPSECRET.domain.CollectionOfPublicationsFactory;
+//import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 //import TOPSECRET.domain.Enum.*;
 //import TOPSECRET.dto.CollectionOfPublicationsDTO;
 //import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;

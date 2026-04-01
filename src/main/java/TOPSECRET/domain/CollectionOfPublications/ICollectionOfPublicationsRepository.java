@@ -1,6 +1,5 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.User.User;
 
 import TOPSECRET.domain.Genre.Genre;

@@ -1,6 +1,6 @@
 //package TOPSECRET.controller;
 //
-//import TOPSECRET.domain.CollectionOfPublications;
+//import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 //import TOPSECRET.domain.Library.Library;
 //import TOPSECRET.domain.PublicationSample.PublicationSample;
 //import TOPSECRET.domain.User;

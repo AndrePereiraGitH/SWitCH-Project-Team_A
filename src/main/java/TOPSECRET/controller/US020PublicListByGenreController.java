@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
-import TOPSECRET.repository.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 import java.util.List;

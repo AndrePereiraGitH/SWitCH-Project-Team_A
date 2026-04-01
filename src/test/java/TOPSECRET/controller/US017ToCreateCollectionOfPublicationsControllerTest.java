@@ -3,11 +3,11 @@ package TOPSECRET.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.repository.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 import org.junit.jupiter.api.Test;

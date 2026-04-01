@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 
 import java.util.ArrayList;
 import java.util.List;

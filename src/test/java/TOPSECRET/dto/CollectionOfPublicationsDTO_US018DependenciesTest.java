@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Enum.UserRole;
