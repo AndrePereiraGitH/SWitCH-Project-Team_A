@@ -1,11 +1,11 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -14,7 +14,6 @@ import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,7 +38,7 @@ class PublicationSampleDTO_US028Test {
 
         // Arrange
         Author author = mock(Author.class);
-        Publisher  publisher = mock(Publisher.class);
+        Publisher publisher = mock(Publisher.class);
         PublicationType pubType = mock(PublicationType.class);
         Code code = mock(Code.class);
         Genre genre = mock(Genre.class);

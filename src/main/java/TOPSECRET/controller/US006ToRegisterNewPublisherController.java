@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.repository.IPublisherRepository;
+import TOPSECRET.domain.Publisher.IPublisherRepository;
 
 
 import javax.management.InstanceAlreadyExistsException;

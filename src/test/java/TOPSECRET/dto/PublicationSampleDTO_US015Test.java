@@ -1,11 +1,11 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -39,7 +39,7 @@ class PublicationSampleDTO_US015Test {
 
         // Arrange
         Author author = mock(Author.class);
-        Publisher  publisher = mock(Publisher.class);
+        Publisher publisher = mock(Publisher.class);
         PublicationType pubType = mock(PublicationType.class);
 
         pubSample = mock(PublicationSample.class);
