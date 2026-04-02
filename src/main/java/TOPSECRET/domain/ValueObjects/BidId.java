@@ -14,9 +14,9 @@ public final class BidId implements DomainID {
 
     private final String bid_id;
 
-    // --------------------------------------------------------------------------------
-    // ----------------------- CONSTRUCTOR --------------------------------------------
-    // --------------------------------------------------------------------------------
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
 
     /**
      * Creates a new {@code BidId} with the given UUID string value.
@@ -35,16 +35,20 @@ public final class BidId implements DomainID {
         else
             throw new IllegalArgumentException("Bid ID cannot be null or empty.");
     }
-    // --------------------------------------------------------------------------------
 
-    /**
-     * Returns the underlying UUID string value of this identifier.
-     *
-     * @return the UUID string representing this {@code BidId}
-     */
+
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
     public String getId() {
         return bid_id;
     }
+
+
+    // ============================================================
+    // ============== EQUALS ======================================
+    // ============================================================
 
     /**
      * Compares this {@code BidId} with another object for equality.

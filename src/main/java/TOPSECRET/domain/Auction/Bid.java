@@ -33,6 +33,10 @@ public class Bid implements DomainEntity<BidId> {
     private final Price _value;
     private final LocalDateTime _timeOfBid;
 
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
+
     /**
      * Creates a new immutable bid instance.
      * This constructor is invoked by the {@code Auction} aggregate root.
@@ -74,51 +78,35 @@ public class Bid implements DomainEntity<BidId> {
         this._timeOfBid = timeOfBid;
     }
 
-    /**
-     * Returns the unique identifier of this bid.
-     *
-     * @return the bid's identifier
-     */
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
     @Override
     public BidId id() {
         return _bidId;
     }
 
-    /**
-     * Returns the identifier of the auction to which this bid belongs.
-     *
-     * @return the auction identifier
-     */
     public AuctionId getAuctionId() {
         return _auctionId;
     }
 
-    /**
-     * Returns the identifier of the user who placed this bid.
-     *
-     * @return the bidder's user identifier
-     */
     public UserId getBidderId(){
         return _bidderId;
     }
 
-    /**
-     * Returns the price offered in this bid.
-     *
-     * @return the bid value
-     */
     public Price getValue(){
         return _value;
     }
 
-    /**
-     * Returns the date and time when this bid was placed.
-     *
-     * @return the timestamp of the bid
-     */
     public LocalDateTime getTimeOfBid(){
         return _timeOfBid;
     }
+
+
+    // ============================================================
+    // =========== EQUALS AND SAMEAS ==============================
+    // ============================================================
 
     /**
      * Compares this bid with another object for identity equality.

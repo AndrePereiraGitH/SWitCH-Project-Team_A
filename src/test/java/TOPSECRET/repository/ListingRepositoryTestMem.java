@@ -14,6 +14,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test suite for the in‑memory implementation of the Listing repository
+ * ({@link ListingRepositoryMem}), validating its behaviour in storing,
+ * retrieving, and filtering {@link Listing} aggregates.
+ *
+ * <p>This suite ensures that the repository enforces all required invariants and
+ * behaves consistently with domain expectations, including:
+ * <ul>
+ *     <li>correct handling of listing creation through the {@link ListingFactory};</li>
+ *     <li>prevention of duplicate listings via {@code InstanceAlreadyExistsException};</li>
+ *     <li>successful creation and storage of new listings with distinct identities;</li>
+ *     <li>accurate filtering of listings by sale type (DIRECT_SALE vs AUCTION);</li>
+ *     <li>return of defensive copies for all query methods, ensuring repository
+ *         encapsulation and preventing external mutation;</li>
+ *     <li>robust handling of edge cases such as empty repositories or absence of
+ *         listings matching a given filter.</li>
+ * </ul>
+ *
+ * <p>Overall, this test class provides comprehensive coverage of the in‑memory
+ * repository implementation, ensuring predictable behaviour and strong
+ * encapsulation in support of the Listing aggregate lifecycle.
+ */
 class ListingRepositoryTestMem {
 
     // ======================================================
@@ -247,7 +269,7 @@ class ListingRepositoryTestMem {
     }
 
     // ======================================================
-    // ==== Tests to findAllAuctionListings===============
+    // ==== Tests to findAllAuctionListings==================
     // ======================================================
 
 
@@ -337,6 +359,53 @@ class ListingRepositoryTestMem {
         assertEquals(1, secondCall.size());
     }
 
+    // ======================================================
+    // ========== Tests to getAllListings ===================
+    // ======================================================
+
+    @Test
+    void getAllListings_ShouldReturnAllListingsInRepository() throws Exception {
+
+        // arrange
+        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
+
+        when(listingFactoryDouble.create("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1,
+                "description1", sellerId, List.of(pic1))).thenReturn(listing1Double);
+        when(listingFactoryDouble.create("title2", List.of(pub2Id), SaleType.AUCTION, price2,
+                "description2", sellerId, List.of(pic2))).thenReturn(listing2Double);
+
+        repo.createAndAdd("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2Id), SaleType.AUCTION, price2, "description2", sellerId, List.of(pic2));
+
+        // act
+        List<Listing> allListings = repo.getAllListings();
+
+        // assert
+        assertEquals(2, allListings.size(), "getAllListings should return all listings added to the repository");
+        assertTrue(allListings.contains(listing1Double), "The list should contain listing1Double");
+        assertTrue(allListings.contains(listing2Double), "The list should contain listing2Double");
+    }
+
+    @Test
+    void getAllListings_ShouldReturnUnmodifiableList() throws Exception {
+
+        // arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        when(factory.create("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+
+        // act
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
+
+        List<Listing> result = repo.getAllListings();
+
+        // assert
+        assertThrows(UnsupportedOperationException.class, () -> result.add(listing2Double));
+    }
+
     // US021 -----------------------------------------------------------------------------------------
     //Method getListOfItemsOnDirectSaleOfAGivenGenre--------------------------------------------------
 //    @Test
@@ -371,12 +440,6 @@ class ListingRepositoryTestMem {
 //        assertTrue(result.isEmpty());
 //    }
 
-
-    /**
-     * Verifies that when a direct-sale listing exists but none of its items match
-     * the given genre, an empty list is returned.
-     * The listing mock is configured as DIRECT_SALE and its sample returns false for hasGenre().
-     */
 //    @Test
 //    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnEmptyListIfNoMatchingGenre() throws InstanceAlreadyExistsException {
 //        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
@@ -405,12 +468,6 @@ class ListingRepositoryTestMem {
 //
 //    }
 
-
-    /**
-     * Verifies that when a direct-sale listing exists with one item matching the given genre,
-     * a list containing exactly that item is returned.
-     * The listing mock is configured as DIRECT_SALE and its sample returns true for hasGenre().
-     */
 //    @Test
 //    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithOneMatch() throws InstanceAlreadyExistsException {
 //        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
@@ -439,12 +496,6 @@ class ListingRepositoryTestMem {
 //        assertTrue(result.contains(sampleDouble));
 //    }
 
-
-    /**
-     * Verifies that when two direct-sale listings each contain an item matching the given genre,
-     * both items are returned.
-     * The factory mock is configured to return different listing doubles on consecutive calls.
-     */
 //    @Test
 //    public void getListOfItemsOnDirectSaleOfAGivenGenre_shouldReturnListWithMultipleMatches() throws InstanceAlreadyExistsException {
 //        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
@@ -483,12 +534,6 @@ class ListingRepositoryTestMem {
 //        assertEquals(2, result.size());
 //    }
 
-
-
-    /**
-     * Verifies that listings with sale type AUCTION are ignored, even if their items
-     * match the given genre. Only DIRECT_SALE listings should be considered.
-     */
 //    @Test
 //    void getListOfItemsOnDirectSaleOfAGivenGenre_shouldIgnoreAuctionListings() throws Exception {
 //        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
@@ -571,11 +616,6 @@ class ListingRepositoryTestMem {
 //        );
 //    }
 
-    /**
-     * Tests that items in non-DIRECT_SALE listings are ignored even if they contain the target author.
-     * <p>
-     * This ensures that getListOfItemsOnDirectSaleofAGivenAuthor only returns items from DIRECT_SALE listings.
-     */
 //    @Test
 //    void getListOfItemsOnDirectSaleofAGivenAuthor_ShouldIgnoreNonDirectSaleListings() throws Exception {
 //
@@ -603,54 +643,5 @@ class ListingRepositoryTestMem {
 //        // Assert
 //        assertTrue(result.isEmpty(), "Items in non-DIRECT_SALE listings should be ignored");
 //    }
-
-    /**
-     * Tests that getAllListings returns the complete list of listings stored in the repository.
-     *
-     * <p>This ensures that the method reflects the repository's internal state
-     * and returns all listings that were added via createAndAdd.</p>
-     */
-    @Test
-    void getAllListings_ShouldReturnAllListingsInRepository() throws Exception {
-
-        // arrange
-        ListingFactory listingFactoryDouble = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
-
-        when(listingFactoryDouble.create("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1,
-                "description1", sellerId, List.of(pic1))).thenReturn(listing1Double);
-        when(listingFactoryDouble.create("title2", List.of(pub2Id), SaleType.AUCTION, price2,
-                "description2", sellerId, List.of(pic2))).thenReturn(listing2Double);
-
-        repo.createAndAdd("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1));
-        repo.createAndAdd("title2", List.of(pub2Id), SaleType.AUCTION, price2, "description2", sellerId, List.of(pic2));
-
-        // act
-        List<Listing> allListings = repo.getAllListings();
-
-        // assert
-        assertEquals(2, allListings.size(), "getAllListings should return all listings added to the repository");
-        assertTrue(allListings.contains(listing1Double), "The list should contain listing1Double");
-        assertTrue(allListings.contains(listing2Double), "The list should contain listing2Double");
-    }
-
-    @Test
-    void getAllListings_ShouldReturnUnmodifiableList() throws Exception {
-
-        // arrange
-        ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
-
-        when(factory.create("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1)))
-                .thenReturn(listing1Double);
-
-        // act
-        repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
-
-        List<Listing> result = repo.getAllListings();
-
-        // assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(listing2Double));
-    }
 
 }

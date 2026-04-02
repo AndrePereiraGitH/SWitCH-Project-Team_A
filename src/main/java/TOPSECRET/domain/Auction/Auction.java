@@ -125,7 +125,9 @@ public class Auction implements AggregateRoot<AuctionId> {
 
     }
 
-    // =============================================================
+    // ============================================================
+    // ================= BUSINESS METHODS =========================
+    // ============================================================
 
     /**
      * Places a new bid in this auction.
@@ -280,42 +282,31 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
 
-    /**
-     * Returns an immutable copy of the bid history.
-     *
-     * @return an unmodifiable list containing all bids placed in this auction
-     */
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
     public List<Bid> getBidHistory() {
         return List.copyOf(_bidHistory);
     }
 
-    /**
-     * Returns the current status of the auction.
-     *
-     * @return the auction status
-     */
     public AuctionStatus getAuctionStatus() {
         return _auctionStatus;
     }
 
-    /**
-     * Returns the identifier of the listing associated with this auction.
-     *
-     * @return the listing ID
-     */
     public ListingId getListingId() {
         return _listingId;
     }
 
-    /**
-     * Returns the unique identifier of this auction.
-     *
-     * @return the auction ID
-     */
     @Override
     public AuctionId id() {
         return _auctionId;
     }
+
+
+    // ============================================================
+    // ========== EQUALS, SAMEAS AND HASCODE ======================
+    // ============================================================
 
     /**
      * Compares this auction with another object for equality.
@@ -356,11 +347,6 @@ public class Auction implements AggregateRoot<AuctionId> {
                 && Objects.equals(_buyoutPrice, auction._buyoutPrice);
     }
 
-    /**
-     * Computes the hash code for this auction based solely on its identifier.
-     *
-     * @return the hash code of the auction
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_auctionId);

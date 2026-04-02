@@ -14,6 +14,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test suite for the {@link Auction} aggregate, validating its construction rules,
+ * state transitions, bidding logic, equality semantics, and time‑dependent behaviour.
+ *
+ * <p>This suite ensures that the Auction domain model enforces all business invariants,
+ * including:
+ * <ul>
+ *     <li>validation of constructor arguments (dates, prices, identifiers, clock);</li>
+ *     <li>correct initial status assignment (SCHEDULED or ACTIVE);</li>
+ *     <li>proper behaviour of {@code equals} and {@code sameAs} according to DDD rules;</li>
+ *     <li>bid placement rules, including price progression, terminal states and buyout logic;</li>
+ *     <li>status transitions based on time, including expiration and closing behaviour;</li>
+ *     <li>immutability guarantees for exposed collections (e.g., bid history).</li>
+ * </ul>
+ *
+ * <p>Several tests rely on a fixed {@link java.time.Clock} to simulate deterministic
+ * time‑dependent behaviour, ensuring reproducibility.
+ *
+ * <p>Overall, this test class provides comprehensive coverage of the Auction lifecycle,
+ * ensuring that the aggregate behaves consistently with the domain rules and remains
+ * robust against invalid inputs or illegal state transitions.
+ */
 class AuctionTest {
 
     // -------------- Initial Set Up --------------------------------

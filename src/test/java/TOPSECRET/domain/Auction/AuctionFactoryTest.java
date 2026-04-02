@@ -1,6 +1,5 @@
 package TOPSECRET.domain.Auction;
 
-import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.Test;
@@ -12,6 +11,17 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+/**
+ * Test suite for {@link AuctionFactory}, ensuring that new {@link Auction} instances
+ * are correctly constructed through the factory methods.
+ *
+ * <p>This test class validates two main behaviors:
+ * <ul>
+ *     <li>The factory creates a new {@code Auction} instance using the expected constructor.</li>
+ *     <li>The overload that receives a {@link java.time.Clock} also constructs the Auction correctly.</li>
+ * </ul>
+ */
 
 class AuctionFactoryTest {
 

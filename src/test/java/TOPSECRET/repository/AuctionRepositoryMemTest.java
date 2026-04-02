@@ -20,10 +20,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for .
+ * Test suite for the in‑memory implementation of the auction repository
+ * ({@link AuctionRepositoryMem}), validating its behaviour in creating,
+ * storing, and retrieving {@link Auction} aggregates.
  *
- * <p>All dependencies are replaced with Mockito doubles to isolate the
- * repository logic from domain construction and persistence concerns.</p>
+ * <p>This suite ensures that the repository enforces all required invariants and
+ * behaves consistently with domain expectations, including:
+ * <ul>
+ *     <li>correct delegation of auction creation to the {@link AuctionFactory};</li>
+ *     <li>prevention of duplicate auctions through {@link InstanceAlreadyExistsException};</li>
+ *     <li>successful creation and storage of new auctions with distinct identities;</li>
+ *     <li>accurate retrieval of all auctions stored in the repository;</li>
+ *     <li>robust handling of edge cases such as empty repositories or attempts
+ *         to add an already‑existing auction.</li>
+ * </ul>
+ *
+ * <p>Overall, this test class provides comprehensive coverage of the in‑memory
+ * auction repository, ensuring predictable behaviour, correct enforcement of
+ * domain constraints, and strong encapsulation of stored auction data.
  */
 class AuctionRepositoryMemTest {
 
@@ -396,11 +410,6 @@ class AuctionRepositoryMemTest {
 //        return sample;
 //    }
 
-    /**
-     * Creates a mocked {@link Auction} related to a {@link ListingId}.
-     *
-     * @return a configured {@link Auction} mock
-     */
     private Auction createMockAuction() {
         ListingId listingId = new ListingId("listingId");
 

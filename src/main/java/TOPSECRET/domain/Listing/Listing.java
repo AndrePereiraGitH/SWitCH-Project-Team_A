@@ -35,6 +35,10 @@ public class Listing implements AggregateRoot<ListingId> {
     private final UserId _sellerId;
     private final List<Picture> _pictures;
 
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
+
     /**
      * Creates a new listing with the specified details.
      * Upon creation, all items in the listing are automatically marked as FOR_SALE.
@@ -103,15 +107,10 @@ public class Listing implements AggregateRoot<ListingId> {
 //        changePublicationSampleStatusToSale();
     }
 
-    /**
-     * Returns a copy of the unique identifiers of items in this listing.
-     *
-     * @return a new list containing the publication samples ID in this listing
-     */
-    public List<PublicationSampleID> getItemsId() {
-        List<PublicationSampleID> copyItemsId = new ArrayList<>(_itemsId);
-        return copyItemsId;
-    }
+
+    // ============================================================
+    // ================= BUSINESS METHODS =========================
+    // ============================================================
 
     // TODO: validate PublicationSample state in Application Layer
     // With DDD (and the use of IDs to communicate between aggregates) the following methods don't apply (they should be on
@@ -157,72 +156,47 @@ public class Listing implements AggregateRoot<ListingId> {
 //        return false;
 //    }
 
-    /**
-     * Returns the price of this listing.
-     *
-     * @return the listing price
-     */
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
+    public List<PublicationSampleID> getItemsId() {
+        List<PublicationSampleID> copyItemsId = new ArrayList<>(_itemsId);
+        return copyItemsId;
+    }
+
     public Price getPrice() {
         return _price;
     }
 
-    /**
-     * Returns the title of this listing.
-     *
-     * @return the listing title
-     */
     public String getListingTitle() {
         return _listingTitle;
     }
 
-    /**
-     * Returns the seller unique identifier of this listing.
-     *
-     * @return the user ID who is selling the items
-     */
     public UserId getSellerId() {
         return _sellerId;
     }
-
-    /**
-     * Returns the sale type (direct sale or auction) of this listing.
-     *
-     * @return the sale type (direct sale or auction) of a listing.
-     */
 
     public SaleType getSaleType() {
         return _saleType;
     }
 
-    /**
-     * Returns the short description of this listing.
-     *
-     * @return the short description of a listing.
-     */
-
     public String getShortDescription() {
         return _shortDescription;
     }
-
-    /**
-     * Returns the pictures of this listing.
-     *
-     * @return the pictures of a listing.
-     */
 
     public List<Picture> getPictures() {
         return _pictures;
     }
 
-    /**
-     * Returns the unique identifier of this Listing.
-     *
-     * @return the ListingId associated with this aggregate root
-     */
     @Override
     public ListingId id() {
         return _listingId;
     }
+
+    // ============================================================
+    // =========== EQUALS AND SAMEAS ==============================
+    // ============================================================
 
     /**
      * Compares this listing with another object based on identity.

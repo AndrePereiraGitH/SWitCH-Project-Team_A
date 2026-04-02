@@ -4,6 +4,24 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test suite for the {@link Picture} value object, validating its construction
+ * constraints, immutability, and equality semantics.
+ *
+ * <p>This suite ensures that the Picture model enforces all required invariants,
+ * including:
+ * <ul>
+ *     <li>rejection of null or blank picture paths;</li>
+ *     <li>correct preservation of the picture path provided at construction;</li>
+ *     <li>value‑based equality, where two Picture instances are equal if they
+ *         encapsulate the same path string;</li>
+ *     <li>safe handling of invalid comparisons, such as null references or
+ *         unrelated object types.</li>
+ * </ul>
+ *
+ * <p>The tests use simple, deterministic string values to verify that Picture
+ * behaves as a well‑formed, immutable value object within the domain model.
+ */
 class PictureTest {
 
     // ============ CONSTRUCTOR TESTS ============

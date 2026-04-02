@@ -31,10 +31,6 @@ class ListingTest {
     private UserId validSellerId;
     private ListingFactory listingFactory;
 
-    /**
-     * Initialises shared test fixtures before each test.
-     * Creates mock dependencies and valid data used across multiple test cases.
-     */
     @BeforeEach
     void setup() {
         validPrice = mock(Price.class);
@@ -51,9 +47,6 @@ class ListingTest {
 
     // ========== CONSTRUCTOR TESTS - HAPPY PATH ==========
 
-    /**
-     * Tests that a valid listing can be created when the items list contains a single publication sample.
-     */
     @Test
     void shouldCreateValidListingWhenDataIsValidAndListHasOnlyOneBook() {
         //Arrange
@@ -64,9 +57,6 @@ class ListingTest {
         assertNotNull(validListing);
     }
 
-    /**
-     * Tests that a valid listing can be created when the items list contains multiple publication samples.
-     */
     @Test
     void shouldCreateValidListingWhenDataIsValidAndListHasSeveralBooks() {
         //Arrange
@@ -80,9 +70,6 @@ class ListingTest {
 
     // ========== TITLE VALIDATION TESTS ==========
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the title has fewer than 5 characters.
-     */
     @Test
     void shouldThrowExceptionWhenTitleIsTooShort() {
         //Arrange
@@ -93,9 +80,6 @@ class ListingTest {
                 () -> listingFactory.create(titleLessThanFiveCharacters, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
     }
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the title has more than 100 characters.
-     */
     @Test
     void shouldThrowExceptionWhenTitleIsTooLong() {
         //Arrange
@@ -106,9 +90,6 @@ class ListingTest {
                 () -> listingFactory.create(titleTooLong, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
     }
 
-    /**
-     * Tests that a title with exactly 5 characters (lower boundary) is accepted as valid.
-     */
     @Test
     void ensureTitleWith5CharsIsValid() {
         //Arrange
@@ -121,9 +102,6 @@ class ListingTest {
         assertNotNull(listing);
     }
 
-    /**
-     * Tests that a title with exactly 100 characters (upper boundary) is accepted as valid.
-     */
     @Test
     void ensureTitleWith100CharsIsValid() {
         //Arrange
@@ -139,9 +117,6 @@ class ListingTest {
 
     // ========== DESCRIPTION VALIDATION TESTS ==========
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the description has fewer than 10 characters.
-     */
     @Test
     void shouldThrowExceptionWhenDescriptionIsTooShort() {
         //Arrange
@@ -152,9 +127,6 @@ class ListingTest {
                 () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, invalidDescription, validSellerId, validPictures));
     }
 
-    /**
-     * Tests that a description with exactly 10 characters (lower boundary) is accepted as valid.
-     */
     @Test
     void ensureDescriptionWith10CharsIsValid() {
         //Arrange
@@ -167,9 +139,6 @@ class ListingTest {
         assertNotNull(listing);
     }
 
-    /**
-     * Tests that a description with exactly 100 characters (higher boundary) is accepted as valid.
-     */
     @Test
     void ensureDescriptionWith100CharsIsValid() {
         //Arrange
@@ -196,9 +165,6 @@ class ListingTest {
 
     // ========== PRICE VALIDATION TESTS ==========
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the price is null.
-     */
     @Test
     void shouldThrowExceptionWhenPriceIsNull() {
         //Arrange
@@ -210,9 +176,6 @@ class ListingTest {
 
     // ========== ITEMS VALIDATION TESTS ==========
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the items list is null.
-     */
     @Test
     void shouldThrowExceptionWhenItemIsNull() {
         //Arrange
@@ -221,9 +184,6 @@ class ListingTest {
                 () -> listingFactory.create(validTitle, null, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
     }
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the items list is empty.
-     */
     @Test
     void shouldThrowExceptionWhenItemIsEmpty() {
         //Arrange
@@ -236,9 +196,6 @@ class ListingTest {
 
     // ========== SELLER VALIDATION TESTS ==========
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the seller ID is null.
-     */
     @Test
     void shouldThrowExceptionWhenSellerIdIsNull() {
         //Act & Assert
@@ -249,9 +206,6 @@ class ListingTest {
 
     // ========== PICTURES VALIDATION TESTS ==========
 
-    /**
-     * Tests that an {@link IllegalArgumentException} is thrown when the pictures list is null.
-     */
     @Test
     void shouldThrowExceptionWhenPicturesIsNull() {
         //Arrange
@@ -263,9 +217,6 @@ class ListingTest {
 
     // ========== GETTER METHODS TESTS ==========
 
-    /**
-     * Tests that {@link Listing#getPrice()} returns the same {@link Price} instance provided at creation.
-     */
     @Test
     void shouldReturnPrice() {
         //Arrange
@@ -279,9 +230,6 @@ class ListingTest {
         assertEquals(price, listing.getPrice());
     }
 
-    /**
-     * Tests that {@link Listing#getListingTitle()} returns the exact title provided at creation.
-     */
     @Test
     void shouldReturnListingTitle() {
         //Arrange
@@ -303,9 +251,6 @@ class ListingTest {
         assertEquals(validSellerId, listing.getSellerId());
     }
 
-    /**
-     * Tests that {@link Listing#getShortDescription()} returns the exact description provided at creation.
-     */
     @Test
     void shouldReturnShortDescription() {
         //Arrange
@@ -316,9 +261,6 @@ class ListingTest {
         assertEquals(validDescription, listing.getShortDescription());
     }
 
-    /**
-     * Tests that {@link Listing#getPictures()} returns the same list of pictures provided at creation.
-     */
     @Test
     void shouldReturnPictures() {
         //Arrange
@@ -329,9 +271,6 @@ class ListingTest {
         assertEquals(validPictures, listing.getPictures());
     }
 
-    /**
-     * Tests that {@link Listing#getSaleType()} returns the same sale type provided at creation.
-     */
     @Test
     void shouldReturnSaleType() {
         //Arrange
@@ -342,10 +281,6 @@ class ListingTest {
         assertEquals(SaleType.DIRECT_SALE, listing.getSaleType());
     }
 
-    /**
-     * Tests that {@link Listing#getPictures()} returns a list equal in content to the original
-     * but not the same reference, confirming that a defensive copy is returned.
-     */
     @Test
     void picturesListShouldBeUnmodifiable() {
         // Arrange
@@ -358,10 +293,6 @@ class ListingTest {
         assertThrows(UnsupportedOperationException.class, () -> pics.add(mock(Picture.class)));
     }
 
-    /**
-     * Tests that {@link Listing#getItemsId()} returns a list equal in content to the original
-     * but not the same reference, confirming that a defensive copy is returned.
-     */
     @Test
     void shouldReturnACopyOfItems() {
         //Arrange

@@ -15,9 +15,10 @@ public final class AuctionId implements DomainID {
 
     private final String auc_id;
 
-    // --------------------------------------------------------------------------------
-    // ----------------------- CONSTRUCTOR --------------------------------------------
-    // --------------------------------------------------------------------------------
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
+
     /**
      * Creates a new {@code AuctionId} with the given UUID string value.
      *
@@ -32,16 +33,19 @@ public final class AuctionId implements DomainID {
             throw new IllegalArgumentException("Auction ID cannot be null or empty.");
     }
 
-    // --------------------------------------------------------------------------------
 
-    /**
-     * Returns the underlying UUID string value of this identifier.
-     *
-     * @return the UUID string representing this {@code AuctionId}
-     */
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
     public String getId() {
         return auc_id;
     }
+
+
+    // ============================================================
+    // ============== EQUALS ======================================
+    // ============================================================
 
     /**
      * Compares this {@code AuctionId} with another object for equality.

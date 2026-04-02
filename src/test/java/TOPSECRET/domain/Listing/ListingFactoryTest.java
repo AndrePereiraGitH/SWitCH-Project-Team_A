@@ -14,7 +14,24 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
+/**
+ * Test suite for the {@link ListingFactory}, ensuring that new {@link Listing}
+ * instances are correctly constructed through the factory method.
+ *
+ * <p>This suite verifies that the factory delegates object creation to the
+ * {@link Listing} constructor, rather than performing alternative instantiation
+ * logic.
+ * <ul>
+ *     <li>a new Listing instance is created exactly once;</li>
+ *     <li>the returned instance is the same object produced by the constructor;</li>
+ *     <li>all required parameters (title, items, sale type, price, description,
+ *         seller ID, pictures) are passed correctly to the constructor.</li>
+ * </ul>
+ *
+ * <p>By validating the factory’s behaviour in isolation, this test class ensures
+ * that the Listing creation process remains consistent, predictable, and aligned
+ * with the domain model’s construction rules.
+ */
 class ListingFactoryTest {
 
 

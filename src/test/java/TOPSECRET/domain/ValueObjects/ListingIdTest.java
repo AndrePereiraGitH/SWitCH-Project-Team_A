@@ -6,6 +6,25 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test suite for the {@link ListingId} value object, validating its construction
+ * constraints, identity semantics, and defensive behaviour against invalid input.
+ *
+ * <p>This suite ensures that the ListingId model enforces all required invariants,
+ * including:
+ * <ul>
+ *     <li>rejection of null, empty, or blank identifiers;</li>
+ *     <li>correct preservation of the UUID string provided at construction;</li>
+ *     <li>identity‑based equality, where two ListingId instances are equal only if
+ *         they encapsulate the same UUID value;</li>
+ *     <li>safe handling of invalid comparisons, such as null references or objects
+ *         of unrelated types.</li>
+ * </ul>
+ *
+ * <p>The tests use deterministic UUID values to ensure predictable behaviour and
+ * verify that ListingId behaves as a well‑formed, immutable value object within
+ * the domain model.
+ */
 class ListingIdTest {
 
     // ========== ID VALIDATION TESTS =========

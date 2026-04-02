@@ -14,6 +14,10 @@ public final class Picture implements ValueObject {
 
     private final String _picture; // path or URL
 
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
+
     /**
      * Creates a new {@code Picture} with the given path or URL.
      * <p>
@@ -31,14 +35,18 @@ public final class Picture implements ValueObject {
         this._picture = picture;
     }
 
-    /**
-     * Returns the underlying picture reference (path or URL).
-     *
-     * @return the string representing the picture
-     */
+
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
     public String getPicture() {
         return _picture;
     }
+
+    // ============================================================
+    // ============== EQUALS ======================================
+    // ============================================================
 
     /**
      * Compares this {@code Picture} with another object for equality.

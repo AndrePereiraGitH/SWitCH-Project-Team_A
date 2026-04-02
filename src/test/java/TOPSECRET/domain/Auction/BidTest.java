@@ -7,6 +7,23 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test suite for the {@link Bid} entity, validating its construction rules,
+ * equality semantics, and domain‑driven comparison logic.
+ *
+ * <p>This suite ensures that the Bid model enforces all required invariants, including:
+ * <ul>
+ *     <li>non‑null validation of all constructor parameters (bid ID, auction ID, bidder ID, value, timestamp);</li>
+ *     <li>correct initialization of all fields when valid data is provided;</li>
+ *     <li>identity‑based equality via {@code equals()}, where two bids are equal only if they share the same {@link BidId};</li>
+ *     <li>semantic comparison via {@code sameAs()}, which evaluates whether two bids represent the same bidding action
+ *         based on auction ID, bidder ID, bid value, and timestamp, regardless of their technical identity;</li>
+ *     <li>robustness against invalid comparisons, including null references and objects of unrelated types.</li>
+ * </ul>
+ *
+ * <p>Overall, this test class provides comprehensive coverage of the Bid value object,
+ * ensuring that it behaves consistently with domain rules and supports the integrity of the auction model.
+ */
 class BidTest {
 
     // ------------- TEST DATA SETUP -------------
