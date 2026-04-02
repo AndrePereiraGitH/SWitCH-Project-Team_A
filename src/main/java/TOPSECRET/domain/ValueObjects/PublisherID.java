@@ -30,11 +30,6 @@ public class PublisherID implements DomainID {
         this._publisherID = publisherID;
     }
 
-    /**
-     * Returns the underlying string value of this ID.
-     *
-     * @return the ID value; never {@code null} or blank
-     */
     public String getId() {
         return _publisherID;
     }
