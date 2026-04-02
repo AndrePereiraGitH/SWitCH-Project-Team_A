@@ -1,8 +1,8 @@
 package TOPSECRET.domain.City;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -33,8 +33,7 @@ public class City implements AggregateRoot<CityID> {
     /**
      * The country this city belongs to.
      */
-    private Country _country;
-
+    private CountryID _countryID;
     /**
      * The name of the city.
      */
@@ -46,71 +45,44 @@ public class City implements AggregateRoot<CityID> {
      * The constructor is protected, so it can only be called from
      * subclasses or classes in the same package.
      *
-     * @param country  the country this city belongs to; must not be null
+     * @param countryID  the country this city belongs to; must not be null
      * @param cityName the name of the city; must not be null or blank
      * @throws IllegalArgumentException if country is null or cityName is null/blank
      */
 
-    protected City(Country country, String cityName) {
+    protected City(CountryID countryID, String cityName) {
         if (cityName == null || cityName.isBlank()) {
             throw new IllegalArgumentException("A city name cannot be left blank");
         }
-
-        if (country == null) {
-            throw new IllegalArgumentException("Country cannot be left blank");
+        if (countryID == null) {
+            throw new IllegalArgumentException("CountryID cannot be null");
         }
 
-        _country = country;
+        _countryID = countryID;
         _cityName = cityName;
         this.cityID = new CityID(UUID.randomUUID().toString());
     }
 
-    /**
-     * Returns the country this city belongs to.
-     *
-     * @return the country of this city
-     */
-    public Country getCityCountry() {
-        return _country;
+    public CountryID getCityCountryID() {
+        return _countryID;
     }
 
-    /**
-     * Returns the name of the city.
-     *
-     * @return the city name
-     */
     public String getCityName() {
         return _cityName;
     }
 
-    /**
-     * Returns the unique identifier of this city (AggregateRoot contract).
-     *
-     * @return the {@link CityID} of this city
-     */
     @Override
     public CityID id() { return cityID; }
 
-    /**
-     * Returns a string representation of the city.
-     *
-     * @return formatted string with city data
-     */
     @Override
     public String toString() {
         return "City{" +
                 "cityID=" + cityID +
-                ", country=" + _country +
+                ", country=" + _countryID +
                 ", cityName='" + _cityName + '\'' +
                 '}';
     }
 
-    /**
-     * Compares this city with another based on identifier.
-     *
-     * @param o object to compare
-     * @return true if both cities have the same id, false otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,30 +91,14 @@ public class City implements AggregateRoot<CityID> {
         return Objects.equals(cityID, city.cityID);
     }
 
-    /**
-     * Returns the hash code based on the identifier.
-     *
-     * @return hash code value
-     */
     @Override
     public int hashCode() {return Objects.hash(cityID);}
 
-    /**
-     * Compares cities based on business identity.
-     *
-     * @param object object to compare
-     * @return true if country and name are equal, false otherwise
-     */
     @Override
     public boolean sameAs(Object object) {
-
-        if (object instanceof City) {
-            City oCity = (City) object;
-
-            if (
-                    this._country.equals(oCity._country) &&
-                            this._cityName.equals(oCity._cityName))
-                return true;
+        if (object instanceof City other) {
+            return this._countryID.equals(other._countryID) &&
+                    this._cityName.equals(other._cityName);
         }
         return false;
     }

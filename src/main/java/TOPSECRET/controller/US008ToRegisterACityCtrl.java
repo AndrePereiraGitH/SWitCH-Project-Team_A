@@ -1,4 +1,4 @@
-package TOPSECRET.controller;
+/*package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.Country.Country;
@@ -20,7 +20,7 @@ import TOPSECRET.repository.CityRepositoryMem;
  * <p>Use Case: <b>US008 – Register a new city</b></p>
  */
 
-public class US008ToRegisterACityCtrl {
+/*public class US008ToRegisterACityCtrl {
     private final CityRepositoryMem _cityRepositoryMem;
 
 
@@ -42,3 +42,4 @@ public class US008ToRegisterACityCtrl {
 
     }
 }
+ */

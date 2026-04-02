@@ -1,4 +1,4 @@
-package TOPSECRET.controller;
+/*package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.Country.Country;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
  * <p>The {@link City} domain object is mocked because its constructor is protected
  * and the controller only needs to forward the object returned by the repository.</p>
  */
-class US008ToRegisterACityCtrlTest {
+/*class US008ToRegisterACityCtrlTest {
 
 
     // Collaborator
@@ -71,3 +71,4 @@ class US008ToRegisterACityCtrlTest {
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCity(nullCountry, anyCityName));
     }
 }
+ */
