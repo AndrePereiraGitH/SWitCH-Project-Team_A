@@ -8,7 +8,7 @@ import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
@@ -26,41 +26,29 @@ import java.util.Optional;
  */
 public interface IPublicationSampleRepository {
 
+    // -------------------------------------------------------------------------
+    // Construction
+    // -------------------------------------------------------------------------
+
     /**
      * Creates a new {@link PublicationSample} from the provided attributes,
      * persists it in the repository, and returns the created instance.
      *
-     * @param bibliographicalDataID the ID of the bibliographical metadata of the publication; must not be null
-     * @param userID                the ID of the user who owns this copy; must not be null
+     * @param bibliographicalDataId the ID of the bibliographical metadata of the publication; must not be null
+     * @param userId                the ID of the user who owns this copy; must not be null
      * @param status                the initial publication status; must not be null
-     * @param editionID             the ID of the edition of the publication; must not be null
+     * @param editionId             the ID of the edition of the publication; must not be null
      * @param condition             the physical condition of this copy; must not be null
      * @return the newly created and persisted {@link PublicationSample}
      * @throws InstanceAlreadyExistsException if an equivalent publication sample
      *                                        already exists in the repository
      */
-    PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataID, UserId userID, PublicationStatus status,
-                                   EditionID editionID, Condition condition) throws InstanceAlreadyExistsException;
+    PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataId, UserId userId, PublicationStatus status,
+                                   EditionID editionId, Condition condition) throws InstanceAlreadyExistsException;
 
-
-    /**
-     * Retrieves all {@link PublicationSample} instances stored in the repository.
-     *
-     * @return a {@link List} of all publication samples; never {@code null},
-     *         but may be empty if none exist
-     */
-    List<PublicationSample> getAllPublications();
-
-
-    /**
-     * Finds a {@link PublicationSample} by its unique identifier.
-     *
-     * @param id the ID to search for; must not be {@code null}
-     * @return an {@link Optional} containing the matching sample, or empty if none found
-     * @throws IllegalArgumentException if {@code id} is {@code null}
-     */
-    Optional<PublicationSample> findById(PublicationSampleID id);
-
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
 
     /**
      * Saves the given {@link PublicationSample} to the repository.
@@ -71,7 +59,6 @@ public interface IPublicationSampleRepository {
      */
     PublicationSample save(PublicationSample publicationSample);
 
-
     /**
      * Checks whether the given {@link PublicationSample} exists in the repository.
      *
@@ -81,6 +68,30 @@ public interface IPublicationSampleRepository {
      */
     boolean isExistent(PublicationSample publicationSample);
 
+    // -------------------------------------------------------------------------
+    // Identity Lookup
+    // -------------------------------------------------------------------------
+
+    /**
+     * Finds a {@link PublicationSample} by its unique identifier.
+     *
+     * @param id the ID to search for; must not be {@code null}
+     * @return an {@link Optional} containing the matching sample, or empty if none found
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<PublicationSample> findById(PublicationSampleId id);
+
+    // -------------------------------------------------------------------------
+    // Specific Queries
+    // -------------------------------------------------------------------------
+
+    /**
+     * Retrieves all {@link PublicationSample} instances stored in the repository.
+     *
+     * @return a {@link List} of all publication samples; never {@code null},
+     *         but may be empty if none exist
+     */
+    List<PublicationSample> getAllPublications();
 
     /**
      * Returns the subset of {@link PublicationSample} instances from the repository
@@ -106,7 +117,7 @@ public interface IPublicationSampleRepository {
      * @return a {@link List} of matching {@link PublicationSample} instances;
      *         never {@code null}, but may be empty if no matches are found
      */
-  //  List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
+//    List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the
@@ -128,7 +139,7 @@ public interface IPublicationSampleRepository {
      * @param dto         the DTO carrying the data to convert; must not be null
      * @return the corresponding {@link PublicationSample} domain object
      */
-   // PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
+//    PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto);
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the

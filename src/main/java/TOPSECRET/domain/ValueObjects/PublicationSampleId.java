@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
-public class PublicationSampleID implements DomainID {
+public class PublicationSampleId implements DomainID {
 
     private final String pubSampleID;
 
@@ -23,7 +23,7 @@ public class PublicationSampleID implements DomainID {
      * @param pubSampleID the string value for this ID; must not be {@code null} or blank
      * @throws IllegalArgumentException if {@code pubSampleID} is {@code null} or blank
      */
-    public PublicationSampleID(String pubSampleID) {
+    public PublicationSampleId(String pubSampleID) {
         if (pubSampleID == null || pubSampleID.isBlank()) {
             throw new IllegalArgumentException("ID value should not be null or blank");
         }
@@ -43,7 +43,7 @@ public class PublicationSampleID implements DomainID {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        PublicationSampleID that = (PublicationSampleID) o;
+        PublicationSampleId that = (PublicationSampleId) o;
         return Objects.equals(pubSampleID, that.pubSampleID);
     }
 

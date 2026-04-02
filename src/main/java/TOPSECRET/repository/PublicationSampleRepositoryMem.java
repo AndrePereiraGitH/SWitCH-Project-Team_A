@@ -1,6 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -8,7 +7,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 
@@ -29,12 +28,16 @@ import java.util.Optional;
  */
 public class PublicationSampleRepositoryMem implements IPublicationSampleRepository {
 
-    // ---------------------------------------- Fields -------------------------------------------
+    // -------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------
 
     private final PublicationSampleFactory _publicationSampleFactory;
     private List<PublicationSample> allPublicationsInSystem;
 
-    // -------------------------------------- Constructor ----------------------------------------
+    // -------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------
 
     /**
      * Constructs a new {@code PublicationSampleRepositoryMem} with the given factory.
@@ -43,69 +46,58 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      * @param publicationSampleFactory the factory used to create {@link PublicationSample} instances
      */
     public PublicationSampleRepositoryMem(PublicationSampleFactory publicationSampleFactory) {
-        if(publicationSampleFactory == null){
+        if (publicationSampleFactory == null) {
             throw new NullPointerException("PublicationSampleFactory can not be null");
         }
         allPublicationsInSystem = new ArrayList<>();
         _publicationSampleFactory = publicationSampleFactory;
     }
 
-    // ----------------------------------- Core CRUD Methods -------------------------------------
+    // -------------------------------------------------------------------------
+    // Construction (createAndAdd)
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
      */
-    public PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataID, UserId userID, PublicationStatus status, EditionID editionID, Condition condition) throws InstanceAlreadyExistsException {
-
-        if(bibliographicalDataID == null){
+    public PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataID, UserId userID,
+                                          PublicationStatus status, EditionID editionID,
+                                          Condition condition) throws InstanceAlreadyExistsException {
+        if (bibliographicalDataID == null) {
             throw new IllegalArgumentException("BibliographicalDataID cannot be null");
         }
-        if(userID == null){
+        if (userID == null) {
             throw new IllegalArgumentException("UserID cannot be null");
         }
-        if(status == null){
+        if (status == null) {
             throw new IllegalArgumentException("Publication Status cannot be null");
         }
-        if(editionID == null){
+        if (editionID == null) {
             throw new IllegalArgumentException("EditionID cannot be null");
         }
-        if(condition == null){
+        if (condition == null) {
             throw new IllegalArgumentException("Condition cannot be null");
         }
 
-        PublicationSample newPublicationSample = _publicationSampleFactory.create(bibliographicalDataID, userID, status, editionID, condition);
+        PublicationSample newPublicationSample = _publicationSampleFactory.create(
+                bibliographicalDataID, userID, status, editionID, condition);
 
         return save(newPublicationSample);
     }
 
-    public PublicationSample save(PublicationSample publicationSample){
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
 
-        if(isExistent(publicationSample)){
+    /**
+     * {@inheritDoc}
+     */
+    public PublicationSample save(PublicationSample publicationSample) {
+        if (isExistent(publicationSample)) {
             throw new IllegalArgumentException("PublicationSample already exists in the repository");
         }
         allPublicationsInSystem.add(publicationSample);
         return publicationSample;
-    }
-
-    // ----------------------------------- Query Methods -----------------------------------------
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<PublicationSample> getAllPublications() {
-        return List.copyOf(allPublicationsInSystem);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Optional<PublicationSample> findById(PublicationSampleID id) {
-        if (id == null) {
-            throw new NullPointerException("PublicationSampleID cannot be null");
-        }
-        return allPublicationsInSystem.stream()
-                .filter(ps -> id.equals(ps.id()))
-                .findFirst();
     }
 
     /**
@@ -118,15 +110,41 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return allPublicationsInSystem.contains(publicationSample);
     }
 
+    // -------------------------------------------------------------------------
+    // Identity Lookup
+    // -------------------------------------------------------------------------
+
     /**
      * {@inheritDoc}
      */
-//    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary){
+    public Optional<PublicationSample> findById(PublicationSampleId id) {
+        if (id == null) {
+            throw new NullPointerException("PublicationSampleID cannot be null");
+        }
+        return allPublicationsInSystem.stream()
+                .filter(ps -> id.equals(ps.id()))
+                .findFirst();
+    }
+
+    // -------------------------------------------------------------------------
+    // Specific Queries
+    // -------------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSample> getAllPublications() {
+        return List.copyOf(allPublicationsInSystem);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+//    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary) {
 //        List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
 //
 //        for (PublicationSample publication : allPublicationsInSystem) {
-//            //If the user library does not contain the publication
-//            if (!listOfPublicationsInLibrary.contains(publication)){
+//            if (!listOfPublicationsInLibrary.contains(publication)) {
 //                listOfDifferentPublications.add(publication);
 //            }
 //        }
@@ -137,7 +155,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      * {@inheritDoc}
      */
 //    public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
-//
 //        if (pubsDto == null || pubsDto.isEmpty()) {
 //            throw new IllegalArgumentException("list of PublicationSampleDTO cannot be null or empty");
 //        }
@@ -148,6 +165,82 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 //
 //        return matched;
 //    }
+
+    /**
+     * {@inheritDoc}
+     */
+//    public List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication) {
+//        List<PublicationSample> pubSamplesList = new ArrayList<>();
+//
+//        if (listings == null) {
+//            throw new IllegalArgumentException("List of listings cannot be null");
+//        }
+//        if (publication == null) {
+//            throw new IllegalArgumentException("Publication cannot be null");
+//        }
+//
+//        for (Listing listing : listings) {
+//            for (PublicationSample pubSample : listing.getItems()) {
+//                if (pubSample.getBibliographicalDataID().equals(publication)) {
+//                    pubSamplesList.add(pubSample);
+//                }
+//            }
+//        }
+//        return List.copyOf(pubSamplesList);
+//    }
+
+    /**
+     * {@inheritDoc}
+     */
+//    public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher) {
+//        List<PublicationSample> pubSamplesList = new ArrayList<>();
+//
+//        if (listings == null) {
+//            throw new IllegalArgumentException("List of listings cannot be null");
+//        }
+//        if (publisher == null) {
+//            throw new IllegalArgumentException("Publisher cannot be null");
+//        }
+//        for (Listing listing : listings) {
+//            if (listing == null)
+//                throw new IllegalArgumentException("Listings cannot contain null elements");
+//        }
+//
+//        for (Listing listing : listings) {
+//            for (PublicationSample pubSample : listing.getItems()) {
+//                if (pubSample == null) {
+//                    throw new IllegalArgumentException("Listings must not contain null PublicationSample items");
+//                }
+//                if (pubSample.getEdition().getPublisher().equals(publisher)) {
+//                    pubSamplesList.add(pubSample);
+//                }
+//            }
+//        }
+//        return List.copyOf(pubSamplesList);
+//    }
+
+    /**
+     * {@inheritDoc}
+     */
+//    public PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto) {
+//        if (userLibrary == null)
+//            throw new IllegalArgumentException("Library cannot be null");
+//        if (dto == null)
+//            throw new IllegalArgumentException("DTO cannot be null");
+//
+//        for (PublicationSample publication : userLibrary.getAllPublications()) {
+//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
+//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
+//                    && publication.getOwnerId().getUserName().equals(dto.getOwnerUsername())) {
+//                return publication;
+//            }
+//        }
+//        throw new IllegalArgumentException("Publication not found in user's library");
+//    }
+
+    // -------------------------------------------------------------------------
+    // Private Helper Methods
+    // -------------------------------------------------------------------------
 
     /**
      * Determines whether a {@link PublicationSample} matches the criteria defined in a
@@ -178,90 +271,5 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 //                && Objects.equals(genreTypes, dto.getGenreType())
 //                && Objects.equals(ps.getOwnerId().getUserName(), dto.getOwnerName())
 //                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
-//    }
-
-    /**
-     * {@inheritDoc}
-     */
-//    public List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication){
-//
-//        List<PublicationSample> pubSamplesList = new ArrayList<>();
-//
-//        if (listings == null) {
-//            throw new IllegalArgumentException("List of listings cannot be null");
-//        }
-//        if (publication == null){
-//            throw new IllegalArgumentException("Publication cannot be null");
-//        }
-//
-//        for (Listing listing : listings) {
-//            for  (PublicationSample pubSample : listing.getItems()) {
-//                if(pubSample.getBibliographicalDataID().equals(publication)){
-//                    pubSamplesList.add(pubSample);
-//                }
-//            }
-//        }
-//        return List.copyOf(pubSamplesList);
-//    }
-
-    // --------------------------------------- US018 Methods -------------------------------------
-
-    /**
-     * {@inheritDoc}
-     */
-//    public PublicationSample PublicationSampleDtoToDomain(
-//            Library userLibrary,
-//            PublicationSampleDTO_US018 dto) {
-//
-//        if (userLibrary == null)
-//            throw new IllegalArgumentException("Library cannot be null");
-//
-//        if (dto == null)
-//            throw new IllegalArgumentException("DTO cannot be null");
-//
-//        for (PublicationSample publication : userLibrary.getAllPublications()) {
-//
-//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
-//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
-//                    && publication.getOwnerId().getUserName().equals(dto.getOwnerUsername())) {
-//
-//                return publication;
-//            }
-//        }
-//
-//        throw new IllegalArgumentException("Publication not found in user's library");
-//    }
-
-    /**
-     * {@inheritDoc}
-     */
-//    public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher){
-//
-//        List<PublicationSample> pubSamplesList = new ArrayList<>();
-//
-//        if (listings == null) {
-//            throw new IllegalArgumentException("List of listings cannot be null");
-//        }
-//        if (publisher == null) {
-//            throw new IllegalArgumentException("Publisher cannot be null");
-//        }
-//        for (Listing listing : listings) {
-//            if (listing == null)
-//                throw new IllegalArgumentException("Listings cannot contain null elements");
-//        }
-//
-//        for (Listing listing : listings) {
-//            for  (PublicationSample pubSample : listing.getItems()) {
-//
-//                if (pubSample == null) {
-//                    throw new IllegalArgumentException("Listings must not contain null PublicationSample items");
-//                }
-//
-//                if(pubSample.getEdition().getPublisher().equals(publisher)){
-//                    pubSamplesList.add(pubSample);
-//                }
-//            }
-//        }
-//        return List.copyOf(pubSamplesList);
 //    }
 }

@@ -21,18 +21,18 @@ public class PublicationSampleFactory {
     /**
      * Creates a new {@link PublicationSample} instance.
      *
-     * @param bibliographicalDataID the ID of the bibliographical data associated with the publication
-     * @param userID the ID of the owner of the publication sample
+     * @param bibliographicalDataId the ID of the bibliographical data associated with the publication
+     * @param userId the ID of the owner of the publication sample
      * @param publicationStatus the current status of the publication
-     * @param editionID the ID of the edition details of the publication
+     * @param editionId the ID of the edition details of the publication
      * @param condition the physical condition of the publication
      * @return a newly created {@code PublicationSample}
      * @throws IllegalArgumentException if any of the provided arguments are {@code null}
      */
-    public PublicationSample create(BibliographicalDataID bibliographicalDataID, UserId userID,
-                                    PublicationStatus publicationStatus, EditionID editionID, Condition condition){
+    public PublicationSample create(BibliographicalDataID bibliographicalDataId, UserId userId,
+                                    PublicationStatus publicationStatus, EditionID editionId, Condition condition){
 
-        return new PublicationSample(bibliographicalDataID, userID, publicationStatus, editionID, condition);
+        return new PublicationSample(bibliographicalDataId, userId, publicationStatus, editionId, condition);
     }
 
 }
