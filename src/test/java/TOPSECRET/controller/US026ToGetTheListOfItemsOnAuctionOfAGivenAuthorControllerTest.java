@@ -1,22 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Country.Country;
-import TOPSECRET.dto.AuctionDTO_US026;
 import TOPSECRET.dto.AuthorDTO_US026;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.repository.AuctionRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 

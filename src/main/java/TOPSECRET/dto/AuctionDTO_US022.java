@@ -1,12 +1,8 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 
-import java.util.ArrayList;
 import java.util.List;
 /**
  * Data Transfer Object (DTO) representing auction information
