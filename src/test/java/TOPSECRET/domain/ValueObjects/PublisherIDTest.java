@@ -105,25 +105,25 @@ class PublisherIDTest {
     }
 
     // -------------------------------------------------------------------------
-    // toString
+    // getPublisherId
     // -------------------------------------------------------------------------
 
     @Test
-    void givenValidId_whenToString_thenReturnsRawId() {
+    void givenValidId_whenGetPublisherId_thenReturnsRawId() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
 
         // Act + Assert
-        assertEquals("123456789", publisherID.toString());
+        assertEquals("123456789", publisherID.getPublisherId());
     }
 
     @Test
-    void givenValidId_whenToStringAndGetId_thenBothMatch() {
+    void givenValidId_whenGetPublisherIdAndGetId_thenBothMatch() {
         // Arrange
         PublisherID publisherID = new PublisherID("123456789");
 
         // Act + Assert
-        assertEquals(publisherID.getId(), publisherID.toString());
+        assertEquals(publisherID.getId(), publisherID.getPublisherId());
     }
 
     // -------------------------------------------------------------------------
