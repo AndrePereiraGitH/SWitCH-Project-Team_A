@@ -69,14 +69,6 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
 
     //==================================================================================================================
 
-    /**
-     * Determines whether this DirectSale is equal to another object.
-     * Two DirectSale instances are considered equal if they contain the same listings
-     * and the same buyer. The finished state is not considered for equality.
-     *
-     * @param o the object to compare with
-     * @return true if the given object is a DirectSale with the same listings and buyer; false otherwise
-     */
 
     @Override
     public boolean equals(Object o) {
@@ -84,13 +76,6 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
         DirectSale that = (DirectSale) o;
         return Objects.equals(_listings, that._listings) && Objects.equals(_buyer, that._buyer);
     }
-
-    /**
-     * Computes the hash code for this DirectSale.
-     * The hash is based on the listings and buyer.
-     *
-     * @return the hash code value
-     */
 
     @Override
     public int hashCode() {

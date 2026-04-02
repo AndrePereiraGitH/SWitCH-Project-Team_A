@@ -143,15 +143,6 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
 
     // Equals and HashCode =============================================================================================
 
-    /**
-     * Compares this instance with another object for logical equality.
-     * Two instances are considered equal if all their fields are equal.
-     *
-     * @param o the object to compare with
-     * @return {@code true} if both objects represent the same bibliographical data;
-     *         {@code false} otherwise
-     */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -166,12 +157,6 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
                 Objects.equals(_genres, that._genres) &&
                 Objects.equals(_chunksOfText, that._chunksOfText);
     }
-
-    /**
-     * Returns a hash code consistent with {@link #equals(Object)}.
-     *
-     * @return the hash code of this instance
-     */
 
     @Override
     public int hashCode() {
