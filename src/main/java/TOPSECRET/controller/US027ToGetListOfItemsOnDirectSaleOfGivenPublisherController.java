@@ -1,12 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.Publisher;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.dto.PublicationSampleDTO_US027;
 import TOPSECRET.dto.PublisherDTO_US027;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.repository.IPublisherRepository;
+import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.repository.IListingRepository;
 
 import java.util.List;

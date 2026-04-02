@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.Publisher;
-import TOPSECRET.repository.IPublisherRepository;
+import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.Publisher.IPublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

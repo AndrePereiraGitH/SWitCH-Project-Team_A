@@ -35,7 +35,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         when(bdDouble.getTitle()).thenReturn("Test Title");
-        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
 
         PublicationSample publicationSampleDouble = mock(PublicationSample.class);
 //        when(publicationSampleDouble.getBibliographicalData()).thenReturn(bdDouble);
@@ -120,11 +120,11 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         BibliographicalData bd1Double = mock(BibliographicalData.class);
         when(bd1Double.getTitle()).thenReturn("Title 1");
-        when(bd1Double.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bd1Double.getGenres()).thenReturn(List.of(genreDouble));
 
         BibliographicalData bd2Double = mock(BibliographicalData.class);
         when(bd2Double.getTitle()).thenReturn("Title 2");
-        when(bd2Double.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bd2Double.getGenres()).thenReturn(List.of(genreDouble));
 
         PublicationSample sample1Double = mock(PublicationSample.class);
 //        when(sample1Double.getBibliographicalData()).thenReturn(bd1Double);
@@ -172,7 +172,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         when(bdDouble.getTitle()).thenReturn("Book");
-        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
 
         PublicationSample sampleDouble = mock(PublicationSample.class);
 //        when(sampleDouble.getBibliographicalData()).thenReturn(bdDouble);

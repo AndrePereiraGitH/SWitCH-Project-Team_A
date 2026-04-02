@@ -1,12 +1,15 @@
 package TOPSECRET.repository;
 
+import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.Publisher;
-import TOPSECRET.domain.PublisherFactory;
+import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.Publisher.PublisherFactory;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -47,12 +50,9 @@ class PublisherRepositoryMemTest {
         publisherFactory = mock(PublisherFactory.class);
     }
 
-    /**
-     * Verifies that constructing the repository with a null factory
-     * throws an {@link IllegalArgumentException}.
-     */
     @Test
     void shouldThrowExceptionWhenFactoryIsNull() {
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> new PublisherRepositoryMem(null)
@@ -60,11 +60,7 @@ class PublisherRepositoryMemTest {
         assertEquals("PublisherFactory cannot be null", exception.getMessage());
     }
 
-    /**
-     * Verifies that the repository delegates publisher creation
-     * to the {@link PublisherFactory} and stores the result
-     * in the internal publisher list.
-     */
+
     @Test
     void shouldDelegateCreationToFactoryAndAddPublisher() {
         // Arrange
@@ -81,10 +77,7 @@ class PublisherRepositoryMemTest {
         assertTrue(repository.getAllPublishers().contains(publisherDouble));
     }
 
-    /**
-     * Verifies that a publisher with the same identity
-     * cannot be added twice to the repository.
-     */
+
     @Test
     void shouldRejectPublisherWhenAlreadyIsExistent() {
         // Arrange
@@ -103,10 +96,7 @@ class PublisherRepositoryMemTest {
                 () -> repository.createAndAdd(name, vatNumber, contact));
     }
 
-    /**
-     * Verifies that a second publisher with a different identity
-     * can be added alongside an existing one.
-     */
+
     @Test
     void shouldAddPublisherWhenDifferentPublisherAlreadyExists() {
         // Arrange
@@ -132,10 +122,7 @@ class PublisherRepositoryMemTest {
         assertTrue(repository.getAllPublishers().contains(existingPublisher));
     }
 
-    /**
-     * Verifies that {@link PublisherRepositoryMem#getAllPublishers()}
-     * returns an unmodifiable list.
-     */
+
     @Test
     void shouldReturnUnmodifiableList() {
         // Arrange
@@ -153,10 +140,6 @@ class PublisherRepositoryMemTest {
         assertThrows(UnsupportedOperationException.class, () -> result.add(publisherDouble));
     }
 
-    /**
-     * Verifies that {@link PublisherRepositoryMem#getAllPublishers()}
-     * returns a defensive copy of the publisher list.
-     */
     @Test
     void shouldReturnDefensiveCopy() {
         // Arrange
@@ -176,15 +159,11 @@ class PublisherRepositoryMemTest {
         assertEquals(result1, result2);
     }
 
-    /**
-     * Verifies that {@code findByVatNumber} returns the correct publisher
-     * when a matching VAT number exists in the repository.
-     */
     @Test
     void shouldFindPublisherByVatNumber() {
         // Arrange
         Publisher publisherDouble = mock(Publisher.class);
-        when(publisherDouble.getVatNumber()).thenReturn(vatNumber);
+        when(publisherDouble.id()).thenReturn(new PublisherID(vatNumber));
 
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
 
@@ -192,21 +171,18 @@ class PublisherRepositoryMemTest {
         repository.createAndAdd(name,vatNumber,contact);
 
         // Act
-        Publisher result = repository.findByVatNumber(vatNumber);
+        Optional<Publisher> result = repository.findByVatNumber(new PublisherID(vatNumber));
 
         // Assert
-        assertEquals(publisherDouble, result);
+        assertTrue(result.isPresent());
+        assertEquals(publisherDouble, result.get());
     }
 
-    /**
-     * Verifies that {@code findByVatNumber} returns {@code null}
-     * when no publisher with the given VAT number exists.
-     */
     @Test
-    void shouldReturnNullWhenVatNumberDoesNotExist() {
+    void shouldReturnEmptyWhenVatNumberDoesNotExist() {
         // Arrange
         Publisher publisherDouble = mock(Publisher.class);
-        when(publisherDouble.getVatNumber()).thenReturn("999999999");
+        when(publisherDouble.id()).thenReturn(new PublisherID("999999999"));
 
         when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
 
@@ -214,10 +190,10 @@ class PublisherRepositoryMemTest {
         repository.createAndAdd(name,vatNumber,contact);
 
         // Act
-        Publisher result = repository.findByVatNumber(vatNumber);
+        Optional<Publisher> result = repository.findByVatNumber(new PublisherID(vatNumber));
 
         // Assert
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
 
 }

@@ -1,10 +1,10 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.GenreID;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -60,8 +60,8 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      * {@inheritDoc}
      */
     @Override
-    public BibliographicalData createAndAdd(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
-                                            List<Genre> genres, String chunksOfText) throws InstanceAlreadyExistsException
+    public BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
+                                            List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException
     {
         if(title == null){
             throw new IllegalArgumentException("title cannot be null");

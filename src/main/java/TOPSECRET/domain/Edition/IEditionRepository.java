@@ -1,7 +1,7 @@
 package TOPSECRET.domain.Edition;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType.PublicationType;

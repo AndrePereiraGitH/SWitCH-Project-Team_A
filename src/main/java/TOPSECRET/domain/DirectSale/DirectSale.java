@@ -1,9 +1,9 @@
 package TOPSECRET.domain.DirectSale;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.DirectSaleID;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,15 +17,31 @@ import java.util.UUID;
 public class DirectSale implements AggregateRoot<DirectSaleID> {
 
     private final DirectSaleID _directSaleID;
-    private List<Listing> _listings;
-    private User _buyer;
+    private List<ListingId> _listings;
+    private UserId _buyer;
     private boolean _isFinished;
 
     //==================================================================================================================
     // Constructor for DirectSale
     //==================================================================================================================
 
-    protected DirectSale (List<Listing> _listings, User _buyer, boolean _isFinished) {
+    /**
+     * Constructs a DirectSale with the given listings, buyer, and completion status.
+     *
+     * <p>This constructor initializes a new DirectSale instance with a generated
+     * unique identifier. It validates that the listings list and buyer are not null.
+     * Additionally, all listings are expected to be of type DIRECT_SALE (validation
+     * logic to be implemented).</p>
+     *
+     * @param _listings     the list of listings included in this direct sale; must not be null
+     * @param _buyer        the user purchasing the listings; must not be null
+     * @param _isFinished   indicates whether the direct sale has been completed
+     *
+     * @throws IllegalArgumentException if the listings list is null
+     * @throws IllegalArgumentException if the buyer is null
+     * @throws IllegalArgumentException if any listing is not of type DIRECT_SALE
+     */
+    protected DirectSale (List<ListingId> _listings, UserId _buyer, boolean _isFinished) {
 
         if(_listings == null){
             throw new IllegalArgumentException("List of listings cannot be null");
@@ -33,6 +49,17 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
         if(_buyer == null){
             throw new IllegalArgumentException("Buyer cannot be empty");
         }
+
+        // TO BE UPDATED LATER
+        // method to check is listing is of direct sale type
+        boolean invalid = false;
+
+        if (invalid) {
+            throw new IllegalArgumentException(
+                    "All listings must be of type DIRECT_SALE to create a DirectSale"
+            );
+        }
+
 
         this._directSaleID = new DirectSaleID(UUID.randomUUID().toString());
         this._listings = _listings;
@@ -42,14 +69,6 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
 
     //==================================================================================================================
 
-    /**
-     * Determines whether this DirectSale is equal to another object.
-     * Two DirectSale instances are considered equal if they contain the same listings
-     * and the same buyer. The finished state is not considered for equality.
-     *
-     * @param o the object to compare with
-     * @return true if the given object is a DirectSale with the same listings and buyer; false otherwise
-     */
 
     @Override
     public boolean equals(Object o) {
@@ -57,13 +76,6 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
         DirectSale that = (DirectSale) o;
         return Objects.equals(_listings, that._listings) && Objects.equals(_buyer, that._buyer);
     }
-
-    /**
-     * Computes the hash code for this DirectSale.
-     * The hash is based on the listings and buyer.
-     *
-     * @return the hash code value
-     */
 
     @Override
     public int hashCode() {
@@ -76,7 +88,7 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
      * @return the list of listings
      */
 
-    public List<Listing> getListings() {
+    public List<ListingId> getListings() {
         return _listings;
     }
 
@@ -92,7 +104,9 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
     }
 
     /**
-     * @return _directSaleID
+     * Returns the unique identifier of this DirectSale.
+     *
+     * @return the DirectSaleID associated with this direct sale
      */
     @Override
     public DirectSaleID id() { return _directSaleID; }
@@ -121,8 +135,8 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
      */
 
     public record DirectSaleDetails(
-            List<Listing> listings,
-            User buyer,
+            List<ListingId> listings,
+            UserId buyer,
             boolean isFinished
     ) {}
 }

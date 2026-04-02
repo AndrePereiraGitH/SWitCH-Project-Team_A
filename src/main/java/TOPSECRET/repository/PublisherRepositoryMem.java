@@ -1,11 +1,14 @@
 package TOPSECRET.repository;
 
+import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.Publisher;
-import TOPSECRET.domain.PublisherFactory;
+import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.Publisher.PublisherFactory;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link IPublisherRepository}.
@@ -15,7 +18,7 @@ import java.util.List;
  */
 public class PublisherRepositoryMem implements IPublisherRepository {
 
-    private List<Publisher> _publishers;
+    private final List<Publisher> _publishers;
     private final PublisherFactory _publisherFactory;
 
     /**
@@ -61,14 +64,12 @@ public class PublisherRepositoryMem implements IPublisherRepository {
      * {@inheritDoc}
      */
     @Override
-    public Publisher findByVatNumber(String vatNumber) {
-        for (Publisher publisher : _publishers) {
-            if (publisher.getVatNumber().equals(vatNumber)) {
-                return publisher;
-            }
-        }
-        return null;
+    public Optional<Publisher> findByVatNumber(PublisherID vatNumber) {
+        return _publishers.stream()
+                .filter(p -> p.id().equals(vatNumber))
+                .findFirst();
     }
+
 
     /**
      * {@inheritDoc}

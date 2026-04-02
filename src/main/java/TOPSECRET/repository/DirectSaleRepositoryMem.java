@@ -1,10 +1,11 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class DirectSaleRepositoryMem implements IDirectSaleRepository {
      * {@inheritDoc}
      */
     @Override
-    public DirectSale createAndAdd(List<Listing> listings, User buyer) {
+    public DirectSale createAndAdd(List<ListingId> listings, UserId buyer) {
         DirectSale directSale = _directSaleFactory.create(listings, buyer);
         add(directSale);
         return directSale;

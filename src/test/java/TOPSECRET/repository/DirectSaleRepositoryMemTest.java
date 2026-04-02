@@ -6,6 +6,8 @@ import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,19 +23,19 @@ class DirectSaleRepositoryMemTest {
     private DirectSaleFactory dsFactoryDouble;
     private DirectSale dsDouble;
 
-    private Listing listing1Double;
-    private Listing listing2Double;
-    private List<Listing> listings;
-    private User buyerDouble;
+    private ListingId listing1Double;
+    private ListingId listing2Double;
+    private List<ListingId> listings;
+    private UserId buyerDouble;
 
     @BeforeEach
     void setUp() {
 
-        listing1Double = mock(Listing.class);
-        listing2Double = mock(Listing.class);
+        listing1Double = mock(ListingId.class);
+        listing2Double = mock(ListingId.class);
         listings = List.of(listing1Double, listing2Double);
 
-        buyerDouble = mock(User.class);
+        buyerDouble = mock(UserId.class);
 
         dsDouble = mock(DirectSale.class);
         dsFactoryDouble = mock(DirectSaleFactory.class);

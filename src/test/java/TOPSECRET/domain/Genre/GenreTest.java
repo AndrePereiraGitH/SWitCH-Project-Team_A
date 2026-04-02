@@ -12,67 +12,105 @@ class GenreTest {
 
     // --------------------------------- US003 starts ---------------------------------
 
-    // A valid genre name must be accepted and stored correctly
     @Test
     void shouldCreateWithValidGenre() {
-        Genre genre = new Genre("Romance");
+        // Arrange
+        String genreType = "Romance";
 
+        //Act
+        Genre genre = new Genre(genreType);
+
+        // Assert
         assertEquals("Romance", genre.getGenreType());
     }
 
-    // Null must be rejected — a genre without a name makes no sense
     @Test
     void genreTypeCannotBeNull() {
+        // Arrange
+        String genreType = null;
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Genre(null));
     }
 
-    // Empty string must be rejected
     @Test
     void genreTypeCannotBeEmpty() {
+        //Arrange
+        String genreType = "";
+
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Genre(""));
     }
 
-    // Blank string (only spaces) must also be rejected
     @Test
     void genreTypeCannotBeBlank() {
+        //Arrange
+        String genreType = " ";
+
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Genre(" "));
     }
 
     // --------------------------------- US003 ends ---------------------------------
-    // equals() — same object should equal itself
-    @Test
+
+     @Test
     void genreShouldEqualItself() {
+        //Arrange
         Genre g1 = new Genre("Fantasy");
+        //Act & Assert
         assertEquals(g1, g1); // ✅ same reference = same ID
     }
 
-    // equals() — two separately created genres are NOT equal even with same name
+    // equals() — two genres with the same type ARE now equal (ID is based on genreType)
     @Test
-    void genresWithSameTypeButDifferentIdShouldNotBeEqual() {
+    void genresWithSameTypeShouldBeEqual() {
+        // Arrange
         Genre g1 = new Genre("Fantasy");
         Genre g2 = new Genre("Fantasy");
-        assertNotEquals(g1, g2); // ✅ different UUIDs = not equal
+
+        // Assert
+        assertEquals(g1, g2);
     }
+
+    @Test
+    void genresWithDifferentTypeShouldNotBeEqual() {
+        //Arrange
+        Genre g1 = new Genre("Fantasy");
+        Genre g2 = new Genre("Romance");
+
+        //Assert
+        assertNotEquals(g1, g2);
+    }
+
     // US004 — two genres with the same name (different case) must be considered equal
     @Test
     void genresWithSameTypeShouldBeEqualIgnoringCase() {
+        //Arrange
         Genre g1 = new Genre("Fantasy");
         Genre g2 = new Genre("fantasy");
 
-        assertTrue(g1.sameAs(g2)); //sameAs() compares by name
+        //Assert
+        assertTrue(g1.sameAs(g2));
+        assertEquals(g1, g2);
     }
 
     // US004 — equal genres must have the same hash code (required by Java contract)
     @Test
     void equalGenresShouldHaveSameHashCode() {
+        // Arrange
         Genre g1 = new Genre("SciFi");
-        assertEquals(g1.hashCode(), g1.hashCode()); //consistent
+        Genre g2 = new Genre("SciFi");
+
+        // Assert
+        assertEquals(g1.hashCode(), g2.hashCode());
     }
 
     @Test
     void equals_shouldReturnFalse_forNull_orDifferentObjects() {
+        //Arrange
         Genre genre = new Genre("Fiction");
 
+        //Assert
         assertFalse(genre.equals(null));
         assertFalse(genre.equals("not a genre"));
     }

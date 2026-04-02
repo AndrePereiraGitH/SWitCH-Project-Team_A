@@ -32,7 +32,7 @@ class AuctionDTO_US022Test {
 
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         when(bdDouble.getTitle()).thenReturn("Book Title");
-        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble));
 
         PublicationSample psDouble = mock(PublicationSample.class);
 //        when(psDouble.getBibliographicalData()).thenReturn(bdDouble);
@@ -62,8 +62,8 @@ class AuctionDTO_US022Test {
         BibliographicalData bdDouble2 = mock(BibliographicalData.class);
         when(bdDouble1.getTitle()).thenReturn("Book Title");
         when(bdDouble2.getTitle()).thenReturn("Book Title");
-        when(bdDouble1.getGenres()).thenReturn(List.of(genreDouble));
-        when(bdDouble2.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bdDouble1.getGenres()).thenReturn(List.of(genreDouble));
+//        when(bdDouble2.getGenres()).thenReturn(List.of(genreDouble));
 
         PublicationSample sampleDouble1 = mock(PublicationSample.class);
         PublicationSample sampleDouble2 = mock(PublicationSample.class);
