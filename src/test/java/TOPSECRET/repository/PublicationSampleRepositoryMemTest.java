@@ -960,7 +960,7 @@ class PublicationSampleRepositoryMemTest {
             when(authorDouble.getName()).thenReturn(n);
             return authorDouble;
         }).toList();
-        when(bdDouble.getAuthors()).thenReturn(authors);
+//        when(bdDouble.getAuthors()).thenReturn(authors);
 
         // Genres -> genreType
         List<Genre> genres = genreTypes.stream().map(gt -> {
@@ -968,7 +968,7 @@ class PublicationSampleRepositoryMemTest {
             when(g.getGenreType()).thenReturn(gt);
             return g;
         }).toList();
-        when(bdDouble.getGenres()).thenReturn(genres);
+//        when(bdDouble.getGenres()).thenReturn(genres);
 
         // owner username
         User ownerDouble = mock(User.class);

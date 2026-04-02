@@ -3,7 +3,9 @@ package TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,10 +33,10 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
 
     private final BibliographicalDataID _bibliographicalDataID;
     private final String _title;
-    private final List<Author> _authors;
+    private final List<AuthorId> _authors;
     private final Locale _originalLanguage;
     private final LocalDate _publicationDate;
-    private final List<Genre> _genres;
+    private final List<GenreID> _genres;
     private final String _chunksOfText;
 
     // Constructor =====================================================================================================
@@ -53,8 +55,8 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      *                                  or if the genres list is null/empty
      */
 
-    protected BibliographicalData(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
-                List<Genre> genres, String chunksOfText) {
+    protected BibliographicalData(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
+                List<GenreID> genres, String chunksOfText) {
 
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be null or blank");
@@ -95,7 +97,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      * @return a non-null, non-empty list of authors
      */
 
-    public List<Author> getAuthors() {
+    public List<AuthorId> getAuthors() {
         return _authors;
     }
 
@@ -125,7 +127,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      * @return a non-null, non-empty list of genres
      */
 
-    public List<Genre> getGenres() {
+    public List<GenreID> getGenres() {
         return _genres;
     }
 
@@ -222,10 +224,10 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
 
     public record BibliographicalDataDetails(
             String title,
-            List<Author> authors,
+            List<AuthorId> authors,
             Locale originalLanguage,
             LocalDate publicationDate,
-            List<Genre> genres,
+            List<GenreID> genres,
             String chunksOfText
     ) {}
 }

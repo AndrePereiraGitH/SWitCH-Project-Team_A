@@ -27,16 +27,16 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
     // =================================================================================================================
 
-    public List<BibliographicalDataDTO_US023> getAllPublicationBD() {
-
-        // Gets all the bibliographicalData on repository
-        List<BibliographicalData> listOfAllPublicationBD = _bdRepo.getAllPublicationsBD();
-
-        // Converts to DTOs
-        List<BibliographicalDataDTO_US023> listOfAllBibliographicalDataDTO = BibliographicalDataDTO_US023.toDTOs(listOfAllPublicationBD);
-
-        return listOfAllBibliographicalDataDTO;
-    }
+//    public List<BibliographicalDataDTO_US023> getAllPublicationBD() {
+//
+//        // Gets all the bibliographicalData on repository
+//        List<BibliographicalData> listOfAllPublicationBD = _bdRepo.getAllPublicationsBD();
+//
+//        // Converts to DTOs
+//        List<BibliographicalDataDTO_US023> listOfAllBibliographicalDataDTO = BibliographicalDataDTO_US023.toDTOs(listOfAllPublicationBD);
+//
+//        return listOfAllBibliographicalDataDTO;
+//    }
 
 
 //    public List<PublicationSampleDTO_US023> findListOfItemsOnDirectSale(BibliographicalData publication) {

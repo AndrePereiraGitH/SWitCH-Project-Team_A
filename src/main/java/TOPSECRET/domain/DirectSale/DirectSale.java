@@ -1,9 +1,9 @@
 package TOPSECRET.domain.DirectSale;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Listing;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.DirectSaleID;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,15 +17,15 @@ import java.util.UUID;
 public class DirectSale implements AggregateRoot<DirectSaleID> {
 
     private final DirectSaleID _directSaleID;
-    private List<Listing> _listings;
-    private User _buyer;
+    private List<ListingId> _listings;
+    private UserId _buyer;
     private boolean _isFinished;
 
     //==================================================================================================================
     // Constructor for DirectSale
     //==================================================================================================================
 
-    protected DirectSale (List<Listing> _listings, User _buyer, boolean _isFinished) {
+    protected DirectSale (List<ListingId> _listings, UserId _buyer, boolean _isFinished) {
 
         if(_listings == null){
             throw new IllegalArgumentException("List of listings cannot be null");
@@ -76,7 +76,7 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
      * @return the list of listings
      */
 
-    public List<Listing> getListings() {
+    public List<ListingId> getListings() {
         return _listings;
     }
 
@@ -121,8 +121,8 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
      */
 
     public record DirectSaleDetails(
-            List<Listing> listings,
-            User buyer,
+            List<ListingId> listings,
+            UserId buyer,
             boolean isFinished
     ) {}
 }

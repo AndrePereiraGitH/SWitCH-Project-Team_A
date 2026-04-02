@@ -71,13 +71,13 @@ class DirectSaleDTO_US025Test {
         // --- BIBLIOGRAPHICAL DATA ---
         BibliographicalData bd1 = mock(BibliographicalData.class);
         when(bd1.getTitle()).thenReturn("Title One");
-        when(bd1.getAuthors()).thenReturn(List.of(author2));
-        when(bd1.getGenres()).thenReturn(List.of(genre1));
+//        when(bd1.getAuthors()).thenReturn(List.of(author2));
+//        when(bd1.getGenres()).thenReturn(List.of(genre1));
 
         BibliographicalData bd2 = mock(BibliographicalData.class);
         when(bd2.getTitle()).thenReturn("Title Two");
-        when(bd2.getAuthors()).thenReturn(List.of(author2));
-        when(bd2.getGenres()).thenReturn(List.of(genre1));
+//        when(bd2.getAuthors()).thenReturn(List.of(author2));
+//        when(bd2.getGenres()).thenReturn(List.of(genre1));
 
         // --- PUBLICATION SAMPLES ---
         sample1 = mock(PublicationSample.class);
@@ -107,7 +107,7 @@ class DirectSaleDTO_US025Test {
 
         // --- DIRECT SALE ---
         directSale = mock(DirectSale.class);
-        when(directSale.getListings()).thenReturn(List.of(listing1, listing2));
+//        when(directSale.getListings()).thenReturn(List.of(listing1, listing2));
     }
 
     /**

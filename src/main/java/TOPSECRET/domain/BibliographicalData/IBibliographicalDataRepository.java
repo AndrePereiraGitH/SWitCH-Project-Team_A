@@ -2,6 +2,8 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.GenreID;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -33,8 +35,8 @@ public interface IBibliographicalDataRepository {
      * @throws InstanceAlreadyExistsException if an equivalent bibliographical data record already exists
      */
 
-    BibliographicalData createAndAdd(String title, List<Author> authors, Locale originalLanguage, LocalDate publicationDate,
-                                     List<Genre> genres, String chunksOfText) throws InstanceAlreadyExistsException;
+    BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
+                                     List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException;
 
 
     /**

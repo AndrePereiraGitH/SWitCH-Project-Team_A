@@ -187,7 +187,7 @@ class PublicationDetailsDTO_US012Test {
         BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
 
         when(bibliographicalDataDouble.getTitle()).thenReturn(title);
-        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
+//        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
 
         return bibliographicalDataDouble;
     }

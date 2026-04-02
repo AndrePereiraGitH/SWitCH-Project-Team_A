@@ -55,9 +55,9 @@ class PublicationSampleDTO_US015Test {
 //        when(pubSample.getOwnerId()).thenReturn(owner);
 
         when(bd.getTitle()).thenReturn("Clean Code");
-        when(bd.getAuthors()).thenReturn(List.of(author));
+//        when(bd.getAuthors()).thenReturn(List.of(author));
         when(author.getName()).thenReturn("Robert C. Martin");
-        when(bd.getGenres()).thenReturn(List.of(new GenreFactory().create("Programming")));
+//        when(bd.getGenres()).thenReturn(List.of(new GenreFactory().create("Programming")));
 
         when(edition.getEditionNumber()).thenReturn("3rd");
         when(edition.getCode()).thenReturn(Code.fromIsbn13("9780132350884"));

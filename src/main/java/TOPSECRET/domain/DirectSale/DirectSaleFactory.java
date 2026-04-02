@@ -3,6 +3,8 @@ package TOPSECRET.domain.DirectSale;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
 
@@ -29,14 +31,16 @@ public class DirectSaleFactory {
      * @throws IllegalArgumentException if listings is null or contains any listing not of type DIRECT_SALE
      */
 
-    public DirectSale create(List<Listing> listings, User buyer) {
+    public DirectSale create(List<ListingId> listings, UserId buyer) {
 
         if (listings == null) {
             throw new IllegalArgumentException("Listings cannot be null");
         }
 
-        boolean invalid = listings.stream()
-                .anyMatch(l -> l.getSaleType() != SaleType.DIRECT_SALE);
+//        boolean invalid = listings.stream()
+//                .anyMatch(l -> l.getSaleType() != SaleType.DIRECT_SALE);
+
+        boolean invalid = true;
 
         if (invalid) {
             throw new IllegalArgumentException(
