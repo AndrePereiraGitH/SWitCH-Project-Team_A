@@ -30,11 +30,6 @@ public class Genre implements AggregateRoot<GenreID>{
     }
 
     // --------------------------------- US003 ends ---------------------------------
-    /**
-     * Returns the unique identifier of this Genre.
-     *
-     * @return the GenreID identifying this genre; never null
-     */
     @Override
     public GenreID id() {
         return _id;
@@ -53,17 +48,10 @@ public class Genre implements AggregateRoot<GenreID>{
         return false;
     }
     // --------------------------------- US004 starts ---------------------------------
-    /**
-     * Returns the genre title.
-     * @return Genre title.
-     */
     public String getGenreType() {
         return _genreType;
     }
 
-    /**
-     * Compares two Genre objects based on their title.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,9 +60,6 @@ public class Genre implements AggregateRoot<GenreID>{
         return _id.equals(other._id); // -id is based on genreType.toLowerCase()
     }
 
-    /**
-     * Generates hash code based on genre title.
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_id); // matches equals() which uses _id
