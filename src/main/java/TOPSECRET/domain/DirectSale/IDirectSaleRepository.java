@@ -1,7 +1,7 @@
 package TOPSECRET.domain.DirectSale;
 
-import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public interface IDirectSaleRepository {
      * @param buyer the user who is purchasing the listings
      * @return the created and stored direct sale
      */
-    DirectSale createAndAdd(List<Listing> listings, User buyer);
+    DirectSale createAndAdd(List<ListingId> listings, UserId buyer);
 
     /**
      * Checks whether the given direct sale already exists in the repository.

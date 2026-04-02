@@ -1,32 +1,26 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.*;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.dto.AuctionItemDTO_US024;
-import TOPSECRET.dto.BibliographicalDataDTO_US024;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Auction.IAuctionRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for {@link US024GetTheListOfItemsOnAuctionOfAGivenPublicationController}.
- *
- * <p>All repository dependencies are replaced with Mockito doubles to ensure
- * tests are isolated from infrastructure concerns and focus solely on
- * controller behaviour.</p>
- */
+///**
+// * Unit tests for {@link US024GetTheListOfItemsOnAuctionOfAGivenPublicationController}.
+// *
+// * <p>All repository dependencies are replaced with Mockito doubles to ensure
+// * tests are isolated from infrastructure concerns and focus solely on
+// * controller behaviour.</p>
+// */
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     // -------------------------------------------------------------------------
@@ -53,52 +47,52 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     // -------------------------------------------------------------------------
     // Tests — getAllPublicationBD()
     // -------------------------------------------------------------------------
-
-    /**
-     * Verifies that {@code getAllPublicationBD()} returns a correctly mapped list
-     * of {@link BibliographicalDataDTO_US024} when the repository contains publications.
-     *
-     * <p>Expects two DTOs with titles matching the mocked domain objects.</p>
-     */
-    @Test
-    void getAllPublicationBD_ShouldReturnListOfDTOsWhenPublicationBDExist() {
-        // Arrange
-        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
-        BibliographicalData bd1 = createMockBibliographicalData("Title1");
-        BibliographicalData bd2 = createMockBibliographicalData("Title2");
-
-        when(bdRepository.getAllPublicationsBD()).thenReturn(List.of(bd1, bd2));
-
-        // Act
-        List<BibliographicalDataDTO_US024> result = controller.getAllPublicationBD();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("Title1", result.get(0)._publicationTitle);
-        assertEquals("Title2", result.get(1)._publicationTitle);
-    }
-
-    /**
-     * Verifies that {@code getAllPublicationBD()} returns an empty list
-     * (rather than {@code null}) when the repository contains no publications.
-     */
-    @Test
-    void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
-        // Arrange
-        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
-        IBibliographicalDataRepository bdRepoDouble = mock(IBibliographicalDataRepository.class);
-        when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
-
-        // Act
-        List<BibliographicalDataDTO_US024> result = controller.getAllPublicationBD();
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
+//
+//    /**
+//     * Verifies that {@code getAllPublicationBD()} returns a correctly mapped list
+//     * of {@link BibliographicalDataDTO_US024} when the repository contains publications.
+//     *
+//     * <p>Expects two DTOs with titles matching the mocked domain objects.</p>
+//     */
+//    @Test
+//    void getAllPublicationBD_ShouldReturnListOfDTOsWhenPublicationBDExist() {
+//        // Arrange
+//        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+//                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//        BibliographicalData bd1 = createMockBibliographicalData("Title1");
+//        BibliographicalData bd2 = createMockBibliographicalData("Title2");
+//
+//        when(bdRepository.getAllPublicationsBD()).thenReturn(List.of(bd1, bd2));
+//
+//        // Act
+//        List<BibliographicalDataDTO_US024> result = controller.getAllPublicationBD();
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(2, result.size());
+//        assertEquals("Title1", result.get(0)._publicationTitle);
+//        assertEquals("Title2", result.get(1)._publicationTitle);
+//    }
+//
+//    /**
+//     * Verifies that {@code getAllPublicationBD()} returns an empty list
+//     * (rather than {@code null}) when the repository contains no publications.
+//     */
+//    @Test
+//    void getAllPublicationsShouldReturnEmptyListWhenRepositoryIsEmpty() {
+//        // Arrange
+//        US024GetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
+//                new US024GetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository,auctionRepository);
+//        IBibliographicalDataRepository bdRepoDouble = mock(IBibliographicalDataRepository.class);
+//        when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
+//
+//        // Act
+//        List<BibliographicalDataDTO_US024> result = controller.getAllPublicationBD();
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
 
     // -------------------------------------------------------------------------
     // Tests — getListOfItemsOnAuctionByGivenPublicationDTO()

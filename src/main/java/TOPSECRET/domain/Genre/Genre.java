@@ -3,7 +3,6 @@ package TOPSECRET.domain.Genre;
 import java.util.Objects;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.GenreID;
-import java.util.UUID;
 
 /**
  * Represents a literary genre (e.g. "Drama", "Science Fiction").
@@ -27,15 +26,10 @@ public class Genre implements AggregateRoot<GenreID>{
             throw new IllegalArgumentException("Genre type cannot be null or blank");
         }
         this._genreType = genreType;
-        this._id = new GenreID(UUID.randomUUID().toString());
+        this._id = new GenreID(genreType.toLowerCase()); //genreType is the ID
     }
 
     // --------------------------------- US003 ends ---------------------------------
-    /**
-     * Returns the unique identifier of this Genre.
-     *
-     * @return the GenreID identifying this genre; never null
-     */
     @Override
     public GenreID id() {
         return _id;
@@ -54,31 +48,21 @@ public class Genre implements AggregateRoot<GenreID>{
         return false;
     }
     // --------------------------------- US004 starts ---------------------------------
-    /**
-     * Returns the genre title.
-     * @return Genre title.
-     */
     public String getGenreType() {
         return _genreType;
     }
 
-    /**
-     * Compares two Genre objects based on their title.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Genre)) return false;
         Genre other = (Genre) o;
-        return _id.equals(other._id); //compares by ID
+        return _id.equals(other._id); // -id is based on genreType.toLowerCase()
     }
 
-    /**
-     * Generates hash code based on genre title.
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(_id); // natches equals() which uses _id
+        return Objects.hash(_id); // matches equals() which uses _id
     }
 
     // --------------------------------- US004 ends ---------------------------------

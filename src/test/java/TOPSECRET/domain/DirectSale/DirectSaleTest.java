@@ -1,7 +1,8 @@
 package TOPSECRET.domain.DirectSale;
 
-import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,22 +12,26 @@ import static org.mockito.Mockito.*;
 
 class DirectSaleTest {
 
+    // Factory and doubles setup for tests
+    DirectSaleFactory dsFactory = new DirectSaleFactory();;
+    ListingId listing1Double = mock(ListingId.class);
+    ListingId listing2Double = mock(ListingId.class);
+    UserId buyerDouble = mock(UserId.class);
+
+////     Sale Type setup
+//    @BeforeEach
+//    void setUp() {
+//        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+//        when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+//    }
+
     // Tests to constructor --------------------------------------------------------------------------------------------
-    @Test
-    void emptyConstructor_createsInstance() {
-        DirectSale ds = new DirectSale();
-        assertNotNull(ds);
-    }
 
     @Test
     void validConstructor_createsInstance() {
-        // Arrange
-        Listing listing1Double = mock(Listing.class);
-        Listing listing2Double = mock(Listing.class);
-        User buyerDouble = mock(User.class);
 
         // Act
-        DirectSale ds = new DirectSale(List.of(listing1Double, listing2Double), buyerDouble, false);
+        DirectSale ds = dsFactory.create(List.of(listing1Double), buyerDouble);
 
         // Assert
         assertNotNull(ds);
@@ -34,28 +39,27 @@ class DirectSaleTest {
 
     @Test
     void validConstructor_withNullListingsThrowsException() {
+
         // Arrange
-        User buyerDouble = mock(User.class);
+        UserId buyerDouble = mock(UserId.class);
 
         // Act
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new DirectSale(null, buyerDouble, false)
+                () -> dsFactory.create(null, buyerDouble)
         );
 
         // Assert
-        assertEquals("List of listings cannot be null", e.getMessage());
+        assertEquals("Listings cannot be null", e.getMessage());
     }
 
     @Test
     void validconstructor_withNullBuyerThrowsException() {
-        // Arrange
-        Listing listingDouble = mock(Listing.class);
 
         // Act
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new DirectSale(List.of(listingDouble), null, false)
+                () -> dsFactory.create(List.of(listing1Double), null)
         );
 
         // Assert
@@ -65,10 +69,9 @@ class DirectSaleTest {
     // Method equals ---------------------------------------------------------------------------------------------------
     @Test
     void equals_withNullReturnsFalse() {
+
         // Arrange
-        Listing listingDouble = mock(Listing.class);
-        User buyerDouble = mock(User.class);
-        DirectSale ds = new DirectSale(List.of(listingDouble), buyerDouble, false);
+        DirectSale ds = dsFactory.create(List.of(listing1Double), buyerDouble);
 
         // Act
         boolean result = ds.equals(null);
@@ -79,13 +82,10 @@ class DirectSaleTest {
 
     @Test
     void equals_withDifferentObjectsReturnsFalse() {
-        // Arrange
-        Listing listing1Double = mock(Listing.class);
-        Listing listing2Double = mock(Listing.class);
-        User buyerDouble = mock(User.class);
 
-        DirectSale ds1 = new DirectSale(List.of(listing1Double), buyerDouble, false);
-        DirectSale ds2 = new DirectSale(List.of(listing2Double), buyerDouble, true);
+        // Arrange
+        DirectSale ds1 = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds2 = dsFactory.create(List.of(listing2Double), buyerDouble);
 
         // Act
         boolean result = ds1.equals(ds2);
@@ -96,12 +96,10 @@ class DirectSaleTest {
 
     @Test
     void equals_withSameListingsAndBuyerReturnsTrue() {
-        // Arrange
-        Listing listingDouble = mock(Listing.class);
-        User buyerDouble = mock(User.class);
 
-        DirectSale ds1 = new DirectSale(List.of(listingDouble), buyerDouble, false);
-        DirectSale ds2 = new DirectSale(List.of(listingDouble), buyerDouble, false);
+        // Arrange
+        DirectSale ds1 = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds2 = dsFactory.create(List.of(listing1Double), buyerDouble);
 
         // Act
         boolean result = ds1.equals(ds2);
@@ -113,10 +111,9 @@ class DirectSaleTest {
     // Method hasCode --------------------------------------------------------------------------------------------------
     @Test
     void hashCode_sameObjectReturnsSameHash() {
+
         // Arrange
-        Listing listingDouble = mock(Listing.class);
-        User buyerDouble = mock(User.class);
-        DirectSale ds = new DirectSale(List.of(listingDouble), buyerDouble, false);
+        DirectSale ds = dsFactory.create(List.of(listing1Double), buyerDouble);
 
         // Act and Assert
         assertEquals(ds.hashCode(), ds.hashCode());
@@ -124,13 +121,10 @@ class DirectSaleTest {
 
     @Test
     void hashCode_differentObjectsReturnsDifferentHash() {
-        // Arrange
-        Listing listing1Double = mock(Listing.class);
-        Listing listing2Double = mock(Listing.class);
-        User buyerDouble = mock(User.class);
 
-        DirectSale ds1 = new DirectSale(List.of(listing1Double), buyerDouble, false);
-        DirectSale ds2 = new DirectSale(List.of(listing2Double), buyerDouble, false);
+        // Arrange
+        DirectSale ds1 = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds2 = dsFactory.create(List.of(listing2Double), buyerDouble);
 
         // Act and Assert
         assertNotEquals(ds1.hashCode(), ds2.hashCode());
@@ -139,15 +133,13 @@ class DirectSaleTest {
     // Method getListings ----------------------------------------------------------------------------------------------
     @Test
     void getListings_returnsSameList() {
-        // Arrange
-        Listing listingDouble = mock(Listing.class);
-        User buyerDouble = mock(User.class);
-        List<Listing> listings = List.of(listingDouble);
 
-        DirectSale ds = new DirectSale(listings, buyerDouble, false);
+        // Arrange
+        List<ListingId> listings = List.of(listing1Double, listing2Double);
+        DirectSale ds = dsFactory.create(listings, buyerDouble);
 
         // Act
-        List<Listing> result = ds.getListings();
+        List<ListingId> result = ds.getListings();
 
         // Assert
         assertSame(listings, result);
@@ -156,13 +148,10 @@ class DirectSaleTest {
     // Method getDetails -----------------------------------------------------------------------------------------------
     @Test
     void getDetails_returnsCorrectValues() {
-        // Arrange
-        Listing listing1Double = mock(Listing.class);
-        Listing listing2Double = mock(Listing.class);
-        User buyerDouble = mock(User.class);
 
-        List<Listing> listings = List.of(listing1Double, listing2Double);
-        DirectSale ds = new DirectSale(listings, buyerDouble, false);
+        // Arrange
+        List<ListingId> listings = List.of(listing1Double, listing2Double);
+        DirectSale ds = dsFactory.create(listings, buyerDouble);
 
         // Act
         DirectSale.DirectSaleDetails details = ds.getDetails();
@@ -177,10 +166,9 @@ class DirectSaleTest {
     // Method directSaleDetails (record) -------------------------------------------------------------------------------
     @Test
     void directSaleDetails_recordStoresValuesCorrectly() {
+
         // Arrange
-        Listing listingDouble = mock(Listing.class);
-        User buyerDouble = mock(User.class);
-        List<Listing> listings = List.of(listingDouble);
+        List<ListingId> listings = List.of(listing1Double, listing2Double);
 
         // Act
         DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(listings, buyerDouble, true);

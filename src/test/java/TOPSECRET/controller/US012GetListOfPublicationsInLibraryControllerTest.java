@@ -1,12 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType.PublicationType;
 
@@ -169,7 +166,7 @@ class US012GetListOfPublicationsInLibraryControllerTest {
         BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
 
         when(bibliographicalDataDouble.getTitle()).thenReturn(title);
-        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
+//        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
 
         return bibliographicalDataDouble;
     }

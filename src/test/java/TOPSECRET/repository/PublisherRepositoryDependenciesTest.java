@@ -5,7 +5,7 @@
 //
 //import static org.junit.jupiter.api.Assertions.assertNotNull;
 //import static org.junit.jupiter.api.Assertions.assertNull;
-////import TOPSECRET.domain.Publisher; ...
+////import TOPSECRET.domain.Publisher.Publisher; ...
 //
 //class PublisherRepositoryDependenciesTest {
 //

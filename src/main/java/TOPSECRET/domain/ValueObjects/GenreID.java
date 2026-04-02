@@ -44,6 +44,11 @@ public class GenreID implements DomainID {
         return Objects.equals(genreID, that.genreID);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(genreID);
+    }
+
     /**
      * Returns the underlying string value of this ID.
      *

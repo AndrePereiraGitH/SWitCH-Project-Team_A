@@ -1,20 +1,23 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Publisher;
 
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 
 import java.util.Objects;
 
 /**
- * Represents a publisher entity in the system.
+ * Represents a publisher aggregate root in the system.
  *
- * <p>A publisher is uniquely identified by its VAT number.
- * Two publishers are considered equal if they share the same VAT number,
- * regardless of name or contact information.</p>
+ * <p>A publisher is uniquely identified by its {@link PublisherID}, which is derived
+ * from its VAT number. Instances are immutable after creation.</p>
  */
-public class Publisher {
-    private String _name;
-    private String _vatNumber;
-    private Contact _contact;
+
+public class Publisher implements AggregateRoot<PublisherID> {
+    private final PublisherID _publisherID;
+    private final String _name;
+    private final String _vatNumber;
+    private final Contact _contact;
 
     /**
      * Constructs a new {@code Publisher} with the given name, VAT number, and contact.
@@ -22,23 +25,23 @@ public class Publisher {
      * @param name      the publisher's name; must not be blank
      * @param vatNumber the publisher's VAT number; must not be blank
      * @param contact   the publisher's contact information
-     * @throws IllegalArgumentException if {@code name} or {@code vatNumber} is blank
+     * @throws IllegalArgumentException if {@code name} or {@code vatNumber} is {@code null} or blank
      */
     protected Publisher(String name, String vatNumber, Contact contact) {
 
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Not a valid name");
         }
         _name = name;
 
-        if (vatNumber.isBlank()) {
+        if (vatNumber == null || vatNumber.isBlank()) {
             throw new IllegalArgumentException("Not a valid vatNumber");
         }
+        _publisherID = new PublisherID(vatNumber);
         _vatNumber = vatNumber;
 
         _contact = contact;
     }
-
 
     public String getName() {
         return _name;
@@ -52,18 +55,63 @@ public class Publisher {
         return _contact;
     }
 
+    /**
+     * Returns the unique identifier of this {@code Publisher}.
+     *
+     * @return the {@link PublisherID} identifying this publisher; never {@code null}
+     */
+
+    @Override
+    public PublisherID id() {
+        return _publisherID;
+    }
+
+    /**
+     * Determines whether this {@code Publisher} represents the same business entity
+     * as another object, based on name and contact equality.
+     *
+     * @param o the object to compare with
+     * @return {@code true} if {@code o} is a {@code Publisher} with the same name and contact;
+     *         {@code false} otherwise
+     */
+
+    @Override
+    public boolean sameAs(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Publisher that = (Publisher) o;
+        return Objects.equals(_name, that._name) &&
+                Objects.equals(_contact, that._contact);
+    }
+
+    /**
+     * Indicates whether some other object is equal to this {@code Publisher}.
+     *
+     * <p>Two publishers are considered equal if and only if they share the same
+     * {@link PublisherID}.</p>
+     *
+     * @param o the reference object with which to compare
+     * @return {@code true} if {@code o} is a {@code Publisher} with the same identifier;
+     *         {@code false} otherwise
+     */
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Publisher that = (Publisher) o;
-        return Objects.equals(this.getVatNumber(), that.getVatNumber());
+        return Objects.equals(_publisherID, that._publisherID);
     }
+
+    /**
+     * Returns a hash code value for this {@code Publisher}, based solely on its identifier.
+     *
+     * @return the hash code of this publisher's {@link PublisherID}
+     */
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getVatNumber());
+        return Objects.hash(_publisherID);
     }
 
     /**

@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Publisher;
 
 import TOPSECRET.domain.ValueObjects.Contact;
 

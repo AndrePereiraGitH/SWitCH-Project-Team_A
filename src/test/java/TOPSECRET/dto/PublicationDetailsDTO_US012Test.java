@@ -1,6 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
@@ -187,7 +186,7 @@ class PublicationDetailsDTO_US012Test {
         BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
 
         when(bibliographicalDataDouble.getTitle()).thenReturn(title);
-        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
+//        when(bibliographicalDataDouble.getAuthors()).thenReturn(authorsDouble);
 
         return bibliographicalDataDouble;
     }

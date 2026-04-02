@@ -1,8 +1,10 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.Publisher;
 
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.Publisher;
+import TOPSECRET.domain.ValueObjects.PublisherID;
+
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Contract for repositories responsible for managing {@link Publisher} instances.
@@ -47,10 +49,10 @@ public interface IPublisherRepository {
     List<Publisher> getAllPublishers();
 
     /**
-     * Finds and returns the {@link Publisher} with the given VAT number.
+     * Finds and returns the {@link Publisher} with the given identifier.
      *
-     * @param vatNumber the VAT number to search for
-     * @return the Publisher with the matching VAT number, or {@code null} if not found
+     * @param vatNumber the {@link PublisherID} to search for
+     * @return an {@link Optional} containing the Publisher if found; empty otherwise
      */
-    Publisher findByVatNumber(String vatNumber);
+    Optional<Publisher> findByVatNumber(PublisherID vatNumber);
 }

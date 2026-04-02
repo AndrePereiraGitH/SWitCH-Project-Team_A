@@ -1,11 +1,11 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -39,7 +39,7 @@ class PublicationSampleDTO_US015Test {
 
         // Arrange
         Author author = mock(Author.class);
-        Publisher  publisher = mock(Publisher.class);
+        Publisher publisher = mock(Publisher.class);
         PublicationType pubType = mock(PublicationType.class);
 
         pubSample = mock(PublicationSample.class);
@@ -55,9 +55,9 @@ class PublicationSampleDTO_US015Test {
 //        when(pubSample.getOwnerId()).thenReturn(owner);
 
         when(bd.getTitle()).thenReturn("Clean Code");
-        when(bd.getAuthors()).thenReturn(List.of(author));
+//        when(bd.getAuthors()).thenReturn(List.of(author));
         when(author.getName()).thenReturn("Robert C. Martin");
-        when(bd.getGenres()).thenReturn(List.of(new GenreFactory().create("Programming")));
+//        when(bd.getGenres()).thenReturn(List.of(new GenreFactory().create("Programming")));
 
         when(edition.getEditionNumber()).thenReturn("3rd");
         when(edition.getCode()).thenReturn(Code.fromIsbn13("9780132350884"));
