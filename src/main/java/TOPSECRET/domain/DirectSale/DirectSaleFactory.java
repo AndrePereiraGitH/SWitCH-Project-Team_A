@@ -28,24 +28,12 @@ public class DirectSaleFactory {
      * @param listings the listings included in the sale; must not be null and must all be DIRECT_SALE
      * @param buyer    the buyer associated with the sale
      * @return a new DirectSale instance in an unfinished state
-     * @throws IllegalArgumentException if listings is null or contains any listing not of type DIRECT_SALE
      */
 
     public DirectSale create(List<ListingId> listings, UserId buyer) {
 
         if (listings == null) {
             throw new IllegalArgumentException("Listings cannot be null");
-        }
-
-//        boolean invalid = listings.stream()
-//                .anyMatch(l -> l.getSaleType() != SaleType.DIRECT_SALE);
-
-        boolean invalid = true;
-
-        if (invalid) {
-            throw new IllegalArgumentException(
-                    "All listings must be of type DIRECT_SALE to create a DirectSale"
-            );
         }
 
         return new DirectSale(listings, buyer, false);

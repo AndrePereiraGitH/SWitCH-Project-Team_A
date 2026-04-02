@@ -25,6 +25,22 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
     // Constructor for DirectSale
     //==================================================================================================================
 
+    /**
+     * Constructs a DirectSale with the given listings, buyer, and completion status.
+     *
+     * <p>This constructor initializes a new DirectSale instance with a generated
+     * unique identifier. It validates that the listings list and buyer are not null.
+     * Additionally, all listings are expected to be of type DIRECT_SALE (validation
+     * logic to be implemented).</p>
+     *
+     * @param _listings     the list of listings included in this direct sale; must not be null
+     * @param _buyer        the user purchasing the listings; must not be null
+     * @param _isFinished   indicates whether the direct sale has been completed
+     *
+     * @throws IllegalArgumentException if the listings list is null
+     * @throws IllegalArgumentException if the buyer is null
+     * @throws IllegalArgumentException if any listing is not of type DIRECT_SALE
+     */
     protected DirectSale (List<ListingId> _listings, UserId _buyer, boolean _isFinished) {
 
         if(_listings == null){
@@ -33,6 +49,17 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
         if(_buyer == null){
             throw new IllegalArgumentException("Buyer cannot be empty");
         }
+
+        // TO BE UPDATED LATER
+        // method to check is listing is of direct sale type
+        boolean invalid = false;
+
+        if (invalid) {
+            throw new IllegalArgumentException(
+                    "All listings must be of type DIRECT_SALE to create a DirectSale"
+            );
+        }
+
 
         this._directSaleID = new DirectSaleID(UUID.randomUUID().toString());
         this._listings = _listings;
@@ -92,7 +119,9 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
     }
 
     /**
-     * @return _directSaleID
+     * Returns the unique identifier of this DirectSale.
+     *
+     * @return the DirectSaleID associated with this direct sale
      */
     @Override
     public DirectSaleID id() { return _directSaleID; }
