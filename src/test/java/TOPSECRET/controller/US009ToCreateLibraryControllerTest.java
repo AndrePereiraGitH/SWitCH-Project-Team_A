@@ -1,12 +1,14 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.repository.UserRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,78 +23,56 @@ import static org.mockito.Mockito.*;
  */
 class US009ToCreateLibraryControllerTest {
 
+    // ===========================================================
+    // ========== Constructor Tests ==============================
+    // ===========================================================
 
-
-    /**
-     * Tests that the controller can be successfully instantiated with valid repositories.
-     * <p>
-     * Verifies that no exception is thrown when both repositories are non-null.
-     * </p>
-     */
     @Test
     void shouldCreateControllerWithValidRepositories() {
         //Arrange
-
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         // Act & Assert
-        assertDoesNotThrow(() -> new US009ToCreateLibraryController(libraryRepositoryDouble, userRepositoryMemDouble));
+        assertDoesNotThrow(() ->
+                new US009ToCreateLibraryController(libraryRepositoryDouble, userRepositoryMemDouble));
     }
 
-    /**
-     * Tests that a {@link NullPointerException} is thrown when attempting to
-     * instantiate the controller with a null LibraryRepository.
-     * <p>
-     * Validates that the LibraryRepository is a required dependency.
-     * </p>
-     */
     @Test
     void shouldThrowExceptionWhenLibraryRepositoryIsNull() {
         //Arrange
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
 
         // Act & Assert
-        assertThrows(NullPointerException.class, () -> new US009ToCreateLibraryController(null, userRepositoryMemDouble));
+        assertThrows(NullPointerException.class, () ->
+                new US009ToCreateLibraryController(null, userRepositoryMemDouble));
     }
 
-    /**
-     * Tests that a {@link NullPointerException} is thrown when attempting to
-     * instantiate the controller with a null UserRepository.
-     * <p>
-     * Validates that the UserRepository is a required dependency.
-     * </p>
-     */
     @Test
     void shouldThrowExceptionWhenUserRepositoryIsNull() {
         //Arrange
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
-
         // Act & Assert
-        assertThrows(NullPointerException.class, () -> new US009ToCreateLibraryController(libraryRepositoryDouble,null));
+        assertThrows(NullPointerException.class, () ->
+                new US009ToCreateLibraryController(libraryRepositoryDouble, null));
     }
 
-    /**
-     * Tests that a library is successfully created when the user exists in the repository.
-     * <p>
-     * Verifies that the createAndAddLibrary method returns {@code true} when
-     * provided with a valid library name and an existing user.
-     * </p>
-     *
-     * @throws InstanceAlreadyExistsException if the user already has a library
-     */
+    // ===========================================================
+    // ========== createAndAddLibrary Tests ======================
+    // ===========================================================
+
     @Test
-    void shouldCreateALibraryIfUserExists() throws InstanceAlreadyExistsException {
+    void createAndAdd_shouldReturnTrue_whenALibraryIsCreated() throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "mylib";
         String username = "User1";
 
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn(username);
+        UserId userId = mock(UserId.class);
+        when(userId.getUsername()).thenReturn(UUID.randomUUID().toString());
 
         UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
-        when(userRepositoryMemDouble.exists(username)).thenReturn(true);
+        when(userRepositoryMemDouble.findIdByUsername(username)).thenReturn(Optional.of(userId));
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
@@ -100,101 +80,31 @@ class US009ToCreateLibraryControllerTest {
                 libraryRepositoryDouble, userRepositoryMemDouble);
 
         // Act
-        boolean result = ctrl.createAndAddLibrary(libraryName, userDouble);
+        boolean result = ctrl.createAndAddLibrary(libraryName, username);
 
         // Assert
         assertTrue(result);
     }
 
-    /**
-     * Tests that a library is not created when the user does not exist in the repository.
-     * <p>
-     * Verifies that the createAndAddLibrary method returns {@code false} when
-     * attempting to create a library for a user that hasn't been added to the repository.
-     * </p>
-     *
-     * @throws InstanceAlreadyExistsException if the user already has a library
-     */
     @Test
-    void shouldNotCreateALibraryIfUserDoesNotExist() throws InstanceAlreadyExistsException {
-        //Arrange
+    void createAndAdd_shouldThrowAnException_whenUserIsEmpty() {
+        // Arrange
         String libraryName = "mylib";
-
-        UserId userDouble = mock(UserId.class);
-
-        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
-
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-
-        US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryMemDouble);
-
-        // Act
-        boolean result = ctrl.createAndAddLibrary(libraryName,userDouble);
-
-        //Assert
-        assertFalse(result);
-    }
-
-    /**
-     * Tests that the isUserExistent method returns {@code true} for a user
-     * that exists in the repository.
-     * <p>
-     * Verifies correct detection of existing users.
-     * </p>
-     */
-    @Test
-    void shouldReturnTrueIfUserExists(){
-        //Arrange
         String username = "User1";
 
-        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
-        when(userRepositoryMemDouble.exists(username)).thenReturn(true);
+        UserId userId = mock(UserId.class);
+        when(userId.getUsername()).thenReturn(UUID.randomUUID().toString());
 
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn(username);
+        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
+        when(userRepositoryMemDouble.findIdByUsername(username)).thenReturn(Optional.empty());
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
                 libraryRepositoryDouble, userRepositoryMemDouble);
 
-        // Act
-        boolean result = ctrl.isUserExistent(userDouble);
-
-        //Assert
-        assertTrue(result);
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                ctrl.createAndAddLibrary(libraryName, username));
     }
-
-    /**
-     * Tests that the isUserExistent method returns {@code false} for a user
-     * that does not exist in the repository.
-     * <p>
-     * Verifies correct detection when a user has not been added to the repository.
-     * </p>
-     */
-    @Test
-    void shouldReturnFalseIfUserDoesNotExist(){
-        //Arrange
-        String username = "User1";
-
-        UserRepositoryMem userRepositoryMemDouble = mock(UserRepositoryMem.class);
-        when(userRepositoryMemDouble.exists(username)).thenReturn(false);
-
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn(username);
-
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-
-        US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryMemDouble);
-
-        // Act
-        boolean result = ctrl.isUserExistent(userDouble);
-
-        //Assert
-        assertFalse(result);
-    }
-
-
 }
