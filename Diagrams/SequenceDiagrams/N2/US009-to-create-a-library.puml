@@ -8,7 +8,9 @@ actor User
 participant ":UI009" as UI
 
 participant ":US009ToCreateLibraryCtrl" as Ctrl
-participant ":LibraryRepository" as LibraryRepo
+
+participant ":IUserRepository" as userRepo
+participant ":ILibraryRepository" as LibraryRepo
 participant ":LibraryFactory" as factory
 
 
@@ -16,19 +18,28 @@ User -> UI : I want to create a library.
 activate UI
 UI --> User : What name?
 deactivate UI
-User -> UI : libraryName, user
+User -> UI : libraryName, username
+
 activate UI
 
-UI -> Ctrl : createAndAddLibrary(libraryName,user)
+UI -> Ctrl : createAndAddLibrary(libraryName,username)
+
 activate Ctrl
-Ctrl -> LibraryRepo : createAndAdd(libraryName,user)
+
+Ctrl -> userRepo: findIdByUsername(username)
+activate userRepo
+userRepo -> Ctrl: userId
+deactivate userRepo
+
+
+Ctrl -> LibraryRepo : createAndAdd(libraryName,userId)
 activate LibraryRepo
 
 
 
 LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary()
 
-LibraryRepo -> factory: create(libraryName,user)
+LibraryRepo -> factory: create(libraryName,userId)
 activate factory
 create "lib1:Library" as Library
 factory -> Library : create()
@@ -36,7 +47,7 @@ factory -> LibraryRepo: lib1
 deactivate factory
 
 
-LibraryRepo -> LibraryRepo : libraries.put(user,lib1)
+LibraryRepo -> LibraryRepo : libraries.put(userId,lib1)
 
 
 LibraryRepo --> Ctrl : lib1
