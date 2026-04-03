@@ -66,7 +66,7 @@ public class UserRepositoryMem implements IUserRepository {
     /**
      * {@inheritDoc}
      */
-    public Optional<UserId> findIdByUsername(String username){
+    public Optional<UserId> findUserIdByUsername(String username){
 
         if(username == null){
             throw new NullPointerException("Username must not be null");

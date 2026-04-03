@@ -72,7 +72,7 @@ class US009ToCreateLibraryControllerTest {
         when(userId.getUsername()).thenReturn(UUID.randomUUID().toString());
 
         IUserRepository userRepositoryDouble = mock(IUserRepository.class);
-        when(userRepositoryDouble.findIdByUsername(username)).thenReturn(Optional.of(userId));
+        when(userRepositoryDouble.findUserIdByUsername(username)).thenReturn(Optional.of(userId));
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
@@ -96,7 +96,7 @@ class US009ToCreateLibraryControllerTest {
         when(userId.getUsername()).thenReturn(UUID.randomUUID().toString());
 
         IUserRepository userRepositoryDouble = mock(IUserRepository.class);
-        when(userRepositoryDouble.findIdByUsername(username)).thenReturn(Optional.empty());
+        when(userRepositoryDouble.findUserIdByUsername(username)).thenReturn(Optional.empty());
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 

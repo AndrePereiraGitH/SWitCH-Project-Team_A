@@ -63,7 +63,7 @@ public class US009ToCreateLibraryController {
 
     public boolean createAndAddLibrary(String libraryName, String username) throws InstanceAlreadyExistsException {
 
-        Optional<UserId> userId = _userRepository.findIdByUsername(username);
+        Optional<UserId> userId = _userRepository.findUserIdByUsername(username);
 
         if(userId.isEmpty()){
             throw new IllegalArgumentException("This user does not exist");

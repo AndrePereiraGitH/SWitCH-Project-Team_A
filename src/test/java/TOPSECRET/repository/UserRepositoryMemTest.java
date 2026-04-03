@@ -167,7 +167,7 @@ class UserRepositoryMemTest {
 
 
     @Test
-    void findIdByUsername_shouldReturnAValidId_WhenUsernameIsValid(){
+    void findIdByUsername_shouldReturnAValidUserId_WhenUsernameIsValid(){
         //Arrange
         User createdUser = userRepository.createAndAdd(
                 "ReturnTestUser",
@@ -176,38 +176,38 @@ class UserRepositoryMemTest {
                 UserRole.NORMAL_USER);
 
         //Act
-        Optional<UserId> realUserId = userRepository.findIdByUsername("ReturnTestUser");
+        Optional<UserId> realUserId = userRepository.findUserIdByUsername("ReturnTestUser");
 
         //Assert
         assertEquals(createdUser.getId(),realUserId.get());
     }
 
     @Test
-    void findIdByUsername_shouldThrowAnException_WhenUsernameIsNull(){
+    void findUserIdByUsername_shouldThrowAnException_WhenUsernameIsNull(){
         //Arrange
 
         //Act + Assert
-        assertThrows( NullPointerException.class, () -> userRepository.findIdByUsername(null));
+        assertThrows( NullPointerException.class, () -> userRepository.findUserIdByUsername(null));
     }
 
     @Test
-    void findIdByUsername_shouldThrowAnException_WhenUsernameIsEmpty(){
+    void findUserIdByUsername_shouldThrowAnException_WhenUsernameIsEmpty(){
         //Arrange
 
         //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> userRepository.findIdByUsername(""));
+        assertThrows(IllegalArgumentException.class, () -> userRepository.findUserIdByUsername(""));
     }
 
     @Test
-    void findIdByUsername_shouldThrowAnException_WhenUsernameIsBlank(){
+    void findUserIdByUsername_shouldThrowAnException_WhenUsernameIsBlank(){
         //Arrange
 
         //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> userRepository.findIdByUsername("     "));
+        assertThrows(IllegalArgumentException.class, () -> userRepository.findUserIdByUsername("     "));
     }
 
     @Test
-    void findIdByUsername_shouldReturnEmpty_WhenUsernameIsNotFound(){
+    void findUserIdByUsername_shouldReturnEmpty_WhenUsernameIsNotFound(){
         //Arrange
         User createdUser = userRepository.createAndAdd(
                 "ReturnTestUser",
@@ -216,7 +216,7 @@ class UserRepositoryMemTest {
                 UserRole.NORMAL_USER);
 
         //Act
-        Optional<UserId> realUserId = userRepository.findIdByUsername("NotFoundUser");
+        Optional<UserId> realUserId = userRepository.findUserIdByUsername("NotFoundUser");
 
         //Assert
         assertTrue(realUserId.isEmpty());
