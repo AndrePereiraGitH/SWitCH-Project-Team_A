@@ -30,22 +30,22 @@ class US009ToCreateLibraryControllerTest {
     @Test
     void shouldCreateControllerWithValidRepositories() {
         //Arrange
-        IUserRepository userRepositoryMemDouble = mock(IUserRepository.class);
+        IUserRepository userRepositoryDouble = mock(IUserRepository.class);
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         // Act & Assert
         assertDoesNotThrow(() ->
-                new US009ToCreateLibraryController(libraryRepositoryDouble, userRepositoryMemDouble));
+                new US009ToCreateLibraryController(libraryRepositoryDouble, userRepositoryDouble));
     }
 
     @Test
     void shouldThrowExceptionWhenLibraryRepositoryIsNull() {
         //Arrange
-        IUserRepository userRepositoryMemDouble = mock(IUserRepository.class);
+        IUserRepository userRepositoryDouble = mock(IUserRepository.class);
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new US009ToCreateLibraryController(null, userRepositoryMemDouble));
+                new US009ToCreateLibraryController(null, userRepositoryDouble));
     }
 
     @Test
@@ -71,13 +71,13 @@ class US009ToCreateLibraryControllerTest {
         UserId userId = mock(UserId.class);
         when(userId.getUsername()).thenReturn(UUID.randomUUID().toString());
 
-        IUserRepository userRepositoryMemDouble = mock(IUserRepository.class);
-        when(userRepositoryMemDouble.findIdByUsername(username)).thenReturn(Optional.of(userId));
+        IUserRepository userRepositoryDouble = mock(IUserRepository.class);
+        when(userRepositoryDouble.findIdByUsername(username)).thenReturn(Optional.of(userId));
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryMemDouble);
+                libraryRepositoryDouble, userRepositoryDouble);
 
         // Act
         boolean result = ctrl.createAndAddLibrary(libraryName, username);
@@ -95,13 +95,13 @@ class US009ToCreateLibraryControllerTest {
         UserId userId = mock(UserId.class);
         when(userId.getUsername()).thenReturn(UUID.randomUUID().toString());
 
-        IUserRepository userRepositoryMemDouble = mock(IUserRepository.class);
-        when(userRepositoryMemDouble.findIdByUsername(username)).thenReturn(Optional.empty());
+        IUserRepository userRepositoryDouble = mock(IUserRepository.class);
+        when(userRepositoryDouble.findIdByUsername(username)).thenReturn(Optional.empty());
 
         ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
 
         US009ToCreateLibraryController ctrl = new US009ToCreateLibraryController(
-                libraryRepositoryDouble, userRepositoryMemDouble);
+                libraryRepositoryDouble, userRepositoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
