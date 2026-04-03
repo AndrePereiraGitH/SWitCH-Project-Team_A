@@ -9,8 +9,8 @@ participant ":UI009" as UI
 
 participant ":US009ToCreateLibraryCtrl" as Ctrl
 
-participant ":UserRepositoryMem" as userRepo
-participant ":LibraryRepositoryMem" as LibraryRepo
+participant ":IUserRepository" as userRepo
+participant ":ILibraryRepository" as LibraryRepo
 participant ":LibraryFactory" as factory
 
 

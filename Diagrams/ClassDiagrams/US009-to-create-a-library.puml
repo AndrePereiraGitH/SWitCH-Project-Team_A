@@ -7,16 +7,16 @@ class UI009 {
 
 
 class US009ToCreateLibraryCtrl {
-    - libraryRepository: LibraryRepository
-    - userRepository: UserRepository
+    - libraryRepository: ILibraryRepository
+    - userRepository: IUserRepository
     + createAndAddLibrary(libraryName, username): boolean
 }
 
-class UserRepository {
+class IUserRepository {
     + findIdByUsername(username): UserId
 }
 
-class LibraryRepository {
+class ILibraryRepository {
     - libraries: Map<UserId, Library>
     + createAndAdd(libraryName, userId): Library
     - verifyIfUserHasALibrary(userId): boolean
@@ -34,10 +34,10 @@ class Library {
 
 ' Relationships
 UI009 ..> US009ToCreateLibraryCtrl: uses
-US009ToCreateLibraryCtrl ..> UserRepository: uses
-US009ToCreateLibraryCtrl ..> LibraryRepository: uses
-LibraryRepository "1" --> "1" LibraryFactory: uses
-LibraryRepository "1" --> "*" Library: manages
+US009ToCreateLibraryCtrl ..> IUserRepository: uses
+US009ToCreateLibraryCtrl ..> ILibraryRepository: uses
+ILibraryRepository "1" --> "1" LibraryFactory: uses
+ILibraryRepository "1" --> "*" Library: manages
 LibraryFactory ..> Library: creates
 
 @enduml
