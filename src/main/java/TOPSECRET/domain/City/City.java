@@ -29,14 +29,7 @@ import java.util.UUID;
 public class City implements AggregateRoot<CityID> {
 
     private final CityID cityID;
-
-    /**
-     * The country this city belongs to.
-     */
     private CountryID _countryID;
-    /**
-     * The name of the city.
-     */
     private String _cityName;
 
     /**

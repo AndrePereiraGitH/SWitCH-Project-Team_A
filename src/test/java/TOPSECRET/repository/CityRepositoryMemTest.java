@@ -2,6 +2,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
+import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ class CityRepositoryMemTest {
     void shouldCreateAndAddCity() {
 
         // Arrange
-        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
+        ICityRepository repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(anyCountryID, anyName)).thenReturn(anyCity);
 
@@ -44,7 +45,7 @@ class CityRepositoryMemTest {
     void shouldThrowWhenCityAlreadyExists() {
 
         // Arrange
-        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
+        ICityRepository repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(anyCountryID, anyName)).thenReturn(anyCity);
         when(anyCity.sameAs(anyCity)).thenReturn(true);
@@ -60,7 +61,7 @@ class CityRepositoryMemTest {
     void shouldThrowExceptionIfCountryIsNull() {
 
         // Arrange
-        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
+        ICityRepository repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(null, anyName))
                 .thenThrow(new IllegalArgumentException());
@@ -74,7 +75,7 @@ class CityRepositoryMemTest {
     void shouldStoreOnlyOneInstanceOfCity() {
 
         // Arrange
-        CityRepositoryMem repository = new CityRepositoryMem(cityFactory);
+        ICityRepository repository = new CityRepositoryMem(cityFactory);
 
         when(cityFactory.create(anyCountryID, anyName)).thenReturn(anyCity);
         when(anyCity.sameAs(anyCity)).thenReturn(true);
