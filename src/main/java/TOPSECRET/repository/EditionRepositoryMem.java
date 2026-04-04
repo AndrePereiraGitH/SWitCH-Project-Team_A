@@ -6,6 +6,7 @@ import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType.PublicationType;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Repository responsible for managing {@link Edition} entities.
@@ -41,6 +43,23 @@ public class EditionRepositoryMem implements IEditionRepository {
       }
       _editions.add(newEdition);
        return List.copyOf(_editions);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Optional<Edition> findEditionById(EditionID editionID){
+
+        if(editionID == null){
+            throw new NullPointerException("EditionId must not be null");
+        }
+
+        for(Edition edition: _editions){
+            if(edition.id().equals(editionID)){
+                return Optional.of(edition);
+            }
+        }
+        return Optional.empty();
     }
 }
 

@@ -6,6 +6,7 @@ import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -139,6 +141,117 @@ class EditionRepositoryMemTest {
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Edition.class)));
+    }
+
+
+
+    // ─────────────────────────────────────────────────────────────
+    // findEditionById
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    void findEditionById_shouldReturnAnEdition_whenIdIsValid(){
+
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+
+        EditionID editionID = mock(EditionID.class);
+        Edition edition = mock(Edition.class);
+        when(edition.id()).thenReturn(editionID);
+
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
+                .thenReturn(edition);
+
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+
+        // Act
+        Optional<Edition> result = repository.findEditionById(editionID);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(edition,result.get());
+    }
+
+    @Test
+    void findEditionById_shouldReturnAnEdition_whenIdIsValid_multipleEditions(){
+
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+
+        EditionID editionID_1 = mock(EditionID.class);
+        Edition edition_1 = mock(Edition.class);
+        when(edition_1.id()).thenReturn(editionID_1);
+
+        EditionID editionID_2 = mock(EditionID.class);
+        Edition edition_2 = mock(Edition.class);
+        when(edition_2.id()).thenReturn(editionID_2);
+
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
+                .thenReturn(edition_1);
+
+        when(editionFactoryDouble.create("2st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
+                .thenReturn(edition_2);
+
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+
+        // Act
+        Optional<Edition> result = repository.findEditionById(editionID_1);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(edition_1,result.get());
+    }
+
+    @Test
+    void findEditionById_shouldReturnEmpty_whenIdIsNotFound(){
+
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+
+        EditionID editionID = mock(EditionID.class);
+        Edition edition = mock(Edition.class);
+        when(edition.id()).thenReturn(editionID);
+
+        EditionID editionNotFound = mock(EditionID.class);
+
+
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
+                .thenReturn(edition);
+
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+
+        // Act
+        Optional<Edition> result = repository.findEditionById(editionNotFound);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findEditionById_shouldThrowAnException_whenIdIsNull(){
+
+        // Arrange
+        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+
+        EditionID editionID = mock(EditionID.class);
+        Edition edition = mock(Edition.class);
+        when(edition.id()).thenReturn(editionID);
+
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
+                .thenReturn(edition);
+        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+
+        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeDouble, publisherDouble, Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repository.findEditionById(null));
     }
 
 }
