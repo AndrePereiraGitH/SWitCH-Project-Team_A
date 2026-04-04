@@ -3,6 +3,7 @@ package TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -55,4 +56,14 @@ public interface IPublicationTypeRepository {
      *                                  or if no publication type is found
      */
     PublicationType findByAttributes(String mediaFormat);
+
+    /**
+     * Finds a {@link PublicationType} by its unique identifier.
+     *
+     * @param pubTypeId the unique identifier of the publication type to search for; must not be {@code null}
+     * @return an {@link Optional} containing the matching {@link PublicationType} if found,
+     *         or an empty {@link Optional} if no publication type with the given ID exists
+     * @throws NullPointerException if {@code pubTypeId} is {@code null}
+     */
+    Optional<PublicationType> findPublicationTypeById(PublicationTypeId pubTypeId);
 }
