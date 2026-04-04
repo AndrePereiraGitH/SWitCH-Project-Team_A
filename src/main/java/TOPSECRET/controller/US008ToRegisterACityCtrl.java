@@ -27,12 +27,12 @@ public class US008ToRegisterACityCtrl {
     //Again, how do we validate it's a user admin here? Should the method receive a User as input and not allow the role
     // to be anything else other than ADMIN?
 
-    public US008ToRegisterACityCtrl(ICityRepository ICityRepository) {
-        if (ICityRepository == null) {
+    public US008ToRegisterACityCtrl(ICityRepository repository) {
+        if (repository == null) {
             throw new IllegalArgumentException("CityRepository must not be left blank");
         }
 
-        this._ICityRepository = ICityRepository;
+        this._ICityRepository = repository;
     }
 
     public City registerNewCity(CountryID countryID1, String cityName1) {
