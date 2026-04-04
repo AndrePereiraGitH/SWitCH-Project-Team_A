@@ -22,7 +22,7 @@ import TOPSECRET.domain.ValueObjects.CountryID;
 
 public class US008ToRegisterACityCtrl {
 
-    private final ICityRepository _ICityRepository;
+    private final ICityRepository _cityRepository;
 
     //Again, how do we validate it's a user admin here? Should the method receive a User as input and not allow the role
     // to be anything else other than ADMIN?
@@ -32,13 +32,13 @@ public class US008ToRegisterACityCtrl {
             throw new IllegalArgumentException("CityRepository must not be left blank");
         }
 
-        this._ICityRepository = repository;
+        this._cityRepository = repository;
     }
 
     public City registerNewCity(CountryID countryID1, String cityName1) {
 
 
-        return _ICityRepository.createAndAdd(countryID1, cityName1);
+        return _cityRepository.createAndAdd(countryID1, cityName1);
 
     }
 }
