@@ -1,9 +1,11 @@
 package TOPSECRET.domain.Author;
 
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface responsible for managing {@link Author} entities.
@@ -34,6 +36,20 @@ public interface IAuthorRepository {
      *                                  by the {@link Author} constructor
      */
     Author createAndAddAuthor(String name, CountryID countryID, LocalDate dateOfBirth, String biography);
+
+    /**
+     * Finds an author in the repository by their unique identifier.
+     *
+     * <p>Iterates through all stored authors and returns the first one whose
+     * ID matches the provided {@link AuthorId}.</p>
+     *
+     * @param authorId the unique identifier of the author to search for;
+     *                 must not be {@code null}
+     * @return an {@link Optional} containing the matching {@link Author} if found,
+     *         or an empty {@link Optional} if no author with the given ID exists
+     * @throws NullPointerException if {@code authorId} is {@code null}
+     */
+    Optional<Author> findAuthorById(AuthorId authorId);
 
     /**
      * Retrieves all authors currently stored in the repository.
