@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 class ContactTest {
 
     //Double for City class
-    private final City anyCity = mock(City.class);
+    private final CityID anyCity = mock(CityID.class);
 
     /**
      * Helper method to create a valid Contact.
