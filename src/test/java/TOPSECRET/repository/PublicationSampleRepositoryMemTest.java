@@ -315,11 +315,11 @@ class PublicationSampleRepositoryMemTest {
 
 
     // ===========================================================
-    // ========== Tests for findById =============================
+    // ========== Tests for findPublicationSampleById ============
     // ===========================================================
 
     @Test
-    void findById_shouldThrowException_whenIdIsNull() {
+    void findPublicationSampleById_shouldThrowException_whenIdIsNull() {
         // Arrange
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
@@ -328,7 +328,7 @@ class PublicationSampleRepositoryMemTest {
     }
 
     @Test
-    void findById_shouldReturnPublicationSample_whenIdExists() throws InstanceAlreadyExistsException {
+    void findPublicationSampleById_shouldReturnPublicationSample_whenIdExists() throws InstanceAlreadyExistsException {
         // Arrange
         PublicationSampleId id = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
@@ -348,7 +348,7 @@ class PublicationSampleRepositoryMemTest {
     }
 
     @Test
-    void findById_shouldReturnEmptyOptional_whenIdDoesNotExist() {
+    void findPublicationSampleById_shouldReturnEmptyOptional_whenIdDoesNotExist() {
         // Arrange
         PublicationSampleId id = mock(PublicationSampleId.class);
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
@@ -361,7 +361,7 @@ class PublicationSampleRepositoryMemTest {
     }
 
     @Test
-    void findById_shouldReturnCorrectSample_whenMultipleSamplesExist() throws InstanceAlreadyExistsException {
+    void findPublicationSampleByIdgit_shouldReturnCorrectSample_whenMultipleSamplesExist() throws InstanceAlreadyExistsException {
         // Arrange
         PublicationSampleId id_1 = mock(PublicationSampleId.class);
         PublicationSampleId id_2 = mock(PublicationSampleId.class);

@@ -117,13 +117,17 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public Optional<PublicationSample> findById(PublicationSampleId id) {
-        if (id == null) {
+    public Optional<PublicationSample> findPublicationSampleById(PublicationSampleId pbSampleId) {
+        if (pbSampleId == null) {
             throw new NullPointerException("PublicationSampleID cannot be null");
         }
-        return allPublicationsInSystem.stream()
-                .filter(ps -> id.equals(ps.id()))
-                .findFirst();
+
+        for(PublicationSample pbSample: allPublicationsInSystem){
+            if(pbSample.id().equals(pbSampleId)){
+                return Optional.of(pbSample);
+            }
+        }
+        return Optional.empty();
     }
 
     // -------------------------------------------------------------------------
