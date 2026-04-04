@@ -324,7 +324,7 @@ class PublicationSampleRepositoryMemTest {
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findById(null));
+        assertThrows(NullPointerException.class, () -> repo.findPublicationSampleById(null));
     }
 
     @Test
@@ -340,7 +340,7 @@ class PublicationSampleRepositoryMemTest {
         repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
 
         // Act
-        Optional<PublicationSample> result = repo.findById(id);
+        Optional<PublicationSample> result = repo.findPublicationSampleById(id);
 
         // Assert
         assertTrue(result.isPresent());
@@ -354,7 +354,7 @@ class PublicationSampleRepositoryMemTest {
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act
-        Optional<PublicationSample> result = repo.findById(id);
+        Optional<PublicationSample> result = repo.findPublicationSampleById(id);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -382,7 +382,7 @@ class PublicationSampleRepositoryMemTest {
         repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
 
         // Act
-        Optional<PublicationSample> result = repo.findById(id_2);
+        Optional<PublicationSample> result = repo.findPublicationSampleById(id_2);
 
         // Assert
         assertTrue(result.isPresent());

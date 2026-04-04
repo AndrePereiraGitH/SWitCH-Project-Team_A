@@ -79,7 +79,7 @@ public interface IPublicationSampleRepository {
      * @return an {@link Optional} containing the matching sample, or empty if none found
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
-    Optional<PublicationSample> findById(PublicationSampleId id);
+    Optional<PublicationSample> findPublicationSampleById(PublicationSampleId id);
 
     // -------------------------------------------------------------------------
     // Specific Queries
