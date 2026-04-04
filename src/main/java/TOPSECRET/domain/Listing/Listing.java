@@ -198,14 +198,6 @@ public class Listing implements AggregateRoot<ListingId> {
     // =========== EQUALS AND SAMEAS ==============================
     // ============================================================
 
-    /**
-     * Compares this listing with another object based on identity.
-     * <p>
-     * Two Listings are considered equal if and only if they share the same {@link ListingId}.
-     *
-     * @param object the object to compare with
-     * @return {@code true} if the object is a Listing with the same identity, {@code false} otherwise
-     */
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -213,17 +205,6 @@ public class Listing implements AggregateRoot<ListingId> {
         Listing other = (Listing) object;
         return this._listingId.equals(other._listingId);
     }
-
-    /**
-     * Determines whether this Listing is semantically equivalent to another object.
-     * <p>
-     * Unlike {@link #equals(Object)}, which compares Listings solely by identity
-     * ({@link ListingId}), this method evaluates whether two Listings represent
-     * the same conceptual sale in the domain.
-     *
-     * @param object the object to compare with this Listing
-     * @return {@code true} if the given object is a Listing with the same conceptual sale; {@code false} otherwise
-     */
 
     @Override
     public boolean sameAs(Object object) {

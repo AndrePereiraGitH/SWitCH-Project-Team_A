@@ -50,17 +50,6 @@ public final class BidId implements DomainID {
     // ============== EQUALS ======================================
     // ============================================================
 
-    /**
-     * Compares this {@code BidId} with another object for equality.
-     * <p>
-     * Two {@code BidId} instances are equal if and only if their
-     * underlying UUID string values are equal.
-     * </p>
-     *
-     * @param o the object to compare with this identifier
-     * @return {@code true} if the given object is a {@code BidId} with the same UUID string;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

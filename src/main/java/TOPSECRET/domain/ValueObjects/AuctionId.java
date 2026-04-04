@@ -47,17 +47,6 @@ public final class AuctionId implements DomainID {
     // ============== EQUALS ======================================
     // ============================================================
 
-    /**
-     * Compares this {@code AuctionId} with another object for equality.
-     * <p>
-     * Two {@code AuctionId} instances are equal if and only if their
-     * underlying UUID string values are equal.
-     * </p>
-     *
-     * @param o the object to compare with this identifier
-     * @return {@code true} if the given object is an {@code AuctionId} with the same UUID string;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

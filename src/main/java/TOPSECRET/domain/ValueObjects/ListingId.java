@@ -49,17 +49,6 @@ public final class ListingId implements DomainID {
     // ============== EQUALS ======================================
     // ============================================================
 
-    /**
-     * Compares this identifier with another object for equality.
-     * <p>
-     * Two {@code ListingId} instances are considered equal if and only if
-     * their underlying UUID strings are equal.
-     * </p>
-     *
-     * @param o the object to compare with this identifier
-     * @return {@code true} if the given object is a {@code ListingId} with the same UUID string;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

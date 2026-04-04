@@ -108,15 +108,6 @@ public class Bid implements DomainEntity<BidId> {
     // =========== EQUALS AND SAMEAS ==============================
     // ============================================================
 
-    /**
-     * Compares this bid with another object for identity equality.
-     * <p>
-     * Two bids are considered equal if and only if they share the same {@link BidId}.
-     *
-     * @param o the object to compare with
-     * @return {@code true} if both objects represent the same bid identity,
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -124,19 +115,6 @@ public class Bid implements DomainEntity<BidId> {
         Bid other = (Bid) o;
         return this._bidId.equals(other._bidId);
     }
-
-    /**
-     * Compares this bid with another object for semantic equality.
-     * <p>
-     * Unlike {@link #equals(Object)}, which compares only the bid identity,
-     * this method compares the semantic attributes of the bid:
-     * auction, bidder, value, and timestamp.
-     * <p>
-     *
-     * @param o the object to compare with
-     * @return {@code true} if both bids share the same auction, bidder, value, and timestamp;
-     *         {@code false} otherwise
-     */
 
     @Override
     public boolean sameAs(Object o) {

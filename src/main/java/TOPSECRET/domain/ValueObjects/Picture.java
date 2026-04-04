@@ -48,19 +48,6 @@ public final class Picture implements ValueObject {
     // ============== EQUALS ======================================
     // ============================================================
 
-    /**
-     * Compares this {@code Picture} with another object for equality.
-     * <p>
-     * Two {@code Picture} instances are considered equal if and only if
-     * their underlying picture reference (path or URL) is equal. This
-     * comparison is case-sensitive and follows standard value-object
-     * semantics, meaning equality is based solely on the encapsulated value.
-     * </p>
-     *
-     * @param o the object to compare with this {@code Picture}
-     * @return {@code true} if the given object is a {@code Picture} with the same
-     *         underlying picture string; {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

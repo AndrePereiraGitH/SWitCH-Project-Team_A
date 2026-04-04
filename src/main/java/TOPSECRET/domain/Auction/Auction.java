@@ -308,16 +308,6 @@ public class Auction implements AggregateRoot<AuctionId> {
     // ========== EQUALS, SAMEAS AND HASCODE ======================
     // ============================================================
 
-    /**
-     * Compares this auction with another object for equality.
-     *
-     * <p>Two auctions are considered equal if they share the same {@link AuctionId}.
-     * This follows the DDD principle that aggregate identity is defined solely by
-     * the aggregate root identifier.</p>
-     *
-     * @param o the object to compare with
-     * @return {@code true} if the objects represent the same auction; {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -326,16 +316,6 @@ public class Auction implements AggregateRoot<AuctionId> {
         return this._auctionId.equals(other._auctionId);
     }
 
-    /**
-     * Compares this auction with another for structural equivalence.
-     *
-     * <p>This method evaluates whether two auctions share the same immutable
-     * attributes (listing ID, start date, end date, initial price, buyout price),
-     * ignoring mutable state such as bid history or auction status.</p>
-     *
-     * @param o the object to compare with
-     * @return {@code true} if the auctions are structurally equivalent; {@code false} otherwise
-     */
     @Override
     public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
