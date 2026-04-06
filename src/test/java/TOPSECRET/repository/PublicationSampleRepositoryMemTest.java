@@ -459,7 +459,6 @@ class PublicationSampleRepositoryMemTest {
         // Arrange
         PublicationSampleId id_1 = mock(PublicationSampleId.class);
         PublicationSampleId id_2 = mock(PublicationSampleId.class);
-        LibraryId libraryId = mock(LibraryId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         PublicationSample pbSample_2 = mock(PublicationSample.class);
@@ -543,8 +542,6 @@ class PublicationSampleRepositoryMemTest {
 
         PublicationSampleId id_1 = mock(PublicationSampleId.class);
         PublicationSampleId id_2 = mock(PublicationSampleId.class);
-        LibraryId libraryId_1 = mock(LibraryId.class);
-        LibraryId libraryId_2 = mock(LibraryId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         PublicationSample pbSample_2 = mock(PublicationSample.class);
@@ -585,7 +582,6 @@ class PublicationSampleRepositoryMemTest {
         //Arrange
         PublicationSampleId id_1 = mock(PublicationSampleId.class);
         PublicationSampleId id_2 = mock(PublicationSampleId.class);
-        LibraryId libraryId = mock(LibraryId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         PublicationSample pbSample_2 = mock(PublicationSample.class);
