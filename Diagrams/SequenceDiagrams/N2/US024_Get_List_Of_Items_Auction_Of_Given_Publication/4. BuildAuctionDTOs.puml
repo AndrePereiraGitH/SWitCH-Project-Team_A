@@ -1,0 +1,40 @@
+@startuml
+hide footbox
+autonumber
+
+title US024 - Build Auction DTOs
+
+participant ":US024Controller" as Ctrl
+participant ":US024AuctionMapper" as mapper
+participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
+participant "auctionDTO:US024AuctionDTO" as auctionDTO
+participant "listOfAuctionDTO:List<US024AuctionDTO>" as listOfAuctionDTO
+
+note over Ctrl, mapper #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl, mapper #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+
+
+Ctrl -> mapper : toDTOs(listOfAuctionOfGivenPublication)
+activate mapper
+
+mapper -->> listOfAuctionDTO ** : <<create>>
+
+loop for each auction in listOfAuctionOfGivenPublication
+    mapper -> auctionDTO ** : toDTO(auction)
+    mapper -> mapper : listOfAuctionDTO.add(auctionDTO)
+end
+
+mapper --> Ctrl : listOfAuctionDTOs
+deactivate mapper
+
+@enduml

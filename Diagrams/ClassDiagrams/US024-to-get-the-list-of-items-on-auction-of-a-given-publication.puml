@@ -8,53 +8,62 @@ class UI024 {
 
 ' Controller
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
-  +getAllPublicationBD(): List<BibliographicalDataDTO_US024>
-  +getListOfItemsOnAuctionByGivenPublicationDTO(bdPublication: BibliographicalDataDTO_US024): List<AuctionItemDTO_US024>
+  +getAllPublicationTitles(): List<String>
+  +getAuctionListingsByTitle(title: String): List<US024AuctionDTO>
 }
 
 ' Repositories
-class BibliographicalDataRepository {
-  +getAllPublicationBD(): List<BibliographicalData>
+interface IBibliographicalDataRepository {
+  +getAllTitles(): List<String>
+  +findBibliographicalDataIdByTitle(title: String): BibliographicalDataId
 }
 
-class AuctionRepository {
-  +getListOfItemsOnAuctionByGivenPublication(bdPublicationDTO: BibliographicalData): List<PublicationSample>
-  -verifyIfAuctionHasItemsOfThatPublication(bdPublicationDTO: BibliographicalData): boolean
+interface IPublicationSampleRepository {
+  +getPublicationSampleIdsByBibliographicalDataId(bdId: BibliographicalDataId): List<PublicationSampleId>
+}
+
+interface IListingRepository {
+  +getAuctionListingsContaining(listOfPubSampleIds: List<PublicationSampleId>): List<Listing>
 }
 
 ' Domain
 class BibliographicalData {
-  +getBibliographicalDataDetails(): BibliographicalDataDetails
+  -id: BibliographicalDataId
+  -title: String
 }
 
 class PublicationSample {
-  +getAuctionItemDetails(): AuctionItemDetails
+  -id: PublicationSampleId
 }
 
-
-class BibliographicalDataDTO_US024 {
-  +toDTOs(listOfAllPublicationBD: List<BibliographicalData>): List<BibliographicalDataDTO_US024>
-  +createDTO(bibliographicalDataDetails: BibliographicalDataDetails): BibliographicalDataDTO_US024
+class Listing {
+  +verifyIfHasAuctionSaleType(): boolean
+  +getAuctionDetails(): AuctionDetails
 }
 
-class AuctionItemDTO_US024 {
-  +toDTOs(listOfItemsOnAuctionByPublication: List<PublicationSample>): List<AuctionItemDTO_US024>
-  +createDTO(auctionItemDetails: AuctionItemDetails): AuctionItemDTO_US024
+' Mapper
+class US024AuctionMapper {
+  +toDTOs(listOfAuction: List<Listing>): List<US024AuctionDTO>
+  +toDTO(auction: Listing): US024AuctionDTO
+}
+
+' DTO
+class US024AuctionDTO {
 }
 
 ' Relationships
-UI024 --> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
+UI024 ..> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
 
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> BibliographicalDataRepository : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> AuctionRepository : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> BibliographicalDataDTO_US024 : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> AuctionItemDTO_US024 : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IBibliographicalDataRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IPublicationSampleRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IListingRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> US024AuctionMapper : uses
 
-BibliographicalDataRepository "1" --> "*" BibliographicalData : manages
+IBibliographicalDataRepository "1" --> "*" BibliographicalData : manages
+IPublicationSampleRepository "1" --> "*" PublicationSample : manages
+IListingRepository "1" --> "*" Listing : manages
 
-
-
-BibliographicalDataDTO_US024 ..> BibliographicalData : maps from
-AuctionItemDTO_US024 ..> PublicationSample : maps from
+US024AuctionMapper ..> Listing : maps from
+US024AuctionMapper ..> US024AuctionDTO : creates
 
 @enduml

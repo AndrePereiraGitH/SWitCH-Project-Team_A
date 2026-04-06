@@ -1,0 +1,59 @@
+@startuml
+hide footbox
+autonumber
+
+title US024 - Get Auction Listings By Title
+
+participant ":UI024" as UI
+participant ":US024Controller" as Ctrl
+participant ":BibliographicalDataRepository" as bdRepo
+participant ":PublicationSampleRepository" as pubSampleRepo
+participant ":ListingRepository" as listingRepo
+participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
+participant "listing:Listing" as listing
+
+note over UI, listingRepo #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, listingRepo #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+UI -> Ctrl : getAuctionListingsByTitle(title)
+activate Ctrl
+
+Ctrl -> bdRepo : findBibliographicalDataIdByTitle(title)
+activate bdRepo
+bdRepo --> Ctrl : bdId
+deactivate bdRepo
+
+Ctrl -> pubSampleRepo : getPublicationSampleIdsByBibliographicalDataId(bdId)
+activate pubSampleRepo
+pubSampleRepo --> Ctrl : listOfPubSampleIds
+deactivate pubSampleRepo
+
+Ctrl -> listingRepo : getAuctionListingsContaining(listOfPubSampleIds)
+activate listingRepo
+
+listingRepo -->> aucListing ** : <<create>>
+
+loop for each listing in ListingRepository
+    listingRepo -> listing: verifyIfHasAuctionSaleType()
+    activate listing
+    listing -> listingRepo: true
+    deactivate listing
+    listingRepo -> listingRepo: listOfAuctionOfGivenPublication.add(listing)
+end
+
+listingRepo --> Ctrl : listOfAuctionOfGivenPublication
+deactivate listingRepo
+
+Ctrl --> UI : listOfAuctionOfGivenPublication
+deactivate Ctrl
+
+@enduml

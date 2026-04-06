@@ -1,0 +1,88 @@
+@startuml
+hide footbox
+autonumber
+title US024 - To get the list of items on auction of a given publication
+
+actor Buyer
+
+' Participants
+participant ":UI024" as UI
+participant ":US024Controller" as Ctrl
+participant ":IBibliographicalDataRepository" as bdRepo
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IListingRepository" as listingRepo
+participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
+participant ":Listing" as listing
+participant ":US024AuctionMapper" as mapper
+participant "listOfAuctionDTO:List<US024AuctionDTO>" as listOfAuctionDTO
+
+' Section 1 - Get all publication titles
+Buyer -> UI : I want to get the list of items\n on auction of a given publication
+activate UI
+UI -> Ctrl : getAllPublicationTitles()
+activate Ctrl
+
+Ctrl -> bdRepo: getAllTitles()
+activate bdRepo
+bdRepo --> Ctrl: listOfTitles
+deactivate bdRepo
+
+Ctrl --> UI: listOfTitles
+deactivate Ctrl
+
+UI --> Buyer: Here is the list of publication titles.\n Pick one.
+deactivate UI
+
+' Section 2 - Find listings on auction for the selected publication
+Buyer -> UI: title
+activate UI
+UI -> Ctrl: getAuctionListingsByTitle(title)
+activate Ctrl
+
+Ctrl -> bdRepo: findBibliographicalDataIdByTitle(title)
+activate bdRepo
+bdRepo --> Ctrl: bdId
+deactivate bdRepo
+
+Ctrl -> pubSampleRepo: getPublicationSampleIdsByBibliographicalDataId(bdId)
+activate pubSampleRepo
+pubSampleRepo --> Ctrl: listOfPubSampleIds
+deactivate pubSampleRepo
+
+Ctrl -> listingRepo: getAuctionListingsContaining(listOfPubSampleIds)
+activate listingRepo
+
+listingRepo -->> aucListing **: <<create>>
+
+loop for each listing in ListingRepository
+    listingRepo -> listing: verifyIfHasAuctionSaleType()
+    activate listing
+    listing -> listingRepo: true
+    deactivate listing
+    listingRepo -> listingRepo: listOfAuctionOfGivenPublication.add(listing)
+end
+
+listingRepo --> Ctrl: listOfAuctionOfGivenPublication
+deactivate listingRepo
+
+' Section 3 - Build and return DTO
+Ctrl -> mapper: toDTOs(listOfAuctionOfGivenPublication)
+activate mapper
+
+mapper -->> listOfAuctionDTO**: <<create>>
+
+loop for each auction in listOfAuctionOfGivenPublication
+    mapper -->> auctionDTO **: toDTO(auction)
+    mapper -> mapper: listOfAuctionDTO.add(auctionDTO)
+end
+
+mapper --> Ctrl: listOfAuctionDTO
+deactivate mapper
+
+Ctrl --> UI: listOfAuctionDTO
+deactivate Ctrl
+
+UI --> Buyer: Here is the list of auction listings\n for the selected publication.
+deactivate UI
+
+@enduml
