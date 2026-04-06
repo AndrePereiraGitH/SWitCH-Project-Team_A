@@ -36,9 +36,15 @@ activate pubSampleRepo
 
 pubSampleRepo -->> ListPubs ** : <<create>>
 
-loop for each pubSample in allPublicationsInSystem
+loop for each pubSample in PublicationSampleRepository
     pubSampleRepo -> pubSample : isOwnedByUser(userId)
+    activate pubSample
+    pubSample --> pubSampleRepo : true
+    deactivate pubSample
     pubSampleRepo -> pubSample : isInUserLibrary()
+    activate pubSample
+    pubSample --> pubSampleRepo : true
+    deactivate pubSample
     pubSampleRepo -> pubSampleRepo : listOfPublications.add(pubSample)
 end
 
@@ -61,7 +67,7 @@ deactivate Mapper
 Ctrl --> UI : listOfPublicationsDTO
 deactivate Ctrl
 
-UI -> User : Display list of publications\n(title, author, type, ISBN/SSN)
+UI --> User : Display list of publications\n(title, author, type, ISBN/SSN)
 deactivate UI
 
 @enduml

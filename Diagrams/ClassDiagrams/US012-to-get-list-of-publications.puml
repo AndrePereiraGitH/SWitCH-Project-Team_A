@@ -50,7 +50,7 @@ UI012 ..> US012GetListOfPublicationsInLibraryController : uses
 US012GetListOfPublicationsInLibraryController ..> IUserRepository : uses
 US012GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
 US012GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
-IPublicationSampleRepository ..> PublicationSample : queries
+IPublicationSampleRepository --> PublicationSample : queries
 US012PublicationSampleMapper ..> PublicationSample : reads
 US012PublicationSampleMapper ..> US012PublicationDetailsDTO : creates
 
