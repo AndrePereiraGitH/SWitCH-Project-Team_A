@@ -1,55 +1,51 @@
 @startuml
 hide footbox
 autonumber
-
-title US003 - Register Genre to Official Genre List
+title US003 - To add a publication genre to the genre list
 
 actor Administrator
 participant ":UI003" as UI
-participant ":US003ToRegisterGenreController" as Controller
-participant ":GenreRepository" as GenreRepository
-participant ":GenreFactory" as GenreFactory
+participant ":US003ToRegisterGenreCtrl" as Ctrl
+participant ":IGenreRepository" as genreRepo
+participant ":GenreFactory" as factory
 
 Administrator -> UI : I want to add a new genre to the official list
 activate UI
-
-UI --> Administrator : Please enter the genre name
+UI --> Administrator : What is the genre name?
 deactivate UI
+Administrator -> UI : genreType("romance")
 
-Administrator -> UI : name("romance")
 activate UI
 
-UI -> Controller : registerGenre(genreType)
-activate Controller
+UI -> Ctrl : registerGenre(genreType)
+activate Ctrl
 
-Controller -> GenreRepository : createAndAddGenre(genreType)
-activate GenreRepository
+Ctrl -> genreRepo : createAndAdd(genreType)
+activate genreRepo
 
-GenreRepository -> GenreFactory : createGenre(genreType)
-activate GenreFactory
+genreRepo -> factory : create(genreType)
+activate factory
+create "romance:Genre" as Genre
+factory -->> Genre : <<create>>
+factory --> genreRepo : romance
+deactivate factory
 
-create "romance: Genre"
-GenreFactory -> "romance: Genre" : create ()
-GenreFactory --> GenreRepository : romance
-deactivate GenreFactory
-
-GenreRepository -> GenreRepository : exists(romance)
+genreRepo -> genreRepo : exists(romance)
 
 alt [genre already exists]
-    GenreRepository --> Controller : error: "Genre already exists"
-    Controller --> UI : error: "Genre already exists"
+    genreRepo --> Ctrl : error: "Genre already exists"
+    Ctrl --> UI : error: "Genre already exists"
     UI --> Administrator : Genre already exists
 
 else [genre does NOT exist]
-    GenreRepository -> GenreRepository : _genres.add(romance)
-    GenreRepository --> Controller : romance
-
+    genreRepo -> genreRepo : _genres.add(romance)
+    genreRepo --> Ctrl : romance
 end
 
-deactivate GenreRepository
+deactivate genreRepo
 
-Controller --> UI : success
-deactivate Controller
+Ctrl --> UI : true
+deactivate Ctrl
 
 UI --> Administrator : success
 deactivate UI
