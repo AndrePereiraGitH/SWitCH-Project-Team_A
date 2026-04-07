@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.AuctionFactory;
 import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import javax.management.InstanceAlreadyExistsException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,6 +80,10 @@ class AuctionRepositoryMemTest {
         listingId = new ListingId ("listingId");
     }
 
+    // =================================================================================================================
+    // ============== GET ALL AUCTIONS =================================================================================
+    // =================================================================================================================
+
     @Test
     void getAllAuctions_shouldReturnListOfAllAuctionsInRepo() throws InstanceAlreadyExistsException {
         //Arrange
@@ -89,6 +95,10 @@ class AuctionRepositoryMemTest {
         //Assert
         assertEquals(3, result.size());
     }
+
+    // =================================================================================================================
+    // ============== CREATE AND ADD ===================================================================================
+    // =================================================================================================================
 
     @Test
     void createAndAdd_shouldThrowsWhenAuctionAlreadyExists() throws InstanceAlreadyExistsException {
@@ -127,6 +137,62 @@ class AuctionRepositoryMemTest {
         assertTrue(all.contains(created));
     }
 
+    // =================================================================================================================
+    // =============== FIND AUCTION BY ID ==============================================================================
+    // =================================================================================================================
+
+    @Test
+    void findAuctionById_shouldThrowExceptionWhenIdIsNull() throws Exception {
+        // arrange
+        IAuctionRepository repo = instantiateAuctionRepository();
+
+        // act + assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.findAuctionById(null);
+        });
+    }
+
+    @Test
+    void findAuctionById_shouldReturnAuctionWhenIdExists() throws Exception {
+        // arrange
+        AuctionId auctionId1 = new AuctionId("auction1");
+        AuctionId auctionId2 = new AuctionId("auction2");
+        AuctionId auctionId3 = new AuctionId("auction3");
+
+        when(auction1.id()).thenReturn(auctionId1);
+        when(auction2.id()).thenReturn(auctionId2);
+        when(auction3.id()).thenReturn(auctionId3);
+
+        IAuctionRepository repo = instantiateAuctionRepository();
+
+        // act
+        Optional<Auction> result = repo.findAuctionById(auctionId1);
+
+        // assert
+        assertTrue(result.isPresent());
+        assertEquals(auction1, result.get());
+    }
+
+    @Test
+    void findAuctionById_shouldReturnEmptyWhenIdDoesNotExist() throws Exception {
+        // arrange
+        AuctionId newId = new AuctionId("notExisting");
+        AuctionId auctionId1 = new AuctionId("auction1");
+        AuctionId auctionId2 = new AuctionId("auction2");
+        AuctionId auctionId3 = new AuctionId("auction3");
+
+        when(auction1.id()).thenReturn(auctionId1);
+        when(auction2.id()).thenReturn(auctionId2);
+        when(auction3.id()).thenReturn(auctionId3);
+
+        IAuctionRepository repo = instantiateAuctionRepository();
+
+        // act
+        Optional<Auction> result = repo.findAuctionById(newId);
+
+        // assert
+        assertTrue(result.isEmpty());
+    }
 
     // US024 getListOfItemsOnAuctionByGivenPublication -----------------------------------------------------------------
 //    /**

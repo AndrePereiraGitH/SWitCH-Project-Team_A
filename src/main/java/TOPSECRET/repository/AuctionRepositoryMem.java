@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.AuctionFactory;
 import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 
@@ -10,6 +11,7 @@ import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link IAuctionRepository}.
@@ -76,6 +78,20 @@ public class AuctionRepositoryMem implements IAuctionRepository {
     @Override
     public List<Auction> getAllAuctions() {
         return List.copyOf(_auctionsList);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Auction> findAuctionById(AuctionId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("AuctionId cannot be null");
+        }
+
+        return _auctionsList.stream()
+                .filter(auction -> auction.id().equals(id))
+                .findFirst();
     }
 
 

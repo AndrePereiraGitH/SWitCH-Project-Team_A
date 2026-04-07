@@ -3,9 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.time.LocalDate;
@@ -58,22 +56,6 @@ public class AuthorRepositoryMem implements IAuthorRepository {
             return author;
         }
         throw new IllegalArgumentException("Author already exists");
-    }
-
-    /**
-     * Adds an {@link Author} instance to the in-memory repository.
-     * <p>
-     * This method exists exclusively for testing purposes, allowing test
-     * suites to populate the repository with predefined {@link Author}
-     * instances without relying on the factory or creation workflows.
-     * </p>
-     *
-     * @param author the author to add; must not be {@code null}
-     * @throws IllegalArgumentException if {@code author} is {@code null}
-     */
-    // Only for TESTING
-    void add(Author author) {
-        _authors.add(author);
     }
 
     /**
