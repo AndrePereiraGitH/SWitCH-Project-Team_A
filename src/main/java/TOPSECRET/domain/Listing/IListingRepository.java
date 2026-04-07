@@ -32,7 +32,7 @@ public interface IListingRepository {
      * @throws InstanceAlreadyExistsException if an equivalent listing already exists
      */
     Listing createAndAdd(String listingTitle,
-                         List<PublicationSampleID> itemsId,
+                         List<PublicationSampleId> itemsId,
                          SaleType saleType,
                          Price price,
                          String shortDescription,

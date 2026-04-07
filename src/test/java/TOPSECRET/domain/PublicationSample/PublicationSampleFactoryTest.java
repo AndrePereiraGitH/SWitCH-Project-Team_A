@@ -11,6 +11,13 @@ import org.mockito.MockedConstruction;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link PublicationSampleFactory}.
+ *
+ * <p>Verifies that the factory correctly creates {@link PublicationSample} instances
+ * given valid input parameters, using Mockito to isolate dependencies and
+ * intercept construction.</p>
+ */
 class PublicationSampleFactoryTest {
 
     @Test

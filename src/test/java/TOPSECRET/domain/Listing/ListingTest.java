@@ -24,10 +24,10 @@ class ListingTest {
     private final String validTitle = "PS5 Pro";
     private Price validPrice;
     private List<Picture> validPictures;
-    private List<PublicationSampleID> oneItemList;
-    private List<PublicationSampleID> severalItemList;
-    private PublicationSampleID pub1Id;
-    private PublicationSampleID pub2Id;
+    private List<PublicationSampleId> oneItemList;
+    private List<PublicationSampleId> severalItemList;
+    private PublicationSampleId pub1Id;
+    private PublicationSampleId pub2Id;
     private UserId validSellerId;
     private ListingFactory listingFactory;
 
@@ -36,8 +36,8 @@ class ListingTest {
         validPrice = mock(Price.class);
         Picture pic1 = mock(Picture.class);
         validPictures = List.of(pic1);
-        pub1Id = new PublicationSampleID("pub1");
-        pub2Id = new PublicationSampleID("pub2");
+        pub1Id = new PublicationSampleId("pub1");
+        pub2Id = new PublicationSampleId("pub2");
         oneItemList = List.of(pub1Id);
         severalItemList = List.of(pub1Id, pub2Id);
         validSellerId = new UserId("seller");
@@ -187,7 +187,7 @@ class ListingTest {
     @Test
     void shouldThrowExceptionWhenItemIsEmpty() {
         //Arrange
-        final List<PublicationSampleID> emptyItemList = new ArrayList<>();
+        final List<PublicationSampleId> emptyItemList = new ArrayList<>();
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -299,7 +299,7 @@ class ListingTest {
         Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
 
         //Act
-        List<PublicationSampleID> itemsId = listing.getItemsId();
+        List<PublicationSampleId> itemsId = listing.getItemsId();
 
         //Assert
         assertEquals(severalItemList, itemsId);

@@ -19,6 +19,9 @@ import java.util.Optional;
 
 public interface IAuthorRepository {
 
+    // -------------------------------------------------------------------------
+    // Construction
+    // -------------------------------------------------------------------------
     /**
      * Creates a new {@link Author} with the given data and adds it to the repository.
      *
@@ -36,6 +39,11 @@ public interface IAuthorRepository {
      *                                  by the {@link Author} constructor
      */
     Author createAndAddAuthor(String name, CountryID countryID, LocalDate dateOfBirth, String biography);
+
+    // -------------------------------------------------------------------------
+    // Identity Lookup
+    // -------------------------------------------------------------------------
+
 
     /**
      * Retrieves all authors currently stored in the repository.

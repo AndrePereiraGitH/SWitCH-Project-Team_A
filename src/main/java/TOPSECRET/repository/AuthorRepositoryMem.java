@@ -30,6 +30,10 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     private final List<Author> _authors = new ArrayList<>();
     private final AuthorFactory _authorFactory;
 
+    // -------------------------------------------------------------------------
+    // Construction
+    // -------------------------------------------------------------------------
+
     /**
      * Creates a new in-memory author repository.
      *
@@ -42,6 +46,10 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         }
         this._authorFactory = authorFactory;
     }
+
+    // -------------------------------------------------------------------------
+    // Construction (createAndAdd)
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -76,6 +84,10 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         }
         return false;
     }
+
+    // -------------------------------------------------------------------------
+    // Identity Lookup
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}

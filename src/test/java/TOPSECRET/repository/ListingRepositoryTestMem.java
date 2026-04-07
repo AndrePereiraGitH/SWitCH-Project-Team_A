@@ -47,9 +47,9 @@ class ListingRepositoryTestMem {
     Listing listing2Double;
     Listing listing3Double;
 
-    PublicationSampleID pub1Id;
-    PublicationSampleID pub2Id;
-    PublicationSampleID pub3Id;
+    PublicationSampleId pub1Id;
+    PublicationSampleId pub2Id;
+    PublicationSampleId pub3Id;
 
     Price price1;
     Price price2;
@@ -68,9 +68,9 @@ class ListingRepositoryTestMem {
         listing2Double = mock(Listing.class);
         listing3Double = mock(Listing.class);
         
-        pub1Id = new PublicationSampleID("pub1Id");
-        pub2Id = new PublicationSampleID("pub2Id");
-        pub3Id = new PublicationSampleID("pub3Id");
+        pub1Id = new PublicationSampleId("pub1Id");
+        pub2Id = new PublicationSampleId("pub2Id");
+        pub3Id = new PublicationSampleId("pub3Id");
 
         price1 = mock(Price.class);
         price2 = mock(Price.class);
@@ -98,7 +98,7 @@ class ListingRepositoryTestMem {
         ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
         
         String listingTitle = "title1";
-        List<PublicationSampleID> itemsId = List.of(pub1Id);
+        List<PublicationSampleId> itemsId = List.of(pub1Id);
         SaleType saleType = SaleType.DIRECT_SALE;
         String shortDescription = "Description";
         List<Picture> pictures = List.of(pic1, pic2);
@@ -124,7 +124,7 @@ class ListingRepositoryTestMem {
         ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         String listingTitle = "Title";
-        List<PublicationSampleID> itemsId = List.of(pub1Id);
+        List<PublicationSampleId> itemsId = List.of(pub1Id);
         SaleType saleType = SaleType.DIRECT_SALE;
         String shortDescription = "Description";
         List<Picture> pictures = List.of(pic1, pic2);

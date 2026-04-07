@@ -18,15 +18,15 @@ import java.util.UUID;
  * <p>
  * No attribute must be left null when creating a PublicationSample.
  */
-public class PublicationSample implements AggregateRoot<PublicationSampleID> {
+public class PublicationSample implements AggregateRoot<PublicationSampleId> {
 
-    private final PublicationSampleID _pubSampleID;
+    private final PublicationSampleId _pubSampleID;
     private final BibliographicalDataID _bdID;
     private final UserId _ownerID;
     private PublicationStatus _publicationStatus;
     private final EditionID _editionID;
     private final Condition _condition;
-    private LibraryId _libraryID;
+    private LibraryId _libraryId;
     private CollectionOfPublicationsID _collecOfPubID;
 
     // -------------------------------------------------------------------------
@@ -49,8 +49,8 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
             throw new IllegalArgumentException("All criteria must not be null");
         }
 
-        _pubSampleID = new PublicationSampleID(UUID.randomUUID().toString());
-        _libraryID = null;
+        _pubSampleID = new PublicationSampleId(UUID.randomUUID().toString());
+        _libraryId = null;
         _collecOfPubID = null;
         _bdID = bdID;
         _ownerID = ownerID;
@@ -67,7 +67,6 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     public BibliographicalDataID getBibliographicalDataID() {
         return _bdID;
     }
-
 
     public UserId getOwnerID() {
         return _ownerID;
@@ -90,7 +89,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
 
 
     public LibraryId getLibraryID(){
-        return _libraryID;
+        return _libraryId;
     }
 
     public CollectionOfPublicationsID getCollecOfPubID(){
@@ -128,11 +127,11 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
         if(libraryId == null){
             throw new NullPointerException("LibraryID can not be null");
         }
-        if(_libraryID != null){
+        if(_libraryId != null){
             throw new IllegalArgumentException("Already assigned to a library");
         }
 
-        _libraryID = libraryId;
+        _libraryId = libraryId;
         return libraryId;
     }
 
@@ -153,7 +152,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
             throw new IllegalArgumentException("Already assigned to a collection of publications");
         }
 
-        if(_libraryID == null){
+        if(_libraryId == null){
             throw new IllegalArgumentException("Publication must belong to a library before" +
                     " being assigned to a collection.");
         }
@@ -202,7 +201,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
     // -------------------------------------------------------------------------
 
     @Override
-    public PublicationSampleID id() {
+    public PublicationSampleId id() {
         return _pubSampleID;
     }
 

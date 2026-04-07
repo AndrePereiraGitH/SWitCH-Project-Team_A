@@ -6,7 +6,7 @@ import TOPSECRET.domain.Listing.ListingFactory;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US015;
 import java.util.List;
@@ -93,7 +93,7 @@ public class US015ToPutPublicationInDirectSaleController {
      * Creates a direct sale listing for the selected publication sample.
      *
      * @param listingTitle the title chosen by the user for the listing
-     * @param pubSamples the list of publication samples chosen by the user
+     * @param pubSamplesId the list of publication samples chosen by the user
      * @param price  the price defined by the user
      * @param shortDescription  the short description chosen by the user for the listing
      * @param pictures  pictures chosen by the user for the listing
@@ -101,7 +101,7 @@ public class US015ToPutPublicationInDirectSaleController {
      * @throws IllegalArgumentException if the listingTitle, the pubSamples, price, shortDescription or pictures are invalid
      */
 
-    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleID> pubSamplesId, SaleType saleType,
+    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleId> pubSamplesId, SaleType saleType,
                                          Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
 
         if (listingTitle == null || listingTitle.isBlank())

@@ -12,6 +12,29 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for the {@link PublicationSample} domain entity.
+ *
+ * <p>This test class validates the construction, getter methods, library and collection
+ * assignment logic, status transitions, and equality/identity behaviour of
+ * {@code PublicationSample}.</p>
+ *
+ * <p>All collaborators ({@link BibliographicalDataID}, {@link UserId}, {@link EditionID},
+ * {@link PublicationStatus}, {@link Condition}) are provided as Mockito test doubles,
+ * keeping each test focused on the behaviour of {@code PublicationSample} in isolation.</p>
+ *
+ * <p>Test coverage is organised into the following sections:</p>
+ * <ul>
+ *   <li><b>Constructor</b> – valid creation and null-argument guards.</li>
+ *   <li><b>Getters</b> – correct retrieval of all fields, including lazily assigned ones.</li>
+ *   <li><b>Library Assignment</b> – assignment rules, null rejection, and double-assignment guard.</li>
+ *   <li><b>Collection Assignment</b> – assignment rules, null rejection, double-assignment guard,
+ *       and prerequisite library check.</li>
+ *   <li><b>Status Change</b> – {@code FOR_SALE} transition and idempotency.</li>
+ *   <li><b>Equality and Identity</b> – {@code sameAs} and {@code equals} contracts.</li>
+ * </ul>
+ */
+
 
 class PublicationSampleTest {
 
@@ -233,7 +256,7 @@ class PublicationSampleTest {
                 bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
 
         //Act
-        PublicationSampleID id = sample.id();
+        PublicationSampleId id = sample.id();
 
         //Assert
         assertNotNull(id);

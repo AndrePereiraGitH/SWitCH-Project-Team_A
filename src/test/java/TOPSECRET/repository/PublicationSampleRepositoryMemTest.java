@@ -11,7 +11,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +27,28 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link PublicationSampleRepositoryMem}.
+ *
+ * <p>This test class validates the in-memory repository implementation of
+ * {@link IPublicationSampleRepository}, covering all active operations
+ * including construction, creation, persistence, identity lookup, and
+ * domain-specific queries.</p>
+ *
+ * <p>All collaborators ({@link PublicationSampleFactory}, {@link BibliographicalDataID},
+ * {@link UserId}, {@link EditionID}) are provided as Mockito test doubles,
+ * keeping each test focused on the behaviour of the repository in isolation.</p>
+ *
+ * <p>Test coverage is organised into the following sections:</p>
+ * <ul>
+ *   <li><b>Constructor</b> – valid instantiation and null factory guard.</li>
+ *   <li><b>createAndAdd</b> – delegation to factory, null-argument guards, and persistence.</li>
+ *   <li><b>save</b> – return value, side effects, duplicate rejection, and null guard.</li>
+ *   <li><b>getAllPublications</b> – empty state, single and multiple elements, immutability.</li>
+ *   <li><b>findById</b> – null guard, match found, no match, and multiple-sample disambiguation.</li>
+ *   <li><b>isExistent</b> – presence and absence checks, empty repository, and null guard.</li>
+ * </ul>
+ */
 
 class PublicationSampleRepositoryMemTest {
 
@@ -293,22 +315,22 @@ class PublicationSampleRepositoryMemTest {
 
 
     // ===========================================================
-    // ========== Tests for findById =============================
+    // ========== Tests for findPublicationSampleById ============
     // ===========================================================
 
     @Test
-    void findById_shouldThrowException_whenIdIsNull() {
+    void findPublicationSampleById_shouldThrowException_whenIdIsNull() {
         // Arrange
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findById(null));
+        assertThrows(NullPointerException.class, () -> repo.findPublicationSampleById(null));
     }
 
     @Test
-    void findById_shouldReturnPublicationSample_whenIdExists() throws InstanceAlreadyExistsException {
+    void findPublicationSampleById_shouldReturnPublicationSample_whenIdExists() throws InstanceAlreadyExistsException {
         // Arrange
-        PublicationSampleID id = mock(PublicationSampleID.class);
+        PublicationSampleId id = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(id);
         when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
@@ -318,7 +340,7 @@ class PublicationSampleRepositoryMemTest {
         repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
 
         // Act
-        Optional<PublicationSample> result = repo.findById(id);
+        Optional<PublicationSample> result = repo.findPublicationSampleById(id);
 
         // Assert
         assertTrue(result.isPresent());
@@ -326,23 +348,23 @@ class PublicationSampleRepositoryMemTest {
     }
 
     @Test
-    void findById_shouldReturnEmptyOptional_whenIdDoesNotExist() {
+    void findPublicationSampleById_shouldReturnEmptyOptional_whenIdDoesNotExist() {
         // Arrange
-        PublicationSampleID id = mock(PublicationSampleID.class);
+        PublicationSampleId id = mock(PublicationSampleId.class);
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act
-        Optional<PublicationSample> result = repo.findById(id);
+        Optional<PublicationSample> result = repo.findPublicationSampleById(id);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findById_shouldReturnCorrectSample_whenMultipleSamplesExist() throws InstanceAlreadyExistsException {
+    void findPublicationSampleByIdgit_shouldReturnCorrectSample_whenMultipleSamplesExist() throws InstanceAlreadyExistsException {
         // Arrange
-        PublicationSampleID id_1 = mock(PublicationSampleID.class);
-        PublicationSampleID id_2 = mock(PublicationSampleID.class);
+        PublicationSampleId id_1 = mock(PublicationSampleId.class);
+        PublicationSampleId id_2 = mock(PublicationSampleId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         PublicationSample pbSample_2 = mock(PublicationSample.class);
@@ -360,7 +382,7 @@ class PublicationSampleRepositoryMemTest {
         repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
 
         // Act
-        Optional<PublicationSample> result = repo.findById(id_2);
+        Optional<PublicationSample> result = repo.findPublicationSampleById(id_2);
 
         // Assert
         assertTrue(result.isPresent());

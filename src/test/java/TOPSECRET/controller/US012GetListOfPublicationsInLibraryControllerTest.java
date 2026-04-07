@@ -6,6 +6,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
@@ -148,15 +149,17 @@ class US012GetListOfPublicationsInLibraryControllerTest {
 //    }
 
     private Edition createMockEdition(String code) {
-        PublicationType publicationTypeDouble = mock(PublicationType.class);
-        when(publicationTypeDouble.getMediaFormat()).thenReturn("Book");
 
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);
 
         Edition editionDouble = mock(Edition.class);
+        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
+        when(editionDouble.getMediaFormat()).thenReturn("Book");
+
         when(editionDouble.getCode()).thenReturn(codeDouble);
-        when(editionDouble.getPublicationType()).thenReturn(publicationTypeDouble);
+        when(editionDouble.getPublicationTypeID()).thenReturn(publicationTypeIdDouble);
+        when(publicationTypeIdDouble.getId()).thenReturn("1");
 
         return editionDouble;
     }
