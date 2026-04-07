@@ -2,34 +2,30 @@
 title US005 - Register Author in MIteLovers
 
 class ToRegisterAuthorController {
-  +registerAuthor(name: String, country: Country, birthday: LocalDate, biography: String): Author
+  +registerAuthor(name: String, countryId: CountryId, birthday: LocalDate, biography: String): Author
 }
 
-class AuthorRepository {
-  +createAndAddAuthor(name: String, country: Country, birthday: LocalDate, biography: String): Author
+interface IAuthorRepository {
+  +createAndAdd(name: String, countryId: CountryId, birthday: LocalDate, biography: String): Author
   /'NO NEED FOR THIS US +getAllAuthors()'/
   -exists(author: Author): boolean
 }
 
 class Author {
+  -_name :String
+  -_countryId: CountryId
+  -_birthday: LocalDate
   -_biography: String
 }
 
-class Profile {
-  -_name: String
-  -_country: Country
-  -_birthday: LocalDate
-
-}
 class AuthorFactory {
-+ create(): Author
++ create(name: String, countryId: CountryId, \n birthday: LocalDate, biography: String): Author
 }
 
 
-ToRegisterAuthorController "1 " -.-> "1" AuthorRepository : uses
-AuthorRepository "1" --> "_authors *" Author : stores
-AuthorRepository "1" -.-> "                     1" AuthorFactory : uses
+ToRegisterAuthorController "1 " -.-> "1" IAuthorRepository : uses
+IAuthorRepository "1" --> "_authors *" Author : stores
+IAuthorRepository "1" -.-> "                     1" AuthorFactory : uses
 AuthorFactory "1   " -.-> "*" Author : creates
-Author "1" --> "1" Profile : has
 
 @enduml
