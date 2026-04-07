@@ -186,11 +186,23 @@ public class Edition implements AggregateRoot<EditionID> {
     /** @return the type of binding */
     public TypeOfBinding getTypeOfBinding() { return _typeOfBinding; }
 
+
     /**
-     * Compares two editions by value (all attributes except identity).
+     * Returns the unique identifier of this edition.
      *
-     * @param o object to compare
-     * @return true if all attributes are equal
+     * @return the edition ID
+     */
+    @Override
+    public EditionID id(){
+        return _editionID;
+    }
+
+
+    /**
+     * Checks if two Edition objects share the same identity.
+     *
+     * @param o the object to compare
+     * @return {@code true} if both have the same EditionID; {@code false} otherwise
      */
     @Override
     public boolean equals(Object o) {
@@ -200,24 +212,11 @@ public class Edition implements AggregateRoot<EditionID> {
     }
 
     /**
-     * Returns the unique identifier of this edition.
+     * Compares two editions by value (all attributes except identity).
      *
-     * @return the edition ID
+     * @param o object to compare
+     * @return true if all attributes are equal
      */
-
-    @Override
-    public EditionID id(){
-        return _editionID;
-    }
-
-    /**
-     * Checks if two Edition objects share the same identity.
-     *
-     * @param o the object to compare
-     * @return {@code true} if both have the same EditionID; {@code false} otherwise
-     */
-
-
     @Override
     public boolean sameAs(Object o){
         if(o == null || getClass() != o.getClass()) return false;
