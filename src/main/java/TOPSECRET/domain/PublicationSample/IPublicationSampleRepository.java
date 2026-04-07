@@ -23,7 +23,7 @@ import java.util.Optional;
  * in the repository.
  * <p>
  */
-public interface IPublicationSampleRepository {
+public interface    IPublicationSampleRepository {
 
     // -------------------------------------------------------------------------
     // Construction

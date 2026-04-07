@@ -1,11 +1,7 @@
 package TOPSECRET.domain.Edition;
 
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,15 +21,15 @@ public interface IEditionRepository {
      * @param editionNumber the edition number identifier
      * @param code the unique code associated with the edition
      * @param physicalAttributes the physical attributes of the edition
-     * @param publicationType the type of publication
-     * @param publisher the publisher responsible for the edition
+     * @param publicationTypeId the type of publication
+     * @param publisherID the publisher responsible for the edition
      * @param editionLanguage the language of the edition
      * @param editionDate the publication date of the edition
      * @param typeOfBinding the type of binding used in the edition
      * @return a list of created and stored {@link Edition} objects
      */
-    List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationType publicationType,
-                                      Publisher publisher, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding);
+    List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationTypeId publicationTypeId,
+                                      PublisherID publisherID, String mediaFormat, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding);
 
     /**
      * Finds an edition by its unique identifier.

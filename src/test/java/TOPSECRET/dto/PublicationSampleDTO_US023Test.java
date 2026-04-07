@@ -11,6 +11,8 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +40,8 @@ class PublicationSampleDTO_US023Test {
 
         // Arrange
         Author author = mock(Author.class);
-        Publisher  publisher = mock(Publisher.class);
-        PublicationType pubType = mock(PublicationType.class);
+        PublisherID  publisherID = mock(PublisherID.class);
+        PublicationTypeId pubTypeId = mock(PublicationTypeId.class);
         Code code = mock(Code.class);
         Genre genre = mock(Genre.class);
 
@@ -64,11 +66,13 @@ class PublicationSampleDTO_US023Test {
         when(edition.getEditionNumber()).thenReturn("3rd");
         when(edition.getCode()).thenReturn(code);
         when(code.toString()).thenReturn("9780132350884");
-        when(edition.getPublicationType()).thenReturn(pubType);
-        when(pubType.getMediaFormat()).thenReturn("Book");
+        when(edition.getPublicationTypeID()).thenReturn(pubTypeId);
+        when(pubTypeId.getId()).thenReturn("1");
+        when(edition.getMediaFormat()).thenReturn("Book");
         when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);
-        when(edition.getPublisher()).thenReturn(publisher);
-        when(publisher.getName()).thenReturn("Prentice Hall");
+        when(edition.getPublisherID()).thenReturn(publisherID);
+        when(publisherID.getId()).thenReturn("1");
+        when(publisherID.getId()).thenReturn("1");
 
         when(owner.getUserName()).thenReturn("silvia");
 
