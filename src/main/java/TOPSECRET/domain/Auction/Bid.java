@@ -8,6 +8,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a bid placed within an {@link Auction}.
@@ -41,23 +42,18 @@ public class Bid implements DomainEntity<BidId> {
      * Creates a new immutable bid instance.
      * This constructor is invoked by the {@code Auction} aggregate root.
      *
-     * @param bidId      the unique identifier of the bid (must not be null)
      * @param auctionId  the identifier of the auction to which this bid belongs (must not be null)
      * @param bidderId   the identifier of the user who placed the bid (must not be null)
      * @param value      the monetary value offered in the bid (must not be null)
      * @param timeOfBid  the timestamp at which the bid was placed (must not be null)
      *
-     * @throws IllegalArgumentException if bidId is null
      * @throws IllegalArgumentException if auctionId is null
      * @throws IllegalArgumentException if bidder is null
      * @throws IllegalArgumentException if value is null
      * @throws IllegalArgumentException if timeOfBid is null
      */
-    protected Bid (BidId bidId, AuctionId auctionId, UserId bidderId, Price value, LocalDateTime timeOfBid) {
+    protected Bid (AuctionId auctionId, UserId bidderId, Price value, LocalDateTime timeOfBid) {
 
-        if (bidId == null) {
-            throw new IllegalArgumentException("Bid ID can't be null.");
-        }
         if (auctionId == null) {
             throw new IllegalArgumentException("Auction ID can't be null.");
         }
@@ -71,7 +67,7 @@ public class Bid implements DomainEntity<BidId> {
             throw new IllegalArgumentException("Time of bid can't be null.");
         }
 
-        this._bidId = bidId;
+        this._bidId = new BidId(UUID.randomUUID().toString());;
         this._auctionId = auctionId;
         this._bidderId = bidderId;
         this._value = value;

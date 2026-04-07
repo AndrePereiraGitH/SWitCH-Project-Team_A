@@ -180,10 +180,9 @@ public class Auction implements AggregateRoot<AuctionId> {
 //            throw new IllegalArgumentException("Seller cannot bid on their own auction");
 
         // creates Bid
-        BidId bidId = new BidId(UUID.randomUUID().toString());
         LocalDateTime timestamp = LocalDateTime.now(_clock);
 
-        Bid bid = new Bid(bidId, _auctionId, bidderId, value, timestamp);
+        Bid bid = new Bid(_auctionId, bidderId, value, timestamp);
 
         _bidHistory.add(bid);
         _winningBid = bid;

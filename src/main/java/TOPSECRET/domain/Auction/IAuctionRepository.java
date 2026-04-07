@@ -1,12 +1,15 @@
 package TOPSECRET.domain.Auction;
 
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Contract for managing {@link Auction} objects.
@@ -44,6 +47,22 @@ public interface IAuctionRepository {
      * @return a copy of the list containing all auctions
      */
     List<Auction> getAllAuctions();
+
+    /**
+     * Retrieves an {@link Auction} instance by its identifier.
+     * <p>
+     * This method searches the in-memory list of stored auctions and returns
+     * the first element whose {@code id()} matches the provided {@link AuctionId}.
+     * If no matching listing is found, an empty {@link Optional} is returned.
+     * </p>
+     *
+     * @param id the identifier of the listing to retrieve; must not be {@code null}
+     * @return an {@link Optional} containing the matching auction if found,
+     *         or an empty {@link Optional} otherwise
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<Auction> findAuctionById(AuctionId id);
 
     /**
      * Returns the list of auctions containing at least one item whose publication
