@@ -23,12 +23,12 @@ public class US005ToRegisterAuthorController {
     private final IAuthorRepository _authorRepository;
 
 
-    public US005ToRegisterAuthorController(IAuthorRepository IAuthorRepository) {
-        if (IAuthorRepository == null) {
+    public US005ToRegisterAuthorController(IAuthorRepository authorRepository) {
+        if (authorRepository == null) {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
         }
 
-        this._authorRepository = IAuthorRepository;
+        this._authorRepository = authorRepository;
     }
 
     public Author register(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
