@@ -33,6 +33,6 @@ public class US005ToRegisterAuthorController {
 
     public Author register(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
         // Delegates author creation and persistence to the repository
-        return _I_authorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
+        return _AuthorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
     }
 }
