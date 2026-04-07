@@ -5,63 +5,63 @@ title Sequence Diagram - US008 Register a new city in the System
 
 actor Administrator
 participant ":UI" as UI
-participant ":US008_toRegisterACityCtrl" as CityController
+participant ":US008ToRegisterACityCtrl" as CityController
 participant ":CountryRepository" as CountryRepository
 participant ":CityRepository" as CityRepository
 participant ":CityFactory" as CityFactory
 
-Administrator -> UI : **1** I want to register a new city
+Administrator -> UI : 1. Request to register a new city
 activate UI
 
-UI --> Administrator : **2** From which country is the city?
-deactivate UI
-
-Administrator -> UI : **3** The city is from the country <countryName>
-activate UI
-
-UI -> CityController : **4** getCountryName(countryName)
+UI -> CityController : 2. registerNewCity(countryName, cityName)
 activate CityController
 
-CityController -> CountryRepository : **5** exists(countryName)
+CityController -> CountryRepository : 3. findCountryIdByCountryName(countryName)
 activate CountryRepository
-CountryRepository -> CountryRepository : **6** validate(countryName)
-CountryRepository --> CityController : **7** true
-deactivate CountryRepository
 
-CityController --> UI : **8** country exists
+CountryRepository -> CountryRepository : 4. validate(countryName)
+CountryRepository -> CountryRepository : 5. normalize(countryName)
+
+alt Country found
+    CountryRepository --> CityController : 6. Optional<CountryID>
+
+    deactivate CountryRepository
+
+    CityController -> CityRepository : 7. createAndAdd(countryID, cityName)
+    activate CityRepository
+
+    CityRepository -> CityFactory : 8. create(countryID, cityName)
+    activate CityFactory
+
+    create "newCity : City" as City
+    CityFactory -> City : 9. instantiate
+
+    CityFactory --> CityRepository : 10. newCity
+    deactivate CityFactory
+
+    CityRepository -> CityRepository : 11. existsByAttributes(newCity)
+
+    alt City already exists
+        CityRepository --> CityController : throws IllegalArgumentException
+        deactivate CityRepository
+    else City is new
+        CityRepository -> CityRepository : 12. add(newCity)
+        CityRepository --> CityController : 13. newCity
+        deactivate CityRepository
+
+        CityController --> UI : 14. true
+    end
+
+else Country not found
+    CountryRepository --> CityController : Optional.empty()
+    deactivate CountryRepository
+
+    CityController --> UI : throws IllegalArgumentException
+end
+
 deactivate CityController
 
-UI --> Administrator : **9** What is the name of the city?
-deactivate UI
-
-Administrator -> UI : **10** The city's name is <cityName>
-activate UI
-
-UI -> CityController : **11** registerNewCity(cityName, countryName)
-activate CityController
-
-CityController -> CityRepository : **12** createAndAdd(cityName, countryName)
-activate CityRepository
-
-CityRepository -> CityFactory : **13** create(cityName, countryName)
-activate CityFactory
-
-create "newCity : City" as City
-CityFactory -> City : **14** create(cityName, countryName)
-
-CityFactory --> CityRepository : **15** newCity
-deactivate CityFactory
-
-CityRepository -> CityRepository : **16** validate(newCity)
-CityRepository -> CityRepository : **17** add(newCity)
-
-CityRepository --> CityController : **18** success(newCity)
-deactivate CityRepository
-
-CityController --> UI : **19** success(newCity)
-deactivate CityController
-
-UI --> Administrator : **20** <newCity> has been registered successfully!
+UI --> Administrator : 15. Operation result (success / error)
 deactivate UI
 
 @enduml
