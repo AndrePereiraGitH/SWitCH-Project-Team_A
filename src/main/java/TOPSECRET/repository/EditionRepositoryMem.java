@@ -5,7 +5,9 @@ import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType.PublicationType;
 
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Repository responsible for managing {@link Edition} entities.
@@ -41,6 +44,37 @@ public class EditionRepositoryMem implements IEditionRepository {
       }
       _editions.add(newEdition);
        return List.copyOf(_editions);
+    }
+
+    /**
+     * Adds an {@link Edition} instance to the in-memory repository.
+     * <p>
+     * This method exists exclusively for testing purposes, allowing test
+     * suites to populate the repository with predefined {@link Edition}
+     * instances without relying on the factory or the normal creation
+     * workflow. It should not be used in production code.
+     * </p>
+     *
+     * @param edition the edition to add; must not be {@code null}
+     * @throws IllegalArgumentException if {@code edition} is {@code null}
+     */
+    // Only for TESTING
+    void add(Edition edition){
+        _editions.add(edition);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Edition> findById(EditionID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("EditionId cannot be null");
+        }
+
+        return _editions.stream()
+                .filter(edition -> edition.id().equals(id))
+                .findFirst();
     }
 }
 

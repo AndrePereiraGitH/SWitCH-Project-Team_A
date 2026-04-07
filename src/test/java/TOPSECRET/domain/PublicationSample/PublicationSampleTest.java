@@ -389,7 +389,7 @@ class PublicationSampleTest {
     @Test
     void shouldReturnFalseIfSampleAlreadyForSale() {
 
-
+        // Arrange
         PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.FOR_SALE,
                 editionID, anyCondition);
 
@@ -398,6 +398,62 @@ class PublicationSampleTest {
 
         //Assert
         assertFalse(alreadyForSale);
+    }
+
+    // =========================================================================
+    // Is Available For Sale
+    // =========================================================================
+
+    @Test
+    void shouldReturnTrueWhenPublicationStatusIsReading() {
+        // Arrange
+        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.READING,
+                editionID, anyCondition);
+
+        // Act
+        boolean result = sampleForSale.isAvailableForSale();
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnTrueWhenPublicationStatusIsRead() {
+        // Arrange
+        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.READ,
+                editionID, anyCondition);
+
+        // Act
+        boolean result = sampleForSale.isAvailableForSale();
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenPublicationStatusIsForSale() {
+        // Arrange
+        PublicationSample sampleNotForSale = new PublicationSample(bdID, ownerID, PublicationStatus.FOR_SALE,
+                editionID, anyCondition);
+
+        // Act
+        boolean result = sampleNotForSale.isAvailableForSale();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenPublicationStatusIsSold() {
+        // Arrange
+        PublicationSample sampleNotForSale = new PublicationSample(bdID, ownerID, PublicationStatus.SOLD,
+                editionID, anyCondition);
+
+        // Act
+        boolean result = sampleNotForSale.isAvailableForSale();
+
+        // Assert
+        assertFalse(result);
     }
 
 

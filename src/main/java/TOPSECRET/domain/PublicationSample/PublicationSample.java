@@ -197,6 +197,24 @@ public class PublicationSample implements AggregateRoot<PublicationSampleID> {
         );
     }
 
+    /**
+     * Determines whether this publication sample is currently eligible to be put for sale.
+     * <p>
+     * This method delegates the decision to the {@link PublicationStatus} enum,
+     * ensuring that the business rule is evaluated consistently based on the
+     * current status of the publication.
+     * <p>
+     * A publication sample is available for sale when its status is neither
+     * {@code SOLD} nor {@code FOR_SALE}.
+     *
+     * @return {@code true} if this publication sample can be listed for sale,
+     *         {@code false} otherwise.
+     */
+    public boolean isAvailableForSale() {
+        return _publicationStatus.isAvailableForSale();
+    }
+
+
     // -------------------------------------------------------------------------
     // Identity (AggregateRoot)
     // -------------------------------------------------------------------------

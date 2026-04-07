@@ -3,14 +3,18 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link IBibliographicalDataRepository}.
@@ -98,6 +102,19 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return List.copyOf(_bdList);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<BibliographicalData> findById(BibliographicalDataID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("BibliographicalDataId cannot be null");
+        }
+
+        return _bdList.stream()
+                .filter(bd -> bd.id().equals(id))
+                .findFirst();
+    }
 }
 
 

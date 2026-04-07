@@ -1,11 +1,10 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 class BibliographicalDataRepositoryMemTest {
 
     // =====================================================
-    // =================== SetUP ===========================
+    // =================== SetUp ===========================
     // =====================================================
 
     private BibliographicalData bd1Double;
@@ -265,4 +265,65 @@ class BibliographicalDataRepositoryMemTest {
                 .create(any(), any(), any(), any(), any(), any());
     }
 
+    // =====================================================
+    // ================= FIND BY ID ========================
+    // =====================================================
+
+    @Test
+    void findById_ShouldReturnBibliographicalDataWhenIdExists() {
+        // Arrange
+        BibliographicalDataID id1 = new BibliographicalDataID("bdId1");
+        when(bd1Double.id()).thenReturn(id1);
+        BibliographicalDataID id2 = new BibliographicalDataID("bdId2");
+        when(bd2Double.id()).thenReturn(id2);
+
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+        repo = new BibliographicalDataRepositoryMem(factory, List.of(bd1Double, bd2Double));
+
+        // Act
+        Optional<BibliographicalData> result = repo.findById(id1);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(bd1Double, result.get());
+    }
+
+    @Test
+    void findById_ShouldReturnEmptyOptionalWhenIdDoesNotExist() {
+        // Arrange
+        BibliographicalDataID unknownId = new BibliographicalDataID("unknownId");
+        BibliographicalDataID id1 = new BibliographicalDataID("bdId1");
+        when(bd1Double.id()).thenReturn(id1);
+        BibliographicalDataID id2 = new BibliographicalDataID("bdId2");
+        when(bd2Double.id()).thenReturn(id2);
+
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+        repo = new BibliographicalDataRepositoryMem(factory, List.of(bd1Double, bd2Double));
+
+        // Act
+        Optional<BibliographicalData> result = repo.findById(unknownId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findById_ShouldThrowExceptionWhenIdIsNull() {
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, List.of(bd1Double, bd2Double));
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.findById(null)
+        );
+
+        assertEquals("BibliographicalDataId cannot be null", ex.getMessage());
+    }
 }

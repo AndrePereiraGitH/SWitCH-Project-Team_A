@@ -6,6 +6,7 @@ import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -141,4 +143,76 @@ class EditionRepositoryMemTest {
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Edition.class)));
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // findById
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    void findById_ShouldReturnEdition_WhenIdExists() {
+        // Arrange
+        EditionID id1 = new EditionID("e1");
+        EditionID id2 = new EditionID("e2");
+        EditionID id3 = new EditionID("e3");
+
+        Edition edition1Double = mock(Edition.class);
+        when(edition1Double.id()).thenReturn(id1);
+        Edition edition2Double = mock(Edition.class);
+        when(edition2Double.id()).thenReturn(id2);
+        Edition edition3Double = mock(Edition.class);
+        when(edition3Double.id()).thenReturn(id3);
+
+        EditionRepositoryMem repo = new EditionRepositoryMem(editionFactoryDouble);
+        repo.add(edition1Double);
+        repo.add(edition2Double);
+        repo.add(edition3Double);
+
+        // Act
+        Optional<Edition> result = repo.findById(id2);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(edition2Double, result.get());
+    }
+
+    @Test
+    void findById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() {
+        // Arrange
+        EditionID id1 = new EditionID("e1");
+        EditionID id2 = new EditionID("e2");
+        EditionID id3 = new EditionID("e3");
+
+        Edition edition1Double = mock(Edition.class);
+        when(edition1Double.id()).thenReturn(id1);
+        Edition edition2Double = mock(Edition.class);
+        when(edition2Double.id()).thenReturn(id2);
+        Edition edition3Double = mock(Edition.class);
+        when(edition3Double.id()).thenReturn(id3);
+
+        EditionRepositoryMem repo = new EditionRepositoryMem(editionFactoryDouble);
+        repo.add(edition1Double);
+        repo.add(edition2Double);
+        repo.add(edition3Double);
+
+        EditionID unknownId = new EditionID("unknown");
+
+        // Act
+        Optional<Edition> result = repo.findById(unknownId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findById_ShouldThrowException_WhenIdIsNull() {
+        // Arrange
+        EditionRepositoryMem repo = new EditionRepositoryMem(editionFactoryDouble);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.findById(null)
+        );
+
+        assertEquals("EditionId cannot be null", ex.getMessage());
+    }
 }

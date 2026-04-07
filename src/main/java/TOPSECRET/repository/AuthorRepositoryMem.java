@@ -3,11 +3,16 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 /**
  * In-memory repository responsible for storing and managing {@link Author} entities.
  *
@@ -56,6 +61,22 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     }
 
     /**
+     * Adds an {@link Author} instance to the in-memory repository.
+     * <p>
+     * This method exists exclusively for testing purposes, allowing test
+     * suites to populate the repository with predefined {@link Author}
+     * instances without relying on the factory or creation workflows.
+     * </p>
+     *
+     * @param author the author to add; must not be {@code null}
+     * @throws IllegalArgumentException if {@code author} is {@code null}
+     */
+    // Only for TESTING
+    void add(Author author) {
+        _authors.add(author);
+    }
+
+    /**
      * Checks whether the given author already exists in the repository.
      *
      * <p>An author is considered to exist if another stored {@link Author}
@@ -79,5 +100,19 @@ public class AuthorRepositoryMem implements IAuthorRepository {
      */
     public List<Author> getAllAuthors() {
         return List.copyOf(this._authors);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Author> findAuthorById(AuthorId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
+        }
+
+        return _authors.stream()
+                .filter(author -> author.id().equals(id))
+                .findFirst();
     }
 }

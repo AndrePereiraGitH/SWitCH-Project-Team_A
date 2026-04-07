@@ -1,14 +1,14 @@
 package TOPSECRET.domain.BibliographicalData;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Contract for managing {@link BibliographicalData} objects.
@@ -52,4 +52,21 @@ public interface IBibliographicalDataRepository {
 
     List<BibliographicalData> getAllPublicationsBD();
 
+    /**
+     * Retrieves a {@link BibliographicalData} instance by its identifier.
+     * <p>
+     * This method searches the in-memory list of stored bibliographical data
+     * and returns the first element whose {@code id()} matches the provided
+     * {@link BibliographicalDataID}. If no matching element is found, an
+     * empty {@link Optional} is returned.
+     * </p>
+     *
+     * @param id the identifier of the bibliographical data to retrieve;
+     *           must not be {@code null}
+     * @return an {@link Optional} containing the matching bibliographical data
+     *         if found, or an empty {@link Optional} otherwise
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<BibliographicalData> findById(BibliographicalDataID id);
 }

@@ -5,10 +5,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
@@ -141,4 +138,23 @@ public interface IPublicationSampleRepository {
      *         never {@code null}, but may be empty if no matches are found
      */
 //    List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication);
+
+    /**
+     * Retrieves all {@link PublicationSample} instances that belong to the library
+     * identified by the given {@link LibraryId}.
+     * <p>
+     * This method performs an in-memory search over all publication samples stored
+     * in the repository and returns only those whose associated library identifier
+     * matches the provided one.
+     * </p>
+     *
+     * @param libraryId the identifier of the library whose publication samples
+     *                  should be retrieved; must not be {@code null}
+     * @return a list containing all publication samples associated with the given
+     *         library; never {@code null}, but may be empty if the library has no
+     *         registered publications
+     * @throws IllegalArgumentException if {@code libraryId} is {@code null}
+     */
+
+    List<PublicationSample> findByLibraryId(LibraryId libraryId);
 }

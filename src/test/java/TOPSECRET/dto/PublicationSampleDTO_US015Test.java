@@ -3,20 +3,12 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.Genre.GenreFactory;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -28,66 +20,76 @@ class PublicationSampleDTO_US015Test {
     // ================ Set Up ================================
     // ========================================================
 
-    private PublicationSample pubSample;
     private BibliographicalData bd;
+    private List<Author> authors;
     private Edition edition;
-    private Condition condition;
-    private User owner;
 
     @BeforeEach
     void setup() {
 
-        // Arrange
-        Author author = mock(Author.class);
-        Publisher publisher = mock(Publisher.class);
-        PublicationType pubType = mock(PublicationType.class);
-
-        pubSample = mock(PublicationSample.class);
         bd = mock(BibliographicalData.class);
-        edition = mock(Edition.class);
-        owner = mock(User.class);
-
-
-//        when(pubSample.getBibliographicalData()).thenReturn(bd);
-//        when(pubSample.getEdition()).thenReturn(edition);
-        when(pubSample.getCondition()).thenReturn(Condition.LIKE_NEW);
-        when(pubSample.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
-//        when(pubSample.getOwnerId()).thenReturn(owner);
-
         when(bd.getTitle()).thenReturn("Clean Code");
-//        when(bd.getAuthors()).thenReturn(List.of(author));
-        when(author.getName()).thenReturn("Robert C. Martin");
-//        when(bd.getGenres()).thenReturn(List.of(new GenreFactory().create("Programming")));
 
-        when(edition.getEditionNumber()).thenReturn("3rd");
+        Author author = mock(Author.class);
+        when(author.getName()).thenReturn("Robert C. Martin");
+        authors = List.of(author);
+
+        edition = mock(Edition.class);
+        PublicationType pubType = mock(PublicationType.class);
         when(edition.getCode()).thenReturn(Code.fromIsbn13("9780132350884"));
         when(edition.getPublicationType()).thenReturn(pubType);
         when(pubType.getMediaFormat()).thenReturn("Book");
-        when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);
-        when(edition.getPublisher()).thenReturn(publisher);
-        when(publisher.getName()).thenReturn("Prentice Hall");
-
-        when(owner.getUserName()).thenReturn("silvia");
-
     }
 
     // ========================================================
-    // ================ Tests =================================
+    // ================ TO DTO ================================
     // ========================================================
 
-    // Tests to Equals =================================================================================================
+    @Test
+    void toDTO_ShouldMapAllFieldsCorrectly() {
+        // Act
+        PublicationSampleDTO_US015 dto = PublicationSampleDTO_US015.toDTO(bd, authors, edition);
+
+        // Assert
+        assertEquals("Clean Code", dto.getTitle());
+        assertEquals(List.of("Robert C. Martin"), dto.getAuthorsName());
+        assertEquals("9780132350884", dto.getCode());
+        assertEquals("Book", dto.getMediaFormat());
+    }
+
+    @Test
+    void toDTO_ShouldThrowNullPointerExceptionWhenBibliographicalDataIsNull() {
+        // Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationSampleDTO_US015.toDTO(null, authors, edition));
+    }
+
+    @Test
+    void toDTO_ShouldThrowNullPointerExceptionWhenAuthorsIsNull() {
+        // Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationSampleDTO_US015.toDTO(bd, null, edition));
+    }
+
+    @Test
+    void toDTO_ShouldThrowNullPointerExceptionWhenEditionIsNull() {
+        // Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationSampleDTO_US015.toDTO(bd, authors, null));
+    }
+
+    // ========================================================
+    // ================ EQUALS ================================
+    // ========================================================
+
     @Test
     void equals_ShouldReturnTrueForSameObject() {
         // Arrange
         PublicationSampleDTO_US015 dto1 = new PublicationSampleDTO_US015(
-                "Title", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title", List.of("Author"), "123", "BOOK");
 
         PublicationSampleDTO_US015 dto2 = new PublicationSampleDTO_US015(
-                "Title", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title", List.of("Author"), "123", "BOOK");
 
         // Act
         boolean result = dto1.equals(dto2);
@@ -101,14 +103,10 @@ class PublicationSampleDTO_US015Test {
     void equals_ShouldReturnFalseForDifferentObjects() {
         // Arrange
         PublicationSampleDTO_US015 dto1 = new PublicationSampleDTO_US015(
-                "Title1", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title1", List.of("Author"), "123", "BOOK");
 
         PublicationSampleDTO_US015 dto2 = new PublicationSampleDTO_US015(
-                "Title2", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title2", List.of("Author"), "123", "BOOK");
 
         // Act
         boolean result = dto1.equals(dto2);
@@ -118,26 +116,35 @@ class PublicationSampleDTO_US015Test {
     }
 
     @Test
-    void equals_ShouldReturnFalseWhenComparingWithNullOrDifferentClass() {
+    void equals_ShouldReturnFalseWhenComparingWithNull() {
         // Arrange
         PublicationSampleDTO_US015 dto = new PublicationSampleDTO_US015(
-                "Title", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title", List.of("Author"), "123", "BOOK");
 
         // Act + Assert
         assertFalse(dto.equals(null));
+    }
+
+    @Test
+    void equals_ShouldReturnFalseWhenComparingWithDifferentObject() {
+        // Arrange
+        PublicationSampleDTO_US015 dto = new PublicationSampleDTO_US015(
+                "Title", List.of("Author"), "123", "BOOK");
+
+        // Act + Assert
         assertFalse(dto.equals("Not a DTO"));
     }
 
-    // Tests to HashCode ===============================================================================================
+
+    // ========================================================
+    // ================ HASHCODE ==============================
+    // ========================================================
+
     @Test
     void hashCode_ShouldReturnTheSameHashCodeForTheSameObject() {
         // Arrange
         PublicationSampleDTO_US015 dto = new PublicationSampleDTO_US015(
-                "Title", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title", List.of("Author"), "123", "BOOK");
 
         // Act
         int hash1 = dto.hashCode();
@@ -151,14 +158,10 @@ class PublicationSampleDTO_US015Test {
     void hashCode_ShouldBeDifferentForDifferentObjects() {
         // Arrange
         PublicationSampleDTO_US015 dto1 = new PublicationSampleDTO_US015(
-                "Title1", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title1", List.of("Author"), "123", "BOOK");
 
         PublicationSampleDTO_US015 dto2 = new PublicationSampleDTO_US015(
-                "Title2", List.of("Author"), List.of("Genre"), "Owner",
-                "AVAILABLE", "1st", "123", "BOOK", "en",
-                "Publisher", "Good");
+                "Title2", List.of("Author"), "123", "BOOK");
 
         // Act
         int hash1 = dto1.hashCode();
@@ -166,109 +169,5 @@ class PublicationSampleDTO_US015Test {
 
         // Assert
         assertNotEquals(hash1, hash2);
-    }
-
-
-    // Tests to toDTO ==================================================================================================
-    @Test
-    void toDTO_ShouldMapAllFieldsCorrectly() {
-        // Act
-//        PublicationSampleDTO_US015 dto = PublicationSampleDTO_US015.toDTO(pubSample);
-
-        // Assert
-//        assertEquals("Clean Code", dto.getTitle());
-//        assertEquals(List.of("Robert C. Martin"), dto.getAuthorsName());
-//        assertEquals(List.of("Programming"), dto.getGenres());
-//        assertEquals("silvia", dto.getOwnerUsername());
-//        assertEquals("FOR_SALE", dto.getPublicationStatus());
-//        assertEquals("3rd", dto.getEditionNumber());
-//        assertEquals("9780132350884", dto.getCode());
-//        assertEquals("Book", dto.getMediaFormat());
-//        assertEquals("en", dto.getEditionLanguage());
-//        assertEquals("Prentice Hall", dto.getPublisherName());
-//        assertEquals("LIKE_NEW", dto.getCondition());
-    }
-
-    @Test
-    void toDTO_ShouldThrowNullPointerExceptionWhenPublicationSampleIsNull() {
-        // Act + Assert
-//        NullPointerException exception = assertThrows(NullPointerException.class,
-//                () -> PublicationSampleDTO_US015.toDTO(null)
-//        );
-
-//        assertEquals("Publication sample can not be null",exception.getMessage());
-    }
-
-    // Tests to toDTOs =================================================================================================
-    @Test
-    void toDTOs_ShouldThrowNullPointerExceptionWhenListIsNull() {
-        // Act + Assert
-//        NullPointerException exception = assertThrows(NullPointerException.class,
-//                () -> PublicationSampleDTO_US015.toDTOs(null)
-//        );
-
-//        assertEquals("List of items can not be null", exception.getMessage());
-    }
-
-    @Test
-    void toDTOs_ShouldThrowIllegalArgumentExceptionWhenListContainsNullElement() {
-        // Arrange
-        List<PublicationSample> listWithNull = new ArrayList<>();
-        listWithNull.add(pubSample);
-        listWithNull.add(null);
-
-        // Act
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-//                () -> PublicationSampleDTO_US015.toDTOs(listWithNull));
-
-        // Assert
-//        assertEquals("List of items must not contain null elements", exception.getMessage());
-    }
-
-    @Test
-    void toDTOs_ShouldReturnEmptyListWhenInputListIsEmpty() {
-        // Act
-//        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of());
-
-        // Assert
-//        assertNotNull(dtoList);
-//        assertTrue(dtoList.isEmpty());
-    }
-
-    @Test
-    void toDTOs_ShouldReturnListWithOneDTOWhenListHasOneElement() {
-        // Act
-//        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample));
-
-        // Assert
-//        assertNotNull(dtoList);
-//        assertEquals(1, dtoList.size());
-    }
-
-    @Test
-    void toDTOs_ShouldReturnListWithSameSizeAsInputList() {
-        // Arrange
-        // New publicationSample
-        PublicationSample anotherSample = mock(PublicationSample.class);
-//        when(anotherSample.getBibliographicalData()).thenReturn(bd);
-//        when(anotherSample.getEdition()).thenReturn(edition);
-        when(anotherSample.getCondition()).thenReturn(Condition.LIKE_NEW);
-        when(anotherSample.getPublicationStatus()).thenReturn(PublicationStatus.FOR_SALE);
-//        when(anotherSample.getOwnerId()).thenReturn(owner);
-
-        // Act
-//        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample, anotherSample));
-
-        // Assert
-//        assertEquals(2, dtoList.size());
-    }
-    @Test
-    void toDTOs_ShouldBeImmutableList() {
-        // Act
-//        List<PublicationSampleDTO_US015> dtoList = PublicationSampleDTO_US015.toDTOs(List.of(pubSample));
-
-        // Assert
-//        assertThrows(UnsupportedOperationException.class,
-//                () -> dtoList.add(mock(PublicationSampleDTO_US015.class)));
     }
 }
