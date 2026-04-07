@@ -9,19 +9,23 @@ class UI015 {
 }
 
 class US015ToPutPublicationInDirectSaleController {
-    - libraryRepository: LibraryRepository
-    - publicationSampleRepository: PublicationSampleRepository
-    - listingRepository: ListingRepository
+    - libraryRepository: ILibraryRepository
+    - publicationSampleRepository: IPublicationSampleRepository
+    - listingRepository: IListingRepository
+    - pubSampleMapper: US015PublicationSampleMapper
     + findLibraryPublicationsAvailableForSale(): List<PublicationSampleDTO_US015>
     + putPublicationForSale(title, selectedPublicationIds, price, shortDescription, user1, pictures): boolean
 }
 
-class PublicationSampleDTO_US015 {
+class US015PublicationSampleDTO {
     - title: String
     - authorsName: List<String>
     - code: String
     - mediaFormat: String
-    + toDTO(publicationSample) : PublicationSampleDTO_US015
+}
+
+class US015PublicationSampleMapper {
+    + toDTOs(listOfAvailablePublications): List<US015PublicationSampleDTO>
 }
 
 ' -------------------------
@@ -89,9 +93,8 @@ UI015 -.> US015ToPutPublicationInDirectSaleController : "invokes"
 US015ToPutPublicationInDirectSaleController "1" --> "1" LibraryRepository: "uses"
 US015ToPutPublicationInDirectSaleController "1" --> "1" PublicationSampleRepository : "uses"
 US015ToPutPublicationInDirectSaleController "1" --> "1" ListingRepository : "uses"
-US015ToPutPublicationInDirectSaleController ..> PublicationSampleDTO_US015 : "creates DTOs"
+US015ToPutPublicationInDirectSaleController "1" --> "1" US015PublicationSampleMapper : "creates DTOs"
 US015ToPutPublicationInDirectSaleController ..> PublicationSample : "invokes"
-'US015ToPutPublicationInDirectSaleController ..> Library : "invokes"
 
 ' --- Library ---
 'Library "1" --> "*" PublicationSampleId : "stores IDs of"
@@ -111,7 +114,7 @@ ListingRepository "1" --> "1" ListingFactory : "uses"
 ListingRepository "1" --> "*" Listing : "stores"
 
 ' --- PublicationSample DTO mapping ---
-PublicationSampleDTO_US015 ..> PublicationSample : "maps from"
+US015PublicationSampleMapper ..> US015PublicationSampleDTO : "maps from"
 
 @enduml
 

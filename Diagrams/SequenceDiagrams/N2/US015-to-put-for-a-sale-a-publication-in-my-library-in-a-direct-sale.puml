@@ -18,9 +18,9 @@ participant ":PublicationSample" as Pub
 participant "listOfLibraryPublications:\nList<PublicationSample" as ListLibraryPS
 participant "listOfAvailablePublication:\nList<PublicationSample>" as ListAvailablePub
 
-participant ":PublicationSampleDTO_US015" as DTO
-participant "listOfPublicationSampleDTO:\nList<PublicationSampleDTO_US015>" as listDTO
-participant "publicationSampleDTO:\nPublicationSampleDTO_US015" as DTO_O
+participant ":US015PublicationSampleMapper" as Mapper
+participant "listOfPublicationSampleDTO:\nList<US015PublicationSampleDTO>" as listDTO
+participant "publicationSampleDTO:\nUS015PublicationSampleDTO" as DTO_O
 
 participant ":ListingRepository" as LRepo
 participant ":ListingFactory" as LFactory
@@ -61,15 +61,15 @@ loop for each PublicationSample
 end
 
 ' --- Step 6: Converts the list of available publications to DTOs ---
-' Later, add mapper
-Ctrl -->> listDTO ** : «create»
+Ctrl -> Mapper : toDTOs(listOfAvailablePublications)
+activate Mapper
+Mapper -->> listDTO ** : «create»
 loop for each publicationSample
-    Ctrl -> DTO : toDTO(publicationSample)
-    activate DTO
-    DTO -->> DTO_O ** : «create»
-    DTO -> listDTO : add(publicationSampleDTO)
-    deactivate DTO
+    Mapper -->> DTO_O **: «create»
+    Mapper -> listDTO: add(publicationSampleDTO)
 end
+Mapper --> Ctrl : listOfPublicationSampleDTO
+deactivate Mapper
 Ctrl --> UI : listOfPublicationSampleDTO
 deactivate Ctrl
 
