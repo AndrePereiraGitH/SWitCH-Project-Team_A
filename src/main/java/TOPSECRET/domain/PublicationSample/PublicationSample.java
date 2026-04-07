@@ -115,6 +115,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         return true;
     }
 
+
     /**
      * Associates this publication copy with the given library.
      *
@@ -159,6 +160,36 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
 
         _collecOfPubID = collectionOfPublicationsID;
         return collectionOfPublicationsID;
+    }
+
+
+
+    /**
+     * Checks whether this publication is owned by the given user.
+     *
+     * @param userId the {@link UserId} to check against the publication's owner
+     * @return {@code true} if the publication's owner matches the provided {@link UserId},
+     *         {@code false} otherwise
+     */
+    public boolean isOwnedByUser(UserId userId){
+        if(_ownerID.equals(userId)){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks whether this publication has been assigned to a library.
+     *
+     * @return {@code true} if a {@link LibraryId} has been assigned to this publication,
+     *         {@code false} if none has been set
+     */
+    public boolean isInUserLibrary(){
+        if(_libraryId == null){
+            return false;
+        }
+        return true;
     }
 
     /**

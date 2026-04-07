@@ -1,90 +1,74 @@
+```
 @startuml
 autonumber
 hide footbox
 title US012 - As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
 
-
 actor User
 participant ":UI012" as UI
-
-
-
 participant ":US012GetListOfPublicationsInLibraryController" as Ctrl
 
-participant ":LibraryRepository" as libraryRepo
-
-
-participant ":Library" as LibDomain
-
-participant "listOfPublications:List<PublicationSample>" as ListPubs
-
-participant ":PublicationDetailsDTO_US012" as DTO
-
-participant "listOfPublicationsDTO:List<PublicationDetailsDTO>" as ListDTO
-
-participant ":PublicationSample" as PubDomain
-
-participant "pubDTO:PublicationDetailsDTO" as pubDTO
-
-
-
-
-
-
+participant ":IUserRepository" as userRepo
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant "listOfPublications\n:List<PublicationSample>" as ListPubs
+participant ":PublicationSample" as pubSample
+participant ":US012PublicationSampleMapper" as Mapper
+participant "listOfPublicationsDTO\n:List<PublicationDetailsDTO_US012>" as ListDTO
+participant "pubDTO\n:PublicationDetailsDTO_US012" as pubDTO
 
 User -> UI : I want to see a list of the publications in my library
 activate UI
 UI -> User : Enter your username
 deactivate UI
-User -> UI: username
+User -> UI : username
 
 activate UI
-
-UI -> Ctrl: getListOfPublicationsInLibraryDTO(username)
+UI -> Ctrl : getListOfPublicationsInLibrary(username)
 activate Ctrl
-Ctrl -> libraryRepo: getAllPublicationsFromUserLibrary(username)
 
-activate libraryRepo
+Ctrl -> userRepo : findUserIdByUsername(username)
+activate userRepo
+userRepo --> Ctrl : userId
+deactivate userRepo
 
-libraryRepo -> LibDomain : getAllPublications()
+Ctrl -> pubSampleRepo : getAllPublicationsInUserLibrary(userId)
+activate pubSampleRepo
 
-activate LibDomain
+pubSampleRepo -->> ListPubs ** : <<create>>
 
-LibDomain -> ListPubs **: create()
+loop for each pubSample in PublicationSampleRepository
+    pubSampleRepo -> pubSample : isOwnedByUser(userId)
+    activate pubSample
+    pubSample --> pubSampleRepo : true
+    deactivate pubSample
+    pubSampleRepo -> pubSample : isInUserLibrary()
+    activate pubSample
+    pubSample --> pubSampleRepo : true
+    deactivate pubSample
+    pubSampleRepo -> pubSampleRepo : listOfPublications.add(pubSample)
+end
 
-LibDomain -> libraryRepo : listOfAllPublications
+pubSampleRepo --> Ctrl : listOfPublications
+deactivate pubSampleRepo
 
-deactivate LibDomain
+Ctrl -> Mapper : toDTOs(listOfPublications)
+activate Mapper
 
+Mapper -->> ListDTO ** : <<create>>
 
-libraryRepo -> Ctrl: listOfAllPublications
+loop for each publicationSample in listOfPublications
+    Mapper -> pubDTO ** : toDTO()
+    Mapper -> Mapper : listOfPublicationsDTO.add(pubDTO)
+end
 
-deactivate libraryRepo
+Mapper --> Ctrl : listOfPublicationsDTO
+deactivate Mapper
 
-
-Ctrl -> DTO: toDTOs(listOfPublications)
-
-activate DTO
-DTO -> ListDTO **: create()
-
-
-    loop for each publication in listOfPublications
-        DTO -> PubDomain: getDetails()
-        activate PubDomain
-        PubDomain --> DTO: details
-        deactivate PubDomain
-
-        DTO -> pubDTO** : createDTO(details)
-
-        DTO -> DTO: listOfPublicationsDTO.add(pubDTO)
-    end
-
-DTO --> Ctrl: listOfPublicationsDTO
-deactivate DTO
-
-Ctrl --> UI: listOfPublicationsDTO
+Ctrl --> UI : listOfPublicationsDTO
 deactivate Ctrl
 
-UI --> User : shows the list of publications with details
+UI --> User : Display list of publications\n(title, author, type, ISBN/SSN)
 deactivate UI
+
 @enduml
+```
