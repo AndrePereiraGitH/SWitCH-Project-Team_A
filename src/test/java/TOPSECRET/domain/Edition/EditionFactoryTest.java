@@ -2,9 +2,10 @@ package TOPSECRET.domain.Edition;
 
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.Code;
 import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,36 +30,46 @@ import static org.mockito.Mockito.when;
 class EditionFactoryTest {
 
 // -------------------------
-// Mocks
+// Doubles
 // -------------------------
 
-    private PublicationType validPublicationType;
+    private PublicationTypeId validPublicationTypeId;
     private Code validCode;
     private final PhysicalAttributes validPhysicalAttributes = mock(PhysicalAttributes.class);
-    private final Publisher validPublisher = mock(Publisher.class);
+    private final PublisherID validPublisherId = mock(PublisherID.class);
 
     @BeforeEach
     void setUp() {
-        validPublicationType = mock(PublicationType.class);
-        when(validPublicationType.getMediaFormat()).thenReturn("Book");
+
+        Edition edition = mock(Edition.class);
+
+        validPublicationTypeId = mock(PublicationTypeId.class);
+        when(edition.getMediaFormat()).thenReturn("Book");
+
+        when(validPublicationTypeId.getId()).thenReturn("1");
+
         validCode = mock(Code.class);
         when(validCode.getIsbn13()).thenReturn("9781234567890");
+
+        when(validPublisherId.getId()).thenReturn("1");
     }
-    
+
 // -------------------------
 // Tests
 // -------------------------
 
     @Test
     void shouldCreateEdition_whenValidEditionNumber() {
+
         EditionFactory factory = new EditionFactory();
 
         Edition edition = factory.create(
                 "1st",
                 validCode,
                 validPhysicalAttributes,
-                validPublicationType,
-                validPublisher,
+                validPublicationTypeId,
+                validPublisherId,
+                "Book",
                 Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1),
                 TypeOfBinding.HARDBACK
@@ -66,19 +77,20 @@ class EditionFactoryTest {
 
         assertNotNull(edition);
         assertEquals("1st", edition.getEditionNumber());
-
     }
 
     @Test
     void shouldCreateEdition_whenValidEditionLanguage() {
+
         EditionFactory factory = new EditionFactory();
 
         Edition edition = factory.create(
                 "1st",
                 validCode,
                 validPhysicalAttributes,
-                validPublicationType,
-                validPublisher,
+                validPublicationTypeId,
+                validPublisherId,
+                "Book",
                 Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1),
                 TypeOfBinding.HARDBACK
@@ -90,14 +102,16 @@ class EditionFactoryTest {
 
     @Test
     void shouldCreateEdition_whenValidEditionDate() {
+
         EditionFactory factory = new EditionFactory();
 
         Edition edition = factory.create(
                 "1st",
                 validCode,
                 validPhysicalAttributes,
-                validPublicationType,
-                validPublisher,
+                validPublicationTypeId,
+                validPublisherId,
+                "Book",
                 Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1),
                 TypeOfBinding.HARDBACK
@@ -107,22 +121,24 @@ class EditionFactoryTest {
         assertEquals(LocalDate.of(2020, 1, 1), edition.getEditionDate());
     }
 
-
-
     @Test
     void shouldTrimEditionNumber() {
+
         EditionFactory factory = new EditionFactory();
+
         Edition edition = factory.create(
                 "   1st   ",
                 validCode,
                 validPhysicalAttributes,
-                validPublicationType,
-                validPublisher,
+                validPublicationTypeId,
+                validPublisherId,
+                "Book",
                 Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1),
                 TypeOfBinding.HARDBACK
         );
 
+        assertNotNull(edition);
         assertEquals("1st", edition.getEditionNumber());
     }
 }

@@ -128,7 +128,7 @@ class PublicationTypeTest {
         PublicationTypeId id = pt.id();
 
         // ASSERT
-        assertEquals(pt.identity(), id);
+        assertEquals(pt.id(), id);
     }
 
     @Test
@@ -138,7 +138,7 @@ class PublicationTypeTest {
         PublicationType pt = new PublicationType("Book");
 
         // ACT
-        PublicationTypeId id = pt.identity();
+        PublicationTypeId id = pt.id();
 
         // ASSERT
         assertNotNull(id);

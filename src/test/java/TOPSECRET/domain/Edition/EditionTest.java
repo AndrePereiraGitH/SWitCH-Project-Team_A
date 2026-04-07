@@ -1,12 +1,9 @@
 package TOPSECRET.domain.Edition;
 
-import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -35,11 +32,34 @@ import static org.mockito.Mockito.when;
 class EditionTest {
 
     private final PhysicalAttributes validPhysicalAttributes = mock(PhysicalAttributes.class);
-    private final Publisher validPublisher = mock(Publisher.class);
-    private final PublicationType publicationType = mock(PublicationType.class);
+    private final PublisherID validPublisherID = new PublisherID("1");
+    private final PublicationTypeId publicationTypeId = new PublicationTypeId("1");
 
     private final Code codeWithIsbn13 = Code.fromIsbn13("978-3-16-148410-0");
     private final Code codeWithIsbn10 = Code.fromIsbn10("0-306-40615-2");
+
+    private Edition createValidEdition() {
+
+        Code code = mock(Code.class);
+        when(code.getIsbn13()).thenReturn("9781234567890");
+
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        PublisherID publisherID = mock(PublisherID.class);
+
+        TypeOfBinding binding = mock(TypeOfBinding.class);
+
+        return new Edition(
+                "1st",
+                code,
+                validPhysicalAttributes,
+                publicationTypeId,
+                publisherID,
+                "Book",
+                Locale.ENGLISH,
+                LocalDate.of(2020, 1, 1),
+                binding
+        );
+    }
 
 // ─────────────────────────────────────────────────────────────
 // Constructor validation
@@ -50,12 +70,10 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition(null, codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(2010, 1, 1), typeOfBindingDouble));
 
         // Assert
@@ -68,12 +86,10 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("   ", codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(2010, 1, 1), typeOfBindingDouble));
 
         // Assert
@@ -85,16 +101,15 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1", codeWithIsbn13, null,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(2010, 1, 1), typeOfBindingDouble));
 
         // Assert
-        assertTrue(ex.getMessage().contains("Physical"));
+        assertTrue(ex.getMessage().contains("Physical Attributes, publication type ID and/or publisher ID cannot be null"));
     }
 
     @Test
@@ -104,11 +119,11 @@ class EditionTest {
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1", codeWithIsbn13, validPhysicalAttributes,
-                        null, validPublisher,
+                        null, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(2010, 1, 1), typeOfBindingDouble));
 
         // Assert
-        assertTrue(ex.getMessage().contains("publication"));
+        assertTrue(ex.getMessage().contains("Physical Attributes, publication type ID and/or publisher ID cannot be null"));
     }
 
     @Test
@@ -116,16 +131,15 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1", codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, null,
+                        publicationTypeId, null, "Book",
                         Locale.ENGLISH, LocalDate.of(2010, 1, 1), typeOfBindingDouble));
 
         // Assert
-        assertTrue(ex.getMessage().contains("publisher"));
+        assertTrue(ex.getMessage().contains("Physical Attributes, publication type ID and/or publisher ID cannot be null"));
     }
 
     @Test
@@ -133,16 +147,15 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1", codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         null, LocalDate.of(2010, 1, 1), typeOfBindingDouble));
 
         // Assert
-        assertTrue(ex.getMessage().contains("Edition language"));
+        assertTrue(ex.getMessage().contains("Edition language cannot be null"));
     }
 
     @Test
@@ -150,32 +163,30 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1", codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, null, typeOfBindingDouble));
 
         // Assert
-        assertTrue(ex.getMessage().contains("Edition date"));
+        assertTrue(ex.getMessage().contains("Edition date cannot be null"));
     }
 
     @Test
     void shouldThrow_whenTypeOfBinding_isNull() {
 
         // Arrange
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1", codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(2000, 11, 1), null));
 
         // Assert
-        assertTrue(ex.getMessage().contains("TypeOfBinding"));
+        assertTrue(ex.getMessage().contains("TypeOfBinding cannot be null"));
 
     }
 
@@ -196,12 +207,11 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act + Assert
         assertDoesNotThrow(() ->
                 new Edition("1st", codeWithIsbn13, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
     }
 
@@ -213,12 +223,11 @@ class EditionTest {
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
         Code code = mock(Code.class);
         when(code.getIsbn13()).thenReturn(null);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1st", code, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
 
         // Assert
@@ -236,12 +245,11 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act + Assert
         assertDoesNotThrow(() ->
                 new Edition("1st", codeWithIsbn10, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
     }
 
@@ -253,12 +261,11 @@ class EditionTest {
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
         Code code = mock(Code.class);
         when(code.getIsbn10()).thenReturn(null);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1st", code, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
 
         // Assert
@@ -276,12 +283,11 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act + Assert
         assertDoesNotThrow(() ->
                 new Edition("1st", null, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Book",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
     }
 
@@ -295,13 +301,12 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Magazine");
         Code codeWithIssn = Code.fromIssn("0378-5955");
 
         // Act + Assert
         assertDoesNotThrow(() ->
                 new Edition("1st", codeWithIssn, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Magazine",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
     }
 
@@ -313,12 +318,11 @@ class EditionTest {
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
         Code code = mock(Code.class);
         when(code.getIssn()).thenReturn(null);
-        when(publicationType.getMediaFormat()).thenReturn("Magazine");
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new Edition("1st", code, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Magazine",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
 
         // Assert
@@ -336,12 +340,11 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Magazine");
 
         // Act + Assert
         assertDoesNotThrow(() ->
                 new Edition("1st", null, validPhysicalAttributes,
-                        publicationType, validPublisher,
+                        publicationTypeId, validPublisherID, "Magazine",
                         Locale.ENGLISH, LocalDate.of(year, 1, 1), typeOfBindingDouble));
     }
 
@@ -354,11 +357,10 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
@@ -373,11 +375,10 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
@@ -392,18 +393,17 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
-        PublicationType result = edition.getPublicationType();
+        PublicationTypeId result = edition.getPublicationTypeID();
 
         // Assert
-        assertEquals(publicationType, result);
+        assertEquals(publicationTypeId, result);
     }
 
     @Test
@@ -411,18 +411,17 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
-        Publisher result = edition.getPublisher();
+        PublisherID result = edition.getPublisherID();
 
         // Assert
-        assertEquals(validPublisher, result);
+        assertEquals(validPublisherID, result);
     }
 
     @Test
@@ -430,11 +429,10 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
@@ -449,12 +447,11 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         LocalDate expectedDate = LocalDate.of(2020, 1, 1);
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, expectedDate, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, expectedDate, typeOfBindingDouble);
 
         // Act
         LocalDate result = edition.getEditionDate();
@@ -468,12 +465,11 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
 
         LocalDate expectedDate = LocalDate.of(2020, 1, 1);
         Edition edition = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, expectedDate, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, expectedDate, typeOfBindingDouble);
 
         // Act
         TypeOfBinding result = edition.getTypeOfBinding();
@@ -481,7 +477,23 @@ class EditionTest {
         // Assert
         assertEquals(typeOfBindingDouble, result);
     }
-/*
+
+    @Test
+    void shouldReturnPhysicalAttributes() {
+
+        Edition e = createValidEdition();
+
+        assertEquals(validPhysicalAttributes, e.getPhysicalAttributes());
+    }
+
+    @Test
+    void shouldReturnMediaFormat() {
+
+        Edition e = createValidEdition();
+
+        assertEquals("Book", e.getMediaFormat());
+    }
+
 // ─────────────────────────────────────────────────────────────
 // equals
 // ─────────────────────────────────────────────────────────────
@@ -491,10 +503,10 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
+
         Edition e = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH,
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
@@ -509,22 +521,21 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         Edition e2 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         // Act
         boolean result = e1.equals(e2);
 
         // Assert
-        assertFalse(result);
+        assertTrue(result);
     }
 
     @Test
@@ -532,16 +543,15 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         Edition e2 = new Edition("2nd", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         // Act
         boolean result = e1.equals(e2);
@@ -555,17 +565,16 @@ class EditionTest {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
         LocalDate date = LocalDate.of(2020, 1, 1);
         LocalDate date2 = LocalDate.of(2001, 1, 1);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         Edition e2 = new Edition("1st", codeWithIsbn10,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date2, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId,
+                validPublisherID, "Book", Locale.ENGLISH, date2, typeOfBindingDouble);
 
         // Act
         boolean result = e1.equals(e2);
@@ -575,187 +584,59 @@ class EditionTest {
     }
 
     @Test
-    void equals_differentPhysicalAttributes_returnsFalse() {
+    void sameAs_differentInstances_returnsFalse() {
 
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        PhysicalAttributes otherPhysicalAttributes = mock(PhysicalAttributes.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-        LocalDate date = LocalDate.of(2020, 1, 1);
+        TypeOfBinding binding = mock(TypeOfBinding.class);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId, validPublisherID,
+                "Book",
+                Locale.ENGLISH, LocalDate.of(2020, 1, 1), binding);
 
         Edition e2 = new Edition("1st", codeWithIsbn13,
-                otherPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId, validPublisherID,
+                "Book",
+                Locale.ENGLISH, LocalDate.of(2020, 1, 1), binding);
 
-        // Act
-        boolean result = e1.equals(e2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void equals_differentPublicationType_returnsFalse() {
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        PublicationType otherPublicationType = mock(PublicationType.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-        when(otherPublicationType.getMediaFormat()).thenReturn("Book");
-        LocalDate date = LocalDate.of(2020, 1, 1);
-
-        Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
-
-        Edition e2 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, otherPublicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
-
-        // Act
-        boolean result = e1.equals(e2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void equals_differentPublisher_returnsFalse() {
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        Publisher otherPublisher = mock(Publisher.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-        LocalDate date = LocalDate.of(2020, 1, 1);
-
-        Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
-
-        Edition e2 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                otherPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
-
-        // Act
-        boolean result = e1.equals(e2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void equals_differentLocale_returnsFalse() {
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-        LocalDate date = LocalDate.of(2020, 1, 1);
-
-        Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH, date, typeOfBindingDouble);
-
-        Edition e2 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.FRENCH, date, typeOfBindingDouble);
-
-        // Act
-        boolean result = e1.equals(e2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void equals_differentDate_returnsFalse() {
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-
-        Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
-        Edition e2 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
-                LocalDate.of(2021, 1, 1), typeOfBindingDouble);
-
-        // Act
-        boolean result = e1.equals(e2);
-
-        // Assert
-        assertFalse(result);
-    }*/
-
-// ─────────────────────────────────────────────────────────────
-// Identity (DDD)
-// ─────────────────────────────────────────────────────────────
-
-    @Test
-    void sameIdentityAs_sameInstance_returnsTrue() {
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-
-        Edition e = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
-        // Act
-        boolean result = e.sameAs(e);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void sameAs_differentInstances_returnsTrue() {
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
-
-        Edition e1 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
-        Edition e2 = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
-        // Act
-        boolean result = e1.sameAs(e2);
-
-        // Assert
-        assertTrue(result);
+        assertFalse(e1.sameAs(e2));
     }
 
     @Test
     void givenValidEditionThenReturnValidEdition(){
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(publicationType.getMediaFormat()).thenReturn("Book");
+
+        TypeOfBinding binding = mock(TypeOfBinding.class);
 
         Edition e = new Edition("1st", codeWithIsbn13,
-                validPhysicalAttributes, publicationType,
-                validPublisher, Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+                validPhysicalAttributes, publicationTypeId, validPublisherID,
+                "Book",
+                Locale.ENGLISH, LocalDate.of(2020, 1, 1), binding);
 
-        // Assert
         EditionID id = e.id();
+
         assertFalse(id.getID().isBlank());
         assertDoesNotThrow(() -> UUID.fromString(id.getID()));
     }
 
+    @Test
+    void sameAs_null_returnsFalse() {
+        Edition e = createValidEdition();
+        assertFalse(e.sameAs(null));
+    }
+
+    @Test
+    void sameAs_differentClass_returnsFalse() {
+        Edition e = createValidEdition();
+        assertFalse(e.sameAs("not an edition"));
+    }
+
+    @Test
+    void sameAs_sameId_returnsTrue() {
+
+        Edition e1 = createValidEdition();
+
+        Edition e2 = e1;
+
+        assertTrue(e1.sameAs(e2));
+    }
 }
+

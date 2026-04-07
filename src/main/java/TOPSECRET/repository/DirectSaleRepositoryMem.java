@@ -1,7 +1,7 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.DirectSale.DirectSale;
+
 import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
 import TOPSECRET.domain.ValueObjects.ListingId;

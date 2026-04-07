@@ -92,24 +92,21 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     /**
      * {@inheritDoc}
      */
-    public Optional<Author> findAuthorById(AuthorId authorId){
-        if(authorId == null){
-            throw new NullPointerException("AuthorId must not be null");
-        }
-
-        for(Author author : _authors){
-            if(author.id().equals(authorId)){
-                return Optional.of(author);
-            }
-        }
-
-        return Optional.empty();
+    public List<Author> getAllAuthors() {
+        return List.copyOf(this._authors);
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Author> getAllAuthors() {
-        return List.copyOf(this._authors);
+    @Override
+    public Optional<Author> findAuthorById(AuthorId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
+        }
+
+        return _authors.stream()
+                .filter(author -> author.id().equals(id))
+                .findFirst();
     }
 }

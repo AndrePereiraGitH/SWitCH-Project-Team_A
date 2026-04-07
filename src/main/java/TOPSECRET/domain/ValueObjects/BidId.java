@@ -2,7 +2,6 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 
-import java.util.UUID;
 
 /**
  * Value Object representing the unique identity of a Bid entity inside the Auction aggregate.
@@ -15,9 +14,9 @@ public final class BidId implements DomainID {
 
     private final String bid_id;
 
-    // --------------------------------------------------------------------------------
-    // ----------------------- CONSTRUCTOR --------------------------------------------
-    // --------------------------------------------------------------------------------
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
 
     /**
      * Creates a new {@code BidId} with the given UUID string value.
@@ -36,28 +35,21 @@ public final class BidId implements DomainID {
         else
             throw new IllegalArgumentException("Bid ID cannot be null or empty.");
     }
-    // --------------------------------------------------------------------------------
 
-    /**
-     * Returns the underlying UUID string value of this identifier.
-     *
-     * @return the UUID string representing this {@code BidId}
-     */
+
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
     public String getId() {
         return bid_id;
     }
 
-    /**
-     * Compares this {@code BidId} with another object for equality.
-     * <p>
-     * Two {@code BidId} instances are equal if and only if their
-     * underlying UUID string values are equal.
-     * </p>
-     *
-     * @param o the object to compare with this identifier
-     * @return {@code true} if the given object is a {@code BidId} with the same UUID string;
-     *         {@code false} otherwise
-     */
+
+    // ============================================================
+    // ============== EQUALS ======================================
+    // ============================================================
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
