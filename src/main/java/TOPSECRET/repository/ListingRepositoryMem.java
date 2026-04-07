@@ -4,14 +4,12 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link IListingRepository}.
@@ -163,5 +161,19 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return auctionListings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Listing> findListingById(ListingId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ListingId cannot be null");
+        }
+
+        return listings.stream()
+                .filter(listing -> listing.id().equals(id))
+                .findFirst();
     }
 }
