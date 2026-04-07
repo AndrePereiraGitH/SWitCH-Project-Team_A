@@ -2,7 +2,10 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
+import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
+
+import java.util.Optional;
 
 /**
  * Controller responsible for handling the use case of registering
@@ -23,22 +26,35 @@ import TOPSECRET.domain.ValueObjects.CountryID;
 public class US008ToRegisterACityCtrl {
 
     private final ICityRepository _cityRepository;
+    private final ICountryRepository _countryRepository;
 
     //Again, how do we validate it's a user admin here? Should the method receive a User as input and not allow the role
     // to be anything else other than ADMIN?
 
-    public US008ToRegisterACityCtrl(ICityRepository repository) {
-        if (repository == null) {
-            throw new IllegalArgumentException("CityRepository must not be left blank");
+    public US008ToRegisterACityCtrl(ICityRepository cityRepository, ICountryRepository countryRepository) {
+        if (cityRepository == null) {
+            throw new IllegalArgumentException("ICityRepository must not be left blank");
         }
 
-        this._cityRepository = repository;
+        if (countryRepository == null) {
+            throw new IllegalArgumentException("ICountryRepository must not be left blank");
+        }
+
+        this._cityRepository = cityRepository;
+        this._countryRepository = countryRepository;
     }
 
-    public City registerNewCity(CountryID countryID1, String cityName1) {
+    public boolean registerNewCity(String countryName, String cityName1)
+            throws IllegalArgumentException {
 
+        Optional<CountryID> countryId = _countryRepository.findCountryIdByCountryName(countryName);
 
-        return _cityRepository.createAndAdd(countryID1, cityName1);
+        if (countryId.isEmpty()) {
+            throw new IllegalArgumentException("Country with name " + countryName + " not found");
+        }
 
+        City newCity = _cityRepository.createAndAdd(countryId.get(), cityName1);
+
+        return true;
     }
 }
