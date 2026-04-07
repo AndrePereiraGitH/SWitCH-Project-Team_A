@@ -1,13 +1,12 @@
 package TOPSECRET.domain.Listing;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -97,4 +96,19 @@ public interface IListingRepository {
      */
     List<Listing> findAllAuctionListings();
 
+    /**
+     * Retrieves an {@link Listing} instance by its identifier.
+     * <p>
+     * This method searches the in-memory list of stored listings and returns
+     * the first element whose {@code id()} matches the provided {@link ListingId}.
+     * If no matching listing is found, an empty {@link Optional} is returned.
+     * </p>
+     *
+     * @param id the identifier of the listing to retrieve; must not be {@code null}
+     * @return an {@link Optional} containing the matching listing if found,
+     *         or an empty {@link Optional} otherwise
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<Listing> findListingById(ListingId id);
 }

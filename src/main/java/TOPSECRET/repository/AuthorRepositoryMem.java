@@ -3,11 +3,14 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 /**
  * In-memory repository responsible for storing and managing {@link Author} entities.
  *
@@ -79,5 +82,19 @@ public class AuthorRepositoryMem implements IAuthorRepository {
      */
     public List<Author> getAllAuthors() {
         return List.copyOf(this._authors);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Author> findAuthorById(AuthorId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
+        }
+
+        return _authors.stream()
+                .filter(author -> author.id().equals(id))
+                .findFirst();
     }
 }

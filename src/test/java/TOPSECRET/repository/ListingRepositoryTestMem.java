@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -405,6 +406,64 @@ class ListingRepositoryTestMem {
         // assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(listing2Double));
     }
+
+    // ====================================================
+    // ====== FIND LISTING BY ID  =========================
+    // ====================================================
+
+    @Test
+    void findListingById_shouldThrowExceptionWhenIdIsNull() {
+
+        // arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // act + Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.findListingById(null);
+        });
+    }
+
+    @Test
+    void findListingById_shouldReturnListingWhenIdExists() {
+
+        // arrange
+        ListingId id1 = new ListingId("id1");
+
+        when(listing1Double.id()).thenReturn(id1);
+
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        repo.addListing(listing1Double);
+
+        // act
+        Optional<Listing> result = repo.findListingById(id1);
+
+        // assert
+        assertTrue(result.isPresent());
+        assertEquals(listing1Double, result.get());
+    }
+
+    @Test
+    void findListingById_shouldReturnEmptyWhenIdDoNotExists() {
+
+        // arrange
+        ListingId id1 = new ListingId("id1");
+        ListingId newId = new ListingId("newId");
+
+        when(listing1Double.id()).thenReturn(id1);
+
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        repo.addListing(listing1Double);
+
+        // act
+        Optional<Listing> result = repo.findListingById(newId);
+
+        // assert
+        assertTrue(result.isEmpty());
+    }
+
 
     // US021 -----------------------------------------------------------------------------------------
     //Method getListOfItemsOnDirectSaleOfAGivenGenre--------------------------------------------------

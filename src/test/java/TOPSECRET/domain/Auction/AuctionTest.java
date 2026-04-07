@@ -599,7 +599,18 @@ class AuctionTest {
         assertEquals("Bid value cannot be null", ex.getMessage());
     }
 
+    @Test
+    void placeBid_shouldAddBidToHistory() {
 
+        // Arrange
+        Price price = new Price(new BigDecimal("20.00"));
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        // Act
+        auction.placeBid(buyerId, price);
+
+        assertEquals(1, auction.getBidHistory().size());
+    }
 
     // --------- winningBid Method Tests ---------
 
