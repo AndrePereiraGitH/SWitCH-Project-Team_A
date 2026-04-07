@@ -20,7 +20,7 @@ import java.time.LocalDate;
  */
 
 public class US005ToRegisterAuthorController {
-    private final IAuthorRepository _I_authorRepository;
+    private final IAuthorRepository _authorRepository;
 
 
     public US005ToRegisterAuthorController(IAuthorRepository IAuthorRepository) {
@@ -28,11 +28,11 @@ public class US005ToRegisterAuthorController {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
         }
 
-        this._I_authorRepository = IAuthorRepository;
+        this._authorRepository = IAuthorRepository;
     }
 
     public Author register(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
         // Delegates author creation and persistence to the repository
-        return _I_authorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
+        return _authorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
     }
 }
