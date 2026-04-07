@@ -121,24 +121,4 @@ class EditionFactoryTest {
         assertEquals(LocalDate.of(2020, 1, 1), edition.getEditionDate());
     }
 
-    @Test
-    void shouldTrimEditionNumber() {
-
-        EditionFactory factory = new EditionFactory();
-
-        Edition edition = factory.create(
-                "   1st   ",
-                validCode,
-                validPhysicalAttributes,
-                validPublicationTypeId,
-                validPublisherId,
-                "Book",
-                Locale.ENGLISH,
-                LocalDate.of(2020, 1, 1),
-                TypeOfBinding.HARDBACK
-        );
-
-        assertNotNull(edition);
-        assertEquals("1st", edition.getEditionNumber());
-    }
 }

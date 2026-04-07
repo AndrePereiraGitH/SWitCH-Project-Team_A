@@ -102,7 +102,7 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
         List<PublicationTypeId> publicationTypes = new ArrayList<>();
         for (PublicationTypeDTO_US004 dto : selectedPublicationTypesDTO) {
             PublicationType publicationType =
-                    _publicationTypeRepository.findByAttributes(dto.getMediaFormat());
+                    _publicationTypeRepository.findPublicationTypeByAttributes(dto.getMediaFormat());
             if (publicationType == null) {
                 throw new IllegalArgumentException("PublicationType not found.");
             }
