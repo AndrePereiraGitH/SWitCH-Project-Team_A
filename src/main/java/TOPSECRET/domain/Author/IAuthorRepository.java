@@ -1,9 +1,11 @@
 package TOPSECRET.domain.Author;
 
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface responsible for managing {@link Author} entities.
@@ -41,4 +43,20 @@ public interface IAuthorRepository {
      * @return a list containing all stored {@link Author} instances
      */
     List<Author> getAllAuthors();
+
+    /**
+     * Retrieves an {@link Author} instance by its identifier.
+     * <p>
+     * This method searches the in-memory list of stored authors and returns
+     * the first element whose {@code id()} matches the provided {@link AuthorId}.
+     * If no matching author is found, an empty {@link Optional} is returned.
+     * </p>
+     *
+     * @param id the identifier of the author to retrieve; must not be {@code null}
+     * @return an {@link Optional} containing the matching author if found,
+     *         or an empty {@link Optional} otherwise
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<Author> findAuthorById(AuthorId id);
 }
