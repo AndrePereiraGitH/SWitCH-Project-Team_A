@@ -229,10 +229,11 @@ class PublisherTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void sameAs_sameName_andSameContact_returnsTrue() {
+    void sameAs_sameVatNumber_returnsTrue() {
         // Arrange
-        Publisher p1 = factory.create(name, "123456", contact);
-        Publisher p2 = factory.create(name, "789012", contact);
+        Contact contact2 = mock(Contact.class);
+        Publisher p1 = factory.create("Publisher A", "123456", contact);
+        Publisher p2 = factory.create("Publisher B", "123456", contact2);
 
         // Act
         boolean result = p1.sameAs(p2);
@@ -242,10 +243,10 @@ class PublisherTest {
     }
 
     @Test
-    void sameAs_differentName_returnsFalse() {
+    void sameAs_differentVatNumber_returnsFalse() {
         // Arrange
-        Publisher p1 = factory.create("Publisher A", vatNumber, contact);
-        Publisher p2 = factory.create("Publisher B", vatNumber, contact);
+        Publisher p1 = factory.create(name,"123456", contact);
+        Publisher p2 = factory.create(name,"789012", contact);
 
         // Act
         boolean result = p1.sameAs(p2);
@@ -254,19 +255,7 @@ class PublisherTest {
         assertFalse(result);
     }
 
-    @Test
-    void sameAs_differentContact_returnsFalse() {
-        // Arrange
-        Contact contact2 = mock(Contact.class);
-        Publisher p1 = factory.create(name, "123456", contact);
-        Publisher p2 = factory.create(name, "789012", contact2);
 
-        // Act
-        boolean result = p1.sameAs(p2);
-
-        // Assert
-        assertFalse(result);
-    }
 
     @Test
     void sameAs_null_returnsFalse() {

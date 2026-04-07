@@ -19,7 +19,10 @@ import java.util.Optional;
 public class PublisherRepositoryMem implements IPublisherRepository {
 
     private final List<Publisher> _publishers;
-    private final PublisherFactory _publisherFactory;
+
+    public PublisherRepositoryMem() {
+        _publishers = new ArrayList<>();
+    /*private final PublisherFactory _publisherFactory;
 
     /**
      * Constructs a new {@code PublisherRepositoryMem} with the given factory.
@@ -29,26 +32,29 @@ public class PublisherRepositoryMem implements IPublisherRepository {
      *                         must not be {@code null}
      * @throws IllegalArgumentException if {@code publisherFactory} is {@code null}
      */
-    public PublisherRepositoryMem(PublisherFactory publisherFactory) {
+    /*public PublisherRepositoryMem(PublisherFactory publisherFactory) {
         if (publisherFactory == null) {
             throw new IllegalArgumentException("PublisherFactory cannot be null");
         }
         _publishers = new ArrayList<>();
         _publisherFactory = publisherFactory;
+
+     */
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    /*
     public Publisher createAndAdd(String name, String vatNumber, Contact contact) {
         Publisher publisher = _publisherFactory.create(name, vatNumber, contact);
-
+*/
+    public Publisher save(Publisher publisher) {
         if (exists(publisher)) {
             throw new IllegalArgumentException("Publisher already exists");
         }
         _publishers.add(publisher);
-
         return publisher;
     }
 
@@ -77,9 +83,7 @@ public class PublisherRepositoryMem implements IPublisherRepository {
     @Override
     public boolean exists(Publisher publisher) {
         for (Publisher p : _publishers) {
-            if (p.equals(publisher)) {
-                return true;
-            }
+            if (p.equals(publisher)) return true;
         }
         return false;
     }

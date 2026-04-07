@@ -79,8 +79,7 @@ public class Publisher implements AggregateRoot<PublisherID> {
     public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Publisher that = (Publisher) o;
-        return Objects.equals(_name, that._name) &&
-                Objects.equals(_contact, that._contact);
+        return Objects.equals(_vatNumber, that._vatNumber);
     }
 
     /**
