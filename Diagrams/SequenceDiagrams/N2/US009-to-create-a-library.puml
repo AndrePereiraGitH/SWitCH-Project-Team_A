@@ -28,7 +28,7 @@ activate Ctrl
 
 Ctrl -> userRepo: findIdByUsername(username)
 activate userRepo
-userRepo -> Ctrl: userId
+userRepo --> Ctrl: userId
 deactivate userRepo
 
 
@@ -42,8 +42,8 @@ LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary()
 LibraryRepo -> factory: create(libraryName,userId)
 activate factory
 create "lib1:Library" as Library
-factory -> Library : create()
-factory -> LibraryRepo: lib1
+factory -->> Library : <<create>>
+factory --> LibraryRepo: lib1
 deactivate factory
 
 

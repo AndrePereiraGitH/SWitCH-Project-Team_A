@@ -1,6 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
  * </ul>
  * <p>
  * The {@code City} class represents a value defined by a combination of a
- * {@link Country} and a city name.
+ * {@link CountryID} and a city name.
  */
 
 class CityTest {
@@ -27,11 +27,11 @@ class CityTest {
     void shouldCreateCityWithValidData() {
 
         // Arrange
-        Country country = mock(Country.class);
+        CountryID countryID = mock(CountryID.class);
         String cityName = "Porto";
 
         // Act
-        City city = new City(country, cityName);
+        City city = new City(countryID, cityName);
 
         // Assert
         assertNotNull(city);
@@ -52,30 +52,31 @@ class CityTest {
     void shouldThrowExceptionWhenCityNameIsNull() {
 
         // Arrange
-        Country country = mock(Country.class);
+        CountryID countryID = mock(CountryID.class);
+
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City(country, null));
+                () -> new City(countryID, null));
     }
 
     @Test
     void shouldThrowExceptionWhenCityNameIsEmpty() {
 
         // Arrange
-        Country country = mock(Country.class);
+        CountryID countryID = mock(CountryID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City(country, ""));
+                () -> new City(countryID, ""));
     }
 
     @Test
     void shouldReturnCityName() {
 
         // Arrange
-        Country country = mock(Country.class);
-        City city = new City(country, "Florence");
+        CountryID countryID = mock(CountryID.class);
+        City city = new City(countryID, "Florence");
 
         // Act
         String result = city.getCityName();
@@ -88,22 +89,21 @@ class CityTest {
     void shouldReturnCityCountry() {
 
         // Arrange
-        Country country = mock(Country.class);
-        City city = new City(country, "Oslo");
+        CountryID countryID = mock(CountryID.class);
+        City city = new City(countryID, "Oslo");
 
         // Act
-        Country result = city.getCityCountry();
+        CountryID result = city.getCityCountryID();
 
         // Assert
-        assertEquals(country, result);
+        assertEquals(countryID, result);
     }
 
     @Test
     void equals_shouldReturnTrueForEqualCities() {
 
-        Country country = mock(Country.class);
-
-        City cityA = new City(country, "Helsinki");
+        CountryID countryID = mock(CountryID.class);
+        City cityA = new City(countryID, "Helsinki");
         City cityB = cityA;
 
         assertEquals(cityA, cityB);
@@ -112,31 +112,26 @@ class CityTest {
     @Test
     void equals_shouldReturnFalseWhenCityNamesDiffer() {
 
-        Country country = mock(Country.class);
-
-        City cityA = new City(country, "Lisbon");
-        City cityB = new City(country, "Porto");
+        CountryID countryID = mock(CountryID.class);
+        City cityA = new City(countryID, "Lisbon");
+        City cityB = new City(countryID, "Porto");
 
         assertNotEquals(cityA, cityB);
     }
 
     @Test
-    void hashCode_shouldBeEqualForEqualCities() {
+    void hashCode_shouldBeEqualForSameCity() {
+        CountryID countryID = mock(CountryID.class);
+        City city = new City(countryID, "Portland");
 
-        Country country = mock(Country.class);
-
-        City cityA = new City(country, "Portland");
-        City cityB = new City(country, "Portland");
-
-        assertEquals(cityA.hashCode(), cityB.hashCode());
+        assertEquals(city.hashCode(), city.hashCode());
     }
 
     @Test
     void differentCitiesShouldHaveDifferentHashCodes() {
-        Country country = mock(Country.class);
-
-        City city1 = new City(country, "Lisbon");
-        City city2 = new City(country, "Porto");
+        CountryID countryID = mock(CountryID.class);
+        City city1 = new City(countryID, "Lisbon");
+        City city2 = new City(countryID, "Porto");
 
         assertNotEquals(city1.hashCode(), city2.hashCode());
     }
@@ -145,9 +140,8 @@ class CityTest {
     void equalsShouldReturnFalseWhenComparingWithNull() {
 
         //Arrange
-        Country country = mock(Country.class);
-
-        City city = new City(country, "Lisbon");
+        CountryID countryID = mock(CountryID.class);
+        City city = new City(countryID, "Lisbon");
 
         //Assert
         assertFalse(city.equals(null));
@@ -157,12 +151,10 @@ class CityTest {
     void equalsShouldReturnFalseWhenComparingWithDifferentType() {
 
         //Arrange
-        Country country = mock(Country.class);
-
-        City city = new City(country, "Lisbon");
+        CountryID countryID = mock(CountryID.class);
+        City city = new City(countryID, "Lisbon");
 
         //Assert
         assertFalse(city.equals("NotACity"));
     }
-
 }

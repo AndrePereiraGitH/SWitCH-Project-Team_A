@@ -1,10 +1,10 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
-import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.Country.CountryFactory;
+import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link CityFactory}.
@@ -22,22 +22,19 @@ class CityFactoryTest {
 
 
     private final CityFactory anyFactory = new CityFactory();
-
-    private final CountryFactory countryFactory = new CountryFactory();
-    private final Country anyCountry = countryFactory.create("Portugal");
-
+    private final CountryID anyCountryID = mock(CountryID.class);
     private final String anyCityName = "Braga";
 
     @Test
     void shouldCreateValidCity() {
 
         //Arrange
-        City city = anyFactory.create(anyCountry, anyCityName);
+        City city = anyFactory.create(anyCountryID, anyCityName);
 
         //Assert
         assertNotNull(city);
         assertEquals(anyCityName, city.getCityName());
-        assertEquals(anyCountry, city.getCityCountry());
+        assertEquals(anyCountryID, city.getCityCountryID());
     }
 
     @Test
@@ -53,7 +50,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountry, null));
+                () -> anyFactory.create(anyCountryID, null));
     }
 
     @Test
@@ -61,6 +58,6 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountry, ""));
+                () -> anyFactory.create(anyCountryID, ""));
     }
 }

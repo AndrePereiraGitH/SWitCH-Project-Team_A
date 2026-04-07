@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
+
 public class US010ToRegisterNewPublicationCtrl {
 
     private final IPublicationSampleRepository _publicationRepository;

@@ -12,11 +12,11 @@ class US009ToCreateLibraryCtrl {
     + createAndAddLibrary(libraryName, username): boolean
 }
 
-class IUserRepository {
+interface IUserRepository {
     + findIdByUsername(username): UserId
 }
 
-class ILibraryRepository {
+interface ILibraryRepository {
     - libraries: Map<UserId, Library>
     + createAndAdd(libraryName, userId): Library
     - verifyIfUserHasALibrary(userId): boolean

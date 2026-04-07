@@ -1,6 +1,5 @@
 package TOPSECRET.domain.PublicationSample;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
@@ -24,7 +23,7 @@ import java.util.Optional;
  * in the repository.
  * <p>
  */
-public interface IPublicationSampleRepository {
+public interface    IPublicationSampleRepository {
 
     // -------------------------------------------------------------------------
     // Construction

@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.Auction;
 
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -11,15 +12,28 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test suite for {@link AuctionFactory}, ensuring that new {@link Auction} instances
+ * are correctly constructed through the factory methods.
+ *
+ * <p>This test class validates two main behaviors:
+ * <ul>
+ *     <li>The factory creates a new {@code Auction} instance using the expected constructor.</li>
+ *     <li>The overload that receives a {@link java.time.Clock} also constructs the Auction correctly.</li>
+ * </ul>
+ */
+
 class AuctionFactoryTest {
 
     @Test
     void create_returnsNewConstructedAuctionInstance() {
 
-        Listing listingDouble = mock(Listing.class);
+        // Arrange
+        ListingId listingId = new ListingId("listingId");
         LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
         LocalDateTime endDate = LocalDateTime.now().plusDays(5);
-        Price buyoutDouble = mockPrice("150");
+        Price initialPrice = new Price(new BigDecimal(10.00));
+        Price buyoutPrice = new Price(new BigDecimal(100.00));
 
 
         try (MockedConstruction<Auction> mocked =
@@ -28,27 +42,27 @@ class AuctionFactoryTest {
 
             AuctionFactory auctionFactory = new AuctionFactory();
 
-            // act
-            Auction auction = auctionFactory.create(listingDouble, startDate, endDate, buyoutDouble);
+            // Act
+            Auction auction = auctionFactory.create(listingId, startDate, endDate, initialPrice, buyoutPrice);
 
-            // assert
+            // Assert
             assertNotNull(auction);
             assertEquals(1, mocked.constructed().size());
 
             Auction constructedAuction = mocked.constructed().get(0);
             assertSame(auction, constructedAuction);
         }
-
-
     }
 
     @Test
     void createWithClock_returnsNewConstructedAuctionInstance() {
 
-        Listing listingDouble = mock(Listing.class);
+        // Arrange
+        ListingId listingId = new ListingId("listingId");
         LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
         LocalDateTime endDate = LocalDateTime.now().plusDays(5);
-        Price buyoutDouble = mockPrice("150");
+        Price initialPrice = new Price(new BigDecimal(10.00));
+        Price buyoutPrice = new Price(new BigDecimal(100.00));
         Clock clock = mock(Clock.class);
 
 
@@ -58,22 +72,15 @@ class AuctionFactoryTest {
 
             AuctionFactory auctionFactory = new AuctionFactory();
 
-            // act
-            Auction auction = auctionFactory.create(listingDouble, startDate, endDate, buyoutDouble, clock);
+            // Act
+            Auction auction = auctionFactory.create(listingId, startDate, endDate, initialPrice, buyoutPrice, clock);
 
-            // assert
+            // Assert
             assertNotNull(auction);
             assertEquals(1, mocked.constructed().size());
 
             Auction constructedAuction = mocked.constructed().get(0);
             assertSame(auction, constructedAuction);
         }
-
-    }
-    private Price mockPrice(String value){
-        Price price = mock(Price.class);
-        when(price.getPrice()).thenReturn(new BigDecimal(value));
-
-        return price;
     }
 }

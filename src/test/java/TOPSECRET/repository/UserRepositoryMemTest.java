@@ -43,13 +43,6 @@ class UserRepositoryMemTest {
 
     @BeforeEach
     void setUp() {
-        // Mock countries
-        portugal1 = mock(Country.class);
-        when(portugal1.getCountryName()).thenReturn("Portugal");
-
-        portugal2 = mock(Country.class);
-        when(portugal2.getCountryName()).thenReturn("Portugal");
-
         // Mock emails
         email1 = mock(Email.class);
         when(email1.getEmail()).thenReturn("test.user@example.com");
@@ -68,11 +61,13 @@ class UserRepositoryMemTest {
 
         // Mock profiles
         profile1 = mock(Profile.class);
-        when(profile1.getCountry()).thenReturn(portugal1);
+        when(profile1.getName()).thenReturn("Profile 1");
+        when(profile1.getContact()).thenReturn(contact1);
         when(profile1.getBirthday()).thenReturn(LocalDate.of(1997, 8, 15));
 
         profile2 = mock(Profile.class);
-        when(profile2.getCountry()).thenReturn(portugal2);
+        when(profile2.getName()).thenReturn("Profile 2");
+        when(profile2.getContact()).thenReturn(contact2);
         when(profile2.getBirthday()).thenReturn(LocalDate.of(1990, 1, 1));
 
         // Initialize repository with factory
