@@ -1,6 +1,5 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.repository.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
@@ -24,11 +23,10 @@ class US003ToRegisterGenreControllerDependenciesTest {
                 new US003ToRegisterGenreController(genreRepository);
 
         // Act
-        Genre genre = controller.registerGenre("Drama");
+        boolean result = controller.registerGenre("Drama");
 
         // Assert
-        assertNotNull(genre);
-        assertEquals("Drama", genre.getGenreType());
+        assertTrue(result);
     }
 
     // Real objects — registering the same genre twice must throw an exception
