@@ -15,28 +15,36 @@ class US013GenreDTOTest {
 
     @Test
     void shouldCreateGenreDTOWithValidName() {
+        // Act
         US013GenreDTO dto = new US013GenreDTO("Romance");
+        // Assert
         assertEquals("Romance", dto.genreName());
     }
 
 
     @Test
     void shouldSupportRecordEquality() {
+        //Act
         US013GenreDTO dto1 = new US013GenreDTO("Jazz");
         US013GenreDTO dto2 = new US013GenreDTO("Jazz");
+        //Assert
         assertEquals(dto1, dto2);
     }
 
     @Test
     void shouldSupportRecordHashCode() {
+        //Act
         US013GenreDTO dto1 = new US013GenreDTO("Jazz");
         US013GenreDTO dto2 = new US013GenreDTO("Jazz");
+        //Assert
         assertEquals(dto1.hashCode(), dto2.hashCode());
     }
 
     @Test
     void shouldSupportRecordToString() {
+        //Act
         US013GenreDTO dto = new US013GenreDTO("Pop");
+        //Assert
         assertEquals("US013GenreDTO[genreName=Pop]", dto.toString());
     }
 }
