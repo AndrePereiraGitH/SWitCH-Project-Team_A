@@ -4,7 +4,6 @@ import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -36,8 +35,6 @@ class BidTest {
     private UserId bidderId2;
     private Price value1;
     private Price value2;
-    private LocalDateTime timeOfBid1;
-    private LocalDateTime timeOfBid2;
 
     @BeforeEach
     void setUp() {
@@ -49,8 +46,6 @@ class BidTest {
         bidderId2 = new UserId("bidder2");
         value1 = new Price(BigDecimal.valueOf(10.00));
         value2 = new Price(BigDecimal.valueOf(5.50));
-        timeOfBid1 = LocalDateTime.of(2026,4,1,10,0,0);
-        timeOfBid2 = LocalDateTime.of(2026,4,1,11,0,0);
     }
 
 
@@ -59,51 +54,53 @@ class BidTest {
     void constructorShouldCreateBidWhenValid() {
 
         //Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid1 = new Bid(auctionId1, bidderId1, value1);
 
         //Assert
         assertEquals(auctionId1, bid1.getAuctionId());
         assertEquals(bidderId1, bid1.getBidderId());
         assertEquals(value1, bid1.getValue());
-        assertEquals(timeOfBid1, bid1.getTimeOfBid());
     }
 
     @Test
     void constructorShouldThrowExceptionWhenAuctionIdIsNull() {
 
         // Assert
-        assertThrows(IllegalArgumentException.class, () -> new Bid(null, bidderId1, value1, timeOfBid1));
+        assertThrows(IllegalArgumentException.class, () -> new Bid(null, bidderId1, value1));
     }
 
     @Test
     void constructorShouldThrowExceptionWhenBidderIsNull() {
 
         // Assert
-        assertThrows(IllegalArgumentException.class, () -> new Bid(auctionId1, null, value1, timeOfBid1));
+        assertThrows(IllegalArgumentException.class, () -> new Bid(auctionId1, null, value1));
     }
 
     @Test
     void constructorShouldThrowExceptionWhenValueIsNull() {
 
         // Assert
-        assertThrows(IllegalArgumentException.class, () -> new Bid(auctionId1, bidderId1, null, timeOfBid1));
-    }
-
-    @Test
-    void constructorShouldThrowExceptionWhenTimeOfBidIsNull() {
-
-        // Assert
-        assertThrows(IllegalArgumentException.class, () -> new Bid(auctionId1, bidderId1, value1, null));
+        assertThrows(IllegalArgumentException.class, () -> new Bid(auctionId1, bidderId1, null));
     }
 
     @Test
     void constructorShouldGenerateBidId() {
 
         // Act
-        Bid bid = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid = new Bid(auctionId1, bidderId1, value1);
 
         // Assert
         assertNotNull(bid.id());
+    }
+
+    @Test
+    void constructorShouldGenerateTimeOfBid() {
+
+        // Act
+        Bid bid = new Bid(auctionId1, bidderId1, value1);
+
+        // Assert
+        assertNotNull(bid.getTimeOfBid());
     }
 
 
@@ -113,8 +110,8 @@ class BidTest {
     void equalsShouldReturnFalseForDifferentBidId() {
 
         // Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
-        Bid bid2 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid1 = new Bid(auctionId1, bidderId1, value1);
+        Bid bid2 = new Bid(auctionId1, bidderId1, value1);
 
         // Assert
         assertNotEquals(bid1, bid2);
@@ -124,7 +121,7 @@ class BidTest {
     void equalsShouldReturnFalseWhenObjectIsNull() {
 
         // Act
-        Bid bid = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid = new Bid(auctionId1, bidderId1, value1);
 
         // Assert
         assertNotEquals(bid, null);
@@ -134,7 +131,7 @@ class BidTest {
     void equalsShouldReturnFalseWhenObjectIsNotBid() {
 
         // Act
-        Bid bid = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid = new Bid(auctionId1, bidderId1, value1);
 
         // Assert
         assertNotEquals(bid, "not a bid");
@@ -147,8 +144,8 @@ class BidTest {
     void sameAsShouldReturnTrueWhenSemanticAttributesMatch() {
 
         // Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
-        Bid bid2 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid1 = new Bid(auctionId1, bidderId1, value1);
+        Bid bid2 = new Bid(auctionId1, bidderId1, value1);
 
         // Assert
         assertTrue(bid1.sameAs(bid2));
@@ -158,8 +155,8 @@ class BidTest {
     void sameAsShouldReturnFalseWhenAuctionIdDoesNotMatch() {
 
         // Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
-        Bid bid2 = new Bid(auctionId2, bidderId1, value1, timeOfBid1);
+        Bid bid1 = new Bid(auctionId1, bidderId1, value1);
+        Bid bid2 = new Bid(auctionId2, bidderId1, value1);
 
         // Assert
         assertFalse(bid1.sameAs(bid2));
@@ -169,8 +166,8 @@ class BidTest {
     void sameAsShouldReturnFalseWhenBidderIdDoesNotMatch() {
 
         // Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
-        Bid bid2 = new Bid(auctionId1, bidderId2, value1, timeOfBid1);
+        Bid bid1 = new Bid(auctionId1, bidderId1, value1);
+        Bid bid2 = new Bid(auctionId1, bidderId2, value1);
 
         // Assert
         assertFalse(bid1.sameAs(bid2));
@@ -180,19 +177,8 @@ class BidTest {
     void sameAsShouldReturnFalseWhenValueDoesNotMatch() {
 
         // Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
-        Bid bid2 = new Bid(auctionId1, bidderId1, value2, timeOfBid1);
-
-        // Assert
-        assertFalse(bid1.sameAs(bid2));
-    }
-
-    @Test
-    void sameAsShouldReturnFalseWhenTimeOfBidDoesNotMatch() {
-
-        // Act
-        Bid bid1 = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
-        Bid bid2 = new Bid(auctionId1, bidderId1, value1, timeOfBid2);
+        Bid bid1 = new Bid(auctionId1, bidderId1, value1);
+        Bid bid2 = new Bid(auctionId1, bidderId1, value2);
 
         // Assert
         assertFalse(bid1.sameAs(bid2));
@@ -202,7 +188,7 @@ class BidTest {
     void sameAsShouldReturnFalseWhenObjectIsNull() {
 
         // Act
-        Bid bid = new Bid(auctionId1, bidderId1, value1, timeOfBid1);
+        Bid bid = new Bid(auctionId1, bidderId1, value1);
 
         // Assert
         assertFalse(bid.sameAs(null));
