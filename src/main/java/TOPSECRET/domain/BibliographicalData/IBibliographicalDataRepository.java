@@ -68,5 +68,5 @@ public interface IBibliographicalDataRepository {
      *
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
-    Optional<BibliographicalData> findById(BibliographicalDataID id);
+    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID id);
 }

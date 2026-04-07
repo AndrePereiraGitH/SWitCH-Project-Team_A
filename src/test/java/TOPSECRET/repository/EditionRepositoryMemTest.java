@@ -167,7 +167,7 @@ class EditionRepositoryMemTest {
         repo.add(edition3Double);
 
         // Act
-        Optional<Edition> result = repo.findById(id2);
+        Optional<Edition> result = repo.findEditionById(id2);
 
         // Assert
         assertTrue(result.isPresent());
@@ -196,7 +196,7 @@ class EditionRepositoryMemTest {
         EditionID unknownId = new EditionID("unknown");
 
         // Act
-        Optional<Edition> result = repo.findById(unknownId);
+        Optional<Edition> result = repo.findEditionById(unknownId);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -210,7 +210,7 @@ class EditionRepositoryMemTest {
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.findById(null)
+                () -> repo.findEditionById(null)
         );
 
         assertEquals("EditionId cannot be null", ex.getMessage());

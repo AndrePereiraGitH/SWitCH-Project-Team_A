@@ -49,5 +49,5 @@ public interface IEditionRepository {
      *
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
-    Optional<Edition> findById(EditionID id);
+    Optional<Edition> findEditionById(EditionID id);
 }

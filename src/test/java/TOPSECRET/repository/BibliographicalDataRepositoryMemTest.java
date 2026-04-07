@@ -283,7 +283,7 @@ class BibliographicalDataRepositoryMemTest {
         repo = new BibliographicalDataRepositoryMem(factory, List.of(bd1Double, bd2Double));
 
         // Act
-        Optional<BibliographicalData> result = repo.findById(id1);
+        Optional<BibliographicalData> result = repo.findBibliographicalDataById(id1);
 
         // Assert
         assertTrue(result.isPresent());
@@ -305,7 +305,7 @@ class BibliographicalDataRepositoryMemTest {
         repo = new BibliographicalDataRepositoryMem(factory, List.of(bd1Double, bd2Double));
 
         // Act
-        Optional<BibliographicalData> result = repo.findById(unknownId);
+        Optional<BibliographicalData> result = repo.findBibliographicalDataById(unknownId);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -321,7 +321,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.findById(null)
+                () -> repo.findBibliographicalDataById(null)
         );
 
         assertEquals("BibliographicalDataId cannot be null", ex.getMessage());

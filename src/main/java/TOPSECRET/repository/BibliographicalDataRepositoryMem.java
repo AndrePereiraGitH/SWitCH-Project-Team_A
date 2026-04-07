@@ -106,7 +106,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      * {@inheritDoc}
      */
     @Override
-    public Optional<BibliographicalData> findById(BibliographicalDataID id) {
+    public Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID id) {
         if (id == null) {
             throw new IllegalArgumentException("BibliographicalDataId cannot be null");
         }

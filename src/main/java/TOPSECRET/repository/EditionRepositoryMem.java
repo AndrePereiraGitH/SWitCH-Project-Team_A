@@ -67,7 +67,7 @@ public class EditionRepositoryMem implements IEditionRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Edition> findById(EditionID id) {
+    public Optional<Edition> findEditionById(EditionID id) {
         if (id == null) {
             throw new IllegalArgumentException("EditionId cannot be null");
         }
