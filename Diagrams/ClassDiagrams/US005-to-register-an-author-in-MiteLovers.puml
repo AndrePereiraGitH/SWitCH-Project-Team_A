@@ -26,6 +26,6 @@ class AuthorFactory {
 ToRegisterAuthorController "1 " -.-> "1" IAuthorRepository : uses
 IAuthorRepository "1" --> "_authors *" Author : stores
 IAuthorRepository "1" -.-> "                     1" AuthorFactory : uses
-AuthorFactory "1   " -.-> "*" Author : creates
+AuthorFactory "1   " -.-> "*" Author : <<creates>>
 
 @enduml
