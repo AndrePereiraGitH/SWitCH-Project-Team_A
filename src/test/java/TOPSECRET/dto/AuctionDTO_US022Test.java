@@ -1,15 +1,12 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.*;
+
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,11 +34,11 @@ class AuctionDTO_US022Test {
         PublicationSample psDouble = mock(PublicationSample.class);
 //        when(psDouble.getBibliographicalData()).thenReturn(bdDouble);
 
-        Listing listingDouble = mock(Listing.class);
-        when(listingDouble.getItems()).thenReturn(List.of(psDouble));
-
-        Auction auctionDouble =  mock(Auction.class);
-        when(auctionDouble.getListing()).thenReturn(listingDouble);
+//        Listing listingDouble = mock(Listing.class);
+//        when(listingDouble.getItems()).thenReturn(List.of(psDouble));
+//
+//        Auction auctionDouble =  mock(Auction.class);
+//        when(auctionDouble.getListing()).thenReturn(listingDouble);
 
         // Act
 //        List<AuctionDTO_US022> result = AuctionDTO_US022.fromDomainList(List.of(auctionDouble));
@@ -70,15 +67,15 @@ class AuctionDTO_US022Test {
 //        when(sampleDouble1.getBibliographicalData()).thenReturn(bdDouble1);
 //        when(sampleDouble2.getBibliographicalData()).thenReturn(bdDouble2);
 
-        Listing listingDouble1 = mock(Listing.class);
-        Listing listingDouble2 = mock(Listing.class);
-        when(listingDouble1.getItems()).thenReturn(List.of(sampleDouble1));
-        when(listingDouble2.getItems()).thenReturn(List.of(sampleDouble2));
-
-        Auction auctionDouble1 = mock(Auction.class);
-        Auction auctionDouble2 = mock(Auction.class);
-        when(auctionDouble1.getListing()).thenReturn(listingDouble1);
-        when(auctionDouble2.getListing()).thenReturn(listingDouble2);
+//        Listing listingDouble1 = mock(Listing.class);
+//        Listing listingDouble2 = mock(Listing.class);
+//        when(listingDouble1.getItems()).thenReturn(List.of(sampleDouble1));
+//        when(listingDouble2.getItems()).thenReturn(List.of(sampleDouble2));
+//
+//        Auction auctionDouble1 = mock(Auction.class);
+//        Auction auctionDouble2 = mock(Auction.class);
+//        when(auctionDouble1.getListing()).thenReturn(listingDouble1);
+//        when(auctionDouble2.getListing()).thenReturn(listingDouble2);
 
         // Act
 

@@ -1,7 +1,6 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.City;
 
 import java.util.Objects;
 
@@ -16,7 +15,7 @@ public class Address implements ValueObject {
     private final String street;
     private final String number;
     private final String zipCode;
-    private final City city;
+    private final CityID cityID;
 
     /**
      * Constructs a new {@code Address} with the given fields.
@@ -24,21 +23,21 @@ public class Address implements ValueObject {
      * @param street  the street name; must not be {@code null} or blank
      * @param number  the address number; must not be {@code null} or blank
      * @param zipCode the zip/postal code; must not be {@code null} or blank
-     * @param city    the city; must not be {@code null}
+     * @param cityID    the city; must not be {@code null}
      * @throws IllegalArgumentException if any field is {@code null}, or if street,
      *                                  number, or zip code are blank
      */
-    public Address(String street, String number, String zipCode, City city) {
+    public Address(String street, String number, String zipCode, CityID cityID) {
 
         if (street == null || street.isBlank() || number == null || number.isBlank() || zipCode == null
-                || zipCode.isBlank() || city == null) {
+                || zipCode.isBlank() || cityID == null) {
             throw new IllegalArgumentException("Street, number, zip Code and city are all required fields.");
         }
 
         this.street = street;
         this.number = number;
         this.zipCode = zipCode;
-        this.city = city;
+        this.cityID = cityID;
     }
 
     public String getStreet() {
@@ -53,13 +52,13 @@ public class Address implements ValueObject {
         return zipCode;
     }
 
-    public City getCity() {
-        return city;
+    public CityID getCityID() {
+        return cityID;
     }
 
     @Override
     public String toString() {
-        return street + ", no. " + number + ", " + zipCode + ", " + city.getCityName();
+        return street + ", no. " + number + ", " + zipCode + ", " + cityID.getCityID();
     }
     @Override
     public boolean equals(Object o) {
@@ -69,12 +68,12 @@ public class Address implements ValueObject {
         return Objects.equals(street, address.street)
                 && Objects.equals(number, address.number)
                 && Objects.equals(zipCode, address.zipCode)
-                && Objects.equals(city, address.city);
+                && Objects.equals(cityID, address.cityID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(street, number, zipCode, city);
+        return Objects.hash(street, number, zipCode, cityID);
     }
 }
 

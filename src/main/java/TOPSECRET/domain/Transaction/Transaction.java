@@ -1,7 +1,7 @@
 package TOPSECRET.domain.Transaction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Auction;
+import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.TransactionStatus;
 import TOPSECRET.domain.ValueObjects.*;

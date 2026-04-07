@@ -1,17 +1,57 @@
 package TOPSECRET.domain.ValueObjects;
 
-public class Picture {
+import TOPSECRET.ddd.ValueObject;
 
-        private final String _picture; // path or URL
+/**
+ * Value Object representing a picture associated with a listing.
+ * <p>
+ * A {@code Picture} encapsulates the path or URL of an image and ensures
+ * that the value is always valid. This object is immutable and equality
+ * is based solely on its underlying string value.
+ * </p>
+ */
+public final class Picture implements ValueObject {
 
-        public Picture(String picture) {
-            if (picture == null || picture.isBlank()) {
-                throw new IllegalArgumentException("Picture cannot be null or blank");
-            }
-            this._picture = picture;
+    private final String _picture; // path or URL
+
+    // ============================================================
+    // ============== CONSTRUCTOR =================================
+    // ============================================================
+
+    /**
+     * Creates a new {@code Picture} with the given path or URL.
+     * <p>
+     * The provided string must not be {@code null} or blank. This ensures
+     * that every {@code Picture} instance represents a valid image reference.
+     * </p>
+     *
+     * @param picture the path or URL of the picture
+     * @throws IllegalArgumentException if {@code picture} is {@code null} or blank
+     */
+    public Picture(String picture) {
+        if (picture == null || picture.isBlank()) {
+            throw new IllegalArgumentException("Picture cannot be null or blank");
         }
+        this._picture = picture;
+    }
 
-        public String get_picture() {
-            return _picture;
-        }
+
+    // ============================================================
+    // ============== GETTERS =====================================
+    // ============================================================
+
+    public String getPicture() {
+        return _picture;
+    }
+
+    // ============================================================
+    // ============== EQUALS ======================================
+    // ============================================================
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Picture other)) return false;
+        return _picture.equals(other._picture);
+    }
 }

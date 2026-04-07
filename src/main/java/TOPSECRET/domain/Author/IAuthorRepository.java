@@ -44,19 +44,6 @@ public interface IAuthorRepository {
     // Identity Lookup
     // -------------------------------------------------------------------------
 
-    /**
-     * Finds an author in the repository by their unique identifier.
-     *
-     * <p>Iterates through all stored authors and returns the first one whose
-     * ID matches the provided {@link AuthorId}.</p>
-     *
-     * @param authorId the unique identifier of the author to search for;
-     *                 must not be {@code null}
-     * @return an {@link Optional} containing the matching {@link Author} if found,
-     *         or an empty {@link Optional} if no author with the given ID exists
-     * @throws NullPointerException if {@code authorId} is {@code null}
-     */
-    Optional<Author> findAuthorById(AuthorId authorId);
 
     /**
      * Retrieves all authors currently stored in the repository.
@@ -64,4 +51,20 @@ public interface IAuthorRepository {
      * @return a list containing all stored {@link Author} instances
      */
     List<Author> getAllAuthors();
+
+    /**
+     * Retrieves an {@link Author} instance by its identifier.
+     * <p>
+     * This method searches the in-memory list of stored authors and returns
+     * the first element whose {@code id()} matches the provided {@link AuthorId}.
+     * If no matching author is found, an empty {@link Optional} is returned.
+     * </p>
+     *
+     * @param id the identifier of the author to retrieve; must not be {@code null}
+     * @return an {@link Optional} containing the matching author if found,
+     *         or an empty {@link Optional} otherwise
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<Author> findAuthorById(AuthorId id);
 }

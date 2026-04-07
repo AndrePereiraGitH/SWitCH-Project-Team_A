@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,10 +33,8 @@ class AuthorRepositoryMemTest {
 
     private final AuthorFactory authorFactory = mock(AuthorFactory.class);
     private final CountryID countryID = mock(CountryID.class);
-    private final AuthorId authorId = mock(AuthorId.class);
     private final String name = "João";
     String validBio = "bio";
-
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -94,122 +91,6 @@ class AuthorRepositoryMemTest {
     }
 
     // ========================================
-    // findAuthorById
-    // ========================================
-
-    @Test
-    void findAuthorById_nullId_throwsNullPointerException() {
-        // Arrange
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-        repo.createAndAddAuthor(name, countryID,  LocalDate.of(1978, 5, 12), validBio);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class,
-                () -> repo.findAuthorById(null)
-        );
-    }
-
-    @Test
-    void findAuthorById_emptyRepository_returnsEmpty() {
-        // Arrange
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-
-        // Act
-        Optional<Author> result = repo.findAuthorById(authorId);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findAuthorById_existingAuthor_returnsAuthor() {
-        // Arrange
-        AuthorId authorId = mock(AuthorId.class);
-
-        Author authorDouble = mock(Author.class);
-        when(authorDouble.id()).thenReturn(authorId);
-
-        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
-                .thenReturn(authorDouble);
-
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-        Author saved = repo.createAndAddAuthor(
-                name, countryID,  LocalDate.of(1978, 5, 12), validBio);
-
-        // Act
-        Optional<Author> result = repo.findAuthorById(saved.id());
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(saved, result.get());
-    }
-
-    @Test
-    void findAuthorById_unknownId_returnsEmpty() {
-        // Arrange
-        AuthorId authorId1 = mock(AuthorId.class);
-        AuthorId authorId2 = mock(AuthorId.class);
-
-        Author author1 = mock(Author.class);
-        when(author1.id()).thenReturn(authorId1);
-
-        Author author2 = mock(Author.class);
-        when(author2.id()).thenReturn(authorId2);
-
-        // Stub using the SAME arguments passed to createAndAddAuthor
-        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
-                .thenReturn(author1);
-
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-        repo.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
-
-        // Act
-        Optional<Author> result = repo.findAuthorById(authorId2);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findAuthorById_multipleAuthors_returnsCorrectOne() {
-        // Arrange
-        AuthorId authorId1 = mock(AuthorId.class);
-        AuthorId authorId2 = mock(AuthorId.class);
-
-        Author author1 = mock(Author.class);
-        when(author1.id()).thenReturn(authorId1);
-
-        Author author2 = mock(Author.class);
-        when(author2.id()).thenReturn(authorId2);
-
-        CountryID CountryId_1 = mock(CountryID.class);
-        when(CountryId_1.getCountryID()).thenReturn(UUID.randomUUID().toString());
-
-        CountryID CountryId_2 = mock(CountryID.class);
-        when(CountryId_2.getCountryID()).thenReturn(UUID.randomUUID().toString());
-
-        when(authorFactory.create("George Orwell", CountryId_1, LocalDate.of(1903, 6, 25), validBio))
-                .thenReturn(author1);
-
-        when(authorFactory.create("Aldous Huxley", CountryId_2, LocalDate.of(1894, 7, 26), validBio))
-                .thenReturn(author2);
-
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-
-
-        Author first = repo.createAndAddAuthor("George Orwell", CountryId_1, LocalDate.of(1903, 6, 25), validBio);
-        Author second = repo.createAndAddAuthor("Aldous Huxley", CountryId_2, LocalDate.of(1894, 7, 26), validBio);
-
-        // Act
-        Optional<Author> result = repo.findAuthorById(second.id());
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(second, result.get());
-    }
-
-
-    // ========================================
     // GET ALL AUTHORS TESTS
     // ========================================
 
@@ -243,5 +124,84 @@ class AuthorRepositoryMemTest {
         // Assert
         assertNotSame(result1, result2);
         assertEquals(result1, result2);
+    }
+
+
+    // ========================================
+    // FIND AUTHOR BY ID
+    // ========================================
+
+    @Test
+    void findAuthorById_ShouldReturnAuthor_WhenIdExists() {
+        // Arrange
+        AuthorId id1 = new AuthorId("a1");
+        AuthorId id2 = new AuthorId("a2");
+        AuthorId id3 = new AuthorId("a3");
+
+        Author author1Double = mock(Author.class);
+        when(author1Double.id()).thenReturn(id1);
+        Author author2Double = mock(Author.class);
+        when(author2Double.id()).thenReturn(id2);
+        Author author3Double = mock(Author.class);
+        when(author3Double.id()).thenReturn(id3);
+
+        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
+
+        when(authorFactory.create(any(),  any(), any(), any())).thenReturn(author1Double, author2Double, author3Double);
+
+        repo.createAndAddAuthor("author1", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author2", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author3", countryID, LocalDate.of(1978, 5, 12), validBio);
+
+        // Act
+        Optional<Author> result = repo.findAuthorById(id2);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(author2Double, result.get());
+    }
+
+    @Test
+    void findAuthorById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() {
+        // Arrange
+        AuthorId id1 = new AuthorId("a1");
+        AuthorId id2 = new AuthorId("a2");
+        AuthorId id3 = new AuthorId("a3");
+        AuthorId unknownId = new AuthorId("unknown");
+
+        Author author1Double = mock(Author.class);
+        when(author1Double.id()).thenReturn(id1);
+        Author author2Double = mock(Author.class);
+        when(author2Double.id()).thenReturn(id2);
+        Author author3Double = mock(Author.class);
+        when(author3Double.id()).thenReturn(id3);
+
+        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
+
+        when(authorFactory.create(any(),  any(), any(), any())).thenReturn(author1Double, author2Double, author3Double);
+
+        repo.createAndAddAuthor("author1", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author2", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author3", countryID, LocalDate.of(1978, 5, 12), validBio);;
+
+        // Act
+        Optional<Author> result = repo.findAuthorById(unknownId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuthorById_ShouldThrowException_WhenIdIsNull() {
+        // Arrange
+        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.findAuthorById(null)
+        );
+
+        assertEquals("AuthorId cannot be null", ex.getMessage());
     }
 }

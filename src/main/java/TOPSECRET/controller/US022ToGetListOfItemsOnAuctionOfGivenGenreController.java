@@ -1,12 +1,12 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Auction;
+import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Genre.Genre;
 
-import TOPSECRET.dto.AuctionDTO_US022;
+//import TOPSECRET.dto.AuctionDTO_US022;
 import TOPSECRET.dto.GenreDTO_US022;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.IAuctionRepository;
+import TOPSECRET.domain.Auction.IAuctionRepository;
 
 import java.util.List;
 /**

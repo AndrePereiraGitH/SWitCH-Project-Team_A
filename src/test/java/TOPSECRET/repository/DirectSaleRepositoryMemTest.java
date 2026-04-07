@@ -1,11 +1,8 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
-
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +43,6 @@ class DirectSaleRepositoryMemTest {
 
     @Test
     void createAndAdd_createsAndAddsDirectSale() {
-
         // Arrange
         IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 

@@ -1,7 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CountryID;
 
 /**
  * Factory responsible for creating {@link City} domain objects.
@@ -24,14 +24,14 @@ public class CityFactory {
      * All invariants defined in the {@code City} domain class must be satisfied,
      * otherwise an exception is expected to be thrown by {@code City}.
      *
-     * @param country the country to which the city belongs; must not be {@code null}
+     * @param countryID the country to which the city belongs; must not be {@code null}
      * @param cityName the name of the city; must not be {@code null} or blank
      * @return a valid {@link City} instance
      * @throws IllegalArgumentException if any domain constraint is violated
      */
 
-    public City create(Country country, String cityName) {
+    public City create(CountryID countryID, String cityName) {
 
-        return new City(country, cityName);
+        return new City(countryID, cityName);
     }
 }
