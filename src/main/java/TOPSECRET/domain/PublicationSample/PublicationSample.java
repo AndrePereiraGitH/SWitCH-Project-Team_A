@@ -172,7 +172,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
      *         {@code false} otherwise
      */
     public boolean isOwnedByUser(UserId userId){
-        if(_ownerId.equals(userId)){
+        if(_ownerID.equals(userId)){
             return true;
         }
         return false;

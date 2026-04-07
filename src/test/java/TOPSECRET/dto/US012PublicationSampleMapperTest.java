@@ -8,10 +8,7 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -246,12 +243,9 @@ class US012PublicationSampleMapperTest {
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);
 
-        PublicationType publicationTypeDouble = mock(PublicationType.class);
-        when(publicationTypeDouble.getMediaFormat()).thenReturn(pubType);
-
         Edition edition = mock(Edition.class);
         when(edition.getCode()).thenReturn(codeDouble);
-        when(edition.getPublicationType()).thenReturn(publicationTypeDouble);
+        when(edition.getMediaFormat()).thenReturn(pubType);
 
         return edition;
     }

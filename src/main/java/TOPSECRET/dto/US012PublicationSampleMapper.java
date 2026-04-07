@@ -199,8 +199,7 @@ public class US012PublicationSampleMapper {
      */
     private String getPublicationType(PublicationSample publicationSample) throws InstanceNotFoundException {
         Edition edition = getEdition(publicationSample);
-        String pbType = edition.getPublicationType().getMediaFormat();
-
+        String pbType = edition.getMediaFormat();
         return pbType;
     }
 
@@ -214,7 +213,6 @@ public class US012PublicationSampleMapper {
     private String getCode(PublicationSample publicationSample) throws InstanceNotFoundException {
         Edition edition = getEdition(publicationSample);
         String code = edition.getCode().toString();
-
         return code;
     }
 }
