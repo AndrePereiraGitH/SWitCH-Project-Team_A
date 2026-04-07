@@ -4,14 +4,17 @@ hide circle
 title US013 - To get official genres list
 
 class ToGetListOfGenreController {
-  +getGenresList() : List<GenreDTO_US013>
+  +getGenresList() : List<US013GenreDTO>
+}
+class US013GenreMapper{
+  +toDTO : List<allGenresList>
 }
 
-class GenreDTO_US013 {
-toDTO(Genre) : GenreDTO_US013
+class US013GenreDTO {
+toDTO(Genre) : US013GenreDTO
 }
 
-class GenreRepository {
+class IGenreRepository {
   +getAllGenres() : List<Genre>
 }
 
@@ -20,8 +23,10 @@ class Genre {
 }
 
 ' Interactions
-ToGetListOfGenreController "1"..> "1" GenreDTO_US013 : Invokes to convert into DTO
-ToGetListOfGenreController "1"--> "1" GenreRepository : requests list to
-GenreRepository "1"-----> "   * _genres" Genre : stores
+ToGetListOfGenreController "1"..> "1" US013GenreMapper : Invokes to convert into DTO
+US013GenreMapper "1" ..> "1" US013GenreDTO
+US013GenreMapper "1" -> "1" Genre : request GenreType
+ToGetListOfGenreController "1"--> "1" IGenreRepository : requests list to
+IGenreRepository "1"-----> "   * _genres" Genre : stores
 
 @enduml
