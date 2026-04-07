@@ -1,89 +1,117 @@
 @startuml
 title US015 - To put for a sale a publication in my library in a direct sale
 
-' -----CLASSES------
+' -------------------------
+' APPLICATION LAYER
+' -------------------------
 
-class UI015 {}
+class UI015 {
+}
 
 class US015ToPutPublicationInDirectSaleController {
-    - library: Library
-    - listingFactory: ListingFactory
+    - libraryRepository: LibraryRepository
+    - publicationSampleRepository: PublicationSampleRepository
+    - listingRepository: ListingRepository
     + findLibraryPublicationsAvailableForSale(): List<PublicationSampleDTO_US015>
-    + putPublicationForSale(title, selectedPublications, saleType, price, shortDescription, seller, pictures): Listing
-}
-class Library {
-    - publications: List<PublicationSample>
-    - libraryName: String
-    - user: User
-    + findLibraryPublicationsAvailableForSale(): List<PublicationSample>
+    + putPublicationForSale(title, selectedPublicationIds, price, shortDescription, user1, pictures): boolean
 }
 
 class PublicationSampleDTO_US015 {
     - title: String
     - authorsName: List<String>
-    - genres: List<String>
-    - ownerUsername: String
-    - pubStatus: String
-    - editionNumber: String
     - code: String
     - mediaFormat: String
-    - editionLanguage: String
-    - publisherName: String
-    - condition: String
-    + toDTO(listOfAvailablePublications): List<PublicationSampleDTO_US015>
+    + toDTO(publicationSample) : PublicationSampleDTO_US015
+}
+
+' -------------------------
+' DOMAIN LAYER
+' -------------------------
+
+class PublicationSampleId {
+    - publicationSampleId: String
 }
 
 class PublicationSample {
-    - bibliographicalData: BibliographicalData
-    - owner: User
+    - publicationSampleId: PublicationSampleId
+    - bibliographicalDataId: BibliographicalDataId
+    - ownerId: UserId
     - publicationStatus: PublicationStatus
-    - edition: Edition
+    - editionId: EditionId
     - condition: Condition
-    + getPublicationStatus(): PublicationStatus
-    + getDetails(): PublicationSample
+    - libraryId: LibraryId
+    + isAvailableForSale(): boolean
+}
+
+class Listing {
+    - listingId: String
+    - listingTitle: String
+    - publicationSampleIds: List<PublicationSampleId>
+    - saleType: SaleType
+    - price: Price
+    - shortDescription: String
+    - sellerId: UserId
+    - pictures: List<Picture>
 }
 
 class ListingFactory {
-    + create(title, selectedPublications, saleType, price, shortDescription, seller, pictures): Listing
+    + create(title, publicationSampleIds, SaleType.DIRECT_SALE, price, shortDescription, userId, pictures): Listing
+}
+
+' -------------------------
+' REPOSITORIES
+' -------------------------
+
+class LibraryRepository {
+    - libraries: List<Library>
+    + getLibraryOfUser(userId): Library
+}
+
+class PublicationSampleRepository {
+    - allPublicationsInSystem: List<PublicationSample>
+    + findByLibraryId(library.libraryId): List<PublicationSample>
 }
 
 class ListingRepository {
     - listings: List<Listing>
-    + createAndAdd(title, selectedPublications, saleType, price, shortDescription, seller, pictures): Listing
+    - listingFactory: ListingFactory
+    + createAndAdd(title, publicationSampleIds, SaleType.DIRECT_SALE, price, shortDescription, userId, pictures): Listing
 }
 
-class Listing {
-    - listingTitle: String
-    - items: List<PublicationSample>
-    - saleType: SaleType
-    - price: Price
-    - shortDescription: String
-    - seller: User
-    - pictures: List<Picture>
-}
-
-' ------ RELATIONSHIPS -----
+' -------------------------
+' RELATIONSHIPS
+' -------------------------
 
 ' --- UI ---
-UI015 -.> US015ToPutPublicationInDirectSaleController : requests operations from
+UI015 -.> US015ToPutPublicationInDirectSaleController : "invokes"
 
 ' --- Controller ---
-US015ToPutPublicationInDirectSaleController -.> Library : consults
-US015ToPutPublicationInDirectSaleController -.> PublicationSampleDTO_US015 : maps using
-US015ToPutPublicationInDirectSaleController -.> ListingFactory : delegates creation to
-US015ToPutPublicationInDirectSaleController "1" -> "1" ListingRepository : maintains
+US015ToPutPublicationInDirectSaleController "1" --> "1" LibraryRepository: "uses"
+US015ToPutPublicationInDirectSaleController "1" --> "1" PublicationSampleRepository : "uses"
+US015ToPutPublicationInDirectSaleController "1" --> "1" ListingRepository : "uses"
+US015ToPutPublicationInDirectSaleController ..> PublicationSampleDTO_US015 : "creates DTOs"
+US015ToPutPublicationInDirectSaleController ..> PublicationSample : "invokes"
+'US015ToPutPublicationInDirectSaleController ..> Library : "invokes"
 
 ' --- Library ---
-Library "0..1" -> "*" PublicationSample: contains
+'Library "1" --> "*" PublicationSampleId : "stores IDs of"
+Library <.. PublicationSampleRepository : "queries by ID"
 
-' --- PublicationSampleDTO_US015 ---
-PublicationSampleDTO_US015 ..> PublicationSample : maps from
+' --- PublicationSampleRepository ---
+PublicationSampleRepository "1" --> "*" PublicationSample : "returns"
 
-' --- ListingRepository ---
-ListingRepository "1" -> "*" Listing : stores
+' --- PublicationSample ---
+PublicationSample "1" --> "1" PublicationSampleId : "has"
 
-' --- Domain Classes ---
-Listing "0..1" -> "1..*" PublicationSample : aggregates
-ListingFactory "1" -> "1..*" Listing: creates
+' --- Listing ---
+Listing "0..1" --> "1..*" PublicationSampleId : "references IDs of"
+
+' --- Listing ---
+ListingRepository "1" --> "1" ListingFactory : "uses"
+ListingRepository "1" --> "*" Listing : "stores"
+
+' --- PublicationSample DTO mapping ---
+PublicationSampleDTO_US015 ..> PublicationSample : "maps from"
 
 @enduml
+
