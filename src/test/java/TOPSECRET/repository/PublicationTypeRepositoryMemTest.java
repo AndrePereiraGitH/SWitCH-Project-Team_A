@@ -133,7 +133,7 @@ class PublicationTypeRepositoryMemTest {
         repo.addToList(pt);
 
         // ACT
-        PublicationType result = repo.findByAttributes("BOOK");
+        PublicationType result = repo.findPublicationTypeByAttributes("BOOK");
 
         // ASSERT
         assertEquals(pt, result);
@@ -144,7 +144,7 @@ class PublicationTypeRepositoryMemTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findByAttributes("MAGAZINE"));
+                () -> repo.findPublicationTypeByAttributes("MAGAZINE"));
     }
 
     @Test
@@ -152,7 +152,7 @@ class PublicationTypeRepositoryMemTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findByAttributes(null));
+                () -> repo.findPublicationTypeByAttributes(null));
     }
 
     @Test
@@ -182,7 +182,7 @@ class PublicationTypeRepositoryMemTest {
         repo.addToList(pt);
 
         // ACT
-        PublicationType result = repo.findByAttributes("book");
+        PublicationType result = repo.findPublicationTypeByAttributes("book");
 
         // ASSERT
         assertEquals(pt, result);
@@ -194,7 +194,7 @@ class PublicationTypeRepositoryMemTest {
         // ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.findByAttributes("   ")
+                () -> repo.findPublicationTypeByAttributes("   ")
         );
 
         // ASSERT

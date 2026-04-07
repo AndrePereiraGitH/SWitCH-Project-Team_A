@@ -193,7 +193,7 @@ public class Edition implements AggregateRoot<EditionID> {
      * @return true if all attributes are equal
      */
     @Override
-    public boolean sameAs(Object o) {
+    public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Edition that = (Edition) o;
         return Objects.equals(_editionID, that._editionID);
@@ -217,8 +217,9 @@ public class Edition implements AggregateRoot<EditionID> {
      * @return {@code true} if both have the same EditionID; {@code false} otherwise
      */
 
+
     @Override
-    public boolean equals(Object o){
+    public boolean sameAs(Object o){
         if(o == null || getClass() != o.getClass()) return false;
         Edition edition = (Edition) o;
         return Objects.equals(_editionNumber, edition._editionNumber)
