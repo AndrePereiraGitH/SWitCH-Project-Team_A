@@ -1,16 +1,16 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.Listing;
+import TOPSECRET.domain.Auction.Auction;
+import TOPSECRET.domain.Listing.Listing;
 
 public record AuctionDTO_US026(
         Listing listing
 ) {
 
-    public static AuctionDTO_US026 fromAuction(Auction auction) {
-        if (auction == null)
-            throw new IllegalArgumentException("Auction cannot be null.");
-
-        return new AuctionDTO_US026(auction.getListing());
-    }
+//    public static AuctionDTO_US026 fromAuction(Auction auction) {
+//        if (auction == null)
+//            throw new IllegalArgumentException("Auction cannot be null.");
+//
+//        return new AuctionDTO_US026(auction.getListing());
+//    }
 }

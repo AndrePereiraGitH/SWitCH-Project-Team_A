@@ -1,15 +1,12 @@
-package TOPSECRET.repository;
+package TOPSECRET.domain.Listing;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -26,7 +23,7 @@ public interface IListingRepository {
      * Creates a new listing and adds it to the repository if it does not already exist.
      *
      * @param listingTitle the title of the listing
-     * @param items the publication samples associated with the listing
+     * @param itemsId the publication samples IDs associated with the listing
      * @param saleType the type of sale for the listing
      * @param price the price defined for the listing
      * @param shortDescription a short description of the listing
@@ -35,10 +32,11 @@ public interface IListingRepository {
      * @throws InstanceAlreadyExistsException if an equivalent listing already exists
      */
     Listing createAndAdd(String listingTitle,
-                         List<PublicationSample> items,
+                         List<PublicationSampleID> itemsId,
                          SaleType saleType,
                          Price price,
                          String shortDescription,
+                         UserId sellerId,
                          List<Picture> pictures) throws InstanceAlreadyExistsException;
 
 
@@ -98,5 +96,19 @@ public interface IListingRepository {
      */
     List<Listing> findAllAuctionListings();
 
-
+    /**
+     * Retrieves an {@link Listing} instance by its identifier.
+     * <p>
+     * This method searches the in-memory list of stored listings and returns
+     * the first element whose {@code id()} matches the provided {@link ListingId}.
+     * If no matching listing is found, an empty {@link Optional} is returned.
+     * </p>
+     *
+     * @param id the identifier of the listing to retrieve; must not be {@code null}
+     * @return an {@link Optional} containing the matching listing if found,
+     *         or an empty {@link Optional} otherwise
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<Listing> findListingById(ListingId id);
 }

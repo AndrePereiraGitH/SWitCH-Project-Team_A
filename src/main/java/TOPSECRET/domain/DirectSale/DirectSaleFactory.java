@@ -1,7 +1,7 @@
 package TOPSECRET.domain.DirectSale;
 
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Listing;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;

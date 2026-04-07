@@ -1,6 +1,6 @@
 package TOPSECRET.domain.ValueObjects;
 
-import TOPSECRET.domain.City;
+import TOPSECRET.domain.City.City;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 class ContactTest {
 
     //Double for City class
-    private final City anyCity = mock(City.class);
+    private final CityID anyCity = mock(CityID.class);
 
     /**
      * Helper method to create a valid Contact.

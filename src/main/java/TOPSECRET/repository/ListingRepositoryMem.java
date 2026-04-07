@@ -1,16 +1,15 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link IListingRepository}.
@@ -23,10 +22,10 @@ import java.util.List;
  * during the application's runtime.
  * </p>
  */
-public class ListingRepositoryMem implements IListingRepository{
+public class ListingRepositoryMem implements IListingRepository {
 
-    private List<Listing> listings;
-    private ListingFactory listingFactory;
+    private final List<Listing> listings;
+    private final ListingFactory listingFactory;
 
     /**
      * Constructs an in-memory listing repository with the given listing factory.
@@ -34,6 +33,10 @@ public class ListingRepositoryMem implements IListingRepository{
      * @param listingFactory the factory used to create {@link Listing} instances
      */
     public ListingRepositoryMem(ListingFactory listingFactory) {
+
+        if (listingFactory == null)
+            throw new IllegalArgumentException("ListingFactory cannot be null");
+
         this.listings = new ArrayList<>();
         this.listingFactory = listingFactory;
     }
@@ -44,16 +47,17 @@ public class ListingRepositoryMem implements IListingRepository{
     @Override
     public Listing createAndAdd(
             String listingTitle,
-            List<PublicationSample> items,
+            List<PublicationSampleID> itemsId,
             SaleType saleType,
             Price price,
             String shortDescription,
+            UserId sellerId,
             List<Picture> pictures
     ) throws InstanceAlreadyExistsException {
 
-        Listing newListing = listingFactory.create(listingTitle, items, saleType, price, shortDescription, pictures);
+        Listing newListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
 
-        if (isExistent(newListing))
+        if (existsById(newListing))
             throw new InstanceAlreadyExistsException("Listing already exists.");
 
         listings.add(newListing);
@@ -66,7 +70,7 @@ public class ListingRepositoryMem implements IListingRepository{
         listings.add(listing);
     }
 
-    private boolean isExistent(Listing listing) {
+    private boolean existsById(Listing listing) {
         return listings.contains(listing);
     }
 
@@ -126,7 +130,7 @@ public class ListingRepositoryMem implements IListingRepository{
      */
     @Override
     public List<Listing> getAllListings() {
-        return listings;
+        return List.copyOf(listings);
     }
 
     /**
@@ -157,5 +161,19 @@ public class ListingRepositoryMem implements IListingRepository{
             }
         }
         return auctionListings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Listing> findListingById(ListingId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ListingId cannot be null");
+        }
+
+        return listings.stream()
+                .filter(listing -> listing.id().equals(id))
+                .findFirst();
     }
 }

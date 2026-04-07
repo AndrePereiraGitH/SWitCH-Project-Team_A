@@ -1,9 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.IListingRepository;
 
 import java.util.List;
 

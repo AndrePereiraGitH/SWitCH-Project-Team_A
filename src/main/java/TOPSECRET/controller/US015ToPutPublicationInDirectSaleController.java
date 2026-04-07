@@ -1,11 +1,13 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.Library;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationSampleDTO_US015;
 import java.util.List;
 
@@ -99,14 +101,14 @@ public class US015ToPutPublicationInDirectSaleController {
      * @throws IllegalArgumentException if the listingTitle, the pubSamples, price, shortDescription or pictures are invalid
      */
 
-    public Listing putPublicationForSale(String listingTitle, List<PublicationSample> pubSamples, SaleType saleType,
-                                         Price price, String shortDescription, List<Picture> pictures) {
+    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleID> pubSamplesId, SaleType saleType,
+                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
 
         if (listingTitle == null || listingTitle.isBlank())
             throw new IllegalArgumentException("Listing title cannot be empty.");
 
-        if (pubSamples == null)
-            throw new IllegalArgumentException("Publication samples cannot be null.");
+        if (pubSamplesId == null)
+            throw new IllegalArgumentException("Publication samples ID cannot be null.");
 
         if (saleType == null)
             throw new IllegalArgumentException("Sale type samples cannot be null.");
@@ -117,10 +119,13 @@ public class US015ToPutPublicationInDirectSaleController {
         if (shortDescription == null || shortDescription.isBlank())
             throw new IllegalArgumentException("Short description cannot be empty.");
 
+        if (sellerId == null)
+            throw new IllegalArgumentException("Seller ID cannot be empty.");
+
         if (pictures == null)
             throw new IllegalArgumentException("Pictures cannot be null.");
 
-        return _listingFactory.create(listingTitle, pubSamples, SaleType.DIRECT_SALE, price, shortDescription, pictures);
+        return _listingFactory.create(listingTitle, pubSamplesId, SaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures);
     }
 
     // The Listing class already sets the seller as the publication's owner.
