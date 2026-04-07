@@ -59,22 +59,6 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     }
 
     /**
-     * Adds an {@link Author} instance to the in-memory repository.
-     * <p>
-     * This method exists exclusively for testing purposes, allowing test
-     * suites to populate the repository with predefined {@link Author}
-     * instances without relying on the factory or creation workflows.
-     * </p>
-     *
-     * @param author the author to add; must not be {@code null}
-     * @throws IllegalArgumentException if {@code author} is {@code null}
-     */
-    // Only for TESTING
-    void add(Author author) {
-        _authors.add(author);
-    }
-
-    /**
      * Checks whether the given author already exists in the repository.
      *
      * <p>An author is considered to exist if another stored {@link Author}

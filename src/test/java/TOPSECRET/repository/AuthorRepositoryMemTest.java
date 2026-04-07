@@ -146,9 +146,12 @@ class AuthorRepositoryMemTest {
         when(author3Double.id()).thenReturn(id3);
 
         AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-        repo.add(author1Double);
-        repo.add(author2Double);
-        repo.add(author3Double);
+
+        when(authorFactory.create(any(),  any(), any(), any())).thenReturn(author1Double, author2Double, author3Double);
+
+        repo.createAndAddAuthor("author1", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author2", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author3", countryID, LocalDate.of(1978, 5, 12), validBio);
 
         // Act
         Optional<Author> result = repo.findAuthorById(id2);
@@ -174,9 +177,12 @@ class AuthorRepositoryMemTest {
         when(author3Double.id()).thenReturn(id3);
 
         AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
-        repo.add(author1Double);
-        repo.add(author2Double);
-        repo.add(author3Double);
+
+        when(authorFactory.create(any(),  any(), any(), any())).thenReturn(author1Double, author2Double, author3Double);
+
+        repo.createAndAddAuthor("author1", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author2", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.createAndAddAuthor("author3", countryID, LocalDate.of(1978, 5, 12), validBio);;
 
         // Act
         Optional<Author> result = repo.findAuthorById(unknownId);
