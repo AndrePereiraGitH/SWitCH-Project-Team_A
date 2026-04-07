@@ -108,8 +108,9 @@ public class Library implements AggregateRoot<LibraryId> {
      */
     @Override
     public boolean sameAs(Object object) {
-        if (object instanceof Library other)
-            return _id.equals(other._id);
+        if (object instanceof Library other) {
+            return this._libraryName.equals(other._libraryName);
+        }
         return false;
     }
 }

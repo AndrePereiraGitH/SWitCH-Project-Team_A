@@ -77,8 +77,8 @@ public class AuthorRepositoryMem implements IAuthorRepository {
      *         {@code false} otherwise
      */
     private boolean exists(Author author) {
-        for (Author newAuthor : this._authors) {
-            if (author.equals(newAuthor)) {
+        for (Author existingAuthor : this._authors) {
+            if (author.sameAs(existingAuthor)) {
                 return true;
             }
         }
