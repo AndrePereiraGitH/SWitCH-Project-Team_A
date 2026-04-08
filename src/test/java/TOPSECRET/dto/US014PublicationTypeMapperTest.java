@@ -32,6 +32,8 @@ class US014PublicationTypeMapperTest {
 
     @Test
     void toDTOThrowsWhenNull() {
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 US014PublicationTypeMapper.toDTO(null));
     }
@@ -39,24 +41,28 @@ class US014PublicationTypeMapperTest {
     @Test
     void toDTOListEmptyListReturnsEmptyList() {
 
+        // Act
         List<US014PublicationTypeDTO> result =
                 US014PublicationTypeMapper.toDTOList(List.of());
 
+        // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void toDTOListOneElement() {
-
+        // Arrange
         PublicationType pt = mock(PublicationType.class);
         PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
         when(pt.getMediaFormat()).thenReturn("Book");
         when(publicationTypeId.getId()).thenReturn("1");
         when(pt.getId()).thenReturn(publicationTypeId);
 
+        // Act
         List<US014PublicationTypeDTO> result =
                 US014PublicationTypeMapper.toDTOList(List.of(pt));
 
+        // Assert
         assertEquals(1, result.size());
         assertEquals("Book", result.get(0).mediaFormat());
         assertEquals("1", result.get(0).id());
@@ -65,6 +71,7 @@ class US014PublicationTypeMapperTest {
     @Test
     void toDTOListMultipleElements() {
 
+        // Arrange
         PublicationType pt1 = mock(PublicationType.class);
         PublicationType pt2 = mock(PublicationType.class);
 
@@ -79,15 +86,18 @@ class US014PublicationTypeMapperTest {
         when(publicationTypeId2.getId()).thenReturn("2");
         when(pt2.getId()).thenReturn(publicationTypeId2);
 
+        // Act
         List<US014PublicationTypeDTO> result =
                 US014PublicationTypeMapper.toDTOList(List.of(pt1, pt2));
 
+        // Assert
         assertEquals(2, result.size());
     }
 
     @Test
     void toDTOListThrowsWhenNullList() {
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 US014PublicationTypeMapper.toDTOList(null));
     }
