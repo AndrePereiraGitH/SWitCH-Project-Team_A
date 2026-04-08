@@ -14,24 +14,24 @@ class US007ToRegisterCountryControllerTest {
 
     private US007ToRegisterCountryController controller;
 
-    private ICountryRepository countryRepoMock;
+    private ICountryRepository countryRepoDouble;
 
-    private Country countryMock;
+    private Country countryDouble;
 
     @BeforeEach
     void preparation(){
 
-        countryRepoMock = mock(ICountryRepository.class); //Creates the mock
-        countryMock = mock(Country.class);
-        controller = new US007ToRegisterCountryController(countryRepoMock);
+        countryRepoDouble = mock(ICountryRepository.class); //Creates the mock
+        countryDouble = mock(Country.class);
+        controller = new US007ToRegisterCountryController(countryRepoDouble);
     }
 
     @Test
-    void registerNewCountry_validCountry_mock(){
+    void registerNewCountry_validCountry_double(){
         //Arrange
-        when(countryRepoMock.createAndAddNewCountry("Portugal")).thenReturn(countryMock);
+        when(countryRepoDouble.createAndAddNewCountry("Portugal")).thenReturn(countryDouble);
 
-        when(countryMock.getCountryName()).thenReturn("Portugal");
+        when(countryDouble.getCountryName()).thenReturn("Portugal");
 
         //Act
         Country result = controller.registerNewCountry("Portugal");
@@ -43,9 +43,9 @@ class US007ToRegisterCountryControllerTest {
     }
 
     @Test
-    void registerNewCountry_InvalidCountry_mock(){
+    void registerNewCountry_InvalidCountry_double(){
 
-        when(countryRepoMock.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
+        when(countryRepoDouble.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry("Mordor"));
@@ -53,7 +53,7 @@ class US007ToRegisterCountryControllerTest {
     }
 
     @Test
-    void registerNewCountry_nullCountry_mock(){
+    void registerNewCountry_nullCountry_double(){
 
         //Arrange + Act + Assert
         IllegalArgumentException exception =
@@ -64,7 +64,7 @@ class US007ToRegisterCountryControllerTest {
     }
 
     @Test
-    void registerNewCountry_blankCountry_mock(){
+    void registerNewCountry_blankCountry_double(){
 
         // Arrange + Act + Assert
         IllegalArgumentException exception =
@@ -77,7 +77,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_duplicateCountry() {
         // Arrange
-        when(countryRepoMock.createAndAddNewCountry("Portugal"))
+        when(countryRepoDouble.createAndAddNewCountry("Portugal"))
                 .thenThrow(new IllegalArgumentException("Country is already registered"));
 
         // Act + Assert
