@@ -8,13 +8,16 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
-import TOPSECRET.dto.GenreDetailsDTO_US004;
-import TOPSECRET.dto.PublicationTypeDTO_US004;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.dto.US004GenreDTO;
+import TOPSECRET.dto.US004PublicationTypeDTO;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,42 +39,27 @@ class AppraisalEntityRepositoryTest {
 
         Contact contact = mock(Contact.class);
 
-        // DTO mocks are created separately to allow proper configuration
-        GenreDetailsDTO_US004 genreDTO = mock(GenreDetailsDTO_US004.class);
-        when(genreDTO.getTitle()).thenReturn("Fantasy");
-
-        PublicationTypeDTO_US004 publicationDTO = mock(PublicationTypeDTO_US004.class);
-
-        String mediaFormat = "Book";
-        when(publicationDTO.getMediaFormat()).thenReturn(mediaFormat);
-
-        List<GenreDetailsDTO_US004> genreDTOs = List.of(genreDTO);
-        List<PublicationTypeDTO_US004> publicationDTOs = List.of(publicationDTO);
+        // DTO doubles are created separately to allow proper configuration
+        US004GenreDTO genreDTO = mock(US004GenreDTO.class);
+        GenreID genreId = mock(GenreID.class);
+        when(genreDTO.getId()).thenReturn(genreId);
 
         Genre genre = mock(Genre.class);
-        PublicationType publicationType = mock(PublicationType.class);
-        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        when(genre.id()).thenReturn(genreId);
+        when(genreRepository.findById(genreId)).thenReturn(genre);
 
-        when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-        when(publicationTypeRepository.findPublicationTypeByAttributes(
-                mediaFormat))
-                .thenReturn(publicationType);
+        US004PublicationTypeDTO publicationDTO = mock(US004PublicationTypeDTO.class);
+        PublicationTypeId pubId = mock(PublicationTypeId.class);
+        when(publicationDTO.getId()).thenReturn(pubId);
+
+        PublicationType publicationType = mock(PublicationType.class);
+        when(publicationType.id()).thenReturn(pubId);
+        when(publicationTypeRepository.findPublicationTypeById(pubId)).thenReturn(Optional.of(publicationType));
+
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
-        when(createdEntity.getId()).thenReturn(id);
-        when(createdEntity.getName()).thenReturn("Test");
-        when(createdEntity.getContact()).thenReturn(contact);
-
-        try (MockedStatic<AppraisalEntityFactory> mockedFactory =
-                     mockStatic(AppraisalEntityFactory.class)) {
-
-            mockedFactory.when(() -> appraisalEntityFactory.create(
-                            eq("Test"),
-                            eq(contact),
-                            anyList(),
-                            anyList()
-                    )
-            ).thenReturn(createdEntity);
+        when(appraisalEntityFactory.create(eq("Test"), eq(contact), anyList(), anyList()))
+                .thenReturn(createdEntity);
 
             // ACT
             AppraisalEntity result =
@@ -84,7 +72,7 @@ class AppraisalEntityRepositoryTest {
 
             // ASSERT
             assertEquals(createdEntity, result);
-        }
+
     }
 
     @Test
@@ -100,31 +88,28 @@ class AppraisalEntityRepositoryTest {
 
         Contact contact = mock(Contact.class);
 
-        GenreDetailsDTO_US004 genreDTO = mock(GenreDetailsDTO_US004.class);
-        when(genreDTO.getTitle()).thenReturn("Fantasy");
-
-        PublicationTypeDTO_US004 publicationDTO = mock(PublicationTypeDTO_US004.class);
-
-        String mediaFormat = "Book";
-
-        when(publicationDTO.getMediaFormat()).thenReturn(mediaFormat);
-
-        List<GenreDetailsDTO_US004> genreDTOs = List.of(genreDTO);
-        List<PublicationTypeDTO_US004> publicationDTOs = List.of(publicationDTO);
+        US004GenreDTO genreDTO = mock(US004GenreDTO.class);
+        GenreID genreId = mock(GenreID.class);
+        when(genreDTO.getId()).thenReturn(genreId);
 
         Genre genre = mock(Genre.class);
-        PublicationType publicationType = mock(PublicationType.class);
-        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        when(genre.id()).thenReturn(genreId);
+        when(genreRepository.findById(genreId)).thenReturn(genre);
 
-        when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-        when(publicationTypeRepository.findPublicationTypeByAttributes(
-                mediaFormat))
-                .thenReturn(publicationType);
+        US004PublicationTypeDTO publicationDTO = mock(US004PublicationTypeDTO.class);
+        PublicationTypeId pubId = mock(PublicationTypeId.class);
+        when(publicationDTO.getId()).thenReturn(pubId);
+
+        PublicationType publicationType = mock(PublicationType.class);
+        when(publicationType.id()).thenReturn(pubId);
+        when(publicationTypeRepository.findPublicationTypeById(pubId)).thenReturn(Optional.of(publicationType));
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
-        when(createdEntity.getId()).thenReturn(id);
         when(createdEntity.getName()).thenReturn("Test");
         when(createdEntity.getContact()).thenReturn(contact);
+
+        when(appraisalEntityFactory.create(anyString(), any(), anyList(), anyList()))
+                .thenReturn(createdEntity);
 
 
         try (MockedStatic<AppraisalEntityFactory> mockedFactory =
@@ -143,8 +128,8 @@ class AppraisalEntityRepositoryTest {
             sut.createAndAdd(
                     "Test",
                     contact,
-                    genreDTOs,
-                    publicationDTOs
+                    List.of(genreDTO),
+                    List.of(publicationDTO)
             );
 
             // ACT + ASSERT
@@ -152,8 +137,8 @@ class AppraisalEntityRepositoryTest {
                     sut.createAndAdd(
                             "Test",
                             contact,
-                            genreDTOs,
-                            publicationDTOs
+                            List.of(genreDTO),
+                            List.of(publicationDTO)
                     ));
         }
     }
@@ -178,7 +163,7 @@ class AppraisalEntityRepositoryTest {
                         "Test",
                         contact,
                         null,
-                        List.of(mock(PublicationTypeDTO_US004.class))
+                        List.of(mock(US004PublicationTypeDTO.class))
                 ));
     }
 
@@ -197,7 +182,7 @@ class AppraisalEntityRepositoryTest {
         Contact contact = mock(Contact.class);
         AppraisalEntityId id = mock(AppraisalEntityId.class);
 
-        GenreDetailsDTO_US004 genreDTO = mock(GenreDetailsDTO_US004.class);
+        US004GenreDTO genreDTO = mock(US004GenreDTO.class);
         when(genreDTO.getTitle()).thenReturn("Fantasy");
 
         // ACT + ASSERT
