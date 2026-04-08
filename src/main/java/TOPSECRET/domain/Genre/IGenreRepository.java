@@ -1,5 +1,7 @@
 package TOPSECRET.domain.Genre;
 
+import TOPSECRET.domain.ValueObjects.GenreID;
+
 import java.util.List;
 
 /**
@@ -22,14 +24,24 @@ public interface IGenreRepository {
        Genre createAndAdd(String genreType);
 
     /**
+     * Returns the genre matching the given id.
+     *
+     * <p>This method searches the repository's internal collection and returns
+     * the first genre whose type matches the given id.
+     *
+     * @param id the title of the genre to search for
+     * @throws IllegalArgumentException if {@code id} is {@code null}, blank, or not found
+     */
+        Genre findById(GenreID id);
+
+
+    /**
      * Returns the genre matching the given title.
      *
      * <p>This method searches the repository's internal collection and returns
-     * the first genre whose type matches the given title, ignoring case.
-     * The search is case-insensitive.</p>
+     * the first genre whose type matches the given title.
      *
      * @param title the title of the genre to search for
-     * @return the genre matching the given title; never {@code null}
      * @throws IllegalArgumentException if {@code title} is {@code null}, blank, or not found
      */
         Genre findByTitle(String title);
@@ -46,5 +58,7 @@ public interface IGenreRepository {
      * @return an unmodifiable list of all official genres; may be empty if no genres have been registered
      */
         List<Genre> getAllGenres();
+
+
 }
 
