@@ -10,9 +10,9 @@ end box
 
 participant ":US015ToPutPublicationInDirectSaleController" as Ctrl
 
-participant ":LibraryRepository" as LibRepo
+participant ":ILibraryRepository" as LibRepo
 
-participant ":PublicationSampleRepository" as PSRepo
+participant ":IPublicationSampleRepository" as PSRepo
 participant ":PublicationSample" as Pub
 
 participant "listOfLibraryPublications:\nList<PublicationSample" as ListLibraryPS
@@ -22,7 +22,7 @@ participant ":US015PublicationSampleMapper" as Mapper
 participant "listOfPublicationSampleDTO:\nList<US015PublicationSampleDTO>" as listDTO
 participant "publicationSampleDTO:\nUS015PublicationSampleDTO" as DTO_O
 
-participant ":ListingRepository" as LRepo
+participant ":IListingRepository" as LRepo
 participant ":ListingFactory" as LFactory
 participant ":Listing" as Listing
 

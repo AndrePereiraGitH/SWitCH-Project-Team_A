@@ -66,17 +66,17 @@ class ListingFactory {
 ' REPOSITORIES
 ' -------------------------
 
-class LibraryRepository {
+class ILibraryRepository {
     - libraries: List<Library>
     + getLibraryOfUser(userId): Library
 }
 
-class PublicationSampleRepository {
+class IPublicationSampleRepository {
     - allPublicationsInSystem: List<PublicationSample>
     + findByLibraryId(library.libraryId): List<PublicationSample>
 }
 
-class ListingRepository {
+class IListingRepository {
     - listings: List<Listing>
     - listingFactory: ListingFactory
     + createAndAdd(title, publicationSampleIds, SaleType.DIRECT_SALE, price, shortDescription, userId, pictures): Listing
@@ -90,18 +90,18 @@ class ListingRepository {
 UI015 -.> US015ToPutPublicationInDirectSaleController : "invokes"
 
 ' --- Controller ---
-US015ToPutPublicationInDirectSaleController "1" --> "1" LibraryRepository: "uses"
-US015ToPutPublicationInDirectSaleController "1" --> "1" PublicationSampleRepository : "uses"
-US015ToPutPublicationInDirectSaleController "1" --> "1" ListingRepository : "uses"
+US015ToPutPublicationInDirectSaleController "1" --> "1" ILibraryRepository: "uses"
+US015ToPutPublicationInDirectSaleController "1" --> "1" IPublicationSampleRepository : "uses"
+US015ToPutPublicationInDirectSaleController "1" --> "1" IListingRepository : "uses"
 US015ToPutPublicationInDirectSaleController "1" --> "1" US015PublicationSampleMapper : "creates DTOs"
 US015ToPutPublicationInDirectSaleController ..> PublicationSample : "invokes"
 
 ' --- Library ---
 'Library "1" --> "*" PublicationSampleId : "stores IDs of"
-Library <.. PublicationSampleRepository : "queries by ID"
+Library <.. IPublicationSampleRepository : "queries by ID"
 
 ' --- PublicationSampleRepository ---
-PublicationSampleRepository "1" --> "*" PublicationSample : "returns"
+IPublicationSampleRepository "1" --> "*" PublicationSample : "returns"
 
 ' --- PublicationSample ---
 PublicationSample "1" --> "1" PublicationSampleId : "has"
@@ -110,8 +110,8 @@ PublicationSample "1" --> "1" PublicationSampleId : "has"
 Listing "0..1" --> "1..*" PublicationSampleId : "references IDs of"
 
 ' --- Listing ---
-ListingRepository "1" --> "1" ListingFactory : "uses"
-ListingRepository "1" --> "*" Listing : "stores"
+IListingRepository "1" --> "1" ListingFactory : "uses"
+IListingRepository "1" --> "*" Listing : "stores"
 
 ' --- PublicationSample DTO mapping ---
 US015PublicationSampleMapper ..> US015PublicationSampleDTO : "maps from"
