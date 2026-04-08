@@ -30,16 +30,24 @@ import static org.mockito.Mockito.*;
  */
 class CountryRepositoryMemTest {
 
-    /** System Under Test: the repository responsible for storing countries. */
+    /**
+     * System Under Test: the repository responsible for storing countries.
+     */
     private ICountryRepository repository;
 
-    /** Mocked collaborator responsible for creating Country objects. */
+    /**
+     * Mocked collaborator responsible for creating Country objects.
+     */
     private CountryFactory factoryMock;
 
-    /** Mocked Country object used in tests. */
+    /**
+     * Mocked Country object used in tests.
+     */
     private Country countryMock1;
 
-    /** Another mocked Country object used in tests. */
+    /**
+     * Another mocked Country object used in tests.
+     */
     private Country countryMock2;
 
     /**
@@ -227,6 +235,7 @@ class CountryRepositoryMemTest {
         //Assert
         assertFalse(result.isPresent());
     }
+
     /**
      * Tests that {@link CountryRepositoryMem#findByID(CountryID)}
      * returns the correct country when multiple countries exist in the repository,
@@ -255,5 +264,57 @@ class CountryRepositoryMemTest {
         //Assert
         assertTrue(result.isPresent());
         assertEquals(countryMock2, result.get());
+    }
+
+    @Test
+    void findIdByCountryNameShouldReturnAValidCountryIdWhenCountryNameIsValid() {
+
+        //Arrange
+        when(factoryMock.create("Portugal")).thenReturn(countryMock1);
+
+        Country createdCountry = repository.createAndAddNewCountry(
+                "Portugal");
+
+        CountryID countryId = mock(CountryID.class);
+
+
+        when(createdCountry.getCountryName()).thenReturn("Portugal");
+        when(createdCountry.getCountryID()).thenReturn(countryId);
+
+        //Act
+        Optional<CountryID> result = repository.findCountryIdByCountryName("Portugal");
+
+
+        //Assert
+        assertTrue(result.isPresent());
+        assertEquals(countryId, result.get());
+    }
+
+    @Test
+    void findIdByCountryNameShouldThrowWhenCountryNameIsNull() {
+
+        //Assert
+        assertThrows(NullPointerException.class,
+                () -> repository.findCountryIdByCountryName(null));
+    }
+
+    @Test
+    void findIdByCountryNameShouldThrowWhenCountryNameIsBlank() {
+
+        //Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.findCountryIdByCountryName(""));
+    }
+
+    @Test
+    void findIdByCountryNameShouldReturnEmptyWhenCountryIsNotFound() {
+        // Arrange
+        // Just make sure the repository doesn't contain the country "Gondor"
+
+        // Act
+        Optional<CountryID> result = repository.findCountryIdByCountryName("Gondor");
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 }
