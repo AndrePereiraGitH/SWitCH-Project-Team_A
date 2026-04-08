@@ -4,7 +4,7 @@ import TOPSECRET.domain.Enum.MediaFormat;
 import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.dto.PublicationTypeDTO_US014;
+import TOPSECRET.dto.US014PublicationTypeMapper;
 import TOPSECRET.repository.PublicationTypeRepositoryMem;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
                 new US014ToGetPublicationTypeListController(repository);
 
         // Act
-        List<PublicationTypeDTO_US014> result = controller.getAllPublicationTypes();
+        List<US014PublicationTypeMapper> result = controller.getAllPublicationTypes();
 
         // Assert
         assertNotNull(result);
@@ -63,13 +63,13 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
                 new US014ToGetPublicationTypeListController(repository);
 
         // Act
-        List<PublicationTypeDTO_US014> result =
+        List<US014PublicationTypeMapper> result =
                 controller.getAllPublicationTypes();
 
         // Assert
         assertEquals(1, result.size());
 
-        PublicationTypeDTO_US014 dto = result.get(0);
+        US014PublicationTypeMapper dto = result.get(0);
         assertEquals("Book", dto._mediaFormat);
         verify(repository).getAllPublicationTypes();
 
@@ -94,7 +94,7 @@ class US014ToGetPublicationTypeListControllerDependenciesTest {
                 new US014ToGetPublicationTypeListController(repository);
 
         // Act
-        List<PublicationTypeDTO_US014> result =
+        List<US014PublicationTypeMapper> result =
                 controller.getAllPublicationTypes();
 
         // Assert

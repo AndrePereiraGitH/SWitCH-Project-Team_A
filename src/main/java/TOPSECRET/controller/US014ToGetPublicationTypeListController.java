@@ -2,7 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationType.PublicationType;
 
-import TOPSECRET.dto.PublicationTypeDTO_US014;
+import TOPSECRET.dto.US014PublicationTypeDTO;
+import TOPSECRET.dto.US014PublicationTypeMapper;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 
 import java.util.List;
@@ -44,14 +45,14 @@ public class US014ToGetPublicationTypeListController {
      * Retrieves all publication types from the repository
      * and converts them into DTO representations.
      *
-     * @return a list of PublicationTypeDTO_US014 objects
+     * @return a list of US014PublicationTypeMapper objects
      */
-    public List<PublicationTypeDTO_US014> getAllPublicationTypes() {
+    public List<US014PublicationTypeDTO> getAllPublicationTypes() {
         // Gets all publicationTypes domain objects from the repository
         List<PublicationType> publicationTypes =
                 publicationTypeRepository.getAllPublicationTypes();
         // converts the domain objects into DTO
-        return PublicationTypeDTO_US014.fromDomainList(publicationTypes);
+        return US014PublicationTypeMapper.toDTOList(publicationTypes);
     }
 
 }
