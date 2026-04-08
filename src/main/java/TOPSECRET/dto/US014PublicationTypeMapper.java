@@ -45,15 +45,11 @@ public class US014PublicationTypeMapper {
             throw new IllegalArgumentException("PublicationTypeDTO list cannot be null");
         }
 
-        // Creates an empty list to store DTOs
         List<US014PublicationTypeDTO> listOfPublicationTypeDTO = new ArrayList<>();
 
-        // Iterates over all PublicationType
-        // pT is a temporary variable tha refers to each PublicationType
+        
         for (PublicationType pT : publicationTypes) {
 
-            // a new DTO is created from the domain and the DTO extracts the data
-            // add a new DTO to the list
             listOfPublicationTypeDTO.add(toDTO(pT));
         }
 
