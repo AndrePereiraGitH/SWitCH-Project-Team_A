@@ -33,11 +33,11 @@ public class US008ToRegisterACityCtrl {
 
     public US008ToRegisterACityCtrl(ICityRepository cityRepository, ICountryRepository countryRepository) {
         if (cityRepository == null) {
-            throw new IllegalArgumentException("ICityRepository must not be left blank");
+            throw new IllegalArgumentException("ICityRepository must not be left null");
         }
 
         if (countryRepository == null) {
-            throw new IllegalArgumentException("ICountryRepository must not be left blank");
+            throw new IllegalArgumentException("ICountryRepository must not be left null");
         }
 
         this._cityRepository = cityRepository;

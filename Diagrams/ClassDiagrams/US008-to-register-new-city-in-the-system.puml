@@ -2,6 +2,9 @@
 hide circle
 title US008 - Register New City (Class Diagram)
 
+class UI008{
+}
+
 class City {
   -cityName: String
   -countryID: CountryID
@@ -33,15 +36,16 @@ class US008ToRegisterACityCtrl {
 }
 
 ' Relationships
-US008ToRegisterACityCtrl --> ICityRepository
-US008ToRegisterACityCtrl --> ICountryRepository
+UI008 ..> US008ToRegisterACityCtrl: uses
+US008ToRegisterACityCtrl "1"..>"1" ICityRepository: uses
+US008ToRegisterACityCtrl "1"..>"1" ICountryRepository: uses
 
-ICityRepository --> City
-ICountryRepository --> CountryID
+ICityRepository "1"-->"*" City: manages
+ICountryRepository "1"-->"*" CountryID: finds
 
-City --> CountryID
-Country --> CountryID
+City "1"-->"1..*" CountryID: belongs to
+Country "1"-->"1" CountryID: identified by
 
-ICityRepository ..> CityFactory : uses
+ICityRepository "1"..>"1" CityFactory : uses
 
 @enduml

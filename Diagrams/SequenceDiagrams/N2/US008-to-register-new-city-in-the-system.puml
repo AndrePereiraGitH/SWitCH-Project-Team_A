@@ -34,7 +34,7 @@ alt Country found
     activate CityFactory
 
     create "newCity : City" as City
-    CityFactory -> City : 9. «create»
+    CityFactory --> City : 9. «create»
 
     CityFactory --> CityRepository : 10. newCity
     deactivate CityFactory

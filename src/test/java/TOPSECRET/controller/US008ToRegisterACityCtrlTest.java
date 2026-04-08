@@ -44,7 +44,7 @@ class US008ToRegisterACityCtrlTest {
         );
 
         //Act + assert
-        assertEquals("ICityRepository must not be left blank", ex.getMessage());
+        assertEquals("ICityRepository must not be left null", ex.getMessage());
     }
 
     @Test
@@ -57,7 +57,7 @@ class US008ToRegisterACityCtrlTest {
         );
 
         //Act + assert
-        assertEquals("ICountryRepository must not be left blank", ex.getMessage());
+        assertEquals("ICountryRepository must not be left null", ex.getMessage());
     }
 
     @Test
