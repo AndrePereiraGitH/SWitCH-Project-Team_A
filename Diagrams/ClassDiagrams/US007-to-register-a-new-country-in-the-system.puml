@@ -28,6 +28,7 @@ class "List<Country>" {
 
 class Country {
 -countryName: String
+-_countryID : CountryID
 }
 
 ' Interactions

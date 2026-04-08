@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.ICountryRepository;
-import TOPSECRET.repository.CountryRepositoryMem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ class US007ToRegisterCountryControllerTest {
     private US007ToRegisterCountryController controller;
 
     /** Mocked repository used as a dependency of the controller. */
-    private ICountryRepository countryRepo;
+    private ICountryRepository countryRepoMock;
 
     /** Mocked Country object returned by the repository. */
     private Country countryMock;
@@ -39,9 +38,9 @@ class US007ToRegisterCountryControllerTest {
     @BeforeEach
     void preparation(){
 
-        countryRepo = mock(ICountryRepository.class); //Creates the mock
+        countryRepoMock = mock(ICountryRepository.class); //Creates the mock
         countryMock = mock(Country.class);
-        controller = new US007ToRegisterCountryController(countryRepo);
+        controller = new US007ToRegisterCountryController(countryRepoMock);
     }
 
     /**
@@ -55,7 +54,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_validCountry_mock(){
         //Arrange
-        when(countryRepo.createAndAddNewCountry("Portugal")).thenReturn(countryMock);
+        when(countryRepoMock.createAndAddNewCountry("Portugal")).thenReturn(countryMock);
 
         when(countryMock.getCountryName()).thenReturn("Portugal");
 
@@ -78,7 +77,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_InvalidCountry_mock(){
 
-        when(countryRepo.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
+        when(countryRepoMock.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry("Mordor"));
@@ -100,7 +99,6 @@ class US007ToRegisterCountryControllerTest {
                         () -> controller.registerNewCountry(null));
 
         assertEquals("Country name cannot be null or blank", exception.getMessage());
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(null));
     }
 
     /**
@@ -118,7 +116,6 @@ class US007ToRegisterCountryControllerTest {
                         () -> controller.registerNewCountry("   "));
 
         assertEquals("Country name cannot be null or blank", exception.getMessage());
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry(" "));
     }
     /**
      * Tests that attempting to register a duplicate country causes
@@ -127,7 +124,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_duplicateCountry() {
         // Arrange
-        when(countryRepo.createAndAddNewCountry("Portugal"))
+        when(countryRepoMock.createAndAddNewCountry("Portugal"))
                 .thenThrow(new IllegalArgumentException("Country is already registered"));
 
         // Act + Assert

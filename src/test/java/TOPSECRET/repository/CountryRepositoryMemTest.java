@@ -256,4 +256,35 @@ class CountryRepositoryMemTest {
         assertTrue(result.isPresent());
         assertEquals(countryMock2, result.get());
     }
+
+    /**
+     * Tests that {@link CountryRepositoryMem#createAndAddNewCountry(String)}
+     * successfully creates and returns a valid {@link Country} instance.
+     *
+     * <p>This test uses real objects instead of mocks to verify the actual
+     * behavior of the system, ensuring that:</p>
+     * <ul>
+     *     <li>The returned {@link Country} is not {@code null}</li>
+     *     <li>The country name is correctly assigned</li>
+     *     <li>The created country is stored in the repository</li>
+     *     <li>The generated {@link CountryID} is consistent with the expected format</li>
+     * </ul>
+     *
+     * <p>This test also helps detect mutations that alter the return value
+     * (e.g., returning {@code null} instead of the created object).</p>
+     */
+    @Test
+    void shouldCreateAndReturnCountry() {
+        CountryFactory factory = new CountryFactory();
+        CountryRepositoryMem repo = new CountryRepositoryMem(factory);
+
+        Country result = repo.createAndAddNewCountry("Portugal");
+
+        assertNotNull(result); // 🔥 kills the mutation
+        assertEquals("Portugal", result.getCountryName());
+
+        // Optional but strong check:
+        assertTrue(repo.getAllCountries().contains(result));
+        assertEquals("PORTUGAL", result.getCountryID().getCountryID());
+    }
 }

@@ -24,27 +24,27 @@ deactivate UI
 Administrator -> UI : The country is <countryName>
 activate UI
 
-UI -> CountryController : registerNewCountry (countryName)
+UI -> CountryController : registerNewCountry\n (countryName)
 activate CountryController
 
 
-CountryController -> CountryRepository : createAndAddNewCountry (countryName)
+CountryController -> CountryRepository : createAndAddNewCountry\n (countryName)
 activate CountryRepository
 
-CountryRepository -> CountryFactory : create(countryName)
+CountryRepository -->> CountryFactory : «create»
 activate CountryFactory
 create participant "newCountry1: Country" as Country
-CountryFactory -> Country : create(countryName)
+CountryFactory -->> Country : «create»
 
 CountryFactory --> CountryRepository : newCountry1
 deactivate CountryFactory
 
-CountryRepository -> CountryRepository : validate (newCountry1)
+CountryRepository -> CountryRepository : validate\n (newCountry1)
 
 alt Country already exists
-CountryRepository --> CountryController : newCountry1 already exists
-CountryController --> UI : newCountry1 already exists
-UI --> Administrator : <newCountry1> is already registered in the system!
+CountryRepository --> CountryController : newCountry1\n already exists
+CountryController --> UI : newCountry1\n already exists
+UI --> Administrator : <newCountry1> is already\n registered in the system!
 else Country does not exist
 CountryRepository -> CountryRepository : Add (newCountry1)
 CountryRepository --> CountryController : newCountry1
@@ -53,7 +53,7 @@ deactivate CountryRepository
 CountryController --> UI : success!
 deactivate CountryController
 
-UI --> Administrator : <newCountry1> registered successfully!
+UI --> Administrator : <newCountry1>\n registered successfully!
 deactivate UI
 end
 
