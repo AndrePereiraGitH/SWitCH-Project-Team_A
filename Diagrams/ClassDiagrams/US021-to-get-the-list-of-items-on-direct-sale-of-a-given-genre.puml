@@ -10,51 +10,72 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
   +getListOfItemsOnDirectSale(genre: Genre)
 }
 
-class GenreRepository {
+interface IGenreRepository {
   +getAllGenres()
 }
 
-class FactoryGenre  <<Factory>> {
-}
-
-class FactoryListing <<Factory>> {
-}
-
-
 class Genre {
+   - id: GenreID
     -genreType: String
-    +getDetails()
 }
 
-class ListingRepository {
-  +getListOfItemsOnDirectSale(genre: Genre)
-  -isDirectSaleFromGenre(genre)
+
+
+
+interface IListingRepository {
+  + findAllDirectSaleListings()
 }
 
-class DirectSale {
-  - listing: Listing
-  - directSaleDate: LocalDateTime
-  +getDetails()
+
+class Listing {
+  getSaleType(): SaleType
+  getItemsId(): List<PublicationSampleId>
 }
 
-class Item{
--condition: Condition
--dimension: Dimension
--publication: Publication
--weight: double
+interface "IPublicationSampleRepository" as IPSR {
+    + findPublicationSampleById(id)
 }
+
+
+class "PublicationSample" as PS {
+    + getBibliographicalDataID()
+}
+
+
+interface "IBibliographicalDataRepository" as IBDR {
+    + findBibliographicalDataById(id)
+}
+
+class "BibliographicalData" as BD {
+    + hasGenre(genre) : boolean
+}
+
+class "US021DirectSaleMapper" as Mapper {
+    + toDTO(listing: Listing): US021DirectSaleDTO
+}
+
+
+class "US021DirectSaleDTO" as DTO {
+
+}
+
+
+
 
 ' Interactions
-UI021 "1 " ..>  ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> ListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> GenreRepository : uses
+UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> IGenreRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IPSR : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IBDR : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> IListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> Mapper : uses
 
-GenreRepository ..>  FactoryGenre : uses
-GenreRepository "1 " --> "                   *" Genre : stores
+IGenreRepository "1 " --> "                   *" Genre : manages
+IPSR  "1 "-->  "*" PS : manages
+IBDR  "1 " -->  "*" BD : manages
+IListingRepository "1 " --> "*" Listing : manages
 
-ListingRepository ..> FactoryListing : uses
+Mapper ..> Listing : maps from
+Mapper ..> DTO : creates
 
-ListingRepository "1 " --> "*" DirectSale : stores
-Genre "1 " --> "1 " Item : categorizes
-DirectSale "1 " -->  "1 " Item : has
 @enduml

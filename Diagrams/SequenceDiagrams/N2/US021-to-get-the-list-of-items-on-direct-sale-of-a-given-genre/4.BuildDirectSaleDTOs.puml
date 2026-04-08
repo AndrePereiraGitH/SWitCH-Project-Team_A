@@ -1,0 +1,37 @@
+@startuml
+hide footbox
+autonumber
+title US021 - Build Direct Sale DTOs
+
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+participant ":US021DirectSaleMapper" as mapper
+participant "resultList:\nList<Listing>" as ResultList
+participant "directSaleDTO:\nUS021DirectSaleDTO" as directSaleDTO
+participant "listOfDirectSaleDTO:\nList<US021DirectSaleDTO>" as listOfDirectSaleDTO
+
+note over Ctrl, mapper #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl, mapper #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> mapper : toDTOs(resultList)
+activate mapper
+
+mapper -->> listOfDirectSaleDTO ** : <<create>>
+
+loop for each listing in resultList
+    mapper -> directSaleDTO ** : toDTO(listing)
+    mapper -> mapper : listOfDirectSaleDTO.add(directSaleDTO)
+end
+
+mapper --> Ctrl : listOfDirectSaleDTO
+deactivate mapper
+
+@enduml

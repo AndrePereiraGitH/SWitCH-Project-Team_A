@@ -1,0 +1,58 @@
+@startuml
+hide footbox
+autonumber
+title US021 - Get Direct Sale Listings By Genre
+
+participant ":UI021" as UI
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+participant ":ListingRepository" as listingRepo
+participant ":PublicationSampleRepository" as pubSampleRepo
+participant ":BibliographicalDataRepository" as bdRepo
+participant "resultList:\nList<Listing>" as ResultList
+
+note over UI, bdRepo #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, bdRepo #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenre)
+activate Ctrl
+
+Ctrl -> listingRepo : findAllDirectSaleListings()
+activate listingRepo
+listingRepo --> Ctrl : List<Listing>
+deactivate listingRepo
+
+Ctrl -->> ResultList ** : <<create>>
+
+loop for each listing in List<Listing>
+    loop for each PublicationSampleId in listing.getItemsId()
+        Ctrl -> pubSampleRepo : findPublicationSampleById(id)
+        activate pubSampleRepo
+        pubSampleRepo --> Ctrl : PublicationSample
+        deactivate pubSampleRepo
+
+        Ctrl -> bdRepo : findBibliographicalDataById(bdId)
+        activate bdRepo
+        bdRepo --> Ctrl : BibliographicalData
+        deactivate bdRepo
+
+        Ctrl -> Ctrl : bd.hasGenre(selectedGenre)
+
+        alt hasGenre == true
+            Ctrl -> ResultList : add(listing)
+        end
+    end
+end
+
+Ctrl --> UI : resultList
+deactivate Ctrl
+
+@enduml

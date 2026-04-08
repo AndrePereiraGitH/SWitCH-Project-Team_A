@@ -1,0 +1,33 @@
+@startuml
+hide footbox
+autonumber
+title US021 - Get All Genres
+
+participant ":UI021" as UI
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+participant ":GenreRepository" as genreRepo
+
+note over UI, Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+UI -> Ctrl : getAllGenres()
+activate Ctrl
+
+Ctrl -> genreRepo : getAllGenres()
+activate genreRepo
+genreRepo --> Ctrl : CopylistOfAllGenres
+deactivate genreRepo
+
+Ctrl --> UI : CopylistOfAllGenres
+deactivate Ctrl
+
+@enduml
