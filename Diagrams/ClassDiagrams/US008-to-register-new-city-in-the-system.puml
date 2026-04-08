@@ -26,19 +26,6 @@ interface ICountryRepository {
   +findCountryIdByCountryName(countryName: String) : Optional<CountryID>
 }
 
-class CityRepositoryMem {
-  -_cities: List<City>
-  -_cityFactory: CityFactory
-  +createAndAdd(countryID: CountryID, cityName: String) : City
-  -existsByAttributes(city: City) : boolean
-}
-
-class CountryRepositoryMem {
-  -registeredCountries: List<Country>
-  +findCountryIdByCountryName(countryName: String) : Optional<CountryID>
-  -normalizeCountryName(countryName: String) : String
-}
-
 class US008ToRegisterACityCtrl {
   -_cityRepository: ICityRepository
   -_countryRepository: ICountryRepository
@@ -49,15 +36,12 @@ class US008ToRegisterACityCtrl {
 US008ToRegisterACityCtrl --> ICityRepository
 US008ToRegisterACityCtrl --> ICountryRepository
 
-ICityRepository <|.. CityRepositoryMem
-ICountryRepository <|.. CountryRepositoryMem
-
-CityRepositoryMem --> CityFactory
-CityRepositoryMem --> City
-
-CountryRepositoryMem --> Country
+ICityRepository --> City
+ICountryRepository --> CountryID
 
 City --> CountryID
 Country --> CountryID
+
+ICityRepository ..> CityFactory : uses
 
 @enduml

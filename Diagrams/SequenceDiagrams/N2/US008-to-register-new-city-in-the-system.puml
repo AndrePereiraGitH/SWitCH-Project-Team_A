@@ -6,8 +6,8 @@ title Sequence Diagram - US008 Register a new city in the System
 actor Administrator
 participant ":UI" as UI
 participant ":US008ToRegisterACityCtrl" as CityController
-participant ":CountryRepository" as CountryRepository
-participant ":CityRepository" as CityRepository
+participant ":ICountryRepository" as CountryRepository
+participant ":ICityRepository" as CityRepository
 participant ":CityFactory" as CityFactory
 
 Administrator -> UI : 1. Request to register a new city
@@ -34,7 +34,7 @@ alt Country found
     activate CityFactory
 
     create "newCity : City" as City
-    CityFactory -> City : 9. instantiate
+    CityFactory -> City : 9. «create»
 
     CityFactory --> CityRepository : 10. newCity
     deactivate CityFactory
