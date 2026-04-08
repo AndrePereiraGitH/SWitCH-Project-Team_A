@@ -30,6 +30,10 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     private final List<Author> _authors = new ArrayList<>();
     private final AuthorFactory _authorFactory;
 
+    // -------------------------------------------------------------------------
+    // Construction
+    // -------------------------------------------------------------------------
+
     /**
      * Creates a new in-memory author repository.
      *
@@ -42,6 +46,10 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         }
         this._authorFactory = authorFactory;
     }
+
+    // -------------------------------------------------------------------------
+    // Construction (createAndAdd)
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -69,13 +77,17 @@ public class AuthorRepositoryMem implements IAuthorRepository {
      *         {@code false} otherwise
      */
     private boolean exists(Author author) {
-        for (Author newAuthor : this._authors) {
-            if (author.equals(newAuthor)) {
+        for (Author existingAuthor : this._authors) {
+            if (author.sameAs(existingAuthor)) {
                 return true;
             }
         }
         return false;
     }
+
+    // -------------------------------------------------------------------------
+    // Identity Lookup
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}

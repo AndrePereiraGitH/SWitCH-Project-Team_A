@@ -3,12 +3,14 @@ package TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Contract for managing {@link BibliographicalData} objects.
@@ -51,5 +53,19 @@ public interface IBibliographicalDataRepository {
      */
 
     List<BibliographicalData> getAllPublicationsBD();
+
+    /**
+     * Finds bibliographical data in the repository by its unique identifier.
+     *
+     * <p>Iterates through all stored bibliographical data entries and returns
+     * the first one whose ID matches the provided {@link BibliographicalDataID}.</p>
+     *
+     * @param bibliographicalDataId the unique identifier of the bibliographical data
+     *                              to search for; must not be {@code null}
+     * @return an {@link Optional} containing the matching {@link BibliographicalData}
+     *         if found, or an empty {@link Optional} if no entry with the given ID exists
+     * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
+     */
+    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
 
 }

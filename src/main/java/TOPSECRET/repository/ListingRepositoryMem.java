@@ -47,7 +47,7 @@ public class ListingRepositoryMem implements IListingRepository {
     @Override
     public Listing createAndAdd(
             String listingTitle,
-            List<PublicationSampleID> itemsId,
+            List<PublicationSampleId> itemsId,
             SaleType saleType,
             Price price,
             String shortDescription,

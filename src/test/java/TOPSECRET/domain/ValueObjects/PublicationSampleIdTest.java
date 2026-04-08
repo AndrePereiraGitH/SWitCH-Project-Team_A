@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublicationSampleIDTest {
+class PublicationSampleIdTest {
 
     final String pubSampleID_1 = "1";
     final String pubSampleID_2 = "2";
 
     @Test
     public void shouldCreateAValidPubSampleID(){
-        new PublicationSampleID(pubSampleID_1);
+        new PublicationSampleId(pubSampleID_1);
     }
 
     @Test
@@ -19,7 +19,7 @@ class PublicationSampleIDTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSampleID(null));
+                new PublicationSampleId(null));
     }
 
     @Test
@@ -27,14 +27,14 @@ class PublicationSampleIDTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSampleID(" "));
+                new PublicationSampleId(" "));
     }
 
     @Test
     public void shouldReturnFalseWhenTheIDs_areDifferent(){
         //Arrange
-        PublicationSampleID id1 = new PublicationSampleID(pubSampleID_1);
-        PublicationSampleID id2 = new PublicationSampleID(pubSampleID_2);
+        PublicationSampleId id1 = new PublicationSampleId(pubSampleID_1);
+        PublicationSampleId id2 = new PublicationSampleId(pubSampleID_2);
 
         //Act
         boolean result = id1.equals(id2);
@@ -46,8 +46,8 @@ class PublicationSampleIDTest {
     @Test
     public void shouldReturnTrueWhenTheIDs_areEqual(){
         //Arrange
-        PublicationSampleID id1 = new PublicationSampleID(pubSampleID_1);
-        PublicationSampleID id2 = new PublicationSampleID(pubSampleID_1);
+        PublicationSampleId id1 = new PublicationSampleId(pubSampleID_1);
+        PublicationSampleId id2 = new PublicationSampleId(pubSampleID_1);
 
         //Act
         boolean result = id1.equals(id2);
@@ -59,7 +59,7 @@ class PublicationSampleIDTest {
     @Test
     public void shouldReturnFalseWhenComparedToNull() {
         //Arrange
-        PublicationSampleID id = new PublicationSampleID(pubSampleID_1);
+        PublicationSampleId id = new PublicationSampleId(pubSampleID_1);
 
         //Act
         boolean result = id.equals(null);
@@ -73,7 +73,7 @@ class PublicationSampleIDTest {
         //Arrange
 
         //Act
-        PublicationSampleID id = new PublicationSampleID(pubSampleID_1);
+        PublicationSampleId id = new PublicationSampleId(pubSampleID_1);
 
         //Assert
         assertEquals(id, id);
@@ -86,7 +86,7 @@ class PublicationSampleIDTest {
         //Arrange
 
         //Act
-        PublicationSampleID id = new PublicationSampleID(pubSampleID_1);
+        PublicationSampleId id = new PublicationSampleId(pubSampleID_1);
         String result = id.getID();
 
         //Assert

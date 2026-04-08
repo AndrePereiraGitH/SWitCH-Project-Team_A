@@ -158,7 +158,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     // --------------------- US004 START ---------------------
 
     /**
-     * Verifies that findByAttributes returns correct PublicationType.
+     * Verifies that findPublicationTypeByAttributes returns correct PublicationType.
 
     @Test
     void shouldReturnPublicationTypeWhenExists() {
@@ -178,7 +178,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ACT
         PublicationType result =
-                repository.findByAttributes(
+                repository.findPublicationTypeByAttributes(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "Standard"
@@ -189,7 +189,7 @@ public class PublicationTypeRepositoryDependenciesTest {
     }
 
     /**
-     * Verifies that findByAttributes throws exception when not found.
+     * Verifies that findPublicationTypeByAttributes throws exception when not found.
 
     @Test
     void shouldThrowExceptionWhenPublicationTypeNotFound() {
@@ -200,7 +200,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findByAttributes(
+                repository.findPublicationTypeByAttributes(
                         MediaFormat.MAGAZINE,
                         TypeOfBinding.PAPERBACK,
                         "Unknown"
@@ -220,7 +220,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findByAttributes(
+                repository.findPublicationTypeByAttributes(
                         null,
                         TypeOfBinding.HARDBACK,
                         "Standard"
@@ -240,7 +240,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findByAttributes(
+                repository.findPublicationTypeByAttributes(
                         MediaFormat.BOOK,
                         null,
                         "Standard"
@@ -259,7 +259,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findByAttributes(
+                repository.findPublicationTypeByAttributes(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         null
@@ -279,7 +279,7 @@ public class PublicationTypeRepositoryDependenciesTest {
 
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findByAttributes(
+                repository.findPublicationTypeByAttributes(
                         MediaFormat.BOOK,
                         TypeOfBinding.HARDBACK,
                         "   "

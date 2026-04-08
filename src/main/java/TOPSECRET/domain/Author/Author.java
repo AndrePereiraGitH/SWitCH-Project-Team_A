@@ -36,13 +36,13 @@ public class Author implements AggregateRoot<AuthorId> {
     private final LocalDate _dateOfBirth;
     private final String _biography;
 
+
+    // -------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------
+
     /**
      * Creates a new {@code Author} instance.
-     *
-     * <p>An author must always have a non-null and non-blank name, a non-null
-     * {@link CountryID}, a non-null date of birth, and a non-null and non-blank
-     * biography. These validations are enforced at construction time to ensure
-     * that no invalid {@code Author} instances are created.</p>
      *
      * <p>A unique {@link AuthorId} is automatically generated when the author is created.</p>
      *
@@ -73,8 +73,11 @@ public class Author implements AggregateRoot<AuthorId> {
         this._countryID = countryID;
         this._dateOfBirth = dateOfBirth;
         this._biography = biography;
-
     }
+
+    // -------------------------------------------------------------------------
+    // Getters
+    // -------------------------------------------------------------------------
 
     @Override
     public AuthorId id() {
@@ -97,20 +100,10 @@ public class Author implements AggregateRoot<AuthorId> {
         return _biography;
     }
 
+    // -------------------------------------------------------------------------
+    // Comparison
+    // -------------------------------------------------------------------------
 
-
-    /**
-     * Compares this author with another object for equality.
-     *
-     * <p>Two {@code Author} instances are considered equal if they have the same
-     * unique identifier ({@link AuthorId}). Other attributes such as name, country,
-     * date of birth, or biography are not considered by this method.</p>
-     *
-     * @param o the object to compare with this author
-     * @return {@code true} if the given object is the same instance as this author,
-     *         or if it is another {@code Author} with the same identifier;
-     *         {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,33 +112,11 @@ public class Author implements AggregateRoot<AuthorId> {
         return Objects.equals(_id, author._id);
     }
 
-    /**
-     * Returns the hash code of this author.
-     *
-     * <p>The hash code is based exclusively on the author's unique identifier
-     * ({@link AuthorId}), ensuring consistency with {@link #equals(Object)}.</p>
-     *
-     * @return the hash code derived from this author's identifier
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_id);
     }
 
-    /**
-     * Checks whether this author has the same business identity as another object.
-     *
-     * <p>Two {@code Author} objects are considered to represent the same author
-     * if the given object is also an {@code Author} and both objects have the same
-     * name, country, date of birth, and biography.</p>
-     *
-     * <p>This method is distinct from {@link #equals(Object)}, which is based
-     * solely on the unique identifier ({@link AuthorId}).</p>
-     *
-     * @param object the object to compare with this author
-     * @return {@code true} if the given object is an {@code Author} with the same
-     *         name, country, date of birth, and biography; {@code false} otherwise
-     */
     @Override
     public boolean sameAs(Object object) {
 

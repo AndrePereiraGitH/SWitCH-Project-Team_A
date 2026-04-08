@@ -3,7 +3,7 @@ package TOPSECRET.domain.Listing;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class ListingFactory {
 
     public Listing create(
             String listingTitle,
-            List<PublicationSampleID> itemsId,
+            List<PublicationSampleId> itemsId,
             SaleType saleType,
             Price price,
             String shortDescription,
