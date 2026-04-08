@@ -48,10 +48,10 @@ public class US014ToGetPublicationTypeListController {
      * @return a list of US014PublicationTypeMapper objects
      */
     public List<US014PublicationTypeDTO> getAllPublicationTypes() {
-        // Gets all publicationTypes domain objects from the repository
+        
         List<PublicationType> publicationTypes =
                 publicationTypeRepository.getAllPublicationTypes();
-        // converts the domain objects into DTO
+        
         return US014PublicationTypeMapper.toDTOList(publicationTypes);
     }
 
