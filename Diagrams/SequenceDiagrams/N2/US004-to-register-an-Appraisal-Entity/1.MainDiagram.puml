@@ -72,14 +72,14 @@ Controller -> Controller : validateSelectedPublicationTypes\n(selectedPublicatio
 loop for each genreDTO
     Controller -> GenreRepo : findById(genreDTO.id)
     activate GenreRepo
-    GenreRepo --> Controller : Genre
+    GenreRepo --> Controller : genres
     deactivate GenreRepo
 end
 
 loop for each publicationTypeDTO
     Controller -> PublicationTypeRepo : findById(publicationTypeDTO.id)
     activate PublicationTypeRepo
-    PublicationTypeRepo --> Controller : PublicationType
+    PublicationTypeRepo --> Controller : publicationTypes
     deactivate PublicationTypeRepo
 end
 
@@ -89,8 +89,6 @@ activate AppraisalRepo
 AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, \ngenres, publicationTypes)
 activate FactoryAppraisalEntity
 
-participant "apraisalEntityId: AppraisalEntityId" as AppraisalId
-FactoryAppraisalEntity -->> AppraisalId ** : <<create>>
 participant "apEn: AppraisalEntity" as AppraisalEntity
 FactoryAppraisalEntity -->> AppraisalEntity ** : <<create>>
 

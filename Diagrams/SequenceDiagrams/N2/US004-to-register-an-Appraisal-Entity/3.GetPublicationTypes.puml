@@ -40,10 +40,10 @@ activate PublicationTypeMapper
 PublicationTypeMapper -->> listOfPublicationTypeDTO ** : <<create>>
 
 loop for each publicationType in allPublicationTypeList
-    PublicationTypeMapper -> PublicationType : getId()
-    activate PublicationType
-    PublicationType --> PublicationTypeMapper : id
-    deactivate PublicationType
+'    PublicationTypeMapper -> PublicationType : getId()
+'    activate PublicationType
+'    PublicationType --> PublicationTypeMapper : id
+'    deactivate PublicationType
 
     PublicationTypeMapper -> PublicationType : getMediaFormat()
     activate PublicationType

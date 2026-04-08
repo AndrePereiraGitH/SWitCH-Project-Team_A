@@ -27,7 +27,7 @@ participant "publicationTypeDTO: PublicationTypeDTO" as PDTO
 participant ":AppraisalEntityRepository" as AppraisalRepo
 participant ":FactoryAppraisalEntity" as FactoryAppraisalEntity
 participant "apEn : AppraisalEntity" as AppraisalEntity
-participant "appraisalId: AppraisalEntityId" as AppraisalId
+' participant "appraisalId: AppraisalEntityId" as AppraisalId
 
 
 ' --- Start ---
@@ -49,7 +49,7 @@ activate Controller
 Controller -> GenreRepo : getAllGenres()
 activate GenreRepo
 GenreRepo -->> allGenreList ** : <<create>>
-GenreRepo --> Controller : List<Genre>
+GenreRepo --> Controller : allGenreList
 deactivate GenreRepo
 
 Controller -> GenreMapper : toDTO(allGenreList)
@@ -57,10 +57,10 @@ activate GenreMapper
 GenreMapper -->> GenreDTO ** : <<create>>
 
 loop for each genre in the list
-    GenreMapper -> Genre : getId()
-    activate Genre
-    Genre --> GenreMapper : id
-    deactivate Genre
+'    GenreMapper -> Genre : getId()
+'    activate Genre
+'    Genre --> GenreMapper : id
+'    deactivate Genre
 
     GenreMapper -> Genre : getTitle()
     activate Genre
@@ -71,10 +71,10 @@ loop for each genre in the list
     GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
 end
 
-GenreMapper --> Controller : List<GenreDTO>
+GenreMapper --> Controller : listOfGenreDTO
 deactivate GenreMapper
 
-Controller --> UI : List<GenreDTO>
+Controller --> UI : listOfGenreDTO
 deactivate Controller
 
 UI --> Administrator : Display available Genres
@@ -92,7 +92,7 @@ activate Controller
 Controller -> PublicationTypeRepo : getAllPublicationTypes()
 activate PublicationTypeRepo
 PublicationTypeRepo -->> allPublicationTypeList ** : <<create>>
-PublicationTypeRepo --> Controller : List<PublicationType>
+PublicationTypeRepo --> Controller : allPublicationTypeList
 deactivate PublicationTypeRepo
 
 Controller -> PublicationTypeMapper : toDTO(allPublicationTypeList)
@@ -100,10 +100,10 @@ activate PublicationTypeMapper
 PublicationTypeMapper -->> PublicationTypeDTO ** : <<create>>
 
 loop for each publicationType in the list
-    PublicationTypeMapper -> PublicationType : getId()
-    activate PublicationType
-    PublicationType --> PublicationTypeMapper : id
-    deactivate PublicationType
+'    PublicationTypeMapper -> PublicationType : getId()
+'    activate PublicationType
+'    PublicationType --> PublicationTypeMapper : id
+'    deactivate PublicationType
 
     PublicationTypeMapper -> PublicationType : getMediaFormat()
     activate PublicationType
@@ -114,10 +114,10 @@ loop for each publicationType in the list
     PublicationTypeMapper -> PublicationTypeMapper : listOfPublicationTypeDTO.add(publicationTypeDTO)
 end
 
-PublicationTypeMapper --> Controller : List<PublicationTypeDTO>
+PublicationTypeMapper --> Controller : listOfPublicationTypeDTO
 deactivate PublicationTypeMapper
 
-Controller --> UI : List<PublicationTypeDTO>
+Controller --> UI : listOfPublicationTypeDTO
 deactivate Controller
 
 UI --> Administrator : Display available Publication Types
@@ -138,14 +138,14 @@ Controller -> Controller : validateSelectedPublicationTypes(selectedPublicationT
 loop for each genreDTO in selectedGenresDTO
     Controller -> GenreRepo : findById(genreDTO.id)
     activate GenreRepo
-    GenreRepo --> Controller : Genre
+    GenreRepo --> Controller : genres
     deactivate GenreRepo
 end
 
 loop for each publicationTypeDTO in selectedPublicationTypesDTO
     Controller -> PublicationTypeRepo : findById(publicationTypeDTO.id)
     activate PublicationTypeRepo
-    PublicationTypeRepo --> Controller : PublicationType
+    PublicationTypeRepo --> Controller : publicationTypes
     deactivate PublicationTypeRepo
 end
 
@@ -155,8 +155,7 @@ activate AppraisalRepo
 AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genres, publicationTypes)
 activate FactoryAppraisalEntity
 
-FactoryAppraisalEntity -->> AppraisalId ** : <<create>>
-FactoryAppraisalEntity -->> AppraisalEntity **: <<create>> (appraisalId, name, contact, genres, publicationTypes)
+FactoryAppraisalEntity -->> AppraisalEntity **: <<create>>
 
 FactoryAppraisalEntity --> AppraisalRepo : apEn
 deactivate FactoryAppraisalEntity

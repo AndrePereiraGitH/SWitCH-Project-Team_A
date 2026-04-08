@@ -39,12 +39,12 @@ activate GenreMapper
 GenreMapper -->> listOfGenreDTO ** : <<create>>
 
 loop for each genre in allGenreList
-    GenreMapper -> Genre : getId()
-    activate Genre
-    Genre --> GenreMapper : id
-    deactivate Genre
+'    GenreMapper -> Genre : getId()
+'    activate Genre
+'    Genre --> GenreMapper : id
+'    deactivate Genre
 
-    GenreMapper -> Genre : getTitle()
+    GenreMapper -> Genre : findByTitle()
     activate Genre
     Genre --> GenreMapper : title
     deactivate Genre
