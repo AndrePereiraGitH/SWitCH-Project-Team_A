@@ -2,31 +2,38 @@
 
 title US024 - To get the list of items on auction of a given publication
 
-' UI Layer
+' ── UI Layer ───────────────────────────────────────────────
 class UI024 {
 }
 
-' Controller
+' ── Application Layer ──────────────────────────────────────
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
   +getAllPublicationTitles(): List<String>
   +getAuctionListingsByTitle(title: String): List<US024AuctionDTO>
 }
 
-' Repositories
+class US024AuctionMapper {
+  +toDTOs(listOfAuction: List<Listing>): List<US024AuctionDTO>
+  +toDTO(auction: Listing): US024AuctionDTO
+}
+
+class US024AuctionDTO {
+}
+
+' ── Domain Layer ───────────────────────────────────────────
 interface IBibliographicalDataRepository {
   +getAllTitles(): List<String>
   +findBibliographicalDataIdByTitle(title: String): BibliographicalDataId
 }
 
 interface IPublicationSampleRepository {
-  +getPublicationSampleIdsByBibliographicalDataId(bdId: BibliographicalDataId): List<PublicationSampleId>
+  +findPubSampleIdsByBibliographicalDataId(bdId: BibliographicalDataId): List<PublicationSampleId>
 }
 
 interface IListingRepository {
   +getAuctionListingsContaining(listOfPubSampleIds: List<PublicationSampleId>): List<Listing>
 }
 
-' Domain
 class BibliographicalData {
   -id: BibliographicalDataId
   -title: String
@@ -37,21 +44,12 @@ class PublicationSample {
 }
 
 class Listing {
-  +verifyIfHasAuctionSaleType(): boolean
-  +getAuctionDetails(): AuctionDetails
+  +isListingLinkedToAnAuction(): boolean
+  +verifyIfListingContainsPubId(pubId: PublicationSampleId): boolean
 }
 
-' Mapper
-class US024AuctionMapper {
-  +toDTOs(listOfAuction: List<Listing>): List<US024AuctionDTO>
-  +toDTO(auction: Listing): US024AuctionDTO
-}
+' ── Relationships ──────────────────────────────────────────
 
-' DTO
-class US024AuctionDTO {
-}
-
-' Relationships
 UI024 ..> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
 
 US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IBibliographicalDataRepository : uses

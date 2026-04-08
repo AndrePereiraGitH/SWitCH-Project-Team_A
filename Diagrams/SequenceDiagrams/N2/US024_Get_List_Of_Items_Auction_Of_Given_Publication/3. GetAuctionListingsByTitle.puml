@@ -5,7 +5,7 @@ autonumber
 title US024 - Get Auction Listings By Title
 
 participant ":UI024" as UI
-participant ":US024Controller" as Ctrl
+participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":BibliographicalDataRepository" as bdRepo
 participant ":PublicationSampleRepository" as pubSampleRepo
 participant ":ListingRepository" as listingRepo
@@ -27,14 +27,14 @@ end note
 UI -> Ctrl : getAuctionListingsByTitle(title)
 activate Ctrl
 
-Ctrl -> bdRepo : findBibliographicalDataIdByTitle(title)
+Ctrl -> bdRepo: findBibliographicalDataIdByTitle(title)
 activate bdRepo
-bdRepo --> Ctrl : bdId
+bdRepo --> Ctrl: bdId
 deactivate bdRepo
 
-Ctrl -> pubSampleRepo : getPublicationSampleIdsByBibliographicalDataId(bdId)
+Ctrl -> pubSampleRepo: findPubSampleIdsByBibliographicalDataId(bdId)
 activate pubSampleRepo
-pubSampleRepo --> Ctrl : listOfPubSampleIds
+pubSampleRepo --> Ctrl: listOfPubSampleId
 deactivate pubSampleRepo
 
 Ctrl -> listingRepo : getAuctionListingsContaining(listOfPubSampleIds)
@@ -43,9 +43,13 @@ activate listingRepo
 listingRepo -->> aucListing ** : <<create>>
 
 loop for each listing in ListingRepository
-    listingRepo -> listing: verifyIfHasAuctionSaleType()
+    listingRepo -> listing: isListingLinkedToAnAuction()
     activate listing
-    listing -> listingRepo: true
+    listing --> listingRepo: true
+    deactivate listing
+    listingRepo -> listing: verifyIfListingContainsPubId()
+    activate listing
+    listing --> listingRepo: true
     deactivate listing
     listingRepo -> listingRepo: listOfAuctionOfGivenPublication.add(listing)
 end

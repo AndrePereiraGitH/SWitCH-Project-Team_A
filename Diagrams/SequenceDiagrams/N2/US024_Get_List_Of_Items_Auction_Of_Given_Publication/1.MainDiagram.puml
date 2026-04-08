@@ -5,7 +5,7 @@ title US024 - To get the list of items on auction of a given publication (Main)
 
 actor Buyer
 participant ":UI024" as UI
-participant ":US024Controller" as Ctrl
+participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":BibliographicalDataRepository" as bdRepo
 participant ":PublicationSampleRepository" as pubSampleRepo
 participant ":ListingRepository" as listingRepo

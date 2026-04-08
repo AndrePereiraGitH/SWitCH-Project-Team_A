@@ -4,11 +4,12 @@ autonumber
 
 title US024 - Build Auction DTOs
 
-participant ":US024Controller" as Ctrl
+participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":US024AuctionMapper" as mapper
 participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
 participant "auctionDTO:US024AuctionDTO" as auctionDTO
 participant "listOfAuctionDTO:List<US024AuctionDTO>" as listOfAuctionDTO
+participant "auctionDTO:US024AuctionDTO" as auctionDTO
 
 note over Ctrl, mapper #E3F2FD
 <b>Fragment</b>

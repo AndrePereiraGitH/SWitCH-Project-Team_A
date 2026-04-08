@@ -7,7 +7,7 @@ actor Buyer
 
 ' Participants
 participant ":UI024" as UI
-participant ":US024Controller" as Ctrl
+participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":IBibliographicalDataRepository" as bdRepo
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":IListingRepository" as listingRepo
@@ -15,6 +15,7 @@ participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
 participant ":Listing" as listing
 participant ":US024AuctionMapper" as mapper
 participant "listOfAuctionDTO:List<US024AuctionDTO>" as listOfAuctionDTO
+participant "auctionDTO:US024AuctionDTO" as auctionDTO
 
 ' Section 1 - Get all publication titles
 Buyer -> UI : I want to get the list of items\n on auction of a given publication
@@ -44,20 +45,24 @@ activate bdRepo
 bdRepo --> Ctrl: bdId
 deactivate bdRepo
 
-Ctrl -> pubSampleRepo: getPublicationSampleIdsByBibliographicalDataId(bdId)
+Ctrl -> pubSampleRepo: findPubSampleIdsByBibliographicalDataId(bdId)
 activate pubSampleRepo
-pubSampleRepo --> Ctrl: listOfPubSampleIds
+pubSampleRepo --> Ctrl: listOfPubSampleId
 deactivate pubSampleRepo
 
-Ctrl -> listingRepo: getAuctionListingsContaining(listOfPubSampleIds)
+Ctrl -> listingRepo: getAuctionListingsContaining(listOfPubSampleId)
 activate listingRepo
 
 listingRepo -->> aucListing **: <<create>>
 
 loop for each listing in ListingRepository
-    listingRepo -> listing: verifyIfHasAuctionSaleType()
+    listingRepo -> listing: isListingLinkedToAnAuction()
     activate listing
-    listing -> listingRepo: true
+    listing --> listingRepo: true
+    deactivate listing
+    listingRepo -> listing: verifyIfListingContainsPubId(pubId)
+    activate listing
+    listing --> listingRepo: true
     deactivate listing
     listingRepo -> listingRepo: listOfAuctionOfGivenPublication.add(listing)
 end
@@ -72,7 +77,7 @@ activate mapper
 mapper -->> listOfAuctionDTO**: <<create>>
 
 loop for each auction in listOfAuctionOfGivenPublication
-    mapper -->> auctionDTO **: toDTO(auction)
+    mapper -> auctionDTO **: toDTO(auction)
     mapper -> mapper: listOfAuctionDTO.add(auctionDTO)
 end
 

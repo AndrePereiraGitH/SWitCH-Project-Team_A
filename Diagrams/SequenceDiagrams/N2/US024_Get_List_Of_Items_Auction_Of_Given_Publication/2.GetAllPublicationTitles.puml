@@ -5,7 +5,7 @@ autonumber
 title US024 - Get All Publication Titles
 
 participant ":UI024" as UI
-participant ":US024Controller" as Ctrl
+participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":BibliographicalDataRepository" as bdRepo
 
 note over UI, Ctrl #E3F2FD
@@ -21,8 +21,10 @@ note over UI, Ctrl #E3F2FD
 end note
 
 
+
 UI -> Ctrl : getAllPublicationTitles()
 activate Ctrl
+
 
 Ctrl -> bdRepo : getAllTitles()
 activate bdRepo
