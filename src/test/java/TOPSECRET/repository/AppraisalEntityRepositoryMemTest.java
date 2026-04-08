@@ -58,7 +58,7 @@ class AppraisalEntityRepositoryMemTest {
         PublicationType publicationType = mock(PublicationType.class);
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-        when(publicationTypeRepository.findByAttributes(mediaFormat)).thenReturn(publicationType);
+        when(publicationTypeRepository.findPublicationTypeByAttributes(mediaFormat)).thenReturn(publicationType);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
         when(appraisalEntityFactory.create(eq("Test"), eq(contact), anyList(), anyList()))
@@ -100,7 +100,7 @@ class AppraisalEntityRepositoryMemTest {
         Genre genre = mock(Genre.class);
         PublicationType publicationType = mock(PublicationType.class);
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-        when(publicationTypeRepository.findByAttributes(mediaFormat)).thenReturn(publicationType);
+        when(publicationTypeRepository.findPublicationTypeByAttributes(mediaFormat)).thenReturn(publicationType);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
         when(createdEntity.getName()).thenReturn("Test");
@@ -170,7 +170,7 @@ class AppraisalEntityRepositoryMemTest {
         Genre genre = mock(Genre.class);
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
 
-        when(publicationTypeRepository.findByAttributes("Book")).thenReturn(null);
+        when(publicationTypeRepository.findPublicationTypeByAttributes("Book")).thenReturn(null);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->

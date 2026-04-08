@@ -3,7 +3,7 @@ package TOPSECRET.domain.Listing;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -40,9 +40,9 @@ class ListingFactoryTest {
 
         String listingTitle = "listing title";
 
-        PublicationSampleID pubSample1ID = new PublicationSampleID("pub1");
-        PublicationSampleID pubSample2ID = new PublicationSampleID("pub2");
-        List<PublicationSampleID> itemsIdList = List.of(pubSample1ID, pubSample2ID);
+        PublicationSampleId pubSample1ID = new PublicationSampleId("pub1");
+        PublicationSampleId pubSample2ID = new PublicationSampleId("pub2");
+        List<PublicationSampleId> itemsIdList = List.of(pubSample1ID, pubSample2ID);
 
         SaleType saleType = SaleType.AUCTION;
 

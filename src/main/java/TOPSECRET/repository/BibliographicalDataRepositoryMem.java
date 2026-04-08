@@ -87,6 +87,24 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return newBibliographicalData;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId){
+
+        if(bibliographicalDataId == null){
+            throw new NullPointerException("BibliographicalDataId must not be null");
+        }
+
+        for(BibliographicalData bd : _bdList){
+            if(bd.id().equals(bibliographicalDataId)){
+                return Optional.of(bd);
+            }
+        }
+
+        return Optional.empty();
+    }
+
 
 
     // -----------------------------------------------------------------------------------------------------------------

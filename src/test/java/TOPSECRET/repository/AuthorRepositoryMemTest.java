@@ -75,19 +75,19 @@ class AuthorRepositoryMemTest {
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         // Arrange
         Author mockAuthor = mock(Author.class);
+        when(mockAuthor.sameAs(mockAuthor)).thenReturn(true);
         when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
                 .thenReturn(mockAuthor);
 
-        IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
-        IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
+        repo.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
 
         // Act + Assert
-        IllegalArgumentException exception = assertThrows(
+        IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio)
+                () -> repo.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio)
         );
-
-        assertEquals("Author already exists", exception.getMessage());
+        assertEquals("Author already exists", ex.getMessage());
     }
 
     // ========================================

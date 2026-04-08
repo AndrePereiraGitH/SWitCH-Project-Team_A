@@ -53,20 +53,17 @@ public interface IBibliographicalDataRepository {
     List<BibliographicalData> getAllPublicationsBD();
 
     /**
-     * Retrieves a {@link BibliographicalData} instance by its identifier.
-     * <p>
-     * This method searches the in-memory list of stored bibliographical data
-     * and returns the first element whose {@code id()} matches the provided
-     * {@link BibliographicalDataID}. If no matching element is found, an
-     * empty {@link Optional} is returned.
-     * </p>
+     * Finds bibliographical data in the repository by its unique identifier.
      *
-     * @param id the identifier of the bibliographical data to retrieve;
-     *           must not be {@code null}
-     * @return an {@link Optional} containing the matching bibliographical data
-     *         if found, or an empty {@link Optional} otherwise
+     * <p>Iterates through all stored bibliographical data entries and returns
+     * the first one whose ID matches the provided {@link BibliographicalDataID}.</p>
      *
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @param bibliographicalDataId the unique identifier of the bibliographical data
+     *                              to search for; must not be {@code null}
+     * @return an {@link Optional} containing the matching {@link BibliographicalData}
+     *         if found, or an empty {@link Optional} if no entry with the given ID exists
+     * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
      */
-    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID id);
+    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
+
 }

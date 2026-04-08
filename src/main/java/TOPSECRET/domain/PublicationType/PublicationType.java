@@ -62,7 +62,7 @@ public class PublicationType implements AggregateRoot<PublicationTypeId>  {
 
     // --------------------------------- US004 ends ---------------------------------
 
-    public PublicationTypeId identity(){
+    public PublicationTypeId getId(){
         return pub_id;
     }
 

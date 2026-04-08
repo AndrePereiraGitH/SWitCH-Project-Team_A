@@ -2,17 +2,15 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.ValueObjects.Address;
-import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.Email;
-import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,6 +23,7 @@ import static org.mockito.Mockito.*;
  *     <li>Creating and adding users via the factory</li>
  *     <li>Handling duplicate usernames</li>
  *     <li>Checking user existence</li>
+ *     <li>Finding a user ID by username, including valid, invalid, null, empty and blank inputs</li>
  * </ul>
  */
 class UserRepositoryMemTest {
@@ -156,4 +155,66 @@ class UserRepositoryMemTest {
     void testExists_ReturnsFalse_WhenUserDoesNotExist() {
         assertFalse(userRepository.exists("NonExistingUser"));
     }
+
+    // ===========================================================
+    // ========== Tests for findByUsername =======================
+    // ===========================================================
+
+
+    @Test
+    void findIdByUsername_shouldReturnAValidUserId_WhenUsernameIsValid(){
+        //Arrange
+        User createdUser = userRepository.createAndAdd(
+                "ReturnTestUser",
+                contact1,
+                profile1,
+                UserRole.NORMAL_USER);
+
+        //Act
+        Optional<UserId> realUserId = userRepository.findUserIdByUsername("ReturnTestUser");
+
+        //Assert
+        assertEquals(createdUser.getId(),realUserId.get());
+    }
+
+    @Test
+    void findUserIdByUsername_shouldThrowAnException_WhenUsernameIsNull(){
+        //Arrange
+
+        //Act + Assert
+        assertThrows( NullPointerException.class, () -> userRepository.findUserIdByUsername(null));
+    }
+
+    @Test
+    void findUserIdByUsername_shouldThrowAnException_WhenUsernameIsEmpty(){
+        //Arrange
+
+        //Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> userRepository.findUserIdByUsername(""));
+    }
+
+    @Test
+    void findUserIdByUsername_shouldThrowAnException_WhenUsernameIsBlank(){
+        //Arrange
+
+        //Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> userRepository.findUserIdByUsername("     "));
+    }
+
+    @Test
+    void findUserIdByUsername_shouldReturnEmpty_WhenUsernameIsNotFound(){
+        //Arrange
+        User createdUser = userRepository.createAndAdd(
+                "ReturnTestUser",
+                contact1,
+                profile1,
+                UserRole.NORMAL_USER);
+
+        //Act
+        Optional<UserId> realUserId = userRepository.findUserIdByUsername("NotFoundUser");
+
+        //Assert
+        assertTrue(realUserId.isEmpty());
+    }
+
 }

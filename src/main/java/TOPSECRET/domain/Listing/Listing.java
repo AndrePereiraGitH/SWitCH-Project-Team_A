@@ -28,7 +28,7 @@ public class Listing implements AggregateRoot<ListingId> {
 
     private final ListingId _listingId;
     private final String _listingTitle;
-    private final List<PublicationSampleID> _itemsId;
+    private final List<PublicationSampleId> _itemsId;
     private final SaleType _saleType;
     private final Price _price;
     private final String _shortDescription;
@@ -57,7 +57,7 @@ public class Listing implements AggregateRoot<ListingId> {
      * @throws IllegalArgumentException if any item is already in a listing (status is FOR_SALE)
      * @throws IllegalArgumentException if any item is already sold (status is SOLD)
      */
-    protected Listing(String listingTitle, List<PublicationSampleID> itemsId, SaleType saleType,
+    protected Listing(String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,
                    Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
 
         if (listingTitle == null || listingTitle.length() < 5) {
@@ -160,8 +160,8 @@ public class Listing implements AggregateRoot<ListingId> {
     // ============== GETTERS =====================================
     // ============================================================
 
-    public List<PublicationSampleID> getItemsId() {
-        List<PublicationSampleID> copyItemsId = new ArrayList<>(_itemsId);
+    public List<PublicationSampleId> getItemsId() {
+        List<PublicationSampleId> copyItemsId = new ArrayList<>(_itemsId);
         return copyItemsId;
     }
 

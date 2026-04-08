@@ -3,9 +3,11 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link IPublicationTypeRepository}.
@@ -107,7 +109,7 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
      * {@inheritDoc}
      */
     @Override
-    public PublicationType findByAttributes(String mediaFormat) {
+    public PublicationType findPublicationTypeByAttributes(String mediaFormat) {
 
         if (mediaFormat == null || mediaFormat.isBlank()) {
             throw new IllegalArgumentException("MediaFormat can't be null.");
@@ -118,6 +120,23 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
                         .equalsIgnoreCase(mediaFormat.trim()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("PublicationType not found."));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Optional<PublicationType> findPublicationTypeById(PublicationTypeId pubTypeId){
+
+        if(pubTypeId == null){
+            throw new NullPointerException("Publication type can not be null");
+        }
+
+        for(PublicationType type: _publicationTypes){
+            if(type.id().equals(pubTypeId)){
+                return Optional.of(type);
+            }
+        }
+        return Optional.empty();
     }
 
 }

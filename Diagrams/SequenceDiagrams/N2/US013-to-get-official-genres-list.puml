@@ -1,47 +1,53 @@
 @startuml
-autonumber
 hide footbox
-title US013 - To get official genres list
+autonumber
 
-actor User
-participant ":UI" as UI
-participant ":ToGetListOfGenreController" as Ctrl
-participant ":GenreRepository" as Repo
-participant "GenreDTO_US013" as DTOClass
-participant ":Genre" as genre
+title US013 - Get Official Genres List
 
-User -> UI : I want to get a list of official genres in the system
-activate UI
+actor Administrator as User
+participant ":UI013" as UI
+participant ":US013ToGetListOfGenresController" as Controller
+participant ":GenreRepository" as GenreRepo
+participant "allGenreList: List<Genre>" as allGenreList
+participant ":US013GenreMapper" as GenreMapper
+participant "genreDTO: List<US013GenreDTO>" as GenreDTO
+participant ":Genre" as Genre
+participant "genreDTO: US013GenreDTO" as GDTO
 
-UI -> Ctrl : getGenresList()
-activate Ctrl
+User -> UI : I want to see all official genres in the system.
+    activate UI
 
-Ctrl -> Repo : getAllGenres()
-activate Repo
+UI -> Controller : getAllGenres()
+activate Controller
 
-Repo --> Ctrl : _genres
-deactivate Repo
+Controller -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo -->> allGenreList ** : <<create>>
+GenreRepo --> Controller : allGenreList
+deactivate GenreRepo
 
-create "_genresDTO : List<GenreDTO_US013>" as listDTO
-Ctrl -> listDTO : create()
+Controller -> GenreMapper : toDTO(allGenreList)
+activate GenreMapper
 
-loop for each Genre in _genres
-    Ctrl -> DTOClass : toDTO(genre)
-    activate DTOClass
+GenreMapper -->> GenreDTO ** : <<create>>
 
+loop for each genre in the list
+    GenreMapper -> Genre : getGenreType()
+    activate Genre
+    Genre --> GenreMapper : genreType
+    deactivate Genre
 
+    GenreMapper -->> GDTO ** : <<create>>
 
-
-
-    DTOClass --> Ctrl : dto
-    deactivate DTOClass
-
-    Ctrl -> listDTO : add(dto)
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
 end
 
-Ctrl --> UI : _genresDTO
-deactivate Ctrl
+GenreMapper --> Controller : List<GenreDTO>
+deactivate GenreMapper
 
-UI --> User : Official List of Genres
-deactivate UI
+Controller --> UI : List<GenreDTO>
+deactivate Controller
+
+UI --> User : Here's the list of available genres!
+    deactivate UI
 @enduml
