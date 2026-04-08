@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for PublicationTypeDTO_US014.
+ * Unit tests for US014PublicationTypeMapper.
  *
  * <p>This class validates that the DTO correctly extracts
  * data from the PublicationType domain object.</p>
@@ -35,7 +35,7 @@ class PublicationTypeDTO_US014DependenciesTest {
                 "Paperback"
         );
         // Act
-        PublicationTypeDTO_US014 dto = new PublicationTypeDTO_US014(pT);
+        US014PublicationTypeMapper dto = new US014PublicationTypeMapper(pT);
 
         // Assert
         assertEquals("PAPERBACK", dto.getTypeOfBinding());
@@ -45,7 +45,7 @@ class PublicationTypeDTO_US014DependenciesTest {
     @Test
     void fromDomainListNullPublicationType(){
         // Act
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()->new PublicationTypeDTO_US014(null));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()->new US014PublicationTypeMapper(null));
 
         // Assert
         assertEquals("PublicationTypeDTO cannot be null", ex.getMessage());
@@ -54,7 +54,7 @@ class PublicationTypeDTO_US014DependenciesTest {
     @Test
     void fromDomainListEmptyListPublicationType(){
         // Act
-        List<PublicationTypeDTO_US014> result = PublicationTypeDTO_US014.fromDomainList(List.of());
+        List<US014PublicationTypeMapper> result = US014PublicationTypeMapper.fromDomainList(List.of());
 
         // Assert
         assertTrue(result.isEmpty());
@@ -71,12 +71,12 @@ class PublicationTypeDTO_US014DependenciesTest {
         );
 
         // Act & Assert
-        List<PublicationTypeDTO_US014> result = PublicationTypeDTO_US014.fromDomainList(List.of(pT));
+        List<US014PublicationTypeMapper> result = US014PublicationTypeMapper.fromDomainList(List.of(pT));
 
         assertEquals(1, result.size());
 
         // Act & Assert
-        PublicationTypeDTO_US014 dto = result.get(0);
+        US014PublicationTypeMapper dto = result.get(0);
 
         assertEquals("PAPERBACK", dto.getTypeOfBinding());
         assertEquals("Paperback", dto.getDetails());
@@ -97,7 +97,7 @@ class PublicationTypeDTO_US014DependenciesTest {
         );
 
         // Act & Assert
-        List<PublicationTypeDTO_US014> result = PublicationTypeDTO_US014.fromDomainList(List.of(pT1, pT2));
+        List<US014PublicationTypeMapper> result = US014PublicationTypeMapper.fromDomainList(List.of(pT1, pT2));
         assertEquals(2, result.size());
 
     }
@@ -105,7 +105,7 @@ class PublicationTypeDTO_US014DependenciesTest {
     @Test
     void fromDomainListNullListPublicationType(){
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> PublicationTypeDTO_US014.fromDomainList(null));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> US014PublicationTypeMapper.fromDomainList(null));
 
         assertEquals("PublicationTypeDTO list cannot be null", ex.getMessage());
     }
