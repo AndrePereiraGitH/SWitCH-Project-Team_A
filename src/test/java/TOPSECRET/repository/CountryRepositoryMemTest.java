@@ -13,38 +13,16 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for the {@link CountryRepositoryMem} class.
- *
- * <p>Uses Mockito to isolate the SUT ({@link CountryRepositoryMem})
- * from its collaborators ({@link CountryFactory} and {@link Country}).</p>
- *
- * <p>Validates the following responsibilities:</p>
- * <ul>
- *     <li>Adding valid countries</li>
- *     <li>Rejecting invalid or null country inputs</li>
- *     <li>Preventing duplicate countries</li>
- *     <li>Returning an immutable list of registered countries</li>
- *     <li>Finding a country by its {@link CountryID}</li>
- * </ul>
- */
 class CountryRepositoryMemTest {
 
-    /** System Under Test: the repository responsible for storing countries. */
     private ICountryRepository repository;
 
-    /** Mocked collaborator responsible for creating Country objects. */
     private CountryFactory factoryMock;
 
-    /** Mocked Country object used in tests. */
     private Country countryMock1;
 
-    /** Another mocked Country object used in tests. */
     private Country countryMock2;
 
-    /**
-     * Initializes mocks and the repository before each test.
-     */
     @BeforeEach
     void preparation() {
         factoryMock = mock(CountryFactory.class);
@@ -57,9 +35,6 @@ class CountryRepositoryMemTest {
     // Constructor tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that a {@code null} factory throws {@link IllegalArgumentException}.
-     */
     @Test
     void constructor_nullFactory() {
 
@@ -72,9 +47,6 @@ class CountryRepositoryMemTest {
     // createAndAddNewCountry() tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests the successful creation and addition of valid countries.
-     */
     @Test
     void createAndAddNewCountry_validCountry() {
 
@@ -92,10 +64,6 @@ class CountryRepositoryMemTest {
         assertEquals(2, repository.getAllCountries().size());
     }
 
-    /**
-     * Tests that an invalid country name causes the factory exception
-     * to propagate and leaves the repository unchanged.
-     */
     @Test
     void createAndAddNewCountry_invalidCountry() {
 
@@ -109,10 +77,6 @@ class CountryRepositoryMemTest {
         assertEquals(0, repository.getAllCountries().size());
     }
 
-    /**
-     * Tests that a {@code null} country name causes the factory exception
-     * to propagate and leaves the repository unchanged.
-     */
     @Test
     void createAndAddNewCountry_nullCountry() {
 
@@ -126,9 +90,6 @@ class CountryRepositoryMemTest {
         assertEquals(0, repository.getAllCountries().size());
     }
 
-    /**
-     * Tests that a duplicate country (same name) is rejected.
-     */
     @Test
     void createAndAddNewCountry_duplicateCountry() {
 
@@ -148,10 +109,6 @@ class CountryRepositoryMemTest {
     // getAllCountries() tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that the list returned by {@link CountryRepositoryMem#getAllCountries()}
-     * is immutable.
-     */
     @Test
     void getAllCountries_returnsReadOnlyList() {
 
@@ -169,10 +126,6 @@ class CountryRepositoryMemTest {
                 () -> countryList.add(countryMock2));
     }
 
-    /**
-     * Tests that {@link CountryRepositoryMem#getAllCountries()}
-     * returns an empty list when no countries have been added.
-     */
     @Test
     void getAllCountries_emptyRepository() {
 
@@ -187,10 +140,6 @@ class CountryRepositoryMemTest {
     // findByID() tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that {@link CountryRepositoryMem#findByID(CountryID)}
-     * returns the correct country when a matching ID exists.
-     */
     @Test
     void findByID_existingID() {
 
@@ -211,10 +160,6 @@ class CountryRepositoryMemTest {
         assertEquals(countryMock1, result.get());
     }
 
-    /**
-     * Tests that {@link CountryRepositoryMem#findByID(CountryID)}
-     * returns an empty {@link Optional} when no matching ID exists.
-     */
     @Test
     void findByID_nonExistingID() {
 
@@ -227,11 +172,7 @@ class CountryRepositoryMemTest {
         //Assert
         assertFalse(result.isPresent());
     }
-    /**
-     * Tests that {@link CountryRepositoryMem#findByID(CountryID)}
-     * returns the correct country when multiple countries exist in the repository,
-     * ensuring the filter correctly matches by ID and not just by position.
-     */
+
     @Test
     void findByID_returnsCorrectCountryAmongMultiple() {
 
@@ -257,22 +198,6 @@ class CountryRepositoryMemTest {
         assertEquals(countryMock2, result.get());
     }
 
-    /**
-     * Tests that {@link CountryRepositoryMem#createAndAddNewCountry(String)}
-     * successfully creates and returns a valid {@link Country} instance.
-     *
-     * <p>This test uses real objects instead of mocks to verify the actual
-     * behavior of the system, ensuring that:</p>
-     * <ul>
-     *     <li>The returned {@link Country} is not {@code null}</li>
-     *     <li>The country name is correctly assigned</li>
-     *     <li>The created country is stored in the repository</li>
-     *     <li>The generated {@link CountryID} is consistent with the expected format</li>
-     * </ul>
-     *
-     * <p>This test also helps detect mutations that alter the return value
-     * (e.g., returning {@code null} instead of the created object).</p>
-     */
     @Test
     void shouldCreateAndReturnCountry() {
         CountryFactory factory = new CountryFactory();
@@ -280,7 +205,7 @@ class CountryRepositoryMemTest {
 
         Country result = repo.createAndAddNewCountry("Portugal");
 
-        assertNotNull(result); // 🔥 kills the mutation
+        assertNotNull(result);
         assertEquals("Portugal", result.getCountryName());
 
         // Optional but strong check:

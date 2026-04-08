@@ -9,32 +9,15 @@ import TOPSECRET.domain.Country.ICountryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * Unit tests for {@link US007ToRegisterCountryController}.
- *
- * <p>This test class uses Mockito to isolate the System Under Test (SUT),
- * which is the {@link US007ToRegisterCountryController}. All collaborators
- * such as {@link ICountryRepository} and {@link Country} are mocked in order
- * to ensure that only the controller logic is being tested.</p>
- */
+
 class US007ToRegisterCountryControllerTest {
 
-    /** The System Under Test (SUT). */
     private US007ToRegisterCountryController controller;
 
-    /** Mocked repository used as a dependency of the controller. */
     private ICountryRepository countryRepoMock;
 
-    /** Mocked Country object returned by the repository. */
     private Country countryMock;
 
-    /**
-     * Prepares the test environment before each test execution.
-     *
-     * <p>This method initializes the mocks for {@link ICountryRepository}
-     * and {@link Country}, and injects the mocked repository into the
-     * controller being tested.</p>
-     */
     @BeforeEach
     void preparation(){
 
@@ -43,14 +26,6 @@ class US007ToRegisterCountryControllerTest {
         controller = new US007ToRegisterCountryController(countryRepoMock);
     }
 
-    /**
-     * Tests the successful registration of a valid country.
-     *
-     * <p>The repository is mocked to return a mocked {@link Country}
-     * object when "Portugal" is registered. The test verifies that
-     * the controller returns the expected country and that the
-     * repository method is invoked exactly once.</p>
-     */
     @Test
     void registerNewCountry_validCountry_mock(){
         //Arrange
@@ -67,13 +42,6 @@ class US007ToRegisterCountryControllerTest {
 
     }
 
-    /**
-     * Tests the behavior when attempting to register an invalid country.
-     *
-     * <p>The repository is configured to throw an {@link IllegalArgumentException}
-     * when "Mordor" is provided. The test verifies that the controller
-     * propagates the exception and that the repository method was called.</p>
-     */
     @Test
     void registerNewCountry_InvalidCountry_mock(){
 
@@ -84,12 +52,6 @@ class US007ToRegisterCountryControllerTest {
 
     }
 
-    /**
-     * Tests the controller behavior when a null country name is provided.
-     *
-     * <p>The controller should throw an {@link IllegalArgumentException}
-     * and must not interact with the repository.</p>
-     */
     @Test
     void registerNewCountry_nullCountry_mock(){
 
@@ -101,12 +63,6 @@ class US007ToRegisterCountryControllerTest {
         assertEquals("Country name cannot be null or blank", exception.getMessage());
     }
 
-    /**
-     * Tests the controller behavior when a blank country name is provided.
-     *
-     * <p>The controller should throw an {@link IllegalArgumentException}
-     * and must not call the repository.</p>
-     */
     @Test
     void registerNewCountry_blankCountry_mock(){
 
@@ -117,10 +73,7 @@ class US007ToRegisterCountryControllerTest {
 
         assertEquals("Country name cannot be null or blank", exception.getMessage());
     }
-    /**
-     * Tests that attempting to register a duplicate country causes
-     * the repository exception to propagate.
-     */
+
     @Test
     void registerNewCountry_duplicateCountry() {
         // Arrange
