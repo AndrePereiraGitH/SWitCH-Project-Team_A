@@ -109,7 +109,7 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
      * {@inheritDoc}
      */
     @Override
-    public PublicationType findByAttributes(String mediaFormat) {
+    public PublicationType findPublicationTypeByAttributes(String mediaFormat) {
 
         if (mediaFormat == null || mediaFormat.isBlank()) {
             throw new IllegalArgumentException("MediaFormat can't be null.");

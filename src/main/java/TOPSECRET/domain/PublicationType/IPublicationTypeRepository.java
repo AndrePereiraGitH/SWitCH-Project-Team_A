@@ -55,7 +55,7 @@ public interface IPublicationTypeRepository {
      * @throws IllegalArgumentException if {@code mediaFormat} is null or blank,
      *                                  or if no publication type is found
      */
-    PublicationType findByAttributes(String mediaFormat);
+    PublicationType findPublicationTypeByAttributes(String mediaFormat);
 
     /**
      * Finds a {@link PublicationType} by its unique identifier.

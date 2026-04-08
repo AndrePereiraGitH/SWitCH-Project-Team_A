@@ -5,10 +5,7 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -141,6 +138,27 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return List.copyOf(allPublicationsInSystem);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId){
+
+        if(userId == null){
+            throw new NullPointerException("UserId must not be null");
+        }
+
+        List<PublicationSample> listOfPublications = new ArrayList<>();
+
+        for(PublicationSample pubSample: allPublicationsInSystem) {
+            if(pubSample.isOwnedByUser(userId) && pubSample.isInUserLibrary()) {
+                listOfPublications.add(pubSample);
+            }
+        }
+
+        return listOfPublications;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -245,6 +263,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // -------------------------------------------------------------------------
     // Private Helper Methods
     // -------------------------------------------------------------------------
+
 
     /**
      * Determines whether a {@link PublicationSample} matches the criteria defined in a

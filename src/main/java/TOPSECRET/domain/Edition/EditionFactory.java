@@ -45,7 +45,7 @@ public class EditionFactory {
                           TypeOfBinding typeOfBinding) {
 
         return new Edition(
-                editionNumber == null ? null : editionNumber.trim(),
+                editionNumber,
                 code,
                 physicalAttributes,
                 publicationTypeId,

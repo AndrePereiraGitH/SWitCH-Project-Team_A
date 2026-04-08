@@ -53,7 +53,7 @@ class AppraisalEntityRepositoryTest {
         AppraisalEntityId id = mock(AppraisalEntityId.class);
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-        when(publicationTypeRepository.findByAttributes(
+        when(publicationTypeRepository.findPublicationTypeByAttributes(
                 mediaFormat))
                 .thenReturn(publicationType);
 
@@ -117,7 +117,7 @@ class AppraisalEntityRepositoryTest {
         AppraisalEntityId id = mock(AppraisalEntityId.class);
 
         when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-        when(publicationTypeRepository.findByAttributes(
+        when(publicationTypeRepository.findPublicationTypeByAttributes(
                 mediaFormat))
                 .thenReturn(publicationType);
 

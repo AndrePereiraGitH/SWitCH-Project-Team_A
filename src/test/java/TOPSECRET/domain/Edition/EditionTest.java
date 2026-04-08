@@ -499,7 +499,7 @@ class EditionTest {
 // ─────────────────────────────────────────────────────────────
 
     @Test
-    void equals_sameReference_returnsTrue() {
+    void sameAs_sameReference_returnsTrue() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -510,14 +510,14 @@ class EditionTest {
                 LocalDate.of(2020, 1, 1), typeOfBindingDouble);
 
         // Act
-        boolean result = e.equals(e);
+        boolean result = e.sameAs(e);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void equals_twoIdenticalEditions_returnsTrue() {
+    void sameAs_twoIdenticalEditions_returnsTrue() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -532,14 +532,14 @@ class EditionTest {
                 validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         // Act
-        boolean result = e1.equals(e2);
+        boolean result = e1.sameAs(e2);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void equals_differentEditionNumber_returnsFalse() {
+    void sameAs_differentEditionNumber_returnsFalse() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -554,14 +554,14 @@ class EditionTest {
                 validPublisherID, "Book", Locale.ENGLISH, date, typeOfBindingDouble);
 
         // Act
-        boolean result = e1.equals(e2);
+        boolean result = e1.sameAs(e2);
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void equals_differentCode_returnsFalse() {
+    void sameAs_differentCode_returnsFalse() {
 
         // Arrange
         TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -577,14 +577,14 @@ class EditionTest {
                 validPublisherID, "Book", Locale.ENGLISH, date2, typeOfBindingDouble);
 
         // Act
-        boolean result = e1.equals(e2);
+        boolean result = e1.sameAs(e2);
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void sameAs_differentInstances_returnsFalse() {
+    void equals_differentInstances_returnsFalse() {
 
         TypeOfBinding binding = mock(TypeOfBinding.class);
 
@@ -598,7 +598,7 @@ class EditionTest {
                 "Book",
                 Locale.ENGLISH, LocalDate.of(2020, 1, 1), binding);
 
-        assertFalse(e1.sameAs(e2));
+        assertFalse(e1.equals(e2));
     }
 
     @Test
