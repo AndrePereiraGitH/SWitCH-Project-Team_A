@@ -9,8 +9,12 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US016_PublicationSampleDTO;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.PublicationSampleDTO_US016;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -636,6 +640,135 @@ class PublicationSampleRepositoryMemTest {
         assertThrows(NullPointerException.class, () -> repo.getAllPublicationsInUserLibrary(null));
     }
 
+    // ===========================================================
+    // =========== Tests for getPublicationsByLibraryId ==========
+    // ===========================================================
+
+    @Test
+    void getPublicationsByLibraryID_shouldReturnPublicationsBelongingToGivenLibrary() {
+        // Arrange
+        LibraryId libraryId_1 = mock(LibraryId.class);
+        LibraryId libraryId_2 = mock(LibraryId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+
+        when(pbSample_1.getLibraryID()).thenReturn(libraryId_1);
+        when(pbSample_2.getLibraryID()).thenReturn(libraryId_1);
+        when(pbSample_3.getLibraryID()).thenReturn(libraryId_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+        repo.save(pbSample_3);
+
+        // Act
+        List<PublicationSample> result = repo.getPublicationsByLibraryID(libraryId_1);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pbSample_1));
+        assertTrue(result.contains(pbSample_2));
+        assertFalse(result.contains(pbSample_3));
+    }
+
+    @Test
+    void getPublicationsByLibraryID_shouldReturnEmptyList_whenNoPublicationBelongsToLibrary() {
+        // Arrange
+        LibraryId libraryId_1 = mock(LibraryId.class);
+        LibraryId libraryId_2 = mock(LibraryId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(pbSample_1.getLibraryID()).thenReturn(libraryId_1);
+        when(pbSample_2.getLibraryID()).thenReturn(libraryId_1);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+
+        // Act
+        List<PublicationSample> result = repo.getPublicationsByLibraryID(libraryId_2);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getPublicationsByLibraryID_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        List<PublicationSample> result = repo.getPublicationsByLibraryID(libraryId);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getPublicationsByLibraryID_shouldReturnOnlyPublicationsWithMatchingLibraryId() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+
+        when(pbSample_1.getLibraryID()).thenReturn(libraryId);
+        when(pbSample_2.getLibraryID()).thenReturn(null);
+        when(pbSample_3.getLibraryID()).thenReturn(mock(LibraryId.class));
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+        repo.save(pbSample_3);
+
+        // Act
+        List<PublicationSample> result = repo.getPublicationsByLibraryID(libraryId);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(pbSample_1, result.get(0));
+    }
+
+    @Test
+    void getPublicationsByLibraryID_shouldReturnPublicationsWithNullLibraryId_whenArgumentIsNull() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+
+        when(pbSample_1.getLibraryID()).thenReturn(null);
+        when(pbSample_2.getLibraryID()).thenReturn(libraryId);
+        when(pbSample_3.getLibraryID()).thenReturn(null);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+        repo.save(pbSample_3);
+
+        // Act
+        List<PublicationSample> result = repo.getPublicationsByLibraryID(null);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pbSample_1));
+        assertTrue(result.contains(pbSample_3));
+        assertFalse(result.contains(pbSample_2));
+    }
+
+
+
+
+
 
     // ===========================================================
     // ===== Tests for getListOfDifferentPublications ============
@@ -1191,21 +1324,21 @@ class PublicationSampleRepositoryMemTest {
         return ps;
     }
 
-    private static PublicationSampleDTO_US016 mockDto(
+    private static US016_PublicationSampleDTO mockDto(
             String title,
             List<String> authors,
             Locale language,
             List<String> genreTypes,
-            String ownerName,
+            UserId ownerName,
             String condition
     ) {
-        PublicationSampleDTO_US016 dtoDouble = mock(PublicationSampleDTO_US016.class);
-        when(dtoDouble.getTitle()).thenReturn(title);
-        when(dtoDouble.getAuthorName()).thenReturn(authors);
-        when(dtoDouble.getLanguage()).thenReturn(language);          // Locale
-        when(dtoDouble.getGenreType()).thenReturn(genreTypes);
-        when(dtoDouble.getOwnerName()).thenReturn(ownerName);
-        when(dtoDouble.getCondition()).thenReturn(condition);
+        US016_PublicationSampleDTO dtoDouble = mock(US016_PublicationSampleDTO.class);
+        when(dtoDouble.title()).thenReturn(title);
+        when(dtoDouble.authorName()).thenReturn(authors);
+        when(dtoDouble.language()).thenReturn(language);          // Locale
+        when(dtoDouble.genreType()).thenReturn(genreTypes);
+        when(dtoDouble.ownerName()).thenReturn(ownerName);
+        when(dtoDouble.condition()).thenReturn(condition);
         return dtoDouble;
     }
 }

@@ -118,6 +118,18 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return List.copyOf(_bdList);
     }
 
+
+//    @Override
+//    public BibliographicalData getById(BibliographicalDataID id) {
+//
+//        for (BibliographicalData bd : _bdList) {
+//            if (bd.id().equals(id)) {
+//                return bd;
+//            }
+//        }
+//        return null;
+//    }
+
 }
 
 

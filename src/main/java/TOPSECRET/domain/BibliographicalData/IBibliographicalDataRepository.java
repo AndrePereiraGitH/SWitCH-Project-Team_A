@@ -1,7 +1,5 @@
 package TOPSECRET.domain.BibliographicalData;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
@@ -67,5 +65,7 @@ public interface IBibliographicalDataRepository {
      * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
      */
     Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
+
+  //  BibliographicalData getById(BibliographicalDataID id);
 
 }

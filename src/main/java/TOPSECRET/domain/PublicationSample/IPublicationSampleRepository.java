@@ -9,7 +9,7 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.PublicationSampleDTO_US016;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -103,6 +103,15 @@ public interface    IPublicationSampleRepository {
      * @throws NullPointerException if {@code userId} is {@code null}
      */
     List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
+
+    /**
+     * Retrieves all publication samples that belong to the specified library.
+     *
+     * @param libraryID the identifier of the library whose publication samples are to be retrieved
+     * @return a list containing all publication samples associated with the given library;
+     * returns an empty list if no publication samples are found
+     */
+    List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
      * Returns the subset of {@link PublicationSample} instances from the repository
