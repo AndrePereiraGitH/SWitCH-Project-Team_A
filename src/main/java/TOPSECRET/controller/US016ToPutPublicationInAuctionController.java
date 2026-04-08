@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.IAuctionRepository;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
@@ -34,7 +33,6 @@ public class US016ToPutPublicationInAuctionController {
     private final IListingRepository listingRepository;
     private final IAuctionRepository auctionRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
-    private final IBibliographicalDataRepository bdRepository;
     private final US016_PublicationSampleMapper mapper;
 
     /**
@@ -47,13 +45,12 @@ public class US016ToPutPublicationInAuctionController {
      * @param bdRepository repository used to retrieve bibliographical data
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, IBibliographicalDataRepository bdRepository, US016_PublicationSampleMapper mapper) {
+    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016_PublicationSampleMapper mapper) {
 
         this.libraryRepo = libraryRepo;
         this.listingRepository = listingRepository;
         this.auctionRepository = auctionRepository;
         this.publicationSampleRepository = publicationSampleRepository;
-        this.bdRepository = bdRepository;
         this.mapper = mapper;
     }
 

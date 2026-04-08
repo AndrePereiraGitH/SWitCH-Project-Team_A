@@ -81,7 +81,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     // ======================================
     @Test
     void testConstructor() {
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
         // assert
         assertNotNull(controller);
     }
@@ -93,7 +93,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     @Test
     void getAllPublicationsInUserLibrary_shouldThrow_whenUserIDisNULL() {
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> controller.getAllPublicationsInUserLibrary(null));
@@ -104,7 +104,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     void getAllPublicationsInUserLibrary_shouldThrow_whenLibraryDoesNotExist() throws InstanceNotFoundException {
         when(libraryRepo.getLibraryByUserId(userId)).thenReturn(null);
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         InstanceNotFoundException ex = assertThrows(InstanceNotFoundException.class,
                 () -> controller.getAllPublicationsInUserLibrary(userId));
@@ -120,7 +120,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         when(publicationSampleRepository.getPublicationsByLibraryID(libraryId))
                 .thenReturn(List.of());
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         List<US016_PublicationSampleDTO> result = controller.getAllPublicationsInUserLibrary(userId);
 
@@ -141,7 +141,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         when(bdRepository.findBibliographicalDataById(bibliographicalDataId))
                 .thenReturn(Optional.of(bibliographicalData));
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         try (MockedStatic<US016_PublicationSampleMapper> mapperDouble =
                      mockStatic(US016_PublicationSampleMapper.class)) {
@@ -168,7 +168,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         when(listingRepository.createAndAdd(
                 "Auction Title",
@@ -212,7 +212,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         when(listingRepository.createAndAdd(
                 anyString(),
@@ -248,7 +248,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
-        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, bdRepository, mapper);
+        controller = new US016ToPutPublicationInAuctionController(libraryRepo, listingRepository, auctionRepository, publicationSampleRepository, mapper);
 
         when(listingRepository.createAndAdd(
                 anyString(),
