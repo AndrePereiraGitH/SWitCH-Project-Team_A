@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.domain.Genre.IGenreRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
@@ -21,25 +20,21 @@ class US003ToRegisterGenreControllerTest {
                 () -> new US003ToRegisterGenreController(null));
     }
 
-    // Controller must return the genre that the repository gives back
+    // Controller must return true when the repository successfully creates the genre
     @Test
     void shouldRegisterGenreSuccessfully() {
 
         // Arrange
-        Genre genreDouble = mock(Genre.class);
-        GenreRepositoryMem repoDouble = mock(GenreRepositoryMem.class);
-
-        // Program the mock: when createAndAdd is called, return the fake genre
-        when(repoDouble.createAndAdd("Drama")).thenReturn(genreDouble);
+        IGenreRepository repoDouble = mock(IGenreRepository.class);
 
         US003ToRegisterGenreController controller =
                 new US003ToRegisterGenreController(repoDouble);
 
         // Act
-        Genre result = controller.registerGenre("Drama");
+        boolean result = controller.registerGenre("Drama");
 
         // Assert
-        assertEquals(genreDouble, result);
+        assertTrue(result);
     }
 
     // If the repository throws, the controller must not catch it — let it propagate
@@ -47,7 +42,7 @@ class US003ToRegisterGenreControllerTest {
     void shouldPropagateExceptionWhenGenreAlreadyExists() {
 
         // Arrange
-        GenreRepositoryMem repoDouble = mock(GenreRepositoryMem.class);
+        IGenreRepository repoDouble = mock(IGenreRepository.class);
 
         // Program the mock to simulate a duplicate genre error
         when(repoDouble.createAndAdd("Drama"))
