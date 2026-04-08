@@ -204,7 +204,7 @@ public class US015PublicationSampleMapper {
      */
     private String getPublicationType(PublicationSample publicationSample) throws InstanceNotFoundException {
         Edition edition = getEdition(publicationSample);
-        String pbType = edition.getPublicationType().getMediaFormat();
+        String pbType = edition.getMediaFormat();
 
         return pbType;
     }

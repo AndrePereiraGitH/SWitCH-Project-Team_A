@@ -55,8 +55,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     private Library libraryDouble;
     private PublicationSample pubSample1Double;
     private PublicationSample pubSample2Double;
-    private PublicationSampleID pubSampleId1;
-    private PublicationSampleID pubSampleId2;
+    private PublicationSampleId pubSampleId1;
+    private PublicationSampleId pubSampleId2;
     private Price priceDouble;
     private List<Picture> picturesDouble;
 
@@ -82,9 +82,9 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Publication Samples
         pubSample1Double = mock(PublicationSample.class);
-        pubSampleId1 = new PublicationSampleID("pubId1");
+        pubSampleId1 = new PublicationSampleId("pubId1");
         pubSample2Double = mock(PublicationSample.class);
-        pubSampleId2 = new PublicationSampleID("pubId2");
+        pubSampleId2 = new PublicationSampleId("pubId2");
 
         when(pubSample1Double.isAvailableForSale()).thenReturn(true);
         when(pubSample2Double.isAvailableForSale()).thenReturn(true);

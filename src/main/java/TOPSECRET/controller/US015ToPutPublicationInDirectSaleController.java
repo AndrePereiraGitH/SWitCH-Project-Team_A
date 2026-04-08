@@ -9,7 +9,7 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US015PublicationSampleDTO;
 import TOPSECRET.dto.US015PublicationSampleMapper;
@@ -127,7 +127,7 @@ public class US015ToPutPublicationInDirectSaleController {
      * @throws IllegalArgumentException if any of the required parameters are {@code null} or invalid
      * @throws InstanceAlreadyExistsException if a listing already exists for any of the selected publications
      */
-    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleID> pubSampleIds,
+    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleId> pubSampleIds,
                                          Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceAlreadyExistsException {
 
         if (listingTitle == null || listingTitle.isBlank())
