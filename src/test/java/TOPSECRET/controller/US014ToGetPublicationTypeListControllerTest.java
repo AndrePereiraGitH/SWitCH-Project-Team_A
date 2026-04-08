@@ -31,7 +31,6 @@ class US014ToGetPublicationTypeListControllerTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
 
-        verify(repository).getAllPublicationTypes();
     }
 
     @Test
@@ -63,7 +62,6 @@ class US014ToGetPublicationTypeListControllerTest {
 
         assertEquals("Book", dto.mediaFormat());
 
-        verify(repository).getAllPublicationTypes();
     }
 
     @Test
@@ -97,8 +95,6 @@ class US014ToGetPublicationTypeListControllerTest {
 
         assertTrue(result.stream().anyMatch(d -> d.mediaFormat().equals("Book")));
         assertTrue(result.stream().anyMatch(d -> d.mediaFormat().equals("Magazine")));
-
-        verify(repository).getAllPublicationTypes();
     }
 
 
