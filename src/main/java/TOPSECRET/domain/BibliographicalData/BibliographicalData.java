@@ -1,7 +1,6 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
@@ -168,14 +167,16 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
     /**
      * Indicates whether this work is associated with the specified genre.
      *
-     * @param genres the genre to check; may be {@code null}
+     * @param genre the genre to check; may be {@code null}
      * @return {@code true} if the genre is present, {@code false} otherwise
      */
 
-    public boolean hasGenre(Genre genres) {
-        if (genres == null) return false;
-        return _genres.contains(genres);
+    public boolean hasGenre(Genre genre) {
+        if (genre == null) return false;
+        GenreID genreId = genre.id();
+        return _genres.contains(genreId);
     }
+
     //US021 End ========================================================================================================
 
     public BibliographicalData.BibliographicalDataDetails getBibliographicalDataDetails () {
