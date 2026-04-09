@@ -2,8 +2,10 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
+import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -14,37 +16,32 @@ import static org.mockito.Mockito.*;
 
 class CollectionOfPublicationsRepositoryMemTest {
 
+    CollectionOfPublicationsRepositoryMem sut;
+    CollectionOfPublicationsFactory factory;
+
+    @BeforeEach
+    void setUp() {
+        factory = mock(CollectionOfPublicationsFactory.class);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+    }
+
     @Test
     void shouldThrowExceptionWhenFactoryIsNull_US017() {
         assertThrows(IllegalArgumentException.class,
                 () -> new CollectionOfPublicationsRepositoryMem(null));
     }
 
-    /**
-     * Ensures exception is thrown when user is null.
-     */
+
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
-
-        // ARRANGE
-        CollectionOfPublicationsRepositoryMem sut =
-                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
-
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> sut.getUserCollections(null));
     }
 
 
-    /**
-     * Ensures user collections are retrieved correctly.
-     */
     @Test
     void shouldReturnCollectionsOwnedByUser() throws Exception {
-
-        // ARRANGE
-        CollectionOfPublicationsRepositoryMem sut =
-                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         UserId user = mock(UserId.class);
         UserId otherUser = mock(UserId.class);
@@ -73,6 +70,51 @@ class CollectionOfPublicationsRepositoryMemTest {
         // ASSERT
         assertEquals(1, result.size());
         assertEquals(collection1, result.get(0));
+    }
+
+
+    // ==== US020 tests ====
+
+    @Test
+    void shouldThrowExceptionWhenGenreIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicByGenre(null));
+    }
+
+
+    @Test
+    void shouldReturnAllPublicCollectionsOfAGivenGenre() {
+        // Arrange
+        GenreID desiredGenre = mock(GenreID.class);
+        UserId userId = mock(UserId.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        CollectionOfPublications collection1;
+
+        // Act
+        when(factory.create("Collection test", desiredGenre, userId)).thenReturn(collectionDouble);
+        when(collectionDouble.getIsPrivate()).thenReturn(false);
+        when(collectionDouble.getCollectionGenre()).thenReturn(desiredGenre);
+
+        collection1 = sut.createAndAdd(userId, "Collection test", desiredGenre);
+
+        List<CollectionOfPublications> result = sut.findPublicByGenre(desiredGenre);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(collection1, result.get(0));
+        assertEquals(1, result.size());
+    }
+
+
+    @Test
+    void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
+        // Arrange
+        GenreID desiredGenres = mock(GenreID.class);
+
+        List<CollectionOfPublications> result = sut.findPublicByGenre(desiredGenres);
+
+        assertNotNull(result);
+        assertEquals(0, result.size());
     }
 
 }
