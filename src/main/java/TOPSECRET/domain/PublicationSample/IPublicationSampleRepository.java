@@ -80,6 +80,16 @@ public interface    IPublicationSampleRepository {
      */
     Optional<PublicationSample> findPublicationSampleById(PublicationSampleId id);
 
+    /**
+     * Retrieves all publication sample IDs associated with a given bibliographical data ID.
+     *
+     * @param bdId the bibliographical data ID to search for; must not be {@code null}
+     * @return a {@link List} of {@link PublicationSampleId} associated with the given ID;
+     *         returns an empty list if no matches are found
+     * @throws NullPointerException if {@code bdId} is {@code null}
+     */
+    List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId);
+
     // -------------------------------------------------------------------------
     // Specific Queries
     // -------------------------------------------------------------------------

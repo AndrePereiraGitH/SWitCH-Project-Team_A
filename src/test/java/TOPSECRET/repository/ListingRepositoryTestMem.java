@@ -464,6 +464,196 @@ class ListingRepositoryTestMem {
         assertTrue(result.isEmpty());
     }
 
+    // ======================================================
+    // ==== Tests to getAuctionListingsContaining ===========
+    // ======================================================
+
+    @Test
+    void getAuctionListingsContaining_returnsListings_whenMatchingIdExists() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+
+        when(factory.create("title", List.of(pub1Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title", List.of(pub2Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing2Double);
+        when(factory.create("title", List.of(pub3Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing3Double);
+
+        when(listing1Double.isListingLinkedToAnAuction()).thenReturn(true);
+        when(listing2Double.isListingLinkedToAnAuction()).thenReturn(true);
+        when(listing3Double.isListingLinkedToAnAuction()).thenReturn(true);
+
+        when(listing1Double.containsPubSampleId(pub1Id)).thenReturn(true);
+        when(listing2Double.containsPubSampleId(pub2Id)).thenReturn(true);
+        when(listing3Double.containsPubSampleId(pub3Id)).thenReturn(true);
+
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub2Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub3Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+
+        // Act
+        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1Id));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(listing1Double));
+        assertFalse(result.contains(listing2Double));
+        assertFalse(result.contains(listing3Double));
+    }
+
+    @Test
+    void getAuctionListingsContaining_returnsMultipleListings_whenMultipleListingsMatch() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+
+        when(factory.create("title", List.of(pub1Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title", List.of(pub2Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing2Double);
+        when(factory.create("title", List.of(pub3Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing3Double);
+
+        when(listing1Double.isListingLinkedToAnAuction()).thenReturn(true);
+        when(listing2Double.isListingLinkedToAnAuction()).thenReturn(true);
+        when(listing3Double.isListingLinkedToAnAuction()).thenReturn(true);
+
+        when(listing1Double.containsPubSampleId(pub1Id)).thenReturn(true);
+        when(listing2Double.containsPubSampleId(pub2Id)).thenReturn(true);
+        when(listing3Double.containsPubSampleId(pub3Id)).thenReturn(true);
+
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub2Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub3Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+
+        // Act
+        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1Id, pub2Id));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(listing1Double));
+        assertTrue(result.contains(listing2Double));
+        assertFalse(result.contains(listing3Double));
+    }
+
+    @Test
+    void getAuctionListingsContaining_excludesListing_whenNotLinkedToAuction() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+
+        when(factory.create("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title", List.of(pub2Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing2Double);
+        when(factory.create("title", List.of(pub3Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing3Double);
+
+        when(listing1Double.isListingLinkedToAnAuction()).thenReturn(false);
+        when(listing2Double.isListingLinkedToAnAuction()).thenReturn(false);
+        when(listing3Double.isListingLinkedToAnAuction()).thenReturn(false);
+
+        when(listing1Double.containsPubSampleId(pub1Id)).thenReturn(true);
+        when(listing2Double.containsPubSampleId(pub2Id)).thenReturn(true);
+        when(listing3Double.containsPubSampleId(pub3Id)).thenReturn(true);
+
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub2Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub3Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
+
+        // Act
+        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1Id, pub2Id));
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAuctionListingsContaining_excludesListing_whenNoItemIdMatches() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+
+        PublicationSampleId pub4Id = mock(PublicationSampleId.class);
+
+        when(factory.create("title", List.of(pub1Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title", List.of(pub2Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing2Double);
+        when(factory.create("title", List.of(pub3Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1)))
+                .thenReturn(listing3Double);
+
+        when(listing1Double.isListingLinkedToAnAuction()).thenReturn(true);
+        when(listing2Double.isListingLinkedToAnAuction()).thenReturn(true);
+        when(listing3Double.isListingLinkedToAnAuction()).thenReturn(true);
+
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1Id));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2Id));
+        when(listing3Double.getItemsId()).thenReturn(List.of(pub3Id));
+
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub2Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title", List.of(pub3Id), SaleType.AUCTION, price1, "description", sellerId, List.of(pic1));
+
+        // Act
+        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub4Id));
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAuctionListingsContaining_returnsEmptyList_whenListingsIsEmpty() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // Act
+        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1Id));
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAuctionListingsContaining_throwsException_whenListIsNull() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () ->
+                repo.getAuctionListingsContaining(null)
+        );
+    }
+
+    @Test
+    void getAuctionListingsContaining_throwsException_whenListIsEmpty() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.getAuctionListingsContaining(List.of())
+        );
+    }
+
+
+
 
     // US021 -----------------------------------------------------------------------------------------
     //Method getListOfItemsOnDirectSaleOfAGivenGenre--------------------------------------------------

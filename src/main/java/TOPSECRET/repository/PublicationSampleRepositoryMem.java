@@ -1,5 +1,6 @@
 package TOPSECRET.repository;
 
+
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -130,6 +131,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             }
         }
         return Optional.empty();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId){
+        if (bdId == null) {
+            throw new NullPointerException("PublicationSampleID cannot be null");
+        }
+
+        List<PublicationSampleId> listOfPubSampleId = new ArrayList<>();
+
+        for(PublicationSample pbSample:allPublicationsInSystem){
+            if(pbSample.getBibliographicalDataID().equals(bdId)){
+                listOfPubSampleId.add(pbSample.id());
+            }
+        }
+        return listOfPubSampleId;
+
     }
 
     // -------------------------------------------------------------------------

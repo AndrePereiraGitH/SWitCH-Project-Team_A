@@ -156,6 +156,33 @@ public class Listing implements AggregateRoot<ListingId> {
 //        return false;
 //    }
 
+    /**
+     * Checks whether this listing is linked to an auction.
+     *
+     * @return {@code true} if the sale type is {@link SaleType#AUCTION}, {@code false} otherwise.
+     */
+    public boolean isListingLinkedToAnAuction(){
+        if(_saleType.equals(SaleType.AUCTION)){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks whether the given {@link PublicationSampleId} is present in the items ID collection.
+     *
+     * @param pubId the {@link PublicationSampleId} to search for
+     * @return {@code true} if the collection contains the specified ID, {@code false} otherwise
+     */
+    public boolean containsPubSampleId(PublicationSampleId pubId){
+        if(_itemsId.contains(pubId)){
+            return true;
+        }
+        return false;
+    }
+
+
     // ============================================================
     // ============== GETTERS =====================================
     // ============================================================

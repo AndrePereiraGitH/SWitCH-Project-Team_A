@@ -40,19 +40,6 @@ public interface IBibliographicalDataRepository {
 
 
     /**
-     * Returns the complete list of bibliographical data records stored in the repository.
-     *
-     * <p>The returned list reflects the repository's current internal state and
-     * contains all bibliographical data records that have been previously added.
-     * Modifications to the returned list will affect the repository's internal
-     * collection, as no defensive copy is created.</p>
-     *
-     * @return the internal list of all stored bibliographical data records; never {@code null}
-     */
-
-    List<BibliographicalData> getAllPublicationsBD();
-
-    /**
      * Finds bibliographical data in the repository by its unique identifier.
      *
      * <p>Iterates through all stored bibliographical data entries and returns
@@ -66,6 +53,39 @@ public interface IBibliographicalDataRepository {
      */
     Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
 
-  //  BibliographicalData getById(BibliographicalDataID id);
+    /**
+     * Finds the ID of a bibliographical data entry by its title, using case-insensitive
+     * and whitespace-trimmed matching.
+     *
+     * @param bdTitle the title to search for; must not be {@code null} or blank
+     * @return an {@link Optional} containing the {@link BibliographicalDataID} if a match
+     *         is found, or an empty {@link Optional} if no match exists
+     * @throws NullPointerException     if {@code bdTitle} is {@code null}
+     * @throws IllegalArgumentException if {@code bdTitle} is blank
+     */
+    Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle);
+
+
+    /**
+     * Returns the complete list of bibliographical data records stored in the repository.
+     *
+     * <p>The returned list reflects the repository's current internal state and
+     * contains all bibliographical data records that have been previously added.
+     * Modifications to the returned list will affect the repository's internal
+     * collection, as no defensive copy is created.</p>
+     *
+     * @return the internal list of all stored bibliographical data records; never {@code null}
+     */
+
+    List<BibliographicalData> getAllPublicationsBD();
+
+    /**
+     * Retrieves the titles of all bibliographical entries in the list.
+     *
+     * @return a {@link List} of {@link String} containing all titles from {@code _bdList},
+     *         or an empty list if no entries are present.
+     */
+    List<String> getAllTitles();
+
 
 }

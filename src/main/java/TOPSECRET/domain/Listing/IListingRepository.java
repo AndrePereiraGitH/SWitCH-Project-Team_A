@@ -114,4 +114,20 @@ public interface IListingRepository {
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
     Optional<Listing> findListingById(ListingId id);
+
+
+    /**
+     * Returns all auction listings that contain at least one item matching
+     * any of the provided publication sample IDs.
+     *
+     * <p>A listing is included in the result if it is linked to an auction
+     * and contains at least one of the given {@link PublicationSampleId}s.
+     * Each matching listing appears at most once in the returned list.</p>
+     *
+     * @param listOfPubSampleIds the list of {@link PublicationSampleId} to search for;
+     *                           if {@code null} or empty, an empty list is returned
+     * @return a list of {@link Listing} linked to an auction and matching at least one
+     *         of the provided IDs; never {@code null}, may be empty
+     */
+    List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
 }
