@@ -6,16 +6,16 @@ title US024 - To get the list of items on auction of a given publication
 actor Buyer
 
 ' Participants
-participant ":UI024" as UI
-participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
-participant ":IBibliographicalDataRepository" as bdRepo
-participant ":IPublicationSampleRepository" as pubSampleRepo
-participant ":IListingRepository" as listingRepo
-participant "listOfAuctionListingsOfGivenPublication:List<Listing>" as aucListing
-participant ":Listing" as listing
-participant ":US024AucListingMapper" as mapper
-participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
-participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
+participant ":UI024"                                                                    as UI
+participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController"            as Ctrl
+participant ":IBibliographicalDataRepository"                                          as bdRepo
+participant ":IPublicationSampleRepository"                                            as pubSampleRepo
+participant ":IListingRepository"                                                      as listingRepo
+participant "listOfAuctionListingsOfGivenPublication:List<Listing>"                   as aucListing
+participant ":Listing"                                                                 as listing
+participant ":US024AucListingMapper"                                                   as mapper
+participant "listOfAuctionListingsDTO:List<US024AucListingDTO>"                       as listOfAucListingDTO
+participant "aucListingDTO:US024AucListingDTO"                                        as auctionListingDTO
 
 ' Section 1 - Get all publication titles
 Buyer -> UI : I want to get the list of items\n on auction of a given publication
@@ -60,10 +60,12 @@ loop for each listing in ListingRepository
     activate listing
     listing --> listingRepo: true
     deactivate listing
+
     listingRepo -> listing: verifyIfListingContainsPubId(pubId)
     activate listing
     listing --> listingRepo: true
     deactivate listing
+
     listingRepo -> listingRepo: listOfAuctionListingsOfGivenPublication.add(listing)
 end
 
