@@ -1,8 +1,11 @@
 package TOPSECRET.domain.Listing;
 
-import TOPSECRET.domain.Author.Author;
+
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.domain.ValueObjects.Picture;
+import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
