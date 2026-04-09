@@ -17,14 +17,14 @@ class US015ToPutPublicationInDirectSaleController {
     + putPublicationForSale(title, selectedPublicationIds, price, shortDescription, user1, pictures): boolean
 }
 
-class US015PublicationSampleDTO {
-    - title: String
-    - authorsName: List<String>
-    - code: String
-    - mediaFormat: String
+record US015PublicationSampleDTO {
 }
 
 class US015PublicationSampleMapper {
+    - bdRepo: IBibliographicalDataRepository
+    - authorRepo: IAuthorRepository
+    - editionRepo: IEditionRepository
+    + toDTO(publication): US015BibliographicalDataDTO
     + toDTOs(listOfAvailablePublications): List<US015PublicationSampleDTO>
 }
 
