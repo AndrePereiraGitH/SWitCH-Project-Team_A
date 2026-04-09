@@ -1,94 +1,135 @@
 @startuml
 title US023 - To get the list of items on direct sale of a given publication
 
+' -------------------------
+' APPLICATION LAYER
+' -------------------------
+
 class UI023{
 }
 
 class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
-  +getAllPublicationsBD() : List<BibliographicalDataDTO_US023>
-  +findListOfItemsOnDirectSale(publication): List<PublicationSampleDTO_US023>
+  - bibliographicalDataRepository: IBibliographicalDataRepository
+  - listingRepository: IListingRepository
+  - publicationSampleRepository: IPublicationSampleRepository
+  + getAllPublicationsBD() : List<US023BibliographicalDataDTO>
+  + findListOfItemsOnDirectSale(publicationID) : List<US023PublicationSampleDTO>
 }
 
-class BibliographicalDataRepository{
-    +getAllPublicationsBD(): List<BibliographicalData>
+
+class US023BibliographicalDataMapper {
+    + toDTO(bibliographicalData) : US023BibliographicalDataDTO
+    + toDTOs(listOfAllPublicationsBD) : List<US023BibliographicalDataDTO>
 }
 
-class BibliographicalDataDTO_US023 {
-  +toDTOs(listOfAllPublicationsBD): List<BibliographicalDataDTO_US023>
+record US023BibliographicalDataDTO {
 }
+
+class US023PublicationSampleMapper {
+    + toDTO(item) : US023PublicationSampleDTO
+    + toDTOs(listOfItems) : List<US023PublicationSampleDTO>
+}
+
+record US023PublicationSampleDTO {
+}
+
+' -------------------------
+' REPOSITORIES
+' -------------------------
+
+class IBibliographicalDataRepository {
+  - bdList : List<BibliographicalData>
+  + getAllPublicationsBD() : List<BibliographicalData>
+}
+
+class IListingRepository {
+  - listings : List<Listing>
+  + findAllDirectSaleListings() : List<Listing>
+}
+
+class IPublicationSampleRepository {
+  - publicationSamples : List<PublicationSample>
+  + findItemsByIdsAndPublication(listOfPubSampleIds, publicationSampleId) : List<PublicationSample>
+}
+
+' -------------------------
+' DOMAIN LAYER
+' -------------------------
 
 class BibliographicalData {
-    - title: String
-    - author: List<Author>
-    - originalLanguage: Locale
-    - publishDate: LocalDate
-    - genre: List<Genre>
-    - chunksOfText: String
-    + getBibliographicalDataDetails()
-}
-
-class ListingRepository  {
-    - listings: List<Listing>
-    + findAllDirectSaleListings() : List<Listing>
-}
-
-class PublicationSampleRepository {
-    - allPublicationsInTheSystem: List<PublicationSample>
-    + findItemsByListingAndPublication(listOfListings, publication): List<PublicationSample>
-}
-
-class PublicationSampleDTO_US023 {
-    +toDTOs(listOfItems)
-}
-
-class PublicationSample {
-    - bibliographicalData: BibliographicalData
-    - publicationType: PublicationType
-    - userName: User
-    - publicationStatus: PublicationStatus
-    - edition: String
-    - code: Code
-    + getDetails() : PublicationSample
+  - bdId : BibliographicalDataId
+  - title : String
+  - authorsId : List<AuthorId>
 }
 
 class Listing {
-    - listingTitle: String
-    - items: List<PublicationSample>
-    - saleType: SaleType
-    - price: Price
-    - shortDescription: String
-    - seller: User
-    - pictures: List<Picture>
+  - listingId : ListingId
+  - listingTitle : String
+  - publicationSampleIds : List<PublicationSampleId>
+  - saleType : SaleType
+  + getItemsIds(): List<PublicationSampleId>
 }
+
+class PublicationSample {
+    - publicationSampleId: PublicationSampleId
+    - bibliographicalDataId: BibliographicalDataId
+    - ownerId: UserId
+    - publicationStatus: PublicationStatus
+    - editionId: EditionId
+    - condition: Condition
+    + getBibliographicalDataId() : BibliographicalDataId
+}
+
+' Value Objects
+class PublicationSampleId
+class BibliographicalDataId
 
 enum SaleType {
-    DIRECT_SALE
-    AUCTION
+  DIRECT_SALE
+  AUCTION
 }
 
-' Interactions
+' -------------------------
+' RELATIONSHIPS
+' -------------------------
 
-UI023 "1" ..> "1" US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : uses
+' --- UI ---
+UI023 ..> US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : invokes
 
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataRepository: uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" BibliographicalDataDTO_US023 : uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" ListingRepository : uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleRepository : uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" ..> "1" PublicationSampleDTO_US023 : uses
+' --- Controller ---
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IBibliographicalDataRepository : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IListingRepository : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IPublicationSampleRepository : uses
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023BibliographicalDataMapper : creates DTO
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023PublicationSampleMapper : creates DTO
 
-BibliographicalDataRepository "1" ..> "*" BibliographicalData : communicates with
+' --- BD Repository ---
+IBibliographicalDataRepository "1" --> "*" BibliographicalData : stores
 
-BibliographicalDataDTO_US023 "1" ..> "1" BibliographicalData : transfers
+' --- Listing Repository ---
+IListingRepository "1" --> "*" Listing : stores
 
-ListingRepository "1" ..> "*" Listing: communicates with
+' --- PubSample Repository ---
+IPublicationSampleRepository "1" --> "*" PublicationSample : stores
 
-PublicationSampleRepository "1" ..> "*" PublicationSample: communicates with
+' --- BD ---
+BibliographicalData "1" --> "1" BibliographicalDataId : has
 
-PublicationSampleDTO_US023 ..> PublicationSample : transfers
+' --- Listing ---
+Listing "1" --> "1..*" PublicationSampleId : contains
+Listing "*" --> "1" SaleType : for sale in
 
-' Domain classes interactions
+' --- PublicationSample ---
+PublicationSample "1" --> "1" BibliographicalDataId : has
+PublicationSample "1" --> "1" PublicationSampleId : has
 
-Listing "1" -> "1..*" PublicationSample: contains
-Listing "1" -> "1" SaleType: for sale on
+' --- PubSample Mapper and DTO ---
+US023PublicationSampleMapper ..> PublicationSample : uses
+US023PublicationSampleMapper ..> US023PublicationSampleDTO : create
+
+' --- BD Mapper and DTO ---
+US023BibliographicalDataMapper ..> BibliographicalData : uses
+US023BibliographicalDataMapper ..> US023BibliographicalDataDTO : creates
 
 @enduml
+
