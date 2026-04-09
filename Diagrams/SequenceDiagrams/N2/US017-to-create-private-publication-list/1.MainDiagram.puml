@@ -1,0 +1,57 @@
+@startuml
+hide footbox
+autonumber
+title US017 - To create a private collection of publications (Main)
+
+actor "User" as User
+participant ":UI017" as UI
+participant ":US017ToCreateCollectionOfPublicationsController" as Controller
+participant ":IGenreRepository" as GenreRepo
+participant ":ICollectionOfPublicationsRepository" as CollectionRepo
+participant ":CollectionOfPublicationsFactory" as Factory
+
+' --- Start ---
+User -> UI : I want to create a new private collection of publications
+activate UI
+UI --> User : What is the collection name?
+deactivate UI
+
+User -> UI : name("My Favorites")
+activate UI
+
+' =========================
+' Get Genres (reference)
+' =========================
+UI -> Controller : getAllGenres()
+activate Controller
+
+ref over Controller, GenreRepo
+[[2.GetGenres.puml Get Genres]]
+end ref
+
+Controller --> UI : List<GenreDTO_US017>
+deactivate Controller
+
+UI --> User : Here is the list of genres, select one!
+deactivate UI
+
+' =========================
+' Create Private Collection (reference)
+' =========================
+User -> UI : selectedGenre("Fiction")
+activate UI
+
+UI -> Controller : createCollection(name, selectedGenre, user)
+activate Controller
+
+ref over Controller, CollectionRepo, Factory
+[[3.CreateCollection.puml Create Collection]]
+end ref
+
+Controller --> UI : cp
+deactivate Controller
+
+UI --> User : Private collection of publications created successfully
+deactivate UI
+
+@enduml
