@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 
 class PublisherRepositoryMemTest {
 
-    private IPublisherRepository repository;
+    private PublisherFactory publisherFactory;
 
     private final String vatNumber = "123456789";
     private final String name = "Penguin Books";
@@ -24,67 +24,94 @@ class PublisherRepositoryMemTest {
 
     @BeforeEach
     void setup() {
-        repository = new PublisherRepositoryMem();
+        publisherFactory = mock(PublisherFactory.class);
     }
 
     @Test
-    void shouldSaveAndReturnPublisher() {
+    void shouldThrowExceptionWhenFactoryIsNull() {
         // Arrange
-        Publisher publisher = mock(Publisher.class);
+        // (no additional setup needed)
+
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new PublisherRepositoryMem(null)
+        );
+        assertEquals("PublisherFactory cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void shouldDelegateCreationToFactoryAndAddPublisher() {
+        // Arrange
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
 
         // Act
-        Publisher result = repository.save(publisher);
+        Publisher result = repository.createAndAdd(name, vatNumber, contact);
 
         // Assert
-        assertEquals(publisher, result);
-        assertTrue(repository.getAllPublishers().contains(publisher));
+        assertEquals(publisherDouble, result);
+        assertTrue(repository.getAllPublishers().contains(publisherDouble));
     }
 
     @Test
     void shouldRejectDuplicatePublisher() {
         // Arrange
-        Contact contact = mock(Contact.class);
-        Publisher publisher = new PublisherFactory().create("Penguin Books", "123456789", contact);
-        repository.save(publisher);
+        Publisher pub1 = mock(Publisher.class);
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(pub1);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name, vatNumber, contact);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repository.save(publisher));
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.createAndAdd(name, vatNumber, contact));
     }
 
     @Test
     void shouldSavePublisherWhenDifferentOneAlreadyExists() {
         // Arrange
-        Publisher publisher1 = mock(Publisher.class);
-        Publisher publisher2 = mock(Publisher.class);
-        repository.save(publisher1);
+        String existingName = "Existing Publisher";
+        String existingVatNumber = "987654321";
+        Contact existingContact = mock(Contact.class);
+        Publisher existingPublisher = mock(Publisher.class);
+        Publisher newPublisher = mock(Publisher.class);
+        when(publisherFactory.create(existingName, existingVatNumber, existingContact)).thenReturn(existingPublisher);
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(newPublisher);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(existingName, existingVatNumber, existingContact);
 
         // Act
-        Publisher result = repository.save(publisher2);
+        Publisher result = repository.createAndAdd(name, vatNumber, contact);
 
         // Assert
-        assertEquals(publisher2, result);
-        assertTrue(repository.getAllPublishers().contains(publisher1));
-        assertTrue(repository.getAllPublishers().contains(publisher2));
+        assertEquals(newPublisher, result);
+        assertTrue(repository.getAllPublishers().contains(newPublisher));
+        assertTrue(repository.getAllPublishers().contains(existingPublisher));
     }
 
     @Test
     void shouldReturnUnmodifiableList() {
         // Arrange
-        Publisher publisher = mock(Publisher.class);
-        repository.save(publisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name, vatNumber, contact);
 
         // Act
         List<Publisher> result = repository.getAllPublishers();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(publisher));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(publisherDouble));
     }
 
     @Test
     void shouldReturnDefensiveCopy() {
         // Arrange
-        Publisher publisher = mock(Publisher.class);
-        repository.save(publisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name, vatNumber, contact);
 
         // Act
         List<Publisher> result1 = repository.getAllPublishers();
@@ -98,24 +125,28 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldFindPublisherByVatNumber() {
         // Arrange
-        Publisher publisher = mock(Publisher.class);
-        when(publisher.id()).thenReturn(new PublisherID(vatNumber));
-        repository.save(publisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherDouble.id()).thenReturn(new PublisherID(vatNumber));
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name, vatNumber, contact);
 
         // Act
         Optional<Publisher> result = repository.findByVatNumber(new PublisherID(vatNumber));
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(publisher, result.get());
+        assertEquals(publisherDouble, result.get());
     }
 
     @Test
     void shouldReturnEmptyWhenVatNumberDoesNotExist() {
         // Arrange
-        Publisher publisher = mock(Publisher.class);
-        when(publisher.id()).thenReturn(new PublisherID("999999999"));
-        repository.save(publisher);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(publisherDouble.id()).thenReturn(new PublisherID("999999999"));
+        when(publisherFactory.create(name, vatNumber, contact)).thenReturn(publisherDouble);
+        IPublisherRepository repository = new PublisherRepositoryMem(publisherFactory);
+        repository.createAndAdd(name, vatNumber, contact);
 
         // Act
         Optional<Publisher> result = repository.findByVatNumber(new PublisherID(vatNumber));

@@ -1,8 +1,7 @@
 package TOPSECRET.controller;
 
 
-import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.Publisher.PublisherFactory;
+
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 
@@ -18,7 +17,6 @@ import javax.management.InstanceAlreadyExistsException;
 public class   US006ToRegisterNewPublisherController {
 
     private IPublisherRepository _publisherRepository;
-    private final PublisherFactory _publisherFactory;
 
     /**
      * Constructs a new {@code US006ToRegisterNewPublisherController} with the given repository.
@@ -26,20 +24,15 @@ public class   US006ToRegisterNewPublisherController {
      * @param publisherRepository the repository used to store publishers; must not be {@code null}
      * @throws NullPointerException if {@code publisherRepository} is {@code null}
      */
-    public US006ToRegisterNewPublisherController(IPublisherRepository publisherRepository,
-                                                 PublisherFactory publisherFactory) {
 
+    public US006ToRegisterNewPublisherController(IPublisherRepository publisherRepository) {
         if(publisherRepository == null)
             throw new NullPointerException("Repository can not be null");
-        if (publisherFactory == null)
-                throw new NullPointerException("Factory cannot be null");
-
 
         _publisherRepository = publisherRepository;
-        _publisherFactory = publisherFactory;
     }
 
-    /*
+    /**
      * Registers a new publisher in the system by delegating creation to the repository.
      *
      * @param name      the publisher's name; must not be blank
@@ -51,13 +44,7 @@ public class   US006ToRegisterNewPublisherController {
     public boolean registerPublisher(String name, String vatNumber, Contact contact)
             throws InstanceAlreadyExistsException {
 
-        Publisher publisher = _publisherFactory.create(name, vatNumber, contact);
-
-        if (_publisherRepository.exists(publisher)) {
-            throw new InstanceAlreadyExistsException("Publisher already exists: " + vatNumber);
-        }
-
-        _publisherRepository.save(publisher);
+        _publisherRepository.createAndAdd(name, vatNumber, contact);
         return true;
     }
 }

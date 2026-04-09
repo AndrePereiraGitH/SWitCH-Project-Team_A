@@ -19,10 +19,7 @@ import java.util.Optional;
 public class PublisherRepositoryMem implements IPublisherRepository {
 
     private final List<Publisher> _publishers;
-
-    public PublisherRepositoryMem() {
-        _publishers = new ArrayList<>();
-    /*private final PublisherFactory _publisherFactory;
+    private final PublisherFactory _publisherFactory;
 
     /**
      * Constructs a new {@code PublisherRepositoryMem} with the given factory.
@@ -32,30 +29,31 @@ public class PublisherRepositoryMem implements IPublisherRepository {
      *                         must not be {@code null}
      * @throws IllegalArgumentException if {@code publisherFactory} is {@code null}
      */
-    /*public PublisherRepositoryMem(PublisherFactory publisherFactory) {
+    public PublisherRepositoryMem(PublisherFactory publisherFactory) {
         if (publisherFactory == null) {
             throw new IllegalArgumentException("PublisherFactory cannot be null");
         }
         _publishers = new ArrayList<>();
         _publisherFactory = publisherFactory;
-
-     */
     }
 
     /**
      * {@inheritDoc}
+     *
+     * <p>Delegates creation to {@link PublisherFactory}, checks for duplicates,
+     * and adds the publisher to the in-memory list.</p>
+     *
+     * @throws IllegalArgumentException if a Publisher with the same VAT number already exists
      */
     @Override
-    /*
     public Publisher createAndAdd(String name, String vatNumber, Contact contact) {
         Publisher publisher = _publisherFactory.create(name, vatNumber, contact);
-*/
-    public Publisher save(Publisher publisher) {
-        if (exists(publisher)) {
-            throw new IllegalArgumentException("Publisher already exists");
+        if (!exists(publisher)) {
+            _publishers.add(publisher);
+            return publisher;
         }
-        _publishers.add(publisher);
-        return publisher;
+
+        throw new IllegalArgumentException("Publisher already exists");
     }
 
     /**
@@ -78,13 +76,15 @@ public class PublisherRepositoryMem implements IPublisherRepository {
 
 
     /**
-     * {@inheritDoc}
+     * Checks whether a given {@link Publisher} already exists in the repository.
+     *
+     * @param publisher the publisher to check; must not be {@code null}
+     * @return {@code true} if the publisher already exists; {@code false} otherwise
      */
-    @Override
-    public boolean exists(Publisher publisher) {
+    private boolean exists(Publisher publisher) {
         for (Publisher p : _publishers) {
             if (p.equals(publisher)) return true;
-        }
+            }
         return false;
     }
 }

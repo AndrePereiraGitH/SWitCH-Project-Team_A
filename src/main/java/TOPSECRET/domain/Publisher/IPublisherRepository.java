@@ -31,30 +31,8 @@ public interface IPublisherRepository {
      * @return the newly created Publisher
      * @throws IllegalArgumentException if a Publisher with the same VAT number already exists
      */
-    //Publisher createAndAdd(String name, String vatNumber, Contact contact);
+    Publisher createAndAdd(String name, String vatNumber, Contact contact);
 
-    /**
-     * Persists the given {@link Publisher} in the repository.
-     *
-     * <p>The provided {@link Publisher} must have been created prior to calling
-     * this method, typically via {@link TOPSECRET.domain.Publisher.PublisherFactory}.
-     * Implementations must reject duplicate publishers based on their
-     * {@link TOPSECRET.domain.ValueObjects.PublisherID}.</p>
-     *
-     * @param publisher the {@link Publisher} to persist; must not be {@code null}
-     * @return the saved {@link Publisher} instance; never {@code null}
-     * @throws IllegalArgumentException if a {@link Publisher} with the same
-     *                                  identity already exists in the repository
-     */
-    Publisher save(Publisher publisher);
-
-    /**
-     * Checks whether a given {@link Publisher} already exists in the repository.
-     *
-     * @param publisher the Publisher to check
-     * @return {@code true} if the Publisher already exists, {@code false} otherwise
-     */
-    boolean exists(Publisher publisher);
 
     /**
      * Returns all {@link Publisher} instances currently stored in the repository.
