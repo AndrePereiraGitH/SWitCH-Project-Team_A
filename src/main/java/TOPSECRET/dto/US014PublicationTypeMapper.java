@@ -15,22 +15,21 @@ import java.util.List;
  * <p>It converts domain objects into a simplified representation
  * containing only the necessary data for the UI.</p>
  */
-public class PublicationTypeDTO_US014 {
-
-    public String _mediaFormat;
+public class US014PublicationTypeMapper {
 
     /**
      * Creates a DTO from a PublicationType domain object.
      *
      * @param publicationType the domain object to convert
      */
-    public PublicationTypeDTO_US014(PublicationType publicationType) {
+    public static US014PublicationTypeDTO toDTO(PublicationType publicationType) {
 
         if(publicationType==null){
             throw new IllegalArgumentException("PublicationTypeDTO cannot be null");
         }
 
-        this._mediaFormat = publicationType.getMediaFormat();
+        return new US014PublicationTypeDTO(publicationType.getId().getId(),
+                publicationType.getMediaFormat());
     }
 
     /**
@@ -40,35 +39,22 @@ public class PublicationTypeDTO_US014 {
      * @return list of DTO representations
      */
     // Creates a list of DTOs from a list of PublicationType domains
-    public static List<PublicationTypeDTO_US014> fromDomainList(List<PublicationType> publicationTypes) {
+    public static List<US014PublicationTypeDTO> toDTOList( List<PublicationType> publicationTypes) {
 
         if(publicationTypes==null){
             throw new IllegalArgumentException("PublicationTypeDTO list cannot be null");
         }
 
-        // Creates an empty list to store DTOs
-        List<PublicationTypeDTO_US014> listOfPublicationTypeDTO_US014 = new ArrayList<>();
+        List<US014PublicationTypeDTO> listOfPublicationTypeDTO = new ArrayList<>();
 
-        // Iterates over all PublicationType
-        // pT is a temporary variable tha refers to each PublicationType
+        
         for (PublicationType pT : publicationTypes) {
 
-            // a new DTO is created from the domain and the DTO extracts the data
-            // add a new DTO to the list
-            listOfPublicationTypeDTO_US014.add(new PublicationTypeDTO_US014(pT));
+            listOfPublicationTypeDTO.add(toDTO(pT));
         }
 
-        return listOfPublicationTypeDTO_US014;
+        return listOfPublicationTypeDTO;
     }
-
-    // =======================
-    // Getters
-
-    public String getMediaFormat() {
-        return _mediaFormat;
-    }
-    public void setMediaFormat(String mediaFormat) {}
-
 }
 
 
