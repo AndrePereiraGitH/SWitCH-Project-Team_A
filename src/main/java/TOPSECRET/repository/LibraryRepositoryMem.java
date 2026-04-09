@@ -63,7 +63,7 @@ public class LibraryRepositoryMem implements ILibraryRepository {
      * {@inheritDoc}
      */
 
-    public Library getLibraryOfUser(UserId userId) throws InstanceNotFoundException {
+    public Library getLibraryByUserId(UserId userId) throws InstanceNotFoundException {
         if (userId == null) {
             throw new NullPointerException("Username cannot be null");
         }

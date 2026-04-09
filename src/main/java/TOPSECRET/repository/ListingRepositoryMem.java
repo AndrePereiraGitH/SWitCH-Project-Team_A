@@ -65,6 +65,7 @@ public class ListingRepositoryMem implements IListingRepository {
         return newListing;
     }
 
+
     // for tests purpose
     void addListing(Listing listing) {
         listings.add(listing);
@@ -98,6 +99,7 @@ public class ListingRepositoryMem implements IListingRepository {
 //
 //        return listOfPublicationSample;
 //    }
+
 
     /**
      * {@inheritDoc}
@@ -149,5 +151,35 @@ public class ListingRepositoryMem implements IListingRepository {
         return listings.stream()
                 .filter(listing -> listing.id().equals(id))
                 .findFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
+
+        if(listOfPubSampleIds == null){
+            throw new NullPointerException("The list can not be null");
+        }
+
+        if(listOfPubSampleIds.isEmpty()){
+            throw new IllegalArgumentException("The list can not be empty");
+        }
+
+        List<Listing> listOfAuctionListingsOfGivenPublication = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            if (listing.isListingLinkedToAnAuction()) {
+
+                for(PublicationSampleId id: listOfPubSampleIds){
+                    if(listing.containsPubSampleId(id)){
+                        listOfAuctionListingsOfGivenPublication.add(listing);
+                        break;
+                    }
+                }
+            }
+        }
+        return listOfAuctionListingsOfGivenPublication;
     }
 }
