@@ -4,11 +4,9 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
@@ -154,14 +152,14 @@ public interface    IPublicationSampleRepository {
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the
-     * provided {@link Listing} objects and matching the specified
+     * provided {@link PublicationSampleId} objects and matching the specified
      * {@link BibliographicalData}.
      *
-     * @param listings    the list of listings to filter by; must not be null
-     * @param publication the bibliographical data identifying the target publication;
-     *                    must not be null
+     * @param pubSampleIds    the list of publication sample identifiers to filter by; must not be null
+     * @param publicationId   the bibliographical data identifying the target publication;
+     *                      must not be null
      * @return a {@link List} of matching {@link PublicationSample} instances;
      *         never {@code null}, but may be empty if no matches are found
      */
-//    List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication);
+    List<PublicationSample> findItemsByIdsAndPublication(List<PublicationSampleId> pubSampleIds, BibliographicalDataID publicationId);
 }
