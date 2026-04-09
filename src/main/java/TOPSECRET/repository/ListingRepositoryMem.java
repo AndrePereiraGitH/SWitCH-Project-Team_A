@@ -193,19 +193,19 @@ public class ListingRepositoryMem implements IListingRepository {
             throw new IllegalArgumentException("The list can not be empty");
         }
 
-        List<Listing> listOfAuctionOfGivenPublication = new ArrayList<>();
+        List<Listing> listOfAuctionListingsOfGivenPublication = new ArrayList<>();
 
         for (Listing listing : listings) {
             if (listing.isListingLinkedToAnAuction()) {
 
                 for(PublicationSampleId id: listOfPubSampleIds){
                     if(listing.containsPubSampleId(id)){
-                        listOfAuctionOfGivenPublication.add(listing);
+                        listOfAuctionListingsOfGivenPublication.add(listing);
                         break;
                     }
                 }
             }
         }
-        return listOfAuctionOfGivenPublication;
+        return listOfAuctionListingsOfGivenPublication;
     }
 }

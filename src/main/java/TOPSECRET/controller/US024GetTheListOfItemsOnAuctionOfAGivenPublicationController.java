@@ -7,8 +7,8 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.dto.US024AuctionDTO;
-import TOPSECRET.dto.US024AuctionMapper;
+import TOPSECRET.dto.US024AucListingDTO;
+import TOPSECRET.dto.US024AucListingMapper;
 
 import java.util.List;
 
@@ -69,13 +69,13 @@ public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
      * Retrieves all auction listings associated with the publication matching the given title.
      *
      * @param titleDTO the title of the publication to search for; must not be null or blank
-     * @return a {@link List} of {@link US024AuctionDTO} representing the auction listings;
+     * @return a {@link List} of {@link US024AucListingDTO} representing the auction listings;
      *         never null, may be empty
      * @throws NullPointerException     if {@code titleDTO} is null
      * @throws IllegalArgumentException if {@code titleDTO} is blank or no publication is found
      *                                  matching the given title
      */
-    public List<US024AuctionDTO> getAuctionListingsByTitle(String titleDTO){
+    public List<US024AucListingDTO> getAuctionListingsByTitle(String titleDTO){
 
         if(titleDTO == null){
             throw new NullPointerException("Title can not be null");
@@ -92,11 +92,11 @@ public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
 
         List<PublicationSampleId> listOfPubSampleId = _pubRepo.findPubSampleIdsByBibliographicalDataId(bdId);
 
-        List<Listing> listOfAuctionOfGivenPublication = _listingRepo.getAuctionListingsContaining(listOfPubSampleId);
+        List<Listing> listOfAuctionListingsOfGivenPublication = _listingRepo.getAuctionListingsContaining(listOfPubSampleId);
 
-        List<US024AuctionDTO> listOfAuctionDTO = US024AuctionMapper.toDTOs(listOfAuctionOfGivenPublication);
+        List<US024AucListingDTO> listOfAuctionListingsDTO = US024AucListingMapper.toDTOs(listOfAuctionListingsOfGivenPublication);
 
-        return listOfAuctionDTO;
+        return listOfAuctionListingsDTO;
     }
 
 

@@ -8,7 +8,7 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.dto.US024AuctionDTO;
+import TOPSECRET.dto.US024AucListingDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -172,7 +172,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 .thenReturn(List.of());
 
         // Act
-        List<US024AuctionDTO> result = controller.getAuctionListingsByTitle("Title1");
+        List<US024AucListingDTO> result = controller.getAuctionListingsByTitle("Title1");
 
         // Assert
         assertEquals(0, result.size());
@@ -199,7 +199,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 .thenReturn(List.of(listing_1, listing_2, listing_3));
 
         // Act
-        List<US024AuctionDTO> result = controller.getAuctionListingsByTitle("Title1");
+        List<US024AucListingDTO> result = controller.getAuctionListingsByTitle("Title1");
 
         // Assert
         assertEquals(3, result.size());

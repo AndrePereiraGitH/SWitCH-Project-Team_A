@@ -10,7 +10,7 @@ package TOPSECRET.dto;
  * @param listing     the publication title of the auction listing; must not be {@code null}
  * @throws NullPointerException if any parameter is {@code null}
  */
-public record US024AuctionDTO(String listingId, String price, String description, String listing) {
+public record US024AucListingDTO(String listingId, String price, String description, String listing) {
 
     /**
      * Compact canonical constructor that validates all fields upon instantiation.
@@ -18,7 +18,7 @@ public record US024AuctionDTO(String listingId, String price, String description
      * @throws NullPointerException if {@code listingId}, {@code price}, {@code description},
      *                              or {@code listing} is {@code null}
      */
-    public US024AuctionDTO {
+    public US024AucListingDTO {
         if(listingId == null){
             throw new NullPointerException("ListingId can not be null");
         }

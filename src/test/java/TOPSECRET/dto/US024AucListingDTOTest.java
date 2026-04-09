@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link US024AuctionDTO}.
+ * Unit tests for {@link US024AucListingDTO}.
  *
  * <p>Covers the following scenarios:</p>
  * <ul>
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>Record contract: {@code equals}, {@code hashCode}, and {@code toString}</li>
  * </ul>
  */
-class US024AuctionDTOTest {
+class US024AucListingDTOTest {
 
     // -------------------------------------------------------------------------
     // Happy path
@@ -22,7 +22,7 @@ class US024AuctionDTOTest {
 
     @Test
     void shouldCreateDTOSuccessfully_whenAllFieldsAreValid() {
-        US024AuctionDTO dto = new US024AuctionDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         assertEquals("id-1",          dto.listingId());
         assertEquals("99.99",         dto.price());
@@ -37,7 +37,7 @@ class US024AuctionDTOTest {
     @Test
     void shouldThrowNullPointerException_whenListingIdIsNull() {
         NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> new US024AuctionDTO(null, "99.99", "A nice item", "Listing Title"));
+                () -> new US024AucListingDTO(null, "99.99", "A nice item", "Listing Title"));
 
         assertEquals("ListingId can not be null", ex.getMessage());
     }
@@ -45,7 +45,7 @@ class US024AuctionDTOTest {
     @Test
     void shouldThrowNullPointerException_whenPriceIsNull() {
         NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> new US024AuctionDTO("id-1", null, "A nice item", "Listing Title"));
+                () -> new US024AucListingDTO("id-1", null, "A nice item", "Listing Title"));
 
         assertEquals("Price can not be null", ex.getMessage());
     }
@@ -53,7 +53,7 @@ class US024AuctionDTOTest {
     @Test
     void shouldThrowNullPointerException_whenDescriptionIsNull() {
         NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> new US024AuctionDTO("id-1", "99.99", null, "Listing Title"));
+                () -> new US024AucListingDTO("id-1", "99.99", null, "Listing Title"));
 
         assertEquals("Description can not be null", ex.getMessage());
     }
@@ -61,7 +61,7 @@ class US024AuctionDTOTest {
     @Test
     void shouldThrowNullPointerException_whenListingIsNull() {
         NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> new US024AuctionDTO("id-1", "99.99", "A nice item", null));
+                () -> new US024AucListingDTO("id-1", "99.99", "A nice item", null));
 
         assertEquals("Publication titles can not be null", ex.getMessage());
     }
@@ -72,31 +72,31 @@ class US024AuctionDTOTest {
 
     @Test
     void shouldBeEqual_whenTwoDTOsHaveTheSameValues() {
-        US024AuctionDTO dto1 = new US024AuctionDTO("id-1", "99.99", "A nice item", "Listing Title");
-        US024AuctionDTO dto2 = new US024AuctionDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto1 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto2 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         assertEquals(dto1, dto2);
     }
 
     @Test
     void shouldNotBeEqual_whenDTOsHaveDifferentValues() {
-        US024AuctionDTO dto1 = new US024AuctionDTO("id-1", "99.99", "A nice item",      "Listing Title");
-        US024AuctionDTO dto2 = new US024AuctionDTO("id-2", "49.99", "A different item", "Other Title");
+        US024AucListingDTO dto1 = new US024AucListingDTO("id-1", "99.99", "A nice item",      "Listing Title");
+        US024AucListingDTO dto2 = new US024AucListingDTO("id-2", "49.99", "A different item", "Other Title");
 
         assertNotEquals(dto1, dto2);
     }
 
     @Test
     void shouldHaveSameHashCode_whenTwoDTOsAreEqual() {
-        US024AuctionDTO dto1 = new US024AuctionDTO("id-1", "99.99", "A nice item", "Listing Title");
-        US024AuctionDTO dto2 = new US024AuctionDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto1 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto2 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         assertEquals(dto1.hashCode(), dto2.hashCode());
     }
 
     @Test
     void shouldReturnMeaningfulToString() {
-        US024AuctionDTO dto = new US024AuctionDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         String result = dto.toString();
 

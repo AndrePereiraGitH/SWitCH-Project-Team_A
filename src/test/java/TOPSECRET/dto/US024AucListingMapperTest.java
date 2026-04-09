@@ -16,19 +16,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link US024AuctionMapper}.
+ * Unit tests for {@link US024AucListingMapper}.
  *
  * <p>Verifies the correct behaviour of the mapping methods:
  * <ul>
- *   <li>{@link US024AuctionMapper#toDTO(Listing)} - maps a single {@link Listing} to a {@link US024AuctionDTO}</li>
- *   <li>{@link US024AuctionMapper#toDTOs(List)} - maps a list of {@link Listing} to a list of {@link US024AuctionDTO}</li>
+ *   <li>{@link US024AucListingMapper#toDTO(Listing)} - maps a single {@link Listing} to a {@link US024AucListingDTO}</li>
+ *   <li>{@link US024AucListingMapper#toDTOs(List)} - maps a list of {@link Listing} to a list of {@link US024AucListingDTO}</li>
  * </ul>
  *
  * <p>All {@link Listing} dependencies are replaced with Mockito doubles
  * to ensure tests are isolated from domain logic.
  */
 
-class US024AuctionMapperTest {
+class US024AucListingMapperTest {
 
 
     // -------------------------
@@ -38,7 +38,7 @@ class US024AuctionMapperTest {
     @Test
     void constructor_ShouldThrowUnsupportedOperationException_WhenInstantiated() throws Exception {
         //Arrange
-        Constructor<US024AuctionMapper> constructor = US024AuctionMapper.class.getDeclaredConstructor();
+        Constructor<US024AucListingMapper> constructor = US024AucListingMapper.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
         //Act + Assert
@@ -56,7 +56,7 @@ class US024AuctionMapperTest {
         Listing listingDouble = createListingDouble("45", "shortDescription", "ListingTitle");
 
         //Act
-        US024AuctionDTO result = US024AuctionMapper.toDTO(listingDouble);
+        US024AucListingDTO result = US024AucListingMapper.toDTO(listingDouble);
 
         //Assert
         assertNotNull(result);
@@ -66,7 +66,7 @@ class US024AuctionMapperTest {
     void toDTO_ShouldThrowException_WhenListingIsNull() {
         //Act + Assert
         assertThrows(NullPointerException.class, () ->
-                US024AuctionMapper.toDTO(null)
+                US024AucListingMapper.toDTO(null)
         );
     }
 
@@ -78,7 +78,7 @@ class US024AuctionMapperTest {
     void toDTOs_ShouldThrowIllegalArgumentException_WhenListIsNull() {
         //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                US024AuctionMapper.toDTOs(null)
+                US024AucListingMapper.toDTOs(null)
         );
     }
 
@@ -88,7 +88,7 @@ class US024AuctionMapperTest {
         List<Listing> listings = List.of();
 
         //Act
-        List<US024AuctionDTO> result = US024AuctionMapper.toDTOs(listings);
+        List<US024AucListingDTO> result = US024AucListingMapper.toDTOs(listings);
 
         //Assert
         assertEquals(0, result.size()); // Bug fix: was 3
@@ -101,7 +101,7 @@ class US024AuctionMapperTest {
         List<Listing> listings = List.of(listingDouble);
 
         //Act
-        List<US024AuctionDTO> result = US024AuctionMapper.toDTOs(listings);
+        List<US024AucListingDTO> result = US024AucListingMapper.toDTOs(listings);
 
         //Assert
         assertEquals(1, result.size());
@@ -116,7 +116,7 @@ class US024AuctionMapperTest {
         List<Listing> listings = List.of(listingDouble_1, listingDouble_2, listingDouble_3);
 
         //Act
-        List<US024AuctionDTO> result = US024AuctionMapper.toDTOs(listings);
+        List<US024AucListingDTO> result = US024AucListingMapper.toDTOs(listings);
 
         //Assert
         assertEquals(3, result.size());
