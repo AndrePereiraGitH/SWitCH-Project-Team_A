@@ -87,7 +87,7 @@ class US023PublicationSampleMapperTest {
         String expectedPubStatus = "FOR_SALE";
         String expectedCondition = "NEW";
 
-        PublicationSample publication = createMockPublicationSample(expectedTitle, expectedAuthors, expectedCode,
+        PublicationSample publication = createPublicationSampleDouble(expectedTitle, expectedAuthors, expectedCode,
                 expectedPubType, expectedSeller, expectedPubStatus, expectedCondition);
 
         // Act
@@ -119,7 +119,7 @@ class US023PublicationSampleMapperTest {
         List<String> expectedAuthors = List.of("Author1");
 
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
-        BibliographicalData bd = createMockBibliographicalData(expectedTitle, expectedAuthors);
+        BibliographicalData bd = createBibliographicalDataDouble(expectedTitle, expectedAuthors);
 
         EditionID editionId = mock(EditionID.class);
         PublicationSample publication = mock(PublicationSample.class);
@@ -144,7 +144,7 @@ class US023PublicationSampleMapperTest {
         when(bd.getAuthors()).thenReturn(List.of(authorId));
 
         EditionID editionId = mock(EditionID.class);
-        Edition edition = createMockEdition("12345678910", "Book");
+        Edition edition = createEditionDouble("12345678910", "Book");
 
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
@@ -178,8 +178,8 @@ class US023PublicationSampleMapperTest {
         String pubStatus2 = "FOR_SALE";
         String condition2 = "LIKE_NEW";
 
-        PublicationSample pub1 = createMockPublicationSample(title1, authors1, code1, "Book", seller1, pubStatus1, condition1);
-        PublicationSample pub2 = createMockPublicationSample(title2, authors2, code2, "Book", seller2, pubStatus2, condition2);
+        PublicationSample pub1 = createPublicationSampleDouble(title1, authors1, code1, "Book", seller1, pubStatus1, condition1);
+        PublicationSample pub2 = createPublicationSampleDouble(title2, authors2, code2, "Book", seller2, pubStatus2, condition2);
 
         // Act
         List<US023PublicationSampleDTO> result = mapper.toDTOs(List.of(pub1, pub2));
@@ -211,14 +211,14 @@ class US023PublicationSampleMapperTest {
     //========= HELPERS ================================================================================================
     //==================================================================================================================
 
-    private PublicationSample createMockPublicationSample(String title, List<String> authorNames, String code,
+    private PublicationSample createPublicationSampleDouble(String title, List<String> authorNames, String code,
                                                           String pubType, String seller, String pubStatus, String condition) {
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
         EditionID editionId = mock(EditionID.class);
         UserId sellerId = mock(UserId.class);
 
-        BibliographicalData bd = createMockBibliographicalData(title, authorNames);
-        Edition edition = createMockEdition(code, pubType);
+        BibliographicalData bd = createBibliographicalDataDouble(title, authorNames);
+        Edition edition = createEditionDouble(code, pubType);
 
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
@@ -232,7 +232,7 @@ class US023PublicationSampleMapperTest {
         return publication;
     }
 
-    private BibliographicalData createMockBibliographicalData(String title, List<String> authorNames) {
+    private BibliographicalData createBibliographicalDataDouble(String title, List<String> authorNames) {
         List<AuthorId> authorIds = authorNames.stream()
                 .map(name -> {
                     AuthorId authorId = mock(AuthorId.class);
@@ -250,7 +250,7 @@ class US023PublicationSampleMapperTest {
         return bd;
     }
 
-    private Edition createMockEdition(String code, String pubType) {
+    private Edition createEditionDouble(String code, String pubType) {
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);
 
