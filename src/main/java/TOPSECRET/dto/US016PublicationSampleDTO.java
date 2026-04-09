@@ -17,7 +17,7 @@ import java.util.Locale;
  * @param ownerName the identifier of the user who owns the publication sample
  * @param condition the condition of the publication sample
  */
-public record US016_PublicationSampleDTO(
+public record US016PublicationSampleDTO(
         PublicationSampleId publicationSampleID,
         String title,
         List<String>authorName,

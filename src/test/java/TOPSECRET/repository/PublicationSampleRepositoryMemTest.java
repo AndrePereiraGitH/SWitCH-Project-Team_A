@@ -13,7 +13,7 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.US016_PublicationSampleDTO;
+import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1324,7 +1324,7 @@ class PublicationSampleRepositoryMemTest {
         return ps;
     }
 
-    private static US016_PublicationSampleDTO mockDto(
+    private static US016PublicationSampleDTO mockDto(
             String title,
             List<String> authors,
             Locale language,
@@ -1332,7 +1332,7 @@ class PublicationSampleRepositoryMemTest {
             UserId ownerName,
             String condition
     ) {
-        US016_PublicationSampleDTO dtoDouble = mock(US016_PublicationSampleDTO.class);
+        US016PublicationSampleDTO dtoDouble = mock(US016PublicationSampleDTO.class);
         when(dtoDouble.title()).thenReturn(title);
         when(dtoDouble.authorName()).thenReturn(authors);
         when(dtoDouble.language()).thenReturn(language);          // Locale

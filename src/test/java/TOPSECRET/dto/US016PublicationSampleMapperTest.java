@@ -17,17 +17,50 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class US016_PublicationSampleMapperTest {
+class US016PublicationSampleMapperTest {
 
     private IBibliographicalDataRepository bdRepository;
-    private US016_PublicationSampleMapper mapper;
+    private US016PublicationSampleMapper mapper;
+
+    private PublicationSample publicationSample;
+    private BibliographicalData bd;
+
+    private PublicationSampleId publicationSampleId;
+    private BibliographicalDataID bibliographicalDataId;
+    private UserId ownerId;
+
+    private AuthorId author;
+    private AuthorId author1;
+    private AuthorId author2;
+
+    private GenreID genre;
+    private GenreID genre1;
+    private GenreID genre2;
+
+    private Condition condition;
 
     @BeforeEach
     void setUp() {
         bdRepository = mock(IBibliographicalDataRepository.class);
-        mapper = new US016_PublicationSampleMapper(bdRepository);
-    }
+        mapper = new US016PublicationSampleMapper(bdRepository);
 
+        publicationSample = mock(PublicationSample.class);
+        bd = mock(BibliographicalData.class);
+
+        publicationSampleId = mock(PublicationSampleId.class);
+        bibliographicalDataId = mock(BibliographicalDataID.class);
+        ownerId = mock(UserId.class);
+
+        author = mock(AuthorId.class);
+        author1 = mock(AuthorId.class);
+        author2 = mock(AuthorId.class);
+
+        genre = mock(GenreID.class);
+        genre1 = mock(GenreID.class);
+        genre2 = mock(GenreID.class);
+
+        condition = mock(Condition.class);
+    }
 
     // ===================================================
     // ================= FROM DOMAIN =====================
@@ -35,20 +68,9 @@ class US016_PublicationSampleMapperTest {
 
     @Test
     void fromDomain_shouldMapAllFieldsCorrectly() {
-        PublicationSample publicationSample = mock(PublicationSample.class);
-        BibliographicalData bd = mock(BibliographicalData.class);
 
-        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
-        UserId ownerId = mock(UserId.class);
-
-        AuthorId author1 = mock(AuthorId.class);
-        AuthorId author2 = mock(AuthorId.class);
-
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
-
+        // arrange
         Locale language = Locale.ENGLISH;
-        Condition condition = mock(Condition.class);
 
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
@@ -65,8 +87,10 @@ class US016_PublicationSampleMapperTest {
         when(genre2.getID()).thenReturn("Adventure");
         when(condition.toString()).thenReturn("USED");
 
-        US016_PublicationSampleDTO dto = US016_PublicationSampleMapper.fromDomain(publicationSample, bd);
+        // act
+        US016PublicationSampleDTO dto = US016PublicationSampleMapper.fromDomain(publicationSample, bd);
 
+        // assert
         assertNotNull(dto);
         assertEquals(publicationSampleId, dto.publicationSampleID());
         assertEquals("The Hobbit", dto.title());
@@ -79,17 +103,9 @@ class US016_PublicationSampleMapperTest {
 
     @Test
     void fromDomain_shouldMapSingleAuthorAndGenre() {
-        PublicationSample publicationSample = mock(PublicationSample.class);
-        BibliographicalData bd = mock(BibliographicalData.class);
 
-        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
-        UserId ownerId = mock(UserId.class);
-
-        AuthorId author = mock(AuthorId.class);
-        GenreID genre = mock(GenreID.class);
-
+        // arrange
         Locale language = Locale.FRENCH;
-        Condition condition = mock(Condition.class);
 
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
@@ -104,8 +120,10 @@ class US016_PublicationSampleMapperTest {
         when(genre.getID()).thenReturn("Sci-Fi");
         when(condition.toString()).thenReturn("NEW");
 
-        US016_PublicationSampleDTO dto = US016_PublicationSampleMapper.fromDomain(publicationSample, bd);
+        // act
+        US016PublicationSampleDTO dto = US016PublicationSampleMapper.fromDomain(publicationSample, bd);
 
+        // assert
         assertEquals(publicationSampleId, dto.publicationSampleID());
         assertEquals("Dune", dto.title());
         assertEquals(List.of("Frank Herbert"), dto.authorName());
@@ -121,18 +139,9 @@ class US016_PublicationSampleMapperTest {
 
     @Test
     void fromDomainList_shouldReturnMappedDtoList() throws Exception {
-        PublicationSample publicationSample = mock(PublicationSample.class);
-        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
 
-        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
-        BibliographicalDataID bibliographicalDataId = mock(BibliographicalDataID.class);
-        UserId ownerId = mock(UserId.class);
-
-        AuthorId author = mock(AuthorId.class);
-        GenreID genre = mock(GenreID.class);
-
+        // arrange
         Locale language = Locale.ENGLISH;
-        Condition condition = mock(Condition.class);
 
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
@@ -140,23 +149,25 @@ class US016_PublicationSampleMapperTest {
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bdRepository.findBibliographicalDataById(bibliographicalDataId))
-                .thenReturn(Optional.of(bibliographicalData));
+                .thenReturn(Optional.of(bd));
 
-        when(bibliographicalData.getTitle()).thenReturn("The Hobbit");
-        when(bibliographicalData.getAuthors()).thenReturn(List.of(author));
-        when(bibliographicalData.getOriginalLanguage()).thenReturn(language);
-        when(bibliographicalData.getGenres()).thenReturn(List.of(genre));
+        when(bd.getTitle()).thenReturn("The Hobbit");
+        when(bd.getAuthors()).thenReturn(List.of(author));
+        when(bd.getOriginalLanguage()).thenReturn(language);
+        when(bd.getGenres()).thenReturn(List.of(genre));
 
         when(author.getId()).thenReturn("Tolkien");
         when(genre.getID()).thenReturn("Fantasy");
         when(condition.toString()).thenReturn("USED");
 
-        List<US016_PublicationSampleDTO> result = mapper.fromDomainList(List.of(publicationSample));
+        // act
+        List<US016PublicationSampleDTO> result = mapper.fromDomainList(List.of(publicationSample));
 
+        // assert
         assertNotNull(result);
         assertEquals(1, result.size());
 
-        US016_PublicationSampleDTO dto = result.get(0);
+        US016PublicationSampleDTO dto = result.get(0);
         assertNotNull(dto);
         assertEquals(publicationSampleId, dto.publicationSampleID());
         assertEquals("The Hobbit", dto.title());
@@ -169,22 +180,22 @@ class US016_PublicationSampleMapperTest {
 
     @Test
     void fromDomainList_shouldThrowInstanceNotFoundException_whenBibliographicalDataDoesNotExist() {
-        PublicationSample publicationSample = mock(PublicationSample.class);
-        BibliographicalDataID bibliographicalDataId = mock(BibliographicalDataID.class);
 
+        // arrange
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
         when(bdRepository.findBibliographicalDataById(bibliographicalDataId))
                 .thenReturn(Optional.empty());
 
+        // act
         InstanceNotFoundException ex = assertThrows(
                 InstanceNotFoundException.class,
                 () -> mapper.fromDomainList(List.of(publicationSample))
         );
 
+        // assert
         assertEquals(
                 "BibliographicalData not found for id: " + bibliographicalDataId,
                 ex.getMessage()
         );
     }
 }
-

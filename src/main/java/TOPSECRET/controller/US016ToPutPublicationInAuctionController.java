@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.IAuctionRepository;
-import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
@@ -12,8 +11,8 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import javax.management.InstanceAlreadyExistsException;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.US016_PublicationSampleDTO;
-import TOPSECRET.dto.US016_PublicationSampleMapper;
+import TOPSECRET.dto.US016PublicationSampleDTO;
+import TOPSECRET.dto.US016PublicationSampleMapper;
 
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
@@ -33,7 +32,7 @@ public class US016ToPutPublicationInAuctionController {
     private final IListingRepository listingRepository;
     private final IAuctionRepository auctionRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
-    private final US016_PublicationSampleMapper mapper;
+    private final US016PublicationSampleMapper mapper;
 
     /**
      * Creates a new controller with the repositories and mapper required for this use case.
@@ -42,10 +41,9 @@ public class US016ToPutPublicationInAuctionController {
      * @param listingRepository repository used to create and store listings
      * @param auctionRepository repository used to create and store auctions
      * @param publicationSampleRepository repository used to retrieve publication samples
-     * @param bdRepository repository used to retrieve bibliographical data
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016_PublicationSampleMapper mapper) {
+    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.libraryRepo = libraryRepo;
         this.listingRepository = listingRepository;
@@ -65,7 +63,7 @@ public class US016ToPutPublicationInAuctionController {
      * @throws InstanceNotFoundException if the user has no library or if the bibliographical
      * data for any publication sample cannot be found
      */
-    public List<US016_PublicationSampleDTO> getAllPublicationsInUserLibrary(UserId userId) throws InstanceNotFoundException {
+    public List<US016PublicationSampleDTO> getAllPublicationsInUserLibrary(UserId userId) throws InstanceNotFoundException {
 
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null!");
@@ -98,6 +96,19 @@ public class US016ToPutPublicationInAuctionController {
      * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
     public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
+
+        if (listingTitle == null
+                || selectedPublicationsID == null
+                || initialPrice == null
+                || shortDescription == null
+                || sellerId == null
+                || pictures == null
+                || initialDate == null
+                || finalDate == null
+                || buyOutPrice == null
+        ) {
+            throw new IllegalArgumentException("All fields must be non-null.");
+        }
 
         Listing auctionListing = listingRepository.createAndAdd(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
 

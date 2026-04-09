@@ -14,12 +14,12 @@ import java.util.Map;
 
 /**
  * Mapper responsible for converting {@link PublicationSample} domain objects
- * into {@link US016_PublicationSampleDTO} instances.
+ * into {@link US016PublicationSampleDTO} instances.
  * <p>
  * It uses the bibliographical data repository to obtain the bibliographical data
  * associated with each publication sample before performing the conversion.
  */
-public class US016_PublicationSampleMapper {
+public class US016PublicationSampleMapper {
 
     private final IBibliographicalDataRepository _bdRepository;
 
@@ -28,7 +28,7 @@ public class US016_PublicationSampleMapper {
      *
      * @param bdRepo repository used to retrieve bibliographical data
      */
-    public US016_PublicationSampleMapper(IBibliographicalDataRepository bdRepo) {
+    public US016PublicationSampleMapper(IBibliographicalDataRepository bdRepo) {
         this._bdRepository = bdRepo;
     }
 
@@ -40,9 +40,9 @@ public class US016_PublicationSampleMapper {
      * @param bd the bibliographical data associated with the publication sample
      * @return a DTO containing the mapped publication sample information
      */
-    public static US016_PublicationSampleDTO fromDomain(PublicationSample publicationSample, BibliographicalData bd) {
+    public static US016PublicationSampleDTO fromDomain(PublicationSample publicationSample, BibliographicalData bd) {
 
-        return new US016_PublicationSampleDTO(
+        return new US016PublicationSampleDTO(
                 publicationSample.id(),
                 bd.getTitle(),
                 bd.getAuthors().stream().map(AuthorId::getId).toList(),
@@ -64,7 +64,7 @@ public class US016_PublicationSampleMapper {
      * @throws InstanceNotFoundException if the bibliographical data for any publication sample
      * cannot be found
      */
-    public List<US016_PublicationSampleDTO> fromDomainList(List<PublicationSample> publicationSamples) throws InstanceNotFoundException {
+    public List<US016PublicationSampleDTO> fromDomainList(List<PublicationSample> publicationSamples) throws InstanceNotFoundException {
 
         Map<BibliographicalDataID, BibliographicalData> bibliographicalDataMap = new HashMap<>();
 
