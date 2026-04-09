@@ -49,7 +49,7 @@ class IListingRepository {
 
 class IPublicationSampleRepository {
   - publicationSamples : List<PublicationSample>
-  + findItemsByIdsAndPublication(listOfPubSampleIds, publicationSampleId) : List<PublicationSample>
+  + findItemsByIdsAndPublication(listOfPubSampleIds, publicationId) : List<PublicationSample>
 }
 
 ' -------------------------
@@ -104,19 +104,19 @@ US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023Bibli
 US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023PublicationSampleMapper : creates DTO
 
 ' --- BD Repository ---
-IBibliographicalDataRepository "1" --> "*" BibliographicalData : stores
+IBibliographicalDataRepository "1" --> "*" BibliographicalData : persists
 
 ' --- Listing Repository ---
-IListingRepository "1" --> "*" Listing : stores
+IListingRepository "1" --> "*" Listing : persists
 
 ' --- PubSample Repository ---
-IPublicationSampleRepository "1" --> "*" PublicationSample : stores
+IPublicationSampleRepository "1" --> "*" PublicationSample : persists
 
 ' --- BD ---
 BibliographicalData "1" --> "1" BibliographicalDataId : has
 
 ' --- Listing ---
-Listing "1" --> "1..*" PublicationSampleId : contains
+Listing "1" --> "1..*" PublicationSampleId : points to
 Listing "*" --> "1" SaleType : for sale in
 
 ' --- PublicationSample ---
