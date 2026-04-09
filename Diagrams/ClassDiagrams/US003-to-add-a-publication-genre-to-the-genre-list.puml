@@ -1,50 +1,63 @@
 @startuml
-title US003 - Register Genre to Official Genre List
+title US003 - To add a publication genre to the genre list
 
 ' _____________________
 ' DOMAIN
 ' _____________________
 
+interface IGenreRepository {
+  + createAndAdd(genreType : String) : Genre
+  + findByTitle(title : String) : Genre
+  + getAllGenres() : List<Genre>
+}
+
 class Genre {
+  - _id : GenreID
   - _genreType : String
-  + getTitle() : String
+  + id() : GenreID
   + getGenreType() : String
+  + sameAs(object : Object) : boolean
+}
+
+class GenreID {
+  - genreID : String
+  + getID() : String
 }
 
 class GenreFactory {
-  + createGenre(genreType : String) : Genre
+  + create(genreType : String) : Genre
 }
 
-GenreFactory ..> Genre : creates
+Genre "1" --> "1" GenreID : identified by
+GenreFactory ..> Genre : <<creates>>
 
 ' ______________________
 ' APPLICATION
 ' ______________________
 
 class US003ToRegisterGenreController {
-  - _genreRepository : GenreRepository
-  + registerGenre(genreType : String) : Genre
+  - _genreRepository : IGenreRepository
+  + registerGenre(genreType : String) : boolean
 }
 
 ' ___________________
 ' PERSISTENCE
 ' ___________________
 
-class GenreRepository {
+class GenreRepositoryMem {
   - _genres : List<Genre>
   - _genreFactory : GenreFactory
-  + createAndAddGenre(genreType : String) : Genre
-  + getAllGenres() : List<Genre>
   - exists(genre : Genre) : boolean
 }
 
-GenreRepository "1" --> "*" Genre : stores
+GenreRepositoryMem ..|> IGenreRepository : <<implements>>
+GenreRepositoryMem "1" --> "*" Genre : stores
+GenreRepositoryMem --> GenreFactory : has
 
 ' _____________________
 ' DEPENDENCIES
 ' _____________________
 
-US003ToRegisterGenreController ..> GenreRepository : uses
-GenreRepository --> GenreFactory : has
+US003ToRegisterGenreController --> IGenreRepository : uses
 
 @enduml

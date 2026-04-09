@@ -103,6 +103,29 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return Optional.empty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle){
+
+        if(bdTitle == null){
+            throw new NullPointerException("Title must not be null");
+        }
+
+        if(bdTitle.isBlank()){
+            throw new IllegalArgumentException("Title must not be blank");
+        }
+
+        String normalizedBdTitle = bdTitle.toLowerCase().trim();
+
+        for(BibliographicalData bd : _bdList){
+            if(bd.getTitle().toLowerCase().trim().equals(normalizedBdTitle)){
+                return Optional.of(bd.id());
+            }
+        }
+
+        return Optional.empty();
+    }
 
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -116,6 +139,21 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
     @Override
     public List<BibliographicalData> getAllPublicationsBD() {
         return List.copyOf(_bdList);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> getAllTitles(){
+        List<String> listOfTitles = new ArrayList<>();
+
+        for(BibliographicalData bd: _bdList){
+            String title = bd.getTitle();
+            listOfTitles.add(title);
+        }
+
+        return listOfTitles;
     }
 
 }

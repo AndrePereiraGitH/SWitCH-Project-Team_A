@@ -49,11 +49,6 @@ public class GenreID implements DomainID {
         return Objects.hash(genreID);
     }
 
-    /**
-     * Returns the underlying string value of this ID.
-     *
-     * @return the ID value; never {@code null} or blank
-     */
     public String getID() {
         return genreID;
     }
