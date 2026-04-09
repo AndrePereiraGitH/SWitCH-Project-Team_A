@@ -18,31 +18,31 @@ package TOPSECRET.dto;
 
 public class CollectionOfPublicationsDTO_US020 {
 
-    private final String listName;
-    private final String ownerUsername;
+    private final String _collectionName;
+    private final String _ownerName;
 
     /**
      * Constructs a {@code CollectionOfPublicationsDTO}.
      *
-     * @param listName       the name of the publication list (must not be null or blank)
-     * @param ownerUsername  the username of the collection owner (must not be null or blank)
+     * @param collectionName       the name of the publication list (must not be null or blank)
+     * @param ownerName  the username of the collection owner (must not be null or blank)
      * @throws IllegalArgumentException if {@code listName} or {@code ownerUsername}
      *                                  is null or blank
      */
-    public CollectionOfPublicationsDTO_US020(String listName, String ownerUsername)
+    public CollectionOfPublicationsDTO_US020(String collectionName, String ownerName)
     {
-        if (listName == null || listName.isBlank()) {
+        if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("List name can't be null/blank.");
         }
-        if (ownerUsername == null || ownerUsername.isBlank()) {
+        if (ownerName == null || ownerName.isBlank()) {
             throw new IllegalArgumentException("Owner username can't be null/blank.");
         }
-        this.listName = listName.trim();
-        this.ownerUsername = ownerUsername.trim();
+        this._collectionName = collectionName.trim();
+        this._ownerName = ownerName.trim();
     }
 
-    public String getListName() { return listName; }
+    public String getListName() { return _collectionName; }
 
-    public String getOwnerUsername() { return ownerUsername; }
+    public String getOwnerUsername() { return _ownerName; }
 
 }
