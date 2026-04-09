@@ -52,5 +52,5 @@ public interface ICollectionOfPublicationsRepository {
      * @return list of collections of the given genre that are public
      * @throws IllegalArgumentException if genreId is null
      */
-    List<CollectionOfPublications> findPublicByGenre(GenreID genreId) throws IllegalArgumentException;
+    List<CollectionOfPublications> findPublicCollectionsByGenre(GenreID genreId) throws IllegalArgumentException;
 }

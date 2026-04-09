@@ -22,7 +22,6 @@ class CollectionOfPublicationsRepositoryMemTest {
     @BeforeEach
     void setUp() {
         factory = mock(CollectionOfPublicationsFactory.class);
-        sut = new CollectionOfPublicationsRepositoryMem(factory);
     }
 
     @Test
@@ -34,6 +33,9 @@ class CollectionOfPublicationsRepositoryMemTest {
 
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
+        // Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> sut.getUserCollections(null));
@@ -43,8 +45,10 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void shouldReturnCollectionsOwnedByUser() throws Exception {
 
+        // Arrange
         UserId user = mock(UserId.class);
         UserId otherUser = mock(UserId.class);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
         CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
         CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
@@ -52,6 +56,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         when(collection1.getOwnerId()).thenReturn(user);
         when(collection2.getOwnerId()).thenReturn(otherUser);
 
+        // Act
         // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
         Field field = CollectionOfPublicationsRepositoryMem.class
                 .getDeclaredField("_collectionOfPublicationsList");
@@ -63,7 +68,6 @@ class CollectionOfPublicationsRepositoryMemTest {
         list.add(collection1);
         list.add(collection2);
 
-        // ACT
         List<CollectionOfPublications> result =
                 sut.getUserCollections(user);
 
@@ -77,8 +81,11 @@ class CollectionOfPublicationsRepositoryMemTest {
 
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
+        // Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> sut.findPublicByGenre(null));
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenre(null));
     }
 
 
@@ -89,6 +96,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         UserId userId = mock(UserId.class);
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
         CollectionOfPublications collection1;
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
         // Act
         when(factory.create("Collection test", desiredGenre, userId)).thenReturn(collectionDouble);
@@ -97,7 +105,7 @@ class CollectionOfPublicationsRepositoryMemTest {
 
         collection1 = sut.createAndAdd(userId, "Collection test", desiredGenre);
 
-        List<CollectionOfPublications> result = sut.findPublicByGenre(desiredGenre);
+        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenre(desiredGenre);
 
         // Assert
         assertNotNull(result);
@@ -110,9 +118,12 @@ class CollectionOfPublicationsRepositoryMemTest {
     void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
         GenreID desiredGenres = mock(GenreID.class);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
-        List<CollectionOfPublications> result = sut.findPublicByGenre(desiredGenres);
+        // Act
+        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenre(desiredGenres);
 
+        // Assert
         assertNotNull(result);
         assertEquals(0, result.size());
     }

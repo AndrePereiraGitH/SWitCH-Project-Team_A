@@ -3,16 +3,19 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
-import TOPSECRET.repository.*;
+import TOPSECRET.dto.US020_CollectionOfPublicationsDTO;
+import TOPSECRET.dto.US020_CollectionOfPublicationsDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +29,8 @@ class US020PublicListByGenreControllerTest {
     ICollectionOfPublicationsRepository collectionRepo;
     IUserRepository userRepo;
     US020PublicListByGenreController controller;
-    GenreRepositoryMem genreRepo;
+    IGenreRepository genreRepo;
+    US020_CollectionOfPublicationsDTOMapper mapper;
 
     Genre genreDouble1 = mock(Genre.class);
     Genre genreDouble2 = mock(Genre.class);
@@ -34,15 +38,16 @@ class US020PublicListByGenreControllerTest {
     @BeforeEach
     void setup() {
         collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        genreRepo = mock(GenreRepositoryMem.class);
+        genreRepo = mock(IGenreRepository.class);
         userRepo = mock(IUserRepository.class);
-        controller = new US020PublicListByGenreController(genreRepo, collectionRepo , userRepo);
+        mapper = mock(US020_CollectionOfPublicationsDTOMapper.class);
     }
 
 
     @Test
     void getAllGenresDelegatesToGenreRepoAndReturnsResult() {
         //Arrange
+        controller = new US020PublicListByGenreController(genreRepo, collectionRepo , userRepo, mapper);
         List<Genre> expected = List.of(genreDouble1, genreDouble2);
 
         //Act
@@ -57,33 +62,58 @@ class US020PublicListByGenreControllerTest {
 
     @Test
     void shouldThrowWhenGenreIsNull() {
+        // Arrange
+        controller = new US020PublicListByGenreController(genreRepo, collectionRepo , userRepo, mapper);
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> controller.getPublicListsByGenre(null));
     }
 
 
     @Test
-    void getPublicListsByGenreDelegatesToMapperReturnsListOfCollections() {
+    void getPublicListsByGenreDelegatesToRepoReturnsListOfCollections() {
         // Arrange
-        GenreID desiredGenre = mock(GenreID.class);
+        controller = new US020PublicListByGenreController(genreRepo, collectionRepo , userRepo, mapper);
 
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        UserId ownerId = mock(UserId.class);
-        User user = mock(User.class);
+        GenreID genreId = mock(GenreID.class);
 
-        when(collectionRepo.findPublicByGenre(desiredGenre)).thenReturn(List.of(collection));
-        when(collection.getCollectionName()).thenReturn("Collection test");
-        when(collection.getOwnerId()).thenReturn(ownerId);
-        when(userRepo.findUserByID(ownerId)).thenReturn(Optional.of(user));
-        when(user.getUserName()).thenReturn("Alice");
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+
+        UserId ownerId1 = mock(UserId.class);
+        UserId ownerId2 = mock(UserId.class);
+
+        User user1 = mock(User.class);
+        User user2 = mock(User.class);
+
+        List<CollectionOfPublications> collections = List.of(c1, c2);
+        List<US020_CollectionOfPublicationsDTO> expectedDtos = List.of(
+                mock(US020_CollectionOfPublicationsDTO.class),
+                mock(US020_CollectionOfPublicationsDTO.class)
+        );
+
+        when(collectionRepo.findPublicCollectionsByGenre(genreId)).thenReturn(collections);
+
+        when(c1.getOwnerId()).thenReturn(ownerId1);
+        when(c2.getOwnerId()).thenReturn(ownerId2);
+
+        when(userRepo.findUserByID(ownerId1)).thenReturn(Optional.of(user1));
+        when(userRepo.findUserByID(ownerId2)).thenReturn(Optional.of(user2));
+
+        when(user1.getUserName()).thenReturn("Alice");
+        when(user2.getUserName()).thenReturn("Bob");
+
+        Map<UserId, String> expectedOwnerNames = new HashMap<>();
+        expectedOwnerNames.put(ownerId1, "Alice");
+        expectedOwnerNames.put(ownerId2, "Bob");
+
+        when(mapper.toDTO(collections, expectedOwnerNames)).thenReturn(expectedDtos);
 
         // Act
-        List<CollectionOfPublicationsDTO_US020> result = controller.getPublicListsByGenre(desiredGenre);
+        List<US020_CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(genreId);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Collection test", result.get(0).getListName());
-        assertEquals("Alice", result.get(0).getOwnerUsername());
+        assertEquals(expectedDtos, result);
     }
 
 
@@ -91,11 +121,12 @@ class US020PublicListByGenreControllerTest {
     void shouldReturnEmptyListWhenNoListsExist()
     {
         // Arrange
+        controller = new US020PublicListByGenreController(genreRepo, collectionRepo , userRepo, mapper);
         GenreID desiredGenre = mock(GenreID.class);
 
         // Act
-        when(collectionRepo.findPublicByGenre(desiredGenre)).thenReturn(List.of());
-        List<CollectionOfPublicationsDTO_US020> result = controller.getPublicListsByGenre(desiredGenre);
+        when(collectionRepo.findPublicCollectionsByGenre(desiredGenre)).thenReturn(List.of());
+        List<US020_CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(desiredGenre);
 
         // Assert
         assertNotNull(result);

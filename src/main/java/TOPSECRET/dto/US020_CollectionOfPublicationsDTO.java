@@ -16,7 +16,7 @@ package TOPSECRET.dto;
  * This class is immutable.
  */
 
-public class CollectionOfPublicationsDTO_US020 {
+public class US020_CollectionOfPublicationsDTO {
 
     private final String _collectionName;
     private final String _ownerName;
@@ -29,7 +29,7 @@ public class CollectionOfPublicationsDTO_US020 {
      * @throws IllegalArgumentException if {@code listName} or {@code ownerUsername}
      *                                  is null or blank
      */
-    public CollectionOfPublicationsDTO_US020(String collectionName, String ownerName)
+    public US020_CollectionOfPublicationsDTO(String collectionName, String ownerName)
     {
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("List name can't be null/blank.");

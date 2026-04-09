@@ -5,7 +5,6 @@ import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsReposi
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
-import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +125,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * {@inheritDoc}
      */
     @Override
-    public List<CollectionOfPublications> findPublicByGenre(GenreID genreId) {
+    public List<CollectionOfPublications> findPublicCollectionsByGenre(GenreID genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }
