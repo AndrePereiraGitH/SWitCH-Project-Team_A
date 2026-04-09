@@ -9,13 +9,11 @@ title SSD: US013 - To get all official genres list
 actor "User" as User
 participant ":System" as System
 
-activate User
 
-    User -> System : I want to see aal official genres in the system,
+    User -> System : I want to see an official genres in the system,
     activate System
 
     System --> User : Here's the list of available genres!
     deactivate System
 
-deactivate User
 @enduml

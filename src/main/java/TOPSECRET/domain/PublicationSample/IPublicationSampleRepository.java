@@ -93,6 +93,18 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getAllPublications();
 
     /**
+     * Retrieves all publications in the system that are owned by the given user
+     * and have been added to a library.
+     *
+     * @param userId the ID of the user whose library publications are to be retrieved;
+     *               must not be {@code null}
+     * @return a list of {@link PublicationSample} objects owned by the user that are
+     *         currently in a library; never {@code null}, may be empty
+     * @throws NullPointerException if {@code userId} is {@code null}
+     */
+    List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
+
+    /**
      * Returns the subset of {@link PublicationSample} instances from the repository
      * that are not present in the provided list.
      * <p>
