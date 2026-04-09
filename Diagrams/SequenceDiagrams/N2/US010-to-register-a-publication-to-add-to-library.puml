@@ -15,7 +15,7 @@ activate UI
 UI --> User : Provide publication details
 deactivate UI
 
-User -> UI : Here are the details \n(BibliographicalDataID, UserId, PublicationStatus, EditionID, Condition)
+User -> UI : Here are the details \n(BibliographicalDataID, PublicationStatus, EditionID, Condition)
 activate UI
 
 UI -> Ctrl : registerNewPublication(bdId, userId, status, editionId, condition)
