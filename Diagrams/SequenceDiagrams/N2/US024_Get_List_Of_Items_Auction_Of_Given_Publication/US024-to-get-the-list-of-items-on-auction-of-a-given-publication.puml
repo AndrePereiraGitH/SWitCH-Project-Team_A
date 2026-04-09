@@ -11,11 +11,11 @@ participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as C
 participant ":IBibliographicalDataRepository" as bdRepo
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":IListingRepository" as listingRepo
-participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
+participant "listOfAuctionListingsOfGivenPublication:List<Listing>" as aucListing
 participant ":Listing" as listing
-participant ":US024AuctionMapper" as mapper
-participant "listOfAuctionDTO:List<US024AuctionDTO>" as listOfAuctionDTO
-participant "auctionDTO:US024AuctionDTO" as auctionDTO
+participant ":US024AucListingMapper" as mapper
+participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
+participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
 
 ' Section 1 - Get all publication titles
 Buyer -> UI : I want to get the list of items\n on auction of a given publication
@@ -64,27 +64,27 @@ loop for each listing in ListingRepository
     activate listing
     listing --> listingRepo: true
     deactivate listing
-    listingRepo -> listingRepo: listOfAuctionOfGivenPublication.add(listing)
+    listingRepo -> listingRepo: listOfAuctionListingsOfGivenPublication.add(listing)
 end
 
-listingRepo --> Ctrl: listOfAuctionOfGivenPublication
+listingRepo --> Ctrl: listOfAuctionListingsOfGivenPublication
 deactivate listingRepo
 
 ' Section 3 - Build and return DTO
-Ctrl -> mapper: toDTOs(listOfAuctionOfGivenPublication)
+Ctrl -> mapper: toDTOs(listOfAuctionListingsOfGivenPublication)
 activate mapper
 
-mapper -->> listOfAuctionDTO**: <<create>>
+mapper -->> listOfAucListingDTO**: <<create>>
 
-loop for each auction in listOfAuctionOfGivenPublication
-    mapper -> auctionDTO **: toDTO(auction)
-    mapper -> mapper: listOfAuctionDTO.add(auctionDTO)
+loop for each aucListing in listOfAuctionListingsOfGivenPublication
+    mapper -> auctionListingDTO **: toDTO(aucListing)
+    mapper -> mapper: listOfAuctionListingsDTO.add(aucListingDTO)
 end
 
-mapper --> Ctrl: listOfAuctionDTO
+mapper --> Ctrl: listOfAuctionListingsDTO
 deactivate mapper
 
-Ctrl --> UI: listOfAuctionDTO
+Ctrl --> UI: listOfAuctionListingsDTO
 deactivate Ctrl
 
 UI --> Buyer: Here is the list of auction listings\n for the selected publication.

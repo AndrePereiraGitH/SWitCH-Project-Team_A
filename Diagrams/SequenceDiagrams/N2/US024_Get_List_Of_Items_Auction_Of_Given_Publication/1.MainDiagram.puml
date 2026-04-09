@@ -6,10 +6,14 @@ title US024 - To get the list of items on auction of a given publication (Main)
 actor Buyer
 participant ":UI024" as UI
 participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
-participant ":BibliographicalDataRepository" as bdRepo
-participant ":PublicationSampleRepository" as pubSampleRepo
-participant ":ListingRepository" as listingRepo
-participant ":US024AuctionMapper" as mapper
+participant ":IBibliographicalDataRepository" as bdRepo
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IListingRepository" as listingRepo
+participant "listOfAuctionListingsOfGivenPublication:List<Listing>" as aucListing
+participant ":Listing" as listing
+participant ":US024AucListingMapper" as mapper
+participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
+participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
 
 ' --- Start ---
 Buyer -> UI : I want to get the list of items\n on auction of a given publication

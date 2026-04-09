@@ -1,41 +1,24 @@
 @startuml
 hide footbox
-autonumber
-
+autonumber 18
 title US024 - Build Auction DTOs
 
 participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
-participant ":US024AuctionMapper" as mapper
-participant "listOfAuctionOfGivenPublication:List<Listing>" as aucListing
-participant "auctionDTO:US024AuctionDTO" as auctionDTO
-participant "listOfAuctionDTO:List<US024AuctionDTO>" as listOfAuctionDTO
-participant "auctionDTO:US024AuctionDTO" as auctionDTO
+participant ":US024AucListingMapper" as mapper
+participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
+participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
 
-note over Ctrl, mapper #E3F2FD
-<b>Fragment</b>
----
-This diagram is a fragment of the main sequence diagram.
-end note
-
-note over Ctrl, mapper #E3F2FD
-<b>Navigation</b>
----
-[[1.MainDiagram.puml Return to Main Diagram]]
-end note
-
-
-
-Ctrl -> mapper : toDTOs(listOfAuctionOfGivenPublication)
+Ctrl -> mapper: toDTOs(listOfAuctionListingsOfGivenPublication)
 activate mapper
 
-mapper -->> listOfAuctionDTO ** : <<create>>
+mapper -->> listOfAucListingDTO**: <<create>>
 
-loop for each auction in listOfAuctionOfGivenPublication
-    mapper -> auctionDTO ** : toDTO(auction)
-    mapper -> mapper : listOfAuctionDTO.add(auctionDTO)
+loop for each aucListing in listOfAuctionListingsOfGivenPublication
+    mapper -> auctionListingDTO **: toDTO(aucListing)
+    mapper -> mapper: listOfAuctionListingsDTO.add(aucListingDTO)
 end
 
-mapper --> Ctrl : listOfAuctionDTOs
+mapper --> Ctrl: listOfAuctionListingsDTO
 deactivate mapper
 
 @enduml

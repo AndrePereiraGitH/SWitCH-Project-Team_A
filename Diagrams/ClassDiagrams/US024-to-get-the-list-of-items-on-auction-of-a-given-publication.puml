@@ -9,15 +9,15 @@ class UI024 {
 ' ── Application Layer ──────────────────────────────────────
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
   +getAllPublicationTitles(): List<String>
-  +getAuctionListingsByTitle(title: String): List<US024AuctionDTO>
+  +getAuctionListingsByTitle(title: String): List<US024AucListingDTO>
 }
 
-class US024AuctionMapper {
-  +toDTOs(listOfAuction: List<Listing>): List<US024AuctionDTO>
-  +toDTO(auction: Listing): US024AuctionDTO
+class US024AucListingMapper {
+  +toDTOs(listOfAucListings: List<Listing>): List<US024AucListingDTO>
+  +toDTO(aucListing: Listing): US024AucListingDTO
 }
 
-class US024AuctionDTO {
+class US024AucListingDTO {
 }
 
 ' ── Domain Layer ───────────────────────────────────────────
@@ -55,13 +55,13 @@ UI024 ..> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
 US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IBibliographicalDataRepository : uses
 US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IPublicationSampleRepository : uses
 US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IListingRepository : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> US024AuctionMapper : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> US024AucListingMapper : uses
 
 IBibliographicalDataRepository "1" --> "*" BibliographicalData : manages
 IPublicationSampleRepository "1" --> "*" PublicationSample : manages
 IListingRepository "1" --> "*" Listing : manages
 
-US024AuctionMapper ..> Listing : maps from
-US024AuctionMapper ..> US024AuctionDTO : creates
+US024AucListingMapper ..> Listing : maps from
+US024AucListingMapper ..> US024AucListingDTO : creates
 
 @enduml

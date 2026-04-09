@@ -1,37 +1,14 @@
 @startuml
 hide footbox
-autonumber
-
+autonumber 2
 title US024 - Get All Publication Titles
 
-participant ":UI024" as UI
 participant ":US024GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
-participant ":BibliographicalDataRepository" as bdRepo
+participant ":IBibliographicalDataRepository" as bdRepo
 
-note over UI, Ctrl #E3F2FD
-<b>Fragment</b>
----
-This diagram is a fragment of the main sequence diagram.
-end note
-
-note over UI, Ctrl #E3F2FD
-<b>Navigation</b>
----
-[[1.MainDiagram.puml Return to Main Diagram]]
-end note
-
-
-
-UI -> Ctrl : getAllPublicationTitles()
-activate Ctrl
-
-
-Ctrl -> bdRepo : getAllTitles()
+Ctrl -> bdRepo: getAllTitles()
 activate bdRepo
-bdRepo --> Ctrl : listOfTitles
+bdRepo --> Ctrl: listOfTitles
 deactivate bdRepo
-
-Ctrl --> UI : listOfTitles
-deactivate Ctrl
 
 @enduml
