@@ -7,44 +7,56 @@ title US001 - To register a user in the system
 
 actor Administrator
 participant UI
-participant RegisterUserController
-participant UserRepository
+participant "RegisterUserController" as Controller
+participant "UserRepository" as Repository
+participant "UserFactory" as Factory
+participant "User" as User
 participant "users : List<User>" as UserList
-participant User
 
 Administrator -> UI : I want to register a user in the system
 activate UI
 
-UI -> RegisterUserController : registerUser(username, contact, profile, role)
-activate RegisterUserController
+UI -> Controller : registerUser(username, contact, profile, role)
+activate Controller
 
-RegisterUserController -> UserRepository : createAndAddUser(username, contact, profile, role)
+Controller -> Repository : exists(username)
+activate Repository
 
-activate UserRepository
-
-loop for each user in users
-
-    UserRepository -> User : getUserName()
+loop for each user in _userList
+    Repository -> User : getUserName()
     activate User
-    User --> UserRepository : userName
+    User --> Repository : userName
     deactivate User
-    UserRepository -> UserRepository : equals(username)
+    Repository -> Repository : userName.equals(username)
 end
 
-UserRepository -> User : new User(username, contact, profile, role)
+Repository --> Controller : false
+deactivate Repository
+
+Controller -> Factory : create(username, contact, profile, role)
+activate Factory
+
+Factory -> User : new User(username, contact, profile, role)
 activate User
-User --> UserRepository : success
+User --> Factory : user
 deactivate User
 
-UserRepository -> UserList : add(newUser)
+Factory --> Controller : user
+deactivate Factory
+
+Controller -> Repository : save(user)
+activate Repository
+
+Repository -> UserList : add(user)
 activate UserList
-UserList --> UserRepository : success
+UserList --> Repository : success
 deactivate UserList
 
-UserRepository --> RegisterUserController : success
-deactivate UserRepository
-RegisterUserController --> UI : success
-deactivate RegisterUserController
+Repository --> Controller : success
+deactivate Repository
+
+Controller --> UI : success
+deactivate Controller
 
 UI --> Administrator : New user has been registered in the system
 deactivate UI

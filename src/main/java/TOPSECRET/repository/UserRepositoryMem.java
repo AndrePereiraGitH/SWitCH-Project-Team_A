@@ -1,8 +1,5 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
@@ -28,29 +25,7 @@ public class UserRepositoryMem implements IUserRepository {
     //================================================================================
 
     @Override
-    public User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
-
-        if (exists(username)) {
-            throw new IllegalArgumentException("Username already exists");
-        }
-
-        User user = _userFactory.create(username, contact, profile, userRole);
-        add(user);
-        return user;
-    }
-
-    @Override
-    public boolean exists(String username) {
-        for (User user : _userList) {
-            if (user.getUserName().equals(username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void add(User user) {
+    public void save(User user) {
 
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -61,6 +36,16 @@ public class UserRepositoryMem implements IUserRepository {
         }
 
         _userList.add(user);
+    }
+
+    @Override
+    public boolean exists(String username) {
+        for (User user : _userList) {
+            if (user.getUserName().equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -87,5 +72,4 @@ public class UserRepositoryMem implements IUserRepository {
     public int getUserCount() {
         return _userList.size();
     }
-
 }

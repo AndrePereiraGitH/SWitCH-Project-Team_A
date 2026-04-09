@@ -34,7 +34,7 @@ public class UserFactory {
      * @return a new valid {@link User} instance
      * @throws IllegalArgumentException if any business rule is violated
      */
-    public static User create(String username, Contact contact, Profile profile, UserRole userRole) {
+    public User create(String username, Contact contact, Profile profile, UserRole userRole) {
         return new User(username, contact, profile, userRole);
     }
 }
