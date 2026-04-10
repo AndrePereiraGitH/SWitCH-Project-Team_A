@@ -7,11 +7,10 @@ title US001 - To register a user in the system
 
 actor Administrator
 participant UI
-participant "RegisterUserController" as Controller
-participant "UserRepository" as Repository
+participant "US001ToRegisterUserController" as Controller
+participant "IUserRepository" as Repository
 participant "UserFactory" as Factory
 participant "User" as User
-participant "users : List<User>" as UserList
 
 Administrator -> UI : I want to register a user in the system
 activate UI
@@ -33,24 +32,21 @@ end
 Repository --> Controller : false
 deactivate Repository
 
-Controller -> Factory : create(username, contact, profile, role)
+Controller -> Repository : create(username, contact, profile, role)
+activate Repository
+
+Repository -> Factory : create(username, contact, profile, role)
 activate Factory
 
-Factory -> User : new User(username, contact, profile, role)
+Factory -->> User : create(username, contact, profile, role)
 activate User
 User --> Factory : user
 deactivate User
 
-Factory --> Controller : user
+Factory --> Repository : user
 deactivate Factory
 
-Controller -> Repository : save(user)
-activate Repository
-
-Repository -> UserList : add(user)
-activate UserList
-UserList --> Repository : success
-deactivate UserList
+Repository -> Repository : save(user)
 
 Repository --> Controller : success
 deactivate Repository

@@ -1,5 +1,8 @@
 package TOPSECRET.domain.User;
 
+import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.Optional;
@@ -7,7 +10,7 @@ import java.util.Optional;
 public interface IUserRepository {
 
     boolean exists(String username);
-    void save(User user);
+    UserId create(String username, Contact contact, Profile profile, UserRole userRole);
 
     /**
      * Finds the unique identifier of a user by their username.
@@ -18,5 +21,4 @@ public interface IUserRepository {
      * @throws IllegalArgumentException if {@code username} is null or blank
      */
     Optional<UserId> findUserIdByUsername(String username);
-
 }

@@ -8,13 +8,14 @@ interface IUserRepository {
 
 class UserRepositoryMem {
   -_userList : List<User>
+  -_userFactory : UserFactory
 }
 
 class UserFactory {
   +create(username: String, contact: Contact, profile: Profile, userRole: UserRole) : User
 }
 
-class RegisterUserController {
+class US001ToRegisterUserController {
   -userRepository : IUserRepository
   -userFactory : UserFactory
   +registerUser(username: String, contact: Contact, profile: Profile, userRole: UserRole) : void
@@ -29,8 +30,8 @@ class User {
   +getUserName() : String
 }
 
-RegisterUserController "1" ..> "1" IUserRepository : uses
-RegisterUserController "1" ..> "1" UserFactory : uses
+US001ToRegisterUserController "1" ..> "1" IUserRepository : uses
+US001ToRegisterUserController "1" ..> "1" UserFactory : uses
 UserRepositoryMem ..|> IUserRepository : implements
 UserRepositoryMem "1" --> "*" User : stores
 UserFactory ..> User : creates
