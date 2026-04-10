@@ -78,7 +78,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         libraryDouble = mock(Library.class);
         LibraryId libraryId = new LibraryId("libId1");
         when(libraryDouble.id()).thenReturn(libraryId);
-        when(libraryRepoDouble.getLibraryOfUser(userId)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.getLibraryByUserId(userId)).thenReturn(libraryDouble);
 
         // Publication Samples
         pubSample1Double = mock(PublicationSample.class);
@@ -163,7 +163,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     @Test
     void findLibraryPublicationsAvailableForSale_ShouldThrowExceptionWhenLibraryNotFound() throws InstanceNotFoundException {
         // Arrange
-        when(libraryRepoDouble.getLibraryOfUser(userId)).thenReturn(null);
+        when(libraryRepoDouble.getLibraryByUserId(userId)).thenReturn(null);
 
         US015ToPutPublicationInDirectSaleController controller =
                 new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,

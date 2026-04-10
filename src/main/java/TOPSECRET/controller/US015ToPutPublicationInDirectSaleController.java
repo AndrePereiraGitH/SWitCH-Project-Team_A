@@ -84,7 +84,7 @@ public class US015ToPutPublicationInDirectSaleController {
     public List<US015PublicationSampleDTO> findLibraryPublicationsAvailableForSale(UserId userId) throws InstanceNotFoundException {
 
         // finds user library
-        Library library = _libraryRepo.getLibraryOfUser(userId);
+        Library library = _libraryRepo.getLibraryByUserId(userId);
         if (library == null) {
             throw new InstanceNotFoundException("Library not found for user");
         }
