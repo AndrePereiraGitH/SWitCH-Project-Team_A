@@ -197,7 +197,7 @@ class LibraryRepositoryMemTest {
         LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
         repo.createAndAdd("My Library", userDouble);
 
-        Library result = repo.getLibraryOfUser(userDouble);
+        Library result = repo.getLibraryByUserId(userDouble);
         assertEquals(libraryDouble, result);
     }
 
@@ -208,7 +208,7 @@ class LibraryRepositoryMemTest {
 
         assertThrows(
                 NullPointerException.class,
-                () -> repo.getLibraryOfUser(null)
+                () -> repo.getLibraryByUserId(null)
         );
     }
 
@@ -222,7 +222,7 @@ class LibraryRepositoryMemTest {
 
         assertThrows(
                 InstanceNotFoundException.class,
-                () -> repo.getLibraryOfUser(userDouble)
+                () -> repo.getLibraryByUserId(userDouble)
         );
     }
 
@@ -246,8 +246,8 @@ class LibraryRepositoryMemTest {
         repo.createAndAdd("Library A", userDouble1);
         repo.createAndAdd("Library B", userDouble2);
 
-        assertEquals(libraryDouble1, repo.getLibraryOfUser(userDouble1));
-        assertEquals(libraryDouble2, repo.getLibraryOfUser(userDouble2));
+        assertEquals(libraryDouble1, repo.getLibraryByUserId(userDouble1));
+        assertEquals(libraryDouble2, repo.getLibraryByUserId(userDouble2));
     }
 
 

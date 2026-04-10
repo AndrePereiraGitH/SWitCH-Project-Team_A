@@ -1,0 +1,151 @@
+@startuml
+autonumber
+hide footbox
+title US0016 - Put a publication from my library for sale in an auction
+
+box #whitesmoke
+    actor User
+    participant ":UI" as UI
+end box
+
+participant ":US016ToPutPublicationInAuctionController" as ctrl
+
+participant ":ILibraryRepository" as LibRepo
+participant ":IPublicationSampleRepository" as pubRepo
+participant "listOfPublications \n :List<PublicationSample>" as listPub
+participant "listOfPublicationSamples \n :List<PublicationSample>" as listPubSelected
+
+
+participant ":PublicationSampleMapper_US016" as pubMapper
+
+participant "listOfPublicationsDTO \n: List<PublicationSampleDTO" as listPubDTO
+
+participant ":PublicationSample" as pubSample
+
+
+
+
+participant ":ListingRepository" as ListingRepo
+
+participant ":ListingFactory" as ListingFactory
+
+participant "listing :Listing" as listing
+participant ":IAuctionRepository" as AucRepo
+
+participant ":AuctionFactory" as AuctionFactory
+
+
+
+
+
+User -> UI : I want to sell a publication of my library as an auction"
+activate UI
+
+/' ====== GET LIST OF PUBLICATIONS IN LIBRARY ========= '/
+UI -> ctrl : getAllPublicationsInUserLibrary(userID)
+activate ctrl
+ctrl -> LibRepo : getUserLibraryId(userID)
+activate LibRepo
+LibRepo --> ctrl : userLibraryID
+deactivate LibRepo
+
+ctrl -> pubRepo : getAllPublicationsInLibrary(LibraryId)
+activate pubRepo
+
+pubRepo --> listPub **: <<create>>
+
+pubRepo --> ctrl : listOfPublications
+deactivate pubRepo
+
+'create "listOfPublicationsDTO : List<PublicationSampleDTO" as pubDtoList
+ctrl -> pubMapper : fromDomainList(listOfPublications)
+activate pubMapper
+pubMapper --> listPubDTO ** : <<create>>
+
+loop for each PublicationAmple in Library
+    '--------
+    pubMapper -> pubSample : getDetails()
+    activate pubSample
+    pubSample --> pubMapper : dtoDetails
+    deactivate pubSample
+
+
+    pubMapper -> pubMapper : toDto
+    pubMapper -> pubMapper : listOfPublicationsDTO.add(pubDto)
+end
+    pubMapper --> ctrl : listOfPublicationsDTO
+    deactivate pubMapper
+
+
+
+ctrl --> UI : listOfPublicationsDTO
+deactivate ctrl
+UI --> User : Please, select one or more publications from \n your Library: pub1_dto, pub2_dto, pub3_dto...
+deactivate UI
+
+
+/' ====== AUCTION AND LISTING REQUESTS ========= '/
+
+User -> UI : Selected publications: pub1_dto
+activate UI
+UI --> User : Please, insert listingPrice, shortDescription, \n listingTitle, seller, initialDate, finalDate, buyOutPrice.
+deactivate UI
+User -> UI : provide data
+activate UI
+UI -> ctrl : createAuctionListing(listingTitle, selectedPublicationsID, price, \n shortDescription, pictures, initialDate, finalDate, buyOutPrice)
+activate ctrl
+
+ctrl -> pubRepo : getPublicationByID(listOfPublicationsID)
+activate pubRepo
+
+'create "listOfPublicationSamples \n :List<PublicationSample>" as listPubSelected
+
+pubRepo --> listPubSelected ** : <<create>>
+
+loop for each PublicationSampleDTO in pubDtoList
+    pubRepo -> pubRepo : getPublicationByID()
+    pubRepo -> pubRepo : listOfPublicationSamples.add(publicationByDto)
+end
+
+pubRepo --> ctrl : listOfPublicationSamples
+deactivate pubRepo
+
+/' ====== ===== LISTING ========= '/
+
+ctrl -> ListingRepo : createAndAdd ( listing_title, listOfPublicationSamplesID, SaleType.AUCTION, price, shortDescription, pictures )
+activate ListingRepo
+
+ListingRepo -> ListingFactory : create(listing_title, listOfPublicationSamples, \n SaleType.AUCTION, price, shortDescription, pictures)
+activate ListingFactory
+'create "listing :Listing" as listing
+ListingFactory --> listing **: <<create>>
+ListingFactory --> ListingRepo : listing
+deactivate ListingFactory
+ListingRepo -> ListingRepo : isExistent(l1)
+ListingRepo -> ListingRepo : add(l1)
+ListingRepo --> ctrl : listing
+deactivate ListingRepo
+
+/' ====== ===== AUCTION ========= '/
+ctrl -> AucRepo : createAndAdd(listingID, initialDate, finalDate, buyOutPrice)
+activate AucRepo
+
+AucRepo -> AuctionFactory : create(listingID, initialDate, finalDate, buyOutPrice)
+activate AuctionFactory
+create "auction1:Auction" as a1
+AuctionFactory --> a1 : <<create>>
+AuctionFactory --> AucRepo : auction1
+deactivate AuctionFactory
+
+AucRepo -> AucRepo : validateAuction(auction1)
+AucRepo -> AucRepo : addAuction(auction1)
+AucRepo --> ctrl : auction1
+deactivate AucRepo
+
+/'========== RETURN SUCCESS ========== '/
+
+ctrl --> UI : success
+deactivate ctrl
+UI --> User : Your publication pub1 is now in an Auction
+deactivate UI
+@enduml

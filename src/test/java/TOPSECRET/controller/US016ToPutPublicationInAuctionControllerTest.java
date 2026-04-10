@@ -1,263 +1,498 @@
 package TOPSECRET.controller;
 
-/**
- * Unit tests for {@link US016ToPutPublicationInAuctionController}.
- * <p>
- * This test validates:
- * <ul>
- *   <li>Retrieval of publications from a user's library</li>
- *   <li>Conversion of publications to DTOs</li>
- *   <li>Validation rules when creating auction listings</li>
- *   <li>Successful auction creation and duplicate listing behavior</li>
- * </ul>
- */
-/*
+import TOPSECRET.domain.Auction.Auction;
+import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.US016PublicationSampleDTO;
+import TOPSECRET.dto.US016PublicationSampleMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 class US016ToPutPublicationInAuctionControllerTest {
 
-    private IListingRepository listingRepoDouble;
-    private IAuctionRepository auctionRepoDouble;
-    private ILibraryRepository libraryRepoDouble;
-    private IPublicationSampleRepository publicationSampleRepoDouble;
+    private ILibraryRepository libraryRepo;
+    private IListingRepository listingRepository;
+    private IAuctionRepository auctionRepository;
+    private IPublicationSampleRepository publicationSampleRepository;
+
+    private Library library;
+    private Listing listing;
+    private Auction auction;
+
     private US016ToPutPublicationInAuctionController controller;
+
+    private UserId userId;
+    private LibraryId libraryId;
+    private PublicationSample publicationSample;
+    private PublicationSampleId publicationSampleId;
+    private Price initialPrice;
+    private Price buyOutPrice;
+    private List<Picture> pictures;
+    private List<PublicationSampleId> selectedPublications;
+    private US016PublicationSampleMapper mapper;
 
     @BeforeEach
     void setUp() {
-        libraryRepoDouble = mock(ILibraryRepository.class);
-        listingRepoDouble = mock(IListingRepository.class);
-        auctionRepoDouble = mock(IAuctionRepository.class);
-        publicationSampleRepoDouble = mock(IPublicationSampleRepository.class);
-        controller = new US016ToPutPublicationInAuctionController(libraryRepoDouble, listingRepoDouble, auctionRepoDouble, publicationSampleRepoDouble);
+        // arrange
+        libraryRepo = mock(ILibraryRepository.class);
+        listingRepository = mock(IListingRepository.class);
+        auctionRepository = mock(IAuctionRepository.class);
+        publicationSampleRepository = mock(IPublicationSampleRepository.class);
+
+        userId = mock(UserId.class);
+        library = mock(Library.class);
+        libraryId = mock(LibraryId.class);
+        listing = mock(Listing.class);
+        auction = mock(Auction.class);
+        publicationSample = mock(PublicationSample.class);
+        publicationSampleId = mock(PublicationSampleId.class);
+        initialPrice = mock(Price.class);
+        buyOutPrice = mock(Price.class);
+        pictures = List.of(mock(Picture.class));
+        selectedPublications = List.of(publicationSampleId);
+        mapper = mock(US016PublicationSampleMapper.class);
+
+        controller = new US016ToPutPublicationInAuctionController(
+                libraryRepo,
+                listingRepository,
+                auctionRepository,
+                publicationSampleRepository,
+                mapper
+        );
     }
 
+    // ======================================
+    // ========= CONSTRUCTOR ================
+    // ======================================
 
     @Test
-    void getAllPublicationsInUserLibrary_shouldThrow_ifUsernameNull() {
-
-        User userDouble = mock(User.class);
-        when(userDouble.getUserName()).thenReturn(null);
-
+    void testConstructor() {
 
         // act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.getAllPublicationsInUserLibrary(userDouble.getUserName()));
-
-        // assert message
-        assertEquals("username cannot be null", exception.getMessage());
-
-    }
-
-    @Test
-    void getAllPublicationsInUserLibrary_shouldThrow_ifLibraryIsEmpty() throws InstanceNotFoundException {
-
-        // arrange
-        String username = "username";
-
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.getAllPublications()).thenReturn(List.of());
-
-        when(libraryRepoDouble.getLibraryOfUser(username)).thenReturn(libraryDouble);
-
-        // act + assert
-        EmptyStackException exception = assertThrows(EmptyStackException.class, () -> controller.getAllPublicationsInUserLibrary(username));
-
-    }
-
-    @Test
-    void getAllPublicationsInUserLibrary_shouldReturnAListOfSameSize() throws InstanceNotFoundException {
-
-        // arrange
-        String username = "username";
-
-        PublicationSample p1Double = mock(PublicationSample.class);
-        PublicationSample p2Double = mock(PublicationSample.class);
-
-        BibliographicalData bd1Double = mock(BibliographicalData.class);
-        BibliographicalData bd2Double = mock(BibliographicalData.class);
-
-        when(bd1Double.getTitle()).thenReturn("Title 1");
-        when(bd2Double.getTitle()).thenReturn("Title 2");
-
-        when(p1Double.getBibliographicalData()).thenReturn(bd1Double);
-        when(p2Double.getBibliographicalData()).thenReturn(bd2Double);
-
-        User ownerDouble = mock(User.class);
-        Condition condition = Condition.LIKE_NEW;
-
-        when(p1Double.getOwner()).thenReturn(ownerDouble);
-        when(p2Double.getOwner()).thenReturn(ownerDouble);
-
-        when(p1Double.getCondition()).thenReturn(condition);
-        when(p2Double.getCondition()).thenReturn(condition);
-
-        Library libraryDouble = mock(Library.class);
-
-        when(libraryRepoDouble.getLibraryOfUser(username)).thenReturn(libraryDouble);
-        when(libraryDouble.getAllPublications()).thenReturn(List.of(p1Double, p2Double));
-
-        // act
-        List<PublicationSampleDTO_US016> result = controller.getAllPublicationsInUserLibrary(username);
+        US016ToPutPublicationInAuctionController localController =
+                new US016ToPutPublicationInAuctionController(
+                        libraryRepo,
+                        listingRepository,
+                        auctionRepository,
+                        publicationSampleRepository,
+                        mapper
+                );
 
         // assert
-        assertEquals(2, result.size());
+        assertNotNull(localController);
     }
 
-    @Test
-    void createAuctionListing_shouldThrow_ifListOfPublications_isEmpty() {
+    // ===============================================================
+    // ========= GET ALL PUBLICATIONS IN USER LIBRARY ================
+    // ===============================================================
 
-        String listingTitle = "Listing Title";
-        List<PublicationSampleDTO_US016> publicationDTOs = new ArrayList<>();
-        Price listingPriceDouble = mock(Price.class);
-        String shorDescription = "short descr";
-        Picture pictureDouble = mock(Picture.class);
-        List<Picture> pictures = new ArrayList<>(List.of(pictureDouble));
-        LocalDateTime auctionStartDate = LocalDateTime.now().plusMinutes(10);
-        LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
-        Price buyoutPrice = mock(Price.class);
+    @Test
+    void getAllPublicationsInUserLibrary_shouldThrow_whenUserIDisNULL() {
 
         // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(listingTitle, publicationDTOs, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.getAllPublicationsInUserLibrary(null)
+        );
 
-        assertEquals("You should send at least one publication to Listing", exception.getMessage());
+        assertEquals("UserId cannot be null!", ex.getMessage());
     }
 
     @Test
-    void createAuctionListing_shouldThrow_ifListOfPublications_isNull() {
+    void getAllPublicationsInUserLibrary_shouldThrow_whenLibraryDoesNotExist() throws InstanceNotFoundException {
 
         // arrange
-        String listingTitle = "Listing Title";
-        Price listingPriceDouble = mock(Price.class);
-        String shorDescription = "short descr";
-        Picture pictureDouble = mock(Picture.class);
-        List<Picture> pictures = new ArrayList<>(List.of(pictureDouble));
-        LocalDateTime auctionStartDate = LocalDateTime.now().plusMinutes(10);
-        LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
-        Price buyoutPrice = mock(Price.class);
+        when(libraryRepo.getLibraryByUserId(userId)).thenReturn(null);
 
         // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(listingTitle, null, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice));
+        InstanceNotFoundException ex = assertThrows(
+                InstanceNotFoundException.class,
+                () -> controller.getAllPublicationsInUserLibrary(userId)
+        );
 
-        assertEquals("You should send at least one publication to Listing", exception.getMessage());
+        assertEquals("There is no library for the userID: " + userId, ex.getMessage());
     }
 
     @Test
-    void createAuctionListing_shouldThrow_ifStartDateNull() {
+    void getAllPublicationsInUserLibrary_shouldReturnEmptyList_whenLibraryHasNoPublications() throws Exception {
+
         // arrange
-        String listingTitle = "Listing Title";
-        List<PublicationSampleDTO_US016> publicationDTOs = List.of(mock(PublicationSampleDTO_US016.class));
-        Price listingPriceDouble = mock(Price.class);
-        String shorDescription = "short descr";
-        List<Picture> picturesDouble = new ArrayList<>(List.of(mock(Picture.class)));
-        Price buyoutDouble = mock(Price.class);
-
-        // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(
-                listingTitle,
-                publicationDTOs,
-                listingPriceDouble,
-                shorDescription,
-                picturesDouble,
-                null,
-                LocalDateTime.now().plusDays(10),
-                buyoutDouble
-                ));
-
-        assertEquals("auctionStartDateTime, auctionEndDateTime and buyoutPrice cannot be null", exception.getMessage());
-
-    }
-
-    @Test
-    void createAuctionListing_shouldThrow_whenEndDateTimeIsNull() {
-        // arrange
-        String listingTitle = "Listing Title";
-        List<PublicationSampleDTO_US016> publicationDTOs = List.of(mock(PublicationSampleDTO_US016.class));
-        Price listingPriceDouble = mock(Price.class);
-        String shorDescription = "short descr";
-        List<Picture> picturesDouble = new ArrayList<>(List.of(mock(Picture.class)));
-        Price buyoutDouble = mock(Price.class);
-
-        // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(
-                listingTitle,
-                publicationDTOs,
-                listingPriceDouble,
-                shorDescription,
-                picturesDouble,
-                LocalDateTime.now().plusDays(10),
-                null,
-                buyoutDouble
-        ));
-
-        assertEquals("auctionStartDateTime, auctionEndDateTime and buyoutPrice cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void createAuctionListing_shouldThrow_whenBuyoutPriceIsNull() {
-        // arrange
-        String listingTitle = "Listing Title";
-        List<PublicationSampleDTO_US016> publicationDTOs = List.of(mock(PublicationSampleDTO_US016.class));
-        Price listingPriceDouble = mock(Price.class);
-        String shorDescription = "short descr";
-        List<Picture> picturesDouble = new ArrayList<>(List.of(mock(Picture.class)));
-
-        // act + assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.createAuctionListing(
-                listingTitle,
-                publicationDTOs,
-                listingPriceDouble,
-                shorDescription,
-                picturesDouble,
-                LocalDateTime.now().plusDays(10),
-                LocalDateTime.now().plusDays(12),
-                null
-        ));
-
-        assertEquals("auctionStartDateTime, auctionEndDateTime and buyoutPrice cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void createAuctionListing_happyPath_shouldCreateListingAndAuction_andReturneTrue() throws InstanceAlreadyExistsException {
-        // arrange
-        String listingTitle = "Listing Title";
-        Price listingPriceDouble = mock(Price.class);
-        String shorDescription = "short descr";
-        Picture pictureDouble = mock(Picture.class);
-        List<Picture> pictures = List.of(pictureDouble);
-        LocalDateTime auctionStartDate = LocalDateTime.now().plusMinutes(10);
-        LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(5);
-        Price buyoutPrice = mock(Price.class);
-
-        PublicationSampleDTO_US016 pubDTODouble1 = mock(PublicationSampleDTO_US016.class);
-        PublicationSampleDTO_US016 pubDTODouble2 = mock(PublicationSampleDTO_US016.class);
-        List<PublicationSampleDTO_US016> dtoDoubles = List.of(pubDTODouble1, pubDTODouble2);
-
-        PublicationSample pub1Double = mock(PublicationSample.class);
-        PublicationSample pub2Double = mock(PublicationSample.class);
-        List<PublicationSample> pubsDouble = List.of(pub1Double, pub2Double);
-
-        Listing createdListing = mock(Listing.class);
-
-        when(publicationSampleRepoDouble.getPublicationsByDTO(dtoDoubles)).thenReturn(pubsDouble);
-        when(listingRepoDouble.createAndAdd(
-                listingTitle,
-                pubsDouble,
-                SaleType.AUCTION,
-                listingPriceDouble,
-                shorDescription,
-                pictures
-        )).thenReturn(createdListing);
+        when(libraryRepo.getLibraryByUserId(userId)).thenReturn(library);
+        when(library.id()).thenReturn(libraryId);
+        when(publicationSampleRepository.getPublicationsByLibraryID(libraryId)).thenReturn(List.of());
+        when(mapper.fromDomainList(List.of())).thenReturn(List.of());
 
         // act
+        List<US016PublicationSampleDTO> result = controller.getAllPublicationsInUserLibrary(userId);
 
-        boolean result = controller.createAuctionListing(listingTitle, dtoDoubles, listingPriceDouble, shorDescription, pictures, auctionStartDate, auctionEndDate, buyoutPrice);
+        // assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllPublicationsInUserLibrary_shouldReturnDtoList_whenEverythingIsValid() throws Exception {
+
+        // arrange
+        US016PublicationSampleDTO dto = mock(US016PublicationSampleDTO.class);
+
+        when(libraryRepo.getLibraryByUserId(userId)).thenReturn(library);
+        when(library.id()).thenReturn(libraryId);
+        when(publicationSampleRepository.getPublicationsByLibraryID(libraryId))
+                .thenReturn(List.of(publicationSample));
+        when(mapper.fromDomainList(List.of(publicationSample))).thenReturn(List.of(dto));
+
+        // act
+        List<US016PublicationSampleDTO> result = controller.getAllPublicationsInUserLibrary(userId);
+
+        // assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(dto, result.get(0));
+    }
+
+    // ===============================================================
+    // ================ CREATE AUCTION LISTING =======================
+    // ===============================================================
+
+    @Test
+    void createAuctionListing_shouldReturnTrue_whenAuctionListingIsCreatedSuccessfully() throws Exception {
+
+        // arrange
+        ListingId listingId = mock(ListingId.class);
+        LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
+        LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
+
+        when(listingRepository.createAndAdd(
+                "Auction Title",
+                selectedPublications,
+                SaleType.AUCTION,
+                initialPrice,
+                "Short description",
+                userId,
+                pictures
+        )).thenReturn(listing);
+
+        when(listing.id()).thenReturn(listingId);
+
+        when(auctionRepository.createAndAdd(
+                listingId,
+                initialDate,
+                finalDate,
+                initialPrice,
+                buyOutPrice
+        )).thenReturn(auction);
+
+        // act
+        boolean result = controller.createAuctionListing(
+                "Auction Title",
+                selectedPublications,
+                initialPrice,
+                "Short description",
+                userId,
+                pictures,
+                initialDate,
+                finalDate,
+                buyOutPrice
+        );
 
         // assert
         assertTrue(result);
+    }
 
-        // verify
-        verify(publicationSampleRepoDouble).getPublicationsByDTO(dtoDoubles);
-        verify(listingRepoDouble).createAndAdd(listingTitle, pubsDouble, SaleType.AUCTION, listingPriceDouble, shorDescription, pictures);
-        verify(auctionRepoDouble).createAndAdd(createdListing, auctionStartDate, auctionEndDate, buyoutPrice);
+    @Test
+    void createAuctionListing_shouldThrow_whenListingAlreadyExists() throws Exception {
 
+        // arrange
+        LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
+        LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
+
+        when(listingRepository.createAndAdd(
+                anyString(),
+                anyList(),
+                eq(SaleType.AUCTION),
+                eq(initialPrice),
+                anyString(),
+                eq(userId),
+                eq(pictures)
+        )).thenThrow(new InstanceAlreadyExistsException("Listing already exists"));
+
+        // act + assert
+        InstanceAlreadyExistsException ex = assertThrows(
+                InstanceAlreadyExistsException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        initialDate,
+                        finalDate,
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("Listing already exists", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenAuctionAlreadyExists() throws Exception {
+
+        // arrange
+        ListingId listingId = mock(ListingId.class);
+        LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
+        LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
+
+        when(listingRepository.createAndAdd(
+                anyString(),
+                anyList(),
+                eq(SaleType.AUCTION),
+                eq(initialPrice),
+                anyString(),
+                eq(userId),
+                eq(pictures)
+        )).thenReturn(listing);
+
+        when(listing.id()).thenReturn(listingId);
+
+        when(auctionRepository.createAndAdd(
+                eq(listingId),
+                eq(initialDate),
+                eq(finalDate),
+                eq(initialPrice),
+                eq(buyOutPrice)
+        )).thenThrow(new InstanceAlreadyExistsException("Auction already exists"));
+
+        // act + assert
+        InstanceAlreadyExistsException ex = assertThrows(
+                InstanceAlreadyExistsException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        initialDate,
+                        finalDate,
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("Auction already exists", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenListingTitleIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        null,
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenSelectedPublicationsIDIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        null,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenInitialPriceIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        null,
+                        "Short description",
+                        userId,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenShortDescriptionIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        null,
+                        userId,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenSellerIdIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        null,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenPicturesIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        null,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenInitialDateIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        null,
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenFinalDateIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        null,
+                        buyOutPrice
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
+    }
+
+    @Test
+    void createAuctionListing_shouldThrow_whenBuyOutPriceIsNull() {
+
+        // act + assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createAuctionListing(
+                        "Auction Title",
+                        selectedPublications,
+                        initialPrice,
+                        "Short description",
+                        userId,
+                        pictures,
+                        LocalDateTime.of(2026, 4, 8, 10, 0),
+                        LocalDateTime.of(2026, 4, 10, 10, 0),
+                        null
+                )
+        );
+
+        assertEquals("All fields must be non-null.", ex.getMessage());
     }
 }
-
- */
