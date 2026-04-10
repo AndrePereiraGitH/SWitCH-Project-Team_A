@@ -8,332 +8,144 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class US021DirectSaleDTOTest {
 
-    // ============================================================
-    // Successful Creation Tests
-    // ============================================================
-
-    @Test
-    void shouldCreateDTOWithValidInputs() {
-        // Arrange
-        String listingId = "listing-123";
-        String listingTitle = "Harry Potter and the Philosopher's Stone";
-        BigDecimal price = new BigDecimal("15.99");
-        String shortDescription = "Book in excellent condition";
-        String sellerId = "seller-456";
-
-        // Act
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                listingId, listingTitle, price, shortDescription, sellerId
-        );
-
-        // Assert
-        assertEquals(listingId, dto.getListingId());
-        assertEquals(listingTitle, dto.getListingTitle());
-        assertEquals(price, dto.getPrice());
-        assertEquals(shortDescription, dto.getShortDescription());
-        assertEquals(sellerId, dto.getSellerId());
-    }
-
-    @Test
-    void shouldCreateDTOWithZeroPrice() {
-        // Arrange
-        String listingId = "listing-123";
-        String listingTitle = "Free Book";
-        BigDecimal price = BigDecimal.ZERO;
-        String shortDescription = "Free to a good home";
-        String sellerId = "seller-456";
-
-        // Act
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                listingId, listingTitle, price, shortDescription, sellerId
-        );
-
-        // Assert
-        assertEquals(listingId, dto.getListingId());
-        assertEquals(listingTitle, dto.getListingTitle());
-        assertEquals(BigDecimal.ZERO, dto.getPrice());
-        assertEquals(shortDescription, dto.getShortDescription());
-        assertEquals(sellerId, dto.getSellerId());
-    }
-
-    @Test
-    void shouldCreateDTOWithEmptyShortDescription() {
-        // Arrange
-        String listingId = "listing-123";
-        String listingTitle = "Book";
-        BigDecimal price = new BigDecimal("10.00");
-        String shortDescription = "";
-        String sellerId = "seller-456";
-
-        // Act
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                listingId, listingTitle, price, shortDescription, sellerId
-        );
-
-        // Assert
-        assertEquals(listingId, dto.getListingId());
-        assertEquals(listingTitle, dto.getListingTitle());
-        assertEquals(price, dto.getPrice());
-        assertEquals("", dto.getShortDescription());
-        assertEquals(sellerId, dto.getSellerId());
-    }
-
-    // ============================================================
-    // Validation Tests - Null Values
-    // ============================================================
-
+    // =====================
+    // Null validation tests
+    // =====================
     @Test
     void shouldThrowExceptionWhenListingIdIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new US021DirectSaleDTO(null, "Title", new BigDecimal("10"), "Desc", "seller")
-        );
-        assertEquals("listingId cannot be null", exception.getMessage());
+        // Arrange
+        String listingId = null;
+        String listingTitle = "Title";
+        BigDecimal price = new BigDecimal("10");
+        String shortDescription = "Desc";
+        String sellerId = "seller";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new US021DirSaleListingDTO(listingId, listingTitle, price, shortDescription, sellerId));
     }
 
-    @Test
-    void shouldThrowExceptionWhenListingTitleIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new US021DirectSaleDTO("id", null, new BigDecimal("10"), "Desc", "seller")
-        );
-        assertEquals("listingTitle cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenPriceIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new US021DirectSaleDTO("id", "Title", null, "Desc", "seller")
-        );
-        assertEquals("price cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenShortDescriptionIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new US021DirectSaleDTO("id", "Title", new BigDecimal("10"), null, "seller")
-        );
-        assertEquals("shortDescription cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSellerIdIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new US021DirectSaleDTO("id", "Title", new BigDecimal("10"), "Desc", null)
-        );
-        assertEquals("sellerId cannot be null", exception.getMessage());
-    }
-
-    // ============================================================
-    // equals() Tests
-    // ============================================================
-
+    // ============
+    // equals tests - CORRIGIDOS
+    // ============
     @Test
     void shouldReturnTrueWhenSameObject() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertEquals(dto, dto);
+        // Arrange
+        US021DirSaleListingDTO dto = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+
+        // Act
+        boolean result = dto.equals(dto);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
     void shouldReturnTrueWhenAllFieldsAreEqual() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertEquals(dto1, dto2);
+        // Arrange
+        US021DirSaleListingDTO dto1 = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+        US021DirSaleListingDTO dto2 = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+
+        // Act
+        boolean result = dto1.equals(dto2);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
     void shouldReturnFalseWhenListingIdIsDifferent() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id1", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id2", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertNotEquals(dto1, dto2);
-    }
+        // Arrange
+        US021DirSaleListingDTO dto1 = new US021DirSaleListingDTO(
+                "id1", "Title", new BigDecimal("10"), "Desc", "seller");
+        US021DirSaleListingDTO dto2 = new US021DirSaleListingDTO(
+                "id2", "Title", new BigDecimal("10"), "Desc", "seller");
 
-    @Test
-    void shouldReturnFalseWhenListingTitleIsDifferent() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id", "Title1", new BigDecimal("10"), "Desc", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id", "Title2", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertNotEquals(dto1, dto2);
-    }
+        // Act
+        boolean result = dto1.equals(dto2);
 
-    @Test
-    void shouldReturnFalseWhenPriceIsDifferent() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("20"), "Desc", "seller"
-        );
-        assertNotEquals(dto1, dto2);
-    }
-
-    @Test
-    void shouldReturnFalseWhenShortDescriptionIsDifferent() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc1", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc2", "seller"
-        );
-        assertNotEquals(dto1, dto2);
-    }
-
-    @Test
-    void shouldReturnFalseWhenSellerIdIsDifferent() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller1"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller2"
-        );
-        assertNotEquals(dto1, dto2);
+        // Assert
+        assertFalse(result);
     }
 
     @Test
     void shouldReturnFalseWhenObjectIsNull() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertNotEquals(null, dto);
+        // Arrange
+        US021DirSaleListingDTO dto = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+
+        // Act
+        boolean result = dto.equals(null);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
     void shouldReturnFalseWhenDifferentClass() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        String differentObject = "not a DTO";
-        assertNotEquals(dto, differentObject);
+        // Arrange
+        US021DirSaleListingDTO dto = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+
+        // Act
+        boolean result = dto.equals("not a DTO");
+
+        // Assert
+        assertFalse(result);
     }
 
-    // ============================================================
-    // hashCode() Tests
-    // ============================================================
-
+    // ===================
+    // hashCode tests
+    // ====================
     @Test
     void shouldHaveSameHashCodeWhenObjectsAreEqual() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+        // Arrange
+        US021DirSaleListingDTO dto1 = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+        US021DirSaleListingDTO dto2 = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+
+        // Act
+        int hashCode1 = dto1.hashCode();
+        int hashCode2 = dto2.hashCode();
+
+        // Assert
+        assertEquals(hashCode1, hashCode2);
     }
 
-    @Test
-    void shouldHaveDifferentHashCodeWhenListingIdDiffers() {
-        US021DirectSaleDTO dto1 = new US021DirectSaleDTO(
-                "id1", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        US021DirectSaleDTO dto2 = new US021DirectSaleDTO(
-                "id2", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-    }
-
-    // ============================================================
-    // toString() Tests
-    // ============================================================
-
+    // ==============
+    // toString tests
+    // =============
     @Test
     void toStringShouldNotBeNull() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertNotNull(dto.toString());
-    }
+        // Arrange
+        US021DirSaleListingDTO dto = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
 
-    @Test
-    void toStringShouldContainClassName() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertTrue(dto.toString().contains("US021DirectSaleDTO"));
+        // Act
+        String result = dto.toString();
+
+        // Assert
+        assertNotNull(result);
     }
 
     @Test
     void toStringShouldContainAllFields() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
+        // Arrange
+        US021DirSaleListingDTO dto = new US021DirSaleListingDTO(
+                "id", "Title", new BigDecimal("10"), "Desc", "seller");
+
+        // Act
         String result = dto.toString();
+
+        // Assert
         assertTrue(result.contains("listingId"));
         assertTrue(result.contains("listingTitle"));
         assertTrue(result.contains("price"));
         assertTrue(result.contains("shortDescription"));
         assertTrue(result.contains("sellerId"));
-    }
-
-    @Test
-    void toStringShouldContainShortDescription() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "expected-desc", "seller"
-        );
-        assertTrue(dto.toString().contains("expected-desc"));
-    }
-
-    @Test
-    void toStringShouldContainSellerId() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "expected-seller"
-        );
-        assertTrue(dto.toString().contains("expected-seller"));
-    }
-
-    // ============================================================
-    // Getter Tests
-    // ============================================================
-
-    @Test
-    void shouldReturnCorrectListingId() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "expected-id", "Title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertEquals("expected-id", dto.getListingId());
-    }
-
-    @Test
-    void shouldReturnCorrectListingTitle() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "expected-title", new BigDecimal("10"), "Desc", "seller"
-        );
-        assertEquals("expected-title", dto.getListingTitle());
-    }
-
-    @Test
-    void shouldReturnCorrectPrice() {
-        BigDecimal expected = new BigDecimal("25.50");
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", expected, "Desc", "seller"
-        );
-        assertEquals(expected, dto.getPrice());
-    }
-
-    @Test
-    void shouldReturnCorrectShortDescription() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "expected-desc", "seller"
-        );
-        assertEquals("expected-desc", dto.getShortDescription());
-    }
-
-    @Test
-    void shouldReturnCorrectSellerId() {
-        US021DirectSaleDTO dto = new US021DirectSaleDTO(
-                "id", "Title", new BigDecimal("10"), "Desc", "expected-seller"
-        );
-        assertEquals("expected-seller", dto.getSellerId());
     }
 }

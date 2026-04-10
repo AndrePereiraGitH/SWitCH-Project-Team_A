@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class US021DirectSaleMapperTest {
-    private final US021DirectSaleMapper mapper = new US021DirectSaleMapper();
+    private final US021DirSaleListingMapper mapper = new US021DirSaleListingMapper();
 
     // ============================================================
     // toDTO() Tests
@@ -41,14 +41,14 @@ class US021DirectSaleMapperTest {
         when(listing.getSellerId()).thenReturn(sellerId);
 
         // Act
-        US021DirectSaleDTO result = mapper.toDTO(listing);
+        US021DirSaleListingDTO result = mapper.toDTO(listing);
 
         // Assert
-        assertEquals("listing-123", result.getListingId());
-        assertEquals("Harry Potter", result.getListingTitle());
-        assertEquals(new BigDecimal("15.99"), result.getPrice());
-        assertEquals("Book in excellent condition", result.getShortDescription());
-        assertEquals("seller-456", result.getSellerId());
+        assertEquals("listing-123", result.listingId());
+        assertEquals("Harry Potter", result.listingTitle());
+        assertEquals(new BigDecimal("15.99"), result.price());
+        assertEquals("Book in excellent condition", result.shortDescription());
+        assertEquals("seller-456", result.sellerId());
     }
 
     @Test
@@ -71,14 +71,14 @@ class US021DirectSaleMapperTest {
         when(listing.getSellerId()).thenReturn(sellerId);
 
         // Act
-        US021DirectSaleDTO result = mapper.toDTO(listing);
+        US021DirSaleListingDTO result = mapper.toDTO(listing);
 
         // Assert
-        assertEquals("listing-123", result.getListingId());
-        assertEquals("Free Book", result.getListingTitle());
-        assertEquals(BigDecimal.ZERO, result.getPrice());
-        assertEquals("Free to a good home", result.getShortDescription());
-        assertEquals("seller-456", result.getSellerId());
+        assertEquals("listing-123", result.listingId());
+        assertEquals("Free Book", result.listingTitle());
+        assertEquals(BigDecimal.ZERO, result.price());
+        assertEquals("Free to a good home", result.shortDescription());
+        assertEquals("seller-456", result.sellerId());
     }
 
     @Test
@@ -101,14 +101,14 @@ class US021DirectSaleMapperTest {
         when(listing.getSellerId()).thenReturn(sellerId);
 
         // Act
-        US021DirectSaleDTO result = mapper.toDTO(listing);
+        US021DirSaleListingDTO result = mapper.toDTO(listing);
 
         // Assert
-        assertEquals("listing-123", result.getListingId());
-        assertEquals("Book", result.getListingTitle());
-        assertEquals(new BigDecimal("10.00"), result.getPrice());
-        assertEquals("", result.getShortDescription());
-        assertEquals("seller-456", result.getSellerId());
+        assertEquals("listing-123", result.listingId());
+        assertEquals("Book", result.listingTitle());
+        assertEquals(new BigDecimal("10.00"), result.price());
+        assertEquals("", result.shortDescription());
+        assertEquals("seller-456", result.sellerId());
     }
 
     @Test
@@ -127,7 +127,7 @@ class US021DirectSaleMapperTest {
         List<Listing> emptyList = new ArrayList<>();
 
         // Act
-        List<US021DirectSaleDTO> result = mapper.toDTOs(emptyList);
+        List<US021DirSaleListingDTO> result = mapper.toDTOs(emptyList);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -152,18 +152,17 @@ class US021DirectSaleMapperTest {
         when(listing.getShortDescription()).thenReturn("Good condition");
         when(listing.getSellerId()).thenReturn(sellerId);
 
-        List<Listing> listings = List.of(listing);
-
         // Act
-        List<US021DirectSaleDTO> result = mapper.toDTOs(listings);
+
+        List<US021DirSaleListingDTO> result = mapper.toDTOs(List.of(listing));
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("listing-123", result.get(0).getListingId());
-        assertEquals("Harry Potter", result.get(0).getListingTitle());
-        assertEquals(new BigDecimal("15.99"), result.get(0).getPrice());
-        assertEquals("Good condition", result.get(0).getShortDescription());
-        assertEquals("seller-456", result.get(0).getSellerId());
+        assertEquals("listing-123", result.get(0).listingId());
+        assertEquals("Harry Potter", result.get(0).listingTitle());
+        assertEquals(new BigDecimal("15.99"), result.get(0).price());
+        assertEquals("Good condition", result.get(0).shortDescription());
+        assertEquals("seller-456", result.get(0).sellerId());
     }
 
     @Test
@@ -204,22 +203,23 @@ class US021DirectSaleMapperTest {
         List<Listing> listings = List.of(listing1, listing2);
 
         // Act
-        List<US021DirectSaleDTO> result = mapper.toDTOs(listings);
+        List<US021DirSaleListingDTO> result = mapper.toDTOs(listings);
 
         // Assert
         assertEquals(2, result.size());
 
-        assertEquals("listing-1", result.get(0).getListingId());
-        assertEquals("Book One", result.get(0).getListingTitle());
-        assertEquals(new BigDecimal("10.00"), result.get(0).getPrice());
-        assertEquals("Description one", result.get(0).getShortDescription());
-        assertEquals("seller-1", result.get(0).getSellerId());
+        assertEquals("listing-1", result.get(0).listingId());
+        assertEquals("Book One", result.get(0).listingTitle());
+        assertEquals(new BigDecimal("10.00"), result.get(0).price());
 
-        assertEquals("listing-2", result.get(1).getListingId());
-        assertEquals("Book Two", result.get(1).getListingTitle());
-        assertEquals(new BigDecimal("20.00"), result.get(1).getPrice());
-        assertEquals("Description two", result.get(1).getShortDescription());
-        assertEquals("seller-2", result.get(1).getSellerId());
+        assertEquals("Description one", result.get(0).shortDescription());
+        assertEquals("seller-1", result.get(0).sellerId());
+        assertEquals("listing-2", result.get(1).listingId());
+        assertEquals("Book Two", result.get(1).listingTitle());
+        assertEquals(new BigDecimal("20.00"), result.get(1).price());
+
+        assertEquals("Description two", result.get(1).shortDescription());
+        assertEquals("seller-2", result.get(1).sellerId());
     }
 
     @Test
@@ -287,13 +287,13 @@ class US021DirectSaleMapperTest {
         List<Listing> listings = List.of(listing1, listing2);
 
         // Act
-        List<US021DirectSaleDTO> result = mapper.toDTOs(listings);
+        List<US021DirSaleListingDTO> result = mapper.toDTOs(listings);
 
         // Assert
-        assertEquals("listing-1", result.get(0).getListingId());
-        assertEquals("First", result.get(0).getListingTitle());
-        assertEquals("listing-2", result.get(1).getListingId());
-        assertEquals("Second", result.get(1).getListingTitle());
+        assertEquals("listing-1", result.get(0).listingId());
+        assertEquals("First", result.get(0).listingTitle());
+        assertEquals("listing-2", result.get(1).listingId());
+        assertEquals("Second", result.get(1).listingTitle());
     }
 
 }
