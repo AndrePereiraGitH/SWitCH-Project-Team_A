@@ -603,6 +603,70 @@ class ListingTest {
 //        assertEquals(PublicationStatus.FOR_SALE, actualStatus);
 //    }
 
+
+    // ========== isListingLinkedToAnAuction TESTS ==========
+
+
+    @Test
+    void isListingLinkedToAnAuction_shouldReturnTrue_ifSaleTypeIsAuction(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.AUCTION, validPrice, validDescription, validSellerId, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToAnAuction();
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isListingLinkedToAnAuction_shouldReturnFalse_ifSaleTypeIsAuction(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription,validSellerId, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToAnAuction();
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    // ========== containsPubSampleId TESTS ==========
+
+    @Test
+    void containsPubSampleId_shouldReturnTrue_ifItemsContainPubSampleId(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription,validSellerId, validPictures);
+
+        //Act
+        boolean result = validListing.containsPubSampleId(pub1Id);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void containsPubSampleId_shouldReturnFalse_ifItemsDoesNotContainPubSampleId(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription,validSellerId, validPictures);
+
+        //Act
+        boolean result = validListing.containsPubSampleId(pub2Id);
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+
+
     // ========== HELPER METHODS ==========
 
 //    /**

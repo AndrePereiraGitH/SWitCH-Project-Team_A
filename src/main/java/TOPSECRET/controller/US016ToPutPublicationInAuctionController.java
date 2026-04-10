@@ -1,128 +1,120 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import javax.management.InstanceAlreadyExistsException;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.US016PublicationSampleDTO;
+import TOPSECRET.dto.US016PublicationSampleMapper;
+
 import javax.management.InstanceNotFoundException;
+import java.time.LocalDateTime;
 import java.util.*;
 
+
 /**
- * Controller responsible for handling the use case of placing one or more publications
- * from a user's library into an auction listing.
+ * Controller responsible for handling the use case of placing one or more
+ * publications from a user's library into an auction listing.
  * <p>
- * It retrieves publications from the user's library, converts them into DTOs for presentation,
- * and creates both the listing and the corresponding auction.
+ * It provides operations to retrieve the publication samples that belong to a
+ * user's library and to create a new auction listing for the selected publications.
  */
 public class US016ToPutPublicationInAuctionController {
 
     private final ILibraryRepository libraryRepo;
     private final IListingRepository listingRepository;
     private final IAuctionRepository auctionRepository;
-    private final IPublicationSampleRepository IPublicationSampleRepository;
+    private final IPublicationSampleRepository publicationSampleRepository;
+    private final US016PublicationSampleMapper mapper;
 
-    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository IPublicationSampleRepository) {
+    /**
+     * Creates a new controller with the repositories and mapper required for this use case.
+     *
+     * @param libraryRepo repository used to retrieve the user's library
+     * @param listingRepository repository used to create and store listings
+     * @param auctionRepository repository used to create and store auctions
+     * @param publicationSampleRepository repository used to retrieve publication samples
+     * @param mapper mapper used to convert publication samples into DTOs
+     */
+    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.libraryRepo = libraryRepo;
         this.listingRepository = listingRepository;
         this.auctionRepository = auctionRepository;
-        this.IPublicationSampleRepository = IPublicationSampleRepository;
+        this.publicationSampleRepository = publicationSampleRepository;
+        this.mapper = mapper;
     }
 
 
     /**
-     * Retrieves the library associated with a given user.
+     * Retrieves all publication samples from the library associated with the given user
+     * and converts them into DTOs for presentation.
      *
-     * @param username the username of the user whose library should be retrieved
-     * @return the library belonging to the specified user
-     * @throws InstanceNotFoundException if no library is associated with the given username
+     * @param userId the identifier of the user whose library publications are to be retrieved
+     * @return a list of DTOs representing the publication samples in the user's library
+     * @throws IllegalArgumentException if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if the user has no library or if the bibliographical
+     * data for any publication sample cannot be found
      */
-    /*
-    private Library findLibraryByUsername(String username) throws InstanceNotFoundException {
-        Library userLibrary = libraryRepo.getLibraryOfUser(username);
-        return userLibrary;
-    }
+    public List<US016PublicationSampleDTO> getAllPublicationsInUserLibrary(UserId userId) throws InstanceNotFoundException {
 
-     */
-
-    /**
-     * Returns all publications in the user's library as DTOs.
-     *
-     * @param username the username of the user
-     * @return a list of publication DTOs representing all publications in the user's library
-     * @throws IllegalArgumentException if {@code username} is {@code null}
-     * @throws InstanceNotFoundException if the user's library does not exist
-     * @throws EmptyStackException if the user's library contains no publications
-     */
-    /*
-    public List<PublicationSampleDTO_US016> getAllPublicationsInUserLibrary(String username) throws InstanceNotFoundException {
-        if (username == null) {
-            throw new IllegalArgumentException("username cannot be null");
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null!");
         }
 
-        Library userLibrary = findLibraryByUsername(username);
-
-        if (userLibrary.getAllPublications().isEmpty()) {
-            throw new EmptyStackException();
+        Library library = libraryRepo.getLibraryByUserId(userId);
+        if (library == null) {
+            throw new InstanceNotFoundException("There is no library for the userID: " + userId);
         }
 
-        List<PublicationSample> publications = userLibrary.getAllPublications();
+        List<PublicationSample> samplesList = publicationSampleRepository.getPublicationsByLibraryID(library.id());
 
-        List<PublicationSampleDTO_US016> publicationsDTO = publications.stream().map(PublicationSampleDTO_US016::toDTO).toList();
-
-        return publicationsDTO;
+        return mapper.fromDomainList(samplesList);
     }
 
-
-     */
     /**
-     * Creates a listing of type auction and associates an auction with it.
+     * Creates a new auction listing for the selected publication samples and then creates
+     * the corresponding auction associated with that listing.
      *
      * @param listingTitle the title of the listing
-     * @param publicationDTOs the publications to be included in the listing (as DTOs)
-     * @param listingPrice the base/listing price
-     * @param shortDescription a short description for the listing
-     * @param pictures pictures associated with the listing
-     * @param auctionStartDateTime the auction start date and time
-     * @param auctionEndDateTime the auction end date and time
-     * @param buyoutPrice the buyout price for the auction
-     * @return {@code true} if the listing and auction are successfully created
-     * @throws IllegalArgumentException if the publications list is null/empty, or if required auction fields are null
-     * @throws InstanceAlreadyExistsException if the listing or auction already exists
+     * @param selectedPublicationsID the identifiers of the publication samples to include in the listing
+     * @param initialPrice the starting price of the auction
+     * @param shortDescription a short description of the listing
+     * @param sellerId the identifier of the seller creating the listing
+     * @param pictures the pictures associated with the listing
+     * @param initialDate the date and time when the auction starts
+     * @param finalDate the date and time when the auction ends
+     * @param buyOutPrice the optional buyout price for the auction
+     * @return {@code true} if the listing and the auction are successfully created
+     * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
+    public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 
-    /*
-    public boolean createAuctionListing(
-            // for listing
-            String listingTitle,
-            List<PublicationSampleDTO_US016> publicationDTOs,
-            Price listingPrice,
-            String shortDescription,
-            List<Picture> pictures,
-            // for auction
-            LocalDateTime auctionStartDateTime,
-            LocalDateTime auctionEndDateTime,
-            Price buyoutPrice
-    ) throws InstanceAlreadyExistsException {
-
-        if (publicationDTOs == null || publicationDTOs.isEmpty()) {
-            throw new IllegalArgumentException("You should send at least one publication to Listing");
+        if (listingTitle == null
+                || selectedPublicationsID == null
+                || initialPrice == null
+                || shortDescription == null
+                || sellerId == null
+                || pictures == null
+                || initialDate == null
+                || finalDate == null
+                || buyOutPrice == null
+        ) {
+            throw new IllegalArgumentException("All fields must be non-null.");
         }
 
-        if (auctionStartDateTime == null || auctionEndDateTime == null || buyoutPrice == null) {
-            throw new IllegalArgumentException("auctionStartDateTime, auctionEndDateTime and buyoutPrice cannot be null");
-        }
+        Listing auctionListing = listingRepository.createAndAdd(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
 
-        List<PublicationSample> items = IPublicationSampleRepository.getPublicationsByDTO(publicationDTOs);
-
-        Listing auctionListing = listingRepository.createAndAdd(listingTitle, items, SaleType.AUCTION, listingPrice, shortDescription, pictures);
-
-        auctionRepository.createAndAdd(auctionListing, auctionStartDateTime, auctionEndDateTime, buyoutPrice);
+        auctionRepository.createAndAdd(auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
 
         return true;
     }
-     */
 
 }
