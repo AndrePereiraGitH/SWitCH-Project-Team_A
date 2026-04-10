@@ -9,9 +9,10 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.dto.US021DirectSaleDTO;
-import TOPSECRET.dto.US021DirectSaleMapper;
+import TOPSECRET.dto.US021DirSaleListingDTO;
+import TOPSECRET.dto.US021DirSaleListingMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
     private final IListingRepository listingRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
-    private final US021DirectSaleMapper mapper;
+    private final US021DirSaleListingMapper mapper;
 
     /**
      * Constructor.
@@ -41,7 +42,7 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
             IListingRepository listingRepository,
             IPublicationSampleRepository publicationSampleRepository,
             IBibliographicalDataRepository bibliographicalDataRepository,
-            US021DirectSaleMapper mapper) {
+            US021DirSaleListingMapper mapper) {
 
         if (genreRepository == null || listingRepository == null ||
                 publicationSampleRepository == null || bibliographicalDataRepository == null ||
@@ -74,7 +75,7 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * @return list of DTOs matching the given genre
      * @throws IllegalArgumentException if selectedGenre is null
      */
-    public List<US021DirectSaleDTO> getListOfItemsOnDirectSale(Genre selectedGenre) {
+    public List<US021DirSaleListingDTO> getListOfItemsOnDirectSale(GenreID selectedGenre) {
         if (selectedGenre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }

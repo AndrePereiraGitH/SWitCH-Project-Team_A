@@ -165,15 +165,13 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
     //US021 Start ======================================================================================================
 
     /**
-     * Indicates whether this work is associated with the specified genre.
+     * Indicates whether this work is associated with the specified genre ID.
      *
-     * @param genre the genre to check; may be {@code null}
-     * @return {@code true} if the genre is present, {@code false} otherwise
+     * @param genreId the genre ID to check; may be {@code null}
+     * @return {@code true} if the genre ID is present, {@code false} otherwise
      */
-
-    public boolean hasGenre(Genre genre) {
-        if (genre == null) return false;
-        GenreID genreId = genre.id();
+    public boolean hasGenre(GenreID genreId) {
+        if (genreId == null) return false;
         return _genres.contains(genreId);
     }
 
