@@ -9,24 +9,23 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for AuthorDTO_US025 using mocks.
+ * Unit tests for AuthorMapper_US025.
  */
-class AuthorDTO_US025Test {
-
+class AuthorMapper_US025Test {
 
     // ===============================
-    // Tests for fromAuthor()
+    // Tests for toDTO()
     // ===============================
 
     @Test
-    void fromAuthor_whenValidAuthor_shouldMapNameFromProfile() {
+    void toDTO_whenValidAuthor_shouldMapNameCorrectly() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
         when(authorDouble.getName()).thenReturn("Ken Follett");
 
         // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(authorDouble);
+        AuthorDTO_US025 dto = AuthorMapper_US025.toDTO(authorDouble);
 
         // Assert
         assertNotNull(dto);
@@ -34,14 +33,14 @@ class AuthorDTO_US025Test {
     }
 
     @Test
-    void fromAuthor_whenAuthorHasDifferentName_shouldMapThatExactName() {
+    void toDTO_whenAuthorHasDifferentName_shouldMapThatExactName() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
         when(authorDouble.getName()).thenReturn("Dan Brown");
 
         // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(authorDouble);
+        AuthorDTO_US025 dto = AuthorMapper_US025.toDTO(authorDouble);
 
         // Assert
         assertNotNull(dto);
@@ -49,21 +48,21 @@ class AuthorDTO_US025Test {
     }
 
     @Test
-    void fromAuthor_whenAuthorIsNull_shouldReturnNull() {
+    void toDTO_whenAuthorIsNull_shouldReturnNull() {
 
         // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(null);
+        AuthorDTO_US025 dto = AuthorMapper_US025.toDTO(null);
 
         // Assert
         assertNull(dto);
     }
 
     // ===============================
-    // Tests for fromAuthors()
+    // Tests for toDTOList()
     // ===============================
 
     @Test
-    void fromAuthors_listOfAuthors_shouldMapAllNames() {
+    void toDTOList_listOfAuthors_shouldMapAllNames() {
 
         // Arrange
         Author authorDouble1 = mock(Author.class);
@@ -75,7 +74,7 @@ class AuthorDTO_US025Test {
         List<Author> authors = List.of(authorDouble1, authorDouble2);
 
         // Act
-        List<AuthorDTO_US025> dtos = AuthorDTO_US025.fromAuthors(authors);
+        List<AuthorDTO_US025> dtos = AuthorMapper_US025.toDTOList(authors);
 
         // Assert
         assertEquals(2, dtos.size());
@@ -84,10 +83,10 @@ class AuthorDTO_US025Test {
     }
 
     @Test
-    void fromAuthors_nullList_shouldReturnMutableList() {
+    void toDTOList_nullList_shouldReturnEmptyMutableList() {
 
         // Act
-        List<AuthorDTO_US025> dtos = AuthorDTO_US025.fromAuthors(null);
+        List<AuthorDTO_US025> dtos = AuthorMapper_US025.toDTOList(null);
 
         // Assert
         assertNotNull(dtos);
