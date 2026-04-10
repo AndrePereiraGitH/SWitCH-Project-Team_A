@@ -5,46 +5,45 @@ title US021 - Get Direct Sale Listings By Genre
 
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":ListingRepository" as listingRepo
-participant ":PublicationSampleRepository" as pubSampleRepo
-participant ":BibliographicalDataRepository" as bdRepo
+participant ":IListingRepository" as IlistingRepo
+participant ":IPublicationSampleRepository" as IpubSampleRepo
+participant ":IBibliographicalDataRepository" as IbdRepo
 participant "resultList:\nList<Listing>" as ResultList
 
-note over UI, bdRepo #E3F2FD
+note over UI, IbdRepo #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over UI, bdRepo #E3F2FD
+note over UI, IbdRepo #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenre)
+UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
 activate Ctrl
 
-Ctrl -> listingRepo : findAllDirectSaleListings()
-activate listingRepo
-listingRepo --> Ctrl : List<Listing>
-deactivate listingRepo
-
-Ctrl -->> ResultList ** : <<create>>
+Ctrl -> IlistingRepo : findAllDirectSaleListings()
+activate IlistingRepo
+IlistingRepo -->> ResultList ** : «create»
+IlistingRepo --> Ctrl : resultList
+deactivate IlistingRepo
 
 loop for each listing in List<Listing>
     loop for each PublicationSampleId in listing.getItemsId()
-        Ctrl -> pubSampleRepo : findPublicationSampleById(id)
-        activate pubSampleRepo
-        pubSampleRepo --> Ctrl : PublicationSample
-        deactivate pubSampleRepo
+        Ctrl -> IpubSampleRepo : findPublicationSampleById(id)
+        activate IpubSampleRepo
+        IpubSampleRepo --> Ctrl : PublicationSample
+        deactivate IpubSampleRepo
 
-        Ctrl -> bdRepo : findBibliographicalDataById(bdId)
-        activate bdRepo
-        bdRepo --> Ctrl : BibliographicalData
-        deactivate bdRepo
+        Ctrl -> IbdRepo : findBibliographicalDataById(bdId)
+        activate IbdRepo
+        IbdRepo --> Ctrl : BibliographicalData
+        deactivate IbdRepo
 
-        Ctrl -> Ctrl : bd.hasGenre(selectedGenre)
+        Ctrl -> Ctrl : bd.hasGenre(selectedGenreId)
 
         alt hasGenre == true
             Ctrl -> ResultList : add(listing)

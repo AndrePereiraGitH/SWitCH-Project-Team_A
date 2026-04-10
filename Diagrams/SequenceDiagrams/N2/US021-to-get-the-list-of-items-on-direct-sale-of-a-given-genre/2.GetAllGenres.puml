@@ -5,7 +5,8 @@ title US021 - Get All Genres
 
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":GenreRepository" as genreRepo
+participant ":IGenreRepository" as IgenreRepo
+participant "CopylistOfAllGenres:\nList<Genre>" as LG
 
 note over UI, Ctrl #E3F2FD
 <b>Fragment</b>
@@ -22,10 +23,13 @@ end note
 UI -> Ctrl : getAllGenres()
 activate Ctrl
 
-Ctrl -> genreRepo : getAllGenres()
-activate genreRepo
-genreRepo --> Ctrl : CopylistOfAllGenres
-deactivate genreRepo
+Ctrl -> IgenreRepo : getAllGenres()
+activate IgenreRepo
+
+IgenreRepo -->> LG ** : «create»
+
+IgenreRepo --> Ctrl : CopylistOfAllGenres
+deactivate IgenreRepo
 
 Ctrl --> UI : CopylistOfAllGenres
 deactivate Ctrl

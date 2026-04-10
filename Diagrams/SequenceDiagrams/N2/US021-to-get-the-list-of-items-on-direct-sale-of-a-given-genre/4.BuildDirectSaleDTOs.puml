@@ -4,9 +4,8 @@ autonumber
 title US021 - Build Direct Sale DTOs
 
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":US021DirectSaleMapper" as mapper
 participant "resultList:\nList<Listing>" as ResultList
-participant "directSaleDTO:\nUS021DirectSaleDTO" as directSaleDTO
+participant ":US021DirSaleListingMapper" as mapper
 participant "listOfDirectSaleDTO:\nList<US021DirectSaleDTO>" as listOfDirectSaleDTO
 
 note over Ctrl, mapper #E3F2FD
@@ -27,8 +26,8 @@ activate mapper
 mapper -->> listOfDirectSaleDTO ** : <<create>>
 
 loop for each listing in resultList
-    mapper -> directSaleDTO ** : toDTO(listing)
-    mapper -> mapper : listOfDirectSaleDTO.add(directSaleDTO)
+    mapper -->> directSaleDTO ** : toDTO(listing)
+    mapper -->> LDTO : add(US021DirectSaleDTO)
 end
 
 mapper --> Ctrl : listOfDirectSaleDTO

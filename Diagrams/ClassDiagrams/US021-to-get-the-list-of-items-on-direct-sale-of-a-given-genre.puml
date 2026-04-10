@@ -7,11 +7,11 @@ class UI021 {
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
   +getAllGenres()
-  +getListOfItemsOnDirectSale(genre: Genre)
+  +getListOfItemsOnDirectSale(selectedGenreId: GenreId)
 }
 
 interface IGenreRepository {
-  +getAllGenres()
+  +getAllGenres() : List<Genre>
 }
 
 class Genre {
@@ -20,10 +20,8 @@ class Genre {
 }
 
 
-
-
 interface IListingRepository {
-  + findAllDirectSaleListings()
+  + findAllDirectSaleListings(): List<Listing>
 }
 
 
@@ -33,29 +31,29 @@ class Listing {
 }
 
 interface "IPublicationSampleRepository" as IPSR {
-    + findPublicationSampleById(id)
+    + findPublicationSampleById(id) : Optional<PublicationSample>
 }
 
 
 class "PublicationSample" as PS {
-    + getBibliographicalDataID()
+    + getBibliographicalDataID() : BibliographicalDataID
 }
 
 
 interface "IBibliographicalDataRepository" as IBDR {
-    + findBibliographicalDataById(id)
+    + findBibliographicalDataById(id) : Optional<BibliographicalData>
 }
 
 class "BibliographicalData" as BD {
     + hasGenre(genre) : boolean
 }
 
-class "US021DirectSaleMapper" as Mapper {
-    + toDTO(listing: Listing): US021DirectSaleDTO
+class "US021DirSaleListingMapper" as Mapper {
+    + toDTO(listing: Listing): US021DirSaleListingDTO
 }
 
 
-class "US021DirectSaleDTO" as DTO {
+class "US021DirSaleListingDTO" as DTO {
 
 }
 

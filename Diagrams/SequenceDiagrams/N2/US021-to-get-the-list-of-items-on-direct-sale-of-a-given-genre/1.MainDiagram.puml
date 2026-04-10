@@ -6,11 +6,11 @@ title US021 - To get the list of items on direct sale of a given genre (Main)
 actor Buyer
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":GenreRepository" as genreRepo
-participant ":ListingRepository" as listingRepo
-participant ":PublicationSampleRepository" as pubSampleRepo
-participant ":BibliographicalDataRepository" as bdRepo
-participant ":US021DirectSaleMapper" as mapper
+participant ":IgenreRepository" as IgenreRepo
+participant ":IListingRepository" as IlistingRepo
+participant ":IPublicationSampleRepository" as IpubSampleRepo
+participant ":IBibliographicalDataRepository" as IbdRepo
+participant ":US021DirSaleListingMapper" as Mapper
 
 Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
 activate UI
@@ -22,7 +22,7 @@ ref over Ctrl
 [[2.GetAllGenres.puml Get All Genres]]
 end ref
 
-Ctrl --> UI : listOfGenres
+Ctrl --> UI : CopylistOfAllGenres
 deactivate Ctrl
 
 UI --> Buyer : Which genre? Choose!
@@ -38,18 +38,17 @@ ref over Ctrl
 [[3.GetDirectSaleListingsByGenre.puml Get Direct Sale Listings By Genre]]
 end ref
 
-Ctrl --> UI : listOfDirectSaleOfGivenGenre
+Ctrl --> UI : resultList
 deactivate Ctrl
 
-UI -> Ctrl : (internal mapping)
-activate Ctrl
 
-ref over Ctrl
+ref over Ctrl, mapper
 [[4.BuildDirectSaleDTOs.puml Build Direct Sale DTOs]]
 end ref
 
+
 Ctrl --> UI : listOfDirectSaleDTO
-deactivate Ctrl
+
 
 UI --> Buyer : Shows the list of items on direct sale.
 deactivate UI

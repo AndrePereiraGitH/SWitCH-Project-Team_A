@@ -8,14 +8,15 @@ actor Buyer
 ' Participants
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":GenreRepository" as GenreRepo
+participant ":IGenreRepository" as IGenreRepo
 participant "CopylistOfAllGenres:\nList<Genre>" as LG
-participant ":ListingRepository" as ListingRepo
-participant ":PublicationSampleRepository" as PSRepo
-participant ":BibliographicalDataRepository" as BDRepo
-participant "resultList:\nList<Listing>" as ResultList
-participant ":US021DirectSaleMapper" as Mapper
-participant "listOfDTO:\nList<US021DirectSaleDTO>" as LDTO
+participant ":IListingRepository" as IListingRepo
+participant "resultList:\nList<Listing>" as ResultList 
+participant ":IPublicationSampleRepository" as IPSRepo
+participant ":IBibliographicalDataRepository" as IBDRepo
+participant ":US021DirSaleListingMapper" as Mapper
+participant "listOfDirectSaleDTO:\nList<US021DirectSaleDTO>" as LDTO
+
 
 ' Interactions
 
@@ -26,13 +27,13 @@ activate UI
 UI -> Ctrl : getAllGenres()
 activate Ctrl
 
-Ctrl -> GenreRepo : getAllGenres()
-activate GenreRepo
+Ctrl -> IGenreRepo : getAllGenres()
+activate IGenreRepo
 
-GenreRepo -> LG ** : create()
+IGenreRepo -->> LG ** : «create»
 
-GenreRepo --> Ctrl : CopylistOfAllGenres
-deactivate GenreRepo
+IGenreRepo --> Ctrl : CopylistOfAllGenres
+deactivate IGenreRepo
 
 Ctrl --> UI : CopylistOfAllGenres
 deactivate Ctrl
@@ -44,31 +45,31 @@ deactivate UI
 Buyer -> UI : selectedGenre
 activate UI
 
-UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenre)
+UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
 activate Ctrl
 
-Ctrl -> ListingRepo : findAllDirectSaleListings()
-activate ListingRepo
+Ctrl -> IListingRepo : findAllDirectSaleListings()
+activate IListingRepo
 
-ListingRepo --> Ctrl : List<Listing>
-deactivate ListingRepo
+IListingRepo -->> ResultList ** : «create»
 
-Ctrl -> ResultList ** : <<create>>
+IListingRepo --> Ctrl : resultList
+deactivate IListingRepo
 
 
 loop for each listing in List<Listing>
     loop for each PublicationSampleId in listing.getItemsId()
-        Ctrl -> PSRepo : findPublicationSampleById(id)
-        activate PSRepo
-        PSRepo --> Ctrl : PublicationSample
-        deactivate PSRepo
+        Ctrl -> IPSRepo : findPublicationSampleById(id)
+        activate IPSRepo
+        IPSRepo --> Ctrl : PublicationSample
+        deactivate IPSRepo
 
-        Ctrl -> BDRepo : findBibliographicalDataById(bdId)
-        activate BDRepo
-        BDRepo --> Ctrl : BibliographicalData
-        deactivate BDRepo
+        Ctrl -> IBDRepo : findBibliographicalDataById(bdId)
+        activate IBDRepo
+        IBDRepo --> Ctrl : BibliographicalData
+        deactivate IBDRepo
 
-        Ctrl -> Ctrl : bd.hasGenre(selectedGenre)
+        Ctrl -> Ctrl : bd.hasGenre(selectedGenreId)
 
         alt hasGenre == true
             Ctrl -> ResultList : add(listing)
@@ -80,16 +81,17 @@ end
 Ctrl -> Mapper : toDTOs(resultList)
 activate Mapper
 
-Mapper -> LDTO ** : <<create>>
+Mapper -->> LDTO ** : <<create>>
 
 loop for each listing in resultList
-    Mapper -> Mapper : toDTO(listing)
+    Mapper -->> directSaleDTO ** : toDTO(listing)
+    Mapper -->> LDTO : add(US021DirectSaleDTO)
 end
 
-Mapper --> Ctrl : List<US021DirectSaleDTO>
+Mapper --> Ctrl : listOfDirectSaleDTO
 deactivate Mapper
 
-Ctrl --> UI : List<US021DirectSaleDTO>
+Ctrl --> UI : listOfDirectSaleDTO
 deactivate Ctrl
 
 UI --> Buyer : Shows the list of items on direct sale
