@@ -19,10 +19,10 @@ participant ":UI017" as UI
 participant ":US017ToCreateCollectionOfPublicationsController" as Controller
 participant ":IGenreRepository" as GenreRepo
 participant "allGenreList: List<Genre>" as allGenreList
-participant ":GenreMapper_US017" as GenreMapper
-participant "listOfGenreDTO: List<GenreDTO_US017>" as listOfGenreDTO
+participant ":US017GenreMapper" as GenreMapper
+participant "listOfGenreDTO: List<US017GenreDTO>" as listOfGenreDTO
 participant ":Genre" as Genre
-participant "genreDTO: GenreDTO_US017" as GDTO
+participant "genreDTO: US017GenreDTO" as GDTO
 
 UI -> Controller : getAllGenres()
 activate Controller

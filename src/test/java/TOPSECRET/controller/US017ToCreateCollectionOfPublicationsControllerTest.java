@@ -6,8 +6,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.dto.GenreMapper_US017;
+import TOPSECRET.dto.US017GenreDTO;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,28 +28,17 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     @Test
     void shouldThrowWhenGenreRepositoryIsNull() {
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        GenreMapper_US017 mapper = mock(GenreMapper_US017.class);
 
         assertThrows(IllegalArgumentException.class,
-                () -> new US017ToCreateCollectionOfPublicationsController(null, collectionRepo, mapper));
+                () -> new US017ToCreateCollectionOfPublicationsController(null, collectionRepo));
     }
 
     @Test
     void shouldThrowWhenCollectionRepositoryIsNull() {
         IGenreRepository genreRepo = mock(IGenreRepository.class);
-        GenreMapper_US017 mapper = mock(GenreMapper_US017.class);
 
         assertThrows(IllegalArgumentException.class,
-                () -> new US017ToCreateCollectionOfPublicationsController(genreRepo, null, mapper));
-    }
-
-    @Test
-    void shouldThrowWhenMapperIsNull() {
-        IGenreRepository genreRepo = mock(IGenreRepository.class);
-        ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo, null));
+                () -> new US017ToCreateCollectionOfPublicationsController(genreRepo, null));
     }
 
 
@@ -65,15 +53,11 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         IGenreRepository genreRepo = mock(IGenreRepository.class);
         when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble));
 
-        GenreDTO_US017 dtoDouble = new GenreDTO_US017("Fiction");
-        GenreMapper_US017 mapper = mock(GenreMapper_US017.class);
-        when(mapper.toDTOList(List.of(genreDouble))).thenReturn(List.of(dtoDouble));
-
         US017ToCreateCollectionOfPublicationsController controller =
-                createController(genreRepo, mock(ICollectionOfPublicationsRepository.class), mapper);
+                createController(genreRepo, mock(ICollectionOfPublicationsRepository.class));
 
         // Act
-        List<GenreDTO_US017> result = controller.getAllGenres();
+        List<US017GenreDTO> result = controller.getAllGenres();
 
         // Assert
         assertEquals(1, result.size());
@@ -86,11 +70,8 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         IGenreRepository genreRepo = mock(IGenreRepository.class);
         when(genreRepo.getAllGenres()).thenReturn(List.of());
 
-        GenreMapper_US017 mapper = mock(GenreMapper_US017.class);
-        when(mapper.toDTOList(List.of())).thenReturn(List.of());
-
         US017ToCreateCollectionOfPublicationsController controller =
-                createController(genreRepo, mock(ICollectionOfPublicationsRepository.class), mapper);
+                createController(genreRepo, mock(ICollectionOfPublicationsRepository.class));
 
         // Act & Assert
         assertTrue(controller.getAllGenres().isEmpty());
@@ -126,7 +107,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         when(collectionRepo.createAndAdd(userId, "Favorites", genreId)).thenReturn(collectionDouble);
 
         US017ToCreateCollectionOfPublicationsController controller =
-                createController(mock(IGenreRepository.class), collectionRepo, mock(GenreMapper_US017.class));
+                createController(mock(IGenreRepository.class), collectionRepo);
 
         // Act
         CollectionOfPublications result = controller.createCollection("Favorites", genreId, userId);
@@ -146,7 +127,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
                 .thenThrow(new IllegalArgumentException("Collection already exists"));
 
         US017ToCreateCollectionOfPublicationsController controller =
-                createController(mock(IGenreRepository.class), collectionRepo, mock(GenreMapper_US017.class));
+                createController(mock(IGenreRepository.class), collectionRepo);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -159,14 +140,12 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     private US017ToCreateCollectionOfPublicationsController createController() {
         return createController(
                 mock(IGenreRepository.class),
-                mock(ICollectionOfPublicationsRepository.class),
-                mock(GenreMapper_US017.class));
+                mock(ICollectionOfPublicationsRepository.class));
     }
 
     private US017ToCreateCollectionOfPublicationsController createController(
             IGenreRepository genreRepo,
-            ICollectionOfPublicationsRepository collectionRepo,
-            GenreMapper_US017 mapper) {
-        return new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo, mapper);
+            ICollectionOfPublicationsRepository collectionRepo) {
+        return new US017ToCreateCollectionOfPublicationsController(genreRepo, collectionRepo);
     }
 }

@@ -6,8 +6,8 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.GenreDTO_US017;
-import TOPSECRET.dto.GenreMapper_US017;
+import TOPSECRET.dto.US017GenreDTO;
+import TOPSECRET.dto.US017GenreMapper;
 
 import java.util.List;
 
@@ -22,26 +22,22 @@ public class US017ToCreateCollectionOfPublicationsController {
 
     private final IGenreRepository genreRepository;
     private final ICollectionOfPublicationsRepository collectionRepository;
-    private final GenreMapper_US017 genreMapper;
 
     /**
      * @param genreRepository      repository that holds the available genres
      * @param collectionRepository repository that creates and stores collections
-     * @param genreMapper          mapper that converts Genre objects to DTOs
      * @throws IllegalArgumentException if any dependency is null
      */
     public US017ToCreateCollectionOfPublicationsController(
             IGenreRepository genreRepository,
-            ICollectionOfPublicationsRepository collectionRepository,
-            GenreMapper_US017 genreMapper
+            ICollectionOfPublicationsRepository collectionRepository
     ) {
-        if (genreRepository == null || collectionRepository == null || genreMapper == null) {
+        if (genreRepository == null || collectionRepository == null) {
             throw new IllegalArgumentException("Dependencies cannot be null.");
         }
 
         this.genreRepository = genreRepository;
         this.collectionRepository = collectionRepository;
-        this.genreMapper = genreMapper;
     }
 
     /**
@@ -49,9 +45,9 @@ public class US017ToCreateCollectionOfPublicationsController {
      *
      * @return list of genres ready to display in the UI
      */
-    public List<GenreDTO_US017> getAllGenres() {
+    public List<US017GenreDTO> getAllGenres() {
         List<Genre> genres = genreRepository.getAllGenres();
-        return genreMapper.toDTOList(genres);
+        return US017GenreMapper.toDTOList(genres);
     }
 
     /**

@@ -29,7 +29,7 @@ ref over Controller, GenreRepo
 [[2.GetGenres.puml Get Genres]]
 end ref
 
-Controller --> UI : List<GenreDTO_US017>
+Controller --> UI : List<US017GenreDTO>
 deactivate Controller
 
 UI --> User : Here is the list of genres, select one!

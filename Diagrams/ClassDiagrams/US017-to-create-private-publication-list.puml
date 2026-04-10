@@ -70,17 +70,17 @@ CollectionOfPublicationsFactory ..> CollectionOfPublications : <<creates>>
 class US017ToCreateCollectionOfPublicationsController {
   - _genreRepository : IGenreRepository
   - _collectionRepository : ICollectionOfPublicationsRepository
-  + getAllGenres() : List<GenreDTO_US017>
+  + getAllGenres() : List<US017GenreDTO>
   + createCollection(name : String, selectedGenre : Genre, user : User) : CollectionOfPublications
 }
 
-class GenreMapper_US017 {
-  + {static} toDTO(genres : List<Genre>) : List<GenreDTO_US017>
+class US017GenreMapper {
+  + {static} toDTO(genres : List<Genre>) : List<US017GenreDTO>
 }
 
-class GenreDTO_US017 {
+class US017GenreDTO {
   + name : String
-  + {static} toDTO(genre : Genre) : GenreDTO_US017
+  + {static} toDTO(genre : Genre) : US017GenreDTO
 }
 
 ' ___________________
@@ -110,9 +110,9 @@ CollectionOfPublicationsRepositoryMem --> CollectionOfPublicationsFactory : has
 
 US017ToCreateCollectionOfPublicationsController --> IGenreRepository : uses
 US017ToCreateCollectionOfPublicationsController --> ICollectionOfPublicationsRepository : uses
-US017ToCreateCollectionOfPublicationsController ..> GenreMapper_US017 : uses
+US017ToCreateCollectionOfPublicationsController ..> US017GenreMapper : uses
 
-GenreMapper_US017 ..> GenreDTO_US017 : uses
-GenreDTO_US017 ..> Genre : converts
+US017GenreMapper ..> US017GenreDTO : uses
+US017GenreDTO ..> Genre : converts
 
 @enduml

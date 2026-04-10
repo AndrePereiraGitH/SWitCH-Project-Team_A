@@ -5,16 +5,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link GenreDTO_US017} — US017.
+ * Unit tests for {@link US017GenreDTO} — US017.
  */
-class GenreDTO_US017Test {
+class US017GenreDTOTest {
 
     // ============================== construction ==============================
 
     @Test
     void shouldCreateDTOSuccessfully_whenNameIsValid() {
         // Arrange & Act
-        GenreDTO_US017 dto = new GenreDTO_US017("Fiction");
+        US017GenreDTO dto = new US017GenreDTO("Fiction");
 
         // Assert
         assertEquals("Fiction", dto.name());
@@ -24,7 +24,7 @@ class GenreDTO_US017Test {
     void shouldThrowNullPointerException_whenNameIsNull() {
         // Act & Assert
         NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> new GenreDTO_US017(null));
+                () -> new US017GenreDTO(null));
 
         assertEquals("Name cannot be null.", ex.getMessage());
     }
@@ -34,8 +34,8 @@ class GenreDTO_US017Test {
     @Test
     void shouldBeEqual_whenTwoDTOsHaveTheSameName() {
         // Arrange
-        GenreDTO_US017 dto1 = new GenreDTO_US017("Fiction");
-        GenreDTO_US017 dto2 = new GenreDTO_US017("Fiction");
+        US017GenreDTO dto1 = new US017GenreDTO("Fiction");
+        US017GenreDTO dto2 = new US017GenreDTO("Fiction");
 
         // Act & Assert
         assertEquals(dto1, dto2);
@@ -44,8 +44,8 @@ class GenreDTO_US017Test {
     @Test
     void shouldNotBeEqual_whenDTOsHaveDifferentNames() {
         // Arrange
-        GenreDTO_US017 dto1 = new GenreDTO_US017("Fiction");
-        GenreDTO_US017 dto2 = new GenreDTO_US017("History");
+        US017GenreDTO dto1 = new US017GenreDTO("Fiction");
+        US017GenreDTO dto2 = new US017GenreDTO("History");
 
         // Act & Assert
         assertNotEquals(dto1, dto2);
@@ -54,8 +54,8 @@ class GenreDTO_US017Test {
     @Test
     void shouldHaveSameHashCode_whenTwoDTOsAreEqual() {
         // Arrange
-        GenreDTO_US017 dto1 = new GenreDTO_US017("Fiction");
-        GenreDTO_US017 dto2 = new GenreDTO_US017("Fiction");
+        US017GenreDTO dto1 = new US017GenreDTO("Fiction");
+        US017GenreDTO dto2 = new US017GenreDTO("Fiction");
 
         // Act & Assert
         assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -64,7 +64,7 @@ class GenreDTO_US017Test {
     @Test
     void shouldReturnMeaningfulToString() {
         // Arrange
-        GenreDTO_US017 dto = new GenreDTO_US017("Fiction");
+        US017GenreDTO dto = new US017GenreDTO("Fiction");
 
         // Act
         String result = dto.toString();
