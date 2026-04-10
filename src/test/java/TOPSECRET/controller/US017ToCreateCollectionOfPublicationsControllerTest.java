@@ -4,7 +4,6 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.GenreDTO_US017;
@@ -66,9 +65,9 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         IGenreRepository genreRepo = mock(IGenreRepository.class);
         when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble));
 
-        GenreDTO_US017 dtoDouble = GenreDTO_US017.toDTO(genreDouble);
+        GenreDTO_US017 dtoDouble = new GenreDTO_US017("Fiction");
         GenreMapper_US017 mapper = mock(GenreMapper_US017.class);
-        when(mapper.toDTO(List.of(genreDouble))).thenReturn(List.of(dtoDouble));
+        when(mapper.toDTOList(List.of(genreDouble))).thenReturn(List.of(dtoDouble));
 
         US017ToCreateCollectionOfPublicationsController controller =
                 createController(genreRepo, mock(ICollectionOfPublicationsRepository.class), mapper);
@@ -78,7 +77,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("Fiction", result.get(0).name);
+        assertEquals("Fiction", result.get(0).name());
     }
 
     @Test
@@ -88,7 +87,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         when(genreRepo.getAllGenres()).thenReturn(List.of());
 
         GenreMapper_US017 mapper = mock(GenreMapper_US017.class);
-        when(mapper.toDTO(List.of())).thenReturn(List.of());
+        when(mapper.toDTOList(List.of())).thenReturn(List.of());
 
         US017ToCreateCollectionOfPublicationsController controller =
                 createController(genreRepo, mock(ICollectionOfPublicationsRepository.class), mapper);
@@ -101,19 +100,19 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
     // ============================== createCollection() ==============================
 
     @Test
-    void shouldThrowWhenUserIsNull() {
-        Genre genreDouble = mock(Genre.class);
+    void shouldThrowWhenUserIdIsNull() {
+        GenreID genreId = mock(GenreID.class);
 
         assertThrows(IllegalArgumentException.class,
-                () -> createController().createCollection("Favorites", genreDouble, null));
+                () -> createController().createCollection("Favorites", genreId, null));
     }
 
     @Test
-    void shouldThrowWhenGenreIsNull() {
-        User userDouble = mock(User.class);
+    void shouldThrowWhenGenreIdIsNull() {
+        UserId userId = mock(UserId.class);
 
         assertThrows(IllegalArgumentException.class,
-                () -> createController().createCollection("Favorites", null, userDouble));
+                () -> createController().createCollection("Favorites", null, userId));
     }
 
     @Test
@@ -121,11 +120,6 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         // Arrange
         UserId userId = mock(UserId.class);
         GenreID genreId = mock(GenreID.class);
-
-        User userDouble = mock(User.class);
-        Genre genreDouble = mock(Genre.class);
-        when(userDouble.id()).thenReturn(userId);
-        when(genreDouble.id()).thenReturn(genreId);
 
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
@@ -135,7 +129,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
                 createController(mock(IGenreRepository.class), collectionRepo, mock(GenreMapper_US017.class));
 
         // Act
-        CollectionOfPublications result = controller.createCollection("Favorites", genreDouble, userDouble);
+        CollectionOfPublications result = controller.createCollection("Favorites", genreId, userId);
 
         // Assert
         assertEquals(collectionDouble, result);
@@ -147,11 +141,6 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
         UserId userId = mock(UserId.class);
         GenreID genreId = mock(GenreID.class);
 
-        User userDouble = mock(User.class);
-        Genre genreDouble = mock(Genre.class);
-        when(userDouble.id()).thenReturn(userId);
-        when(genreDouble.id()).thenReturn(genreId);
-
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         when(collectionRepo.createAndAdd(userId, "Favorites", genreId))
                 .thenThrow(new IllegalArgumentException("Collection already exists"));
@@ -161,7 +150,7 @@ class US017ToCreateCollectionOfPublicationsControllerTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.createCollection("Favorites", genreDouble, userDouble));
+                () -> controller.createCollection("Favorites", genreId, userId));
     }
 
 

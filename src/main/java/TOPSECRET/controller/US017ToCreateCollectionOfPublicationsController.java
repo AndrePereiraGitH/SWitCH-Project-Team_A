@@ -4,7 +4,6 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.GenreDTO_US017;
@@ -52,32 +51,26 @@ public class US017ToCreateCollectionOfPublicationsController {
      */
     public List<GenreDTO_US017> getAllGenres() {
         List<Genre> genres = genreRepository.getAllGenres();
-        return genreMapper.toDTO(genres);
+        return genreMapper.toDTOList(genres);
     }
 
     /**
      * Creates a new private collection of publications for the given user.
      *
-     * <p>Extracts {@link UserId} and {@link GenreID} from the domain objects
-     * before delegating to the repository.
-     *
-     * @param name          name chosen by the user for the collection
-     * @param selectedGenre genre chosen by the user
-     * @param user          the user who owns the collection
+     * @param name    name chosen by the user for the collection
+     * @param genreId identifier of the genre chosen by the user
+     * @param userId  identifier of the user who owns the collection
      * @return the created {@link CollectionOfPublications}, always private
-     * @throws IllegalArgumentException if user or genre is null, or if a duplicate exists
+     * @throws IllegalArgumentException if userId or genreId is null, or if a duplicate exists
      */
     public CollectionOfPublications createCollection(
             String name,
-            Genre selectedGenre,
-            User user
+            GenreID genreId,
+            UserId userId
     ) {
-        if (user == null || selectedGenre == null) {
+        if (userId == null || genreId == null) {
             throw new IllegalArgumentException("Invalid arguments");
         }
-
-        UserId userId = user.id();
-        GenreID genreId = selectedGenre.id();
 
         return collectionRepository.createAndAdd(userId, name, genreId);
     }
