@@ -117,6 +117,24 @@ public interface IListingRepository {
 
 
     /**
+     * Retrieves all {@link ListingId} that contain at least one of the given
+     * {@link PublicationSampleId}.
+     *
+     * <p>This method searches the repository for all {@link Listing} instances
+     * whose collection of item identifiers includes at least one of the provided
+     * publication sample identifiers.</p>
+     *
+     * @param itemsId the list of publication sample identifiers used to filter listings;
+     *                must not be {@code null}
+     * @return a list of {@link ListingId} corresponding to listings that contain
+     *         at least one of the specified items; may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code itemsId} is {@code null}
+     */
+    List<ListingId> findAllListingId(List<PublicationSampleId> itemsId);
+
+
+    /**
      * Returns all auction listings that contain at least one item matching
      * any of the provided publication sample IDs.
      *

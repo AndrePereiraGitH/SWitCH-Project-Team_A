@@ -102,6 +102,8 @@ public interface    IPublicationSampleRepository {
      */
     List<PublicationSample> getAllPublications();
 
+    List<PublicationSampleId> findAllItemsIdByBibliographicalDataId(List<BibliographicalDataID> bdIds);
+
     /**
      * Retrieves all publications in the system that are owned by the given user
      * and have been added to a library.

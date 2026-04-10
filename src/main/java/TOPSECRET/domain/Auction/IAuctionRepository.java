@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Auction;
 
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuctionId;
@@ -65,14 +66,20 @@ public interface IAuctionRepository {
     Optional<Auction> findAuctionById(AuctionId id);
 
     /**
-     * Returns the list of auctions containing at least one item whose publication
-     * belongs to the given genre.
+     * Retrieves all {@link Auction} instances associated with the given
+     * {@link ListingId}.
      *
-     * @param genre the genre used to filter auctions
-     * @return a list of auctions that contain at least one item with the given genre
-     * @throws IllegalArgumentException if {@code genre} is {@code null}
+     * <p>This method searches the repository for auctions whose listing identifier
+     * matches any of the provided listing identifiers.</p>
+     *
+     * @param listingId the list of listing identifiers used to filter auctions;
+     *                   must not be {@code null}
+     * @return a list of {@link Auction} associated with the given listings;
+     *         may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code listingIds} is {@code null}
      */
-//    List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre);
+    List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId);
 
     /**
      * Returns the list of auctions containing at least one item whose publication

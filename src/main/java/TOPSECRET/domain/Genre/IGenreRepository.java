@@ -52,6 +52,21 @@ public interface IGenreRepository {
 
 
     /**
+     * Retrieves a {@link Genre} by its unique identifier.
+     *
+     * <p>This method searches the repository's internal collection and returns
+     * the genre whose {@link GenreID} matches the provided identifier.</p>
+     *
+     * @param id the identifier of the genre to retrieve; must not be {@code null}
+     * @return the {@link Genre} associated with the given identifier
+     *
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @throws IllegalArgumentException if no genre with the given identifier is found
+     */
+        Genre findById(GenreID id);
+
+
+    /**
      * Returns the genre matching the ID.
      *
      * <p>This method searches the repository's internal collection and returns

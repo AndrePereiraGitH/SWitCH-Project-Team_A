@@ -54,6 +54,21 @@ public interface IBibliographicalDataRepository {
     Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
 
     /**
+     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreID}.
+     *
+     * <p>This method searches the repository for all {@link BibliographicalData}
+     * instances whose list of genres contains the provided genre identifier.</p>
+     *
+     * @param genreId the identifier of the genre used to filter bibliographical data;
+     *                must not be {@code null}
+     * @return a list of {@link BibliographicalDataID} that are associated with the given genre;
+     *         may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code genreId} is {@code null}
+     */
+    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId);
+
+    /**
      * Finds the ID of a bibliographical data entry by its title, using case-insensitive
      * and whitespace-trimmed matching.
      *
