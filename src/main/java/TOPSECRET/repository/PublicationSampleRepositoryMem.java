@@ -1,16 +1,22 @@
 package TOPSECRET.repository;
 
+
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.PublicationSampleDTO_US016;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.LibraryId;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -127,6 +133,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return Optional.empty();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId){
+        if (bdId == null) {
+            throw new NullPointerException("PublicationSampleID cannot be null");
+        }
+
+        List<PublicationSampleId> listOfPubSampleId = new ArrayList<>();
+
+        for(PublicationSample pbSample:allPublicationsInSystem){
+            if(pbSample.getBibliographicalDataID().equals(bdId)){
+                listOfPubSampleId.add(pbSample.id());
+            }
+        }
+        return listOfPubSampleId;
+
+    }
+
     // -------------------------------------------------------------------------
     // Specific Queries
     // -------------------------------------------------------------------------
@@ -158,6 +184,19 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
         return listOfPublications;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID) {
+
+        List<PublicationSample> allPublications = allPublicationsInSystem.stream()
+                .filter(p -> Objects.equals(p.getLibraryID(), libraryID))
+                .toList();
+
+        return allPublications;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -218,6 +257,37 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return List.copyOf(pubSamplesList);
     }
 
+
+
+
+    // --------------------------------------- US018 starts ----------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+//    public PublicationSample PublicationSampleDtoToDomain(
+//            Library userLibrary,
+//            PublicationSampleDTO_US018 dto) {
+//
+//        if (userLibrary == null)
+//            throw new IllegalArgumentException("Library cannot be null");
+//
+//        if (dto == null)
+//            throw new IllegalArgumentException("DTO cannot be null");
+//
+//        for (PublicationSample publication : userLibrary.getAllPublications()) {
+//
+//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
+//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
+//                    && publication.getOwnerId().getUserName().equals(dto.getOwnerUsername())) {
+//
+//                return publication;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("Publication not found in user's library");
+//    }
+
     /**
      * {@inheritDoc}
      */
@@ -270,7 +340,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // -------------------------------------------------------------------------
     // Private Helper Methods
     // -------------------------------------------------------------------------
-
 
     /**
      * Determines whether a {@link PublicationSample} matches the criteria defined in a

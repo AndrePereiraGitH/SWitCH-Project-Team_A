@@ -2,59 +2,66 @@
 
 title US024 - To get the list of items on auction of a given publication
 
-' UI Layer
+' ── UI Layer ───────────────────────────────────────────────
 class UI024 {
 }
 
-' Controller
+' ── Application Layer ──────────────────────────────────────
 class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
-  +getAllPublicationBD(): List<BibliographicalDataDTO_US024>
-  +getListOfItemsOnAuctionByGivenPublicationDTO(bdPublication: BibliographicalDataDTO_US024): List<AuctionItemDTO_US024>
+  +getAllPublicationTitles(): List<String>
+  +getAuctionListingsByTitle(title: String): List<US024AucListingDTO>
 }
 
-' Repositories
-class BibliographicalDataRepository {
-  +getAllPublicationBD(): List<BibliographicalData>
+class US024AucListingMapper {
+  +toDTOs(listOfAucListings: List<Listing>): List<US024AucListingDTO>
+  +toDTO(aucListing: Listing): US024AucListingDTO
 }
 
-class AuctionRepository {
-  +getListOfItemsOnAuctionByGivenPublication(bdPublicationDTO: BibliographicalData): List<PublicationSample>
-  -verifyIfAuctionHasItemsOfThatPublication(bdPublicationDTO: BibliographicalData): boolean
+class US024AucListingDTO {
 }
 
-' Domain
+' ── Domain Layer ───────────────────────────────────────────
+interface IBibliographicalDataRepository {
+  +getAllTitles(): List<String>
+  +findBibliographicalDataIdByTitle(title: String): BibliographicalDataId
+}
+
+interface IPublicationSampleRepository {
+  +findPubSampleIdsByBibliographicalDataId(bdId: BibliographicalDataId): List<PublicationSampleId>
+}
+
+interface IListingRepository {
+  +getAuctionListingsContaining(listOfPubSampleIds: List<PublicationSampleId>): List<Listing>
+}
+
 class BibliographicalData {
-  +getBibliographicalDataDetails(): BibliographicalDataDetails
+  -id: BibliographicalDataId
+  -title: String
 }
 
 class PublicationSample {
-  +getAuctionItemDetails(): AuctionItemDetails
+  -id: PublicationSampleId
 }
 
-
-class BibliographicalDataDTO_US024 {
-  +toDTOs(listOfAllPublicationBD: List<BibliographicalData>): List<BibliographicalDataDTO_US024>
-  +createDTO(bibliographicalDataDetails: BibliographicalDataDetails): BibliographicalDataDTO_US024
+class Listing {
+  +isListingLinkedToAnAuction(): boolean
+  +verifyIfListingContainsPubId(pubId: PublicationSampleId): boolean
 }
 
-class AuctionItemDTO_US024 {
-  +toDTOs(listOfItemsOnAuctionByPublication: List<PublicationSample>): List<AuctionItemDTO_US024>
-  +createDTO(auctionItemDetails: AuctionItemDetails): AuctionItemDTO_US024
-}
+' ── Relationships ──────────────────────────────────────────
 
-' Relationships
-UI024 --> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
+UI024 ..> US024GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
 
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> BibliographicalDataRepository : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> AuctionRepository : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> BibliographicalDataDTO_US024 : uses
-US024GetTheListOfItemsOnAuctionOfAGivenPublicationController --> AuctionItemDTO_US024 : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IBibliographicalDataRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IPublicationSampleRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IListingRepository : uses
+US024GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> US024AucListingMapper : uses
 
-BibliographicalDataRepository "1" --> "*" BibliographicalData : manages
+IBibliographicalDataRepository "1" --> "*" BibliographicalData : manages
+IPublicationSampleRepository "1" --> "*" PublicationSample : manages
+IListingRepository "1" --> "*" Listing : manages
 
-
-
-BibliographicalDataDTO_US024 ..> BibliographicalData : maps from
-AuctionItemDTO_US024 ..> PublicationSample : maps from
+US024AucListingMapper ..> Listing : maps from
+US024AucListingMapper ..> US024AucListingDTO : creates
 
 @enduml
