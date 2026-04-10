@@ -11,7 +11,6 @@ import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 import javax.management.InstanceAlreadyExistsException;
