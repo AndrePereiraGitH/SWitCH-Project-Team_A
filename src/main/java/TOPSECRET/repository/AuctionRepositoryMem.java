@@ -98,30 +98,23 @@ public class AuctionRepositoryMem implements IAuctionRepository {
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
-//
-//        if (genre == null) {
-//            throw new IllegalArgumentException("genre cannot be null");
-//        }
-//
-//        List<Auction> result = new ArrayList<>();
-//        // will iterate over all auctions in the repository
-//        for (Auction auction : _auctionsList) {
-//           // for each auction, will iterate over all items that are in Listing
-//            for(PublicationSample publicationSample : auction.getListing().getItems()) {
-//                //this condition means that we are getting throw all the information necessary to get the final list of genres
-//                if(publicationSample.getBibliographicalData()
-//                        .getGenres().contains(genre)) {
-//                    result.add(auction);
-//                   // break when finds one, prevents the duplication
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
+    @Override
+    public List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId) {
+
+        if (listingId == null) {
+            throw new IllegalArgumentException("ListingId cannot be null");
+        }
+
+        List<Auction> result = new ArrayList<>();
+
+        for(Auction auction : _auctionsList){
+            if(listingId.contains(auction.getListingId())){
+                result.add(auction);
+            }
+        }
+
+        return result;
+    }
 
 
     /**

@@ -65,7 +65,6 @@ public class ListingRepositoryMem implements IListingRepository {
         return newListing;
     }
 
-
     // for tests purpose
     void addListing(Listing listing) {
         listings.add(listing);
@@ -126,7 +125,6 @@ public class ListingRepositoryMem implements IListingRepository {
 //        return listOfPublicationSample;
 //    }
 
-
     /**
      * {@inheritDoc}
      */
@@ -148,6 +146,27 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return dsListings;
+    }
+
+    @Override
+    public List<ListingId> findAllListingId(List<PublicationSampleId> itemsId) {
+        if(itemsId == null){
+            throw new IllegalArgumentException("itemsId cannot be null");
+        }
+        List<ListingId> listingIds = new ArrayList<>();
+        for (Listing listing : listings) {
+
+            List<PublicationSampleId> listingItems = listing.getItemsId();
+
+            for(PublicationSampleId itemId : itemsId){
+                if(listingItems.contains(itemId)){
+                    listingIds.add(listing.id());
+                    break;
+                }
+            }
+        }
+        return listingIds;
+
     }
 
     /**

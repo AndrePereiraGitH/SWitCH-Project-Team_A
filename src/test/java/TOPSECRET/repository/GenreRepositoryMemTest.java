@@ -151,6 +151,28 @@ class GenreRepositoryMemTest {
     }
 
     @Test
+    void shouldReturnGenreWhenIdExists() {
+
+        // Arrange
+        IGenreRepository repository = new GenreRepositoryMem(genreFactory);
+        Genre genre = mock(Genre.class);
+        GenreID genreId = mock(GenreID.class);
+
+        when(genreFactory.create("Fantasy")).thenReturn(genre);
+        when(genre.id()).thenReturn(genreId);
+
+        repository.createAndAdd("Fantasy");
+
+        // Act
+        Genre result = repository.findById(genreId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(genre, result);
+    }
+
+
+    @Test
     void findGenreById_shouldThrowException_whenGenreIdIsNull() {
         // Arrange
         IGenreRepository repo = new GenreRepositoryMem(genreFactory);

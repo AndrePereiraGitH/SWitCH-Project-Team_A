@@ -114,5 +114,20 @@ public class GenreRepositoryMem implements IGenreRepository {
                 .filter(genre -> genre.id().equals(genreId))
                 .findFirst();
     }
+
+    @Override
+    public Genre findById(GenreID id){
+        if(id == null){
+            throw new IllegalArgumentException("Genre id can't be null");
+        }
+
+        for (Genre genre : _genres) {
+            if (genre.id().equals(id)) {
+                return genre;
+            }
+        }
+        throw new IllegalArgumentException("Genre not found.");
+    }
+
 }
 

@@ -652,6 +652,98 @@ class ListingRepositoryTestMem {
         );
     }
 
+    @Test
+    void findAllListingId_shouldThrowException_whenItemsIdIsNull() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findAllListingId(null));
+    }
+
+    @Test
+    void findAllListingId_shouldReturnListingId_whenItemMatches() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
+
+        Listing listingDouble = mock(Listing.class);
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        when(listingDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
+        when(listingDouble.id()).thenReturn(listingIdDouble);
+
+        repo.addListing(listingDouble);
+
+        // Act
+        List<ListingId> result = repo.findAllListingId(List.of(itemIdDouble));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(listingIdDouble));
+    }
+
+    @Test
+    void findAllListingId_shouldReturnEmpty_whenNoItemMatches() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        PublicationSampleId itemDouble1 = mock(PublicationSampleId.class);
+        PublicationSampleId itemDouble2 = mock(PublicationSampleId.class);
+
+        Listing listingDouble = mock(Listing.class);
+        when(listingDouble.getItemsId()).thenReturn(List.of(itemDouble1));
+
+        repo.addListing(listingDouble);
+
+        // Act
+        List<ListingId> result = repo.findAllListingId(List.of(itemDouble2));
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllListingId_shouldReturnMultipleListingIds_whenMultipleMatches() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
+
+        Listing listingDouble1 = mock(Listing.class);
+        Listing listingDouble2 = mock(Listing.class);
+
+        ListingId idDouble1 = mock(ListingId.class);
+        ListingId idDouble2 = mock(ListingId.class);
+
+        when(listingDouble1.getItemsId()).thenReturn(List.of(itemIdDouble));
+        when(listingDouble2.getItemsId()).thenReturn(List.of(itemIdDouble));
+
+        when(listingDouble1.id()).thenReturn(idDouble1);
+        when(listingDouble2.id()).thenReturn(idDouble2);
+
+        repo.addListing(listingDouble1);
+        repo.addListing(listingDouble2);
+
+        // Act
+        List<ListingId> result = repo.findAllListingId(List.of(itemIdDouble));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(idDouble1));
+        assertTrue(result.contains(idDouble2));
+    }
+
 
 
 

@@ -194,6 +194,109 @@ class AuctionRepositoryMemTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldThrowException_whenListingIdIsNull() {
+
+        // Arrange
+        AuctionRepositoryMem repo = new AuctionRepositoryMem(auctionFactory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.getListOfItemsOnAuctionGivenGenre(null));
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldReturnAuction_whenListingIdMatches()
+            throws Exception {
+
+        // Arrange
+        AuctionFactory factoryDouble = mock(AuctionFactory.class);
+        AuctionRepositoryMem repo = new AuctionRepositoryMem(factoryDouble);
+
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        Auction auctionDouble = mock(Auction.class);
+        when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
+        when(factoryDouble.create(any(), any(), any(), any(), any())).thenReturn(auctionDouble);
+
+        // Act
+        repo.createAndAdd(
+                listingIdDouble,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                mock(Price.class),
+                mock(Price.class)
+        );
+
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingIdDouble));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(auctionDouble));
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldReturnEmpty_whenNoListingMatches()
+            throws Exception {
+
+        // Arrange
+        AuctionRepositoryMem repo = new AuctionRepositoryMem(auctionFactory);
+
+        ListingId listingDouble1 = mock(ListingId.class);
+        ListingId listingDouble2 = mock(ListingId.class);
+
+        Auction auction = mock(Auction.class);
+        when(auction.getListingId()).thenReturn(listingDouble1);
+
+        when(auctionFactory.create(any(), any(), any(), any(), any())).thenReturn(auction);
+
+        repo.createAndAdd(
+                listingDouble1,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                mock(Price.class),
+                mock(Price.class)
+        );
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingDouble2));
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldReturnMultipleAuctions_whenMultipleMatch()
+            throws Exception {
+
+        // Arrange
+        AuctionRepositoryMem repo = new AuctionRepositoryMem(auctionFactory);
+
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        Auction auctionDouble1 = mock(Auction.class);
+        Auction auctionDouble2 = mock(Auction.class);
+
+        when(auctionDouble1.getListingId()).thenReturn(listingIdDouble);
+        when(auctionDouble2.getListingId()).thenReturn(listingIdDouble);
+
+        when(auctionFactory.create(any(), any(), any(), any(), any())).thenReturn(auctionDouble1).thenReturn(auctionDouble2);
+
+        repo.createAndAdd(listingIdDouble, LocalDateTime.now(), LocalDateTime.now(), mock(Price.class), mock(Price.class));
+        repo.createAndAdd(listingIdDouble, LocalDateTime.now(), LocalDateTime.now(), mock(Price.class), mock(Price.class));
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingIdDouble));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(auctionDouble1));
+        assertTrue(result.contains(auctionDouble2));
+    }
+
     // US024 getListOfItemsOnAuctionByGivenPublication -----------------------------------------------------------------
 //    /**
 //     * Verifies that {@code getListOfItemsOnAuctionByGivenPublication()} returns
