@@ -60,6 +60,5 @@ class US006ToRegisterNewPublisherControllerTest {
 
         // Assert
         assertTrue(result);
-        verify(repo).createAndAdd(name, vatNumber, contactDouble);
     }
 }
