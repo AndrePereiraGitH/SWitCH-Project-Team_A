@@ -3,10 +3,12 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.domain.ValueObjects.GenreID;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -15,7 +17,6 @@ import static org.mockito.Mockito.when;
 class GenreRepositoryMemTest {
 
     private final GenreFactory genreFactory = mock(GenreFactory.class);
-    private final List<Genre> genres = new ArrayList<>();
     private final Genre genre = mock(Genre.class);
 
     @Test
@@ -147,5 +148,44 @@ class GenreRepositoryMemTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.findByTitle(" "));
+    }
+
+    @Test
+    void findGenreById_shouldThrowException_whenGenreIdIsNull() {
+        // Arrange
+        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.findGenreById(null);
+        });
+    }
+
+    @Test
+    void findGenreById_shouldReturnGenre_whenGenreExists() {
+        GenreID genreId = mock(GenreID.class);
+        when(genre.id()).thenReturn(genreId);
+        when(genreFactory.create("Fantasy")).thenReturn(genre);
+
+        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+
+        Genre createdGenre = repo.createAndAdd("Fantasy");
+
+        Optional<Genre> result = repo.findGenreById(genreId);
+
+        assertTrue(result.isPresent());
+        assertEquals(genre, result.get());
+        assertEquals(genre, createdGenre);
+    }
+
+    @Test
+    void findGenreById_shouldReturnEmpty_whenGenreDoesNotExist() {
+        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+
+        GenreID genreId = mock(GenreID.class);
+
+        Optional<Genre> result = repo.findGenreById(genreId);
+
+        assertTrue(result.isEmpty());
     }
 }
