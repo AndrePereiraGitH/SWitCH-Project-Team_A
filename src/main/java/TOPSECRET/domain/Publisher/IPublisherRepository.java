@@ -33,13 +33,6 @@ public interface IPublisherRepository {
      */
     Publisher createAndAdd(String name, String vatNumber, Contact contact);
 
-    /**
-     * Checks whether a given {@link Publisher} already exists in the repository.
-     *
-     * @param publisher the Publisher to check
-     * @return {@code true} if the Publisher already exists, {@code false} otherwise
-     */
-    boolean exists(Publisher publisher);
 
     /**
      * Returns all {@link Publisher} instances currently stored in the repository.
