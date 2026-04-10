@@ -43,6 +43,10 @@ public class UserRepositoryMem implements IUserRepository {
     /** {@inheritDoc} */
     @Override
     public UserId create(String username, Contact contact, Profile profile, UserRole userRole) {
+        if (exists(username)) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
         User user = _userFactory.create(username, contact, profile, userRole);
         save(user);
         return user.id();
