@@ -1,0 +1,65 @@
+@startuml
+autonumber
+hide footbox
+title US0016 - Put a publication from my library for sale in an auction
+
+box #whitesmoke
+    actor User
+    participant ":UI" as UI
+end box
+
+participant ":US016ToPutPublicationInAuctionController" as ctrl
+participant ":IListingRepository" as ListingRepo
+participant ":ListingFactory" as listingFactory
+participant "auctionListing: Listing" as auctionListing
+
+participant ":IAuctionRepository" as AucRepo
+
+User -> UI : I want to sell a publication of my library as an auction
+activate UI
+
+UI -> ctrl : getAllPublicationsInUserLibrary(userId)
+activate ctrl
+
+ref over ctrl
+[[2.GetAllPublicationsInUserLibrary.puml Get publications from user's library]]
+end ref
+
+ctrl --> UI : listOfPublicationsDTO
+deactivate ctrl
+
+UI --> User : Please, select one or more publications from your library
+deactivate UI
+
+User -> UI : Selected publications: pub1_dto
+activate UI
+UI --> User : Please insert listingTitle, initialPrice,\nshortDescription, sellerId, pictures,\ninitialDate, finalDate, buyOutPrice
+deactivate UI
+
+User -> UI : Provide data
+activate UI
+UI -> ctrl : createAuctionListing(listingTitle, selectedPublicationsID,\ninitialPrice, shortDescription, sellerId,\npictures, initialDate, finalDate, buyOutPrice)
+activate ctrl
+
+ctrl -> ListingRepo : createAndAdd(listingTitle, selectedPublicationsID,\nSaleType.AUCTION, initialPrice,\nshortDescription, sellerId, pictures)
+activate ListingRepo
+ListingRepo -> listingFactory : create()
+activate listingFactory
+listingFactory --> auctionListing** : <<create>>
+listingFactory --> ListingRepo : auctionListing
+deactivate listingFactory
+ListingRepo --> ctrl : auctionListing
+deactivate ListingRepo
+
+ctrl -> AucRepo : createAndAdd(auctionListing.id(),\n initialDate, finalDate, initialPrice, buyOutPrice)
+activate AucRepo
+AucRepo --> auction** : <<create>>
+AucRepo --> ctrl : auction
+deactivate AucRepo
+
+ctrl --> UI : true
+deactivate ctrl
+
+UI --> User : Your publication(s) are now in an auction
+deactivate UI
+@enduml

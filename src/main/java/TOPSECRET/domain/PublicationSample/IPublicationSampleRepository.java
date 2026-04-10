@@ -9,8 +9,8 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.PublicationSampleDTO_US016;
 import TOPSECRET.dto.PublicationSampleDTO_US018;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -81,6 +81,16 @@ public interface    IPublicationSampleRepository {
      */
     Optional<PublicationSample> findPublicationSampleById(PublicationSampleId id);
 
+    /**
+     * Retrieves all publication sample IDs associated with a given bibliographical data ID.
+     *
+     * @param bdId the bibliographical data ID to search for; must not be {@code null}
+     * @return a {@link List} of {@link PublicationSampleId} associated with the given ID;
+     *         returns an empty list if no matches are found
+     * @throws NullPointerException if {@code bdId} is {@code null}
+     */
+    List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId);
+
     // -------------------------------------------------------------------------
     // Specific Queries
     // -------------------------------------------------------------------------
@@ -104,6 +114,15 @@ public interface    IPublicationSampleRepository {
      * @throws NullPointerException if {@code userId} is {@code null}
      */
     List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
+
+    /**
+     * Retrieves all publication samples that belong to the specified library.
+     *
+     * @param libraryID the identifier of the library whose publication samples are to be retrieved
+     * @return a list containing all publication samples associated with the given library;
+     * returns an empty list if no publication samples are found
+     */
+    List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
      * Returns the subset of {@link PublicationSample} instances from the repository

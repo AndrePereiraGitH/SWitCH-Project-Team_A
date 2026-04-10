@@ -3,77 +3,71 @@ hide circle
 skinparam classAttributeIconSize 0
 title US016 - Put a publication from my library for sale in an auction
 
-
-
-class ToPutPublicationInAuctionController {
-  +getAllPublicationsInUserLibrary(username: String): List<Publication>
-  +createAuctionListing(String listingTitle, List<PublicationSampleDTO_US016> publicationDTOs, Price listingPrice, shortDescription: String, List<Picture> pictures, DateTime initialDate, DateTime finalDate, Price buyOutPrice): boolean
+class US016ToPutPublicationInAuctionController {
+  +getAllPublicationsInUserLibrary(userId: UserId): List<US016_PublicationSampleDTO>
+  +createAuctionListing(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>, initialDate: LocalDateTime, finalDate: LocalDateTime, buyOutPrice: Price): boolean
 }
 
-class Library  {
-  +getAllPublications(): List<PublicationSample>
+class Library {
 }
 
 class Listing
 class Auction
+class PublicationSample
+class BibliographicalData
 
-class LibraryRepository {
-    +getLibraryOfUser(username: String)
+interface ILibraryRepository {
+  +getLibraryByUserId(userId: UserId): Library
 }
 
-class PublicationSampleDTO_US016 {
-    +toDTO(publication : PublicationSample)
+interface IPublicationSampleRepository {
+  +getPublicationsByLibraryID(libraryId: LibraryId): List<PublicationSample>
 }
 
-class PublicationSampleRepository {
-    +getPublicationByDTO(dto :PublicationSampleDTO_US016) : PublicationSample
+interface IBibliographicalDataRepository {
+  +findBibliographicalDataById(id: BibliographicalDataID): Optional<BibliographicalData>
 }
 
-class ListingRepository {
-  +createAndAdd(listing_title :String, listOfPublicationSamples: List<PublicationSample>, SaleType.AUCTION :SaleType, price :Price, shortDescription :String, pictures :List<Pictures> ): Listing
-  -isExistent(listing: Listing): boolean
-  -add(listing: Listing): void
+interface IListingRepository {
+  +createAndAdd(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, saleType: SaleType, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>): Listing
+}
+
+interface IAuctionRepository {
+  +createAndAdd(listingId: ListingId, initialDate: LocalDateTime, finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price): Auction
+}
+
+class US016_PublicationSampleDTO
+
+class US016_PublicationSampleMapper {
+  +fromDomain(publicationSample: PublicationSample, bd: BibliographicalData): US016_PublicationSampleDTO
+  +fromDomainList(publicationSamples: List<PublicationSample>): List<US016_PublicationSampleDTO>
 }
 
 class ListingFactory {
-    +create(listing_title :String, listOfPublicationSamples: List<PublicationSample>, SaleType.AUCTION :SaleType, price :Price, shortDescription :String, pictures :List<Pictures>)
-}
-
-class AuctionRepository {
-  +createAndAdd(listing: Listing, initialDate: DateTime, finalDate: DateTime, initialPrice: Price, buyOutPrice: Price): Auction
-  -validateAuction(auction: Auction): void
-  -addAuction(auction: Auction): void
+  +create(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, saleType: SaleType, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>)
 }
 
 class AuctionFactory {
-    +create(listing: Listing, initialDate: DateTime, finalDate: DateTime, initialPrice: Price, buyOutPrice: Price)
+  +create(listingId: ListingId, initialDate: LocalDateTime, finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price)
 }
 
-'======================
-' Controller uses
-'======================
-ToPutPublicationInAuctionController ..> Library : retrieves publications from
-ToPutPublicationInAuctionController ..> LibraryRepository : invokes
-ToPutPublicationInAuctionController ..> PublicationSampleDTO_US016 : converts
-ToPutPublicationInAuctionController ..> PublicationSampleRepository : matches DTO
-ToPutPublicationInAuctionController .....> ListingRepository : invokes
-ToPutPublicationInAuctionController ....> AuctionRepository : invokes
+US016ToPutPublicationInAuctionController ..> ILibraryRepository : invokes
+US016ToPutPublicationInAuctionController ..> IPublicationSampleRepository : invokes
+US016ToPutPublicationInAuctionController ..> IBibliographicalDataRepository : invokes
+US016ToPutPublicationInAuctionController ....> IListingRepository : invokes
+US016ToPutPublicationInAuctionController ....> IAuctionRepository : invokes
+US016ToPutPublicationInAuctionController ..> US016_PublicationSampleMapper : uses
 
-'======================
-' Repositories handles with
-'======================
+US016_PublicationSampleMapper ..> IBibliographicalDataRepository : retrieves
+US016_PublicationSampleMapper ..> US016_PublicationSampleDTO : creates
+US016_PublicationSampleMapper ..> PublicationSample : maps
+US016_PublicationSampleMapper ..> BibliographicalData : maps
 
-ListingRepository --> ListingFactory
+IListingRepository --> ListingFactory
 ListingFactory ..> Listing : creates
 
-AuctionRepository --> AuctionFactory
+IAuctionRepository --> AuctionFactory
 AuctionFactory ..> Auction : creates
 
-'======================
-' Domain interactions
-'======================
 Library "1" -- "*" PublicationSample : contains
-Listing "1" o-- "1..*" PublicationSample : contains
-Auction "1" --> "1" Listing : contains
-
 @enduml
