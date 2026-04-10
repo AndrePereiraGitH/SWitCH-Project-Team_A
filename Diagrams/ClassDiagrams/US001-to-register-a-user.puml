@@ -31,9 +31,9 @@ class User {
 }
 
 US001ToRegisterUserController "1" ..> "1" IUserRepository : uses
-US001ToRegisterUserController "1" ..> "1" UserFactory : uses
-UserRepositoryMem ..|> IUserRepository : implements
-UserRepositoryMem "1" --> "*" User : stores
-UserFactory ..> User : creates
+US001ToRegisterUserController "1" ..> "1   " UserFactory : uses
+UserRepositoryMem "1" ..|> "1    " IUserRepository : implements
+UserRepositoryMem "1  " --> "                *" User : stores
+UserFactory "1" ..> "*" User : creates
 
 @enduml
