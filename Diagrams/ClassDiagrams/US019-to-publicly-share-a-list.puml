@@ -1,50 +1,79 @@
 @startuml
-hide circle
-title US019 - To publicly share a list of mine
 
-skinparam classAttributeIconSize 0
+title US019 - To publicly share a list of mine
 
 class "UI019" as UI019 {
 
 }
 
-class "US019ToPubliclyShareCollectionOfPublicationsController" as Controller {
-  +requestAllCollectionOfPublicationsByUser(user: User): List<CollectionOfPublicationsDTO>
-  +shareCollectionOfPublications(dto: CollectionOfPublicationsDTO): boolean
+'Controller
+class "US019ToPubliclyShareCollectionOfPublicationsController" as US019Controller {
+  -collectionRepository: ICollectionOfPublicationsRepository
+  -genreRepository: IGenreRepository
+  -userRepository: IUserRepository
+  +getUserCollections(userId: UserId): List<CollectionOfPublicationsDTO>
+  +makeCollectionPublic(collectionId: CollectionID, userId: UserId): void
 }
 
-class "CollectionOfPublicationRepository" as Repository  {
-  +getAllCollectionOfPublicationsByUser(user: User): List<CollectionOfPublications>
-  +makeCollectionOfPublicationsPublic(dto: CollectionOfPublicationsDTO): boolean
-  -getCollectionByDTO(dto: CollectionOfPublicationsDTO): CollectionOfPublications
+'Repository Interfaces
+interface "ICollectionOfPublicationRepository" as ICollectionOfPublicationsRepository  {
+ + getUserCollections(userId : UserId) : List<CollectionOfPublications>
+ + findCollectionOfPublicationsById(id : CollectionOfPublicationsID) : Optional<CollectionOfPublications>
 }
 
-class "CollectionOfPublications" as Collection  {
-  -isPrivate: boolean
-  +verifyIfCollectionBelongsToUser(user: User): boolean
-  +set_isPrivate(value: boolean): void
+interface IGenreRepository {
+  + findGenreById(id : GenreID) : Optional<Genre>
 }
 
-class "CollectionOfPublicationsDTO" as DTO {
-  +username: String
-  +name: String
-  +genreName: String
-  +toDTO(collection: CollectionOfPublications): CollectionOfPublicationsDTO
+interface IUserRepository {
+  + findUserById(id : UserId) : Optional<User>
+}
+
+'Domain
+class CollectionOfPublications {
+  - id : CollectionOfPublicationsID
+  - collectionName : String
+  - collectionGenreId : GenreID
+  - ownerId : UserId
+  - isPrivate : boolean
+  + getCollectionName() : String
+  + getCollectionGenre() : GenreID
+  + getOwnerId() : UserId
+  + set_isPrivate(value : boolean) : void
+}
+
+class Genre {
+  - id : GenreID
+  - genreType : String
 }
 
 class User {
-  +username: String
+  - username : String
 }
 
-' Associations / Dependencies
-UI019 ..> Controller : uses
-Controller ..> Repository : uses
-Repository --> Collection : manages
-Controller ..> DTO : creates/maps
-Repository ..> DTO : uses (lookup)
-Collection ..> User : verify owner
 
-' Multiplicities (implicit in the sequence)
-'Repository "1" o-- "0..*" Collection : collections
+class US019CollectionOfPublicationsMapper {
+  + toDTO(collection : CollectionOfPublications) : US019CollectionOfPublicationsDTO
+  + toDTOs(collections : List<CollectionOfPublications>) : List<US019CollectionOfPublicationsDTO>
+}
+
+class "US019CollectionOfPublicationsDTO" as DTO{
+}
+
+' Interactions
+UI019 ..> US019Controller : uses
+
+US019Controller ..> ICollectionOfPublicationsRepository : uses
+US019Controller ..> IGenreRepository : uses
+US019Controller ..> IUserRepository : uses
+US019Controller ..> US019CollectionOfPublicationsMapper : uses
+
+ICollectionOfPublicationsRepository "1" --> "*" CollectionOfPublications : manages
+IGenreRepository "1" --> "*" Genre : manages
+IUserRepository "1" --> "*" User : manages
+
+US019CollectionOfPublicationsMapper ..> CollectionOfPublications : maps from
+US019CollectionOfPublicationsMapper ..> DTO : creates
+
 
 @enduml
