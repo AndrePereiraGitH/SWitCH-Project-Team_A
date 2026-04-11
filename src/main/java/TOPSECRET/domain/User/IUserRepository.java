@@ -36,7 +36,7 @@ public interface IUserRepository {
      * @throws IllegalArgumentException if any parameter is null, or if {@code username} is blank
      * @throws IllegalStateException    if a user with the given username already exists
      */
-    UserId createAndAdd(String username, Contact contact, Profile profile, UserRole userRole);
+    User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole);
 
     /**
      * Finds the unique identifier of a user by their username.

@@ -19,7 +19,7 @@ import java.util.Optional;
  */
 public class UserRepositoryMem implements IUserRepository {
 
-    private final List<User> _userList = new ArrayList<>();
+    private final List<User> _userList;
     private final UserFactory _userFactory;
 
     //================================================================================
@@ -32,19 +32,20 @@ public class UserRepositoryMem implements IUserRepository {
      */
     public UserRepositoryMem(UserFactory userFactory) {
         this._userFactory = userFactory;
+        this._userList = new ArrayList<>();
     }
 
     //================================================================================
 
     /** {@inheritDoc} */
     @Override
-    public UserId createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
+    public User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
         if (exists(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
 
         User user = _userFactory.create(username, contact, profile, userRole);
-        return save(user).id();
+        return save(user);
     }
 
     /**

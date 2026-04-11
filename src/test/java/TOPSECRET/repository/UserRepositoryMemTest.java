@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
@@ -81,7 +82,7 @@ class UserRepositoryMemTest {
     @Test
     void shouldReturnUserIdAfterCreation() {
         // ACT
-        UserId result = userRepository.createAndAdd("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        User result = userRepository.createAndAdd("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
 
         // ASSERT
         assertNotNull(result);
@@ -131,14 +132,14 @@ class UserRepositoryMemTest {
     @Test
     void findUserIdByUsername_ShouldReturnValidId_WhenUsernameExists() {
         // ARRANGE
-        UserId createAndAdddId = userRepository.createAndAdd("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        User createAndAddd = userRepository.createAndAdd("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
 
         // ACT
         Optional<UserId> foundId = userRepository.findUserIdByUsername("ValidUser");
 
         // ASSERT
         assertTrue(foundId.isPresent());
-        assertEquals(createAndAdddId, foundId.get());
+        assertEquals(createAndAddd, foundId.get());
     }
 
     @Test
