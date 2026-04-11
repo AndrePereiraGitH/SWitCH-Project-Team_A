@@ -11,15 +11,17 @@ participant ":UI026" as UI026
 participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
 
 participant ":AuthorRepository" as AuthorRepository
-participant ":AuthorDTO_US026" as AuthorDTO_US026
-
-participant ":AuctionDTO_US016" as AuctionDTO
-participant ":auctionDTO: AuctionDTO_US026" as aucDTO
+participant ":US016AuthorMapper" as authorMapper
 participant ":authorDTO:AuthorDTO_US026" as AuthorDTO
+participant "authorsDtoList<AuthorDTO>" as authorsListDto
+participant ":US016AuctionMapper" as AuctionMapper
+participant ":auctionDTO: AuctionDTO_US026" as aucDTO
+
+
 
 participant "listOfAuctionDTO:\nList<AuctionDTO_US026>" as ListDTO
 
-participant "List<AuthorDTO>" as authorsListDto
+
 
 participant ":AuctionRepository" as AuctionRepository
 participant "listOfAuctions:List<Auction>" as ListAuc
@@ -37,25 +39,28 @@ activate AuthorRepository
 AuthorRepository --> Ctrl: listOfAllAuthors
 deactivate AuthorRepository
 
-Ctrl -> authorsListDto **: create()
+
+Ctrl -> authorMapper : fromDomainList(listOfAllAuthors)
+activate authorMapper
+authorMapper --> authorsListDto ** : <<create>>
 
 loop "For each Author in list"
-    Ctrl -> AuthorDTO_US026: toDTO(author)
-    activate AuthorDTO_US026
-    AuthorDTO_US026 -> AuthorDTO **
-    AuthorDTO_US026 --> Ctrl: authorDTO
-    deactivate AuthorDTO_US026
-    Ctrl -> Ctrl : listOfAuthorDTO.add(authorDTO)
+    authorMapper -> authorMapper: toDTO(author)
+    authorMapper --> AuthorDTO ** : <<create>>
+    authorMapper -> authorMapper : authorsDtoList.add(authorDTO)
 end
 
-Ctrl --> UI026 : listOfAllAuthorsDTO
+authorMapper --> Ctrl : authorsDtoList
+deactivate authorMapper
+
+Ctrl --> UI026 : authorsDtoList
 deactivate Ctrl
 Buyer <-- UI026 : Which author? Choose!
 deactivate UI026
-Buyer -> UI026 : author
+Buyer -> UI026 : selectedAuthor
 activate UI026
 
-UI026 -> Ctrl : getListOfItemsOnAuctionByAuthor(authorDTO)
+UI026 -> Ctrl : getListOfItemsOnAuctionByAuthor(selectedAuthorID)
 activate Ctrl
 
 Ctrl -> AuctionRepository : getListOfItemsOnAuctionByAuthor(authorDTO)
@@ -75,11 +80,11 @@ deactivate AuctionRepository
 Ctrl -> ListDTO ** : create ()
 
 loop for each auction in listOfAuctions
-    Ctrl -> AuctionDTO: toDTO(auction)
-        activate AuctionDTO
+    Ctrl -> AuctionMapper: toDTO(auction)
+        activate AuctionMapper
 
-        AuctionDTO -> aucDTO **
-        AuctionDTO --> Ctrl: auctionDTO
+        AuctionMapper -> aucDTO **
+        AuctionMapper --> Ctrl: auctionDTO
         deactivate
         Ctrl -> Ctrl : listOfAuctionDTO.add(auctionDTO)
 

@@ -52,14 +52,6 @@ public interface IListingRepository {
      */
 //    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre);
 
-    /**
-     * Returns all publication samples in direct-sale listings that are associated with the given author.
-     *
-     * @param author the author used to filter publication samples
-     * @return a list of publication samples in direct-sale listings associated with the given author
-     * @throws IllegalArgumentException if {@code author} is {@code null}
-     */
-//    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author);
 
     /**
      * Returns the complete list of listings stored in the repository.
@@ -130,4 +122,17 @@ public interface IListingRepository {
      *         of the provided IDs; never {@code null}, may be empty
      */
     List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
+
+
+    /**
+     * Retrieves the identifiers of all listings that contain at least one of the
+     * given publication sample identifiers.
+     *
+     * @param publicationSamplesIds the list of publication sample identifiers to search for
+     * @return a list of listing identifiers for listings that contain at least one
+     *         of the given publication sample identifiers; returns an empty list if
+     *         no matching listings are found
+     * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
+     */
+    List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
 }

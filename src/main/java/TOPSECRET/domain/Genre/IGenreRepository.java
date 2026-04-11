@@ -1,6 +1,9 @@
 package TOPSECRET.domain.Genre;
 
+import TOPSECRET.domain.ValueObjects.GenreID;
+
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Contract for managing {@link Genre} objects.
@@ -46,5 +49,19 @@ public interface IGenreRepository {
      * @return an unmodifiable list of all official genres; may be empty if no genres have been registered
      */
         List<Genre> getAllGenres();
+
+
+    /**
+     * Returns the genre matching the ID.
+     *
+     * <p>This method searches the repository's internal collection and returns
+     * the genre corresponding to the genreID.
+     *
+     * @param genreId the ID of the genre to search for
+     * @return the genre matching the ID; never {@code null}
+     * @throws IllegalArgumentException if {@code genreId} is {@code null}, blank, or not found
+     */
+    Optional<Genre> findGenreById(GenreID genreId);
+
 }
 
