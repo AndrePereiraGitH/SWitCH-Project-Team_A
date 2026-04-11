@@ -35,8 +35,8 @@ public interface IAppraisalEntityRepository {
      *
      * @param name name of the AppraisalEntity
      * @param contact contact information
-     * @param selectedGenresDTO selected Genre DTOs
-     * @param selectedPublicationTypesDTO selected PublicationType DTOs
+     * @param genresId selected GenreId
+     * @param publicationTypesId selected PublicationTypeId
      * @return the created AppraisalEntity
      *
      * @throws IllegalArgumentException if:
@@ -48,8 +48,8 @@ public interface IAppraisalEntityRepository {
      */
     AppraisalEntity createAndAdd(String name,
                                  Contact contact,
-                                 List<US004GenreDTO> selectedGenresDTO,
-                                 List<US004PublicationTypeDTO> selectedPublicationTypesDTO);
+                                 List<GenreID> genresId,
+                                 List<PublicationTypeId> publicationTypesId);
 
 
 }

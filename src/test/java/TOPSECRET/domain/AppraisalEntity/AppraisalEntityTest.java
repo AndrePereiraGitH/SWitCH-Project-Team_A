@@ -11,12 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-/**
- * Tests for AppraisalEntity.
- *
- * Validates constructor rules, attribute initialization,
- * identity, equality, and general behavior.
- */
+
 class AppraisalEntityTest {
 
     // HELPER

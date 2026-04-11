@@ -32,7 +32,7 @@ public interface IGenreRepository {
      * @param id the title of the genre to search for
      * @throws IllegalArgumentException if {@code id} is {@code null}, blank, or not found
      */
-        Genre findById(GenreID id);
+        Genre findGenreById(GenreID id);
 
 
     /**
