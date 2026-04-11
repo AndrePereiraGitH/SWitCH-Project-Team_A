@@ -29,7 +29,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_validCountry_double(){
         //Arrange
-        when(countryRepoDouble.createAndAddNewCountry("Portugal")).thenReturn(countryDouble);
+        when(countryRepoDouble.createAndAdd("Portugal")).thenReturn(countryDouble);
 
         when(countryDouble.getCountryName()).thenReturn("Portugal");
 
@@ -45,7 +45,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_InvalidCountry_double(){
 
-        when(countryRepoDouble.createAndAddNewCountry("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
+        when(countryRepoDouble.createAndAdd("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
 
         //assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry("Mordor"));
@@ -77,7 +77,7 @@ class US007ToRegisterCountryControllerTest {
     @Test
     void registerNewCountry_duplicateCountry() {
         // Arrange
-        when(countryRepoDouble.createAndAddNewCountry("Portugal"))
+        when(countryRepoDouble.createAndAdd("Portugal"))
                 .thenThrow(new IllegalArgumentException("Country is already registered"));
 
         // Act + Assert

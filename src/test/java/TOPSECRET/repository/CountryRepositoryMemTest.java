@@ -73,8 +73,8 @@ class CountryRepositoryMemTest {
         when(countryDouble2.getCountryName()).thenReturn("France");
 
         //Act
-        repository.createAndAddNewCountry("Portugal");
-        repository.createAndAddNewCountry("France");
+        repository.createAndAdd("Portugal");
+        repository.createAndAdd("France");
 
         //Assert
         assertEquals(2, repository.getAllCountries().size());
@@ -89,7 +89,7 @@ class CountryRepositoryMemTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddNewCountry("Mordor"));
+                () -> repository.createAndAdd("Mordor"));
         assertEquals(0, repository.getAllCountries().size());
     }
 
@@ -102,7 +102,7 @@ class CountryRepositoryMemTest {
 
         //Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddNewCountry(null));
+                () -> repository.createAndAdd(null));
         assertEquals(0, repository.getAllCountries().size());
     }
 
@@ -113,11 +113,11 @@ class CountryRepositoryMemTest {
         when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
         when(countryDouble1.getCountryName()).thenReturn("Portugal");
 
-        repository.createAndAddNewCountry("Portugal");
+        repository.createAndAdd("Portugal");
 
         //Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAddNewCountry("Portugal"));
+                () -> repository.createAndAdd("Portugal"));
         assertEquals(1, repository.getAllCountries().size());
     }
 
@@ -132,7 +132,7 @@ class CountryRepositoryMemTest {
         when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
         when(countryDouble1.getCountryName()).thenReturn("Portugal");
 
-        repository.createAndAddNewCountry("Portugal");
+        repository.createAndAdd("Portugal");
 
         //Act
         List<Country> countryList = repository.getAllCountries();
@@ -166,7 +166,7 @@ class CountryRepositoryMemTest {
         when(countryDouble1.getCountryName()).thenReturn("Portugal");
         when(countryDouble1.getCountryID()).thenReturn(id);
 
-        repository.createAndAddNewCountry("Portugal");
+        repository.createAndAdd("Portugal");
 
         //Act
         Optional<Country> result = repository.findByID(id);
@@ -203,8 +203,8 @@ class CountryRepositoryMemTest {
         when(countryDouble1.getCountryID()).thenReturn(idPortugal);
         when(countryDouble2.getCountryID()).thenReturn(idFrance);
 
-        repository.createAndAddNewCountry("Portugal");
-        repository.createAndAddNewCountry("France");
+        repository.createAndAdd("Portugal");
+        repository.createAndAdd("France");
 
         //Act
         Optional<Country> result = repository.findByID(idFrance);
@@ -219,7 +219,7 @@ class CountryRepositoryMemTest {
         CountryFactory factory = new CountryFactory();
         CountryRepositoryMem repo = new CountryRepositoryMem(factory);
 
-        Country result = repo.createAndAddNewCountry("Portugal");
+        Country result = repo.createAndAdd("Portugal");
 
         assertNotNull(result);
         assertEquals("Portugal", result.getCountryName());
@@ -235,7 +235,7 @@ class CountryRepositoryMemTest {
         //Arrange
         when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
 
-        Country createdCountry = repository.createAndAddNewCountry(
+        Country createdCountry = repository.createAndAdd(
                 "Portugal");
 
         CountryID countryId = mock(CountryID.class);
