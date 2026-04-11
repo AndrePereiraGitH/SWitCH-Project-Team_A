@@ -40,4 +40,17 @@ public interface ICountryRepository {
      *         or an empty {@link Optional} if no match is found
      */
     Optional<Country> findByID(CountryID countryID);
+
+    /**
+     * Finds the {@code CountryID} associated with a given country name.
+     * <p>
+     * The input is normalized to allow flexible matching (case-insensitive,
+     * spaces and hyphens handled). Returns an empty {@code Optional} if no match is found.
+     *
+     * @param countryName the name of the country to search for
+     * @return an {@code Optional} containing the matching {@code CountryID}, or empty if not found
+     * @throws NullPointerException if {@code countryName} is null
+     * @throws IllegalArgumentException if {@code countryName} is blank
+     */
+    Optional<CountryID> findCountryIdByCountryName(String countryName);
 }

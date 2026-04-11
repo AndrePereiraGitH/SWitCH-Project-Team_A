@@ -1,42 +1,51 @@
-
 @startuml
 hide circle
 title US008 - Register New City (Class Diagram)
 
+class UI008{
+}
+
 class City {
   -cityName: String
-  -country: Country
+  -countryID: CountryID
 }
 
 class Country {
-  -name: String
+  -countryName: String
+  -countryID: CountryID
 }
 
-class FactoryCity {
-  +create(cityName: String, country: Country) : City
+class CountryID
+
+class CityFactory {
+  +create(countryID: CountryID, cityName: String) : City
 }
 
-class CityRepository {
-  +createAndAdd(cityName: String, countryName: String) : City
-  -validate(city: City)
-  -add(city: City)
+interface ICityRepository {
+  +createAndAdd(countryID: CountryID, cityName: String) : City
 }
 
-class CountryRepository {
-  +exists(countryName: String) : boolean
-  +findByName(countryName: String) : Country
+interface ICountryRepository {
+  +findCountryIdByCountryName(countryName: String) : Optional<CountryID>
 }
 
-class US008RegisterNewCityController {
-  +getCountryName(countryName: String) : boolean
-  +registerNewCity(cityName: String, countryName: String) : City
+class US008ToRegisterACityCtrl {
+  -_cityRepository: ICityRepository
+  -_countryRepository: ICountryRepository
+  +registerNewCity(countryName: String, cityName: String) : boolean
 }
 
-' Interactions / Dependencies
-US008RegisterNewCityController "1" ..> "1" CityRepository : uses
-US008RegisterNewCityController "1" ..> "1" CountryRepository : verifies country
-CityRepository "1" ..> "1" FactoryCity : creates via
-CityRepository "1" --> "*" City : stores
-City "*" --> "1" Country : is in
+' Relationships
+UI008 ..> US008ToRegisterACityCtrl: uses
+US008ToRegisterACityCtrl "1"..>"1" ICityRepository: uses
+US008ToRegisterACityCtrl "1"..>"1" ICountryRepository: uses
+
+ICityRepository "1"-->"*" City: manages
+ICountryRepository "1"-->"*" CountryID: finds
+
+City "1"-->"1..*" CountryID: belongs to
+Country "1"-->"1" CountryID: identified by
+
+ICityRepository "1"..>"1" CityFactory : uses
 
 @enduml

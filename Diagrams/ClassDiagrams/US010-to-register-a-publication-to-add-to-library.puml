@@ -6,26 +6,27 @@ hide circle
 class UI010 {
 }
 
-class RegisterNewPublicationCtrl {
-  +createAndAddPublication(bd, owner, status, edition, condition)
+class US010ToRegisterNewPublicationCtrl {
+  +registerNewPublication(bdId, userId, status, editionId, condition) : boolean
 }
 
-class PublicationSampleRepository {
-  +createAndAdd(bd, owner, status, edition, condition)
-  -validate(pub1 : PublicationSample)
-  -add(pub1 : PublicationSample)
+interface IPublicationSampleRepository {
+  +createAndAdd(bdId, userId, status, editionId, condition) : PublicationSample
 }
 
 class PublicationSampleFactory {
-  +create(bd, owner, status, edition, condition) : PublicationSample
+  +create(bdId, userId, status, editionId, condition) : PublicationSample
 }
 
 class PublicationSample {
 }
 
-UI010 "1" ..> "1" RegisterNewPublicationCtrl : contacts
-RegisterNewPublicationCtrl "1" ..> "1" PublicationSampleRepository : uses
-PublicationSampleRepository "1" ..> "1" PublicationSampleFactory : uses
-PublicationSampleRepository "1" -> "*" PublicationSample : owns
+UI010 "1" ..> "1" US010ToRegisterNewPublicationCtrl : uses
+
+US010ToRegisterNewPublicationCtrl "1" ..> "1" IPublicationSampleRepository : depends on
+
+IPublicationSampleRepository "1" ..> "1" PublicationSampleFactory : uses
+
+IPublicationSampleRepository "1" --> "*" PublicationSample : manages
 
 @enduml

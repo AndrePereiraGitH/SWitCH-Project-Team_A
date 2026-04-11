@@ -1,9 +1,14 @@
-/*package TOPSECRET.controller;
+package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.City.ICityRepository;
+import TOPSECRET.domain.Country.ICountryRepository;
+import TOPSECRET.domain.ValueObjects.CountryID;
 import TOPSECRET.repository.CityRepositoryMem;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,57 +23,102 @@ import static org.mockito.Mockito.*;
  * <p>The {@link City} domain object is mocked because its constructor is protected
  * and the controller only needs to forward the object returned by the repository.</p>
  */
-/*class US008ToRegisterACityCtrlTest {
+class US008ToRegisterACityCtrlTest {
+    private ICityRepository doubleCityRepo;
+    private ICountryRepository doubleCountryRepo;
+    private US008ToRegisterACityCtrl controller;
 
-
-    // Collaborator
-    private final CityRepositoryMem anyCityRepositoryMem = mock(CityRepositoryMem.class);
-
-    //Variables important for testing
-    private final String anyCityName = "Salamanca";
-    private final City anyCity = mock(City.class);
-    private final Country anyCountry = mock(Country.class);
+    @BeforeEach
+    void setUp() {
+        doubleCityRepo = mock(ICityRepository.class);
+        doubleCountryRepo = mock(ICountryRepository.class);
+    }
 
     @Test
-    void shouldThrowWhenRepositoryIsNull() {
-
-        //The SUT here could be considered the ctrl class and the CityRepo class
+    void throwsConstructorWhenNullCityRepository() {
 
         //Arrange
-        CityRepositoryMem nullRepository = null;
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new US008ToRegisterACityCtrl(nullRepository));
-    }
-
-    @Test
-    void shouldReturnCityCreatedByRepo() {
-
-        // Arrange
-        US008ToRegisterACityCtrl controller = new US008ToRegisterACityCtrl(anyCityRepositoryMem);
-
-        when(anyCityRepositoryMem.createAndAdd(anyCountry, anyCityName)).thenReturn(anyCity);
-
-        // Act, but I am not sure if this is valid to use later when asserting
-        City result = controller.registerNewCity(anyCountry, anyCityName);
-
-        // Assert
-        assertEquals(anyCity, result);
-    }
-
-    @Test
-    void shouldPropagateExceptionWhenCountryIsNull() {
-
-        //Arrange, the SUT here would in theory be the ctrl and country
-        US008ToRegisterACityCtrl controller = new US008ToRegisterACityCtrl(anyCityRepositoryMem);
-        Country nullCountry = null;
-
-        when(anyCityRepositoryMem.createAndAdd(nullCountry, anyCityName))
-                .thenThrow(new IllegalArgumentException());
+        controller = new US008ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new US008ToRegisterACityCtrl(null, doubleCountryRepo)
+        );
 
         //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCity(nullCountry, anyCityName));
+        assertEquals("ICityRepository must not be left null", ex.getMessage());
+    }
+
+    @Test
+    void throwsConstructorIfNullCountryRepository() {
+
+        //Arrange
+        controller = new US008ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new US008ToRegisterACityCtrl(doubleCityRepo, null)
+        );
+
+        //Act + assert
+        assertEquals("ICountryRepository must not be left null", ex.getMessage());
+    }
+
+    @Test
+    void registerNewCitySuccess() {
+
+        //Arrange
+        controller = new US008ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
+        CountryID doubleCountryId = new CountryID("PORTUGAL_ID");
+
+        // Configure country repo to return a CountryID
+        when(doubleCountryRepo.findCountryIdByCountryName("Portugal"))
+                .thenReturn(Optional.of(doubleCountryId));
+
+        // Configure city repo to return a new City when createAndAdd is called
+        City doubleCity = mock(City.class);
+        when(doubleCityRepo.createAndAdd(doubleCountryId, "Lisbon"))
+                .thenReturn(doubleCity);
+
+        //Act
+        boolean result = controller.registerNewCity("Portugal", "Lisbon");
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void registerNewCitySuccess2() {
+
+        //Arrange
+        controller = new US008ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
+        CountryID doubleCountryId = new CountryID("CZECH_REPUBLIC_ID");
+
+        when(doubleCountryRepo.findCountryIdByCountryName("Czech Republic"))
+                .thenReturn(Optional.of(doubleCountryId));
+
+        City doubleCity = mock(City.class);
+        when(doubleCityRepo.createAndAdd(doubleCountryId, "Prague"))
+                .thenReturn(doubleCity);
+
+        //Act
+        boolean result = controller.registerNewCity("Czech Republic", "Prague");
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void registerNewCityWhenCountryNotFound() {
+
+        //Arrange
+        controller = new US008ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
+        // Country repo returns empty optional
+        when(doubleCountryRepo.findCountryIdByCountryName("Gondor"))
+                .thenReturn(Optional.empty());
+
+        //Act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                controller.registerNewCity("Gondor", "anyCity")
+        );
+
+        //Assert
+        assertEquals("Country with name Gondor not found", ex.getMessage());
     }
 }
- */
