@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.AuctionFactory;
 import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * In-memory implementation of {@link IAuctionRepository}.
@@ -94,90 +97,19 @@ public class AuctionRepositoryMem implements IAuctionRepository {
                 .findFirst();
     }
 
-
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<Auction> getListOfItemsOnAuctionGivenGenre(Genre genre) {
-//
-//        if (genre == null) {
-//            throw new IllegalArgumentException("genre cannot be null");
-//        }
-//
-//        List<Auction> result = new ArrayList<>();
-//        // will iterate over all auctions in the repository
-//        for (Auction auction : _auctionsList) {
-//           // for each auction, will iterate over all items that are in Listing
-//            for(PublicationSample publicationSample : auction.getListing().getItems()) {
-//                //this condition means that we are getting throw all the information necessary to get the final list of genres
-//                if(publicationSample.getBibliographicalData()
-//                        .getGenres().contains(genre)) {
-//                    result.add(auction);
-//                   // break when finds one, prevents the duplication
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
+    @Override
+    public List<Auction> findAuctionsByListingId(List<ListingId> listingIds) {
 
+        if (listingIds == null) {
+            throw new IllegalArgumentException("List of listingIds cannot be null.");
+        }
 
-    /**
-     * {@inheritDoc}
-     */
-//    @Override
-//    public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {
-//
-//        if (author == null || author.name().isBlank())
-//            throw new IllegalArgumentException("Author cannot be null or blank");
-//
-//        List<Auction> authorAuctions = _auctionsList.stream().filter(auction -> auction.getListing().getItems()
-//                .stream()
-//                .anyMatch( item ->
-//                        item.getBibliographicalData()
-//                                .getAuthors().stream()
-//                                .anyMatch(a -> a.getName().equals(author.name()))
-//                )
-//        ).toList();
-//
-//        return authorAuctions;
-//    }
-
-
-    // US024 -------------------------------------------------------------------------------------------------------------
-    /**
-     * {@inheritDoc}
-     */
-//    @Override
-//    public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
-//
-//        if(publicationDTO == null){
-//            throw new NullPointerException("Publication can not be null");
-//        }
-//
-//        if(publicationDTO.isEmpty()){
-//            throw new IllegalArgumentException("Publication can not be empty");
-//        }
-//
-//        List<PublicationSample> listOfItemsOnAuctionByPublication = new ArrayList<>();
-//
-//        for (Auction auc : _auctionsList) {
-//            Listing listing = auc.getListing();
-//
-//            if (listing != null && listing.getItems() != null) {
-//
-//                for (PublicationSample pbSample : listing.getItems()) {
-//
-//                    if (pbSample.getBibliographicalData().getTitle() != null && pbSample.getBibliographicalData().getTitle().equals(publicationDTO)) {
-//                        listOfItemsOnAuctionByPublication.add(pbSample);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfItemsOnAuctionByPublication;
-//    }
+        return _auctionsList.stream()
+                .filter(auction -> listingIds.contains(auction.getListingId()))
+                .toList();
+    }
 
 }
