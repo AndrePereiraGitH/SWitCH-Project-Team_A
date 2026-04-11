@@ -20,10 +20,10 @@ participant ":UI004" as UI
 participant ":US004ToRegisterAppraisalEntityController" as Controller
 participant ":GenreRepository" as GenreRepo
 participant "allGenreList: List<Genre>" as allGenreList
-participant ":GenreMapper" as GenreMapper
-participant "listOfGenreDTO: List<GenreDTO>" as listOfGenreDTO
+participant ":US004GenreMapper" as GenreMapper
+participant "listOfGenreDTO: List<US004GenreDTO>" as listOfGenreDTO
 participant ":Genre" as Genre
-participant "genreDTO: GenreDTO" as genreDTO
+participant "genreDTO: US004GenreDTO" as genreDTO
 
 UI -> Controller : getAllGenres()
 activate Controller
@@ -39,10 +39,10 @@ activate GenreMapper
 GenreMapper -->> listOfGenreDTO ** : <<create>>
 
 loop for each genre in allGenreList
-'    GenreMapper -> Genre : getId()
-'    activate Genre
-'    Genre --> GenreMapper : id
-'    deactivate Genre
+    GenreMapper -> Genre : getId()
+    activate Genre
+    Genre --> GenreMapper : id
+    deactivate Genre
 
     GenreMapper -> Genre : findByTitle()
     activate Genre

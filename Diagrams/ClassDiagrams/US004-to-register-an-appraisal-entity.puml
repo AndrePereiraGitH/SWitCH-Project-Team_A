@@ -6,9 +6,9 @@ title US004 - As an Administrator, I want to register an Appraisal Entity in the
 ' ========================
 
 class US004ToRegisterAppraisalEntityController {
-  +getAllGenres(): List<Genre>
-  +getAllPublicationTypes(): List<PublicationType>
-  +registerAppraisalEntity(name, contact, genreId, publicationTypeIds)
+  +getAllGenres(): List<US004GenreDTO>
+  +getAllPublicationTypes(): List<US004PublicationTypeDTO>
+  +registerAppraisalEntity(name, contact, genreId, publicationTypeIds): AppraisalEntity
 }
 
 
@@ -41,7 +41,7 @@ class GenreId {
   -String: genreId
 }
 
-Genre "1" *-- "1" GenreId
+Genre "   1 " *--- "        1 " GenreId : identifies
 
 
 ' -------- PublicationType --------
@@ -50,18 +50,18 @@ class PublicationType {
 }
 
 class PublicationTypeId {
-  --String: pubTypeId
+  -String: pubTypeId
 }
 
-PublicationType "1" *-- "1" PublicationTypeId
+PublicationType "1" *--- "1" PublicationTypeId : identifies
 
 
 ' ========================
 ' INTERACTIONS
 ' ========================
 
-AppraisalEntity "    1       " --> "      1..*" GenreId : can be \n related to
-AppraisalEntity "1  " --> "  1..*        " PublicationTypeId : can be \n related to
+AppraisalEntity "    1       " --> "      1..*" GenreId : contains
+AppraisalEntity "1  " --> "  1..*        " PublicationTypeId : contains
 
 GenreId ..> Genre
 PublicationTypeId ..> PublicationType
@@ -71,43 +71,43 @@ PublicationTypeId ..> PublicationType
 ' REPOSITORIES
 ' ========================
 
-interface GenreRepository {
+interface IGenreRepository {
   +getAllGenres(): List<Genre>
   +findById(id: GenreId): Genre
 }
 
-interface PublicationTypeRepository {
+interface IPublicationTypeRepository {
   +getAllPublicationTypes(): List<PublicationType>
   +findById(id: PublicationTypeId): PublicationType
 }
 
-interface AppraisalEntityRepository {
-  +createAndAddAppraisalEntity(...)
+interface IAppraisalEntityRepository {
+  +createAndAdd(...)
 }
 
 
-GenreRepository ..> Genre
-PublicationTypeRepository ..> PublicationType
-AppraisalEntityRepository ..> FactoryAppraisalEntity
+IGenreRepository ..> Genre
+IPublicationTypeRepository ..> PublicationType
+IAppraisalEntityRepository ..> AppraisalEntityFactory
 
 
 ' ========================
 ' FACTORY
 ' ========================
 
-class FactoryAppraisalEntity {
+class AppraisalEntityFactory {
   +create(name, contact, genreId, publicationTypeId): AppraisalEntity
 }
 
-FactoryAppraisalEntity "   1 " --> "  1 " AppraisalEntity : creates
+AppraisalEntityFactory "   1 " --> "  * " AppraisalEntity : creates
 
 
 ' ========================
 ' DEPENDENCIES
 ' ========================
 
-US004ToRegisterAppraisalEntityController ...> GenreRepository : interacts with
-US004ToRegisterAppraisalEntityController ...> PublicationTypeRepository : interacts with
-US004ToRegisterAppraisalEntityController ..> AppraisalEntityRepository : interacts with
+US004ToRegisterAppraisalEntityController ...> IGenreRepository : interacts with
+US004ToRegisterAppraisalEntityController ...> IPublicationTypeRepository : interacts with
+US004ToRegisterAppraisalEntityController ..> IAppraisalEntityRepository : interacts with
 
 @enduml

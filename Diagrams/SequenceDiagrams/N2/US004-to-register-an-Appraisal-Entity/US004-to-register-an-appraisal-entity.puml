@@ -8,24 +8,24 @@ actor Administrator
 participant ":UI004" as UI
 participant ":US004ToRegisterAppraisalEntityController" as Controller
 
-participant ":GenreRepository" as GenreRepo
+participant ":IGenreRepository" as GenreRepo
 participant "allGenreList: List<Genre>" as allGenreList
-participant ":GenreMapper" as GenreMapper
-participant "listOfGenreDTO: List<GenreDTO>" as GenreDTO
+participant ":US004GenreMapper" as GenreMapper
+participant "listOfGenreDTO: List<US004GenreDTO>" as GenreDTO
 participant ":Genre" as Genre
-participant "genreDTO: GenreDTO" as GDTO
+participant "genreDTO: US004GenreDTO" as GDTO
 ' participant "genreId: GenreId" as GenreId
 
-participant ":PublicationTypeRepository" as PublicationTypeRepo
+participant ":IPublicationTypeRepository" as PublicationTypeRepo
 participant "allPublicationTypeList: List<PublicationType>" as allPublicationTypeList
-participant ":PublicationTypeMapper" as PublicationTypeMapper
-participant "listOfPublicationTypeDTO: List<PublicationTypeDTO>" as PublicationTypeDTO
+participant ":US004PublicationTypeMapper" as PublicationTypeMapper
+participant "listOfPublicationTypeDTO: List<US004PublicationTypeDTO>" as PublicationTypeDTO
 participant ":PublicationType" as PublicationType
-participant "publicationTypeDTO: PublicationTypeDTO" as PDTO
+participant "publicationTypeDTO: US004PublicationTypeDTO" as PDTO
 ' participant "publicationTypeId: PublicationTypeId" as PublicationTypeId
 
-participant ":AppraisalEntityRepository" as AppraisalRepo
-participant ":FactoryAppraisalEntity" as FactoryAppraisalEntity
+participant ":IAppraisalEntityRepository" as AppraisalRepo
+participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
 participant "apEn : AppraisalEntity" as AppraisalEntity
 ' participant "appraisalId: AppraisalEntityId" as AppraisalId
 
@@ -57,10 +57,10 @@ activate GenreMapper
 GenreMapper -->> GenreDTO ** : <<create>>
 
 loop for each genre in the list
-'    GenreMapper -> Genre : getId()
-'    activate Genre
-'    Genre --> GenreMapper : id
-'    deactivate Genre
+    GenreMapper -> Genre : getId()
+    activate Genre
+    Genre --> GenreMapper : id
+    deactivate Genre
 
     GenreMapper -> Genre : getTitle()
     activate Genre
@@ -100,10 +100,10 @@ activate PublicationTypeMapper
 PublicationTypeMapper -->> PublicationTypeDTO ** : <<create>>
 
 loop for each publicationType in the list
-'    PublicationTypeMapper -> PublicationType : getId()
-'    activate PublicationType
-'    PublicationType --> PublicationTypeMapper : id
-'    deactivate PublicationType
+    PublicationTypeMapper -> PublicationType : getId()
+    activate PublicationType
+    PublicationType --> PublicationTypeMapper : id
+    deactivate PublicationType
 
     PublicationTypeMapper -> PublicationType : getMediaFormat()
     activate PublicationType
@@ -125,34 +125,30 @@ deactivate UI
 
 Administrator -> UI : Selected one or more Publication Types
 activate UI
-
 ' =========================
 ' Register Appraisal Entity
 ' =========================
-UI -> Controller : registerAppraisalEntity(name, contact, selectedGenresDTO, selectedPublicationTypesDTO)
+UI -> Controller : registerAppraisalEntity(name, contact, selectedGenreDTO, selectedPublicationTypeDTO)
 activate Controller
 
-Controller -> Controller : validateSelectedGenres(selectedGenresDTO)
-Controller -> Controller : validateSelectedPublicationTypes(selectedPublicationTypesDTO)
-
-loop for each genreDTO in selectedGenresDTO
-    Controller -> GenreRepo : findById(genreDTO.id)
-    activate GenreRepo
-    GenreRepo --> Controller : genres
-    deactivate GenreRepo
+loop for each genreDTO in selectedGenreDTO
+    Controller -> GDTO : getId()
+    activate GDTO
+    GDTO --> Controller : genreId
+    deactivate GDTO
 end
 
-loop for each publicationTypeDTO in selectedPublicationTypesDTO
-    Controller -> PublicationTypeRepo : findById(publicationTypeDTO.id)
-    activate PublicationTypeRepo
-    PublicationTypeRepo --> Controller : publicationTypes
-    deactivate PublicationTypeRepo
+loop for each publicationTypeDTO in selectedPublicationTypeDTO
+    Controller -> PDTO : getId()
+    activate PDTO
+    PDTO --> Controller : publicationTypeId
+    deactivate PDTO
 end
 
-Controller -> AppraisalRepo : createAndAddAppraisalEntity(name, contact, genres, publicationTypes)
+Controller -> AppraisalRepo : createAndAdd(name, contact, genresId, publicationTypesId)
 activate AppraisalRepo
 
-AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genres, publicationTypes)
+AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genresId, publicationTypesId)
 activate FactoryAppraisalEntity
 
 FactoryAppraisalEntity -->> AppraisalEntity **: <<create>>
@@ -172,5 +168,4 @@ deactivate Controller
 
 UI ---> Administrator : Success
 deactivate UI
-
 @enduml
