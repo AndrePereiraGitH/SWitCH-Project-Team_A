@@ -9,11 +9,11 @@ participant ":UI026" as UI026
 participant ":US026ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
 participant ":IBiblioDataRepository" as bdRepo
 participant "listOfBiblioDataID \n:List<BibliographicalDataId>" as bdList
-participant ":PublicationSampleRepository" as pubRepo
+participant ":IPublicationSampleRepository" as pubRepo
 participant "listOfPubSamplesId \n List<PublicationSamplesId>" as listOfPubSamples
-participant ":ListingRepository" as listingRepo
+participant ":IListingRepository" as listingRepo
 participant "listingsId \n :List<ListingId>" as listings
-participant ":AuctionRepository" as AuctionRepository
+participant ":IAuctionRepository" as AuctionRepository
 participant ":auctionsOfAuthor \n :List<Auction>" as auctionsList
 participant ":US016AuctionMapper" as AuctionMapper
 participant ":auctionDTO: AuctionDTO_US026" as aucDTO
