@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
  * repository implementation, ensuring predictable behaviour and strong
  * encapsulation in support of the Listing aggregate lifecycle.
  */
-class ListingRepositoryTestMem {
+class ListingRepositoryMemTest {
 
     // ======================================================
     // ================== Set Up ============================
@@ -650,6 +650,162 @@ class ListingRepositoryTestMem {
         assertThrows(IllegalArgumentException.class, () ->
                 repo.getAuctionListingsContaining(List.of())
         );
+    }
+
+    // ======================================================
+    // ==== Tests for findListingsByPublicationID ===========
+    // ======================================================
+
+    @Test
+    void findListingsByPublicationID_shouldReturnListingIds_whenListingsContainGivenPublicationSampleIds() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        ListingId listingId1 = new ListingId("listing1");
+        ListingId listingId2 = new ListingId("listing2");
+        ListingId listingId3 = new ListingId("listing3");
+
+        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1Id, pub2Id));
+        when(listing2Double.get_itemsId()).thenReturn(List.of(pub3Id));
+        when(listing3Double.get_itemsId()).thenReturn(List.of(pub2Id));
+
+        when(listing1Double.id()).thenReturn(listingId1);
+        when(listing2Double.id()).thenReturn(listingId2);
+        when(listing3Double.id()).thenReturn(listingId3);
+
+        repo.addListing(listing1Double);
+        repo.addListing(listing2Double);
+        repo.addListing(listing3Double);
+
+        // Act
+        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub2Id));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(listingId1));
+        assertTrue(result.contains(listingId3));
+        assertFalse(result.contains(listingId2));
+    }
+
+    @Test
+    void findListingsByPublicationID_shouldReturnSingleListingId_whenOnlyOneListingContainsGivenPublicationSampleIds() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        ListingId listingId1 = new ListingId("listing1");
+        ListingId listingId2 = new ListingId("listing2");
+        ListingId listingId3 = new ListingId("listing3");
+
+        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1Id));
+        when(listing2Double.get_itemsId()).thenReturn(List.of(pub2Id));
+        when(listing3Double.get_itemsId()).thenReturn(List.of(pub3Id));
+
+        when(listing1Double.id()).thenReturn(listingId1);
+        when(listing2Double.id()).thenReturn(listingId2);
+        when(listing3Double.id()).thenReturn(listingId3);
+
+        repo.addListing(listing1Double);
+        repo.addListing(listing2Double);
+        repo.addListing(listing3Double);
+
+        // Act
+        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub1Id));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(listingId1, result.get(0));
+    }
+
+    @Test
+    void findListingsByPublicationID_shouldReturnMultipleListingIds_whenSearchingMultiplePublicationSampleIds() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        ListingId listingId1 = new ListingId("listing1");
+        ListingId listingId2 = new ListingId("listing2");
+        ListingId listingId3 = new ListingId("listing3");
+
+        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1Id));
+        when(listing2Double.get_itemsId()).thenReturn(List.of(pub2Id));
+        when(listing3Double.get_itemsId()).thenReturn(List.of(pub3Id));
+
+        when(listing1Double.id()).thenReturn(listingId1);
+        when(listing2Double.id()).thenReturn(listingId2);
+        when(listing3Double.id()).thenReturn(listingId3);
+
+        repo.addListing(listing1Double);
+        repo.addListing(listing2Double);
+        repo.addListing(listing3Double);
+
+        // Act
+        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub1Id, pub3Id));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(listingId1));
+        assertTrue(result.contains(listingId3));
+        assertFalse(result.contains(listingId2));
+    }
+
+    @Test
+    void findListingsByPublicationID_shouldReturnEmptyList_whenNoListingContainsGivenPublicationSampleIds() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        PublicationSampleId pub4Id = new PublicationSampleId("pub4Id");
+
+        ListingId listingId1 = new ListingId("listing1");
+        ListingId listingId2 = new ListingId("listing2");
+
+        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1Id));
+        when(listing2Double.get_itemsId()).thenReturn(List.of(pub2Id));
+
+        when(listing1Double.id()).thenReturn(listingId1);
+        when(listing2Double.id()).thenReturn(listingId2);
+
+        repo.addListing(listing1Double);
+        repo.addListing(listing2Double);
+
+        // Act
+        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub4Id));
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findListingsByPublicationID_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // Act
+        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub1Id));
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findListingsByPublicationID_shouldThrowException_whenPublicationSamplesIdsIsNull() {
+
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.findListingsByPublicationID(null));
     }
 
 
