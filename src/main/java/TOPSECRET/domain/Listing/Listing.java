@@ -216,6 +216,10 @@ public class Listing implements AggregateRoot<ListingId> {
         return _pictures;
     }
 
+    public List<PublicationSampleId> get_itemsId() {
+        return _itemsId;
+    }
+
     @Override
     public ListingId id() {
         return _listingId;

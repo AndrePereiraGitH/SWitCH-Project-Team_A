@@ -19,6 +19,12 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link CollectionOfPublicationsRepositoryMem} — US017.
+ *
+ * <p>Verifies that the repository correctly stores collections, retrieves them by owner,
+ * and rejects invalid arguments.
+ */
 class CollectionOfPublicationsRepositoryMemTest {
 
     ICollectionOfPublicationsRepository sut;
@@ -35,11 +41,15 @@ class CollectionOfPublicationsRepositoryMemTest {
                 () -> new CollectionOfPublicationsRepositoryMem(null));
     }
 
-
+    /**
+     * Ensures exception is thrown when user is null.
+     */
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        // ARRANGE
+        CollectionOfPublicationsRepositoryMem sut =
+                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -47,6 +57,9 @@ class CollectionOfPublicationsRepositoryMemTest {
     }
 
 
+    /**
+     * Ensures user collections are retrieved correctly.
+     */
     @Test
     void shouldReturnCollectionsOwnedByUser() throws Exception {
 
@@ -73,6 +86,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         list.add(collection1);
         list.add(collection2);
 
+        // ACT
         List<CollectionOfPublications> result =
                 sut.getUserCollections(user);
 
