@@ -114,6 +114,8 @@ public interface    IPublicationSampleRepository {
      */
     List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
 
+    List<PublicationSample> findPublicationSampleByBiblioDataId(List<BibliographicalData> bds);
+
     /**
      * Retrieves the identifiers of publication samples whose bibliographical data ID
      * is contained in the given list.

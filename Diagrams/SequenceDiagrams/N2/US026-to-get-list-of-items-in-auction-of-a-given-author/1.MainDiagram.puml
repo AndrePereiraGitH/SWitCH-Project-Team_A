@@ -15,9 +15,9 @@ participant ":IListingRepository" as listingRepo
 participant "listingsId \n :List<ListingId>" as listings
 participant ":IAuctionRepository" as AuctionRepository
 participant ":auctionsOfAuthor \n :List<Auction>" as auctionsList
-participant ":US016AuctionMapper" as AuctionMapper
-participant ":auctionDTO: AuctionDTO_US026" as aucDTO
-participant "listOfAuctionDTO:\nList<AuctionDTO_US026>" as ListDTO
+participant ":US026AuctionMapper" as AuctionMapper
+participant "auctionDTO: US026AuctionDTO" as aucDTO
+participant "listOfAuctionDTO:\nList<US026AuctionDTO>" as ListDTO
 
 Buyer -> UI026 : I want to get the list of items\non auction of a given author
 activate UI026
@@ -66,21 +66,24 @@ AuctionRepository -->> auctionsList** : <<create>>
 AuctionRepository --> Ctrl : auctionsOfAuthor
 deactivate AuctionRepository
 
+
+'--------- CONVERT TO DTO-----------------
 Ctrl -> AuctionMapper : fromDomainList(auctionsOfAuthor)
 activate AuctionMapper
-
 
 AuctionMapper -->> ListDTO ** : <<create>>
 
 loop for each auction in listOfAuctions
-    AuctionMapper -> AuctionMapper : toDTO(auction)
-    AuctionMapper -->> aucDTO ** : <<create>>
+    AuctionMapper -> aucDTO ** : fromDomain(auction)
 
     AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
 end
 
 AuctionMapper --> Ctrl : listOfAuctionDTO
     deactivate AuctionMapper
+
+
+
 
 Ctrl --> UI026 : listOfAuctionsDTO
 deactivate Ctrl

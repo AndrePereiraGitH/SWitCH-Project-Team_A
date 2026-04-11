@@ -17,8 +17,8 @@ end note
 
 participant ":Controller" as Ctrl
 participant ":IAuthorRepository" as AuthorRepository
-participant ":US016AuthorMapper" as AuthorMapper
-participant ":authorDTO:AuthorDTO_US026" as AuthorDTO
+participant ":US026AuthorMapper" as AuthorMapper
+participant "authorDTO:US026AuthorDTO" as AuthorDTO
 participant "authorsDtoList<AuthorDTO>" as AuthorsListDto
 
 
@@ -35,9 +35,8 @@ Ctrl -> AuthorMapper : fromDomainList(listOfAllAuthors)
 activate AuthorMapper
 AuthorMapper -->> AuthorsListDto ** : <<create>>
 
-loop for each Author in list
-    AuthorMapper -> AuthorMapper : toDTO(author)
-    AuthorMapper -->> AuthorDTO ** : <<create>>
+loop for each author in list
+    AuthorMapper -> AuthorDTO ** : fromDomain(author)
     AuthorMapper -> AuthorMapper : authorsDtoList.add(authorDTO)
 end
 
