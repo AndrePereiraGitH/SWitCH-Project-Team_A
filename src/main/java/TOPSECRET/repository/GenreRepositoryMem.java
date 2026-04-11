@@ -75,7 +75,7 @@ public class GenreRepositoryMem implements IGenreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Genre findById(GenreID id) {
+    public Genre findGenreById(GenreID id) {
 
         if (id == null) {
             throw new IllegalArgumentException("GenreID cannot be null.");

@@ -38,8 +38,6 @@ import java.util.Optional;
 public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository {
 
     private List<AppraisalEntity> _appraisalEntities;
-    private IGenreRepository _genreRepository;
-    private IPublicationTypeRepository _publicationTypeRepository;
     private AppraisalEntityFactory _appraisalEntityFactory;
 
 
@@ -69,8 +67,6 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
         }
 
         this._appraisalEntities = new ArrayList<>();
-        this._genreRepository = genreRepository;
-        this._publicationTypeRepository = publicationTypeRepository;
         this._appraisalEntityFactory = appraisalEntityFactory;
     }
 
@@ -79,28 +75,22 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
      */
     @Override
     public AppraisalEntity createAndAdd(String name,
-            Contact contact,
-            List<US004GenreDTO> selectedGenresDTO,
-            List<US004PublicationTypeDTO> selectedPublicationTypesDTO) {
+            Contact contact, List<GenreID> genresId, List<PublicationTypeId> publicationTypesId) {
 
-        if (selectedGenresDTO == null || selectedGenresDTO.isEmpty()) {
+        if (genresId == null || genresId.isEmpty()) {
             throw new IllegalArgumentException("Genres cannot be null or empty.");
         }
 
-        if (selectedPublicationTypesDTO == null || selectedPublicationTypesDTO.isEmpty()) {
+        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
             throw new IllegalArgumentException("PublicationTypes cannot be null or empty.");
         }
-
-        List<GenreID> genres = dtoToGenres(selectedGenresDTO);
-        List<PublicationTypeId> publicationTypes = dtoToPublicationTypes(selectedPublicationTypesDTO);
 
         if (existsByNameAndContact(name, contact)) {
             throw new IllegalArgumentException("AppraisalEntity already exists.");
         }
 
-
         AppraisalEntity apEn =
-                _appraisalEntityFactory.create(name, contact, publicationTypes, genres);
+                _appraisalEntityFactory.create(name, contact, publicationTypesId, genresId);
 
         _appraisalEntities.add(apEn);
 
@@ -125,71 +115,6 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
         }
 
         return false;
-    }
-
-    /**
-     * Converts a list of {@link US004GenreDTO} into
-     * a list of {@link GenreID} by retrieving existing domain objects.
-     *
-     * <p>
-     * Each DTO is validated against the repository to ensure that
-     * the corresponding Genre exists in the system.
-     * </p>
-     *
-     * @param dtos list of Genre DTOs
-     * @return list of GenreID
-     *
-     * @throws IllegalArgumentException if any Genre does not exist
-     */
-    private List<GenreID> dtoToGenres(List<US004GenreDTO> dtos) {
-
-        List<GenreID> genres = new ArrayList<>();
-
-        for (US004GenreDTO dto : dtos) {
-
-            Genre genre = _genreRepository.findById(dto.getId());
-
-            if (genre == null) {
-                throw new IllegalArgumentException("Genre not found: " + dto.getTitle());
-            }
-
-            genres.add(genre.id());
-        }
-
-        return genres;
-    }
-
-    /**
-     * Converts a list of {@link US004PublicationTypeDTO} into
-     * a list of {@link PublicationTypeId} by retrieving existing domain objects.
-     *
-     * <p>
-     * Each DTO is validated against the repository to ensure that
-     * the corresponding PublicationType exists in the system.
-     * </p>
-     *
-     * @param dtos list of PublicationType DTOs
-     * @return list of PublicationTypeId
-     *
-     * @throws IllegalArgumentException if any PublicationType does not exist
-     */
-    private List<PublicationTypeId> dtoToPublicationTypes(List<US004PublicationTypeDTO> dtos) {
-
-        List<PublicationTypeId> types = new ArrayList<>();
-
-        for (US004PublicationTypeDTO dto : dtos) {
-
-            Optional<PublicationType> publicationType =
-                    _publicationTypeRepository.findPublicationTypeById(dto.getId());
-
-            if (publicationType.isEmpty()) {
-                throw new IllegalArgumentException("PublicationType not found: " + dto.getMediaFormat());
-            }
-
-            types.add(publicationType.get().id());
-        }
-
-        return types;
     }
 
 }
