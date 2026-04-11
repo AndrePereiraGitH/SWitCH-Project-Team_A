@@ -1,43 +1,39 @@
 @startuml
 title US001 - To register a user in the system
 
-class RegisterUserController {
-  +registerUser(username: String, contact: Contact, profile: Profile, userRole: UserRole)
+interface IUserRepository {
+  +exists(username: String) : boolean
+  +save(user: User) : void
 }
 
-class UserRepository {
-  -users : List<User>
-  +exists(userName: String) : boolean
-  +createAndAddUser(username: String, contact: Contact, profile: Profile, userRole: UserRole) : User
-  +getUserCount() : int
+class UserRepositoryMem {
+  -_userList : List<User>
+  -_userFactory : UserFactory
 }
 
-class "List<User>"
+class UserFactory {
+  +create(username: String, contact: Contact, profile: Profile, userRole: UserRole) : User
+}
+
+class US001ToRegisterUserController {
+  -userRepository : IUserRepository
+  -userFactory : UserFactory
+  +registerUser(username: String, contact: Contact, profile: Profile, userRole: UserRole) : void
+}
 
 class User {
+  -_id : UserId
   -_userName : String
   -_contact : Contact
   -_profile : Profile
   -_userRole : UserRole
+  +getUserName() : String
 }
 
-class Contact {
-  -phoneNum : String
-  -extension : String
-  -email : Email
-  -address : Address
-}
-
-class Profile {
-  -name : String
-  -country : Country
-  -birthday : LocalDate
-}
-
-RegisterUserController "1 " --.> "1 " UserRepository : uses
-UserRepository "1 " --> "1 " "List<User>" : has
-"List<User>" "1 " --> "          *" User : stores
-User "1   " --> "1 " Contact : has
-User "1" --> "1  " Profile : has
+US001ToRegisterUserController "1" ..> "1" IUserRepository : uses
+US001ToRegisterUserController "1" ..> "1   " UserFactory : uses
+UserRepositoryMem "1" ..|> "1    " IUserRepository : implements
+UserRepositoryMem "1  " --> "                *" User : stores
+UserFactory "1" ..> "*" User : creates
 
 @enduml
