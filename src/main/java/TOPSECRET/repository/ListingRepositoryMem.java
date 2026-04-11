@@ -216,19 +216,19 @@ public class ListingRepositoryMem implements IListingRepository {
      *{@inheritDoc}
      */
     @Override
-    public List<ListingId> findListingsByPublicationID(List<PublicationSampleId> publicationSamplesIds) {
+    public List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds) {
 
         if (publicationSamplesIds == null) {
             throw new IllegalArgumentException("List of PublicationSamplesId cannot be null.");
         }
 
-        List<ListingId> listingsWithSamples = listings.stream()
+        List<ListingId> listingIdsWithSamples = listings.stream()
                 .filter(listing -> listing.get_itemsId()
                         .stream()
                         .anyMatch(publicationSamplesIds::contains))
                 .map(Listing::id)
                 .toList();
 
-        return listingsWithSamples;
+        return listingIdsWithSamples;
     }
 }

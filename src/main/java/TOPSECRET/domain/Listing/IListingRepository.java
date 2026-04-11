@@ -2,7 +2,6 @@ package TOPSECRET.domain.Listing;
 
 
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -135,5 +134,5 @@ public interface IListingRepository {
      *         no matching listings are found
      * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
      */
-    List<ListingId> findListingsByPublicationID(List<PublicationSampleId> publicationSamplesIds);
+    List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
 }

@@ -95,7 +95,7 @@ public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
        List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesByBiblioDataIds(bdsOfAuthorID);
 
-       List<ListingId> authorListings = listingRepo.findListingsByPublicationID(samplesOfAuthorID);
+       List<ListingId> authorListings = listingRepo.findListingIdsByPublicationSampleIds(samplesOfAuthorID);
 
        List<Auction> auctionsOfAuthor = auctionRepository.findAuctionsByListingId(authorListings);
 

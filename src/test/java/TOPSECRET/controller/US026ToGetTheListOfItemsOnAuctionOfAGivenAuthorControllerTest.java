@@ -171,7 +171,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findListingsByPublicationID(publicationSampleIds)).thenReturn(listingIds);
+        when(listingRepo.findListingIdsByPublicationSampleIds(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
 
@@ -199,7 +199,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findListingsByPublicationID(publicationSampleIds)).thenReturn(listingIds);
+        when(listingRepo.findListingIdsByPublicationSampleIds(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
 
@@ -226,7 +226,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findListingsByPublicationID(publicationSampleIds)).thenReturn(listingIds);
+        when(listingRepo.findListingIdsByPublicationSampleIds(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenThrow(new InstanceNotFoundException("Listing not found"));
 

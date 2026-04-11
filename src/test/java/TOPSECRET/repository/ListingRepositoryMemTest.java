@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
 import TOPSECRET.domain.ValueObjects.*;
@@ -652,16 +653,17 @@ class ListingRepositoryMemTest {
         );
     }
 
+
     // ======================================================
-    // ==== Tests for findListingsByPublicationID ===========
+    // ==== Tests for findListingIdsByPublicationSampleIds ==
     // ======================================================
 
     @Test
-    void findListingsByPublicationID_shouldReturnListingIds_whenListingsContainGivenPublicationSampleIds() {
+    void findListingIdsByPublicationSampleIds_shouldReturnListingIds_whenListingsContainGivenPublicationSampleIds() throws Exception {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        IListingRepository repo = new ListingRepositoryMem(factory);
 
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
@@ -675,12 +677,19 @@ class ListingRepositoryMemTest {
         when(listing2Double.id()).thenReturn(listingId2);
         when(listing3Double.id()).thenReturn(listingId3);
 
-        repo.addListing(listing1Double);
-        repo.addListing(listing2Double);
-        repo.addListing(listing3Double);
+        when(factory.create("title1", List.of(pub1Id, pub2Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title2", List.of(pub3Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2)))
+                .thenReturn(listing2Double);
+        when(factory.create("title3", List.of(pub2Id), SaleType.AUCTION, price3, "description3", sellerId, List.of(pic3)))
+                .thenReturn(listing3Double);
+
+        repo.createAndAdd("title1", List.of(pub1Id, pub2Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub3Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2));
+        repo.createAndAdd("title3", List.of(pub2Id), SaleType.AUCTION, price3, "description3", sellerId, List.of(pic3));
 
         // Act
-        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub2Id));
+        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub2Id));
 
         // Assert
         assertEquals(2, result.size());
@@ -690,11 +699,11 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingsByPublicationID_shouldReturnSingleListingId_whenOnlyOneListingContainsGivenPublicationSampleIds() {
+    void findListingIdsByPublicationSampleIds_shouldReturnSingleListingId_whenOnlyOneListingContainsGivenPublicationSampleIds() throws Exception {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        IListingRepository repo = new ListingRepositoryMem(factory);
 
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
@@ -708,12 +717,19 @@ class ListingRepositoryMemTest {
         when(listing2Double.id()).thenReturn(listingId2);
         when(listing3Double.id()).thenReturn(listingId3);
 
-        repo.addListing(listing1Double);
-        repo.addListing(listing2Double);
-        repo.addListing(listing3Double);
+        when(factory.create("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title2", List.of(pub2Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2)))
+                .thenReturn(listing2Double);
+        when(factory.create("title3", List.of(pub3Id), SaleType.AUCTION, price3, "description3", sellerId, List.of(pic3)))
+                .thenReturn(listing3Double);
+
+        repo.createAndAdd("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2));
+        repo.createAndAdd("title3", List.of(pub3Id), SaleType.AUCTION, price3, "description3", sellerId, List.of(pic3));
 
         // Act
-        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub1Id));
+        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub1Id));
 
         // Assert
         assertEquals(1, result.size());
@@ -721,11 +737,11 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingsByPublicationID_shouldReturnMultipleListingIds_whenSearchingMultiplePublicationSampleIds() {
+    void findListingIdsByPublicationSampleIds_shouldReturnMultipleListingIds_whenSearchingMultiplePublicationSampleIds() throws Exception {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        IListingRepository repo = new ListingRepositoryMem(factory);
 
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
@@ -739,12 +755,19 @@ class ListingRepositoryMemTest {
         when(listing2Double.id()).thenReturn(listingId2);
         when(listing3Double.id()).thenReturn(listingId3);
 
-        repo.addListing(listing1Double);
-        repo.addListing(listing2Double);
-        repo.addListing(listing3Double);
+        when(factory.create("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title2", List.of(pub2Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2)))
+                .thenReturn(listing2Double);
+        when(factory.create("title3", List.of(pub3Id), SaleType.AUCTION, price3, "description3", sellerId, List.of(pic3)))
+                .thenReturn(listing3Double);
+
+        repo.createAndAdd("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2));
+        repo.createAndAdd("title3", List.of(pub3Id), SaleType.AUCTION, price3, "description3", sellerId, List.of(pic3));
 
         // Act
-        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub1Id, pub3Id));
+        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub1Id, pub3Id));
 
         // Assert
         assertEquals(2, result.size());
@@ -754,11 +777,11 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingsByPublicationID_shouldReturnEmptyList_whenNoListingContainsGivenPublicationSampleIds() {
+    void findListingIdsByPublicationSampleIds_shouldReturnEmptyList_whenNoListingContainsGivenPublicationSampleIds() throws Exception {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        IListingRepository repo = new ListingRepositoryMem(factory);
 
         PublicationSampleId pub4Id = new PublicationSampleId("pub4Id");
 
@@ -771,11 +794,16 @@ class ListingRepositoryMemTest {
         when(listing1Double.id()).thenReturn(listingId1);
         when(listing2Double.id()).thenReturn(listingId2);
 
-        repo.addListing(listing1Double);
-        repo.addListing(listing2Double);
+        when(factory.create("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1)))
+                .thenReturn(listing1Double);
+        when(factory.create("title2", List.of(pub2Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2)))
+                .thenReturn(listing2Double);
+
+        repo.createAndAdd("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description1", sellerId, List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub2Id), SaleType.DIRECT_SALE, price2, "description2", sellerId, List.of(pic2));
 
         // Act
-        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub4Id));
+        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub4Id));
 
         // Assert
         assertNotNull(result);
@@ -783,14 +811,14 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingsByPublicationID_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+    void findListingIdsByPublicationSampleIds_shouldReturnEmptyList_whenRepositoryIsEmpty() {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        IListingRepository repo = new ListingRepositoryMem(factory);
 
         // Act
-        List<ListingId> result = repo.findListingsByPublicationID(List.of(pub1Id));
+        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub1Id));
 
         // Assert
         assertNotNull(result);
@@ -798,14 +826,14 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingsByPublicationID_shouldThrowException_whenPublicationSamplesIdsIsNull() {
+    void findListingIdsByPublicationSampleIds_shouldThrowException_whenPublicationSamplesIdsIsNull() {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
-        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        IListingRepository repo = new ListingRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findListingsByPublicationID(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findListingIdsByPublicationSampleIds(null));
     }
 
 
