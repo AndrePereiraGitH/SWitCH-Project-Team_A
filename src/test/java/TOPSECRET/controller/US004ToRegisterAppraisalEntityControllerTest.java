@@ -108,8 +108,8 @@ class US004ToRegisterAppraisalEntityControllerTest {
         List<US004GenreDTO> result = controller.getAllGenres();
 
         // ASSERT
-        assertEquals(id, result.get(0).getId());
-        assertEquals("Fantasy", result.get(0).getTitle());
+        assertEquals(id, result.get(0).id());
+        assertEquals("Fantasy", result.get(0).title());
     }
 
     @Test
@@ -145,8 +145,8 @@ class US004ToRegisterAppraisalEntityControllerTest {
         List<US004PublicationTypeDTO> result = controller.getAllPublicationTypes();
 
         // ASSERT
-        assertEquals(id, result.get(0).getId());
-        assertEquals("Book", result.get(0).getMediaFormat());
+        assertEquals(id, result.get(0).id());
+        assertEquals("Book", result.get(0).mediaFormat());
     }
 
     @Test
