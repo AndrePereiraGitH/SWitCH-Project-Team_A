@@ -55,6 +55,6 @@ public class US001ToRegisterUserController {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        return userRepository.create(username, contact, profile, userRole);
+        return userRepository.createAndAdd(username, contact, profile, userRole);
     }
 }

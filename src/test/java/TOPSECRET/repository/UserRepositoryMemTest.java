@@ -72,16 +72,16 @@ class UserRepositoryMemTest {
     }
 
     @Test
-    void shouldCreateUserSuccessfully() {
+    void shouldcreateAndAddUserSuccessfully() {
         // ACT & ASSERT
-        assertDoesNotThrow(() -> userRepository.create("TestUser", contact1Double, profile1Double, UserRole.ADMIN));
+        assertDoesNotThrow(() -> userRepository.createAndAdd("TestUser", contact1Double, profile1Double, UserRole.ADMIN));
         assertTrue(userRepository.exists("TestUser"));
     }
 
     @Test
     void shouldReturnUserIdAfterCreation() {
         // ACT
-        UserId result = userRepository.create("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        UserId result = userRepository.createAndAdd("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
 
         // ASSERT
         assertNotNull(result);
@@ -94,12 +94,12 @@ class UserRepositoryMemTest {
     @Test
     void shouldThrowExceptionWhenCreatingDuplicateUsername() {
         // ARRANGE
-        userRepository.create("DuplicateUser", contact1Double, profile1Double, UserRole.ADMIN);
+        userRepository.createAndAdd("DuplicateUser", contact1Double, profile1Double, UserRole.ADMIN);
 
         // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userRepository.create("DuplicateUser", contact2Double, profile2Double, UserRole.NORMAL_USER)
+                () -> userRepository.createAndAdd("DuplicateUser", contact2Double, profile2Double, UserRole.NORMAL_USER)
         );
 
         if (userRepository instanceof UserRepositoryMem repoMem) {
@@ -110,7 +110,7 @@ class UserRepositoryMemTest {
     @Test
     void shouldReturnTrueWhenUserExists() {
         // ARRANGE
-        userRepository.create("ExistingUser", contact1Double, profile1Double, UserRole.ADMIN);
+        userRepository.createAndAdd("ExistingUser", contact1Double, profile1Double, UserRole.ADMIN);
 
         // ACT
         boolean result = userRepository.exists("ExistingUser");
@@ -131,20 +131,20 @@ class UserRepositoryMemTest {
     @Test
     void findUserIdByUsername_ShouldReturnValidId_WhenUsernameExists() {
         // ARRANGE
-        UserId createdId = userRepository.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        UserId createAndAdddId = userRepository.createAndAdd("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
 
         // ACT
         Optional<UserId> foundId = userRepository.findUserIdByUsername("ValidUser");
 
         // ASSERT
         assertTrue(foundId.isPresent());
-        assertEquals(createdId, foundId.get());
+        assertEquals(createAndAdddId, foundId.get());
     }
 
     @Test
     void findUserIdByUsername_ShouldReturnEmpty_WhenUsernameNotFound() {
         // ARRANGE
-        userRepository.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        userRepository.createAndAdd("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
 
         // ACT
         Optional<UserId> result = userRepository.findUserIdByUsername("NonExistingUser");

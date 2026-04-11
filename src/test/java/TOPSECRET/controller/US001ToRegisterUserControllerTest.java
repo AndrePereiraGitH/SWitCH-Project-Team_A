@@ -27,7 +27,8 @@ class US001ToRegisterUserControllerTest {
         UserId userIdDouble = mock(UserId.class);
 
         when(repositoryDouble.exists("TestUser1")).thenReturn(false);
-        when(repositoryDouble.create("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
+
+        when(repositoryDouble.createAndAdd("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
                 .thenReturn(userIdDouble);
 
         US001ToRegisterUserController sut =

@@ -36,20 +36,26 @@ public class UserRepositoryMem implements IUserRepository {
 
     //================================================================================
 
-    private void save(User user) {
-        _userList.add(user);
-    }
-
     /** {@inheritDoc} */
     @Override
-    public UserId create(String username, Contact contact, Profile profile, UserRole userRole) {
+    public UserId createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
         if (exists(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
 
         User user = _userFactory.create(username, contact, profile, userRole);
-        save(user);
-        return user.id();
+        return save(user).id();
+    }
+
+    /**
+     * Persists the given {@link User} to the in-memory list.
+     *
+     * @param user the user to save; must not be null
+     * @return the saved {@link User} instance
+     */
+    protected User save(User user) {
+        _userList.add(user);
+        return user;
     }
 
     /** {@inheritDoc} */
