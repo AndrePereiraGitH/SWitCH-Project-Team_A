@@ -2,9 +2,13 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
+import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
+import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,20 +129,27 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * {@inheritDoc}
      */
     @Override
-    public List<CollectionOfPublications> findPublicCollectionsByGenre(GenreID genreId) {
+    public List<US020CollectionOfPublicationsDTO> findPublicCollectionsByGenreId(GenreID genreId, IUserRepository userRepo) {
         if (genreId == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }
 
-        List<CollectionOfPublications> collections = new ArrayList<>();
+        List<US020CollectionOfPublicationsDTO> dtoList = new ArrayList<>();
 
         for (CollectionOfPublications c : _collectionOfPublicationsList) {
             if (c.getCollectionGenre().equals(genreId) && !c.getIsPrivate()) {
-                collections.add(c);
+                String ownerName = userRepo.findUserByID(c.getOwnerId())
+                        .map(User::getUserName)
+                        .orElseThrow(() -> new IllegalStateException("User not found"));
+
+                dtoList.add(
+                        US020CollectionOfPublicationsDTOMapper.toDTO(
+                                c.getCollectionName(),
+                                ownerName
+                        )
+                );
             }
         }
-
-        return collections;
-
+        return dtoList;
     }
 }

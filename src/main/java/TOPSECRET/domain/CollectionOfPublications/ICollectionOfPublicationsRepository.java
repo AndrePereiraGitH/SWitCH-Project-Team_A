@@ -1,7 +1,9 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
+import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 
 import java.util.List;
 
@@ -52,5 +54,5 @@ public interface ICollectionOfPublicationsRepository {
      * @return list of collections of the given genre that are public
      * @throws IllegalArgumentException if genreId is null
      */
-    List<CollectionOfPublications> findPublicCollectionsByGenre(GenreID genreId) throws IllegalArgumentException;
+    List<US020CollectionOfPublicationsDTO> findPublicCollectionsByGenreId(GenreID genreId, IUserRepository userRepo) throws IllegalArgumentException;
 }

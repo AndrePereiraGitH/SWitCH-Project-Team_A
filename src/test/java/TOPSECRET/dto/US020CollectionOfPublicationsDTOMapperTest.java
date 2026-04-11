@@ -4,30 +4,36 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link US020_CollectionOfPublicationsDTO}.
+ * Unit tests for {@link US020CollectionOfPublicationsDTOMapper}.
  * <p>
- * These tests verify that the DTO correctly handles valid input,
+ * These tests verify that the DTO mapper correctly handles valid input,
  * trims whitespace from fields, and throws exceptions when invalid
  * values are provided.
  */
 
-class US020_CollectionOfPublicationsDTOTest {
+
+class US020CollectionOfPublicationsDTOMapperTest {
 
     /**
      * Verifies that the DTO is created successfully when valid
      * list name and owner username are provided.
      * Also confirms that the stored values match the input.
      */
-
     @Test
     void shouldCreateDTOWithValidData()
     {
-        US020_CollectionOfPublicationsDTO dto =
-                new US020_CollectionOfPublicationsDTO("List Name", "Raul");
+        // Arrange
+        String collectionName = "Collection name";
+        String userName = "Antonio";
 
+        // Act
+        US020CollectionOfPublicationsDTO dto =
+                US020CollectionOfPublicationsDTOMapper.toDTO(collectionName, userName);
+
+        // Assert
         assertNotNull(dto);
-        assertEquals("List Name", dto.getListName());
-        assertEquals("Raul", dto.getOwnerUsername());
+        assertEquals(collectionName, dto.collectionName());
+        assertEquals(userName, dto.userName());
     }
 
     /**
@@ -37,11 +43,11 @@ class US020_CollectionOfPublicationsDTOTest {
     @Test
     void shouldTrimInputValues()
     {
-        US020_CollectionOfPublicationsDTO dto =
-                new US020_CollectionOfPublicationsDTO("  List Name  ", "  Raul  ");
+        US020CollectionOfPublicationsDTO dto =
+                US020CollectionOfPublicationsDTOMapper.toDTO("  List Name  ", "  Raul  ");
 
-        assertEquals("List Name", dto.getListName());
-        assertEquals("Raul", dto.getOwnerUsername());
+        assertEquals("List Name", dto.collectionName());
+        assertEquals("Raul", dto.userName());
     }
 
     /**
@@ -52,7 +58,7 @@ class US020_CollectionOfPublicationsDTOTest {
     void shouldThrowWhenListNameIsNull()
     {
         assertThrows(IllegalArgumentException.class, () ->
-                new US020_CollectionOfPublicationsDTO(null, "Raul")
+                US020CollectionOfPublicationsDTOMapper.toDTO(null, "Raul")
         );
     }
 
@@ -64,7 +70,7 @@ class US020_CollectionOfPublicationsDTOTest {
     void shouldThrowWhenListNameIsBlank()
     {
         assertThrows(IllegalArgumentException.class, () ->
-                new US020_CollectionOfPublicationsDTO("   ", "Raul")
+                US020CollectionOfPublicationsDTOMapper.toDTO("   ", "Raul")
         );
     }
 
@@ -76,7 +82,7 @@ class US020_CollectionOfPublicationsDTOTest {
     void shouldThrowWhenOwnerUsernameIsNull()
     {
         assertThrows(IllegalArgumentException.class, () ->
-                new US020_CollectionOfPublicationsDTO("List Name", null)
+                US020CollectionOfPublicationsDTOMapper.toDTO("List Name", null)
         );
     }
 
@@ -87,7 +93,8 @@ class US020_CollectionOfPublicationsDTOTest {
     @Test
     void shouldThrowWhenOwnerUsernameIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
-                new US020_CollectionOfPublicationsDTO("List Name", "   ")
+                US020CollectionOfPublicationsDTOMapper.toDTO("List Name", "   ")
         );
     }
+
 }
