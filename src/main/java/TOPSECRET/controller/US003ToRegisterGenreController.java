@@ -1,17 +1,16 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.domain.Genre.IGenreRepository;
 
 /**
  * Controller responsible for handling the registration of a new genre (US003).
  *
  * <p>This controller receives a genre name from the UI layer and delegates
- * the creation and storage to the {@link GenreRepositoryMem}.</p>
+ * the creation and storage to the {@link IGenreRepository}.</p>
  */
 public class US003ToRegisterGenreController {
 
-    private final GenreRepositoryMem _genreRepository;
+    private final IGenreRepository _genreRepository;
 
     /**
      * Creates a new instance of the controller.
@@ -20,7 +19,7 @@ public class US003ToRegisterGenreController {
      *                        must not be {@code null}
      * @throws IllegalArgumentException if {@code genreRepository} is {@code null}
      */
-    public US003ToRegisterGenreController(GenreRepositoryMem genreRepository) {
+    public US003ToRegisterGenreController(IGenreRepository genreRepository) {
 
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre repository must not be null");
@@ -33,13 +32,14 @@ public class US003ToRegisterGenreController {
      * Registers a new genre in the system.
      *
      * <p>Delegates to the repository which is responsible for creating the
-     * {@link Genre} object and ensuring no duplicates exist.</p>
+     * Genre object and ensuring no duplicates exist.</p>
      *
      * @param genreType the name of the genre to register (e.g. "Drama")
-     * @return the newly created {@link Genre}
+     * @return {@code true} if the genre was successfully created and added
      * @throws IllegalArgumentException if the genre already exists or the name is invalid
      */
-    public Genre registerGenre(String genreType) {
-        return _genreRepository.createAndAdd(genreType);
+    public boolean registerGenre(String genreType) {
+        _genreRepository.createAndAdd(genreType);
+        return true;
     }
 }
