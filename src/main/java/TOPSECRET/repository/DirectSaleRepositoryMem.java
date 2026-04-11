@@ -4,6 +4,7 @@ import TOPSECRET.domain.DirectSale.DirectSale;
 
 import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
@@ -59,11 +60,17 @@ public class DirectSaleRepositoryMem implements IDirectSaleRepository {
      * {@inheritDoc}
      */
     @Override
-    public DirectSale createAndAdd(List<ListingId> listings, UserId buyer) {
-        DirectSale directSale = _directSaleFactory.create(listings, buyer);
+    public DirectSale createAndAdd(List<ListingId> listings, UserId buyer, IListingRepository listingRepo) {
+        DirectSale directSale = _directSaleFactory.create(listings, buyer, listingRepo);
         add(directSale);
         return directSale;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DirectSale> getAll(){ return _directSaleList; }
 
 
     /**

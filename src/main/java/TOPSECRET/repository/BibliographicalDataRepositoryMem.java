@@ -103,6 +103,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return Optional.empty();
     }
 
+
     /**
      * {@inheritDoc}
      */
@@ -125,6 +126,24 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BibliographicalDataID> findBibliographicalDataIdByAuthorId(AuthorId authorId) {
+
+        if (authorId == null) {
+            throw new IllegalArgumentException("authorId cannot be null.");
+        }
+
+        List<BibliographicalDataID> bdsOfAuthor = _bdList.stream()
+                .filter(bd -> bd.getAuthors().contains(authorId))
+                .map(BibliographicalData::id)
+                .toList();
+
+        return bdsOfAuthor;
     }
 
 
