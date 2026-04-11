@@ -50,7 +50,7 @@ public class CountryRepositoryMem implements ICountryRepository {
      * {@inheritDoc}
      */
     @Override
-    public Country createAndAddNewCountry(String countryName) {
+    public Country createAndAdd(String countryName) {
         Country country = countryFactory.create(countryName);
         if (!isANewCountry(country)) {
             throw new IllegalArgumentException("Country is already registered");

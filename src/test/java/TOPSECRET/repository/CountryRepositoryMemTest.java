@@ -13,6 +13,21 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for the {@link CountryRepositoryMem} class.
+ *
+ * <p>Uses Mockito to isolate the SUT ({@link CountryRepositoryMem})
+ * from its collaborators ({@link CountryFactory} and {@link Country}).</p>
+ *
+ * <p>Validates the following responsibilities:</p>
+ * <ul>
+ *     <li>Adding valid countries</li>
+ *     <li>Rejecting invalid or null country inputs</li>
+ *     <li>Preventing duplicate countries</li>
+ *     <li>Returning an immutable list of registered countries</li>
+ *     <li>Finding a country by its {@link CountryID}</li>
+ * </ul>
+ */
 class CountryRepositoryMemTest {
 
     private ICountryRepository repository;
@@ -22,6 +37,7 @@ class CountryRepositoryMemTest {
     private Country countryDouble1;
 
     private Country countryDouble2;
+
 
     @BeforeEach
     void preparation() {

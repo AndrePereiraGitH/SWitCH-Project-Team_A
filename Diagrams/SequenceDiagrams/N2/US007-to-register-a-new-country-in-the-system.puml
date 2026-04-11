@@ -12,7 +12,7 @@ autonumber
 
 
 participant ":CountryController" as CountryController
-participant ":CountryRepository" as CountryRepository
+participant ":ICountryRepository" as ICountryRepository
 participant ":CountryFactory" as CountryFactory
 
 
@@ -28,27 +28,27 @@ UI -> CountryController : registerNewCountry\n (countryName)
 activate CountryController
 
 
-CountryController -> CountryRepository : createAndAddNewCountry\n (countryName)
-activate CountryRepository
+CountryController -> ICountryRepository : createAndAdd\n (countryName)
+activate ICountryRepository
 
-CountryRepository -->> CountryFactory : «create»
+ICountryRepository -> CountryFactory : createAndAdd\n(countryName)
 activate CountryFactory
 create participant "newCountry1: Country" as Country
 CountryFactory -->> Country : «create»
 
-CountryFactory --> CountryRepository : newCountry1
+CountryFactory --> ICountryRepository : newCountry1
 deactivate CountryFactory
 
-CountryRepository -> CountryRepository : validate\n (newCountry1)
+ICountryRepository -> ICountryRepository : validate\n (newCountry1)
 
 alt Country already exists
-CountryRepository --> CountryController : newCountry1\n already exists
+ICountryRepository --> CountryController : newCountry1\n already exists
 CountryController --> UI : newCountry1\n already exists
 UI --> Administrator : <newCountry1> is already\n registered in the system!
 else Country does not exist
-CountryRepository -> CountryRepository : Add (newCountry1)
-CountryRepository --> CountryController : newCountry1
-deactivate CountryRepository
+ICountryRepository -> ICountryRepository : Add (newCountry1)
+ICountryRepository --> CountryController : newCountry1
+deactivate ICountryRepository
 
 CountryController --> UI : success!
 deactivate CountryController
