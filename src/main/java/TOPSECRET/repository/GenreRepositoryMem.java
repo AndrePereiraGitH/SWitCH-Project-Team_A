@@ -87,7 +87,7 @@ public class GenreRepositoryMem implements IGenreRepository {
             }
         }
 
-        return null;
+        throw new IllegalArgumentException("Genre not found.");
     }
 
     // ----------------------------- US013 starts -------------------------------
