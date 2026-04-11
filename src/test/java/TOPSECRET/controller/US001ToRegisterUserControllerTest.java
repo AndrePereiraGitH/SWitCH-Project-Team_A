@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.User.IUserRepository;
@@ -24,18 +25,18 @@ class US001ToRegisterUserControllerTest {
         IUserRepository repositoryDouble = mock(IUserRepository.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
-        UserId userIdDouble = mock(UserId.class);
+        User userDouble = mock(User.class);
 
         when(repositoryDouble.exists("TestUser1")).thenReturn(false);
 
         when(repositoryDouble.createAndAdd("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
-                .thenReturn(userIdDouble);
+                .thenReturn(userDouble);
 
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(repositoryDouble);
 
         // ACT
-        UserId result = sut.registerUser("TestUser1", contactDouble, profileDouble, UserRole.ADMIN);
+        User result = sut.registerUser("TestUser1", contactDouble, profileDouble, UserRole.ADMIN);
 
         // ASSERT
         assertNotNull(result);

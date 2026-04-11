@@ -1,5 +1,6 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
@@ -37,7 +38,7 @@ public class US001ToRegisterUserController {
      * @return the {@link UserId} of the newly registered user
      * @throws IllegalArgumentException if any parameter is null or if the username already exists
      */
-    public UserId registerUser(String username, Contact contact, Profile profile, UserRole userRole) {
+    public User registerUser(String username, Contact contact, Profile profile, UserRole userRole) {
         if (username == null) {
             throw new IllegalArgumentException("Username cannot be null");
         }

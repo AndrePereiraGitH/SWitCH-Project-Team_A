@@ -80,7 +80,7 @@ class UserRepositoryMemTest {
     }
 
     @Test
-    void shouldReturnUserIdAfterCreation() {
+    void shouldPersistUserAndReturnCorrectId() {
         // ACT
         User result = userRepository.createAndAdd("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
 
@@ -89,7 +89,7 @@ class UserRepositoryMemTest {
         assertTrue(userRepository.exists("ReturnTestUser"));
         Optional<UserId> foundId = userRepository.findUserIdByUsername("ReturnTestUser");
         assertTrue(foundId.isPresent());
-        assertEquals(result, foundId.get());
+        assertEquals(result.id(), foundId.get());
     }
 
     @Test
@@ -139,7 +139,7 @@ class UserRepositoryMemTest {
 
         // ASSERT
         assertTrue(foundId.isPresent());
-        assertEquals(createAndAddd, foundId.get());
+        assertEquals(createAndAddd.id(), foundId.get());
     }
 
     @Test
