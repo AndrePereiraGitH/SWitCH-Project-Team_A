@@ -170,7 +170,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<US026AuctionDTO> expected = List.of(dto1, dto2);
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
+        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
         when(listingRepo.findListingIdsByPublicationSampleIds(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
@@ -198,7 +198,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<US026AuctionDTO> expected = List.of();
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
+        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
         when(listingRepo.findListingIdsByPublicationSampleIds(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
@@ -225,7 +225,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<Auction> auctions = List.of(mock(Auction.class));
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
+        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
         when(listingRepo.findListingIdsByPublicationSampleIds(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenThrow(new InstanceNotFoundException("Listing not found"));

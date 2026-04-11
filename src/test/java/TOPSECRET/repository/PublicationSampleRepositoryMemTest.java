@@ -1,11 +1,8 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -13,7 +10,6 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import javax.management.InstanceAlreadyExistsException;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -906,7 +901,7 @@ class PublicationSampleRepositoryMemTest {
     // ===========================================================
 
     @Test
-    void findPublicationSamplesByBiblioDataIds_shouldReturnListWithMultipleIds_whenMultiplePublicationSamplesMatchGivenBdIds() throws InstanceAlreadyExistsException {
+    void findPublicationSamplesByBiblioDataIds_shouldReturnListWithMultipleIds_whenMultiplePublicationSamplesIdsMatchGivenBdIds() throws InstanceAlreadyExistsException {
 
         // Arrange
         BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
@@ -944,7 +939,7 @@ class PublicationSampleRepositoryMemTest {
         List<BibliographicalDataID> bds = List.of(bdId_1, bdId_2);
 
         // Act
-        List<PublicationSampleId> result = repo.findPublicationSamplesByBiblioDataIds(bds);
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
 
         // Assert
         assertEquals(2, result.size());
@@ -954,7 +949,7 @@ class PublicationSampleRepositoryMemTest {
     }
 
     @Test
-    void findPublicationSamplesByBiblioDataIds_shouldReturnListWithOneId_whenOnePublicationSampleMatchesGivenBdIds() throws InstanceAlreadyExistsException {
+    void findPublicationSamplesByBiblioDataIds_shouldReturnListWithOneId_whenOnePublicationSampleMatchesGivenBdIdsIds() throws InstanceAlreadyExistsException {
 
         // Arrange
         BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
@@ -992,7 +987,7 @@ class PublicationSampleRepositoryMemTest {
         List<BibliographicalDataID> bds = List.of(bdId_2);
 
         // Act
-        List<PublicationSampleId> result = repo.findPublicationSamplesByBiblioDataIds(bds);
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
 
         // Assert
         assertEquals(1, result.size());
@@ -1000,7 +995,7 @@ class PublicationSampleRepositoryMemTest {
     }
 
     @Test
-    void findPublicationSamplesByBiblioDataIds_shouldReturnEmptyList_whenNoPublicationSampleMatchesGivenBdIds() throws InstanceAlreadyExistsException {
+    void findPublicationSamplesByBiblioDataIds_shouldReturnEmptyList_whenNoPublicationSampleMatchesGivenBdIdsIds() throws InstanceAlreadyExistsException {
 
         // Arrange
         BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
@@ -1038,20 +1033,20 @@ class PublicationSampleRepositoryMemTest {
         List<BibliographicalDataID> bds = List.of(mock(BibliographicalDataID.class));
 
         // Act
-        List<PublicationSampleId> result = repo.findPublicationSamplesByBiblioDataIds(bds);
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
 
         // Assert
         assertEquals(0, result.size());
     }
 
     @Test
-    void findPublicationSamplesByBiblioDataIds_shouldThrowException_whenBdIdsListIsNull() {
+    void findPublicationSamplesIdsByBiblioDataIds_shouldThrowException_whenBdIdsListIsNull() {
 
         // Arrange
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesByBiblioDataIds(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));
     }
 
 

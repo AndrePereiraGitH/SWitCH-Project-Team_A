@@ -114,8 +114,6 @@ public interface    IPublicationSampleRepository {
      */
     List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
 
-    List<PublicationSample> findPublicationSampleByBiblioDataId(List<BibliographicalData> bds);
-
     /**
      * Retrieves the identifiers of publication samples whose bibliographical data ID
      * is contained in the given list.
@@ -125,7 +123,7 @@ public interface    IPublicationSampleRepository {
      *         bibliographical data identifiers; returns an empty list if no matches are found
      * @throws IllegalArgumentException if {@code bds} is {@code null}
      */
-    List<PublicationSampleId> findPublicationSamplesByBiblioDataIds(List<BibliographicalDataID> bds);
+    List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds);
 
     /**
      * Retrieves all publication samples that belong to the specified library.

@@ -192,7 +192,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSampleId> findPublicationSamplesByBiblioDataIds(List<BibliographicalDataID> bds) {
+    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds) {
 
         if (bds == null) {
             throw new IllegalArgumentException("List of BibliographicalDataId cannot be null.");
