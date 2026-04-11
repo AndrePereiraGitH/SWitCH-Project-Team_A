@@ -10,13 +10,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for GenreMapper.
- *
- * <p>
- * Ensures correct conversion from Genre domain objects to DTOs.
- * </p>
- */
 class US004GenreMapperTest {
 
     @Test
@@ -35,8 +28,8 @@ class US004GenreMapperTest {
         List<US004GenreDTO> result = mapper.toDTO(List.of(genre));
 
         // ASSERT
-        assertEquals(id, result.get(0).getId());
-        assertEquals("Fantasy", result.get(0).getTitle());
+        assertEquals(id, result.get(0).id());
+        assertEquals("Fantasy", result.get(0).title());
     }
 
     @Test
@@ -58,8 +51,8 @@ class US004GenreMapperTest {
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals(id, result.get(0).getId());
-        assertEquals("Fantasy", result.get(0).getTitle());
+        assertEquals(id, result.get(0).id());
+        assertEquals("Fantasy", result.get(0).title());
     }
 
     @Test
@@ -100,7 +93,7 @@ class US004GenreMapperTest {
 
         // ASSERT
         assertEquals(2, result.size());
-        assertEquals("Fantasy", result.get(0).getTitle());
-        assertEquals("Horror", result.get(1).getTitle());
+        assertEquals("Fantasy", result.get(0).title());
+        assertEquals("Horror", result.get(1).title());
     }
 }

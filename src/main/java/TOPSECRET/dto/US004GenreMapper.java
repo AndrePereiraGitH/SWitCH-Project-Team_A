@@ -6,32 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mapper responsible for converting {@link Genre} domain objects
- * into {@link US004GenreDTO} data transfer objects.
- *
- * <p>This class isolates transformation logic between the domain layer
- * and the presentation layer, ensuring that domain entities are not
- * exposed directly to the UI.
+ * Mapper responsible for converting Genre domain objects
+ * into US004GenreDTO.
  */
 public class US004GenreMapper {
 
-    /**
-     * Converts a list of {@link Genre} objects into a list of DTOs.
-     *
-     * @param genres list of Genre domain objects
-     * @return list of GenreDetailsDTO_US004
-     */
-    public List<US004GenreDTO> toDTO(List<Genre> genres) {
+    public static List<US004GenreDTO> toDTO(List<Genre> genres) {
+        if (genres == null) return new ArrayList<>();
 
         List<US004GenreDTO> list = new ArrayList<>();
 
         for (Genre genre : genres) {
-            list.add(new US004GenreDTO(
-                    genre.id(),
-                    genre.getGenreType()
-            ));
+            list.add(toDTO(genre));
         }
 
         return list;
+    }
+
+    public static US004GenreDTO toDTO(Genre genre) {
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+
+        return new US004GenreDTO(
+                genre.id(),
+                genre.getGenreType()
+        );
     }
 }

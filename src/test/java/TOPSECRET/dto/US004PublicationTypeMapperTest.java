@@ -10,13 +10,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for PublicationTypeMapper.
- *
- * <p>
- * Ensures correct conversion from PublicationType domain objects to DTOs.
- * </p>
- */
 class US004PublicationTypeMapperTest {
 
     @Test
@@ -35,8 +28,8 @@ class US004PublicationTypeMapperTest {
         List<US004PublicationTypeDTO> result = mapper.toDTO(List.of(type));
 
         // ASSERT
-        assertEquals(id, result.get(0).getId());
-        assertEquals("Book", result.get(0).getMediaFormat());
+        assertEquals(id, result.get(0).id());
+        assertEquals("Book", result.get(0).mediaFormat());
     }
 
     @Test
@@ -58,8 +51,8 @@ class US004PublicationTypeMapperTest {
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals(id, result.get(0).getId());
-        assertEquals("Book", result.get(0).getMediaFormat());
+        assertEquals(id, result.get(0).id());
+        assertEquals("Book", result.get(0).mediaFormat());
     }
 
     @Test
@@ -101,7 +94,7 @@ class US004PublicationTypeMapperTest {
 
         // ASSERT
         assertEquals(2, result.size());
-        assertEquals("Book", result.get(0).getMediaFormat());
-        assertEquals("Magazine", result.get(1).getMediaFormat());
+        assertEquals("Book", result.get(0).mediaFormat());
+        assertEquals("Magazine", result.get(1).mediaFormat());
     }
 }

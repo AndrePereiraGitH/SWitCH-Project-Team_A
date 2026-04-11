@@ -6,31 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mapper responsible for converting {@link PublicationType} domain objects
- * into {@link US004PublicationTypeDTO} data transfer objects.
- *
- * <p>This class ensures separation between domain and presentation layers
- * by transforming domain entities into DTOs suitable for UI consumption.
+ * Mapper responsible for converting PublicationType domain objects
+ * into US004PublicationTypeDTO.
  */
 public class US004PublicationTypeMapper {
 
-    /**
-     * Converts a list of {@link PublicationType} objects into a list of DTOs.
-     *
-     * @param types list of PublicationType domain objects
-     * @return list of PublicationTypeDTO_US004
-     */
-    public List<US004PublicationTypeDTO> toDTO(List<PublicationType> types) {
+    public static List<US004PublicationTypeDTO> toDTO(List<PublicationType> types) {
+        if (types == null) return new ArrayList<>();
 
         List<US004PublicationTypeDTO> list = new ArrayList<>();
 
         for (PublicationType pt : types) {
-            list.add(new US004PublicationTypeDTO(
-                    pt.id(),
-                    pt.getMediaFormat()
-            ));
+            list.add(toDTO(pt));
         }
 
         return list;
+    }
+
+    public static US004PublicationTypeDTO toDTO(PublicationType pt) {
+        if (pt == null) {
+            throw new IllegalArgumentException("Publication Type cannot be null");
+        }
+
+        return new US004PublicationTypeDTO(
+                pt.id(),
+                pt.getMediaFormat()
+        );
     }
 }
