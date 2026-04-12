@@ -17,9 +17,9 @@ import java.util.UUID;
 public class DirectSale implements AggregateRoot<DirectSaleID> {
 
     private final DirectSaleID _directSaleID;
-    private List<ListingId> _listings;
-    private UserId _buyer;
-    private boolean _isFinished;
+    private final List<ListingId> _listings;
+    private final UserId _buyer;
+    private final boolean _isFinished;
 
     //==================================================================================================================
     // Constructor for DirectSale
@@ -49,17 +49,6 @@ public class DirectSale implements AggregateRoot<DirectSaleID> {
         if(_buyer == null){
             throw new IllegalArgumentException("Buyer cannot be empty");
         }
-
-        // TO BE UPDATED LATER
-        // method to check is listing is of direct sale type
-        boolean invalid = false;
-
-        if (invalid) {
-            throw new IllegalArgumentException(
-                    "All listings must be of type DIRECT_SALE to create a DirectSale"
-            );
-        }
-
 
         this._directSaleID = new DirectSaleID(UUID.randomUUID().toString());
         this._listings = _listings;

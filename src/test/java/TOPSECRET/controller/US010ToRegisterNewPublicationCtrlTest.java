@@ -14,6 +14,23 @@ import javax.management.InstanceAlreadyExistsException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link US010ToRegisterNewPublicationCtrl}.
+ *
+ * <p>This test suite validates the observable behavior of the controller,
+ * ensuring correct handling of publication registration requests.</p>
+ *
+ * <p>The tests follow a black-box approach, focusing on:
+ * <ul>
+ *   <li>Successful publication registration</li>
+ *   <li>Exception propagation from the repository layer</li>
+ *   <li>Validation of null input parameters (guard clauses)</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Test doubles (Mockito mocks) are used to isolate the controller from
+ * its dependency on {@link IPublicationSampleRepository}.</p>
+ */
 
 class US010ToRegisterNewPublicationCtrlTest {
 
@@ -37,6 +54,81 @@ class US010ToRegisterNewPublicationCtrlTest {
         //Act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> new US010ToRegisterNewPublicationCtrl(null));
+    }
+
+    @Test
+    void shouldThrowWhenBibliographicalDataIdIsNull() {
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                anyController.registerNewPublication(
+                        null,
+                        anyUserId,
+                        anyPublicationStatus,
+                        anyEditionId,
+                        anyCondition
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenUserIdIsNull() {
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                anyController.registerNewPublication(
+                        anyBiblioDataId,
+                        null,
+                        anyPublicationStatus,
+                        anyEditionId,
+                        anyCondition
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenPublicationStatusIsNull() {
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                anyController.registerNewPublication(
+                        anyBiblioDataId,
+                        anyUserId,
+                        null,
+                        anyEditionId,
+                        anyCondition
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenEditionIdIsNull() {
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                anyController.registerNewPublication(
+                        anyBiblioDataId,
+                        anyUserId,
+                        anyPublicationStatus,
+                        null,
+                        anyCondition
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenConditionIsNull() {
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                anyController.registerNewPublication(
+                        anyBiblioDataId,
+                        anyUserId,
+                        anyPublicationStatus,
+                        anyEditionId,
+                        null
+                )
+        );
     }
 
     @Test

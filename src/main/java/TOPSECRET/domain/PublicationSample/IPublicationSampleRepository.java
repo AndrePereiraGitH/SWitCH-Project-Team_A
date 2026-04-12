@@ -115,6 +115,17 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
 
     /**
+     * Retrieves the identifiers of publication samples whose bibliographical data ID
+     * is contained in the given list.
+     *
+     * @param bds the list of bibliographical data identifiers to search for
+     * @return a list of publication sample identifiers associated with the given
+     *         bibliographical data identifiers; returns an empty list if no matches are found
+     * @throws IllegalArgumentException if {@code bds} is {@code null}
+     */
+    List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds);
+
+    /**
      * Retrieves all publication samples that belong to the specified library.
      *
      * @param libraryID the identifier of the library whose publication samples are to be retrieved
@@ -138,16 +149,6 @@ public interface    IPublicationSampleRepository {
      */
 //    List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary);
 
-    /**
-     * Retrieves the {@link PublicationSample} instances that correspond to
-     * the given list of {@link PublicationSampleDTO_US016} transfer objects.
-     *
-     * @param pubsDto the list of DTOs identifying the desired publication samples;
-     *                must not be null
-     * @return a {@link List} of matching {@link PublicationSample} instances;
-     *         never {@code null}, but may be empty if no matches are found
-     */
-//    List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the

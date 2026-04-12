@@ -63,6 +63,22 @@ public class US010ToRegisterNewPublicationCtrl {
 
     ) throws InstanceAlreadyExistsException {
 
+        if (bibliographicalData1 == null) {
+            throw new IllegalArgumentException("BibliographicalData cannot be left null");
+        }
+        if (publicationStatus1 == null) {
+            throw new IllegalArgumentException("PublicationStatus cannot be left null");
+        }
+        if (user1 == null) {
+            throw new IllegalArgumentException("User Id cannot be left blank");
+        }
+        if (_edition == null) {
+            throw new IllegalArgumentException("Edition Id cannot be left null");
+        }
+        if (condition == null) {
+            throw new IllegalArgumentException("Condition cannot be left null");
+        }
+
         PublicationSample newPublication = _publicationRepository.createAndAdd(bibliographicalData1, user1,
                 publicationStatus1, _edition, condition);
 
