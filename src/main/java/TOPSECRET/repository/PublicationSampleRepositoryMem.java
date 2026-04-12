@@ -188,6 +188,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
+    public List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId){
+
+        if(userId == null){
+            throw new NullPointerException("UserId must not be null");
+        }
+
+        List<PublicationSample> listOfPublicationsNotInLibrary = new ArrayList<>();
+
+        for(PublicationSample pubSample: allPublicationsInSystem){
+            if(pubSample.isOwnedByUser(userId) && !pubSample.isInUserLibrary()){
+                listOfPublicationsNotInLibrary.add(pubSample);
+            }
+        }
+
+        return listOfPublicationsNotInLibrary;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID) {
 
         List<PublicationSample> allPublications = allPublicationsInSystem.stream()

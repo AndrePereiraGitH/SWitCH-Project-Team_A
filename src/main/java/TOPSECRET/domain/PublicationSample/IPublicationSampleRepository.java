@@ -124,6 +124,22 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
+     * Retrieves all {@link PublicationSample} instances that are owned by the given user
+     * and have not yet been added to any library.
+     * <p>
+     * This method is used to present the user with a list of publications available
+     * to be added to their library.
+     * </p>
+     *
+     * @param userId the ID of the user whose publications are to be retrieved;
+     *               must not be {@code null}
+     * @return a list of {@link PublicationSample} objects owned by the user that are
+     *         not currently assigned to any library; never {@code null}, may be empty
+     * @throws NullPointerException if {@code userId} is {@code null}
+     */
+    List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId);
+
+    /**
      * Returns the subset of {@link PublicationSample} instances from the repository
      * that are not present in the provided list.
      * <p>

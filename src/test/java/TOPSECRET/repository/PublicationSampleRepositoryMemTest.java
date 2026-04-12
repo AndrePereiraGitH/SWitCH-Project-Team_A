@@ -901,7 +901,157 @@ class PublicationSampleRepositoryMemTest {
         assertFalse(result.contains(pbSample_2));
     }
 
+// ===========================================================
+// ====== Tests for getAllPublicationsFromUserWithoutLibrary ==
+// ===========================================================
 
+    @Test
+    void getAllPublicationsFromUserWithoutLibrary_shouldReturnPublications_whenUserHasPublicationsWithoutLibrary() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
+        when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(true);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(false);
+        when(pbSample_2.isInUserLibrary()).thenReturn(false);
+
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublicationsFromUserWithoutLibrary(userID_Double);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pbSample_1));
+        assertTrue(result.contains(pbSample_2));
+    }
+
+    @Test
+    void getAllPublicationsFromUserWithoutLibrary_shouldReturnEmptyList_whenAllUserPublicationsAreInLibrary() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
+        when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(true);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(true);
+        when(pbSample_2.isInUserLibrary()).thenReturn(true);
+
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublicationsFromUserWithoutLibrary(userID_Double);
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAllPublicationsFromUserWithoutLibrary_shouldNotReturn_publicationsOwnedByOtherUsers() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        UserId userId_Other = mock(UserId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
+        when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(false);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(false);
+        when(pbSample_2.isInUserLibrary()).thenReturn(false);
+
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bibliographicalDataID_Double, userId_Other, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bibliographicalDataID_Double, userId_Other, PublicationStatus.READ, editionID_Double, Condition.POOR);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublicationsFromUserWithoutLibrary(userID_Double);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(pbSample_1));
+        assertFalse(result.contains(pbSample_2));
+    }
+
+    @Test
+    void getAllPublicationsFromUserWithoutLibrary_shouldReturnOnlyPublicationsWithoutLibrary_whenMixed() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+
+        when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
+        when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(true);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(false);
+        when(pbSample_2.isInUserLibrary()).thenReturn(true);
+
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublicationsFromUserWithoutLibrary(userID_Double);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(pbSample_1));
+        assertFalse(result.contains(pbSample_2));
+    }
+
+    @Test
+    void getAllPublicationsFromUserWithoutLibrary_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        List<PublicationSample> result = repo.getAllPublicationsFromUserWithoutLibrary(userID_Double);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllPublicationsFromUserWithoutLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> repo.getAllPublicationsFromUserWithoutLibrary(null));
+    }
 
 
 
