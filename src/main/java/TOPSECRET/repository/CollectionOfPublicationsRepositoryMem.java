@@ -2,12 +2,14 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -119,5 +121,27 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         });
 
         return userCollections;
+    }
+
+    /**
+     * Finds a collection by its unique identifier — US019.
+     *
+     * @param id the ID of the collection to search for; must not be null
+     * @return an {@link Optional} containing the collection if found, or empty if not
+     * @throws NullPointerException if {@code id} is null
+     */
+    public Optional<CollectionOfPublications> findCollectionOfPublicationsById(CollectionOfPublicationsID id) {
+
+        if (id == null) {
+            throw new NullPointerException("Collection ID must not be null");
+        }
+
+        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
+            if (collection.id().equals(id)) {
+                return Optional.of(collection);
+            }
+        }
+
+        return Optional.empty();
     }
 }

@@ -1,16 +1,11 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.User.User;
-
-import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.CollectionOfPublicationsDTO_US018;
-import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
-import TOPSECRET.dto.CollectionOfPublicationsDTO_US020;
 
-import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 public interface ICollectionOfPublicationsRepository {
 
@@ -51,4 +46,15 @@ public interface ICollectionOfPublicationsRepository {
      */
 
     List<CollectionOfPublications> getUserCollections(UserId userId) throws IllegalArgumentException;
+
+    /**
+     * Finds a collection by its unique identifier — US019.
+     *
+     * @param id the ID of the collection to search for; must not be null
+     * @return an {@link Optional} containing the collection if found, or empty if not
+     * @throws NullPointerException if {@code id} is null
+     */
+    Optional<CollectionOfPublications> findCollectionOfPublicationsById(CollectionOfPublicationsID id);
+
+
 }
