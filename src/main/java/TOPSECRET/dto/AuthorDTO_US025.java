@@ -1,17 +1,8 @@
 package TOPSECRET.dto;
 
 /**
- * Data Transfer Object representing an author with just the name.
+ * Data Transfer Object representing an author.
+ *
+ * @param name the name of the author; must not be {@code null}
  */
-public class AuthorDTO_US025 {
-
-    private String name;
-
-    public AuthorDTO_US025(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-}
+public record AuthorDTO_US025(String name) {}

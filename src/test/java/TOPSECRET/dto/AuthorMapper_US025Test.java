@@ -9,7 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for AuthorMapper_US025.
+ * Unit tests for {@link AuthorMapper_US025}.
+ *
+ * Verifies that Author entities are correctly converted to
+ * {@link AuthorDTO_US025} representations, including edge cases
+ * such as null input and empty lists.
  */
 class AuthorMapper_US025Test {
 
@@ -29,7 +33,7 @@ class AuthorMapper_US025Test {
 
         // Assert
         assertNotNull(dto);
-        assertEquals("Ken Follett", dto.getName());
+        assertEquals("Ken Follett", dto.name());
     }
 
     @Test
@@ -44,7 +48,7 @@ class AuthorMapper_US025Test {
 
         // Assert
         assertNotNull(dto);
-        assertEquals("Dan Brown", dto.getName());
+        assertEquals("Dan Brown", dto.name());
     }
 
     @Test
@@ -78,8 +82,8 @@ class AuthorMapper_US025Test {
 
         // Assert
         assertEquals(2, dtos.size());
-        assertEquals("Author One", dtos.get(0).getName());
-        assertEquals("Author Two", dtos.get(1).getName());
+        assertEquals("Author One", dtos.get(0).name());
+        assertEquals("Author Two", dtos.get(1).name());
     }
 
     @Test

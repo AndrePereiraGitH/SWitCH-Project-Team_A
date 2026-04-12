@@ -1,10 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.dto.AuthorDTO_US025;
 import TOPSECRET.dto.AuthorMapper_US025;
 import TOPSECRET.dto.DirectSaleDTO_US025;
@@ -25,27 +22,25 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
     private final IAuthorRepository authorRepository;
     private final DirectSaleMapper_US025 directSaleMapper;
 
+    /**
+     * Constructs a new {@code US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController}
+     * with the required dependencies.
+     *
+     * @param authorRepository  the repository for authors; must not be {@code null}
+     * @param directSaleMapper  the mapper used to convert direct sale entities to DTOs; must not be {@code null}
+     * @throws IllegalArgumentException if any parameter is {@code null}
+     */
     public US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
             IAuthorRepository authorRepository,
-            IListingRepository listingRepository,
-            IBibliographicalDataRepository bibliographicalDataRepository,
-            IPublicationSampleRepository publicationSampleRepository) {
+            DirectSaleMapper_US025 directSaleMapper) {
 
         if (authorRepository == null)
             throw new IllegalArgumentException("AuthorRepository cannot be null");
-        if (listingRepository == null)
-            throw new IllegalArgumentException("ListingRepository cannot be null");
-        if (bibliographicalDataRepository == null)
-            throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
-        if (publicationSampleRepository == null)
-            throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+        if (directSaleMapper == null)
+            throw new IllegalArgumentException("DirectSaleMapper cannot be null");
 
         this.authorRepository = authorRepository;
-        this.directSaleMapper = new DirectSaleMapper_US025(
-                bibliographicalDataRepository,
-                authorRepository,
-                listingRepository,
-                publicationSampleRepository);
+        this.directSaleMapper = directSaleMapper;
     }
 
     /**
@@ -60,14 +55,15 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
     /**
      * Returns the list of items on direct sale for a specific author, converted into DTOs.
      *
-     * @param author the author whose items are being queried
+     * @param authorId the author whose items are being queried
      * @return list of DirectSaleDTO_US025 representing the author's items
      * @throws IllegalArgumentException if the author is null
      */
-    public List<DirectSaleDTO_US025> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
-        if (author == null)
-            throw new IllegalArgumentException("Author cannot be null");
+    public List<DirectSaleDTO_US025> getListOfItemsOnDirectSaleOfAGivenAuthor(String authorId) {
+        if (authorId == null || authorId.isBlank())
+            throw new IllegalArgumentException("AuthorID cannot be null or blank");
 
-        return directSaleMapper.toDTOListByAuthor(author);
+        AuthorId id = new AuthorId(authorId);
+        return directSaleMapper.toDTOListByAuthor(id);
     }
 }

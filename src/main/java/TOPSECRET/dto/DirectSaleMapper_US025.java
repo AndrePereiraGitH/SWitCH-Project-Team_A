@@ -25,10 +25,30 @@ public class DirectSaleMapper_US025 {
     private final IListingRepository listingRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
 
+
+    /**
+     * Constructs a new {@code DirectSaleMapper_US025} with the required repositories.
+     *
+     * @param bibliographicalDataRepository the repository for bibliographical data; must not be {@code null}
+     * @param authorRepository              the repository for authors; must not be {@code null}
+     * @param listingRepository             the repository for listings; must not be {@code null}
+     * @param publicationSampleRepository   the repository for publication samples; must not be {@code null}
+     * @throws IllegalArgumentException if any repository is {@code null}
+     */
     public DirectSaleMapper_US025(IBibliographicalDataRepository bibliographicalDataRepository,
                                   IAuthorRepository authorRepository,
                                   IListingRepository listingRepository,
                                   IPublicationSampleRepository publicationSampleRepository) {
+
+        if (bibliographicalDataRepository == null)
+            throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
+        if (authorRepository == null)
+            throw new IllegalArgumentException("AuthhorRepository cannot be null");
+        if (listingRepository == null)
+            throw new IllegalArgumentException("ListingRepository cannot be null");
+        if (publicationSampleRepository == null)
+            throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+
         this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.authorRepository = authorRepository;
         this.listingRepository = listingRepository;
@@ -61,7 +81,7 @@ public class DirectSaleMapper_US025 {
         String listingTitle = listing.getListingTitle();
         String seller = listing.getSellerId().toString();
 
-        return new DirectSaleDTO_US025(title, authorNames, price, listingTitle, seller);
+        return new DirectSaleDTO_US025(title, List.copyOf(authorNames), price, listingTitle, seller);
     }
 
     /**
@@ -71,6 +91,10 @@ public class DirectSaleMapper_US025 {
      * @return List of DirectSaleDTO_US025 representing all items.
      */
     public List<DirectSaleDTO_US025> toDTOList(List<Listing> listings) {
+
+        if (listings == null)
+            return new ArrayList<>();
+
         List<DirectSaleDTO_US025> dtos = new ArrayList<>();
 
         for (Listing listing : listings) {
@@ -87,10 +111,16 @@ public class DirectSaleMapper_US025 {
     /**
      * Creates a list of DTOs for all items on direct sale associated with a given author.
      *
-     * @param author   The author to filter by.
-     * @return List of DirectSaleDTO_US025 representing the author's items on direct sale.
+     * @param authorId the {@link AuthorId} of the author to filter by; must not be {@code null}
+     * @return list of {@link DirectSaleDTO_US025} representing the author's items on direct sale
+     * @throws IllegalArgumentException if {@code authorId} is {@code null}
+     *                                  or if any required entity is not found in the repositories
      */
-    public List<DirectSaleDTO_US025> toDTOListByAuthor(Author author) {
+    public List<DirectSaleDTO_US025> toDTOListByAuthor(AuthorId authorId) {
+
+        if (authorId == null)
+            throw new IllegalArgumentException("AuthorId cannot be null");
+
         List<Listing> listings = listingRepository.findAllDirectSaleListings();
         List<DirectSaleDTO_US025> result = new ArrayList<>();
 
@@ -105,7 +135,7 @@ public class DirectSaleMapper_US025 {
                         .findBibliographicalDataById(item.getBibliographicalDataID())
                         .orElseThrow(() -> new IllegalArgumentException("BibliographicalData not found"));
 
-                if (bd.getAuthors().contains(author.id())) {
+                if (bd.getAuthors().contains(authorId)) {
                     result.add(toDTO(item, listing));
                 }
             }
