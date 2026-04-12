@@ -3,6 +3,7 @@ package TOPSECRET.domain.Genre;
 import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Contract for managing {@link Genre} objects.

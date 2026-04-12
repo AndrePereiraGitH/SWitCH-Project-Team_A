@@ -7,6 +7,7 @@ import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository responsible for creating and storing Genre objects.
@@ -119,6 +120,5 @@ public class GenreRepositoryMem implements IGenreRepository {
         return false;
     }
     // ----------------------------- US013 ends -------------------------------
-
 }
 

@@ -1,5 +1,6 @@
 package TOPSECRET.domain.DirectSale;
 
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
@@ -22,7 +23,7 @@ public interface IDirectSaleRepository {
      * @param buyer the user who is purchasing the listings
      * @return the created and stored direct sale
      */
-    DirectSale createAndAdd(List<ListingId> listings, UserId buyer);
+    DirectSale createAndAdd(List<ListingId> listings, UserId buyer, IListingRepository listingRepo);
 
     /**
      * Checks whether the given direct sale already exists in the repository.
@@ -38,5 +39,10 @@ public interface IDirectSaleRepository {
      * @param directSale the direct sale to add
      */
     void add(DirectSale directSale);
+
+    /**
+     * @return gets all DirectSales in the repository
+     */
+    List<DirectSale> getAll();
 
 }

@@ -1,62 +1,104 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.dto.AuctionDTO_US026;
-import TOPSECRET.dto.AuthorDTO_US026;
-import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.dto.US026AuctionDTO;
+import TOPSECRET.dto.US026AuctionMapper;
+import TOPSECRET.dto.US026AuthorDTO;
+import TOPSECRET.domain.Author.IAuthorRepository;
+import TOPSECRET.dto.US026AuthorMapper;
 
-import java.util.ArrayList;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 /**
- * Controller responsible for the use case US026:
- * retrieving the list of items currently on auction for a given author.
+ * Controller responsible for retrieving all authors and the list of auction items
+ * associated with a given author.
+ * <p>
+ * This controller coordinates the retrieval of bibliographical data, publication samples,
+ * listings, and auctions in order to return the corresponding DTO representations.
  */
 public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
-    private final IAuthorRepository IAuthorRepository;
-    private final IAuctionRepository auctionRepo;
+    private final IAuthorRepository authorRepository;
+    private final IBibliographicalDataRepository biblioRepository;
+    private final IPublicationSampleRepository pubRepo;
+    private final IListingRepository listingRepo;
+    private final IAuctionRepository auctionRepository;
+    private final US026AuctionMapper mapper;
 
-    public US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository IAuthorRepository, IAuctionRepository auctionRepo) {
-        this.IAuthorRepository = IAuthorRepository;
-        this.auctionRepo = auctionRepo;
+    /**
+     * Creates a controller with all required dependencies.
+     *
+     * @param authorRepository the repository used to retrieve authors
+     * @param biblioRepository the repository used to retrieve bibliographical data
+     * @param pubRepo the repository used to retrieve publication samples
+     * @param listingRepo the repository used to retrieve listings
+     * @param auctionRepository the repository used to retrieve auctions
+     * @param mapper the mapper used to convert auction domain objects into DTOs
+     * @throws IllegalArgumentException if any dependency is null
+     */
+    public US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
+
+        if (authorRepository == null || biblioRepository == null || pubRepo == null || listingRepo == null || auctionRepository == null || mapper == null) {
+            throw new IllegalArgumentException("Controller dependencies cannot be null");
+        }
+
+        this.authorRepository = authorRepository;
+        this.biblioRepository = biblioRepository;
+        this.pubRepo = pubRepo;
+        this.listingRepo = listingRepo;
+        this.auctionRepository = auctionRepository;
+        this.mapper = mapper;
     }
 
     /**
-     * Retrieves all authors and converts them to DTOs.
+     * Retrieves all authors in the system.
      *
-     * @return a list of {@link AuthorDTO_US026} representing all authors
+     * @return a list of {@link US026AuthorDTO} representing all authors
      */
-    public List<AuthorDTO_US026> getAllAuthors() {
+    public List<US026AuthorDTO> getAllAuthors() {
 
-        List<Author> authorsList = IAuthorRepository.getAllAuthors();
-        List<AuthorDTO_US026> authorsListDTO = new ArrayList<>();
-
-        for (Author a : authorsList) {
-            authorsListDTO.add(AuthorDTO_US026.fromAuthor(a));
-        }
+        List<Author> authorsList = authorRepository.getAllAuthors();
+        List<US026AuthorDTO> authorsListDTO = US026AuthorMapper.fromDomainList(authorsList);
 
         return authorsListDTO;
     }
 
     /**
-     * Retrieves the list of items on auction for the given author and converts them to DTOs.
+     * Retrieves the list of auction items associated with a given author.
+     * <p>
+     * The method obtains the bibliographical data identifiers of the author,
+     * retrieves the related publication sample identifiers, then the associated
+     * listing identifiers, and finally the auctions corresponding to those listings.
      *
-     * @param author the author DTO used to filter auctions
-     * @return a list of {@link AuctionDTO_US026} for the specified author
+     * @param authorId the identifier of the author whose auction items are to be retrieved
+     * @return a list of {@link US026AuctionDTO} representing the auction items of the given author
+     * @throws IllegalArgumentException if {@code authorId} is null
+     * @throws InstanceNotFoundException if a required instance cannot be found during the mapping process
      */
-//    public List<AuctionDTO_US026> getListOfItemsOnAuctionByAuthor(AuthorDTO_US026 author) {
-//
-//        List<Auction> auctions = auctionRepo.getListOfItemsOnAuctionGivenAuthor(author);
-//        List<AuctionDTO_US026> auctionsListDto = new ArrayList<>();
-//
-//        for (Auction a : auctions) {
-//            auctionsListDto.add(AuctionDTO_US026.fromAuction(a));
-//        }
-//
-//        return auctionsListDto;
-//    }
+    public List<US026AuctionDTO> getAuctionsByAuthorId(AuthorId authorId) throws InstanceNotFoundException {
 
+        if (authorId == null) {
+            throw new IllegalArgumentException("authorId cannot be null.");
+        }
+
+       List<BibliographicalDataID> bdsOfAuthorID = biblioRepository.findBibliographicalDataIdByAuthorId(authorId);
+
+       List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesIdsByBiblioDataIds(bdsOfAuthorID);
+
+       List<ListingId> authorListings = listingRepo.findListingIdsByPublicationSampleIds(samplesOfAuthorID);
+
+       List<Auction> auctionsOfAuthor = auctionRepository.findAuctionsByListingId(authorListings);
+
+       return mapper.fromDomainList(auctionsOfAuthor);
+    }
 }

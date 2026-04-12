@@ -43,6 +43,6 @@ public class US007ToRegisterCountryController {
         if (_countryName == null || _countryName.isBlank()) {
             throw new IllegalArgumentException("Country name cannot be null or blank");
         }
-        return _countryRepository.createAndAddNewCountry(_countryName);
+        return _countryRepository.createAndAdd(_countryName);
     }
 }
