@@ -25,24 +25,14 @@ public interface IGenreRepository {
        Genre createAndAdd(String genreType);
 
     /**
-     * Returns the genre matching the given id.
-     *
-     * <p>This method searches the repository's internal collection and returns
-     * the first genre whose type matches the given id.
-     *
-     * @param id the title of the genre to search for
-     * @throws IllegalArgumentException if {@code id} is {@code null}, blank, or not found
-     */
-        Genre findGenreById(GenreID id);
-
-
-    /**
      * Returns the genre matching the given title.
      *
      * <p>This method searches the repository's internal collection and returns
-     * the first genre whose type matches the given title.
+     * the first genre whose type matches the given title, ignoring case.
+     * The search is case-insensitive.</p>
      *
      * @param title the title of the genre to search for
+     * @return the genre matching the given title; never {@code null}
      * @throws IllegalArgumentException if {@code title} is {@code null}, blank, or not found
      */
         Genre findByTitle(String title);
@@ -60,6 +50,16 @@ public interface IGenreRepository {
      */
         List<Genre> getAllGenres();
 
-
+    /**
+     * Returns the genre matching the ID.
+     *
+     * <p>This method searches the repository's internal collection and returns
+     * the genre corresponding to the genreID.
+     *
+     * @param genreId the ID of the genre to search for
+     * @return the genre matching the ID; never {@code null}
+     * @throws IllegalArgumentException if {@code genreId} is {@code null}, blank, or not found
+     */
+    Optional<Genre> findGenreById(GenreID genreId);
 }
 

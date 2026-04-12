@@ -72,24 +72,6 @@ public class GenreRepositoryMem implements IGenreRepository {
         throw new IllegalArgumentException("Genre not found.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Genre findGenreById(GenreID id) {
-
-        if (id == null) {
-            throw new IllegalArgumentException("GenreID cannot be null.");
-        }
-
-        for (Genre genre : _genres) {
-            if (genre.id().equals(id)) {
-                return genre;
-            }
-        }
-
-        throw new IllegalArgumentException("Genre not found.");
-    }
 
     // ----------------------------- US013 starts -------------------------------
 
@@ -120,5 +102,19 @@ public class GenreRepositoryMem implements IGenreRepository {
         return false;
     }
     // ----------------------------- US013 ends -------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Genre> findGenreById(GenreID genreId){
+        if (genreId == null) {
+            throw new IllegalArgumentException("GenreId cannot be null");
+        }
+
+        return _genres.stream()
+                .filter(genre -> genre.id().equals(genreId))
+                .findFirst();
+    }
 }
 
