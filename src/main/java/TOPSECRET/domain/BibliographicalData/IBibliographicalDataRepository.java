@@ -65,6 +65,15 @@ public interface IBibliographicalDataRepository {
      */
     Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle);
 
+    /**
+     * Retrieves the identifiers of all bibliographical data entries associated with a given author.
+     *
+     * @param authorId the identifier of the author whose bibliographical data identifiers are to be retrieved
+     * @return a list of {@link BibliographicalDataID} associated with the given author
+     * @throws IllegalArgumentException if {@code authorId} is null
+     */
+    List<BibliographicalDataID> findBibliographicalDataIdByAuthorId(AuthorId authorId);
+
 
     /**
      * Returns the complete list of bibliographical data records stored in the repository.
@@ -86,6 +95,8 @@ public interface IBibliographicalDataRepository {
      *         or an empty list if no entries are present.
      */
     List<String> getAllTitles();
+
+
 
 
 }

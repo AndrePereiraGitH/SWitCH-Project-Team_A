@@ -3,9 +3,11 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository responsible for creating and storing Genre objects.
@@ -98,5 +100,19 @@ public class GenreRepositoryMem implements IGenreRepository {
         return false;
     }
     // ----------------------------- US013 ends -------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Genre> findGenreById(GenreID genreId){
+        if (genreId == null) {
+            throw new IllegalArgumentException("GenreId cannot be null");
+        }
+
+        return _genres.stream()
+                .filter(genre -> genre.id().equals(genreId))
+                .findFirst();
+    }
 }
 

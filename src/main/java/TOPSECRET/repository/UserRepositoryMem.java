@@ -19,7 +19,7 @@ import java.util.Optional;
  */
 public class UserRepositoryMem implements IUserRepository {
 
-    private final List<User> _userList = new ArrayList<>();
+    private final List<User> _userList;
     private final UserFactory _userFactory;
 
     //================================================================================
@@ -32,24 +32,31 @@ public class UserRepositoryMem implements IUserRepository {
      */
     public UserRepositoryMem(UserFactory userFactory) {
         this._userFactory = userFactory;
+        this._userList = new ArrayList<>();
     }
 
     //================================================================================
 
-    private void save(User user) {
-        _userList.add(user);
-    }
-
     /** {@inheritDoc} */
     @Override
-    public UserId create(String username, Contact contact, Profile profile, UserRole userRole) {
+    public User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
         if (exists(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
 
         User user = _userFactory.create(username, contact, profile, userRole);
-        save(user);
-        return user.id();
+        return save(user);
+    }
+
+    /**
+     * Persists the given {@link User} to the in-memory list.
+     *
+     * @param user the user to save; must not be null
+     * @return the saved {@link User} instance
+     */
+    protected User save(User user) {
+        _userList.add(user);
+        return user;
     }
 
     /** {@inheritDoc} */

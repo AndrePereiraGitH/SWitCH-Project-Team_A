@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.DirectSale.DirectSaleFactory;
 import TOPSECRET.domain.DirectSale.IDirectSaleRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,23 +21,54 @@ class DirectSaleRepositoryMemTest {
     private DirectSaleFactory dsFactoryDouble;
     private DirectSale dsDouble;
 
-    private ListingId listing1Double;
-    private ListingId listing2Double;
+    private ListingId listingId1Double;
+    private ListingId listing2IdDouble;
     private List<ListingId> listings;
     private UserId buyerDouble;
+    private IListingRepository listingRepoDouble;
+    private IDirectSaleRepository dsRepo;
 
     @BeforeEach
     void setUp() {
 
-        listing1Double = mock(ListingId.class);
-        listing2Double = mock(ListingId.class);
-        listings = List.of(listing1Double, listing2Double);
+        listingId1Double = mock(ListingId.class);
+        listing2IdDouble = mock(ListingId.class);
+        listings = List.of(listingId1Double, listing2IdDouble);
 
         buyerDouble = mock(UserId.class);
 
         dsDouble = mock(DirectSale.class);
         dsFactoryDouble = mock(DirectSaleFactory.class);
-        when(dsFactoryDouble.create(listings, buyerDouble)).thenReturn(dsDouble);
+        when(dsFactoryDouble.create(listings, buyerDouble, listingRepoDouble)).thenReturn(dsDouble);
+
+        dsRepo = new DirectSaleRepositoryMem(dsFactoryDouble);
+    }
+
+    // Constructor Tests -----------------------------------------------------------------------------------------
+
+    @Test
+    void constructor_shouldInitializeRepositoryCorrectly() {
+        assertNotNull(dsRepo);
+    }
+
+    @Test
+    void constructor_shouldInitializeEmptyList() {
+        assertTrue(dsRepo.getAll().isEmpty());
+    }
+
+    @Test
+    void repository_shouldUseFactoryWhenCreatingDirectSale() {
+        // Arrange
+        DirectSaleFactory factory = mock(DirectSaleFactory.class);
+        DirectSaleRepositoryMem repo = new DirectSaleRepositoryMem(factory);
+        DirectSale sale = mock(DirectSale.class);
+
+        // Act
+        when(factory.create(listings, buyerDouble, listingRepoDouble)).thenReturn(sale);
+        repo.createAndAdd(listings, buyerDouble, listingRepoDouble);
+
+        // Assert
+        assertEquals(sale, repo.getAll().get(0));
     }
 
     // Method createAndAdd ---------------------------------------------------------------------------------------------
@@ -47,7 +79,7 @@ class DirectSaleRepositoryMemTest {
         IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act
-        DirectSale result = dsRepo.createAndAdd(listings, buyerDouble);
+        DirectSale result = dsRepo.createAndAdd(listings, buyerDouble, listingRepoDouble);
 
         // Assert
         assertEquals(dsDouble, result);
@@ -62,20 +94,20 @@ class DirectSaleRepositoryMemTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> dsRepo.createAndAdd(listings, buyerDouble));
+                () -> dsRepo.createAndAdd(listings, buyerDouble, listingRepoDouble));
     }
 
     @Test
     void createAndAdd_propagatesFactoryException() {
         // Arrange
-        when(dsFactoryDouble.create(listings, buyerDouble)).thenThrow(new IllegalArgumentException("Invalid listings"));
+        when(dsFactoryDouble.create(listings, buyerDouble, listingRepoDouble)).thenThrow(new IllegalArgumentException("Invalid listings"));
 
         IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> dsRepo.createAndAdd(listings, buyerDouble)
+                () -> dsRepo.createAndAdd(listings, buyerDouble, listingRepoDouble)
         );
 
         assertEquals("Invalid listings", ex.getMessage());
@@ -84,27 +116,27 @@ class DirectSaleRepositoryMemTest {
     @Test
     void createAndAdd_throwsWhenListingsNull() {
         // Arrange
-        when(dsFactoryDouble.create(null, buyerDouble))
+        when(dsFactoryDouble.create(null, buyerDouble, listingRepoDouble))
                 .thenThrow(new IllegalArgumentException("Listings cannot be null"));
 
         DirectSaleRepositoryMem dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> dsRepo.createAndAdd(null, buyerDouble));
+                () -> dsRepo.createAndAdd(null, buyerDouble, listingRepoDouble));
     }
 
     @Test
     void createAndAdd_throwsWhenBuyerNull() {
         // Arrange
-        when(dsFactoryDouble.create(listings, null))
+        when(dsFactoryDouble.create(listings, null, listingRepoDouble))
                 .thenThrow(new IllegalArgumentException("Buyer cannot be null"));
 
         IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> dsRepo.createAndAdd(listings, null));
+                () -> dsRepo.createAndAdd(listings, null, listingRepoDouble));
     }
 
     @Test
@@ -113,13 +145,13 @@ class DirectSaleRepositoryMemTest {
         DirectSale ds1 = mock(DirectSale.class);
         DirectSale ds2 = mock(DirectSale.class);
 
-        when(dsFactoryDouble.create(listings, buyerDouble)).thenReturn(ds1).thenReturn(ds2);
+        when(dsFactoryDouble.create(listings, buyerDouble, listingRepoDouble)).thenReturn(ds1).thenReturn(ds2);
 
         IDirectSaleRepository dsRepo = new DirectSaleRepositoryMem(new ArrayList<>(), dsFactoryDouble);
 
         // Act
-        DirectSale r1 = dsRepo.createAndAdd(listings, buyerDouble);
-        DirectSale r2 = dsRepo.createAndAdd(listings, buyerDouble);
+        DirectSale r1 = dsRepo.createAndAdd(listings, buyerDouble, listingRepoDouble);
+        DirectSale r2 = dsRepo.createAndAdd(listings, buyerDouble, listingRepoDouble);
 
         // Assert
         assertSame(ds1, r1);

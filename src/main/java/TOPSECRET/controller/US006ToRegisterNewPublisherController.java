@@ -1,8 +1,9 @@
 package TOPSECRET.controller;
 
+
+
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
-
 
 import javax.management.InstanceAlreadyExistsException;
 
@@ -23,14 +24,12 @@ public class   US006ToRegisterNewPublisherController {
      * @param publisherRepository the repository used to store publishers; must not be {@code null}
      * @throws NullPointerException if {@code publisherRepository} is {@code null}
      */
-    public US006ToRegisterNewPublisherController(IPublisherRepository publisherRepository) {
 
-        if(publisherRepository == null){
+    public US006ToRegisterNewPublisherController(IPublisherRepository publisherRepository) {
+        if(publisherRepository == null)
             throw new NullPointerException("Repository can not be null");
-        }
 
         _publisherRepository = publisherRepository;
-
     }
 
     /**
@@ -42,11 +41,10 @@ public class   US006ToRegisterNewPublisherController {
      * @return {@code true} if the publisher was successfully created and registered
      * @throws InstanceAlreadyExistsException if a publisher with the same identity already exists
      */
-    public boolean registerPublisher(String name, String vatNumber, Contact contact) throws InstanceAlreadyExistsException {
+    public boolean registerPublisher(String name, String vatNumber, Contact contact)
+            throws InstanceAlreadyExistsException {
 
-        _publisherRepository.createAndAdd(name, vatNumber,contact);
-
+        _publisherRepository.createAndAdd(name, vatNumber, contact);
         return true;
     }
-
 }
