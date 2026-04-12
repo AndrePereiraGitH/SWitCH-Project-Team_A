@@ -1,76 +1,87 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.dto.CollectionOfPublicationsDTO_US019;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US019CollectionOfPublicationsDTO;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
-
-import javax.management.InstanceNotFoundException;
-import java.util.ArrayList;
+import TOPSECRET.dto.US019CollectionOfPublicationsMapper;
 import java.util.List;
 
 /**
  * Controller for US019: Publicly share a user's collection of publications.
  * <p>
  * This controller orchestrates the retrieval of a user's {@link CollectionOfPublications} from the
- * {@link ICollectionOfPublicationsRepository}, converts them into {@link CollectionOfPublicationsDTO_US019}
- * for presentation, and handles the request to share a selected collection.
+ * {@link ICollectionOfPublicationsRepository}, converts them into {@link US019CollectionOfPublicationsDTO}
+ * for presentation, and handles the request to make a selected collection public.
  * </p>
  */
 public class US019ToPubliclyShareCollectionOfPublicationsController {
 
-    ICollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem;
+    ICollectionOfPublicationsRepository _collectionRepo;
 
-    public US019ToPubliclyShareCollectionOfPublicationsController(ICollectionOfPublicationsRepository collectionOfPublicationsRepositoryMem) {
-        this.collectionOfPublicationsRepositoryMem = collectionOfPublicationsRepositoryMem;
+    public US019ToPubliclyShareCollectionOfPublicationsController(ICollectionOfPublicationsRepository collectionRepo) {
+        if (collectionRepo == null) {
+            throw new NullPointerException("CollectionOfPublicationsRepository cannot be null");
+        }
+        this._collectionRepo = collectionRepo;
     }
 
     /**
      * US019 - Retrieves all collections of publications owned by a given user and converts them to DTOs.
      *
-     * @param user the user whose collections are being requested.
-     * @return a list of {@link CollectionOfPublicationsDTO_US019} representing the user's collections.
-     * @throws IllegalArgumentException if {@code user} is {@code null}.
-     */
-//    public List<CollectionOfPublicationsDTO_US019> requestAllCollectionsOfPublicationsByUser(User user) {
-//
-//        if (user == null) {
-//            throw new IllegalArgumentException("User cannot be null");
-//        }
-//
-//        List<CollectionOfPublications> collections = collectionOfPublicationsRepositoryMem.getAllCollectionOfPublicationsByUser(user);
-//
-//        List<CollectionOfPublicationsDTO_US019> collectionsDTO = new ArrayList<>();
-//
-//        collections.forEach( collection -> {
-//            collectionsDTO.add(CollectionOfPublicationsDTO_US019.toDTO(collection));
-//        });
-//
-//        return collectionsDTO;
-//    }
-
-    /**
-     * US019 - Shares a collection of publications publicly, identified by the provided DTO.
      * <p>
-     * Validates the input DTO and attempts to locate the corresponding {@link CollectionOfPublications}
-     * in the repository.
+     * The repository already filters by owner, so no additional ownership
+     * check is needed here.
      * </p>
      *
-     * @param collectionDTO the DTO that identifies the collection to be shared.
-     * @return {@code true} if the request is accepted and the collection is found.
-     * @throws IllegalArgumentException if {@code collectionDTO} is {@code null}.
-     * @throws InstanceNotFoundException if the DTO does not match any existing collection.
+     * @param userId the ID of the user whose collections are requested; must not be null
+     * @return a list of {@link US019CollectionOfPublicationsDTO}; never null, may be empty
+     * @throws IllegalArgumentException if {@code userId} is null
      */
-//    public boolean shareCollectionOfPublications(CollectionOfPublicationsDTO_US019 collectionDTO) throws InstanceNotFoundException {
-//
-//        if (collectionDTO == null) {
-//            throw new IllegalArgumentException("you must send a collection to share");
-//        }
-//
-//        CollectionOfPublications collectionToShare = collectionOfPublicationsRepositoryMem.getCollectionByDTO(collectionDTO);
-//
-//        return true;
-//    }
+    public List<US019CollectionOfPublicationsDTO> getUserCollections(UserId userId) {
 
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        List<CollectionOfPublications> collections =
+                _collectionRepo.getUserCollections(userId);
+
+        return US019CollectionOfPublicationsMapper.toDTOs(collections);
     }
+
+    /**
+     * US019 - Makes the collection identified by {@code collectionId} public,
+     * after verifying it belongs to {@code userId}.
+     *
+     * @param collectionId the ID of the collection to make public; must not be null
+     * @param userId       the ID of the user requesting the change; must not be null
+     * @throws IllegalArgumentException if either parameter is null,
+     *                                  if the collection is not found,
+     *                                  or if the collection does not belong to the user
+     */
+    public void makeCollectionPublic(CollectionOfPublicationsID collectionId, UserId userId) {
+
+        if (collectionId == null) {
+            throw new IllegalArgumentException("CollectionId cannot be null");
+        }
+
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        CollectionOfPublications collection =
+                _collectionRepo.findCollectionOfPublicationsById(collectionId)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException("Collection not found"));
+
+        if (!collection.getOwnerId().equals(userId)) {
+            throw new IllegalArgumentException(
+                    "Collection does not belong to the given user");
+        }
+
+        collection.set_isPrivate(false);
+    }
+}
 
