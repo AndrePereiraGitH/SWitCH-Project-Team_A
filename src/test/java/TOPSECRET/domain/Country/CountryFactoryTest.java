@@ -6,20 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for the {@link CountryFactory} class.
- *
- * <p>Validates that the factory correctly creates {@link Country} instances
- * with deterministic {@link CountryID}s derived from the country name.</p>
- */
 class CountryFactoryTest {
 
-    /** System Under Test: the factory responsible for creating countries. */
     private CountryFactory factory;
 
-    /**
-     * Initializes a new {@link CountryFactory} before each test.
-     */
     @BeforeEach
     void preparation() {
         factory = new CountryFactory();
@@ -29,10 +19,6 @@ class CountryFactoryTest {
     // create() tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that a valid country name produces a non-null
-     * {@link Country} instance (happy path).
-     */
     @Test
     void create_validCountry() {
 
@@ -43,9 +29,6 @@ class CountryFactoryTest {
         assertNotNull(country);
     }
 
-    /**
-     * Tests that the created {@link Country} holds the correct name.
-     */
     @Test
     void create_returnsCorrectCountryName() {
 
@@ -56,10 +39,6 @@ class CountryFactoryTest {
         assertEquals("Portugal", country.getCountryName());
     }
 
-    /**
-     * Tests that the {@link CountryID} is derived from the country name
-     * in uppercase (e.g., "Portugal" → {@code CountryID("PORTUGAL")}).
-     */
     @Test
     void create_generatesDeterministicID() {
 
@@ -70,10 +49,6 @@ class CountryFactoryTest {
         assertEquals("PORTUGAL", country.getCountryID().getCountryID());
     }
 
-    /**
-     * Tests that two calls with the same country name produce
-     * the same {@link CountryID}, guaranteeing consistency across the system.
-     */
     @Test
     void create_sameNameGeneratesSameID() {
 
@@ -85,10 +60,6 @@ class CountryFactoryTest {
         assertEquals(country1.getCountryID(), country2.getCountryID());
     }
 
-    /**
-     * Tests that two calls with different country names produce
-     * different {@link CountryID}s.
-     */
     @Test
     void create_differentNameGeneratesDifferentID() {
 
@@ -100,10 +71,6 @@ class CountryFactoryTest {
         assertNotEquals(country1.getCountryID(), country2.getCountryID());
     }
 
-    /**
-     * Tests that a {@code null} country name throws
-     * {@link IllegalArgumentException}.
-     */
     @Test
     void create_nullCountryName() {
 
@@ -112,10 +79,6 @@ class CountryFactoryTest {
                 () -> factory.create(null));
     }
 
-    /**
-     * Tests that a blank country name throws
-     * {@link IllegalArgumentException}.
-     */
     @Test
     void create_blankCountryName() {
 
@@ -124,10 +87,6 @@ class CountryFactoryTest {
                 () -> factory.create("   "));
     }
 
-    /**
-     * Tests that a country name not present in the {@code Countries} enum
-     * throws {@link IllegalArgumentException}.
-     */
     @Test
     void create_invalidCountryName() {
 

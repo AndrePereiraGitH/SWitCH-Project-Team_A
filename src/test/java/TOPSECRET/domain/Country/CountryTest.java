@@ -1,25 +1,15 @@
 package TOPSECRET.domain.Country;
 
-import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for the {@link Country} Aggregate Root.
- *
- * <p>Validates construction rules, getters, and equality behavior.</p>
- */
 class CountryTest {
 
     // -------------------------------------------------------------------------
     // Constructor tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that a valid {@link CountryID} and country name produce
-     * a non-null {@link Country} instance (happy path).
-     */
     @Test
     void constructor_validCountry() {
         //Act
@@ -28,10 +18,6 @@ class CountryTest {
         assertNotNull(country);
     }
 
-    /**
-     * Tests that a {@code null} country name throws
-     * {@link IllegalArgumentException} with the expected message.
-     */
     @Test
     void constructor_nullCountryName() {
         //Arrange + Act + Assert
@@ -42,10 +28,6 @@ class CountryTest {
         assertEquals("Country name cannot be null or blank", exception.getMessage());
     }
 
-    /**
-     * Tests that a blank country name throws
-     * {@link IllegalArgumentException} with the expected message.
-     */
     @Test
     void constructor_blankCountryName() {
         //Arrange + Act + Assert
@@ -56,10 +38,6 @@ class CountryTest {
         assertEquals("Country name cannot be null or blank", exception.getMessage());
     }
 
-    /**
-     * Tests that a country name not present in the {@code Countries} enum
-     * throws {@link IllegalArgumentException} with the expected message.
-     */
     @Test
     void constructor_invalidCountryName() {
         //Arrange + Act + Assert
@@ -70,10 +48,6 @@ class CountryTest {
         assertEquals("Country name is not valid", exception.getMessage());
     }
 
-    /**
-     * Tests that a misspelled country name throws
-     * {@link IllegalArgumentException} with the expected message.
-     */
     @Test
     void constructor_misspelledCountryName() {
         //Arrange + Act + Assert
@@ -88,9 +62,6 @@ class CountryTest {
     // Getter tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that {@link Country#getCountryName()} returns the correct name.
-     */
     @Test
     void getCountryName_returnsCorrectName() {
         //Arrange
@@ -101,9 +72,6 @@ class CountryTest {
         assertEquals("Portugal", result);
     }
 
-    /**
-     * Tests that {@link Country#getCountryID()} returns the correct {@link CountryID}.
-     */
     @Test
     void getCountryID_returnsCorrectID() {
         //Arrange
@@ -118,9 +86,6 @@ class CountryTest {
     // Equals tests
     // -------------------------------------------------------------------------
 
-    /**
-     * Tests that a {@link Country} is equal to itself (reflexivity).
-     */
     @Test
     void equals_sameObject() {
         //Arrange
@@ -129,10 +94,6 @@ class CountryTest {
         assertTrue(country.equals(country));
     }
 
-    /**
-     * Tests that two {@link Country} instances with the same {@link CountryID}
-     * are considered equal.
-     */
     @Test
     void equals_sameCountryID() {
         //Arrange
@@ -142,10 +103,6 @@ class CountryTest {
         assertTrue(country1.equals(country2));
     }
 
-    /**
-     * Tests that two {@link Country} instances with different {@link CountryID}s
-     * are not considered equal.
-     */
     @Test
     void equals_differentCountryID() {
         //Arrange
@@ -155,9 +112,6 @@ class CountryTest {
         assertFalse(country1.equals(country2));
     }
 
-    /**
-     * Tests that a {@link Country} is not equal to {@code null}.
-     */
     @Test
     void equals_nullObject() {
         //Arrange
@@ -166,9 +120,6 @@ class CountryTest {
         assertFalse(country.equals(null));
     }
 
-    /**
-     * Tests that a {@link Country} is not equal to an object of a different class.
-     */
     @Test
     void equals_differentClass() {
         //Arrange

@@ -21,10 +21,10 @@ participant ":UI004" as UI
 participant ":US004ToRegisterAppraisalEntityController" as Controller
 participant ":PublicationTypeRepository" as PublicationTypeRepo
 participant "allPublicationTypeList: List<PublicationType>" as allPublicationTypeList
-participant ":PublicationTypeMapper" as PublicationTypeMapper
-participant "listOfPublicationTypeDTO: List<PublicationTypeDTO>" as listOfPublicationTypeDTO
+participant ":US004PublicationTypeMapper" as PublicationTypeMapper
+participant "listOfPublicationTypeDTO: List<US004PublicationTypeDTO>" as listOfPublicationTypeDTO
 participant ":PublicationType" as PublicationType
-participant "publicationTypeDTO: PublicationTypeDTO" as publicationTypeDTO
+participant "publicationTypeDTO: US004PublicationTypeDTO" as publicationTypeDTO
 
 UI -> Controller : getAllPublicationTypes()
 activate Controller
