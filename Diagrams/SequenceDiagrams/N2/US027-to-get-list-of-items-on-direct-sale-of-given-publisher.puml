@@ -9,106 +9,90 @@ actor Buyer
 participant ":UI027" as UI
 end box
 
+'Controller
 participant ":US027ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
-participant ":PublisherRepository" as PublisherRepo
-participant "listOfAllPublishers:\nList<Publisher>" as ListPublishers
-participant ":PublisherDTO_US027" as PublisherDTO
-participant "publisherDTO:\nPublisherDTO_US027" as PublisherDTO_O
-participant ":Publisher" as Publisher
-participant "listOfAllPublishersDTO:\nList<PublisherDTO_US027>" as ListPublisherDTO
-participant ":ListingRepository" as ListingRepo
-participant "listOfListing:\nList<Listing>" as ListListings
-participant ":PublicationSampleRepository" as PubSampleRepo
-participant "listOfPublicationSample:\nList<PublicationSamples>" as ListPubSamples
-participant ":PublicationSampleDTO_US027" as PubSampleDTO
-participant "publicationSampleDTO:\nPublicationSampleDTO_US027" as PubSampleDTO_O
-participant "listOfPublicationSampleDTO:\nList<PublicationSampleDTO_US027>" as ListPubSamplesDTO
-participant ":PublicationSample" as PubSample
 
-' Interactions
+'Repos
+participant ":IPublisher\nRepository" as PublisherRepo
+participant ":IEdition\nRepository" as EditionRepo
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":IListing\nRepository" as ListingRepo
+
+'Mappers
+participant ":US027Publisher\nMapper" as PublisherMapper
+participant ":US027Listing\nMapper" as ListingMapper
+
 
 ' Section 1 - Get all publishers
 Buyer -> UI : I want to get the list of items\n on direct sale of a given publisher
 activate UI
 UI -> Ctrl : getAllPublishers()
 activate Ctrl
+
 Ctrl -> PublisherRepo: getAllPublishers()
 activate PublisherRepo
-PublisherRepo -> ListPublishers ** : create()
+PublisherRepo -->> "listOfAllPublishers:\nList<Publisher>" ** : «create»
 PublisherRepo --> Ctrl: listOfAllPublishers
 deactivate PublisherRepo
-Ctrl -> PublisherDTO: toDTOs(listOfAllPublishers)
-activate PublisherDTO
-PublisherDTO -> ListPublisherDTO ** : create()
+
+' Section 2 - Converts listOfAllPublishers to DTO
+Ctrl -> PublisherMapper: toDTOs(listOfAllPublishers)
+activate PublisherMapper
+PublisherMapper -->> "listOfAllPublishersDTO:\nList<US027PublisherDTO>" ** : «create»
 loop for each publisher
-    PublisherDTO -> Publisher: getPublisherDetails()
-    activate Publisher
-    Publisher --> PublisherDTO: publisherDetails
-    deactivate Publisher
-    PublisherDTO -> PublisherDTO_O **: createDTO(publisherDetails)
-    PublisherDTO --> ListPublisherDTO: add(publisherDTO)
+    PublisherMapper -->> "publisherDTO:\nUS027PublisherDTO" **: «create»
+    PublisherMapper --> "listOfAllPublishersDTO:\nList<US027PublisherDTO>": add(publisherDTO)
 end
-PublisherDTO --> Ctrl: listOfAllPublishersDTO
-deactivate PublisherDTO
+PublisherMapper --> Ctrl : listOfAllPublishersDTO
+deactivate PublisherMapper
+
+' Section 3 - Returns PublisherDTO list to the user
 Ctrl --> UI : listOfAllPublishersDTO
 deactivate Ctrl
 Buyer <-- UI : Which publisher? Choose!
 deactivate UI
 
-' Section 2 - Get list of listings for direct sale
+' Section 4 - User selects publisher
 Buyer -> UI : publisher
 activate UI
-UI -> Ctrl : findListOfItemsOnDirectSale(publisher)
+UI -> Ctrl : findListOfItemsOnDirectSale(publisherId)
 activate Ctrl
-'Ctrl -> ListingRepo : getListOfListingsOnDirectSale()
-Ctrl -> ListingRepo : findAllDirectSaleListings()
-activate ListingRepo
-ListingRepo -> ListListings ** : create()
 
-/'
-loop for each listing
-    alt saleType == DIRECT_SALE
-    ListingRepo -> ListListings: add(listing)
-    end
-end
-'/
-ListingRepo --> Ctrl : listOfListing
-deactivate ListingRepo
+' Section 5 - Get EditionIds of that Publisher
+Ctrl -> EditionRepo : findEditionIdsByPublisherId(publisherId)
+activate EditionRepo
+EditionRepo -->> "listOfEditionIds:\nList<EditionId>" ** : «create»
+EditionRepo --> Ctrl : listOfEditionIds
+deactivate EditionRepo
 
-' Section 3 - Get list of publication samples for the previous listings
-'Ctrl -> PubSampleRepo : getListOfPublicationSamples()
-Ctrl -> PubSampleRepo : findItemsByListingAndPublisher(listOfListings, publisher)
+' Section 6 — Get PublicationSampleIds for those EditionIds
+Ctrl -> PubSampleRepo : findPublicationSampleIdsByEditionIds(listOfEditionIds)
 activate PubSampleRepo
-PubSampleRepo -> ListPubSamples ** : create()
-/'
-    loop for each listing
-        loop for each publicationSample
-            alt publicationSample == publication
-            PubSampleRepo -> ListPubSamples: add(publicationSample)
-            end
-        end
-    end
- '/
-PubSampleRepo --> Ctrl : listOfItems
+PubSampleRepo -->> "listOfPubSampleIds:\nList<PublicationSampleId>" ** : «create»
+PubSampleRepo --> Ctrl : listOfPubSampleIds
 deactivate PubSampleRepo
 
-' Section 4 - create DTO for items
-Ctrl -> PubSampleDTO : toDTOs(listOfItems)
-activate PubSampleDTO
-PubSampleDTO -> ListPubSamplesDTO ** : create()
-loop for each publicationSample
-    PubSampleDTO -> PubSample: getDetails()
-    activate PubSample
-    PubSample --> PubSampleDTO: publicationSampleDetails
-    deactivate PubSample
-    PubSampleDTO -> PubSampleDTO_O ** : createDTO(publicationSampleDetails)
-    PubSampleDTO -> ListPubSamplesDTO : add(publicationSampleDTO)
+' Section 7 — Get Listings in direct sale containing those PublicationSamplesIds
+Ctrl -> ListingRepo : findDirectSaleListingsContaining(listOfPubSampleIds)
+activate ListingRepo
+ListingRepo -->> "listOfListings:\nList<Listing>" ** : «create»
+ListingRepo --> Ctrl : listOfListings
+deactivate ListingRepo
+
+' Section 8 - create DTO for listings
+Ctrl -> ListingMapper : toDTOs(listOfListings)
+activate ListingMapper
+ListingMapper -->> "listOfListingDTOs:\nList<US027ListingDTO>" ** : «create»
+loop for each listing in listOfListings
+    ListingMapper -->> "listingDTO:\nUS027ListingDTO" ** : «create»
+    ListingMapper -> "listOfListingDTOs:\nList<US027ListingDTO>" : add(listingDTO)
 end
-PubSampleDTO --> Ctrl : listOfPublicationSampleDTO
-deactivate PubSampleDTO
-Ctrl --> UI : listOfPublicationSampleDTO
+ListingMapper --> Ctrl : listOfListingDTOs
+deactivate ListingMapper
+
+Ctrl --> UI : listOfListingDTOs
 deactivate Ctrl
-UI --> Buyer : Shows the list of items on direct sale for the publisher
+UI --> Buyer : Shows the list of items on direct\n sale for the publisher
 deactivate UI
 
 @enduml
