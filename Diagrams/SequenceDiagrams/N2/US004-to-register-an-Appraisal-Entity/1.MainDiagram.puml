@@ -7,10 +7,11 @@ title US004 - Register Appraisal Entity (Main)
 actor Administrator
 participant ":UI004" as UI
 participant ":US004ToRegisterAppraisalEntityController" as Controller
-participant ":GenreRepository" as GenreRepo
-participant ":PublicationTypeRepository" as PublicationTypeRepo
-participant ":AppraisalEntityRepository" as AppraisalRepo
-participant ":FactoryAppraisalEntity" as FactoryAppraisalEntity
+participant ":IGenreRepository" as GenreRepo
+participant ":IPublicationTypeRepository" as PublicationTypeRepo
+participant ":IAppraisalEntityRepository" as AppraisalRepo
+participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
+participant "apEn : AppraisalEntity" as AppraisalEntity
 
 ' --- Start ---
 Administrator -> UI : I want to register an Appraisal Entity
@@ -32,7 +33,7 @@ ref over Controller
 [[2.GetGenres.puml Get Genres]]
 end ref
 
-Controller --> UI : List<GenreDTO>
+Controller --> UI : listOfGenreDTO
 deactivate Controller
 
 UI --> Administrator : Display available Genres
@@ -51,7 +52,7 @@ ref over Controller
 [[3.GetPublicationTypes.puml Get Publication Types]]
 end ref
 
-Controller --> UI : List<PublicationTypeDTO>
+Controller --> UI : listOfPublicationTypeDTO
 deactivate Controller
 
 UI --> Administrator : Display Publication Types
@@ -59,40 +60,19 @@ deactivate UI
 
 Administrator -> UI : Selected one or more Publication Types
 activate UI
-
 ' =========================
-' Register Appraisal Entity (FULL)
+' Register Appraisal Entity
 ' =========================
-UI -> Controller : registerAppraisalEntity\n(name, contact, selectedGenresDTO, \nselectedPublicationTypesDTO)
+UI -> Controller : registerAppraisalEntity(name, contact, genresId, publicationTypesId)
 activate Controller
 
-Controller -> Controller : validateSelectedGenres\n(selectedGenresDTO)
-Controller -> Controller : validateSelectedPublicationTypes\n(selectedPublicationTypesDTO)
-
-loop for each genreDTO
-    Controller -> GenreRepo : findById(genreDTO.id)
-    activate GenreRepo
-    GenreRepo --> Controller : Genre
-    deactivate GenreRepo
-end
-
-loop for each publicationTypeDTO
-    Controller -> PublicationTypeRepo : findById(publicationTypeDTO.id)
-    activate PublicationTypeRepo
-    PublicationTypeRepo --> Controller : PublicationType
-    deactivate PublicationTypeRepo
-end
-
-Controller -> AppraisalRepo : createAndAddAppraisalEntity\n(name, contact, genres, publicationTypes)
+Controller -> AppraisalRepo : createAndAdd(name, contact, genresId, publicationTypesId)
 activate AppraisalRepo
 
-AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, \ngenres, publicationTypes)
+AppraisalRepo -> FactoryAppraisalEntity : create(name, contact, genresId, publicationTypesId)
 activate FactoryAppraisalEntity
 
-participant "apraisalEntityId: AppraisalEntityId" as AppraisalId
-FactoryAppraisalEntity -->> AppraisalId ** : <<create>>
-participant "apEn: AppraisalEntity" as AppraisalEntity
-FactoryAppraisalEntity -->> AppraisalEntity ** : <<create>>
+FactoryAppraisalEntity -->> AppraisalEntity **: <<create>>
 
 FactoryAppraisalEntity --> AppraisalRepo : apEn
 deactivate FactoryAppraisalEntity
@@ -107,7 +87,6 @@ deactivate AppraisalRepo
 Controller --> UI : Success
 deactivate Controller
 
-UI --> Administrator : Success
+UI ---> Administrator : Success
 deactivate UI
-
 @enduml

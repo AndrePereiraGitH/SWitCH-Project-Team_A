@@ -50,7 +50,6 @@ public interface IGenreRepository {
      */
         List<Genre> getAllGenres();
 
-
     /**
      * Returns the genre matching the ID.
      *
@@ -62,6 +61,5 @@ public interface IGenreRepository {
      * @throws IllegalArgumentException if {@code genreId} is {@code null}, blank, or not found
      */
     Optional<Genre> findGenreById(GenreID genreId);
-
 }
 

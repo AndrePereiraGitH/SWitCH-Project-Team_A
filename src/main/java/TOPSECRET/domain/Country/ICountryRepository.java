@@ -22,7 +22,7 @@ public interface ICountryRepository {
      * @return the newly created {@link Country} instance
      * @throws IllegalArgumentException if the country name is invalid or already registered
      */
-    Country createAndAddNewCountry(String countryName);
+    Country createAndAdd(String countryName);
 
     /**
      * Returns an unmodifiable list of all registered countries.

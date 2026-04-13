@@ -11,29 +11,25 @@ hide circle
 }
 '/
 
-class CountryRepository {
-    +createAndAddNewCountry (countryName: String)
+class ICountryRepository {
+    +createAndAdd (countryName: String)
     }
 
 class CountryFactory {
-    +createNewCountry
+    +create
 }
 
 class US007RegisterNewCountryController{
   + registerNewCountry(countryName : String)
 }
 
-class "List<Country>" {
-}
-
 class Country {
 -countryName: String
+-_countryID : CountryID
 }
 
 ' Interactions
-US007RegisterNewCountryController "1" .--> "1" CountryRepository : request registering country
-CountryRepository "1" --> "1" "List<Country>" : has a
-"List<Country>" "1" --> "*" Country : contains
-CountryRepository "1" .--> "*" CountryFactory : requests creation
+US007RegisterNewCountryController "1" .--> "1" ICountryRepository : request registering country
+ICountryRepository "1" .--> "1" CountryFactory : requests creation
 CountryFactory "1" .--> "*" Country : creates
 @enduml

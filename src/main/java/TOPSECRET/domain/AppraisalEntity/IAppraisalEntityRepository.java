@@ -1,8 +1,10 @@
 package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.dto.GenreDetailsDTO_US004;
-import TOPSECRET.dto.PublicationTypeDTO_US004;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.dto.US004GenreDTO;
+import TOPSECRET.dto.US004PublicationTypeDTO;
 
 import java.util.List;
 
@@ -17,30 +19,37 @@ import java.util.List;
 public interface IAppraisalEntityRepository {
 
     /**
-     * Creates a new AppraisalEntity and stores it in the repository.
+     * Creates and stores a new {@link AppraisalEntity}.
      *
      * <p>
-     * Converts provided DTOs into domain objects and ensures that
-     * all required data is valid before creation.
+     * This method performs the following steps:
+     * <ul>
+     *     <li>Validates that selected DTO lists are not null or empty</li>
+     *     <li>Converts Genre DTOs into existing {@link GenreID}</li>
+     *     <li>Converts PublicationType DTOs into existing {@link PublicationTypeId}</li>
+     *     <li>Ensures no duplicate AppraisalEntity exists with the same name and contact</li>
+     *     <li>Delegates creation to {@link AppraisalEntityFactory}</li>
+     *     <li>Stores the created entity</li>
+     * </ul>
      * </p>
      *
-     * @param name the name of the appraisal entity;
-     *             must not be null or blank
-     * @param contact the contact information of the entity;
-     *                must not be null
-     * @param selectedGenresDTO list of selected genres (DTO);
-     *                          must not be null or empty
-     * @param selectedPublicationTypesDTO list of selected publication types (DTO);
-     *                                    must not be null or empty
-     * @return the newly created {@link AppraisalEntity}
-     * @throws IllegalArgumentException if any argument is invalid,
-     *                                  if referenced domain objects do not exist,
-     *                                  or if an entity with the same name and contact already exists
+     * @param name name of the AppraisalEntity
+     * @param contact contact information
+     * @param genresId selected GenreId
+     * @param publicationTypesId selected PublicationTypeId
+     * @return the created AppraisalEntity
+     *
+     * @throws IllegalArgumentException if:
+     * <ul>
+     *     <li>DTO lists are null or empty</li>
+     *     <li>Referenced Genre or PublicationType does not exist</li>
+     *     <li>An AppraisalEntity with the same name and contact already exists</li>
+     * </ul>
      */
     AppraisalEntity createAndAdd(String name,
                                  Contact contact,
-                                 List<GenreDetailsDTO_US004> selectedGenresDTO,
-                                 List<PublicationTypeDTO_US004> selectedPublicationTypesDTO);
+                                 List<GenreID> genresId,
+                                 List<PublicationTypeId> publicationTypesId);
 
 
 }
