@@ -10,8 +10,6 @@ participant ":US004ToRegisterAppraisalEntityController" as Controller
 participant ":IGenreRepository" as GenreRepo
 participant ":IPublicationTypeRepository" as PublicationTypeRepo
 participant ":IAppraisalEntityRepository" as AppraisalRepo
-participant "genreDTO: US004GenreDTO" as GDTO
-participant "publicationTypeDTO: US004PublicationTypeDTO" as PDTO
 participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
 participant "apEn : AppraisalEntity" as AppraisalEntity
 
@@ -65,22 +63,8 @@ activate UI
 ' =========================
 ' Register Appraisal Entity
 ' =========================
-UI -> Controller : registerAppraisalEntity(name, contact, selectedGenreDTO, selectedPublicationTypeDTO)
+UI -> Controller : registerAppraisalEntity(name, contact, genresId, publicationTypesId)
 activate Controller
-
-loop for each genreDTO in selectedGenreDTO
-    Controller -> GDTO : getId()
-    activate GDTO
-    GDTO --> Controller : genreId
-    deactivate GDTO
-end
-
-loop for each publicationTypeDTO in selectedPublicationTypeDTO
-    Controller -> PDTO : getId()
-    activate PDTO
-    PDTO --> Controller : publicationTypeId
-    deactivate PDTO
-end
 
 Controller -> AppraisalRepo : createAndAdd(name, contact, genresId, publicationTypesId)
 activate AppraisalRepo

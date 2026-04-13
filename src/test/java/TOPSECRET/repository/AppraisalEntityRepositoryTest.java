@@ -78,7 +78,6 @@ class AppraisalEntityRepositoryTest {
         when(factory.create(anyString(), any(), anyList(), anyList()))
                 .thenReturn(entity);
 
-        // primeira criação
         sut.createAndAdd("Test", contact, List.of(genreId), List.of(pubId));
 
         // ACT + ASSERT

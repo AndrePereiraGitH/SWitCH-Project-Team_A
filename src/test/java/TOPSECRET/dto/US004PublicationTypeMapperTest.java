@@ -97,27 +97,4 @@ class US004PublicationTypeMapperTest {
         assertThrows(IllegalArgumentException.class,
                 () -> US004PublicationTypeMapper.toDTO(null));
     }
-
-    @Test
-    void shouldExtractPublicationTypeIDsFromDTOs() {
-
-        // ARRANGE
-        PublicationTypeId id1 = mock(PublicationTypeId.class);
-        PublicationTypeId id2 = mock(PublicationTypeId.class);
-
-        US004PublicationTypeDTO dto1 =
-                new US004PublicationTypeDTO(id1, "Book");
-
-        US004PublicationTypeDTO dto2 =
-                new US004PublicationTypeDTO(id2, "Magazine");
-
-        // ACT
-        List<PublicationTypeId> result =
-                US004PublicationTypeMapper.getIds(List.of(dto1, dto2));
-
-        // ASSERT
-        assertEquals(2, result.size());
-        assertEquals(id1, result.get(0));
-        assertEquals(id2, result.get(1));
-    }
 }
