@@ -737,6 +737,100 @@ class BibliographicalDataRepositoryMemTest {
         assertEquals("authorId cannot be null.", exception.getMessage());
     }
 
+    @Test
+    void findAllBibliographicalDataByGenreId_shouldThrowException_whenGenreIdIsNull() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findAllBibliographicalDataByGenreId(null));
+    }
+
+    @Test
+    void findAllBibliographicalDataByGenreId_shouldReturnIds_whenGenreMatches() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+
+        GenreID genreIdDouble = mock(GenreID.class);
+
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+
+        when(bdDouble.getGenres()).thenReturn(List.of(genreIdDouble));
+        when(bdDouble.id()).thenReturn(bdIdDouble);
+
+        repo = new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
+
+        // Act
+        List<BibliographicalDataID> result =
+                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(bdIdDouble));
+    }
+
+    @Test
+    void findAllBibliographicalDataByGenreId_shouldReturnEmpty_whenNoMatch() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        GenreID genreDouble1 = mock(GenreID.class);
+        GenreID genreDouble2 = mock(GenreID.class);
+
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble1));
+
+        IBibliographicalDataRepository repo =
+                new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
+
+        // Act
+        List<BibliographicalDataID> result =
+                repo.findAllBibliographicalDataByGenreId(genreDouble2);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllBibliographicalDataByGenreId_shouldReturnMultipleIds_whenMultipleMatch() {
+
+        // Arrange
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        GenreID genreIdDouble = mock(GenreID.class);
+
+        BibliographicalData bdDouble1 = mock(BibliographicalData.class);
+        BibliographicalData bdDouble2 = mock(BibliographicalData.class);
+
+        BibliographicalDataID idDouble1 = mock(BibliographicalDataID.class);
+        BibliographicalDataID idDouble2 = mock(BibliographicalDataID.class);
+
+        when(bdDouble1.getGenres()).thenReturn(List.of(genreIdDouble));
+        when(bdDouble2.getGenres()).thenReturn(List.of(genreIdDouble));
+
+        when(bdDouble1.id()).thenReturn(idDouble1);
+        when(bdDouble2.id()).thenReturn(idDouble2);
+
+        IBibliographicalDataRepository repo =
+                new BibliographicalDataRepositoryMem(factory, List.of(bdDouble1, bdDouble2));
+
+        // Act
+        List<BibliographicalDataID> result =
+                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(idDouble1));
+        assertTrue(result.contains(idDouble2));
+    }
+
 
 
 }
