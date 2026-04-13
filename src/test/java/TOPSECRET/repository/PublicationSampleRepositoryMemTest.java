@@ -1,11 +1,8 @@
 package TOPSECRET.repository;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -13,7 +10,6 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import javax.management.InstanceAlreadyExistsException;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -1014,6 +1009,251 @@ class PublicationSampleRepositoryMemTest {
         assertFalse(result.contains(pbSample_2));
     }
 
+    // ===========================================================
+    // == Tests for findPublicationSamplesByBiblioDataIds ========
+    // ===========================================================
+
+    @Test
+    void findPublicationSamplesByBiblioDataIds_shouldReturnListWithMultipleIds_whenMultiplePublicationSamplesIdsMatchGivenBdIds() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId_3 = mock(BibliographicalDataID.class);
+
+        PublicationSampleId psId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_2 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_3 = mock(PublicationSampleId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
+        when(pbSample_1.id()).thenReturn(psId_1);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getBibliographicalDataID()).thenReturn(bdId_2);
+        when(pbSample_2.id()).thenReturn(psId_2);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
+        when(pbSample_3.id()).thenReturn(psId_3);
+
+        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+        when(factory.create(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
+                .thenReturn(pbSample_3);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+        repo.createAndAdd(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW);
+
+        List<BibliographicalDataID> bds = List.of(bdId_1, bdId_2);
+
+        // Act
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(psId_1));
+        assertTrue(result.contains(psId_2));
+        assertFalse(result.contains(psId_3));
+    }
+
+    @Test
+    void findPublicationSamplesByBiblioDataIds_shouldReturnListWithOneId_whenOnePublicationSampleMatchesGivenBdIdsIds() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId_3 = mock(BibliographicalDataID.class);
+
+        PublicationSampleId psId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_2 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_3 = mock(PublicationSampleId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
+        when(pbSample_1.id()).thenReturn(psId_1);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getBibliographicalDataID()).thenReturn(bdId_2);
+        when(pbSample_2.id()).thenReturn(psId_2);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
+        when(pbSample_3.id()).thenReturn(psId_3);
+
+        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+        when(factory.create(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
+                .thenReturn(pbSample_3);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+        repo.createAndAdd(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW);
+
+        List<BibliographicalDataID> bds = List.of(bdId_2);
+
+        // Act
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(psId_2, result.get(0));
+    }
+
+    @Test
+    void findPublicationSamplesByBiblioDataIds_shouldReturnEmptyList_whenNoPublicationSampleMatchesGivenBdIdsIds() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId_3 = mock(BibliographicalDataID.class);
+
+        PublicationSampleId psId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_2 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_3 = mock(PublicationSampleId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
+        when(pbSample_1.id()).thenReturn(psId_1);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getBibliographicalDataID()).thenReturn(bdId_2);
+        when(pbSample_2.id()).thenReturn(psId_2);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
+        when(pbSample_3.id()).thenReturn(psId_3);
+
+        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
+                .thenReturn(pbSample_1);
+        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
+                .thenReturn(pbSample_2);
+        when(factory.create(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
+                .thenReturn(pbSample_3);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.createAndAdd(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW);
+        repo.createAndAdd(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR);
+        repo.createAndAdd(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW);
+
+        List<BibliographicalDataID> bds = List.of(mock(BibliographicalDataID.class));
+
+        // Act
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void findPublicationSamplesIdsByBiblioDataIds_shouldThrowException_whenBdIdsListIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldThrowException_whenListIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findAllItemsIdByBibliographicalDataId(null));
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldReturnMatchingIds() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+
+        PublicationSample psDouble = mock(PublicationSample.class);
+        PublicationSampleId psDoubleId = mock(PublicationSampleId.class);
+
+        when(psDouble.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+        when(psDouble.id()).thenReturn(psDoubleId);
+
+        repo.save(psDouble);
+
+        // Act
+        List<PublicationSampleId> result =
+                repo.findAllItemsIdByBibliographicalDataId(List.of(bibliographicalDataID_Double));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(psDoubleId));
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldReturnEmptyList_whenNoMatch() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        BibliographicalDataID bdIdDouble1 = mock(BibliographicalDataID.class);
+
+        PublicationSample psDouble = mock(PublicationSample.class);
+
+        when(psDouble.getBibliographicalDataID()).thenReturn(bdIdDouble1);
+
+        repo.save(psDouble);
+
+        // Act
+        List<PublicationSampleId> result =
+                repo.findAllItemsIdByBibliographicalDataId(List.of(bibliographicalDataID_Double));
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldReturnMultipleMatches() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        PublicationSample psDouble1 = mock(PublicationSample.class);
+        PublicationSample psDouble2 = mock(PublicationSample.class);
+
+        PublicationSampleId idDouble1 = mock(PublicationSampleId.class);
+        PublicationSampleId idDouble2 = mock(PublicationSampleId.class);
+
+        when(psDouble1.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+        when(psDouble2.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+
+        when(psDouble1.id()).thenReturn(idDouble1);
+        when(psDouble2.id()).thenReturn(idDouble2);
+
+        repo.save(psDouble1);
+        repo.save(psDouble2);
+
+        // Act
+        List<PublicationSampleId> result =
+                repo.findAllItemsIdByBibliographicalDataId(List.of(bibliographicalDataID_Double));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(idDouble1));
+        assertTrue(result.contains(idDouble2));
+    }
+
 
 
 
@@ -1289,117 +1529,6 @@ class PublicationSampleRepositoryMemTest {
 //    }
 
 
-    // ===========================================================
-    // ===== Tests for getPublicationsByDTO ======================
-    // ===========================================================
-
-//    @Test
-//    void getPublicationByDTO_shouldThrow_whenDTOList_Empty() {
-//
-//        // arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//        List<PublicationSampleDTO_US016> pubsDTOList = new ArrayList<>();
-//
-//        // act + assert
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(pubsDTOList));
-//
-//        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
-//    }
-//
-//    @Test
-//    void getPublicationByDTO_shouldThrow_whenDTOList_Null() {
-//
-//        //Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        // act + assert
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.getPublicationsByDTO(null));
-//
-//        assertEquals("list of PublicationSampleDTO cannot be null or empty", exception.getMessage());
-//    }
-//
-//    @Test
-//    void getPublicationByDTO_shouldReturn_EmptyList_whenNoPublicationSampleMatchesDTO() {
-//
-//        // arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//        List<PublicationSample> matchedList = List.of();
-//
-//
-//        PublicationSampleDTO_US016 dtoDouble1 = mock(PublicationSampleDTO_US016.class);
-//        PublicationSampleDTO_US016 dtoDouble2 = mock(PublicationSampleDTO_US016.class);
-//        List<PublicationSampleDTO_US016> dtoList = List.of(dtoDouble1, dtoDouble2);
-//
-//        // act
-//        List<PublicationSample> result = repo.getPublicationsByDTO(dtoList);
-//
-//        // assert
-//        assertEquals(0, result.size());
-//
-//    }
-
-//    @Test
-//    void getPublicationsByDTO_allFieldsMatch_returnsPublication() {
-//        //Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//
-//        PublicationSample ps = mockPublicationSample(
-//                "Title",
-//                List.of("Author1"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//        repo.add(ps);
-//
-//        PublicationSampleDTO_US016 dto = mockDto(
-//                "Title",
-//                List.of("Author1"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//
-//        //Act
-//        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
-//
-//        //Assert
-//        assertEquals(1, result.size());
-//        assertSame(ps, result.get(0));
-//    }
-//
-//    @Test
-//    void getPublicationsByDTO_authorOrderDifferent_returnsEmpty_becauseListEqualsIsOrderSensitive() {
-//        //Arrange
-//        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-//        PublicationSample ps = mockPublicationSample(
-//                "Title",
-//                List.of("Author1", "Author2"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//        repo.add(ps);
-//
-//        PublicationSampleDTO_US016 dto = mockDto(
-//                "Title",
-//                List.of("Author2", "Author1"),
-//                Locale.ENGLISH,
-//                List.of("Genre1"),
-//                "owner",
-//                "New"
-//        );
-//
-//        //Act
-//        List<PublicationSample> result = repo.getPublicationsByDTO(List.of(dto));
-//
-//        //Arrange
-//        assertTrue(result.isEmpty());
-//    }
-
 
     // ===========================================================
     // ===== Tests for US018 - PublicationSampleDtoToDomain ======
@@ -1525,69 +1654,5 @@ class PublicationSampleRepositoryMemTest {
         EditionID editionID = mock(EditionID.class);
         when(editionID.getID()).thenReturn(UUID.randomUUID().toString());
         return editionID;
-    }
-
-
-
-    private static PublicationSample mockPublicationSample(
-            String title,
-            List<String> authorNames,
-            Locale language,
-            List<String> genreTypes,
-            String ownerName,
-            String conditionDescription
-    ) {
-        PublicationSample ps = mock(PublicationSample.class);
-
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
-//        when(ps.getBibliographicalData()).thenReturn(bdDouble);
-
-        when(bdDouble.getTitle()).thenReturn(title);
-        when(bdDouble.getOriginalLanguage()).thenReturn(language);
-
-        List<Author> authors = authorNames.stream().map(n -> {
-            Author authorDouble = mock(Author.class);
-            when(authorDouble.getName()).thenReturn(n);
-            return authorDouble;
-        }).toList();
-//        when(bdDouble.getAuthors()).thenReturn(authors);
-
-        // Genres -> genreType
-        List<Genre> genres = genreTypes.stream().map(gt -> {
-            Genre g = mock(Genre.class);
-            when(g.getGenreType()).thenReturn(gt);
-            return g;
-        }).toList();
-//        when(bdDouble.getGenres()).thenReturn(genres);
-
-        // owner username
-        User ownerDouble = mock(User.class);
-        when(ownerDouble.getUserName()).thenReturn(ownerName);
-//        when(ps.getOwnerId()).thenReturn(ownerDouble);
-
-        // condition description
-        Condition conditionDouble = mock(Condition.class);
-        when(conditionDouble.getDescription()).thenReturn(conditionDescription);
-        when(ps.getCondition()).thenReturn(conditionDouble);
-
-        return ps;
-    }
-
-    private static US016PublicationSampleDTO mockDto(
-            String title,
-            List<String> authors,
-            Locale language,
-            List<String> genreTypes,
-            UserId ownerName,
-            String condition
-    ) {
-        US016PublicationSampleDTO dtoDouble = mock(US016PublicationSampleDTO.class);
-        when(dtoDouble.title()).thenReturn(title);
-        when(dtoDouble.authorName()).thenReturn(authors);
-        when(dtoDouble.language()).thenReturn(language);          // Locale
-        when(dtoDouble.genreType()).thenReturn(genreTypes);
-        when(dtoDouble.ownerName()).thenReturn(ownerName);
-        when(dtoDouble.condition()).thenReturn(condition);
-        return dtoDouble;
     }
 }

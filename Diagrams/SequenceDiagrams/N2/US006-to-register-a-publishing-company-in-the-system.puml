@@ -1,65 +1,46 @@
 @startuml
-
 hide footbox
 autonumber
-title US006 - To register a publishing company in the system
+title US006 - Register a Publishing Company
 
 box #WhiteSmoke
 actor Administrator
 participant ":UI006" as UI
 end box
-
-
-participant ":US006ToRegisterNewPublisherController" as RegisterPublisherController
-
-
-
+participant ":US006ToRegisterNewPublisherController" as Controller
 participant ":PublisherRepository" as PublisherRepository
-participant "publishers:List<Publisher>" as list
-participant "PublisherFactory" as factory
-participant "publisher:Publisher" as publisher
+participant ":PublisherFactory" as PublisherFactory
+participant "contact:Contact" as Contact
+participant "publisher:Publisher" as Publisher
 
 Administrator -> UI : I want to register a Publishing Company
-
 activate UI
-UI -->> Administrator : Please Provide name, VatNumber, and Contact
-
+UI --> Administrator : Please provide name, vatNumber and contact
 deactivate UI
 
-Administrator -> UI : Name: Cambridge; VatNumber 123456; Contact: +4412345678
-
+Administrator -> UI : Name: Cambridge; VatNumber: 123456; Contact: +4412345678
 activate UI
+UI -> Controller : registerPublisher(name, vatNumber, contact)
+activate Controller
 
-UI -> RegisterPublisherController : registerPublisher(name, vatNumber, contact)
-activate RegisterPublisherController
-
-RegisterPublisherController -> PublisherRepository : createAndAddPublisher(name, vatNumber, contact)
-
+Controller -> PublisherRepository : createAndAdd(name, vatNumber, contact)
 activate PublisherRepository
 
-PublisherRepository -> list **: create()
-PublisherRepository -> factory: create(name, vatNumber, contact)
+PublisherRepository -> PublisherFactory : create(name, vatNumber, contact)
+activate PublisherFactory
+PublisherFactory -->> Contact ** : <<create>>\nContact(contact)
+PublisherFactory -->> Publisher ** : <<create>>\nPublisher(name, vatNumber, contact)
+PublisherFactory --> PublisherRepository : publisher
+deactivate PublisherFactory
 
-
-activate factory
-
-factory -> publisher ** : create(name, vatNumber, contact)
-
-factory -> PublisherRepository: publisher
-
-deactivate factory
-
-PublisherRepository -> PublisherRepository : isExistent()
-PublisherRepository -> PublisherRepository: publishers.add(publisher)
-
-PublisherRepository --> RegisterPublisherController : publisher
+PublisherRepository -> PublisherRepository : exists(publisher)
+PublisherRepository --> PublisherRepository : false
+PublisherRepository -> PublisherRepository : add(publisher)
+PublisherRepository --> Controller : publisher
 deactivate PublisherRepository
 
-RegisterPublisherController --> UI : success
-deactivate RegisterPublisherController
-
+Controller --> UI : publisher
+deactivate Controller
 UI --> Administrator : success
-
-
-
+deactivate UI
 @enduml

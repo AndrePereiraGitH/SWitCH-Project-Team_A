@@ -1,0 +1,64 @@
+@startuml
+hide footbox
+autonumber
+title US017 - Create Collection
+
+note over UI, Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+participant ":UI017" as UI
+participant ":US017ToCreateCollectionOfPublicationsController" as Controller
+participant "selectedGenre: Genre" as SelectedGenre
+participant "user: User" as UserObj
+participant ":ICollectionOfPublicationsRepository" as CollectionRepo
+participant ":CollectionOfPublicationsFactory" as Factory
+
+UI -> Controller : createCollection(name, selectedGenre, user)
+activate Controller
+
+Controller -> SelectedGenre : id()
+activate SelectedGenre
+SelectedGenre --> Controller : genreId : GenreID
+deactivate SelectedGenre
+
+Controller -> UserObj : id()
+activate UserObj
+UserObj --> Controller : userId : UserId
+deactivate UserObj
+
+Controller -> CollectionRepo : createAndAdd(userId, name, genreId)
+activate CollectionRepo
+
+loop for each existing collection
+    CollectionRepo -> CollectionRepo : compare(userId, name, genreId)
+    alt [duplicate found]
+        CollectionRepo --> Controller : error: "Collection already exists"
+    end
+end
+
+CollectionRepo -> Factory : create(name, genreId, userId)
+activate Factory
+
+create "cp: CollectionOfPublications"
+Factory -> "cp: CollectionOfPublications" : <<create>>
+note right : _isPrivate = true\n(enforced by constructor)
+Factory --> CollectionRepo : cp
+deactivate Factory
+
+CollectionRepo -> CollectionRepo : _collectionOfPublicationsList.add(cp)
+CollectionRepo --> Controller : cp
+deactivate CollectionRepo
+
+Controller --> UI : cp
+deactivate Controller
+
+@enduml

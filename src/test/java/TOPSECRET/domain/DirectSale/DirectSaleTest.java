@@ -1,11 +1,15 @@
 package TOPSECRET.domain.DirectSale;
 
+import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -14,16 +18,22 @@ class DirectSaleTest {
 
     // Factory and doubles setup for tests
     DirectSaleFactory dsFactory = new DirectSaleFactory();;
-    ListingId listing1Double = mock(ListingId.class);
-    ListingId listing2Double = mock(ListingId.class);
+    ListingId listingId1Double = mock(ListingId.class);
+    ListingId listingId2Double = mock(ListingId.class);
+    Listing listing1Double = mock(Listing.class);
+    Listing listing2Double = mock(Listing.class);
     UserId buyerDouble = mock(UserId.class);
+    IListingRepository listingRepoDouble = mock(IListingRepository.class);
 
-////     Sale Type setup
-//    @BeforeEach
-//    void setUp() {
-//        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-//        when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-//    }
+//     Sale Type setup
+    @BeforeEach
+    void setUp() {
+        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.ofNullable(listing1Double));
+        when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        when(listingRepoDouble.findListingById(listingId2Double)).thenReturn(Optional.ofNullable(listing2Double));
+        when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+    }
 
     // Tests to constructor --------------------------------------------------------------------------------------------
 
@@ -31,7 +41,7 @@ class DirectSaleTest {
     void validConstructor_createsInstance() {
 
         // Act
-        DirectSale ds = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
 
         // Assert
         assertNotNull(ds);
@@ -46,7 +56,7 @@ class DirectSaleTest {
         // Act
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> dsFactory.create(null, buyerDouble)
+                () -> dsFactory.create(null, buyerDouble, listingRepoDouble)
         );
 
         // Assert
@@ -59,7 +69,7 @@ class DirectSaleTest {
         // Act
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> dsFactory.create(List.of(listing1Double), null)
+                () -> dsFactory.create(List.of(listingId1Double), null, listingRepoDouble)
         );
 
         // Assert
@@ -71,7 +81,7 @@ class DirectSaleTest {
     void equals_withNullReturnsFalse() {
 
         // Arrange
-        DirectSale ds = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
 
         // Act
         boolean result = ds.equals(null);
@@ -84,8 +94,8 @@ class DirectSaleTest {
     void equals_withDifferentObjectsReturnsFalse() {
 
         // Arrange
-        DirectSale ds1 = dsFactory.create(List.of(listing1Double), buyerDouble);
-        DirectSale ds2 = dsFactory.create(List.of(listing2Double), buyerDouble);
+        DirectSale ds1 = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
+        DirectSale ds2 = dsFactory.create(List.of(listingId2Double), buyerDouble, listingRepoDouble);
 
         // Act
         boolean result = ds1.equals(ds2);
@@ -98,8 +108,8 @@ class DirectSaleTest {
     void equals_withSameListingsAndBuyerReturnsTrue() {
 
         // Arrange
-        DirectSale ds1 = dsFactory.create(List.of(listing1Double), buyerDouble);
-        DirectSale ds2 = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds1 = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
+        DirectSale ds2 = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
 
         // Act
         boolean result = ds1.equals(ds2);
@@ -113,7 +123,7 @@ class DirectSaleTest {
     void hashCode_sameObjectReturnsSameHash() {
 
         // Arrange
-        DirectSale ds = dsFactory.create(List.of(listing1Double), buyerDouble);
+        DirectSale ds = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
 
         // Act and Assert
         assertEquals(ds.hashCode(), ds.hashCode());
@@ -123,8 +133,8 @@ class DirectSaleTest {
     void hashCode_differentObjectsReturnsDifferentHash() {
 
         // Arrange
-        DirectSale ds1 = dsFactory.create(List.of(listing1Double), buyerDouble);
-        DirectSale ds2 = dsFactory.create(List.of(listing2Double), buyerDouble);
+        DirectSale ds1 = dsFactory.create(List.of(listingId1Double), buyerDouble, listingRepoDouble);
+        DirectSale ds2 = dsFactory.create(List.of(listingId2Double), buyerDouble, listingRepoDouble);
 
         // Act and Assert
         assertNotEquals(ds1.hashCode(), ds2.hashCode());
@@ -135,8 +145,8 @@ class DirectSaleTest {
     void getListings_returnsSameList() {
 
         // Arrange
-        List<ListingId> listings = List.of(listing1Double, listing2Double);
-        DirectSale ds = dsFactory.create(listings, buyerDouble);
+        List<ListingId> listings = List.of(listingId1Double, listingId2Double);
+        DirectSale ds = dsFactory.create(listings, buyerDouble, listingRepoDouble);
 
         // Act
         List<ListingId> result = ds.getListings();
@@ -150,8 +160,8 @@ class DirectSaleTest {
     void getDetails_returnsCorrectValues() {
 
         // Arrange
-        List<ListingId> listings = List.of(listing1Double, listing2Double);
-        DirectSale ds = dsFactory.create(listings, buyerDouble);
+        List<ListingId> listings = List.of(listingId1Double, listingId2Double);
+        DirectSale ds = dsFactory.create(listings, buyerDouble, listingRepoDouble);
 
         // Act
         DirectSale.DirectSaleDetails details = ds.getDetails();
@@ -168,7 +178,7 @@ class DirectSaleTest {
     void directSaleDetails_recordStoresValuesCorrectly() {
 
         // Arrange
-        List<ListingId> listings = List.of(listing1Double, listing2Double);
+        List<ListingId> listings = List.of(listingId1Double, listingId2Double);
 
         // Act
         DirectSale.DirectSaleDetails details = new DirectSale.DirectSaleDetails(listings, buyerDouble, true);
