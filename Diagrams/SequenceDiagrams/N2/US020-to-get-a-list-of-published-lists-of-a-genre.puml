@@ -8,7 +8,9 @@ actor User
 participant ":UI020" as UI
 participant ":US020PublicListByGenreController" as Controller
 participant ":GenreRepository" as GenreRepo
+participant ":US013GenreDTOMapper" as GenreMapper
 participant ":genreDTOlist \n:List<US013GenreDTO>" as genreDTO
+participant "genreDto:US013GenreDTO" as genreDTO13
 participant ":CollectionOfPublicationsRepository" as CollectionRepo
 participant "collections \n:List<CollectionOfPublications" as collectionsList
 participant ":CollectionOfPublications" as Collection
@@ -28,10 +30,16 @@ Controller -> GenreRepo : getAllGenres()
 activate GenreRepo
 GenreRepo --> Controller : return List<Genre>
 deactivate GenreRepo
-Controller -->> genreDTO** : <<create>>
+
+Controller -> GenreMapper : toDTO(List<Genres>)
+activate GenreMapper
+GenreMapper -->> genreDTO** : <<create>>
 loop for every genre in List<Genre>
-Controller -> Controller : genreDTOList.add(new US013GenreDTO(genre.getGenreType))
+GenreMapper -->> genreDTO13** : <<create>>
+GenreMapper -> GenreMapper : genreDTOList.add(genreDto)
 end
+GenreMapper --> Controller : genreDTOlist
+deactivate GenreMapper
 
 Controller --> UI : List<US013GenreDTO>
 deactivate Controller
@@ -71,9 +79,7 @@ loop for each CollectionOfPublications c in collections
 
     mapper -> userRepo : userRepo.getUserId(c.getOwnerId)
     activate userRepo
-    alt if userId is invalid
-            mapper -> mapper : thrown new illegal state exception ("User not found")
-    end
+
     userRepo --> mapper : return ownerId
     deactivate userRepo
 
@@ -82,7 +88,7 @@ loop for each CollectionOfPublications c in collections
     user --> mapper : return ownerName
     deactivate user
 
-    mapper -->> dto** : <<create>>(collectionName, ownerName)
+    mapper -->> dto** : <<create>>
     mapper -> mapper : dtoList.add(dto)
 end
 

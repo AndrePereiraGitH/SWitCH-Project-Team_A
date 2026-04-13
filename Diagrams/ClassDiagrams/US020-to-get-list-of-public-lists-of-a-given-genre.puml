@@ -61,15 +61,21 @@ class US020CollectionOfPublicationsDTO {
   -userName : String
 }
 
+class US013GenreDTOMapper {
+  +toDTO(List<Genre> genres) : List<US013GenreDTO>
+}
+
 UI020 --> US020PublicListByGenreController : uses
 
 US020PublicListByGenreController --> IGenreRepository : uses
 US020PublicListByGenreController --> ICollectionOfPublicationsRepository : uses
 US020PublicListByGenreController --> US020CollectionOfPublicationsDTOMapper : uses
+US020PublicListByGenreController --> US013GenreDTOMapper : uses
 
 US020CollectionOfPublicationsDTOMapper --> IUserRepository : uses
 
 CollectionOfPublications --> Genre : has
+US013GenreDTOMapper ..> US013GenreDTO : creates
 US013GenreDTO ..> Genre : created from
 US020CollectionOfPublicationsDTO ..> CollectionOfPublications : created from
 US020CollectionOfPublicationsDTOMapper ..> US020CollectionOfPublicationsDTO : creates

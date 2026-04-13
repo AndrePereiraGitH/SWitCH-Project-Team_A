@@ -6,6 +6,7 @@ import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.dto.US013GenreDTO;
+import TOPSECRET.dto.US013GenreMapper;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
@@ -58,12 +59,9 @@ public class US020PublicListByGenreController {
      */
     public List<US013GenreDTO> getGenres() {
         List<Genre> genreList = _genreRepository.getAllGenres();
-        List<US013GenreDTO> genreDTOlist = new ArrayList<>();
+        US013GenreMapper genreMapper = new US013GenreMapper();
 
-        for (Genre genre : genreList) {
-            genreDTOlist.add(new US013GenreDTO(genre.getGenreType()));
-        }
-        return genreDTOlist;
+        return genreMapper.toDTO(genreList);
     }
 
 
