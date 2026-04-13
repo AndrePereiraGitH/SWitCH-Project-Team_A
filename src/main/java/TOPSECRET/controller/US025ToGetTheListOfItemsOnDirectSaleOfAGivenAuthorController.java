@@ -1,5 +1,6 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.dto.AuthorDTO_US025;
@@ -64,6 +65,10 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
             throw new IllegalArgumentException("AuthorID cannot be null or blank");
 
         AuthorId id = new AuthorId(authorId);
-        return directSaleMapper.toDTOListByAuthor(id);
+
+        Author author = authorRepository.findAuthorById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+
+        return directSaleMapper.toDTOListByAuthor(author);
     }
 }

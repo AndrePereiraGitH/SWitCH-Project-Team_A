@@ -8,75 +8,82 @@ actor Buyer
 
 ' Participants
 participant ":UI025" as UI025
-participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenAuthorController" as Ctrl
+participant ":US025ToGetTheListOfItemsOnDirectSale\nOfAGivenAuthorController" as Ctrl
 participant ":AuthorRepository" as AuthorRepository
 participant ":AuthorMapper_US025" as AuthorMapper
-participant ":authorDTO:AuthorDTO_US025" as AuthorDTO
 participant ":DirectSaleMapper_US025" as Mapper
-participant ":DirectSaleRepository" as DirectSaleRepository
-participant "listOfDirectSale:\nList<DirectSale>" as ListDS
-participant "directSaleDTO:\nDirectSaleDTO_US025" as DTO
-participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US025>" as ListDTO
-participant ":DirectSale" as DS
-
+participant ":ListingRepository" as ListingRepository
+participant ":PublicationSampleRepository" as PublicationSampleRepository
+participant ":BibliographicalDataRepository" as BibliographicalDataRepository
 
 ' Interactions
-Buyer -> UI025 : I want to get the list of items\n on direct sale of a given author
+Buyer -> UI025 : I want to get the list of items\non direct sale of a given author
 activate UI025
+
 UI025 -> Ctrl : getAllAuthors()
 activate Ctrl
-Ctrl -> AuthorRepository: getAllAuthors()
+
+Ctrl -> AuthorRepository : getAllAuthors()
 activate AuthorRepository
-AuthorRepository --> Ctrl: listOfAllAuthors
+AuthorRepository --> Ctrl : listOfAllAuthors
 deactivate AuthorRepository
 
-Ctrl -> AuthorMapper: toDTO(listOfAllAuthors)
+Ctrl -> AuthorMapper : toDTOList(listOfAllAuthors)
 activate AuthorMapper
-AuthorMapper -> AuthorDTO **
-AuthorMapper --> Ctrl: listOfAllAuthorsDTO
+AuthorMapper --> Ctrl : listOfAllAuthorsDTO
 deactivate AuthorMapper
 
-Ctrl --> UI025 : listOfAllAuthors
+Ctrl --> UI025 : listOfAllAuthorsDTO
 deactivate Ctrl
-Buyer <-- UI025 : Which author? Choose!
+
+UI025 --> Buyer : Which author? Choose!
 deactivate UI025
-Buyer -> UI025 : author
+
+Buyer -> UI025 : authorId
 activate UI025
 
-UI025 -> Ctrl : getListOfItemsOnDirectSale(author)
+UI025 -> Ctrl : getListOfItemsOnDirectSaleOfAGivenAuthor(authorId)
 activate Ctrl
 
-Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(author)
-activate DirectSaleRepository
+Ctrl -> AuthorRepository : findAuthorById(authorId)
+activate AuthorRepository
+AuthorRepository --> Ctrl : author
+deactivate AuthorRepository
 
-loop for each direct sale
-    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleAuthor(author))
-end
-
-DirectSaleRepository -> ListDS ** : create ()
-DirectSaleRepository --> Ctrl : listOfDirectSale
-
-deactivate DirectSaleRepository
-
-Ctrl -> Mapper : toDTO(listOfDirectSale)
+Ctrl -> Mapper : toDTOListByAuthor(author)
 activate Mapper
-Mapper -> ListDTO ** : create ()
 
-    loop for each direct sale
-    Mapper -> DS: getDetails(directSale)
-        activate DS
-        DS --> Mapper: directSaleDetails
-        deactivate DS
+Mapper -> ListingRepository : findAllDirectSaleListings()
+activate ListingRepository
+ListingRepository --> Mapper : allListings
+deactivate ListingRepository
 
-        Mapper -> DTO ** : createDTO(directSaleDetails)
-        DTO --> Mapper: directSaleDTO
-            Mapper -> ListDTO : add(directSaleDTO)
+loop for each listing / for each itemId in listing
+
+    Mapper -> PublicationSampleRepository : findPublicationSampleById(itemId)
+    activate PublicationSampleRepository
+    PublicationSampleRepository --> Mapper : item
+    deactivate PublicationSampleRepository
+
+    Mapper -> BibliographicalDataRepository : findBibliographicalDataById(item.getBibliographicalDataID())
+    activate BibliographicalDataRepository
+    BibliographicalDataRepository --> Mapper : bd
+    deactivate BibliographicalDataRepository
+
+    alt bd.getAuthors().contains(author.id())
+        Mapper -> Mapper : toDTO(author, item, listing)
+        Mapper -> BibliographicalDataRepository : findBibliographicalDataById(item.getBibliographicalDataID())
+        activate BibliographicalDataRepository
+        BibliographicalDataRepository --> Mapper : bd
+        deactivate BibliographicalDataRepository
     end
 
-Mapper --> Ctrl : listOfDirectSalesDTO
+end
+
+Mapper --> Ctrl : listOfDirectSaleDTOs
 deactivate Mapper
 
-Ctrl --> UI025 : listOfDirectSalesDTO
+Ctrl --> UI025 : listOfDirectSaleDTOs
 deactivate Ctrl
 
 UI025 --> Buyer : Shows the list of items on direct sale

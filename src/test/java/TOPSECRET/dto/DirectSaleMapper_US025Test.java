@@ -1,7 +1,6 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
@@ -29,27 +28,23 @@ import static org.mockito.Mockito.*;
  *
  * Verifies that domain entities are correctly converted to
  * {@link DirectSaleDTO_US025} representations, including filtering
- * by author and edge cases such as null and empty inputs.
+ * by author and edge cases such as null inputs.
  */
-
 class DirectSaleMapper_US025Test {
 
     private IBibliographicalDataRepository bibliographicalDataRepository;
-    private IAuthorRepository authorRepository;
     private IListingRepository listingRepository;
     private IPublicationSampleRepository publicationSampleRepository;
-    private DirectSaleMapper_US025 mapper;
+    private DirectSaleMapper_US025 DSMapper;
 
     @BeforeEach
     void setUp() {
         bibliographicalDataRepository = mock(IBibliographicalDataRepository.class);
-        authorRepository = mock(IAuthorRepository.class);
         listingRepository = mock(IListingRepository.class);
         publicationSampleRepository = mock(IPublicationSampleRepository.class);
 
-        mapper = new DirectSaleMapper_US025(
+        DSMapper = new DirectSaleMapper_US025(
                 bibliographicalDataRepository,
-                authorRepository,
                 listingRepository,
                 publicationSampleRepository);
     }
@@ -60,131 +55,28 @@ class DirectSaleMapper_US025Test {
 
     private Listing buildListing(PublicationSampleId itemId, BigDecimal priceValue,
                                  String listingTitle, UserId sellerId) {
-        Listing listingdouble = mock(Listing.class);
-        Price pricedouble = mock(Price.class);
-        when(pricedouble.getPrice()).thenReturn(priceValue);
-        when(listingdouble.getItemsId()).thenReturn(List.of(itemId));
-        when(listingdouble.getPrice()).thenReturn(pricedouble);
-        when(listingdouble.getListingTitle()).thenReturn(listingTitle);
-        when(listingdouble.getSellerId()).thenReturn(sellerId);
-        return listingdouble;
+        Listing listingDouble = mock(Listing.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getPrice()).thenReturn(priceValue);
+        when(listingDouble.getItemsId()).thenReturn(List.of(itemId));
+        when(listingDouble.getPrice()).thenReturn(priceDouble);
+        when(listingDouble.getListingTitle()).thenReturn(listingTitle);
+        when(listingDouble.getSellerId()).thenReturn(sellerId);
+        return listingDouble;
     }
 
     private PublicationSample buildItem(PublicationSampleId itemId, BibliographicalDataID bdId) {
-        PublicationSample itemdouble = mock(PublicationSample.class);
-        when(itemdouble.id()).thenReturn(itemId);
-        when(itemdouble.getBibliographicalDataID()).thenReturn(bdId);
-        return itemdouble;
+        PublicationSample itemDouble = mock(PublicationSample.class);
+        when(itemDouble.id()).thenReturn(itemId);
+        when(itemDouble.getBibliographicalDataID()).thenReturn(bdId);
+        return itemDouble;
     }
 
     private BibliographicalData buildBD(String title, List<AuthorId> authorIds) {
-        BibliographicalData bddouble = mock(BibliographicalData.class);
-        when(bddouble.getTitle()).thenReturn(title);
-        when(bddouble.getAuthors()).thenReturn(authorIds);
-        return bddouble;
-    }
-
-    // ===============================
-    // Tests for toDTO()
-    // ===============================
-
-    @Test
-    void toDTO_shouldMapAllFieldsCorrectly() {
-
-        // Arrange
-        AuthorId authorIddouble = mock(AuthorId.class);
-        Author authordouble = mock(Author.class);
-        when(authordouble.getName()).thenReturn("author1");
-        when(authorRepository.findAuthorById(authorIddouble)).thenReturn(Optional.of(authordouble));
-
-        BibliographicalDataID bdIddouble = mock(BibliographicalDataID.class);
-        BibliographicalData bddouble = buildBD("Title One", List.of(authorIddouble));
-        when(bibliographicalDataRepository.findBibliographicalDataById(bdIddouble)).thenReturn(Optional.of(bddouble));
-
-        PublicationSampleId itemIddouble = mock(PublicationSampleId.class);
-        PublicationSample itemdouble = buildItem(itemIddouble, bdIddouble);
-
-        UserId sellerIddouble = mock(UserId.class);
-        when(sellerIddouble.toString()).thenReturn("seller1");
-        Listing listingdouble = buildListing(itemIddouble, new BigDecimal("10.00"), "Listing One", sellerIddouble);
-
-        // Act
-        DirectSaleDTO_US025 dto = mapper.toDTO(itemdouble, listingdouble);
-
-        // Assert
-        assertNotNull(dto);
-        assertEquals("Title One", dto.publicationTitle());
-        assertEquals(List.of("author1"), dto.authors());
-        assertEquals(new BigDecimal("10.00"), dto.price());
-        assertEquals("Listing One", dto.listingTitle());
-        assertEquals("seller1", dto.seller());
-    }
-
-    // ===============================
-    // Tests for toDTOList()
-    // ===============================
-
-    @Test
-    void toDTOList_shouldReturnDTOForEachItem() {
-
-        // Arrange
-        AuthorId authorIddouble = mock(AuthorId.class);
-        Author authordouble = mock(Author.class);
-        when(authordouble.getName()).thenReturn("author1");
-        when(authorRepository.findAuthorById(authorIddouble)).thenReturn(Optional.of(authordouble));
-
-        BibliographicalDataID bdId1double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2double = mock(BibliographicalDataID.class);
-
-        BibliographicalData bd1 = buildBD("Title One", List.of(authorIddouble));
-        BibliographicalData bd2 = buildBD("Title Two", List.of(authorIddouble));
-
-        when(bibliographicalDataRepository.findBibliographicalDataById(bdId1double)).thenReturn(Optional.of(bd1));
-        when(bibliographicalDataRepository.findBibliographicalDataById(bdId2double)).thenReturn(Optional.of(bd2));
-
-        PublicationSampleId itemId1double = mock(PublicationSampleId.class);
-        PublicationSampleId itemId2double = mock(PublicationSampleId.class);
-
-        PublicationSample item1 = buildItem(itemId1double, bdId1double);
-        PublicationSample item2 = buildItem(itemId2double, bdId2double);
-
-        when(publicationSampleRepository.findPublicationSampleById(itemId1double)).thenReturn(Optional.of(item1));
-        when(publicationSampleRepository.findPublicationSampleById(itemId2double)).thenReturn(Optional.of(item2));
-
-        UserId sellerIddouble = mock(UserId.class);
-        Listing listing1 = buildListing(itemId1double, new BigDecimal("10.00"), "Listing One", sellerIddouble);
-        Listing listing2 = buildListing(itemId2double, new BigDecimal("15.00"), "Listing Two", sellerIddouble);
-
-        // Act
-        List<DirectSaleDTO_US025> dtos = mapper.toDTOList(List.of(listing1, listing2));
-
-        // Assert
-        assertNotNull(dtos);
-        assertEquals(2, dtos.size());
-        assertEquals("Title One", dtos.get(0).publicationTitle());
-        assertEquals("Title Two", dtos.get(1).publicationTitle());
-    }
-
-    @Test
-    void toDTOList_nullListings_shouldReturnEmptyList() {
-
-        // Act
-        List<DirectSaleDTO_US025> dtos = mapper.toDTOList(null);
-
-        // Assert
-        assertNotNull(dtos);
-        assertTrue(dtos.isEmpty());
-    }
-
-    @Test
-    void toDTOList_emptyListings_shouldReturnEmptyList() {
-
-        // Act
-        List<DirectSaleDTO_US025> dtos = mapper.toDTOList(List.of());
-
-        // Assert
-        assertNotNull(dtos);
-        assertTrue(dtos.isEmpty());
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        when(bdDouble.getTitle()).thenReturn(title);
+        when(bdDouble.getAuthors()).thenReturn(authorIds);
+        return bdDouble;
     }
 
     // ===============================
@@ -195,70 +87,74 @@ class DirectSaleMapper_US025Test {
     void toDTOListByAuthor_shouldReturnOnlyItemsOfGivenAuthor() {
 
         // Arrange
-        AuthorId authorId1double = mock(AuthorId.class);
-        AuthorId authorId2double = mock(AuthorId.class);
+        AuthorId authorId1Double = mock(AuthorId.class);
+        AuthorId authorId2Double = mock(AuthorId.class);
 
-        Author author1double = mock(Author.class);
-        when(author1double.getName()).thenReturn("author1");
-        when(authorRepository.findAuthorById(authorId1double)).thenReturn(Optional.of(author1double));
+        Author author1Double = mock(Author.class);
+        when(author1Double.getName()).thenReturn("author1");
+        when(author1Double.id()).thenReturn(authorId1Double);
 
-        BibliographicalDataID bdId1double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
 
-        BibliographicalData bd1 = buildBD("Title One", List.of(authorId1double));
-        BibliographicalData bd2 = buildBD("Title Two", List.of(authorId2double));
+        BibliographicalData bd1Double = buildBD("Title One", List.of(authorId1Double));
+        BibliographicalData bd2Double = buildBD("Title Two", List.of(authorId2Double));
 
-        when(bibliographicalDataRepository.findBibliographicalDataById(bdId1double)).thenReturn(Optional.of(bd1));
-        when(bibliographicalDataRepository.findBibliographicalDataById(bdId2double)).thenReturn(Optional.of(bd2));
+        when(bibliographicalDataRepository.findBibliographicalDataById(bdId1Double)).thenReturn(Optional.of(bd1Double));
+        when(bibliographicalDataRepository.findBibliographicalDataById(bdId2Double)).thenReturn(Optional.of(bd2Double));
 
-        PublicationSampleId itemId1double = mock(PublicationSampleId.class);
-        PublicationSampleId itemId2double = mock(PublicationSampleId.class);
+        PublicationSampleId itemId1Double = mock(PublicationSampleId.class);
+        PublicationSampleId itemId2Double = mock(PublicationSampleId.class);
 
-        PublicationSample item1 = buildItem(itemId1double, bdId1double);
-        PublicationSample item2 = buildItem(itemId2double, bdId2double);
+        PublicationSample item1Double = buildItem(itemId1Double, bdId1Double);
+        PublicationSample item2Double = buildItem(itemId2Double, bdId2Double);
 
-        when(publicationSampleRepository.findPublicationSampleById(itemId1double)).thenReturn(Optional.of(item1));
-        when(publicationSampleRepository.findPublicationSampleById(itemId2double)).thenReturn(Optional.of(item2));
+        when(publicationSampleRepository.findPublicationSampleById(itemId1Double)).thenReturn(Optional.of(item1Double));
+        when(publicationSampleRepository.findPublicationSampleById(itemId2Double)).thenReturn(Optional.of(item2Double));
 
-        UserId sellerIddouble = mock(UserId.class);
-        Listing listing1 = buildListing(itemId1double, new BigDecimal("10.00"), "Listing One", sellerIddouble);
-        Listing listing2 = buildListing(itemId2double, new BigDecimal("15.00"), "Listing Two", sellerIddouble);
+        UserId sellerIdDouble = mock(UserId.class);
+        Listing listing1Double = buildListing(itemId1Double, new BigDecimal("10.00"), "Listing One", sellerIdDouble);
+        Listing listing2Double = buildListing(itemId2Double, new BigDecimal("15.00"), "Listing Two", sellerIdDouble);
 
-        when(listingRepository.findAllDirectSaleListings()).thenReturn(List.of(listing1, listing2));
+        when(listingRepository.findAllDirectSaleListings()).thenReturn(List.of(listing1Double, listing2Double));
 
-        //Act
-        List<DirectSaleDTO_US025> dtos = mapper.toDTOListByAuthor(authorId1double);
+        // Act
+        List<DirectSaleDTO_US025> dtos = DSMapper.toDTOListByAuthor(author1Double);
 
         // Assert
         assertNotNull(dtos);
         assertEquals(1, dtos.size());
         assertEquals("Title One", dtos.get(0).publicationTitle());
+        assertEquals(List.of("author1"), dtos.get(0).authors());
     }
 
     @Test
     void toDTOListByAuthor_whenNoItemsMatchAuthor_shouldReturnEmptyList() {
 
         // Arrange
-        AuthorId authorId1double = mock(AuthorId.class);
-        AuthorId authorId2double = mock(AuthorId.class);
+        AuthorId authorId1Double = mock(AuthorId.class);
+        AuthorId authorId2Double = mock(AuthorId.class);
 
-        BibliographicalDataID bdIddouble = mock(BibliographicalDataID.class);
-        BibliographicalData bd = buildBD("Title One", List.of(authorId2double));
+        Author author1Double = mock(Author.class);
+        when(author1Double.id()).thenReturn(authorId1Double);
 
-        when(bibliographicalDataRepository.findBibliographicalDataById(bdIddouble)).thenReturn(Optional.of(bd));
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        BibliographicalData bdDouble = buildBD("Title One", List.of(authorId2Double));
 
-        PublicationSampleId itemIddouble = mock(PublicationSampleId.class);
-        PublicationSample item = buildItem(itemIddouble, bdIddouble);
+        when(bibliographicalDataRepository.findBibliographicalDataById(bdIdDouble)).thenReturn(Optional.of(bdDouble));
 
-        when(publicationSampleRepository.findPublicationSampleById(itemIddouble)).thenReturn(Optional.of(item));
+        PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
+        PublicationSample itemDouble = buildItem(itemIdDouble, bdIdDouble);
 
-        UserId sellerIddouble = mock(UserId.class);
-        Listing listing = buildListing(itemIddouble, new BigDecimal("10.00"), "Listing One", sellerIddouble);
+        when(publicationSampleRepository.findPublicationSampleById(itemIdDouble)).thenReturn(Optional.of(itemDouble));
 
-        when(listingRepository.findAllDirectSaleListings()).thenReturn(List.of(listing));
+        UserId sellerIdDouble = mock(UserId.class);
+        Listing listingDouble = buildListing(itemIdDouble, new BigDecimal("10.00"), "Listing One", sellerIdDouble);
+
+        when(listingRepository.findAllDirectSaleListings()).thenReturn(List.of(listingDouble));
 
         // Act
-        List<DirectSaleDTO_US025> dtos = mapper.toDTOListByAuthor(authorId1double);
+        List<DirectSaleDTO_US025> dtos = DSMapper.toDTOListByAuthor(author1Double);
 
         // Assert
         assertNotNull(dtos);
@@ -266,12 +162,27 @@ class DirectSaleMapper_US025Test {
     }
 
     @Test
-    void toDTOListByAuthor_whenAuthorIdIsNull_shouldThrowException() {
+    void toDTOListByAuthor_whenAuthorIsNull_shouldThrowException() {
 
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> mapper.toDTOListByAuthor(null)
+                () -> DSMapper.toDTOListByAuthor(null)
         );
+    }
+
+    @Test
+    void toDTOListByAuthor_whenNoListings_shouldReturnEmptyList() {
+
+        // Arrange
+        Author authorDouble = mock(Author.class);
+        when(listingRepository.findAllDirectSaleListings()).thenReturn(List.of());
+
+        // Act
+        List<DirectSaleDTO_US025> dtos = DSMapper.toDTOListByAuthor(authorDouble);
+
+        // Assert
+        assertNotNull(dtos);
+        assertTrue(dtos.isEmpty());
     }
 }
