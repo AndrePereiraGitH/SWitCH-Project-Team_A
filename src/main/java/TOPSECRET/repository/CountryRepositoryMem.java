@@ -46,9 +46,11 @@ public class CountryRepositoryMem implements ICountryRepository {
         this.registeredCountries = new ArrayList<>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Country createAndAddNewCountry(String countryName) {
+    public Country createAndAdd(String countryName) {
         Country country = countryFactory.create(countryName);
         if (!isANewCountry(country)) {
             throw new IllegalArgumentException("Country is already registered");
@@ -57,13 +59,17 @@ public class CountryRepositoryMem implements ICountryRepository {
         return country;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Country> getAllCountries() {
         return List.copyOf(registeredCountries);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Country> findByID(CountryID countryID) {
         return registeredCountries.stream()
@@ -90,5 +96,48 @@ public class CountryRepositoryMem implements ICountryRepository {
             }
         }
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Optional<CountryID> findCountryIdByCountryName(String countryName) {
+
+        if (countryName == null) {
+            throw new NullPointerException("A country's name cannot be null");
+        }
+
+        if (countryName.isBlank()) {
+            throw new IllegalArgumentException("A country's name cannot be blank");
+        }
+
+        String normalizedInput = normalizeCountryName(countryName);
+
+        for (Country country : registeredCountries) {
+            String normalizedStored = normalizeCountryName(country.getCountryName());
+
+            if (normalizedStored.equals(normalizedInput)) {
+                return Optional.of(country.getCountryID());
+            }
+        }
+
+        return Optional.empty();
+    }
+
+
+    /**
+     * Normalizes a country name into a standard format matching enum constants.
+     * <p>
+     * The transformation includes trimming whitespace, converting to uppercase,
+     * and replacing spaces or hyphens with underscores.
+     *
+     * @param countryName the raw country name provided by the user
+     * @return the normalized country name (e.g., "Czech republic" → "CZECH_REPUBLIC")
+     */
+    private String normalizeCountryName(String countryName) {
+        return countryName
+                .trim()
+                .replace(" ", "_")
+                .replace("-", "_");
     }
 }
