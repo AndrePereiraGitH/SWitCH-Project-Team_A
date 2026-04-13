@@ -1053,7 +1053,7 @@ class PublicationSampleRepositoryMemTest {
     void findAllItemsIdByBibliographicalDataId_shouldThrowException_whenListIsNull() {
 
         // Arrange
-        PublicationSampleRepositoryMem repo =
+        IPublicationSampleRepository repo =
                 new PublicationSampleRepositoryMem(factory);
 
         // Act & Assert
@@ -1065,7 +1065,7 @@ class PublicationSampleRepositoryMemTest {
     void findAllItemsIdByBibliographicalDataId_shouldReturnMatchingIds() {
 
         // Arrange
-        PublicationSampleRepositoryMem repo =
+        IPublicationSampleRepository repo =
                 new PublicationSampleRepositoryMem(factory);
 
 
@@ -1090,7 +1090,7 @@ class PublicationSampleRepositoryMemTest {
     void findAllItemsIdByBibliographicalDataId_shouldReturnEmptyList_whenNoMatch() {
 
         // Arrange
-        PublicationSampleRepositoryMem repo =
+        IPublicationSampleRepository repo =
                 new PublicationSampleRepositoryMem(factory);
 
         BibliographicalDataID bdIdDouble1 = mock(BibliographicalDataID.class);
@@ -1113,7 +1113,7 @@ class PublicationSampleRepositoryMemTest {
     void findAllItemsIdByBibliographicalDataId_shouldReturnMultipleMatches() {
 
         // Arrange
-        PublicationSampleRepositoryMem repo =
+        IPublicationSampleRepository repo =
                 new PublicationSampleRepositoryMem(factory);
 
         PublicationSample psDouble1 = mock(PublicationSample.class);
