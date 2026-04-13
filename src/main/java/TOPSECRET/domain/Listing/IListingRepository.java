@@ -153,4 +153,5 @@ public interface IListingRepository {
      * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
      */
     List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
+
 }

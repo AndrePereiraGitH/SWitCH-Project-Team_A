@@ -68,11 +68,6 @@ public class ListingRepositoryMem implements IListingRepository {
         return newListing;
     }
 
-    // for tests purpose
-    void addListing(Listing listing) {
-        listings.add(listing);
-    }
-
     private boolean existsById(Listing listing) {
         return listings.contains(listing);
     }

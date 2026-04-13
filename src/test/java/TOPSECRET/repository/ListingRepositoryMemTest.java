@@ -106,10 +106,10 @@ class ListingRepositoryMemTest {
 
         Listing existingListing = mock(Listing.class);
 
-        repo.addListing(existingListing);
-
         when(listingFactoryDouble.create(listingTitle, itemsId, saleType, price1, shortDescription, sellerId, pictures))
                 .thenReturn(existingListing);
+
+        repo.createAndAdd(listingTitle, itemsId, saleType, price1, shortDescription, sellerId, pictures);
 
         // act + assert
         assertThrows(InstanceAlreadyExistsException.class, () ->
@@ -426,7 +426,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingById_shouldReturnListingWhenIdExists() {
+    void findListingById_shouldReturnListingWhenIdExists() throws InstanceAlreadyExistsException {
 
         // arrange
         ListingId id1 = new ListingId("id1");
@@ -435,7 +435,8 @@ class ListingRepositoryMemTest {
 
         ListingFactory factory = mock(ListingFactory.class);
         IListingRepository repo = new ListingRepositoryMem(factory);
-        repo.addListing(listing1Double);
+        when(factory.create("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1))).thenReturn(listing1Double);
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // act
         Optional<Listing> result = repo.findListingById(id1);
@@ -446,7 +447,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findListingById_shouldReturnEmptyWhenIdDoNotExists() {
+    void findListingById_shouldReturnEmptyWhenIdDoNotExists() throws InstanceAlreadyExistsException {
 
         // arrange
         ListingId id1 = new ListingId("id1");
@@ -456,7 +457,6 @@ class ListingRepositoryMemTest {
 
         ListingFactory factory = mock(ListingFactory.class);
         IListingRepository repo = new ListingRepositoryMem(factory);
-        repo.addListing(listing1Double);
 
         // act
         Optional<Listing> result = repo.findListingById(newId);
@@ -666,7 +666,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findAllListingId_shouldReturnListingId_whenItemMatches() {
+    void findAllListingId_shouldReturnListingId_whenItemMatches() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -679,8 +679,9 @@ class ListingRepositoryMemTest {
 
         when(listingDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
         when(listingDouble.id()).thenReturn(listingIdDouble);
+        when(factory.create("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1))).thenReturn(listingDouble);
 
-        repo.addListing(listingDouble);
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // Act
         List<ListingId> result = repo.findAllListingId(List.of(itemIdDouble));
@@ -691,7 +692,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findAllListingId_shouldReturnEmpty_whenNoItemMatches() {
+    void findAllListingId_shouldReturnEmpty_whenNoItemMatches() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -702,8 +703,9 @@ class ListingRepositoryMemTest {
 
         Listing listingDouble = mock(Listing.class);
         when(listingDouble.getItemsId()).thenReturn(List.of(itemDouble1));
+        when(factory.create("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1))).thenReturn(listingDouble);
 
-        repo.addListing(listingDouble);
+        repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // Act
         List<ListingId> result = repo.findAllListingId(List.of(itemDouble2));
@@ -713,7 +715,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findAllListingId_shouldReturnMultipleListingIds_whenMultipleMatches() {
+    void findAllListingId_shouldReturnMultipleListingIds_whenMultipleMatches() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -732,9 +734,11 @@ class ListingRepositoryMemTest {
 
         when(listingDouble1.id()).thenReturn(idDouble1);
         when(listingDouble2.id()).thenReturn(idDouble2);
+        when(factory.create("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1))).thenReturn(listingDouble1);
+        when(factory.create("title2", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1))).thenReturn(listingDouble2);
 
-        repo.addListing(listingDouble1);
-        repo.addListing(listingDouble2);
+        repo.createAndAdd("title1", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
+        repo.createAndAdd("title2", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // Act
         List<ListingId> result = repo.findAllListingId(List.of(itemIdDouble));
