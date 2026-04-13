@@ -10,6 +10,7 @@ import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsReposi
 import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
 import TOPSECRET.repository.GenreRepositoryMem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,6 +75,8 @@ public class US020PublicListByGenreController {
 
         List<CollectionOfPublications> collections = _collectionRepo.findPublicCollectionsByGenreId(genreId);
 
-        return US020CollectionOfPublicationsDTOMapper.toDTO(collections, _userRepo);
+        US020CollectionOfPublicationsDTOMapper mapper = new US020CollectionOfPublicationsDTOMapper(_userRepo);
+
+        return mapper.toDTO(collections);
     }
 }

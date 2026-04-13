@@ -14,15 +14,17 @@ import java.util.List;
  * This mapper applies basic data normalization rules such as trimming
  * leading and trailing whitespace from input values.
  * </p>
- *
- * <p>
- * All methods are static and the class is not meant to be instantiated.
- * </p>
  */
 public class US020CollectionOfPublicationsDTOMapper {
 
-    private US020CollectionOfPublicationsDTOMapper() {
-        // Prevents instantiation
+    private final IUserRepository userRepo;
+
+    /**
+     * @param userRepo the repository used to fetch user information by owner ID;
+     *                 must not be null
+     */
+    public US020CollectionOfPublicationsDTOMapper(IUserRepository userRepo) {
+        this.userRepo = userRepo;
     }
 
     /**
@@ -35,13 +37,11 @@ public class US020CollectionOfPublicationsDTOMapper {
      *
      * @param collections the list of {@link CollectionOfPublications} to be converted;
      *                    must not be null
-     * @param userRepo the repository used to fetch user information by owner ID;
-     *                 must not be null
      * @return a list of {@link US020CollectionOfPublicationsDTO} containing the
      *         collection name and owner username
      * @throws IllegalStateException if a user corresponding to any collection's owner ID is not found
      */
-    public static List<US020CollectionOfPublicationsDTO> toDTO(List<CollectionOfPublications> collections, IUserRepository userRepo) {
+    public List<US020CollectionOfPublicationsDTO> toDTO(List<CollectionOfPublications> collections) {
 
         List<US020CollectionOfPublicationsDTO> dto = new ArrayList<>();
 

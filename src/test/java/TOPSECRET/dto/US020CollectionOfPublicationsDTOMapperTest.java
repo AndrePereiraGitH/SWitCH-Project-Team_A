@@ -29,6 +29,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
     UserId userId;
     User user;
     CollectionOfPublications collectionDouble;
+    US020CollectionOfPublicationsDTOMapper mapper;
 
     @BeforeEach
     void setUp() {
@@ -47,6 +48,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
     void shouldCreateDTOWithValidData()
     {
         // Arrange
+        mapper = new US020CollectionOfPublicationsDTOMapper(userRepo);
         List<CollectionOfPublications> collections = List.of(collectionDouble);
         when(collectionDouble.getOwnerId()).thenReturn(userId);
         when(userRepo.findUserByID(userId)).thenReturn(Optional.ofNullable(user));
@@ -54,8 +56,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
         when(user.getUserName()).thenReturn("Antonio");
 
         // Act
-        List<US020CollectionOfPublicationsDTO> dto =
-                US020CollectionOfPublicationsDTOMapper.toDTO(collections, userRepo);
+        List<US020CollectionOfPublicationsDTO> dto = mapper.toDTO(collections);
 
         // Assert
         assertNotNull(dto);
@@ -66,6 +67,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
     @Test
     void shouldTrimCollectionNameAndUserName() {
         // Arrange
+        mapper = new US020CollectionOfPublicationsDTOMapper(userRepo);
         List<CollectionOfPublications> collections = List.of(collectionDouble);
 
         when(collectionDouble.getCollectionName()).thenReturn("  Collection Name  ");
@@ -74,8 +76,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
         when(user.getUserName()).thenReturn("  Antonio  ");
 
         // Act
-        List<US020CollectionOfPublicationsDTO> dto =
-                US020CollectionOfPublicationsDTOMapper.toDTO(collections, userRepo);
+        List<US020CollectionOfPublicationsDTO> dto = mapper.toDTO(collections);
 
         // Assert
         assertEquals("Collection Name", dto.get(0).collectionName());
@@ -85,6 +86,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
         // Arrange
+        mapper = new US020CollectionOfPublicationsDTOMapper(userRepo);
         when(collectionDouble.getCollectionName()).thenReturn("Collection name");
         when(collectionDouble.getOwnerId()).thenReturn(userId);
 
@@ -93,7 +95,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
         // Act & Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> US020CollectionOfPublicationsDTOMapper.toDTO(List.of(collectionDouble), userRepo)
+                () -> mapper.toDTO(List.of(collectionDouble))
         );
 
         assertEquals("User not found", exception.getMessage());
@@ -102,8 +104,8 @@ class US020CollectionOfPublicationsDTOMapperTest {
     @Test
     void shouldReturnEmptyListWhenInputIsEmpty() {
         // Act
-        List<US020CollectionOfPublicationsDTO> result =
-                US020CollectionOfPublicationsDTOMapper.toDTO(List.of(), userRepo);
+        mapper = new US020CollectionOfPublicationsDTOMapper(userRepo);
+        List<US020CollectionOfPublicationsDTO> result = mapper.toDTO(List.of());
 
         // Assert
         assertNotNull(result);
