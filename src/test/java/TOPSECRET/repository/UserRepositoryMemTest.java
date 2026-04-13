@@ -174,4 +174,38 @@ class UserRepositoryMemTest {
         assertThrows(IllegalArgumentException.class,
                 () -> userRepository.findUserIdByUsername("   "));
     }
+
+
+    @Test
+    void shouldThrowExceptionWhenUserIdIsNull(){
+        assertThrows(IllegalArgumentException.class, () -> userRepository.findUserByID(null));
+    }
+
+
+    @Test
+    void shouldReturnUserWhenIdExists() {
+        // Arrange
+        User user1;
+        UserId id;
+
+        // Act
+        user1 = userRepository.createAndAdd("Antonio", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        id = user1.getId();
+        Optional<User> result = userRepository.findUserByID(id);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(user1, result.get());
+
+    }
+
+
+    @Test
+    void shouldReturnEmptyWhenUserNotFound() {
+        Optional<User> result = userRepository.findUserByID(new UserId("99"));
+
+        assertFalse(result.isPresent());
+    }
+
+
 }
