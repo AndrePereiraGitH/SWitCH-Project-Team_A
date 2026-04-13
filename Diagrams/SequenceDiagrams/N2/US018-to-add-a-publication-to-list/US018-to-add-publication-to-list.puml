@@ -2,30 +2,30 @@
 hide footbox
 autonumber
 
-title US018 - Add Publication to Collection Of Publication (Refactored)
+title US018 - Add Publication to Collection Of Publication
 
 actor "User" as User
 participant ":UI018" as UI
 
-participant ":AddCollectionOfPublicationsController" as Controller
+participant ":ToAddPublicationToAListOfMineController" as Controller
 
-participant ":CollectionOfPublicationsRepository" as CollectionRepo
+participant ":ICollectionOfPublicationsRepository" as CollectionRepo
 participant "userCollections : List<CollectionOfPublications>" as userCollections
-participant ":CollectionOfPublicationsMapper" as CollectionMapper
+participant ":US018CollectionOfPublicationsMapper" as CollectionMapper
 participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
 participant ":CollectionOfPublications" as CP
 participant "collectionDTO: CollectionOfPublicationsDTO" as collectionDTO
 
-participant ":LibraryRepository" as LibraryRepo
+participant ":ILibraryRepository" as LibraryRepo
 participant ":Library" as Library
 
-participant ":PublicationSampleRepository" as PublicationSampleRepo
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
 participant ":PublicationSampleMapper" as PublicationSampleMapper
 participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
 participant ":PublicationSample" as PublicationSample
 participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
 
-participant ":BibliographicalDataRepository" as BibliographicalDataRepo
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
 participant ":BibliographicalData" as BibliographicalData
 
 
@@ -33,16 +33,17 @@ participant ":BibliographicalData" as BibliographicalData
 User -> UI : I want to add one of my publications to one of my collections
 activate UI
 
+
 ' =========================
 ' Get CollectionOfPublication
 ' =========================
-UI -> Controller : getUserCollections(user)
+UI -> Controller : getUserCollections(userId)
 activate Controller
 
-Controller -> CollectionRepo : getUserCollections(user)
+Controller -> CollectionRepo : getUserCollections(userId)
 activate CollectionRepo
 
-CollectionRepo -> CollectionRepo : isFromUser(user)
+CollectionRepo -> CollectionRepo : isFromUser(userId)
 CollectionRepo -->> userCollections ** : <<create>>
 CollectionRepo --> Controller : userCollections
 deactivate CollectionRepo
@@ -80,77 +81,70 @@ deactivate UI
 User -> UI : Selected collection
 activate UI
 
-UI -> Controller : getPublicationsForCollection(collectionDTO)
+UI -> Controller : getPublicationsForCollection(collectionId)
 activate Controller
-
-' =====================================================
-' CONVERT DTO -> DOMAIN
-' =====================================================
-
-Controller -> CollectionRepo : findById(collectionDTO.id)
-activate CollectionRepo
-CollectionRepo --> Controller : userCollection
-deactivate CollectionRepo
 
 ' =====================================================
 ' GET USER LIBRARY
 ' =====================================================
 
-Controller -> LibraryRepo : findById(username)
-activate LibraryRepo
-LibraryRepo --> Controller : userLibrary
-deactivate LibraryRepo
-
-Controller -> Library : getAllPublications()
-activate Library
-Library --> Controller : allUserPublications
-deactivate Library
+Controller -> PublicationSampleRepo : getAllPublicationsInUserLibrary(userId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : allUserPublications
+deactivate PublicationSampleRepo
 
 ' =====================================================
-' GET PUBLICATIONS ALREADY IN COLLECTION
+' GET PUBLICATIONS ALREADY IN COLLECTION (NEW MODEL)
 ' =====================================================
 
-Controller -> CP : getPublications(userCollection)
-activate CP
-CP --> Controller : publicationsInCollection
-deactivate CP
+Controller -> PublicationSampleRepo : getPublicationsByCollectionID(collectionId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : publicationsInCollection
+deactivate PublicationSampleRepo
 
 ' =====================================================
 ' CALCULATE DIFFERENCE
 ' =====================================================
 
 Controller -> Controller : diff(allUserPublications, publicationsInCollection)
-' Controller --> Controller : publicationAvailable
+
+' =====================================================
+' GET TITLES (Controller responsibility)
+' =====================================================
+
+loop for each publicationSample in publicationAvailable
+    Controller -> PublicationSample : getBibliographicalDataID()
+    activate PublicationSample
+    PublicationSample --> Controller : bibliographicalDataId
+    deactivate PublicationSample
+
+    Controller -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> Controller : bibliographicalData
+    deactivate BibliographicalDataRepo
+
+    Controller -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> Controller : title
+    deactivate BibliographicalData
+
+    Controller -> Controller : titles.add(title)
+end
 
 ' =====================================================
 ' CONVERT RESULT TO DTO
 ' =====================================================
 
-Controller -> PublicationSampleMapper : toDTO(publicationAvailable)
+Controller -> PublicationSampleMapper : toDTOs(publicationAvailable, titles)
 activate PublicationSampleMapper
 
 PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
 
-loop for each publicationSample in publicationAvailable
+loop for each publicationSample
     PublicationSampleMapper -> PublicationSample : getId()
     activate PublicationSample
     PublicationSample --> PublicationSampleMapper : id
     deactivate PublicationSample
-
-    PublicationSampleMapper -> PublicationSample : getBibliographicalDataId()
-    activate PublicationSample
-    PublicationSample --> PublicationSampleMapper : bibliographicalDataId
-    deactivate PublicationSample
-
-    PublicationSampleMapper -> BibliographicalDataRepo : findById(bibliographicalDataId)
-    activate BibliographicalDataRepo
-    BibliographicalDataRepo --> PublicationSampleMapper : bibliographicalData
-    deactivate BibliographicalDataRepo
-
-    PublicationSampleMapper -> BibliographicalData : getTitle()
-    activate BibliographicalData
-    BibliographicalData --> PublicationSampleMapper : title
-    deactivate BibliographicalData
 
     PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
 
@@ -173,31 +167,32 @@ deactivate UI
 User -> UI : Selected publications
 activate UI
 
-UI -> Controller : addPublicationToCollection(collectionDTO, selectedPublicationDTO)
+UI -> Controller : addPublicationToCollection(collectionId, publicationSampleIds)
 activate Controller
 
 ' =====================================================
-' CONVERT DTO -> DOMAIN
+' CALL REPOSITORY WITH IDS
 ' =====================================================
 
-Controller -> CollectionRepo : findById(collectionDTO.id)
+Controller -> CollectionRepo : addPublicationToCollection(collectionId, publicationSampleIds)
 activate CollectionRepo
-CollectionRepo --> Controller : userCollection
-deactivate CollectionRepo
 
-loop for each publicationSampleDTO in selectedPublicationDTO
-    Controller -> PublicationSampleRepo : findById(publicationSampleDTO.id)
+' =====================================================
+' ASSIGN COLLECTION TO PUBLICATIONS (NEW MODEL)
+' =====================================================
+
+loop for each publicationSampleId
+    CollectionRepo -> PublicationSampleRepo : findPublicationSampleById(publicationSampleId)
     activate PublicationSampleRepo
-    PublicationSampleRepo --> Controller : publicationSample
+    PublicationSampleRepo --> CollectionRepo : publicationSample
     deactivate PublicationSampleRepo
+
+    CollectionRepo -> PublicationSample : assignToCollection(collectionId)
+    activate PublicationSample
+    PublicationSample --> CollectionRepo : true
+    deactivate PublicationSample
 end
 
-' =====================================================
-' ADD TO COLLECTION
-' =====================================================
-
-Controller -> CollectionRepo : addPublicationToCollection(userCollection, publicationSample)
-activate CollectionRepo
 CollectionRepo --> Controller : true
 deactivate CollectionRepo
 
