@@ -96,23 +96,4 @@ class US004GenreMapperTest {
         assertThrows(IllegalArgumentException.class,
                 () -> US004GenreMapper.toDTO(null));
     }
-
-    @Test
-    void shouldExtractGenreIDsFromDTOs() {
-
-        // ARRANGE
-        GenreID id1 = mock(GenreID.class);
-        GenreID id2 = mock(GenreID.class);
-
-        US004GenreDTO dto1 = new US004GenreDTO(id1, "Fantasy");
-        US004GenreDTO dto2 = new US004GenreDTO(id2, "Horror");
-
-        // ACT
-        List<GenreID> result = US004GenreMapper.getIds(List.of(dto1, dto2));
-
-        // ASSERT
-        assertEquals(2, result.size());
-        assertEquals(id1, result.get(0));
-        assertEquals(id2, result.get(1));
-    }
 }

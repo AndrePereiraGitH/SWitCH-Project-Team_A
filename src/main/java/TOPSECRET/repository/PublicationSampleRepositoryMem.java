@@ -161,6 +161,29 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // Specific Queries
     // -------------------------------------------------------------------------
 
+    @Override
+    public List<PublicationSampleId> findAllItemsIdByBibliographicalDataId(List<BibliographicalDataID> bdIds) {
+        if(bdIds == null) {
+            throw new IllegalArgumentException("BibliographicalDataID List cannot be null");
+        }
+
+        List<PublicationSampleId> publicationSampleIds = new ArrayList<>();
+
+        for (PublicationSample pbSample : allPublicationsInSystem){
+
+            BibliographicalDataID bdId = pbSample.getBibliographicalDataID();
+
+            for(BibliographicalDataID bdId2: bdIds){
+                if(bdId.equals(bdId2)){
+                    publicationSampleIds.add(pbSample.id());
+                    break;
+                }
+            }
+        }
+
+        return publicationSampleIds;
+    }
+
     /**
      * {@inheritDoc}
      */

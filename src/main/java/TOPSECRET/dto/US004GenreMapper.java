@@ -47,19 +47,4 @@ public class US004GenreMapper {
                 genre.getGenreType()
         );
     }
-    /**
-     * Extracts a list of GenreID from a list of US004GenreDTO.
-     *
-     * @param dtos list of US004GenreDTO
-     * @return list of GenreID
-     */
-    public static List<GenreID> getIds(List<US004GenreDTO> dtos) {
-        List<GenreID> list = new ArrayList<>();
-
-        for (US004GenreDTO dto : dtos) {
-            list.add(dto.id());
-        }
-
-        return list;
-    }
 }

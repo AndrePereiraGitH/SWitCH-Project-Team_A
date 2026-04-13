@@ -47,20 +47,4 @@ public class US004PublicationTypeMapper {
                 pt.getMediaFormat()
         );
     }
-
-    /**
-     * Extracts a list of PublicationTypeId from DTOs.
-     *
-     * @param dtos list of US004PublicationTypeDTO
-     * @return list of PublicationTypeId
-     */
-    public static List<PublicationTypeId> getIds(List<US004PublicationTypeDTO> dtos) {
-        List<PublicationTypeId> list = new ArrayList<>();
-
-        for (US004PublicationTypeDTO dto : dtos) {
-            list.add(dto.id());
-        }
-
-        return list;
-    }
 }

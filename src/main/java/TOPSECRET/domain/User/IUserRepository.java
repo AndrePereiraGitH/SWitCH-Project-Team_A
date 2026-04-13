@@ -39,6 +39,16 @@ public interface IUserRepository {
     User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole);
 
     /**
+     * Finds the unique user by their ID.
+     *
+     * @param userID the userID to search for; must not be null
+     * @return an {@link Optional} containing the {@link User} if a user with
+     *         the given ID exists, or {@link Optional#empty()} if not found
+     * @throws IllegalArgumentException if {@code userID} is null or blank
+     */
+    Optional<User> findUserByID(UserId userID);
+
+    /**
      * Finds the unique identifier of a user by their username.
      *
      * @param username the username to search for; must not be null or blank
@@ -47,4 +57,5 @@ public interface IUserRepository {
      * @throws IllegalArgumentException if {@code username} is null or blank
      */
     Optional<UserId> findUserIdByUsername(String username);
+
 }

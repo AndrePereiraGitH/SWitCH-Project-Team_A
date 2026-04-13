@@ -53,6 +53,10 @@ class US004ToRegisterAppraisalEntityControllerTest {
         Contact contact = mock(Contact.class);
         AppraisalEntity expected = mock(AppraisalEntity.class);
 
+
+        GenreID genreID = mock(GenreID.class);
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+
         when(appraisalRepository.createAndAdd(
                 eq("Test"),
                 eq(contact),
@@ -64,8 +68,8 @@ class US004ToRegisterAppraisalEntityControllerTest {
         AppraisalEntity result = controller.registerAppraisalEntity(
                 "Test",
                 contact,
-                List.of(mock(US004GenreDTO.class)),
-                List.of(mock(US004PublicationTypeDTO.class))
+                List.of(genreID),
+                List.of(publicationTypeId)
         );
 
         // ASSERT
@@ -151,7 +155,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                         "Test",
                         mock(Contact.class),
                         null,
-                        List.of(mock(US004PublicationTypeDTO.class))
+                        List.of(mock(PublicationTypeId.class))
                 ));
     }
 
@@ -171,7 +175,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 () -> controller.registerAppraisalEntity(
                         "Test",
                         mock(Contact.class),
-                        List.of(mock(US004GenreDTO.class)),
+                        List.of(mock(GenreID.class)),
                         List.of()
                 ));
     }

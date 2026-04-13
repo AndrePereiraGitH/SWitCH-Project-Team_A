@@ -88,28 +88,23 @@ public class US004ToRegisterAppraisalEntityController {
      *
      * @param name name of the entity
      * @param contact contact info
-     * @param selectedGenresDTO selected genres
-     * @param selectedPublicationTypesDTO selected publication types
+     * @param genresId selected genres
+     * @param publicationTypesId selected publication types
      * @return created AppraisalEntity
      */
     public AppraisalEntity registerAppraisalEntity(
             String name,
             Contact contact,
-            List<US004GenreDTO> selectedGenresDTO,
-            List<US004PublicationTypeDTO> selectedPublicationTypesDTO) {
+            List<GenreID> genresId,
+            List<PublicationTypeId> publicationTypesId) {
 
-        if (selectedGenresDTO == null || selectedGenresDTO.isEmpty()) {
+        if (genresId == null || genresId.isEmpty()) {
             throw new IllegalArgumentException("At least one Genre must be selected.");
         }
 
-        if (selectedPublicationTypesDTO == null || selectedPublicationTypesDTO.isEmpty()) {
+        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
             throw new IllegalArgumentException("At least one PublicationType must be selected.");
         }
-
-        List<GenreID> genresId = US004GenreMapper.getIds(selectedGenresDTO);
-
-
-        List<PublicationTypeId> publicationTypesId = US004PublicationTypeMapper.getIds(selectedPublicationTypesDTO);
 
         return _appraisalEntityRepository.createAndAdd(
                 name,
@@ -118,5 +113,4 @@ public class US004ToRegisterAppraisalEntityController {
                 publicationTypesId
         );
     }
-
 }
