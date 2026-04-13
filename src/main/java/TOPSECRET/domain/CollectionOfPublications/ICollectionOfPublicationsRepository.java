@@ -44,4 +44,13 @@ public interface ICollectionOfPublicationsRepository {
      */
 
     List<CollectionOfPublications> getUserCollections(UserId userId) throws IllegalArgumentException;
+
+    /**
+     * Returns all public collections that belong to a given genre — US020.
+     *
+     * @param genreId the genre of the collections
+     * @return list of collections of the given genre that are public
+     * @throws IllegalArgumentException if genreId is null
+     */
+    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
 }
