@@ -742,7 +742,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -754,7 +754,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        BibliographicalDataRepositoryMem repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         GenreID genreIdDouble = mock(GenreID.class);
 
@@ -787,7 +787,7 @@ class BibliographicalDataRepositoryMemTest {
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         when(bdDouble.getGenres()).thenReturn(List.of(genreDouble1));
 
-        BibliographicalDataRepositoryMem repo =
+        IBibliographicalDataRepository repo =
                 new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
 
         // Act
@@ -818,7 +818,7 @@ class BibliographicalDataRepositoryMemTest {
         when(bdDouble1.id()).thenReturn(idDouble1);
         when(bdDouble2.id()).thenReturn(idDouble2);
 
-        BibliographicalDataRepositoryMem repo =
+        IBibliographicalDataRepository repo =
                 new BibliographicalDataRepositoryMem(factory, List.of(bdDouble1, bdDouble2));
 
         // Act
