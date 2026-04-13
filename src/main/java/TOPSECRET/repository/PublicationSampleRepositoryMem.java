@@ -1,6 +1,7 @@
 package TOPSECRET.repository;
 
 
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * In-memory implementation of {@link IPublicationSampleRepository}.
@@ -211,6 +214,24 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
+    @Override
+    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds) {
+
+        if (bds == null) {
+            throw new IllegalArgumentException("List of BibliographicalDataId cannot be null.");
+        }
+
+        List<PublicationSampleId> samplesOfAuthor = allPublicationsInSystem.stream()
+                .filter(pub -> bds.contains(pub.getBibliographicalDataID()))
+                .map(PublicationSample::id)
+                .toList();
+
+        return samplesOfAuthor;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID) {
 
         List<PublicationSample> allPublications = allPublicationsInSystem.stream()
@@ -235,20 +256,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 //        return List.copyOf(listOfDifferentPublications);
 //    }
 
-    /**
-     * {@inheritDoc}
-     */
-//    public List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto) {
-//        if (pubsDto == null || pubsDto.isEmpty()) {
-//            throw new IllegalArgumentException("list of PublicationSampleDTO cannot be null or empty");
-//        }
-//
-//        List<PublicationSample> matched = allPublicationsInSystem.stream()
-//                .filter(ps -> pubsDto.stream().anyMatch(dto -> matches(ps, dto)))
-//                .toList();
-//
-//        return matched;
-//    }
 
     /**
      * {@inheritDoc}

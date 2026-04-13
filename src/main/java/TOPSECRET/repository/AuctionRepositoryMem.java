@@ -117,60 +117,20 @@ public class AuctionRepositoryMem implements IAuctionRepository {
     }
 
 
+
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author) {
-//
-//        if (author == null || author.name().isBlank())
-//            throw new IllegalArgumentException("Author cannot be null or blank");
-//
-//        List<Auction> authorAuctions = _auctionsList.stream().filter(auction -> auction.getListing().getItems()
-//                .stream()
-//                .anyMatch( item ->
-//                        item.getBibliographicalData()
-//                                .getAuthors().stream()
-//                                .anyMatch(a -> a.getName().equals(author.name()))
-//                )
-//        ).toList();
-//
-//        return authorAuctions;
-//    }
+    @Override
+    public List<Auction> findAuctionsByListingId(List<ListingId> listingIds) {
 
+        if (listingIds == null) {
+            throw new IllegalArgumentException("List of listingIds cannot be null.");
+        }
 
-    // US024 -------------------------------------------------------------------------------------------------------------
-    /**
-     * {@inheritDoc}
-     */
-//    @Override
-//    public List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO) {
-//
-//        if(publicationDTO == null){
-//            throw new NullPointerException("Publication can not be null");
-//        }
-//
-//        if(publicationDTO.isEmpty()){
-//            throw new IllegalArgumentException("Publication can not be empty");
-//        }
-//
-//        List<PublicationSample> listOfItemsOnAuctionByPublication = new ArrayList<>();
-//
-//        for (Auction auc : _auctionsList) {
-//            Listing listing = auc.getListing();
-//
-//            if (listing != null && listing.getItems() != null) {
-//
-//                for (PublicationSample pbSample : listing.getItems()) {
-//
-//                    if (pbSample.getBibliographicalData().getTitle() != null && pbSample.getBibliographicalData().getTitle().equals(publicationDTO)) {
-//                        listOfItemsOnAuctionByPublication.add(pbSample);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfItemsOnAuctionByPublication;
-//    }
+        return _auctionsList.stream()
+                .filter(auction -> listingIds.contains(auction.getListingId()))
+                .toList();
+    }
 
 }

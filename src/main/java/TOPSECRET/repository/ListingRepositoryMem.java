@@ -4,12 +4,15 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * In-memory implementation of {@link IListingRepository}.
@@ -226,5 +229,25 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listOfAuctionListingsOfGivenPublication;
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds) {
+
+        if (publicationSamplesIds == null) {
+            throw new IllegalArgumentException("List of PublicationSamplesId cannot be null.");
+        }
+
+        List<ListingId> listingIdsWithSamples = listings.stream()
+                .filter(listing -> listing.get_itemsId()
+                        .stream()
+                        .anyMatch(publicationSamplesIds::contains))
+                .map(Listing::id)
+                .toList();
+
+        return listingIdsWithSamples;
     }
 }

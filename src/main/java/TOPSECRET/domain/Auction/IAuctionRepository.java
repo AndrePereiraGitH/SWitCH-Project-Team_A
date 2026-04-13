@@ -1,8 +1,5 @@
 package TOPSECRET.domain.Auction;
 
-import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -84,30 +81,13 @@ public interface IAuctionRepository {
     /**
      * Returns the list of auctions containing at least one item whose publication
      * is associated with the given author.
+     * Retrieves all auctions whose listing identifier is contained in the given list.
      *
-     * @param author the author DTO used to filter auctions
-     * @return a list of auctions that contain at least one item by the given author
-     * @throws IllegalArgumentException if {@code author} is {@code null} or its name is blank
+     * @param listingIds the list of listing identifiers to search for
+     * @return a list of auctions associated with the given listing identifiers;
+     *         returns an empty list if no matching auctions are found
+     * @throws IllegalArgumentException if {@code listingIds} is {@code null}
      */
-//    List<Auction> getListOfItemsOnAuctionGivenAuthor(AuthorDTO_US026 author);
+    List<Auction> findAuctionsByListingId(List<ListingId> listingIds);
 
-    /**
-     * Retrieves all {@link PublicationSample} instances currently on auction
-     * that match the given publication title.
-     *
-     * <p>Iterates over all active auctions, inspecting each auction's
-     * {@link Listing} and its associated items. An item is included in the
-     * result if its bibliographical title is non-{@code null} and equals
-     * the provided {@code publicationDTO} identifier.</p>
-     *
-     * <p>Auctions with a {@code null} listing or a {@code null} item list
-     * are silently skipped.</p>
-     *
-     * @param publicationDTO the title of the publication to filter by;
-     *                       a {@code null} value will result in an empty list
-     * @return a {@link List} of {@link PublicationSample} objects whose
-     *         bibliographical title matches {@code publicationDTO};
-     *         never {@code null}, but may be empty if no matches are found
-     */
-//    List<PublicationSample> getListOfItemsOnAuctionByGivenPublication(String publicationDTO);
 }
