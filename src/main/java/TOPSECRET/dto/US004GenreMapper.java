@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,13 @@ import java.util.List;
  */
 public class US004GenreMapper {
 
-    public static List<US004GenreDTO> toDTO(List<Genre> genres) {
+    /**
+     * Converts a list of Genre domain objects into a list of US004GenreDTO.
+     *
+     * @param genres list of Genre domain objects
+     * @return list of US004GenreDTO; returns empty list if input is null
+     */
+    public static List<US004GenreDTO> toDTOs(List<Genre> genres) {
         if (genres == null) return new ArrayList<>();
 
         List<US004GenreDTO> list = new ArrayList<>();
@@ -23,6 +30,13 @@ public class US004GenreMapper {
         return list;
     }
 
+    /**
+     * Converts a single Genre domain object into a US004GenreDTO.
+     *
+     * @param genre Genre domain object
+     * @return corresponding US004GenreDTO
+     * @throws IllegalArgumentException if genre is null
+     */
     public static US004GenreDTO toDTO(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
@@ -32,5 +46,20 @@ public class US004GenreMapper {
                 genre.id(),
                 genre.getGenreType()
         );
+    }
+    /**
+     * Extracts a list of GenreID from a list of US004GenreDTO.
+     *
+     * @param dtos list of US004GenreDTO
+     * @return list of GenreID
+     */
+    public static List<GenreID> getIds(List<US004GenreDTO> dtos) {
+        List<GenreID> list = new ArrayList<>();
+
+        for (US004GenreDTO dto : dtos) {
+            list.add(dto.id());
+        }
+
+        return list;
     }
 }

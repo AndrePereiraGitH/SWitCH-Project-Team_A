@@ -28,8 +28,6 @@ public class US004ToRegisterAppraisalEntityController {
     private IGenreRepository _genreRepository;
     private IPublicationTypeRepository _publicationTypeRepository;
     private IAppraisalEntityRepository _appraisalEntityRepository;
-    private US004GenreMapper _US004GenreMapper;
-    private US004PublicationTypeMapper _US004PublicationTypeMapper;
 
     /**
      * Constructor.
@@ -37,15 +35,11 @@ public class US004ToRegisterAppraisalEntityController {
      * @param genreRepository Genre repository
      * @param publicationTypeRepository PublicationType repository
      * @param appraisalEntityRepository AppraisalEntity repository
-     * @param US004GenreMapper Genre mapper
-     * @param US004PublicationTypeMapper PublicationType mapper
      */
     public US004ToRegisterAppraisalEntityController(
             IGenreRepository genreRepository,
             IPublicationTypeRepository publicationTypeRepository,
-            IAppraisalEntityRepository appraisalEntityRepository,
-            US004GenreMapper US004GenreMapper,
-            US004PublicationTypeMapper US004PublicationTypeMapper) {
+            IAppraisalEntityRepository appraisalEntityRepository) {
 
         if (genreRepository == null) {
             throw new IllegalArgumentException("GenreRepository cannot be null.");
@@ -56,18 +50,10 @@ public class US004ToRegisterAppraisalEntityController {
         if (appraisalEntityRepository == null) {
             throw new IllegalArgumentException("AppraisalEntityRepository cannot be null.");
         }
-        if (US004GenreMapper == null) {
-            throw new IllegalArgumentException("GenreMapper cannot be null.");
-        }
-        if (US004PublicationTypeMapper == null) {
-            throw new IllegalArgumentException("PublicationTypeMapper cannot be null.");
-        }
 
         this._genreRepository = genreRepository;
         this._publicationTypeRepository = publicationTypeRepository;
         this._appraisalEntityRepository = appraisalEntityRepository;
-        this._US004GenreMapper = US004GenreMapper;
-        this._US004PublicationTypeMapper = US004PublicationTypeMapper;
     }
 
 
@@ -80,7 +66,7 @@ public class US004ToRegisterAppraisalEntityController {
 
         List<Genre> genres = _genreRepository.getAllGenres();
 
-        return _US004GenreMapper.toDTO(genres);
+        return US004GenreMapper.toDTOs(genres);
     }
 
     /**
@@ -93,7 +79,7 @@ public class US004ToRegisterAppraisalEntityController {
         List<PublicationType> publicationTypes =
                 _publicationTypeRepository.getAllPublicationTypes();
 
-        return _US004PublicationTypeMapper.toDTO(publicationTypes);
+        return US004PublicationTypeMapper.toDTOs(publicationTypes);
     }
 
 
@@ -120,17 +106,10 @@ public class US004ToRegisterAppraisalEntityController {
             throw new IllegalArgumentException("At least one PublicationType must be selected.");
         }
 
-        List<GenreID> genresId = new ArrayList<>();
+        List<GenreID> genresId = US004GenreMapper.getIds(selectedGenresDTO);
 
-        for (US004GenreDTO dto : selectedGenresDTO) {
-            genresId.add(dto.id());
-        }
 
-        List<PublicationTypeId> publicationTypesId = new ArrayList<>();
-
-        for (US004PublicationTypeDTO dto : selectedPublicationTypesDTO) {
-            publicationTypesId.add(dto.id());
-        }
+        List<PublicationTypeId> publicationTypesId = US004PublicationTypeMapper.getIds(selectedPublicationTypesDTO);
 
         return _appraisalEntityRepository.createAndAdd(
                 name,

@@ -16,8 +16,6 @@ class US004GenreMapperTest {
     void shouldMapGenreToDTO() {
 
         // ARRANGE
-        US004GenreMapper mapper = new US004GenreMapper();
-
         Genre genre = mock(Genre.class);
         GenreID id = mock(GenreID.class);
 
@@ -25,19 +23,17 @@ class US004GenreMapperTest {
         when(genre.getGenreType()).thenReturn("Fantasy");
 
         // ACT
-        List<US004GenreDTO> result = mapper.toDTO(List.of(genre));
+        US004GenreDTO result = US004GenreMapper.toDTO(genre);
 
         // ASSERT
-        assertEquals(id, result.get(0).id());
-        assertEquals("Fantasy", result.get(0).title());
+        assertEquals(id, result.id());
+        assertEquals("Fantasy", result.title());
     }
 
     @Test
     void shouldConvertGenreListToDTO() {
 
         // ARRANGE
-        US004GenreMapper mapper = new US004GenreMapper();
-
         Genre genre = mock(Genre.class);
         GenreID id = mock(GenreID.class);
 
@@ -47,7 +43,7 @@ class US004GenreMapperTest {
         List<Genre> genres = List.of(genre);
 
         // ACT
-        List<US004GenreDTO> result = mapper.toDTO(genres);
+        List<US004GenreDTO> result = US004GenreMapper.toDTOs(genres);
 
         // ASSERT
         assertEquals(1, result.size());
@@ -59,12 +55,10 @@ class US004GenreMapperTest {
     void shouldReturnEmptyListWhenInputIsEmpty() {
 
         // ARRANGE
-        US004GenreMapper mapper = new US004GenreMapper();
-
         List<Genre> genres = List.of();
 
         // ACT
-        List<US004GenreDTO> result = mapper.toDTO(genres);
+        List<US004GenreDTO> result = US004GenreMapper.toDTOs(genres);
 
         // ASSERT
         assertTrue(result.isEmpty());
@@ -74,8 +68,6 @@ class US004GenreMapperTest {
     void shouldConvertMultipleGenres() {
 
         // ARRANGE
-        US004GenreMapper mapper = new US004GenreMapper();
-
         Genre genre1 = mock(Genre.class);
         GenreID id1 = mock(GenreID.class);
         when(genre1.id()).thenReturn(id1);
@@ -89,11 +81,38 @@ class US004GenreMapperTest {
         List<Genre> genres = List.of(genre1, genre2);
 
         // ACT
-        List<US004GenreDTO> result = mapper.toDTO(genres);
+        List<US004GenreDTO> result = US004GenreMapper.toDTOs(genres);
 
         // ASSERT
         assertEquals(2, result.size());
         assertEquals("Fantasy", result.get(0).title());
         assertEquals("Horror", result.get(1).title());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenGenreIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> US004GenreMapper.toDTO(null));
+    }
+
+    @Test
+    void shouldExtractGenreIDsFromDTOs() {
+
+        // ARRANGE
+        GenreID id1 = mock(GenreID.class);
+        GenreID id2 = mock(GenreID.class);
+
+        US004GenreDTO dto1 = new US004GenreDTO(id1, "Fantasy");
+        US004GenreDTO dto2 = new US004GenreDTO(id2, "Horror");
+
+        // ACT
+        List<GenreID> result = US004GenreMapper.getIds(List.of(dto1, dto2));
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertEquals(id1, result.get(0));
+        assertEquals(id2, result.get(1));
     }
 }

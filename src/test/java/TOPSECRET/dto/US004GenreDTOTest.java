@@ -23,14 +23,33 @@ class US004GenreDTOTest {
         assertEquals("Fantasy", dto.title());
     }
 
-    /**
-     * Ensures exception when id is null.
-     */
     @Test
     void shouldThrowExceptionWhenIdIsNull() {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> new US004GenreDTO(null, "Fantasy"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTitleIsNull() {
+
+        // ARRANGE
+        GenreID id = mock(GenreID.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new US004GenreDTO(id, null));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTitleIsBlank() {
+
+        // ARRANGE
+        GenreID id = mock(GenreID.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new US004GenreDTO(id, " "));
     }
 }

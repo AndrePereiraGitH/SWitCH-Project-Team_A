@@ -43,16 +43,11 @@ class US004ToRegisterAppraisalEntityControllerTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         IAppraisalEntityRepository appraisalRepository = mock(IAppraisalEntityRepository.class);
 
-        US004GenreMapper US004GenreMapper = new US004GenreMapper();
-        US004PublicationTypeMapper US004PublicationTypeMapper = new US004PublicationTypeMapper();
-
         US004ToRegisterAppraisalEntityController controller =
                 new US004ToRegisterAppraisalEntityController(
                         genreRepository,
                         publicationTypeRepository,
-                        appraisalRepository,
-                        US004GenreMapper,
-                        US004PublicationTypeMapper
+                        appraisalRepository
                 );
 
         Contact contact = mock(Contact.class);
@@ -85,16 +80,11 @@ class US004ToRegisterAppraisalEntityControllerTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         IAppraisalEntityRepository appraisalRepository = mock(IAppraisalEntityRepository.class);
 
-        US004GenreMapper US004GenreMapper = new US004GenreMapper();
-        US004PublicationTypeMapper US004PublicationTypeMapper = new US004PublicationTypeMapper();
-
         US004ToRegisterAppraisalEntityController controller =
                 new US004ToRegisterAppraisalEntityController(
                         genreRepository,
                         publicationTypeRepository,
-                        appraisalRepository,
-                        US004GenreMapper,
-                        US004PublicationTypeMapper
+                        appraisalRepository
                 );
 
         Genre genre = mock(Genre.class);
@@ -120,16 +110,11 @@ class US004ToRegisterAppraisalEntityControllerTest {
         IPublicationTypeRepository publicationTypeRepository = mock(IPublicationTypeRepository.class);
         IAppraisalEntityRepository appraisalRepository = mock(IAppraisalEntityRepository.class);
 
-        US004GenreMapper US004GenreMapper = new US004GenreMapper();
-        US004PublicationTypeMapper US004PublicationTypeMapper = new US004PublicationTypeMapper();
-
         US004ToRegisterAppraisalEntityController controller =
                 new US004ToRegisterAppraisalEntityController(
                         genreRepository,
                         publicationTypeRepository,
-                        appraisalRepository,
-                        US004GenreMapper,
-                        US004PublicationTypeMapper
+                        appraisalRepository
                 );
 
         PublicationType type = mock(PublicationType.class);
@@ -157,9 +142,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 new US004ToRegisterAppraisalEntityController(
                         mock(IGenreRepository.class),
                         mock(IPublicationTypeRepository.class),
-                        mock(IAppraisalEntityRepository.class),
-                        new US004GenreMapper(),
-                        new US004PublicationTypeMapper()
+                        mock(IAppraisalEntityRepository.class)
                 );
 
         // ACT + ASSERT
@@ -180,9 +163,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 new US004ToRegisterAppraisalEntityController(
                         mock(IGenreRepository.class),
                         mock(IPublicationTypeRepository.class),
-                        mock(IAppraisalEntityRepository.class),
-                        new US004GenreMapper(),
-                        new US004PublicationTypeMapper()
+                        mock(IAppraisalEntityRepository.class)
                 );
 
         // ACT + ASSERT

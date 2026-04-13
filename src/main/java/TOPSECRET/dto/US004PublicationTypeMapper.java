@@ -1,6 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,13 @@ import java.util.List;
  */
 public class US004PublicationTypeMapper {
 
-    public static List<US004PublicationTypeDTO> toDTO(List<PublicationType> types) {
+    /**
+     * Converts a list of PublicationType domain objects into DTOs.
+     *
+     * @param types list of PublicationType domain objects
+     * @return list of US004PublicationTypeDTO; returns empty list if input is null
+     */
+    public static List<US004PublicationTypeDTO> toDTOs(List<PublicationType> types) {
         if (types == null) return new ArrayList<>();
 
         List<US004PublicationTypeDTO> list = new ArrayList<>();
@@ -23,6 +30,13 @@ public class US004PublicationTypeMapper {
         return list;
     }
 
+    /**
+     * Converts a single PublicationType domain object into DTO.
+     *
+     * @param pt PublicationType domain object
+     * @return corresponding US004PublicationTypeDTO
+     * @throws IllegalArgumentException if pt is null
+     */
     public static US004PublicationTypeDTO toDTO(PublicationType pt) {
         if (pt == null) {
             throw new IllegalArgumentException("Publication Type cannot be null");
@@ -32,5 +46,21 @@ public class US004PublicationTypeMapper {
                 pt.id(),
                 pt.getMediaFormat()
         );
+    }
+
+    /**
+     * Extracts a list of PublicationTypeId from DTOs.
+     *
+     * @param dtos list of US004PublicationTypeDTO
+     * @return list of PublicationTypeId
+     */
+    public static List<PublicationTypeId> getIds(List<US004PublicationTypeDTO> dtos) {
+        List<PublicationTypeId> list = new ArrayList<>();
+
+        for (US004PublicationTypeDTO dto : dtos) {
+            list.add(dto.id());
+        }
+
+        return list;
     }
 }

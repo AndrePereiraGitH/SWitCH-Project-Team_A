@@ -10,6 +10,13 @@ public record US004GenreDTO(
         String title
 ) {
 
+    /**
+     * Constructs a US004GenreDTO with validation.
+     *
+     * @param id unique identifier of the genre
+     * @param title genre title
+     * @throws IllegalArgumentException if id is null or title is null/blank
+     */
     public US004GenreDTO {
         if (id == null) {
             throw new IllegalArgumentException("GenreID cannot be null.");

@@ -31,4 +31,25 @@ class US004PublicationTypeDTOTest {
                 () -> new US004PublicationTypeDTO(null, "Book"));
     }
 
+    @Test
+    void shouldThrowExceptionWhenMediaFormatIsNull() {
+
+        // ARRANGE
+        PublicationTypeId id = mock(PublicationTypeId.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new US004PublicationTypeDTO(id, null));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMediaFormatIsBlank() {
+
+        // ARRANGE
+        PublicationTypeId id = mock(PublicationTypeId.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new US004PublicationTypeDTO(id, " "));
+    }
 }
