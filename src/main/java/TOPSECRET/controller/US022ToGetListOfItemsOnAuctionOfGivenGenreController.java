@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 
@@ -98,7 +97,7 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdId);
 
-        List<ListingId> listingId = listingRepository.findAllListingId(itemsId);
+        List<ListingId> listingId = listingRepository.findAllListingIdByPublicationSampleId(itemsId);
 
         List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(listingId);
 

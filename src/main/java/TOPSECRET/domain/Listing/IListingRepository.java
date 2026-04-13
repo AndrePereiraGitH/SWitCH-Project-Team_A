@@ -123,7 +123,7 @@ public interface IListingRepository {
      *
      * @throws IllegalArgumentException if {@code itemsId} is {@code null}
      */
-    List<ListingId> findAllListingId(List<PublicationSampleId> itemsId);
+    List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId);
 
 
     /**

@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.IAuctionRepository;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
@@ -81,7 +80,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(anyList()))
                 .thenReturn(itemIds);
 
-        when(listingRepository.findAllListingId(anyList()))
+        when(listingRepository.findAllListingIdByPublicationSampleId(anyList()))
                 .thenReturn(listingIds);
 
         when(auctionRepository.getListOfItemsOnAuctionGivenGenre(anyList()))
@@ -116,7 +115,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genreIdDouble)).thenReturn(List.of());
         when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(List.of())).thenReturn(List.of());
-        when(listingRepository.findAllListingId(List.of())).thenReturn(List.of());
+        when(listingRepository.findAllListingIdByPublicationSampleId(List.of())).thenReturn(List.of());
         when(auctionRepository.getListOfItemsOnAuctionGivenGenre(List.of())).thenReturn(List.of());
 
         // Act

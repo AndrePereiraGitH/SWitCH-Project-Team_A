@@ -654,7 +654,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findAllListingId_shouldThrowException_whenItemsIdIsNull() {
+    void findAllListingId_shouldThrowException_whenItemsIdByPublicationSampleIdIsNull() {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -662,11 +662,11 @@ class ListingRepositoryMemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findAllListingId(null));
+                () -> repo.findAllListingIdByPublicationSampleId(null));
     }
 
     @Test
-    void findAllListingId_shouldReturnListingId_whenItemMatches() throws InstanceAlreadyExistsException {
+    void findAllListingId_shouldReturnListingIdByPublicationSampleId_whenItemMatches() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -684,7 +684,7 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // Act
-        List<ListingId> result = repo.findAllListingId(List.of(itemIdDouble));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(itemIdDouble));
 
         // Assert
         assertEquals(1, result.size());
@@ -692,7 +692,7 @@ class ListingRepositoryMemTest {
     }
 
     @Test
-    void findAllListingId_shouldReturnEmpty_whenNoItemMatches() throws InstanceAlreadyExistsException {
+    void findAllListingIdByPublicationSampleId_shouldReturnEmpty_whenNoItemMatches() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -708,14 +708,14 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // Act
-        List<ListingId> result = repo.findAllListingId(List.of(itemDouble2));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(itemDouble2));
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findAllListingId_shouldReturnMultipleListingIds_whenMultipleMatches() throws InstanceAlreadyExistsException {
+    void findAllListingId_shouldReturnMultipleListingIdByPublicationSampleIds_whenMultipleMatches() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
@@ -741,7 +741,7 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title2", List.of(pub1Id), SaleType.DIRECT_SALE, price1, "description", sellerId, List.of(pic1));
 
         // Act
-        List<ListingId> result = repo.findAllListingId(List.of(itemIdDouble));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(itemIdDouble));
 
         // Assert
         assertEquals(2, result.size());

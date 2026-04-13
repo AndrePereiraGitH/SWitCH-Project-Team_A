@@ -147,7 +147,7 @@ public class ListingRepositoryMem implements IListingRepository {
     }
 
     @Override
-    public List<ListingId> findAllListingId(List<PublicationSampleId> itemsId) {
+    public List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId) {
         if(itemsId == null){
             throw new IllegalArgumentException("itemsId cannot be null");
         }
