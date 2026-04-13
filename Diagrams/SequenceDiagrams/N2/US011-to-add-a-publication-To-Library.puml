@@ -12,7 +12,9 @@ participant ":AddPublicationToLibraryController" as Ctrl
 
 participant ":IPublicationSampleRepository" as PubRepo
 
-participant "ILibraryRepository" as LibDomain
+participant ":ILibraryRepository" as LibDomain
+
+participant ":PublicationSample" as PublicationSample
 
 
 autonumber
@@ -31,7 +33,7 @@ deactivate Ctrl
 UI --> User: "Select Publication you wish\n to add to your Library"
 deactivate UI
 
-User -> UI: "I want to add <publicationSampleId>\n to my Library!"
+User -> UI: "I want to add <publicationSample>\n to my Library!"
 activate UI
 UI -> Ctrl: addPublicationToLibrary\n(UserId userId, PublicationSampleId publicationSampleId)
 activate Ctrl
@@ -42,12 +44,18 @@ deactivate LibDomain
 Ctrl -> PubRepo: findPublicationSampleById\n(publicationSampleId)
 activate PubRepo
 PubRepo --> Ctrl: pbSample
-Ctrl -> PubRepo: addPublicationToLibrary(libraryId)
+deactivate PubRepo
+Ctrl -> PubRepo: addPublicationToLibrary\n(userId, publicationSampleId)
+activate PubRepo
+PubRepo -> PublicationSample: addPublicationToLibrary\n(publicationSample, libraryId)
+activate PublicationSample
+PublicationSample --> PubRepo: true
+deactivate PublicationSample
 PubRepo --> Ctrl: true
 deactivate PubRepo
 Ctrl --> UI: true
 deactivate Ctrl
-UI --> User: "<PublicationSample>\n successfully added to your Library!"
+UI --> User: "<publicationSample>\n successfully added to your Library!"
 deactivate UI
 
 @enduml

@@ -6,22 +6,28 @@ class UI011 {
 }
 
 class US011AddPublicationToLibraryController {
-    + getListOfPublicationsNotInLibrary(UserId userId)
-    + addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId)
+    + getListOfPublicationsNotInLibrary(UserId userId) : List<PublicationSample>
+    + addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : boolean
 }
 
 
 
 class IPublicationSampleRepository {
-    + getAllPublicationsFromUserWithoutLibrary(UserId userId)
-    +findPublicationSampleById(publicationSampleId)
+    + getAllPublicationsFromUserWithoutLibrary(UserId userId) : List<PublicationSample>
+    + findPublicationSampleById(publicationSampleId) : Optional.of(pbSample)
+    + addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : boolean
+
+}
+
+class PublicationSample {
+    + addPublicationToLibrary(LibraryId libraryId) : LibraryId
 
 }
 
 
 
 class ILibraryRepository {
-    + getLibraryByUserId(UserId userId)
+    + getLibraryByUserId(UserId userId) : Library
 
 }
 
@@ -31,6 +37,7 @@ class ILibraryRepository {
 UI011 ..> US011AddPublicationToLibraryController : uses
 US011AddPublicationToLibraryController ..> IPublicationSampleRepository: interacts with
 US011AddPublicationToLibraryController ..>ILibraryRepository : interacts with
+IPublicationSampleRepository ..> PublicationSample : calls for
 
 
 
