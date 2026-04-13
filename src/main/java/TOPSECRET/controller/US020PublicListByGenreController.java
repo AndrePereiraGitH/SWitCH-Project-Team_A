@@ -5,6 +5,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
@@ -55,8 +56,14 @@ public class US020PublicListByGenreController {
      *
      * @return a list containing all {@link Genre} instances
      */
-    public List<Genre> getGenres() {
-        return _genreRepository.getAllGenres();
+    public List<US013GenreDTO> getGenres() {
+        List<Genre> genreList = _genreRepository.getAllGenres();
+        List<US013GenreDTO> genreDTOlist = new ArrayList<>();
+
+        for (Genre genre : genreList) {
+            genreDTOlist.add(new US013GenreDTO(genre.getGenreType()));
+        }
+        return genreDTOlist;
     }
 
 
