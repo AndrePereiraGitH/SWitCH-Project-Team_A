@@ -71,7 +71,8 @@ public class GenreRepositoryMem implements IGenreRepository {
         }
         throw new IllegalArgumentException("Genre not found.");
     }
-    // ----------------------------- US004 ends -------------------------------
+
+
     // ----------------------------- US013 starts -------------------------------
 
     /**
@@ -81,6 +82,7 @@ public class GenreRepositoryMem implements IGenreRepository {
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
+    // ----------------------------- US004 ends -------------------------------
 
     /**
      * Checks whether a genre already exists in the genre collection.

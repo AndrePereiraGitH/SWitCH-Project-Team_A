@@ -76,7 +76,8 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
 
     // Getters
-    public AppraisalEntityId getId () {
+    @Override
+    public AppraisalEntityId id () {
         return _apEnId;
     }
 
@@ -118,13 +119,6 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
                 '}';
     }
 
-
-    /**
-     * Compares this entity with another based on identifier.
-     *
-     * @param obj object to compare
-     * @return true if both entities have the same id, false otherwise
-     */
     @Override
     public boolean equals(Object obj) {
 
@@ -140,32 +134,11 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         return false;
     }
 
-    /**
-     * Returns the hash code based on the identifier.
-     *
-     * @return hash code value
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_apEnId);
     }
 
-    /**
-     * Returns the entity id (DDD contract).
-     *
-     * @return AppraisalEntityId
-     */
-    @Override
-    public AppraisalEntityId id() {
-        return _apEnId;
-    }
-
-    /**
-     * Compares entities based on business identity.
-     *
-     * @param obj object to compare
-     * @return true if all attributes are equal, false otherwise
-     */
     @Override
     public boolean sameAs(Object obj) {
         if (!(obj instanceof AppraisalEntity)) {

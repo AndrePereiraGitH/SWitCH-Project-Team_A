@@ -1,7 +1,5 @@
 package TOPSECRET.controller;
 
-
-
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.ValueObjects.Contact;
@@ -9,19 +7,35 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.dto.GenreDetailsDTO_US004;
-import TOPSECRET.dto.PublicationTypeDTO_US004;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.dto.US004GenreDTO;
+import TOPSECRET.dto.US004PublicationTypeDTO;
+import TOPSECRET.dto.US004GenreMapper;
+import TOPSECRET.dto.US004PublicationTypeMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Controller responsible for US004 - Register Appraisal Entity.
+ *
+ * Coordinates interaction between UI, domain repositories and mappers.
+ */
 public class US004ToRegisterAppraisalEntityController {
 
     private IGenreRepository _genreRepository;
     private IPublicationTypeRepository _publicationTypeRepository;
     private IAppraisalEntityRepository _appraisalEntityRepository;
 
-
+    /**
+     * Constructor.
+     *
+     * @param genreRepository Genre repository
+     * @param publicationTypeRepository PublicationType repository
+     * @param appraisalEntityRepository AppraisalEntity repository
+     */
     public US004ToRegisterAppraisalEntityController(
             IGenreRepository genreRepository,
             IPublicationTypeRepository publicationTypeRepository,
@@ -30,11 +44,9 @@ public class US004ToRegisterAppraisalEntityController {
         if (genreRepository == null) {
             throw new IllegalArgumentException("GenreRepository cannot be null.");
         }
-
         if (publicationTypeRepository == null) {
             throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null.");
         }
-
         if (appraisalEntityRepository == null) {
             throw new IllegalArgumentException("AppraisalEntityRepository cannot be null.");
         }
@@ -45,31 +57,46 @@ public class US004ToRegisterAppraisalEntityController {
     }
 
 
-    public List<GenreDetailsDTO_US004> getAllGenres() {
+    /**
+     * Retrieves all Genres and converts them into DTOs.
+     *
+     * @return list of Genre DTOs
+     */
+    public List<US004GenreDTO> getAllGenres() {
 
         List<Genre> genres = _genreRepository.getAllGenres();
 
-        return GenreDetailsDTO_US004.genreToDTO(genres);
+        return US004GenreMapper.toDTOs(genres);
     }
 
-
-    public List<PublicationTypeDTO_US004> getAllPublicationTypes() {
+    /**
+     * Retrieves all PublicationTypes and converts them into DTOs.
+     *
+     * @return list of PublicationType DTOs
+     */
+    public List<US004PublicationTypeDTO> getAllPublicationTypes() {
 
         List<PublicationType> publicationTypes =
                 _publicationTypeRepository.getAllPublicationTypes();
 
-        List<PublicationTypeDTO_US004> result =
-                PublicationTypeDTO_US004.publicationTypesToDTO(publicationTypes);
-
-        return result;
+        return US004PublicationTypeMapper.toDTOs(publicationTypes);
     }
 
 
+    /**
+     * Registers a new AppraisalEntity.
+     *
+     * @param name name of the entity
+     * @param contact contact info
+     * @param selectedGenresDTO selected genres
+     * @param selectedPublicationTypesDTO selected publication types
+     * @return created AppraisalEntity
+     */
     public AppraisalEntity registerAppraisalEntity(
             String name,
             Contact contact,
-            List<GenreDetailsDTO_US004> selectedGenresDTO,
-            List<PublicationTypeDTO_US004> selectedPublicationTypesDTO) {
+            List<US004GenreDTO> selectedGenresDTO,
+            List<US004PublicationTypeDTO> selectedPublicationTypesDTO) {
 
         if (selectedGenresDTO == null || selectedGenresDTO.isEmpty()) {
             throw new IllegalArgumentException("At least one Genre must be selected.");
@@ -79,12 +106,16 @@ public class US004ToRegisterAppraisalEntityController {
             throw new IllegalArgumentException("At least one PublicationType must be selected.");
         }
 
+        List<GenreID> genresId = US004GenreMapper.getIds(selectedGenresDTO);
+
+
+        List<PublicationTypeId> publicationTypesId = US004PublicationTypeMapper.getIds(selectedPublicationTypesDTO);
 
         return _appraisalEntityRepository.createAndAdd(
                 name,
                 contact,
-                selectedGenresDTO,
-                selectedPublicationTypesDTO
+                genresId,
+                publicationTypesId
         );
     }
 
