@@ -622,13 +622,44 @@ class ListingTest {
     }
 
     @Test
-    void isListingLinkedToAnAuction_shouldReturnFalse_ifSaleTypeIsAuction(){
+    void isListingLinkedToAnAuction_shouldReturnFalse_ifSaleTypeIsNotAuction(){
 
         //Arrange
         Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription,validSellerId, validPictures);
 
         //Act
         boolean result = validListing.isListingLinkedToAnAuction();
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    // ========== isListingLinkedToADirectSale TESTS ==========
+
+
+    @Test
+    void isListingLinkedToADirectSale_shouldReturnTrue_ifSaleTypeIsDirectSale(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToADirectSale();
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isListingLinkedToADirectSale_shouldReturnFalse_ifSaleTypeIsNotDirectSale(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.AUCTION, validPrice, validDescription,validSellerId, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToADirectSale();
 
         //Assert
         assertFalse(result);
