@@ -27,14 +27,6 @@ public class US022AuctionMapper {
             throw new IllegalArgumentException("auction cannot be null");
         }
 
-        if (auction.id() == null) {
-            throw new IllegalArgumentException("auction id cannot be null");
-        }
-
-        if (auction.getListingId() == null) {
-            throw new IllegalArgumentException("listingId cannot be null");
-        }
-
         return new US022AuctionDTO(
                 auction.id().getId(),
                 auction.getListingId().getId()
@@ -57,10 +49,6 @@ public class US022AuctionMapper {
         List<US022AuctionDTO> result = new ArrayList<>();
 
         for (Auction auction : auctions) {
-
-            if (auction == null) {
-                throw new IllegalArgumentException("auction in list cannot be null");
-            }
 
             result.add(toDTO(auction));
         }

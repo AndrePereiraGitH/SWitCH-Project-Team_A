@@ -586,24 +586,31 @@ class EditionTest {
     @Test
     void equals_null_returnsFalse() {
 
+        // Act
         Edition e = createValidEdition();
 
+        // Assert
         assertFalse(e.equals(null));
     }
 
     @Test
     void equals_differentClass_returnsFalse() {
 
+        // Act
         Edition e = createValidEdition();
 
+
+        // Assert
         assertFalse(e.equals("not an edition"));
     }
 
     @Test
     void equals_sameInstance_returnsTrue() {
 
+        // Act
         Edition e = createValidEdition();
 
+        // Assert
         assertTrue(e.equals(e));
     }
 
