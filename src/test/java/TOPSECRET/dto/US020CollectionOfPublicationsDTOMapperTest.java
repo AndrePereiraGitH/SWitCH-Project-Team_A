@@ -1,7 +1,18 @@
 package TOPSECRET.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
 
 /**
  * Unit tests for {@link US020CollectionOfPublicationsDTOMapper}.
@@ -14,87 +25,88 @@ import org.junit.jupiter.api.Test;
 
 class US020CollectionOfPublicationsDTOMapperTest {
 
+    IUserRepository userRepo;
+    UserId userId;
+    User user;
+    CollectionOfPublications collectionDouble;
+
+    @BeforeEach
+    void setUp() {
+        userRepo = mock(IUserRepository.class);
+        userId = mock(UserId.class);
+        user = mock(User.class);
+        collectionDouble = mock(CollectionOfPublications.class);
+    }
+
     /**
      * Verifies that the DTO is created successfully when valid
-     * list name and owner username are provided.
+     * collections and user repository is provided.
      * Also confirms that the stored values match the input.
      */
     @Test
     void shouldCreateDTOWithValidData()
     {
         // Arrange
-        String collectionName = "Collection name";
-        String userName = "Antonio";
+        List<CollectionOfPublications> collections = List.of(collectionDouble);
+        when(collectionDouble.getOwnerId()).thenReturn(userId);
+        when(userRepo.findUserByID(userId)).thenReturn(Optional.ofNullable(user));
+        when(collectionDouble.getCollectionName()).thenReturn("Collection Name");
+        when(user.getUserName()).thenReturn("Antonio");
 
         // Act
-        US020CollectionOfPublicationsDTO dto =
-                US020CollectionOfPublicationsDTOMapper.toDTO(collectionName, userName);
+        List<US020CollectionOfPublicationsDTO> dto =
+                US020CollectionOfPublicationsDTOMapper.toDTO(collections, userRepo);
 
         // Assert
         assertNotNull(dto);
-        assertEquals(collectionName, dto.collectionName());
-        assertEquals(userName, dto.userName());
+        assertEquals("Collection Name", dto.get(0).collectionName());
+        assertEquals("Antonio", dto.get(0).userName());
     }
 
-    /**
-     * Ensures that leading and trailing whitespace in the constructor
-     * parameters is automatically trimmed before storing the values.
-     */
     @Test
-    void shouldTrimInputValues()
-    {
-        US020CollectionOfPublicationsDTO dto =
-                US020CollectionOfPublicationsDTOMapper.toDTO("  List Name  ", "  Raul  ");
+    void shouldTrimCollectionNameAndUserName() {
+        // Arrange
+        List<CollectionOfPublications> collections = List.of(collectionDouble);
 
-        assertEquals("List Name", dto.collectionName());
-        assertEquals("Raul", dto.userName());
+        when(collectionDouble.getCollectionName()).thenReturn("  Collection Name  ");
+        when(collectionDouble.getOwnerId()).thenReturn(userId);
+        when(userRepo.findUserByID(userId)).thenReturn(Optional.of(user));
+        when(user.getUserName()).thenReturn("  Antonio  ");
+
+        // Act
+        List<US020CollectionOfPublicationsDTO> dto =
+                US020CollectionOfPublicationsDTOMapper.toDTO(collections, userRepo);
+
+        // Assert
+        assertEquals("Collection Name", dto.get(0).collectionName());
+        assertEquals("Antonio", dto.get(0).userName());
     }
 
-    /**
-     * Verifies that an {@link IllegalArgumentException} is thrown
-     * when the list name is {@code null}.
-     */
     @Test
-    void shouldThrowWhenListNameIsNull()
-    {
-        assertThrows(IllegalArgumentException.class, () ->
-                US020CollectionOfPublicationsDTOMapper.toDTO(null, "Raul")
+    void shouldThrowExceptionWhenUserNotFound() {
+        // Arrange
+        when(collectionDouble.getCollectionName()).thenReturn("Collection name");
+        when(collectionDouble.getOwnerId()).thenReturn(userId);
+
+        when(userRepo.findUserByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> US020CollectionOfPublicationsDTOMapper.toDTO(List.of(collectionDouble), userRepo)
         );
+
+        assertEquals("User not found", exception.getMessage());
     }
 
-    /**
-     * Verifies that an {@link IllegalArgumentException} is thrown
-     * when the list name is blank or contains only whitespace.
-     */
     @Test
-    void shouldThrowWhenListNameIsBlank()
-    {
-        assertThrows(IllegalArgumentException.class, () ->
-                US020CollectionOfPublicationsDTOMapper.toDTO("   ", "Raul")
-        );
-    }
+    void shouldReturnEmptyListWhenInputIsEmpty() {
+        // Act
+        List<US020CollectionOfPublicationsDTO> result =
+                US020CollectionOfPublicationsDTOMapper.toDTO(List.of(), userRepo);
 
-    /**
-     * Verifies that an {@link IllegalArgumentException} is thrown
-     * when the owner username is {@code null}.
-     */
-    @Test
-    void shouldThrowWhenOwnerUsernameIsNull()
-    {
-        assertThrows(IllegalArgumentException.class, () ->
-                US020CollectionOfPublicationsDTOMapper.toDTO("List Name", null)
-        );
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
-
-    /**
-     * Verifies that an {@link IllegalArgumentException} is thrown
-     * when the owner username is blank or contains only whitespace.
-     */
-    @Test
-    void shouldThrowWhenOwnerUsernameIsBlank() {
-        assertThrows(IllegalArgumentException.class, () ->
-                US020CollectionOfPublicationsDTOMapper.toDTO("List Name", "   ")
-        );
-    }
-
 }

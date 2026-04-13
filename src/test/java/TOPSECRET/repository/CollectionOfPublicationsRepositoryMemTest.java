@@ -4,17 +4,13 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
-
-import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -105,7 +101,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         IUserRepository userRepo = mock(IUserRepository.class);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenreId(null, userRepo));
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenreId(null));
     }
 
 
@@ -113,31 +109,37 @@ class CollectionOfPublicationsRepositoryMemTest {
     void shouldReturnAllPublicCollectionsOfAGivenGenre() {
         // Arrange
         GenreID desiredGenre = mock(GenreID.class);
-        UserId userId = mock(UserId.class);
-        IUserRepository userRepo = mock(IUserRepository.class);
-        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
-        User user = mock(User.class);
+        UserId userDouble = mock(UserId.class);
+
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+
+        when(factory.create("Collection 1 name", desiredGenre, userDouble)).thenReturn(c1);
+        when(factory.create("Collection 2 name", desiredGenre, userDouble)).thenReturn(c2);
+
+        when(c1.getOwnerId()).thenReturn(userDouble);
+        when(c1.getCollectionName()).thenReturn("Collection 1 name");
+        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c1.getIsPrivate()).thenReturn(false);
+
+        when(c2.getOwnerId()).thenReturn(userDouble);
+        when(c2.getCollectionName()).thenReturn("Collection 2 name");
+        when(c2.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c2.getIsPrivate()).thenReturn(false);
 
         sut = new CollectionOfPublicationsRepositoryMem(factory);
 
-        when(factory.create("Collection test", desiredGenre, userId)).thenReturn(collectionDouble);
-        when(collectionDouble.getIsPrivate()).thenReturn(false);
-        when(collectionDouble.getCollectionGenre()).thenReturn(desiredGenre);
-        when(collectionDouble.getOwnerId()).thenReturn(userId);
-        when(collectionDouble.getCollectionName()).thenReturn("Collection test");
-
-        when(userRepo.findUserByID(userId)).thenReturn(Optional.of(user));
-        when(user.getUserName()).thenReturn("Owner test");
-
         // Act
-        sut.createAndAdd(userId, "Collection test", desiredGenre);
-        List<US020CollectionOfPublicationsDTO> result = sut.findPublicCollectionsByGenreId(desiredGenre, userRepo);
+        sut.createAndAdd(userDouble, "Collection 1 name", desiredGenre);
+        sut.createAndAdd(userDouble, "Collection 2 name", desiredGenre);
+
+        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenreId(desiredGenre);
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Collection test", result.get(0).collectionName());
-        assertEquals("Owner test", result.get(0).userName());
+        assertEquals(2, result.size());
+        assertEquals(c1, result.get(0));
+        assertEquals(c2, result.get(1));
     }
 
 
@@ -145,11 +147,10 @@ class CollectionOfPublicationsRepositoryMemTest {
     void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
         GenreID desiredGenres = mock(GenreID.class);
-        IUserRepository userRepo = mock(IUserRepository.class);
         sut = new CollectionOfPublicationsRepositoryMem(factory);
 
         // Act
-        List<US020CollectionOfPublicationsDTO> result = sut.findPublicCollectionsByGenreId(desiredGenres, userRepo);
+        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenreId(desiredGenres);
 
         // Assert
         assertNotNull(result);

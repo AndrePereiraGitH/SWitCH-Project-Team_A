@@ -1,5 +1,12 @@
 package TOPSECRET.dto;
 
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Utility class responsible for mapping raw collection and user data
  * into {@link US020CollectionOfPublicationsDTO} instances.
@@ -19,27 +26,32 @@ public class US020CollectionOfPublicationsDTOMapper {
     }
 
     /**
-     * Converts a collection name and an owner username into a DTO.
-     * <p>
-     * Both input parameters are validated to ensure they are not null.
-     * Leading and trailing whitespace is removed from both values.
-     * </p>
+     * Converts a list of {@link CollectionOfPublications} entities into a list of
+     * {@link US020CollectionOfPublicationsDTO} objects.
      *
-     * @param collectionName the name of the collection to be mapped
-     * @param ownerName the username of the collection owner
-     * @return a new {@link US020CollectionOfPublicationsDTO} containing the normalized data
-     * @throws IllegalArgumentException if either {@code collection} or {@code ownerName} is null
+     * <p>For each collection, this method retrieves the collection name and resolves
+     * the owner's username using the provided {@link IUserRepository}. If a user
+     * corresponding to a collection's owner ID is not found, an exception is thrown.</p>
+     *
+     * @param collections the list of {@link CollectionOfPublications} to be converted;
+     *                    must not be null
+     * @param userRepo the repository used to fetch user information by owner ID;
+     *                 must not be null
+     * @return a list of {@link US020CollectionOfPublicationsDTO} containing the
+     *         collection name and owner username
+     * @throws IllegalStateException if a user corresponding to any collection's owner ID is not found
      */
-    public static US020CollectionOfPublicationsDTO toDTO(String collectionName, String ownerName) {
+    public static List<US020CollectionOfPublicationsDTO> toDTO(List<CollectionOfPublications> collections, IUserRepository userRepo) {
 
-        if (collectionName == null || collectionName.isBlank()) {
-            throw new IllegalArgumentException("Collection name cannot be null");
+        List<US020CollectionOfPublicationsDTO> dto = new ArrayList<>();
+
+        for (CollectionOfPublications c : collections) {
+            String collectionName = c.getCollectionName();
+            String ownerName = userRepo.findUserByID(c.getOwnerId())
+                    .map(User::getUserName)
+                    .orElseThrow(() -> new IllegalStateException("User not found"));
+            dto.add(new US020CollectionOfPublicationsDTO(collectionName.trim(), ownerName.trim()));
         }
-
-        if (ownerName == null || ownerName.isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null");
-        }
-
-        return new US020CollectionOfPublicationsDTO(collectionName.trim(), ownerName.trim());
+        return dto;
     }
 }

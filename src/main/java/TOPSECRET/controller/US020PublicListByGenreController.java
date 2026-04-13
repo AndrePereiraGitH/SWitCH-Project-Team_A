@@ -1,11 +1,13 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
 import TOPSECRET.repository.GenreRepositoryMem;
 
 import java.util.List;
@@ -41,7 +43,6 @@ public class US020PublicListByGenreController {
             ICollectionOfPublicationsRepository collectionRepo,
             IUserRepository userRepo
             ) {
-
         this._genreRepository = genreRepository;
         this._collectionRepo = collectionRepo;
         this._userRepo = userRepo;
@@ -71,6 +72,8 @@ public class US020PublicListByGenreController {
             throw new IllegalArgumentException("Genre can't be null.");
         }
 
-        return _collectionRepo.findPublicCollectionsByGenreId(genreId, _userRepo);
+        List<CollectionOfPublications> collections = _collectionRepo.findPublicCollectionsByGenreId(genreId);
+
+        return US020CollectionOfPublicationsDTOMapper.toDTO(collections, _userRepo);
     }
 }
