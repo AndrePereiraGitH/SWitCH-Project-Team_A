@@ -153,6 +153,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSampleId> findPublicationSampleIdsByEditionIds (List<EditionID> listOfEditionIds) {
+        if (listOfEditionIds == null) {
+            throw new NullPointerException("listOfEditionIds cannot be null");
+        }
+
+        List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
+
+        for(EditionID editionId: listOfEditionIds) {
+            for (PublicationSample pbSample : allPublicationsInSystem) {
+                if (pbSample.getEditionID().equals(editionId)) {
+                    listOfPubSampleIds.add(pbSample.id());
+                }
+            }
+        }
+        return listOfPubSampleIds;
+    }
+
     // -------------------------------------------------------------------------
     // Specific Queries
     // -------------------------------------------------------------------------

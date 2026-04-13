@@ -90,6 +90,23 @@ public interface    IPublicationSampleRepository {
      */
     List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId);
 
+    /**
+     * Retrieves all {@link PublicationSampleId} entities associated with a given {@link EditionID}.
+     * <p>
+     * This method performs a repository query and returns every publication sample ID
+     * whose edition matches the provided identifier. If no samples exist for the
+     * given edition, an empty list is returned.
+     * </p>
+     *
+     * @param listOfEditionIds the list of identifiers of the editions whose publication samples should be retrieved;
+     *                  must not be null
+     * @return a list of {@link PublicationSampleId} objects linked to the specified edition;
+     *         never null, but may be empty
+     *
+     * @throws IllegalArgumentException if {@code editionID} is null
+     */
+    List<PublicationSampleId> findPublicationSampleIdsByEditionIds (List<EditionID> listOfEditionIds);
+
     // -------------------------------------------------------------------------
     // Specific Queries
     // -------------------------------------------------------------------------
