@@ -185,4 +185,51 @@ class US011AddPublicationToLibraryControllerTest {
         assertThrows(InstanceNotFoundException.class,
                 () -> controller.addPublicationToLibrary(userIdDouble, idDouble));
     }
+
+    @Test
+    void addPublicationToLibrary_shouldCallRepositoryWithCorrectArguments()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+
+        when(pubSampleRepositoryDouble.findPublicationSampleById(idDouble))
+                .thenReturn(Optional.of(publication1));
+
+        // Act
+        boolean result = controller.addPublicationToLibrary(userIdDouble, idDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void addPublicationToLibrary_nullUserId_throwsException() {
+
+        // Arrange
+        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.addPublicationToLibrary(null, idDouble));
+    }
+
+    @Test
+    void addPublicationToLibrary_repositoryThrowsException_propagatesException()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+
+        when(pubSampleRepositoryDouble.findPublicationSampleById(idDouble))
+                .thenReturn(Optional.of(publication1));
+
+        doThrow(new IllegalArgumentException("Already assigned"))
+                .when(pubSampleRepositoryDouble)
+                .addPublicationToLibrary(publication1, libraryIdDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.addPublicationToLibrary(userIdDouble, idDouble));
+    }
 }

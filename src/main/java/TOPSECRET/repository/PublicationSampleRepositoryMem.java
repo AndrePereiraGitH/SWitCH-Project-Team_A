@@ -4,6 +4,7 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -236,6 +237,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
                 .toList();
 
         return allPublications;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId){
+
+        if (publicationSample == null) {
+            throw new IllegalArgumentException("PublicationSample cannot be null");
+        }
+
+        if (libraryId == null) {
+            throw new IllegalArgumentException("LibraryId cannot be null");
+        }
+
+        publicationSample.addPublicationToLibrary(libraryId);
+
+        save(publicationSample);
+
+        return true;
     }
 
 

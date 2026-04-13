@@ -63,34 +63,34 @@ public class US011AddPublicationToLibraryController {
     }
 
     /**
-     * Adds the {@link PublicationSample} selected by the user to their library.
-     * <p>
-     * The flow is as follows:
-     * <ol>
-     *     <li>Retrieves the user's {@link Library} from the library repository
-     *         using the {@link UserId}</li>
-     *     <li>Retrieves the selected {@link PublicationSample} from the publication
-     *         repository using the {@link PublicationSampleId}</li>
-     *     <li>Associates the publication with the library via
-     *         {@link PublicationSample#addPublicationToLibrary(LibraryId)}</li>
-     *     <li>Persists the updated publication sample</li>
-     * </ol>
-     * </p>
+     * Adds a {@link PublicationSample} to the library owned by a given {@link UserId}.
      *
-     * @param userId              the ID of the user whose library the publication will be added to;
-     *                            must not be {@code null}
-     * @param publicationSampleId the ID of the publication selected by the user;
-     *                            must not be {@code null}
-     * @return {@code true} if the publication was successfully added
-     * @throws IllegalArgumentException  if {@code publicationSampleId} is {@code null}
-     *                                   or if the publication is not found
-     * @throws InstanceNotFoundException if the user does not have a library
+     * <p>This method retrieves the user's {@link Library}, obtains its {@link LibraryId},
+     * and then fetches the corresponding {@link PublicationSample} using the provided
+     * {@link PublicationSampleId}. The association between the publication and the library
+     * is delegated to the {@link IPublicationSampleRepository}, which handles the domain
+     * operation and persistence.</p>
+     *
+     * @param userId the identifier of the user whose library will receive the publication
+     * @param publicationSampleId the identifier of the publication sample to be added
+     * @return {@code true} if the publication was successfully added to the user's library
+     *
+     * @throws IllegalArgumentException if {@code userId} is null
+     * @throws IllegalArgumentException if {@code publicationSampleId} is null
+     * @throws IllegalArgumentException if the publication sample is not found
+     * @throws IllegalArgumentException if the publication cannot be added to the library
+     *                                  (e.g., already assigned or invalid state)
+     * @throws InstanceNotFoundException if the user does not have an associated library
      */
     public boolean addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId)
             throws InstanceNotFoundException {
 
         if (publicationSampleId == null) {
             throw new IllegalArgumentException("PublicationSampleId cannot be null");
+        }
+
+        if (userId == null){
+            throw new IllegalArgumentException("UserId cannot be null");
         }
 
         // Step 1: get the user's library and its ID
@@ -103,10 +103,7 @@ public class US011AddPublicationToLibraryController {
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
 
         // Step 3: associate the publication with the library
-        publicationSample.addPublicationToLibrary(libraryId);
-
-        // Step 4: persist the updated publication sample
-        _publicationSampleRepository.save(publicationSample);
+        _publicationSampleRepository.addPublicationToLibrary(publicationSample, libraryId);
 
         return true;
     }

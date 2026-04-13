@@ -151,6 +151,26 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId);
 
     /**
+     * Associates a given {@link PublicationSample} with a {@link LibraryId}
+     * and persists the updated publication in the repository.
+     *
+     * <p>This method delegates the association logic to the domain entity
+     * ({@link PublicationSample#addPublicationToLibrary(LibraryId)}) and
+     * then saves the updated entity in the repository.</p>
+     *
+     * @param publicationSample the publication sample to be added to a library
+     * @param libraryId the identifier of the library to associate with the publication
+     * @return {@code true} if the publication was successfully added to the library
+     *
+     * @throws IllegalArgumentException if {@code publicationSample} is null
+     * @throws IllegalArgumentException if {@code libraryId} is null
+     * @throws IllegalArgumentException if the publication is already assigned to a library
+     *                                  or already exists in the repository
+     * @throws NullPointerException if the domain method enforces additional null constraints
+     */
+    boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId);
+
+    /**
      * Returns the subset of {@link PublicationSample} instances from the repository
      * that are not present in the provided list.
      * <p>

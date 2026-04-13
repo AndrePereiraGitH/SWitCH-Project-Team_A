@@ -1200,6 +1200,95 @@ class PublicationSampleRepositoryMemTest {
         assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));
     }
 
+    // ===========================================================
+    // ======== Tests for addPublicationToLibrary         ========
+    // ===========================================================
+
+    @Test
+    void addPublicationToLibrary_shouldAddPublicationAndReturnTrue() {
+
+        // Arrange
+        PublicationSample publication = mock(PublicationSample.class);
+        LibraryId libraryId = mock(LibraryId.class);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        boolean result = repo.addPublicationToLibrary(publication, libraryId);
+
+        // Assert
+        assertTrue(result);
+        assertTrue(repo.isExistent(publication));
+    }
+
+    @Test
+    void addPublicationToLibrary_shouldThrowException_whenLibraryIdIsNull() {
+
+        // Arrange
+        PublicationSample publication = mock(PublicationSample.class);
+
+        doThrow(new IllegalArgumentException("LibraryID can not be null"))
+                .when(publication).addPublicationToLibrary(null);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.addPublicationToLibrary(publication, null));
+    }
+
+    @Test
+    void addPublicationToLibrary_shouldThrowException_whenAlreadyAssignedToLibrary() {
+
+        // Arrange
+        PublicationSample publication = mock(PublicationSample.class);
+        LibraryId libraryId = mock(LibraryId.class);
+
+        doThrow(new IllegalArgumentException("Already assigned to a library"))
+                .when(publication).addPublicationToLibrary(libraryId);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.addPublicationToLibrary(publication, libraryId));
+    }
+
+    @Test
+    void addPublicationToLibrary_shouldThrowException_whenPublicationAlreadyExists() {
+
+        // Arrange
+        PublicationSample publication = mock(PublicationSample.class);
+        LibraryId libraryId = mock(LibraryId.class);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        repo.save(publication); // já existe
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.addPublicationToLibrary(publication, libraryId));
+    }
+
+    @Test
+    void addPublicationToLibrary_shouldThrowException_whenPublicationIsNull() {
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        LibraryId libraryId = mock(LibraryId.class);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.addPublicationToLibrary(null, libraryId));
+    }
+    @Test
+    void addPublicationToLibrary_shouldThrowException_whenLibraryIsNull() {
+
+        PublicationSample publication = mock(PublicationSample.class);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.addPublicationToLibrary(publication, null));
+    }
 
 
 
