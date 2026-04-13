@@ -307,7 +307,7 @@ class AuctionRepositoryMemTest {
 
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepositoryMem repo = new AuctionRepositoryMem(factory);
+        IAuctionRepository repo = new AuctionRepositoryMem(factory);
 
         ListingId listingId = mock(ListingId.class);
 
