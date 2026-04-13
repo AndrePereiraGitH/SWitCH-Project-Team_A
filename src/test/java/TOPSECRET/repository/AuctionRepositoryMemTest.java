@@ -277,6 +277,63 @@ class AuctionRepositoryMemTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldThrowException_whenListIsNull() {
+        // Arrange
+
+        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
+
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.getListOfItemsOnAuctionGivenGenre(null));
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldReturnEmptyList() {
+        // Arrange
+        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
+        List<ListingId> listingIds = List.of(mock(ListingId.class));
+
+
+        // Act
+        List<Auction> result = repo.getListOfItemsOnAuctionGivenGenre(listingIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfItemsOnAuctionGivenGenre_shouldReturnMatchingAuctions() throws Exception {
+
+        // Arrange
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepositoryMem repo = new AuctionRepositoryMem(factory);
+
+        ListingId listingId = mock(ListingId.class);
+
+        Auction auction = mock(Auction.class);
+        when(auction.getListingId()).thenReturn(listingId);
+
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(auction);
+
+        repo.createAndAdd(
+                listingId,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                mock(Price.class),
+                mock(Price.class)
+        );
+
+        // Act
+        List<Auction> result =
+                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingId));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(auction));
+    }
+
 
     // -------------------------------------------------------------------------
     // Helper / factory methods
