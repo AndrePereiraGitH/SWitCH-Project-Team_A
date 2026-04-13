@@ -21,7 +21,7 @@ class US007ToRegisterCountryControllerTest {
     @BeforeEach
     void preparation(){
 
-        countryRepoDouble = mock(ICountryRepository.class); //Creates the mock
+        countryRepoDouble = mock(ICountryRepository.class);
         countryDouble = mock(Country.class);
         controller = new US007ToRegisterCountryController(countryRepoDouble);
     }
