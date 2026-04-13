@@ -23,4 +23,15 @@ public interface IUserRepository {
      */
     Optional<UserId> findUserIdByUsername(String username);
 
+
+    /**
+     * Finds the unique user by their ID.
+     *
+     * @param userID the userID to search for; must not be null
+     * @return an {@link Optional} containing the {@link User} if a user with
+     *         the given ID exists, or {@link Optional#empty()} if not found
+     * @throws IllegalArgumentException if {@code userID} is null or blank
+     */
+    Optional<User> findUserByID(UserId userID);
+
 }

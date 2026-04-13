@@ -88,4 +88,24 @@ public class UserRepositoryMem implements IUserRepository {
         return _userList.size();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> findUserByID(UserId userID){
+
+        if(userID == null){
+            throw new IllegalArgumentException("Username must not be null or empty");
+        }
+
+        for(User user: _userList){
+            if(user.getId().equals(userID)){
+                return Optional.of(user);
+            }
+        }
+
+        return Optional.empty();
+    }
+
 }
