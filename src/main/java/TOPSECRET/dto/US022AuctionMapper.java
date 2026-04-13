@@ -21,7 +21,7 @@ public class US022AuctionMapper {
      * @return a DTO representing the auction
      * @throws IllegalArgumentException if auction or its required fields are null
      */
-    public US022AuctionDTO toDTO(Auction auction) {
+    public static US022AuctionDTO toDTO(Auction auction) {
 
         if (auction == null) {
             throw new IllegalArgumentException("auction cannot be null");
@@ -48,7 +48,7 @@ public class US022AuctionMapper {
      * @return list of DTOs
      * @throws IllegalArgumentException if the list is null or contains null elements
      */
-    public List<US022AuctionDTO> toDTOList(List<Auction> auctions) {
+    public static List<US022AuctionDTO> toDTOList(List<Auction> auctions) {
 
         if (auctions == null) {
             throw new IllegalArgumentException("auctions list cannot be null");

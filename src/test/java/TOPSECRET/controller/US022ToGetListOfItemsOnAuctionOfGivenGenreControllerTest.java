@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
@@ -9,13 +10,13 @@ import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US022AuctionDTO;
-import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.dto.US022GenreDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,7 +28,6 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     private IBibliographicalDataRepository bibliographicalDataRepository = mock(IBibliographicalDataRepository.class);
     private IPublicationSampleRepository publicationSampleRepository = mock(IPublicationSampleRepository.class);
     private IListingRepository listingRepository = mock(IListingRepository.class);
-    private US022AuctionMapper auctionMapper = mock(US022AuctionMapper.class);
 
     private US022ToGetListOfItemsOnAuctionOfGivenGenreController controller;
 
@@ -38,8 +38,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 genreRepository,
                 listingRepository,
                 bibliographicalDataRepository,
-                publicationSampleRepository,
-                auctionMapper
+                publicationSampleRepository
         );
     }
 
@@ -47,42 +46,58 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnAuctionsForGivenGenre() {
 
         // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        Genre genreDouble = mock(Genre.class);
+        GenreID genreId = mock(GenreID.class);
+        Genre genre = mock(Genre.class);
+        when(genre.id()).thenReturn(genreId);
 
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreDtoDouble.name()).thenReturn("drama");
+        US022GenreDTO genreDto = mock(US022GenreDTO.class);
+        when(genreDto.genreId()).thenReturn(genreId);
 
-        List<BibliographicalDataID> bdIds = List.of(mock(BibliographicalDataID.class));
-        List<PublicationSampleId> itemIds = List.of(mock(PublicationSampleId.class));
-        List<ListingId> listingIds = List.of(mock(ListingId.class));
-        List<Auction> auctions = List.of(mock(Auction.class));
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        PublicationSampleId itemId = mock(PublicationSampleId.class);
+        ListingId listingId = mock(ListingId.class);
+        AuctionId auctionId = mock(AuctionId.class);
 
-        US022AuctionDTO auctionDtoDouble = mock(US022AuctionDTO.class);
-        when(auctionDtoDouble.auctionId()).thenReturn("A1");
-        when(auctionDtoDouble.listingId()).thenReturn("L1");
+        List<BibliographicalDataID> bdIds = List.of(bdId);
+        List<PublicationSampleId> itemIds = List.of(itemId);
+        List<ListingId> listingIds = List.of(listingId);
 
-        List<US022AuctionDTO> expectedDTO = List.of(auctionDtoDouble);
 
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
-        when(genreDouble.id()).thenReturn(genreIdDouble);
+        Auction auction = mock(Auction.class);
+        List<Auction> auctions = List.of(auction);
 
-        when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genreIdDouble)).thenReturn(bdIds);
-        when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdIds)).thenReturn(itemIds);
-        when(listingRepository.findAllListingId(itemIds)).thenReturn(listingIds);
-        when(auctionRepository.getListOfItemsOnAuctionGivenGenre(listingIds)).thenReturn(auctions);
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
 
-        when(auctionMapper.toDTOList(auctions)).thenReturn(expectedDTO);
+        when(auctionId.getId()).thenReturn("auction-1");
+        when(listingId.getId()).thenReturn("listing-1");
+
+        when(genreRepository.findGenreById(genreId))
+                .thenReturn(Optional.of(genre));
+
+        when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genreId))
+                .thenReturn(bdIds);
+
+        when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(anyList()))
+                .thenReturn(itemIds);
+
+        when(listingRepository.findAllListingId(anyList()))
+                .thenReturn(listingIds);
+
+        when(auctionRepository.getListOfItemsOnAuctionGivenGenre(anyList()))
+                .thenReturn(auctions);
 
         // Act
         List<US022AuctionDTO> result =
-                controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble);
+                controller.getListOfItemsOnAuctionGivenGenre(genreDto);
 
         // Assert
+        assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("A1", result.get(0).auctionId());
-        assertEquals("L1", result.get(0).listingId());
+
+        US022AuctionDTO dto = result.get(0);
+        assertEquals("auction-1", dto.auctionId());
+        assertEquals("listing-1", dto.listingId());
     }
 
 
@@ -96,15 +111,13 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
         when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
 
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
+        when(genreRepository.findGenreById(genreIdDouble)).thenReturn(Optional.of(genreDouble));
         when(genreDouble.id()).thenReturn(genreIdDouble);
 
         when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genreIdDouble)).thenReturn(List.of());
         when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(List.of())).thenReturn(List.of());
         when(listingRepository.findAllListingId(List.of())).thenReturn(List.of());
         when(auctionRepository.getListOfItemsOnAuctionGivenGenre(List.of())).thenReturn(List.of());
-
-        when(auctionMapper.toDTOList(List.of())).thenReturn(List.of());
 
         // Act
         List<US022AuctionDTO> result =
@@ -142,7 +155,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
         when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
 
-        when(genreRepository.findById(genreIdDouble))
+        when(genreRepository.findGenreById(genreIdDouble))
                 .thenThrow(new IllegalArgumentException("Genre not found"));
 
         // Act & Assert
@@ -160,136 +173,6 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenGenreReturnedIsNull() {
-
-        // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreRepository.findById(genreIdDouble)).thenReturn(null);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenBibliographicalDataIsNull() {
-
-        // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        Genre genreDouble = mock(Genre.class);
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
-        when(genreDouble.id()).thenReturn(genreIdDouble);
-
-        when(bibliographicalDataRepository
-                .findAllBibliographicalDataByGenreId(genreIdDouble))
-                .thenReturn(null);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenItemsIsNull() {
-
-        // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        Genre genreDouble = mock(Genre.class);
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
-        when(genreDouble.id()).thenReturn(genreIdDouble);
-
-        when(bibliographicalDataRepository
-                .findAllBibliographicalDataByGenreId(genreIdDouble))
-                .thenReturn(List.of());
-
-        when(publicationSampleRepository
-                .findAllItemsIdByBibliographicalDataId(any()))
-                .thenReturn(null);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenListingIdsIsNull() {
-
-        // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        Genre genreDouble = mock(Genre.class);
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
-        when(genreDouble.id()).thenReturn(genreIdDouble);
-
-        when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(any())).thenReturn(List.of());
-        when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(any())).thenReturn(List.of());
-        when(listingRepository.findAllListingId(any())).thenReturn(null);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenAuctionsIsNull() {
-
-        // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        Genre genreDouble = mock(Genre.class);
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
-        when(genreDouble.id()).thenReturn(genreIdDouble);
-
-        when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(any())).thenReturn(List.of());
-        when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(any())).thenReturn(List.of());
-        when(listingRepository.findAllListingId(any())).thenReturn(List.of());
-        when(auctionRepository.getListOfItemsOnAuctionGivenGenre(any())).thenReturn(null);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble));
-    }
-
-    @Test
-    void shouldReturnNullWhenMapperReturnsNull() {
-
-        // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
-        Genre genreDouble = mock(Genre.class);
-        US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
-
-        when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
-        when(genreRepository.findById(genreIdDouble)).thenReturn(genreDouble);
-        when(genreDouble.id()).thenReturn(genreIdDouble);
-
-        when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(any())).thenReturn(List.of());
-        when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(any())).thenReturn(List.of());
-        when(listingRepository.findAllListingId(any())).thenReturn(List.of());
-        when(auctionRepository.getListOfItemsOnAuctionGivenGenre(any())).thenReturn(List.of());
-        when(auctionMapper.toDTOList(any())).thenReturn(null);
-
-        // Act
-        List<US022AuctionDTO> result =
-                controller.getListOfItemsOnAuctionGivenGenre(genreDtoDouble);
-
-        // Assert
-        assertNull(result);
     }
 
     @Test

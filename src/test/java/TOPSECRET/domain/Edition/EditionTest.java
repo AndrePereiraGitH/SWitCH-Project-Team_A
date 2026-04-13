@@ -584,6 +584,30 @@ class EditionTest {
     }
 
     @Test
+    void equals_null_returnsFalse() {
+
+        Edition e = createValidEdition();
+
+        assertFalse(e.equals(null));
+    }
+
+    @Test
+    void equals_differentClass_returnsFalse() {
+
+        Edition e = createValidEdition();
+
+        assertFalse(e.equals("not an edition"));
+    }
+
+    @Test
+    void equals_sameInstance_returnsTrue() {
+
+        Edition e = createValidEdition();
+
+        assertTrue(e.equals(e));
+    }
+
+    @Test
     void equals_differentInstances_returnsFalse() {
 
         TypeOfBinding binding = mock(TypeOfBinding.class);

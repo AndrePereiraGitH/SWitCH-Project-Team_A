@@ -35,7 +35,6 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
     private final IListingRepository listingRepository;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
-    private final US022AuctionMapper auctionMapper;
 
     /**
      * Constructor injection of dependencies.
@@ -45,8 +44,7 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
     public US022ToGetListOfItemsOnAuctionOfGivenGenreController(
             IAuctionRepository auctionRepository, IGenreRepository genreRepository,
             IListingRepository listingRepository, IBibliographicalDataRepository bibliographicalDataRepository,
-            IPublicationSampleRepository publicationSampleRepository,
-            US022AuctionMapper auctionMapper) {
+            IPublicationSampleRepository publicationSampleRepository) {
 
         if (auctionRepository == null) {
             throw new IllegalArgumentException("AuctionRepository cannot be null");
@@ -63,16 +61,13 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
         if (publicationSampleRepository == null) {
             throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         }
-        if (auctionMapper == null) {
-            throw new IllegalArgumentException("auctionMapper cannot be null");
-        }
 
         this.auctionRepository = auctionRepository;
         this.genreRepository = genreRepository;
         this.listingRepository = listingRepository;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.publicationSampleRepository = publicationSampleRepository;
-        this.auctionMapper = auctionMapper;
+
     }
 
     public List<US022GenreDTO> getAllGenres() {
@@ -94,39 +89,19 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
             throw new IllegalArgumentException("genre cannot be null");
         }
 
-        if (selectedGenreDTO.genreId() == null) {
-            throw new IllegalArgumentException("genreId cannot be null");
-        }
-        Genre genre = genreRepository.findById(selectedGenreDTO.genreId());
+        Genre genre = genreRepository.findGenreById(selectedGenreDTO.genreId())
+                .orElseThrow(() ->
+                    new IllegalArgumentException("Genre is not valid or not found"));;
 
-        if (genre == null) {
-            throw new IllegalArgumentException("genre not found");
-        }
 
         List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genre.id());
 
-        if (bdId == null) {
-            throw new IllegalArgumentException("bibliographical data cannot be null");
-        }
-
         List<PublicationSampleId> itemsId = publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdId);
-
-        if (itemsId == null) {
-            throw new IllegalArgumentException("items cannot be null");
-        }
 
         List<ListingId> listingId = listingRepository.findAllListingId(itemsId);
 
-        if (listingId == null) {
-            throw new IllegalArgumentException("listingIds cannot be null");
-        }
-
         List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(listingId);
 
-        if (auctions == null) {
-            throw new IllegalArgumentException("auctions cannot be null");
-        }
-
-        return auctionMapper.toDTOList(auctions);
+        return US022AuctionMapper.toDTOList(auctions);
     }
 }
