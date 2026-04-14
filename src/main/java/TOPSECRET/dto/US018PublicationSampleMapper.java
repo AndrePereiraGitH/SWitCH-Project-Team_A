@@ -95,10 +95,12 @@ public class US018PublicationSampleMapper {
         BibliographicalDataID bibliographicalDataId =
                 publication.getBibliographicalDataID();
 
-        Optional<BibliographicalData> bibliographicalData =
-                _bibliographicalRepo.findBibliographicalDataById(bibliographicalDataId);
+        BibliographicalData bibliographicalData = _bibliographicalRepo
+                .findBibliographicalDataById(bibliographicalDataId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "BibliographicalData not found for id: " + bibliographicalDataId));
 
-        String title = bibliographicalData.get().getTitle();
+        String title = bibliographicalData.getTitle();
 
         return new US018PublicationSampleDTO(
                 publication.id(),

@@ -154,4 +154,22 @@ class US018PublicationSampleMapperTest {
         assertEquals("T1", result.get(0).title());
         assertEquals("T2", result.get(1).title());
     }
+
+    @Test
+    void shouldThrowExceptionWhenBibliographicalDataNotFound() {
+
+        // ARRANGE
+        IBibliographicalDataRepository repo = mock(IBibliographicalDataRepository.class);
+        US018PublicationSampleMapper mapper = new US018PublicationSampleMapper(repo);
+
+        PublicationSample publication = mock(PublicationSample.class);
+        BibliographicalDataID bId = mock(BibliographicalDataID.class);
+
+        when(publication.getBibliographicalDataID()).thenReturn(bId);
+        when(repo.findBibliographicalDataById(bId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> mapper.toDTO(publication));
+    }
 }
