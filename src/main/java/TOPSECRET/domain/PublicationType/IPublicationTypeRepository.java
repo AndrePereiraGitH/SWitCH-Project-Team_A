@@ -1,5 +1,7 @@
 package TOPSECRET.domain.PublicationType;
 
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.List;

@@ -1,12 +1,13 @@
 package TOPSECRET.domain.DirectSale;
 
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
+
 
 /**
  * Factory responsible for creating DirectSale instances,
@@ -25,17 +26,34 @@ public class DirectSaleFactory {
      * is only marked as finished when a corresponding Transaction is created,
      * meaning the buyer has completed the purchase process.</p>
      *
-     * @param listings the listings included in the sale; must not be null and must all be DIRECT_SALE
+     * @param listingId the listings included in the sale; must not be null and must all be DIRECT_SALE
      * @param buyer    the buyer associated with the sale
      * @return a new DirectSale instance in an unfinished state
      */
 
-    public DirectSale create(List<ListingId> listings, UserId buyer) {
+    public DirectSale create(List<ListingId> listingId, UserId buyer, IListingRepository listingRepo) {
 
-        if (listings == null) {
+        if (listingId == null) {
             throw new IllegalArgumentException("Listings cannot be null");
         }
 
-        return new DirectSale(listings, buyer, false);
+        if (listingRepo == null) {
+            throw new IllegalArgumentException("Listings Repository cannot be null");
+        }
+
+        List<Listing> listings = listingId.stream()
+                .map(id -> listingRepo.findListingById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id)))
+                .toList();
+
+        boolean allDirectSale = listings.stream()
+                .allMatch(listing -> listing.getSaleType() == SaleType.DIRECT_SALE);
+
+
+        if (!allDirectSale) {
+            throw new IllegalArgumentException("All listings must be of type DIRECT_SALE");
+        }
+
+        return new DirectSale(listingId, buyer, false);
     }
 }

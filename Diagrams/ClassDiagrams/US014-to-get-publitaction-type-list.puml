@@ -3,38 +3,29 @@ title US014 - Get Publication Types
 
 class UI014{}
 
-class US014ToGetPublicationTypeController {
-    +getAllPublicationTypes() : List<US014PublicationTypeDTO>
-    -publicationTypeRepository: IPublicationTypeRepository
-
+class ToGetPublicationTypeController {
+    +getAllPublicationTypes() : List<PublicationTypeDTO>
 }
 
-interface IPublicationTypeRepository {
+class PublicationTypeRepository {
     -publicationTypes : List<PublicationType>
     +getAllPublicationTypes() : List<PublicationType>
 }
 
-class US014PublicationTypeMapper {
+class PublicationTypeDTO {
+    +typeOfBinding : String
+    +details : String
 
-    +toDTO(publicationType: PublicationType) : US014PublicationTypeDTO
-    +toDTOList(listOfPublicationTypes : List<PublicationType>) : List<US014PublicationTypeDTO>
-}
-
-record US014PublicationTypeDTO {
-+id : String
-+mediaFormat : String
-
+    +fromDomainList(list : List<PublicationTypeDTO>)
 }
 
 class PublicationType {
-    -id : String
-    -mediaFormat : String
+    -typeOfBinding : TypeOfBinding
+    -details : String
 }
 
-UI014 "1" -.-> "1" US014ToGetPublicationTypeController : uses
-US014ToGetPublicationTypeController "1" -.-> "1" IPublicationTypeRepository : uses
-US014ToGetPublicationTypeController "1" -.> "1" US014PublicationTypeMapper : uses
-IPublicationTypeRepository "1" --> "1..*" PublicationType : contains
-US014PublicationTypeMapper "1" -.> "1" US014PublicationTypeDTO : creates
-
+UI014 "1" -.-> "1" ToGetPublicationTypeController : uses
+ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses
+ToGetPublicationTypeController "1" -.> "1" PublicationTypeDTO : uses
+PublicationTypeRepository "1" --> "1..*" PublicationType : contains
 @enduml

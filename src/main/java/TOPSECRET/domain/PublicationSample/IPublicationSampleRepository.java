@@ -103,6 +103,8 @@ public interface    IPublicationSampleRepository {
      */
     List<PublicationSample> getAllPublications();
 
+    List<PublicationSampleId> findAllItemsIdByBibliographicalDataId(List<BibliographicalDataID> bdIds);
+
     /**
      * Retrieves all publications in the system that are owned by the given user
      * and have been added to a library.
@@ -114,6 +116,17 @@ public interface    IPublicationSampleRepository {
      * @throws NullPointerException if {@code userId} is {@code null}
      */
     List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
+
+    /**
+     * Retrieves the identifiers of publication samples whose bibliographical data ID
+     * is contained in the given list.
+     *
+     * @param bds the list of bibliographical data identifiers to search for
+     * @return a list of publication sample identifiers associated with the given
+     *         bibliographical data identifiers; returns an empty list if no matches are found
+     * @throws IllegalArgumentException if {@code bds} is {@code null}
+     */
+    List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds);
 
     /**
      * Retrieves all publication samples that belong to the specified library.
@@ -139,16 +152,6 @@ public interface    IPublicationSampleRepository {
      */
 //    List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary);
 
-    /**
-     * Retrieves the {@link PublicationSample} instances that correspond to
-     * the given list of {@link PublicationSampleDTO_US016} transfer objects.
-     *
-     * @param pubsDto the list of DTOs identifying the desired publication samples;
-     *                must not be null
-     * @return a {@link List} of matching {@link PublicationSample} instances;
-     *         never {@code null}, but may be empty if no matches are found
-     */
-//    List<PublicationSample> getPublicationsByDTO(List<PublicationSampleDTO_US016> pubsDto);
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the
