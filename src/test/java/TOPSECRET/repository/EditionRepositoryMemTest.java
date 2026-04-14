@@ -149,9 +149,9 @@ class EditionRepositoryMemTest {
     @Test
     void save_ShouldAddEditionWhenRepositoryIsEmpty() {
         // Arrange
-        EditionID editionId = new EditionID("ed1");
+        EditionID editionIdDouble = mock(EditionID.class);
         Edition edition = mock(Edition.class);
-        when(edition.id()).thenReturn(editionId);
+        when(edition.id()).thenReturn(editionIdDouble);
 
         IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
 
@@ -165,14 +165,14 @@ class EditionRepositoryMemTest {
     @Test
     void save_ShouldAddEditionWhenEditionDoesNotExist() {
         // Arrange
-        EditionID editionId1 = new EditionID("ed1");
-        EditionID editionId2 = new EditionID("ed2");
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
 
         Edition edition1 = mock(Edition.class);
         Edition edition2 = mock(Edition.class);
 
-        when(edition1.id()).thenReturn(editionId1);
-        when(edition2.id()).thenReturn(editionId2);
+        when(edition1.id()).thenReturn(editionId1Double);
+        when(edition2.id()).thenReturn(editionId2Double);
 
         IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
         repo.save(edition1);
@@ -182,8 +182,8 @@ class EditionRepositoryMemTest {
 
         // Assert
         assertEquals(edition2, result);
-        assertEquals(Optional.of(edition1), repo.findEditionById(editionId1));
-        assertEquals(Optional.of(edition2), repo.findEditionById(editionId2));
+        assertEquals(Optional.of(edition1), repo.findEditionById(editionId1Double));
+        assertEquals(Optional.of(edition2), repo.findEditionById(editionId2Double));
     }
 
     @Test
@@ -326,12 +326,12 @@ class EditionRepositoryMemTest {
     @Test
     void findEditionIdsByPublisherId_ShouldReturnEmptyListWhenNoEditionsMatch() {
         // Arrange
-        PublisherID unknownPublisher = new PublisherID("unknown");
+        PublisherID unknownPublisherIdDouble = mock(PublisherID.class);
 
         IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(unknownPublisher);
+        List<EditionID> result = repo.findEditionIdsByPublisherId(unknownPublisherIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -344,23 +344,23 @@ class EditionRepositoryMemTest {
         Edition edition1 = mock(Edition.class);
         Edition edition2 = mock(Edition.class);
 
-        EditionID editionId1 = new EditionID("edId1");
-        EditionID editionId2 = new EditionID("edId2");
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
 
-        when(edition1.id()).thenReturn(editionId1);
-        when(edition2.id()).thenReturn(editionId2);
+        when(edition1.id()).thenReturn(editionId1Double);
+        when(edition2.id()).thenReturn(editionId2Double);
 
-        PublisherID publisherId1 = new PublisherID("publisherId1");
+        PublisherID publisherId1Double = mock(PublisherID.class);
 
-        when(edition1.getPublisherID()).thenReturn(publisherId1);
-        when(edition2.getPublisherID()).thenReturn(publisherId1);
+        when(edition1.getPublisherID()).thenReturn(publisherId1Double);
+        when(edition2.getPublisherID()).thenReturn(publisherId1Double);
 
         IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
         repo.save(edition1);
         repo.save(edition2);
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1);
+        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1Double);
 
         // Assert
         assertEquals(2, result.size());
@@ -388,20 +388,20 @@ class EditionRepositoryMemTest {
         Edition edition2 = mock(Edition.class);
         Edition edition3 = mock(Edition.class);
 
-        EditionID editionId1 = new EditionID("edId1");
-        EditionID editionId2 = new EditionID("edId2");
-        EditionID editionId3 = new EditionID("edId3");
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
+        EditionID editionId3Double = mock(EditionID.class);
 
-        when(edition1.id()).thenReturn(editionId1);
-        when(edition2.id()).thenReturn(editionId2);
-        when(edition3.id()).thenReturn(editionId3);
+        when(edition1.id()).thenReturn(editionId1Double);
+        when(edition2.id()).thenReturn(editionId2Double);
+        when(edition3.id()).thenReturn(editionId3Double);
 
-        PublisherID publisherId1 = new PublisherID("publisherId1");
-        PublisherID publisherId2 = new PublisherID("publisherId2");
+        PublisherID publisherId1Double = mock(PublisherID.class);
+        PublisherID publisherId2Double = mock(PublisherID.class);
 
-        when(edition1.getPublisherID()).thenReturn(publisherId1);
-        when(edition2.getPublisherID()).thenReturn(publisherId1);
-        when(edition3.getPublisherID()).thenReturn(publisherId2);
+        when(edition1.getPublisherID()).thenReturn(publisherId1Double);
+        when(edition2.getPublisherID()).thenReturn(publisherId1Double);
+        when(edition3.getPublisherID()).thenReturn(publisherId2Double);
 
         IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
         repo.save(edition1);
@@ -409,7 +409,7 @@ class EditionRepositoryMemTest {
         repo.save(edition3);
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1);
+        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1Double);
 
         // Assert
         assertEquals(2, result.size());

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for the US027PublisherDTO record.
@@ -19,13 +20,13 @@ class US027PublisherDTOTest {
     @Test
     void shouldCreateDTOWhenArgumentsAreValid() {
         // Arrange
-        PublisherID id = new PublisherID("pub123");
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act
-        US027PublisherDTO dto = new US027PublisherDTO(id, "Penguin Books");
+        US027PublisherDTO dto = new US027PublisherDTO(idDouble, "Penguin Books");
 
         // Assert
-        assertEquals(id, dto.publisherId());
+        assertEquals(idDouble, dto.publisherId());
         assertEquals("Penguin Books", dto.name());
     }
 
@@ -39,20 +40,20 @@ class US027PublisherDTOTest {
     @Test
     void shouldThrowExceptionWhenNameIsNull() {
         // Arrange
-        PublisherID id = new PublisherID("pub123");
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new US027PublisherDTO(id, null));
+                () -> new US027PublisherDTO(idDouble, null));
     }
 
     @Test
     void shouldThrowExceptionWhenNameIsBlank() {
         // Arrange
-        PublisherID id = new PublisherID("pub123");
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new US027PublisherDTO(id, "   "));
+                () -> new US027PublisherDTO(idDouble, "   "));
     }
 }

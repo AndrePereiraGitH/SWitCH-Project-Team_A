@@ -529,36 +529,36 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPubSampleIdsByEditionIds_shouldReturnListWithMultipleId_whenMultiplePubSampleMatchesEditionIds() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalDataID bdId1 = new BibliographicalDataID("bdId1");
-        BibliographicalDataID bdId2 = new BibliographicalDataID("bdId2");
-        BibliographicalDataID bdId3 = new BibliographicalDataID("bdId3");
+        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId3Double = mock(BibliographicalDataID.class);
 
-        EditionID editionID1 = new EditionID("edId1");
-        EditionID editionID2 = new EditionID("edId2");
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
 
         PublicationSample pbSample1 = mock(PublicationSample.class);
-        when(pbSample1.getEditionID()).thenReturn(editionID1);
+        when(pbSample1.getEditionID()).thenReturn(editionId1Double);
 
         PublicationSample pbSample2 = mock(PublicationSample.class);
-        when(pbSample2.getEditionID()).thenReturn(editionID2);
+        when(pbSample2.getEditionID()).thenReturn(editionId2Double);
 
         PublicationSample pbSample3 = mock(PublicationSample.class);
-        when(pbSample3.getEditionID()).thenReturn(editionID1);
+        when(pbSample3.getEditionID()).thenReturn(editionId1Double);
 
-        when(factory.create(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.NEW))
+        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW))
                 .thenReturn(pbSample1);
-        when(factory.create(bdId1, userID_Double, PublicationStatus.READ, editionID2, Condition.POOR))
+        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId2Double, Condition.POOR))
                 .thenReturn(pbSample2);
-        when(factory.create(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.POOR))
+        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.POOR))
                 .thenReturn(pbSample3);
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.createAndAdd(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.NEW);
-        repo.createAndAdd(bdId1, userID_Double, PublicationStatus.READ, editionID2, Condition.POOR);
-        repo.createAndAdd(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.POOR);
+        repo.createAndAdd(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW);
+        repo.createAndAdd(bdId1Double, userID_Double, PublicationStatus.READ, editionId2Double, Condition.POOR);
+        repo.createAndAdd(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.POOR);
 
         // Act
-        List<PublicationSampleId> result = repo.findPublicationSampleIdsByEditionIds(List.of(editionID1, editionID2));
+        List<PublicationSampleId> result = repo.findPublicationSampleIdsByEditionIds(List.of(editionId1Double, editionId2Double));
 
         // Assert
         assertEquals(3,result.size());
@@ -568,29 +568,29 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPubSampleIdsByEditionIds_shouldReturnListWithOneId_whenOnePubSampleMatchesEditionIds() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalDataID bdId1 = new BibliographicalDataID("bdId1");
-        BibliographicalDataID bdId2 = new BibliographicalDataID("bdId2");
+        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
 
-        EditionID editionID1 = new EditionID("edId1");
-        EditionID editionID2 = new EditionID("edId2");
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
-        when(pbSample_1.getEditionID()).thenReturn(editionID1);
+        when(pbSample_1.getEditionID()).thenReturn(editionId1Double);
 
         PublicationSample pbSample_2 = mock(PublicationSample.class);
-        when(pbSample_2.getEditionID()).thenReturn(editionID2);
+        when(pbSample_2.getEditionID()).thenReturn(editionId2Double);
 
-        when(factory.create(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.NEW))
+        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW))
                 .thenReturn(pbSample_1);
-        when(factory.create(bdId2, userID_Double, PublicationStatus.READ, editionID2, Condition.POOR))
+        when(factory.create(bdId2Double, userID_Double, PublicationStatus.READ, editionId2Double, Condition.POOR))
                 .thenReturn(pbSample_2);
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.createAndAdd(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.NEW);
-        repo.createAndAdd(bdId2, userID_Double, PublicationStatus.READ, editionID2, Condition.POOR);
+        repo.createAndAdd(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW);
+        repo.createAndAdd(bdId2Double, userID_Double, PublicationStatus.READ, editionId2Double, Condition.POOR);
 
         // Act
-        List<PublicationSampleId> result = repo.findPublicationSampleIdsByEditionIds(List.of(editionID1));
+        List<PublicationSampleId> result = repo.findPublicationSampleIdsByEditionIds(List.of(editionId1Double));
 
         // Assert
         assertEquals(1,result.size());
@@ -609,29 +609,29 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPubSampleIdsByEditionIds_shouldReturnEmptyList_whenNoPubSampleMatchesEditionIds() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalDataID bdId1 = new BibliographicalDataID("bdId1");
-        BibliographicalDataID bdId2 = new BibliographicalDataID("bdId2");
+        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
 
-        EditionID editionID1 = new EditionID("edId1");
-        EditionID editionID2 = new EditionID("edId2");
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
-        when(pbSample_1.getEditionID()).thenReturn(editionID1);
+        when(pbSample_1.getEditionID()).thenReturn(editionId1Double);
 
         PublicationSample pbSample_2 = mock(PublicationSample.class);
-        when(pbSample_2.getEditionID()).thenReturn(editionID1);
+        when(pbSample_2.getEditionID()).thenReturn(editionId1Double);
 
-        when(factory.create(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.NEW))
+        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW))
                 .thenReturn(pbSample_1);
-        when(factory.create(bdId2, userID_Double, PublicationStatus.READ, editionID1, Condition.POOR))
+        when(factory.create(bdId2Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.POOR))
                 .thenReturn(pbSample_2);
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
-        repo.createAndAdd(bdId1, userID_Double, PublicationStatus.READ, editionID1, Condition.NEW);
-        repo.createAndAdd(bdId2, userID_Double, PublicationStatus.READ, editionID1, Condition.POOR);
+        repo.createAndAdd(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW);
+        repo.createAndAdd(bdId2Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.POOR);
 
         // Act
-        List<PublicationSampleId> result = repo.findPublicationSampleIdsByEditionIds(List.of(editionID2));
+        List<PublicationSampleId> result = repo.findPublicationSampleIdsByEditionIds(List.of(editionId2Double));
 
         // Assert
         assertEquals(0,result.size());

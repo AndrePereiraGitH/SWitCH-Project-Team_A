@@ -29,17 +29,17 @@ class US027PublisherMapperTest {
     // ================= Set Up ======================
     // ===============================================
 
-    private PublisherID publisherID;
+    private PublisherID publisherIdDouble;
     private String name;
     private Publisher publisherDouble;
 
     @BeforeEach
     void setUp() {
-        publisherID = new PublisherID("pubID");
+        publisherIdDouble = mock(PublisherID.class);
         name = "Porto Editora";
 
         publisherDouble = mock(Publisher.class);
-        when(publisherDouble.id()).thenReturn(publisherID);
+        when(publisherDouble.id()).thenReturn(publisherIdDouble);
         when(publisherDouble.getName()).thenReturn(name);
     }
 
@@ -85,8 +85,8 @@ class US027PublisherMapperTest {
     void toDTOs_ShouldConvertListCorrectly() {
         // Arrange
         Publisher newPublisherDouble = mock(Publisher.class);
-        PublisherID newPublisherID = new PublisherID("newPubID");
-        when(newPublisherDouble.id()).thenReturn(newPublisherID);
+        PublisherID newPublisherIdDouble = mock(PublisherID.class);
+        when(newPublisherDouble.id()).thenReturn(newPublisherIdDouble);
         when(newPublisherDouble.getName()).thenReturn("Penguin Books");
 
         List<Publisher> publishers = List.of(publisherDouble, newPublisherDouble);
@@ -108,7 +108,7 @@ class US027PublisherMapperTest {
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> dtos.add(
-                new US027PublisherDTO(publisherID, "Casa das Letras")));
+                new US027PublisherDTO(publisherIdDouble, "Casa das Letras")));
     }
 
     @Test

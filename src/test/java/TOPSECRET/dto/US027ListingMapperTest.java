@@ -53,67 +53,67 @@ class US027ListingMapperTest {
 
         // Author
         Author authorDouble1 = mock(Author.class);
-        AuthorId authorId1 = new AuthorId("authorId1");
+        AuthorId authorId1Double = mock(AuthorId.class);
 
-        when(authorDouble1.id()).thenReturn(authorId1);
+        when(authorDouble1.id()).thenReturn(authorId1Double);
         when(authorDouble1.getName()).thenReturn("authorName1");
 
         Author authorDouble2 = mock(Author.class);
-        AuthorId authorId2 = new AuthorId("authorId2");
+        AuthorId authorId2Double = mock(AuthorId.class);
 
-        when(authorDouble2.id()).thenReturn(authorId2);
+        when(authorDouble2.id()).thenReturn(authorId2Double);
         when(authorDouble2.getName()).thenReturn("authorName2");
 
         authorRepoDouble = mock(IAuthorRepository.class);
 
-        when(authorRepoDouble.findAuthorById(authorId1)).thenReturn(Optional.of(authorDouble1));
-        when(authorRepoDouble.findAuthorById(authorId2)).thenReturn(Optional.of(authorDouble2));
+        when(authorRepoDouble.findAuthorById(authorId1Double)).thenReturn(Optional.of(authorDouble1));
+        when(authorRepoDouble.findAuthorById(authorId2Double)).thenReturn(Optional.of(authorDouble2));
 
         // BibliographicalData
         BibliographicalData bdDouble1 = mock(BibliographicalData.class);
-        BibliographicalDataID bdId1 = new BibliographicalDataID("bdId1");
+        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
 
-        when(bdDouble1.id()).thenReturn(bdId1);
+        when(bdDouble1.id()).thenReturn(bdId1Double);
         when(bdDouble1.getTitle()).thenReturn("bdTitle1");
-        when(bdDouble1.getAuthors()).thenReturn(List.of(authorId1));
+        when(bdDouble1.getAuthors()).thenReturn(List.of(authorId1Double));
 
         BibliographicalData bdDouble2 = mock(BibliographicalData.class);
-        BibliographicalDataID bdId2 = new BibliographicalDataID("bdId2");
+        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
 
-        when(bdDouble2.id()).thenReturn(bdId2);
+        when(bdDouble2.id()).thenReturn(bdId2Double);
         when(bdDouble2.getTitle()).thenReturn("bdTitle2");
-        when(bdDouble2.getAuthors()).thenReturn(List.of(authorId2));
+        when(bdDouble2.getAuthors()).thenReturn(List.of(authorId2Double));
 
         bdRepoDouble = mock(IBibliographicalDataRepository.class);
 
-        when(bdRepoDouble.findBibliographicalDataById(bdId1)).thenReturn(Optional.of(bdDouble1));
-        when(bdRepoDouble.findBibliographicalDataById(bdId2)).thenReturn(Optional.of(bdDouble2));
+        when(bdRepoDouble.findBibliographicalDataById(bdId1Double)).thenReturn(Optional.of(bdDouble1));
+        when(bdRepoDouble.findBibliographicalDataById(bdId2Double)).thenReturn(Optional.of(bdDouble2));
 
         // Publication Sample
         PublicationSample pubSampleDouble1 = mock(PublicationSample.class);
-        PublicationSampleId pubSampleId1 = new PublicationSampleId("pubSampleId1");
+        PublicationSampleId pubSampleId1Double = mock(PublicationSampleId.class);
 
-        when(pubSampleDouble1.id()).thenReturn(pubSampleId1);
-        when(pubSampleDouble1.getBibliographicalDataID()).thenReturn(bdId1);
+        when(pubSampleDouble1.id()).thenReturn(pubSampleId1Double);
+        when(pubSampleDouble1.getBibliographicalDataID()).thenReturn(bdId1Double);
 
         PublicationSample pubSampleDouble2 = mock(PublicationSample.class);
-        PublicationSampleId pubSampleId2 = new PublicationSampleId("pubSampleId2");
+        PublicationSampleId pubSampleId2Double = mock(PublicationSampleId.class);
 
-        when(pubSampleDouble2.id()).thenReturn(pubSampleId2);
-        when(pubSampleDouble2.getBibliographicalDataID()).thenReturn(bdId2);
+        when(pubSampleDouble2.id()).thenReturn(pubSampleId2Double);
+        when(pubSampleDouble2.getBibliographicalDataID()).thenReturn(bdId2Double);
 
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
 
-        when(pubSampleRepoDouble.findPublicationSampleById(pubSampleId1)).thenReturn(Optional.of(pubSampleDouble1));
-        when(pubSampleRepoDouble.findPublicationSampleById(pubSampleId2)).thenReturn(Optional.of(pubSampleDouble2));
+        when(pubSampleRepoDouble.findPublicationSampleById(pubSampleId1Double)).thenReturn(Optional.of(pubSampleDouble1));
+        when(pubSampleRepoDouble.findPublicationSampleById(pubSampleId2Double)).thenReturn(Optional.of(pubSampleDouble2));
 
         // Listing
         listingDouble = mock(Listing.class);
-        ListingId listingId = new ListingId("listingId");
+        ListingId listingIdDouble = mock(ListingId.class);
 
-        when(listingDouble.id()).thenReturn(listingId);
+        when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getListingTitle()).thenReturn("listingTitle");
-        when(listingDouble.getItemsId()).thenReturn(List.of(pubSampleId1, pubSampleId2));
+        when(listingDouble.getItemsId()).thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
         when(listingDouble.getPrice()).thenReturn(mock(Price.class));
 
 
@@ -149,9 +149,9 @@ class US027ListingMapperTest {
     @Test
     void toDTO_ShouldThrowExceptionWhenPublicationSampleNotFound() {
         // Arrange
-        PublicationSampleId wrongId = new PublicationSampleId("wrong");
-        when(listingDouble.getItemsId()).thenReturn(List.of(wrongId));
-        when(pubSampleRepoDouble.findPublicationSampleById(wrongId))
+        PublicationSampleId wrongIdDouble = mock(PublicationSampleId.class);
+        when(listingDouble.getItemsId()).thenReturn(List.of(wrongIdDouble));
+        when(pubSampleRepoDouble.findPublicationSampleById(wrongIdDouble))
                 .thenReturn(Optional.empty());
 
         // Act + Assert
@@ -161,12 +161,12 @@ class US027ListingMapperTest {
     @Test
     void toDTO_ShouldThrowExceptionWhenBibliographicalDataNotFound() {
         // Arrange
-        BibliographicalDataID wrongId = new BibliographicalDataID("wrongBD");
+        BibliographicalDataID wrongIdDouble =  mock(BibliographicalDataID.class);
         PublicationSample pubSampleDouble = pubSampleRepoDouble.findPublicationSampleById(
                 listingDouble.getItemsId().get(0)).get();
 
-        when(pubSampleDouble.getBibliographicalDataID()).thenReturn(wrongId);
-        when(bdRepoDouble.findBibliographicalDataById(wrongId))
+        when(pubSampleDouble.getBibliographicalDataID()).thenReturn(wrongIdDouble);
+        when(bdRepoDouble.findBibliographicalDataById(wrongIdDouble))
                 .thenReturn(Optional.empty());
 
         // Act + Assert
@@ -180,9 +180,9 @@ class US027ListingMapperTest {
                 pubSampleRepoDouble.findPublicationSampleById(
                         listingDouble.getItemsId().get(0)).get().getBibliographicalDataID()).get();
 
-        AuthorId missingAuthorId = new AuthorId("missing");
-        when(bdDouble.getAuthors()).thenReturn(List.of(missingAuthorId));
-        when(authorRepoDouble.findAuthorById(missingAuthorId))
+        AuthorId missingAuthorIdDouble = mock(AuthorId.class);
+        when(bdDouble.getAuthors()).thenReturn(List.of(missingAuthorIdDouble));
+        when(authorRepoDouble.findAuthorById(missingAuthorIdDouble))
                 .thenReturn(Optional.empty());
 
         // Act + Assert
