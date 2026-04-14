@@ -238,6 +238,23 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return allPublications;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSample> findPublicationSamplesAvailableForSaleByLibraryId(LibraryId libraryId) {
+
+        List<PublicationSample> allPublications = getPublicationsByLibraryID(libraryId);
+
+        List<PublicationSample> listOfAvailablePublications = new ArrayList<>();
+
+        for (PublicationSample pbSample : allPublications) {
+            if(pbSample.isAvailableForSale()) {
+                listOfAvailablePublications.add(pbSample);
+            }
+        }
+        return listOfAvailablePublications;
+    }
+
     // ------------------ US018 starts -----------------
     /**
      * {@inheritDoc}

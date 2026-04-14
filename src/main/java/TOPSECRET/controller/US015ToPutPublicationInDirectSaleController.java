@@ -86,17 +86,8 @@ public class US015ToPutPublicationInDirectSaleController {
         // finds user library
         Library library = _libraryRepo.getLibraryByUserId(userId);
 
-        // finds publication samples in that library
-        List<PublicationSample> libraryPubSamples = _pubSampleRepo.getPublicationsByLibraryID(library.id());
-
-        // filters only publications available for sale
-        // Later, this should be done by the domain services
-        List<PublicationSample> availablePubSamples = new ArrayList<>();
-        for (PublicationSample pubSample : libraryPubSamples) {
-            if (pubSample.isAvailableForSale()) {
-                availablePubSamples.add(pubSample);
-            }
-        }
+        // finds publication samples in that library available for sale
+        List<PublicationSample> availablePubSamples = _pubSampleRepo.findPublicationSamplesAvailableForSaleByLibraryId(library.id());
 
         // converts to DTO
         List<US015PublicationSampleDTO> listOfPublicationSampleDTO = _pubSampleMapper.toDTOs(availablePubSamples);

@@ -134,6 +134,17 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
+     * Retrieves all {@link PublicationSample} instances belonging to the library identified
+     * by the given {@link LibraryId} and filters them to return only those that are
+     * eligible to be put for sale in a direct sale listing.
+     *
+     * @param libraryId the identifier of the library whose publication samples should be inspected
+     * @return a list containing only the publication samples that are available for sale
+     * @throws NullPointerException if {@code libraryId} is null
+     */
+    List<PublicationSample> findPublicationSamplesAvailableForSaleByLibraryId(LibraryId libraryId);
+
+    /**
      * Retrieves all publication samples that belong to a collection.
      *
      * @param collectionID the identifier of the collection of publication whose publication samples are to be retrieved

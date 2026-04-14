@@ -897,6 +897,82 @@ class PublicationSampleRepositoryMemTest {
         assertFalse(result.contains(pbSample_2));
     }
 
+    // ==================================================================================
+    // =========== Tests for findPublicationSamplesAvailableForSaleByLibraryId ==========
+    // ==================================================================================
+
+    @Test
+    void findPublicationSamplesAvailableForSaleByLibraryId_shouldReturnOnlyAvailableSamples() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+
+        PublicationSample ps1Double = mock(PublicationSample.class);
+        PublicationSample ps2Double = mock(PublicationSample.class);
+        PublicationSample ps3Double = mock(PublicationSample.class);
+
+        when(ps1Double.isAvailableForSale()).thenReturn(true);
+        when(ps2Double.isAvailableForSale()).thenReturn(false);
+        when(ps3Double.isAvailableForSale()).thenReturn(true);
+        when(ps1Double.getLibraryID()).thenReturn(libraryIdDouble);
+        when(ps2Double.getLibraryID()).thenReturn(libraryIdDouble);
+        when(ps3Double.getLibraryID()).thenReturn(libraryIdDouble);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(ps1Double);
+        repo.save(ps2Double);
+        repo.save(ps3Double);
+
+        // Act
+        List<PublicationSample> result =
+                repo.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(ps1Double));
+        assertTrue(result.contains(ps3Double));
+        assertFalse(result.contains(ps2Double));
+    }
+
+    @Test
+    void findPublicationSamplesAvailableForSaleByLibraryId_shouldReturnEmptyListWhenNoSamplesAvailable() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+
+        PublicationSample ps1Double = mock(PublicationSample.class);
+        PublicationSample ps2Double = mock(PublicationSample.class);
+
+        when(ps1Double.isAvailableForSale()).thenReturn(false);
+        when(ps2Double.isAvailableForSale()).thenReturn(false);
+        when(ps1Double.getLibraryID()).thenReturn(libraryIdDouble);
+        when(ps2Double.getLibraryID()).thenReturn(libraryIdDouble);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        repo.save(ps1Double);
+        repo.save(ps2Double);
+
+        // Act
+        List<PublicationSample> result =
+                repo.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findPublicationSamplesAvailableForSaleByLibraryId_shouldReturnEmptyListWhenLibraryHasNoSamples() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+
+        // Act
+        List<PublicationSample> result =
+                repo.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
     // ===========================================================
     // == Tests for findPublicationSamplesByBiblioDataIds ========
     // ===========================================================

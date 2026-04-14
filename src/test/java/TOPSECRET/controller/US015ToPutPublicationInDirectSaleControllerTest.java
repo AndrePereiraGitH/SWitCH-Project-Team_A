@@ -140,12 +140,20 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     @Test
     void findLibraryPublicationsAvailableForSale_ShouldReturnDTOsFromMapper() throws InstanceNotFoundException {
         // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
+        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+
+        List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
+        when(pubSampleRepoDouble.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(pubSamples);
+
         List<US015PublicationSampleDTO> dtoFromMapper = List.of(
                 new US015PublicationSampleDTO("title1", List.of("author1"), "1234567890", "BOOK"),
                 new US015PublicationSampleDTO("title2", List.of("author2"), "9876543210", "BOOK")
         );
 
         when(mapperDouble.toDTOs(anyList())).thenReturn(dtoFromMapper);
+
         US015ToPutPublicationInDirectSaleController controller =
                 new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
                         listingRepoDouble, mapperDouble);
@@ -161,7 +169,13 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     @Test
     void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenNoSamplesAvailable() throws Exception {
         // Arrange
-        when(pubSampleRepoDouble.getAllPublicationsInUserLibrary(userIdDouble)).thenReturn(List.of());
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
+        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+
+        when(pubSampleRepoDouble.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(List.of());
+
+        when(mapperDouble.toDTOs(List.of())).thenReturn(List.of());
 
         US015ToPutPublicationInDirectSaleController controller =
                 new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
@@ -177,25 +191,32 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void findLibraryPublicationsAvailableForSale_ShouldFilterOnlyAvailableSamples() throws InstanceNotFoundException {
+    void findLibraryPublicationsAvailableForSale_ShouldReturnOnlySamplesProvidedByRepository() throws Exception {
         // Arrange
-        when(pubSample1Double.isAvailableForSale()).thenReturn(true);
-        when(pubSample2Double.isAvailableForSale()).thenReturn(false);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
+        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
 
-        List<US015PublicationSampleDTO> dtoList = List.of(new US015PublicationSampleDTO("title", List.of("author"), "code", "BOOK"));
-        when(mapperDouble.toDTOs(List.of(pubSample1Double))).thenReturn(dtoList);
+        List<PublicationSample> pubSamples = List.of(pubSample1Double);
+        when(pubSampleRepoDouble.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble))
+                .thenReturn(pubSamples);
+
+        List<US015PublicationSampleDTO> dtoList =
+                List.of(new US015PublicationSampleDTO("title", List.of("author"), "code", "BOOK"));
+        when(mapperDouble.toDTOs(pubSamples)).thenReturn(dtoList);
 
         US015ToPutPublicationInDirectSaleController controller =
                 new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
                         listingRepoDouble, mapperDouble);
 
         // Act
-        List<US015PublicationSampleDTO> result = controller.findLibraryPublicationsAvailableForSale(userIdDouble);
+        List<US015PublicationSampleDTO> result =
+                controller.findLibraryPublicationsAvailableForSale(userIdDouble);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(dtoList, result);
     }
+
 
     // ==============================================================
     // ================= putPublicationForSale ======================
