@@ -37,17 +37,17 @@ record US023PublicationSampleDTO {
 ' REPOSITORIES
 ' -------------------------
 
-class IBibliographicalDataRepository {
+interface IBibliographicalDataRepository {
   - bdList : List<BibliographicalData>
   + getAllPublicationsBD() : List<BibliographicalData>
 }
 
-class IListingRepository {
+interface IListingRepository {
   - listings : List<Listing>
   + findAllDirectSaleListings() : List<Listing>
 }
 
-class IPublicationSampleRepository {
+interface IPublicationSampleRepository {
   - publicationSamples : List<PublicationSample>
   + findItemsByIdsAndPublication(listOfPubSampleIds, publicationId) : List<PublicationSample>
 }
@@ -81,9 +81,6 @@ class PublicationSample {
 }
 
 ' Value Objects
-class PublicationSampleId
-class BibliographicalDataId
-
 enum SaleType {
   DIRECT_SALE
   AUCTION
@@ -112,16 +109,8 @@ IListingRepository "1" --> "*" Listing : persists
 ' --- PubSample Repository ---
 IPublicationSampleRepository "1" --> "*" PublicationSample : persists
 
-' --- BD ---
-BibliographicalData "1" --> "1" BibliographicalDataId : has
-
 ' --- Listing ---
-Listing "1" --> "1..*" PublicationSampleId : points to
 Listing "*" --> "1" SaleType : for sale in
-
-' --- PublicationSample ---
-PublicationSample "1" --> "1" BibliographicalDataId : has
-PublicationSample "1" --> "1" PublicationSampleId : has
 
 ' --- PubSample Mapper and DTO ---
 US023PublicationSampleMapper ..> PublicationSample : uses
