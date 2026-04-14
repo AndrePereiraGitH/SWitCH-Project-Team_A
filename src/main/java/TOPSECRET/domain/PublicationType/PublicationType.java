@@ -66,12 +66,7 @@ public class PublicationType implements AggregateRoot<PublicationTypeId>  {
         return pub_id;
     }
 
-    /**
-     * Compares this entity with another based on identifier.
-     *
-     * @param obj object to compare
-     * @return true if both have the same id, false otherwise
-     */
+
    @Override
     public boolean equals(Object obj)
     {
@@ -82,23 +77,12 @@ public class PublicationType implements AggregateRoot<PublicationTypeId>  {
         return  pub_id.equals(that.pub_id);
     }
 
-    /**
-     * Returns the hash code based on the identifier.
-     *
-     * @return hash code value
-     */
     @Override
     public int hashCode()
     {
         return Objects.hash(pub_id);
     }
 
-    /**
-     * Compares entities based on business identity.
-     *
-     * @param obj object to compare
-     * @return true if both have the same media format, false otherwise
-     */
     @Override
     public boolean sameAs(Object obj) {
         if (obj instanceof PublicationType){

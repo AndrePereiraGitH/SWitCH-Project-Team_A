@@ -1,23 +1,24 @@
 @startuml
-autonumber
 hide footbox
-
-title US017 - Create Private Collection Of Publications with a name and a genre
+autonumber
+title US017 - To create a private collection of publications
 
 actor "User" as User
-participant ":System" as System
+participant ":MiteLovers" as UI
 
-User -> System : I want to create a new private collection of publications
-activate System
+User -> UI : I want to create a new private collection of publications
+activate UI
+UI --> User : What is the collection name?
+deactivate UI
 
-System --> User : Provide the collection name
-User -> System : Collection name provided
+User -> UI : name("My Favorites")
+activate UI
+UI --> User : Here is the list of available genres, select one
+deactivate UI
 
-System --> User : Here's the list of genres, select one!
-User -> System : Selected genre
-
-System --> User : Private collection of publications created successfully
-deactivate System
+User -> UI : selectedGenre("Fiction")
+activate UI
+UI --> User : Private collection of publications created successfully
+deactivate UI
 
 @enduml
-

@@ -1,0 +1,64 @@
+@startuml
+
+left to right direction
+
+class Denunciation {
+  + id : DenunciationId
+  + postId : PostId
+  + commentId : CommentId
+  + reporterId : UserId
+  + typeOfDenunciation : enum/class
+  + reason : String
+}
+
+class Comment {
+  + id : CommentId
+  + postId : PostId
+  + ownerId : UserId (User, Publisher, Author)
+  + date : LocalDate
+  + content : String
+}
+
+class Post {
+  + id : PostId
+  + ownerId : UserId (User, Publisher, Author)
+  + postStatus : enum
+  + content : String
+  + photos : Picture
+  + video : Video
+  + pubId : PublicationSampleId
+  + date : LocalDate
+  + tags : List<Tag>
+}
+
+class Tag {
+  + id : TagId
+  + tag : String
+}
+
+class User {
+  + userName : String
+  + profile : Profile
+  + userRole : UserRole
+  + addPrivateList(CollectionOfPublications list)
+  + addCollection(CollectionOfPublications list)
+}
+
+class Ban {
+  + id : BanId
+  + bannedUser : UserId
+  + moderator : UserId
+  + isAeternum : Boolean
+  + initialDate : LocalDate
+  + endDate : LocalDate (isAeternum = null)
+}
+
+Denunciation "flags a" --> "1" Comment
+Denunciation "flags a" --> "1" Post
+Comment "1" ---> "belongs to" Post
+Post "1" <--- "                                     can have" Tag
+Tag "                      is written by" <--- User
+Post "is created by" <-- "1" User
+User "1" --> "1" Ban : is applied to
+
+@enduml
