@@ -194,7 +194,7 @@ class US016PublicationSampleMapperTest {
 
         // assert
         assertEquals(
-                "BibliographicalData not found for id: " + bibliographicalDataId,
+                "BibliographicalData not found for auctionId: " + bibliographicalDataId,
                 ex.getMessage()
         );
     }

@@ -17,7 +17,7 @@ public class UserId implements DomainID {
      *
      * @param id the string to be used as the user identifier;
      *           must not be {@code null} or blank
-     * @throws IllegalArgumentException if {@code id} is {@code null} or blank
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null} or blank
      */
     public UserId(String id) {
         if (id == null || id.isBlank()) {

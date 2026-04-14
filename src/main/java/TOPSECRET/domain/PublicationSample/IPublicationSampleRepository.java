@@ -76,7 +76,7 @@ public interface    IPublicationSampleRepository {
      *
      * @param id the ID to search for; must not be {@code null}
      * @return an {@link Optional} containing the matching sample, or empty if none found
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null}
      */
     Optional<PublicationSample> findPublicationSampleById(PublicationSampleId id);
 

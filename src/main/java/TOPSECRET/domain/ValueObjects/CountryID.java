@@ -20,7 +20,7 @@ public class CountryID {
      *
      * @param id the string to be used as the country identifier;
      *           must not be {@code null} or blank
-     * @throws IllegalArgumentException if {@code id} is {@code null} or blank
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null} or blank
      */
     public CountryID(String id) {
         if (id == null || id.isBlank()) {

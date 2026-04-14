@@ -126,7 +126,7 @@ public class US012PublicationSampleMapper {
         BibliographicalDataID bibliographicalDataId = publicationSample.getBibliographicalDataID();
         BibliographicalData bibliographicalData = _bdRepo.findBibliographicalDataById(bibliographicalDataId)
                 .orElseThrow(() ->
-                        new InstanceNotFoundException("BibliographicalData id was not found:" + bibliographicalDataId));
+                        new InstanceNotFoundException("BibliographicalData auctionId was not found:" + bibliographicalDataId));
 
         return bibliographicalData;
     }

@@ -162,10 +162,10 @@
 //
 //        //Arrange
 //        Country country = repository.createAndAddNewCountry("Portugal");
-//        CountryID id = country.getCountryID();
+//        CountryID auctionId = country.getCountryID();
 //
 //        //Act
-//        Optional<Country> result = repository.findByID(id);
+//        Optional<Country> result = repository.findByID(auctionId);
 //
 //        //Assert
 //        assertTrue(result.isPresent());
@@ -179,10 +179,10 @@
 //    void findByID_nonExistingID() {
 //
 //        //Arrange
-//        CountryID id = new CountryID("FRANCE");
+//        CountryID auctionId = new CountryID("FRANCE");
 //
 //        //Act
-//        Optional<Country> result = repository.findByID(id);
+//        Optional<Country> result = repository.findByID(auctionId);
 //
 //        //Assert
 //        assertFalse(result.isPresent());

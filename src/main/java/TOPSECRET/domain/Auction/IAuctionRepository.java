@@ -50,7 +50,7 @@ public interface IAuctionRepository {
      * Retrieves an {@link Auction} instance by its identifier.
      * <p>
      * This method searches the in-memory list of stored auctions and returns
-     * the first element whose {@code id()} matches the provided {@link AuctionId}.
+     * the first element whose {@code auctionId()} matches the provided {@link AuctionId}.
      * If no matching listing is found, an empty {@link Optional} is returned.
      * </p>
      *
@@ -58,7 +58,7 @@ public interface IAuctionRepository {
      * @return an {@link Optional} containing the matching auction if found,
      *         or an empty {@link Optional} otherwise
      *
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null}
      */
     Optional<Auction> findAuctionById(AuctionId id);
 

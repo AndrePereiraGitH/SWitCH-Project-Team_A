@@ -72,7 +72,7 @@ public class US016PublicationSampleMapper {
             BibliographicalData bd = _bdRepository
                     .findBibliographicalDataById(pub.getBibliographicalDataID())
                     .orElseThrow(() -> new InstanceNotFoundException(
-                            "BibliographicalData not found for id: " + pub.getBibliographicalDataID()
+                            "BibliographicalData not found for auctionId: " + pub.getBibliographicalDataID()
                     ));
 
             bibliographicalDataMap.put(pub.getBibliographicalDataID(), bd);

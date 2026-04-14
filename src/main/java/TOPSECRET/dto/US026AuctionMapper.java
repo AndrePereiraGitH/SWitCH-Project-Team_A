@@ -21,7 +21,7 @@ public class US026AuctionMapper {
     /**
      * Creates a mapper with access to the listing repository.
      *
-     * @param listingRepo the repository used to retrieve listings by their id
+     * @param listingRepo the repository used to retrieve listings by their auctionId
      */
     public US026AuctionMapper(IListingRepository listingRepo) {
         this.listingRepo = listingRepo;
@@ -45,9 +45,9 @@ public class US026AuctionMapper {
             throw new InstanceNotFoundException("Listing not found");
         }
         return new US026AuctionDTO(
-                auction.id(),
+                auction.id().getId(),
                 listing.get().getListingTitle(),
-                auction.getAuctionStatus()
+                auction.getAuctionStatus().name()
         );
     }
 
