@@ -58,8 +58,6 @@ class DirectSaleFactoryTest {
             assertEquals(1, mocked.constructed().size());
             DirectSale constructed = mocked.constructed().get(0);
             assertSame(constructed, sale);
-
-            var args = mocked.constructed().get(0);         // verifies the constructor was called with the right arguments
         }
     }
 
@@ -110,5 +108,28 @@ class DirectSaleFactoryTest {
         );
 
         assertEquals("All listings must be of type DIRECT_SALE",ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenListingNotFound() {
+        // Arrange
+        ListingId missingId = new ListingId("123");
+        List<ListingId> listingIds = List.of(missingId);
+
+        UserId buyer = new UserId("buyer-1");
+
+        IListingRepository listingRepo = mock(IListingRepository.class);
+        when(listingRepo.findListingById(missingId)).thenReturn(Optional.empty());
+
+        DirectSaleFactory service = new DirectSaleFactory();
+
+        // Act
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.create(listingIds, buyer, listingRepo)
+        );
+
+        // Assert
+        assertEquals("Listing not found: " + missingId, ex.getMessage());
     }
 }
