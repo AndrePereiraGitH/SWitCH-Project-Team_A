@@ -3,8 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.*;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
@@ -13,6 +13,7 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for US023: "As a Buyer, I want to get the list of items on direct sale
@@ -37,7 +38,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
     private final IListingRepository _listingRepo;
     private final IPublicationSampleRepository _pubSampleRepo;
     private final US023BibliographicalDataMapper _bdMapper;
-    private final US023PublicationSampleMapper _pubSampleMapper;
+    private final US023ListingMapper _listingMapper;
 
     // =================================================================================================================
     // ====== Constructor ==============================================================================================
@@ -57,7 +58,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
                                                                              IListingRepository listingRepo,
                                                                              IPublicationSampleRepository pubSampleRepo,
                                                                              US023BibliographicalDataMapper bdMapper,
-                                                                             US023PublicationSampleMapper pubSampleMapper) {
+                                                                             US023ListingMapper pubSampleMapper) {
         if (bdRepo == null) {
             throw new IllegalArgumentException("bdRepo cannot be null");
         }
@@ -78,7 +79,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
         this._listingRepo = listingRepo;
         this._pubSampleRepo = pubSampleRepo;
         this._bdMapper = bdMapper;
-        this._pubSampleMapper = pubSampleMapper;
+        this._listingMapper = pubSampleMapper;
     }
 
     // =================================================================================================================
@@ -106,48 +107,38 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
     }
 
     /**
-     * Finds all publication samples that are currently on direct sale for the
-     * specified publication of a given publication.
+     * Retrieves all direct‑sale listings that contain publication samples linked to the
+     * given {@link BibliographicalDataID}, resolves each {@link Listing}, and converts
+     * them into {@link US023ListingDTO}.
      *
-     * <p>
-     * This method performs the following steps:
-     * <ol>
-     *     <li>Retrieve all direct sale listings from the listing repository.</li>
-     *     <li>Extract unique publication sample IDs from these listings.</li>
-     *     <li>Query the publication sample repository for items matching the
-     *     given publication ID and the extracted IDs.</li>
-     *     <li>Convert the resulting publication samples to DTOs for presentation.</li>
-     * </ol>
-     *
-     * @param bdId the ID of the publication for which to find direct sale items
-     * @return a list of {@link US023PublicationSampleDTO} representing the publication
-     * samples on direct sale
-     * @throws InstanceNotFoundException if no publication samples are found or
-     *                                   the repository encounters an error
+     * @param bdId the bibliographical data identifier
+     * @return a list of listing DTOs
+     * @throws InstanceNotFoundException if any ListingId does not correspond to an existing Listing
      */
-    public List<US023PublicationSampleDTO> findListOfItemsOnDirectSale(BibliographicalDataID bdId) throws InstanceNotFoundException {
+    public List<US023ListingDTO> findListOfItemsOnDirectSale(BibliographicalDataID bdId) throws InstanceNotFoundException {
 
-        // Gets all the listings for direct sale
-        List<Listing> listOfDSListings = _listingRepo.findAllDirectSaleListings();
+        if (bdId == null) {
+            throw new IllegalArgumentException("bdId cannot be null");
+        }
 
-        // Gets all the publicationIds for each listing
-        // Later, this logic should be moved to an application service
-        List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
+        List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findPubSampleIdsByBibliographicalDataId(bdId);
 
-        for (Listing listing : listOfDSListings) {
-            for (PublicationSampleId psId : listing.getItemsId()) {
-                if (!listOfPubSampleIds.contains(psId)) { // to avoid duplicates
-                    listOfPubSampleIds.add(psId);
-                }
+        List<ListingId> listOfDSListingIds = _listingRepo.findAllListingIdByPublicationSampleId(listOfPubSample);
+
+        List<Listing> listOfDSListings = new ArrayList<>();
+        for (ListingId listingId : listOfDSListingIds) {
+            Optional<Listing> listingOpt = _listingRepo.findListingById(listingId);
+
+            if (listingOpt.isPresent()) {
+                listOfDSListings.add(listingOpt.get());
+            } else {
+                throw new InstanceNotFoundException("Listing with id " + listingId + " not found");
             }
         }
 
-        // Gets all the publication samples related to the publicationId
-        List<PublicationSample> listOfPubSample = _pubSampleRepo.findItemsByIdsAndPublication(listOfPubSampleIds, bdId);
-
         // Converts to DTOs
-        List<US023PublicationSampleDTO> listOfPubSampleDTO = _pubSampleMapper.toDTOs(listOfPubSample);
+        List<US023ListingDTO> listOfListingDTO = _listingMapper.toDTOs(listOfDSListings);
 
-        return listOfPubSampleDTO;
+        return listOfListingDTO;
     }
 }

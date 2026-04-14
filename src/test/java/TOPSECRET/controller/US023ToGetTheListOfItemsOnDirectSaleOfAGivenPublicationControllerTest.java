@@ -7,19 +7,23 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US023BibliographicalDataDTO;
 import TOPSECRET.dto.US023BibliographicalDataMapper;
-import TOPSECRET.dto.US023PublicationSampleDTO;
-import TOPSECRET.dto.US023PublicationSampleMapper;
+import TOPSECRET.dto.US023ListingDTO;
+import TOPSECRET.dto.US023ListingMapper;
 import TOPSECRET.repository.BibliographicalDataRepositoryMem;
 import TOPSECRET.repository.ListingRepositoryMem;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -48,6 +52,7 @@ import static org.mockito.Mockito.when;
  * </p>
  */
 class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
+    private static final Log log = LogFactory.getLog(US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest.class);
 
     // ===========================================
     // ================= Set Up ==================
@@ -60,6 +65,8 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     private IListingRepository listingRepoDouble;
     private Listing listing1Double;
     private Listing listing2Double;
+    private ListingId listingId1Double;
+    private ListingId listingId2Double;
 
     private IBibliographicalDataRepository bdRepoDouble;
     private BibliographicalData bd1Double;
@@ -68,7 +75,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     private BibliographicalDataID bdId2Double;
 
     private US023BibliographicalDataMapper bdMapperDouble;
-    private US023PublicationSampleMapper pubSampleMapperDouble;
+    private US023ListingMapper listingMapperDouble;
 
     @BeforeEach
     void setUp() {
@@ -94,9 +101,13 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         // Listing
         listing1Double = mock(Listing.class);
+        listingId1Double = mock(ListingId.class);
         when(listing1Double.getItemsId()).thenReturn(List.of(psId1Double));
+        when(listing1Double.id()).thenReturn(listingId1Double);
         listing2Double = mock(Listing.class);
+        listingId2Double = mock(ListingId.class);
         when(listing2Double.getItemsId()).thenReturn(List.of(psId2Double));
+        when(listing2Double.id()).thenReturn(listingId2Double);
 
         // Repositories
         bdRepoDouble = mock(BibliographicalDataRepositoryMem.class);
@@ -105,7 +116,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         // Mappers
         bdMapperDouble = mock(US023BibliographicalDataMapper.class);
-        pubSampleMapperDouble = mock(US023PublicationSampleMapper.class);
+        listingMapperDouble = mock(US023ListingMapper.class);
     }
 
     // =================================================================================================================
@@ -117,7 +128,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertDoesNotThrow(() ->
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble));
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -125,7 +136,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        null, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble));
+                        null, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -133,7 +144,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, null, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble));
+                        bdRepoDouble, null, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -141,7 +152,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, null, bdMapperDouble, pubSampleMapperDouble));
+                        bdRepoDouble, listingRepoDouble, null, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -149,7 +160,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, null, pubSampleMapperDouble));
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, null, listingMapperDouble));
     }
 
     @Test
@@ -174,7 +185,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
-                        listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
+                        listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023BibliographicalDataDTO> listOfPublicationsDTO = controller.getAllPublicationBD();
@@ -192,7 +203,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023BibliographicalDataDTO> listOfPublicationsDTO = controller.getAllPublicationBD();
@@ -206,175 +217,98 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     // =================================================================================================================
 
     @Test
-    void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenListingsIsEmpty() throws InstanceNotFoundException {
+    void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenNoListingIds() throws Exception {
         // Arrange
-        when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(List.of());
+        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
-                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
-                        listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
+        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of());
 
-        // Act
-        List<US023PublicationSampleDTO> listOfPubSampleDTO = controller.findListOfItemsOnDirectSale(bdId1Double);
-
-        // Assert
-        assertNotNull(listOfPubSampleDTO);
-        assertTrue(listOfPubSampleDTO.isEmpty());
-    }
-
-    @Test
-    void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenNoItemsFound() throws InstanceNotFoundException {
-        // Arrange
-        when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(List.of());
-        when(pubSampleRepoDouble.findItemsByIdsAndPublication(List.of(), bdId1Double)).thenReturn(List.of());
-
-        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
-                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
-                        listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
-
-        // Act
-        List<US023PublicationSampleDTO> itemsListDTO = controller.findListOfItemsOnDirectSale(bdId1Double);
-
-        // Assert
-        assertNotNull(itemsListDTO);
-        assertTrue(itemsListDTO.isEmpty());
-    }
-
-    @Test
-    void findListOfItemsOnDirectSale_ShouldReturnAllItemWhenMultipleSamplesExist() throws InstanceNotFoundException {
-        // Arrange
-        PublicationSample pubSample1Double = mock(PublicationSample.class);
-        PublicationSample pubSample2Double = mock(PublicationSample.class);
-        when(pubSample1Double.id()).thenReturn(psId1Double);
-        when(pubSample2Double.id()).thenReturn(psId2Double);
-        when(pubSample1Double.getBibliographicalDataID()).thenReturn(bdId1Double);
-        when(pubSample2Double.getBibliographicalDataID()).thenReturn(bdId1Double);
-
-        when(listingRepoDouble.findAllDirectSaleListings())
-                .thenReturn(List.of(listing1Double, listing2Double));
-
-        when(pubSampleRepoDouble.findItemsByIdsAndPublication(List.of(psId1Double, psId2Double), bdId1Double))
-                .thenReturn(List.of(pubSample1Double, pubSample2Double));
-
-        US023PublicationSampleDTO dto1 = mock(US023PublicationSampleDTO.class);
-        US023PublicationSampleDTO dto2 = mock(US023PublicationSampleDTO.class);
-        when(pubSampleMapperDouble.toDTOs(List.of(pubSample1Double, pubSample2Double)))
-                .thenReturn(List.of(dto1, dto2));
-
-        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
-                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
-                        listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
-
-        // Act
-        List<US023PublicationSampleDTO> itemsListDTO = controller.findListOfItemsOnDirectSale(bdId1Double);
-
-        // Assert
-        assertNotNull(itemsListDTO);
-        assertEquals(2, itemsListDTO.size());
-    }
-
-    @Test
-    void findListOfItemsOnDirectSale_ShouldIgnoreDuplicateIds() throws InstanceNotFoundException {
-        // Arrange
-        when(listing1Double.getItemsId()).thenReturn(List.of(psId1Double, psId1Double));
-        when(listing2Double.getItemsId()).thenReturn(List.of(psId1Double));
-
-        when(listingRepoDouble.findAllDirectSaleListings())
-                .thenReturn(List.of(listing1Double, listing2Double));
-
-        PublicationSample pubSample = mock(PublicationSample.class);
-        when(pubSampleRepoDouble.findItemsByIdsAndPublication(List.of(psId1Double), bdId1Double))
-                .thenReturn(List.of(pubSample));
-
-        US023PublicationSampleDTO dto = mock(US023PublicationSampleDTO.class);
-        when(pubSampleMapperDouble.toDTOs(List.of(pubSample)))
-                .thenReturn(List.of(dto));
+        when(listingMapperDouble.toDTOs(List.of())).thenReturn(List.of());
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
-        List<US023PublicationSampleDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
+        List<US023ListingDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findListOfItemsOnDirectSale_ShouldThrowWhenListingNotFound() throws Exception {
+        // Arrange
+        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
+
+        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
+
+        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.empty());
+
+        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> controller.findListOfItemsOnDirectSale(bdId1Double));
+    }
+
+    @Test
+    void findListOfItemsOnDirectSale_ShouldReturnDTOs() throws Exception {
+        // Arrange
+        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
+
+        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
+
+        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.of(listing1Double));
+
+        US023ListingDTO dto = mock(US023ListingDTO.class);
+        when(listingMapperDouble.toDTOs(List.of(listing1Double))).thenReturn(List.of(dto));
+
+        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
+                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+
+        // Act
+        List<US023ListingDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
 
         // Assert
         assertEquals(1, result.size());
+        assertSame(dto, result.get(0));
     }
 
     @Test
-    void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenMapperReturnsEmpty() throws InstanceNotFoundException {
+    void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenMapperReturnsEmpty() throws Exception {
         // Arrange
-        when(listingRepoDouble.findAllDirectSaleListings())
-                .thenReturn(List.of(listing1Double));
+        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        PublicationSample pubSample = mock(PublicationSample.class);
-        when(pubSampleRepoDouble.findItemsByIdsAndPublication(List.of(psId1Double), bdId1Double))
-                .thenReturn(List.of(pubSample));
+        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
 
-        when(pubSampleMapperDouble.toDTOs(List.of(pubSample)))
-                .thenReturn(List.of());
+        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.of(listing1Double));
+
+        when(listingMapperDouble.toDTOs(List.of(listing1Double))).thenReturn(List.of());
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
-        List<US023PublicationSampleDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
+        List<US023ListingDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findListOfItemsOnDirectSale_ShouldThrowWhenRepoReturnsNull() {
+    void findListOfItemsOnDirectSale_ShouldThrowWhenBdIdIsNull() {
         // Arrange
-        when(listingRepoDouble.findAllDirectSaleListings()).thenReturn(null);
-
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
+                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> controller.findListOfItemsOnDirectSale(bdId1Double));
-    }
-
-    @Test
-    void findListOfItemsOnDirectSale_ShouldThrowWhenListingItemsIdIsNull() {
-        // Arrange
-        when(listing1Double.getItemsId()).thenReturn(null);
-        when(listingRepoDouble.findAllDirectSaleListings())
-                .thenReturn(List.of(listing1Double));
-
-        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
-                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> controller.findListOfItemsOnDirectSale(bdId1Double));
-    }
-
-    @Test
-    void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenNoSamplesMatchPublication() throws InstanceNotFoundException {
-        // Arrange
-        when(listingRepoDouble.findAllDirectSaleListings())
-                .thenReturn(List.of(listing1Double, listing2Double));
-
-        when(pubSampleRepoDouble.findItemsByIdsAndPublication(List.of(psId1Double, psId2Double), bdId1Double))
-                .thenReturn(List.of());
-
-        when(pubSampleMapperDouble.toDTOs(List.of()))
-                .thenReturn(List.of());
-
-        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
-                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, pubSampleMapperDouble);
-
-        // Act
-        List<US023PublicationSampleDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findListOfItemsOnDirectSale(null));
     }
 }
