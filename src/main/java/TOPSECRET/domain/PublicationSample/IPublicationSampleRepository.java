@@ -6,12 +6,8 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.domain.ValueObjects.LibraryId;
-import TOPSECRET.dto.PublicationSampleDTO_US018;
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.US018PublicationSampleDTO;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -138,6 +134,48 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
+     * Retrieves all publication samples that belong to a collection.
+     *
+     * @param collectionID the identifier of the collection of publication whose publication samples are to be retrieved
+     * @return a list containing all publication samples associated with the given collection;
+     * returns an empty list if no publication samples are found
+     */
+    List<PublicationSample> getPublicationsByCollectionID (CollectionOfPublicationsID collectionID);
+
+    /**
+     * Assigns a collection to a list of publication samples.
+     *
+     * @param collectionId collection identifier
+     * @param publicationSampleIds publication identifiers
+     * @return true if operation succeeds
+     */
+    boolean assignPublicationsToCollection(
+            CollectionOfPublicationsID collectionId,
+            List<PublicationSampleId> publicationSampleIds);
+
+    /**
+     * Retrieves the list of publications owned by the user that are not yet
+     * assigned to the specified collection.
+     *
+     * <p>
+     * This method computes the difference between:
+     * <ul>
+     *     <li>All publications in the user's library</li>
+     *     <li>Publications already assigned to the collection</li>
+     * </ul>
+     * </p>
+     *
+     * @param userId identifier of the user
+     * @param collectionId identifier of the collection
+     * @return list of available publication samples
+     *
+     * @throws IllegalArgumentException if any argument is null
+     */
+    List<PublicationSample> getAvailablePublicationsForCollection(
+            UserId userId,
+            CollectionOfPublicationsID collectionId);
+
+    /**
      * Returns the subset of {@link PublicationSample} instances from the repository
      * that are not present in the provided list.
      * <p>
@@ -165,7 +203,7 @@ public interface    IPublicationSampleRepository {
 //    List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher);
 
     /**
-     * Converts a {@link PublicationSampleDTO_US018} transfer object into a domain
+     * Converts a {@link US018PublicationSampleDTO} transfer object into a domain
      * {@link PublicationSample}, resolved in the context of the given {@link Library}.
      *
      * @param userLibrary the library context used to resolve the publication sample;
