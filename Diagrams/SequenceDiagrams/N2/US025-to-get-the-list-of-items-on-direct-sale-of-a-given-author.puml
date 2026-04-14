@@ -50,38 +50,31 @@ activate AuthorRepository
 AuthorRepository --> Ctrl : author
 deactivate AuthorRepository
 
-Ctrl -> Mapper : toDTOListByAuthor(author)
-activate Mapper
-
-Mapper -> ListingRepository : findAllDirectSaleListings()
+Ctrl -> ListingRepository : findAllDirectSaleListings()
 activate ListingRepository
-ListingRepository --> Mapper : allListings
+ListingRepository --> Ctrl : allListings
 deactivate ListingRepository
 
 loop for each listing / for each itemId in listing
 
-    Mapper -> PublicationSampleRepository : findPublicationSampleById(itemId)
+    Ctrl -> PublicationSampleRepository : findPublicationSampleById(itemId)
     activate PublicationSampleRepository
-    PublicationSampleRepository --> Mapper : item
+    PublicationSampleRepository --> Ctrl : item
     deactivate PublicationSampleRepository
 
-    Mapper -> BibliographicalDataRepository : findBibliographicalDataById(item.getBibliographicalDataID())
+    Ctrl -> BibliographicalDataRepository : findBibliographicalDataById(item.getBibliographicalDataID())
     activate BibliographicalDataRepository
-    BibliographicalDataRepository --> Mapper : bd
+    BibliographicalDataRepository --> Ctrl : bd
     deactivate BibliographicalDataRepository
 
     alt bd.getAuthors().contains(author.id())
-        Mapper -> Mapper : toDTO(author, item, listing)
-        Mapper -> BibliographicalDataRepository : findBibliographicalDataById(item.getBibliographicalDataID())
-        activate BibliographicalDataRepository
-        BibliographicalDataRepository --> Mapper : bd
-        deactivate BibliographicalDataRepository
+        Ctrl -> Mapper : toDTO(author, item, listing, bd)
+        activate Mapper
+        Mapper --> Ctrl : directSaleDTO
+        deactivate Mapper
     end
 
 end
-
-Mapper --> Ctrl : listOfDirectSaleDTOs
-deactivate Mapper
 
 Ctrl --> UI025 : listOfDirectSaleDTOs
 deactivate Ctrl

@@ -2,13 +2,19 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.dto.AuthorDTO_US025;
-import TOPSECRET.dto.DirectSaleDTO_US025;
-import TOPSECRET.dto.DirectSaleMapper_US025;
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.US025AuthorDTO;
+import TOPSECRET.dto.US025DirectSaleDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,29 +24,35 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController}.
  *
- * Verifies that the controller correctly orchestrates author retrieval
- * and delegates direct sale item lookup to the mapper.
+ * Verifies that the controller correctly orchestrates repository calls
+ * and delegates DTO conversion to the mapper classes.
  */
 class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
     private IAuthorRepository authorRepositoryDouble;
-    private DirectSaleMapper_US025 directSaleMapperDouble;
+    private IListingRepository listingRepositoryDouble;
+    private IPublicationSampleRepository publicationSampleRepositoryDouble;
+    private IBibliographicalDataRepository bibliographicalDataRepositoryDouble;
     private US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut;
 
     @BeforeEach
     void setUp() {
         authorRepositoryDouble = mock(IAuthorRepository.class);
-        directSaleMapperDouble = mock(DirectSaleMapper_US025.class);
+        listingRepositoryDouble = mock(IListingRepository.class);
+        publicationSampleRepositoryDouble = mock(IPublicationSampleRepository.class);
+        bibliographicalDataRepositoryDouble = mock(IBibliographicalDataRepository.class);
 
         sut = new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                 authorRepositoryDouble,
-                directSaleMapperDouble);
+                listingRepositoryDouble,
+                publicationSampleRepositoryDouble,
+                bibliographicalDataRepositoryDouble);
     }
 
     @Test
     void shouldReturnAuthorsDTOList() {
 
-        // ARRANGE
+        // Arrange
         Author author1Double = mock(Author.class);
         Author author2Double = mock(Author.class);
 
@@ -48,10 +60,10 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         when(author2Double.getName()).thenReturn("Author Two");
         when(authorRepositoryDouble.getAllAuthors()).thenReturn(List.of(author1Double, author2Double));
 
-        // ACT
-        List<AuthorDTO_US025> result = sut.getAllAuthors();
+        // Act
+        List<US025AuthorDTO> result = sut.getAllAuthors();
 
-        // ASSERT
+        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
     }
@@ -59,18 +71,41 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     @Test
     void shouldReturnItemsOnDirectSaleForGivenAuthor() {
 
-        // ARRANGE
-        String authorId = "author-123";
+        // Arrange
+        String authorIdStr = "author-123";
+        AuthorId authorIdDouble = new AuthorId(authorIdStr);
+
         Author authorDouble = mock(Author.class);
-        DirectSaleDTO_US025 dtoDouble = mock(DirectSaleDTO_US025.class);
+        when(authorDouble.id()).thenReturn(authorIdDouble);
+        when(authorDouble.getName()).thenReturn("Author One");
+
+        PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+
+        Listing listingDouble = mock(Listing.class);
+        when(listingDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getPrice()).thenReturn(new BigDecimal("10.00"));
+        when(listingDouble.getPrice()).thenReturn(priceDouble);
+        when(listingDouble.getListingTitle()).thenReturn("Listing One");
+        when(listingDouble.getSellerId()).thenReturn(mock(UserId.class));
+
+        PublicationSample itemDouble = mock(PublicationSample.class);
+        when(itemDouble.getBibliographicalDataID()).thenReturn(bdIdDouble);
+
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        when(bdDouble.getAuthors()).thenReturn(List.of(authorIdDouble));
+        when(bdDouble.getTitle()).thenReturn("Some Title");
 
         when(authorRepositoryDouble.findAuthorById(any(AuthorId.class))).thenReturn(Optional.of(authorDouble));
-        when(directSaleMapperDouble.toDTOListByAuthor(authorDouble)).thenReturn(List.of(dtoDouble));
+        when(listingRepositoryDouble.findAllDirectSaleListings()).thenReturn(List.of(listingDouble));
+        when(publicationSampleRepositoryDouble.findPublicationSampleById(itemIdDouble)).thenReturn(Optional.of(itemDouble));
+        when(bibliographicalDataRepositoryDouble.findBibliographicalDataById(bdIdDouble)).thenReturn(Optional.of(bdDouble));
 
-        // ACT
-        List<DirectSaleDTO_US025> result = sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorId);
+        // Act
+        List<US025DirectSaleDTO> result = sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorIdStr);
 
-        // ASSERT
+        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
     }
@@ -78,17 +113,19 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     @Test
     void shouldReturnEmptyListForAuthorWithoutDirectSales() {
 
-        // ARRANGE
-        String authorId = "author-123";
+        // Arrange
+        String authorIdStr = "author-123";
         Author authorDouble = mock(Author.class);
+        AuthorId authorIdDouble = new AuthorId(authorIdStr);
+        when(authorDouble.id()).thenReturn(authorIdDouble);
 
         when(authorRepositoryDouble.findAuthorById(any(AuthorId.class))).thenReturn(Optional.of(authorDouble));
-        when(directSaleMapperDouble.toDTOListByAuthor(authorDouble)).thenReturn(List.of());
+        when(listingRepositoryDouble.findAllDirectSaleListings()).thenReturn(List.of());
 
-        // ACT
-        List<DirectSaleDTO_US025> result = sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorId);
+        // Act
+        List<US025DirectSaleDTO> result = sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorIdStr);
 
-        // ASSERT
+        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -96,21 +133,20 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     @Test
     void shouldThrowExceptionWhenAuthorNotFound() {
 
-        // ARRANGE
-        String authorId = "author-123";
+        // Arrange
         when(authorRepositoryDouble.findAuthorById(any(AuthorId.class))).thenReturn(Optional.empty());
 
-        // ACT + ASSERT
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorId)
+                () -> sut.getListOfItemsOnDirectSaleOfAGivenAuthor("author-123")
         );
     }
 
     @Test
     void shouldThrowExceptionWhenAuthorIdIsNull() {
 
-        // ACT + ASSERT
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.getListOfItemsOnDirectSaleOfAGivenAuthor(null)
@@ -120,7 +156,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     @Test
     void shouldThrowExceptionWhenAuthorIdIsBlank() {
 
-        // ACT + ASSERT
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.getListOfItemsOnDirectSaleOfAGivenAuthor("   ")
@@ -130,24 +166,116 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     @Test
     void constructorShouldThrowExceptionWhenAuthorRepositoryIsNull() {
 
-        // ACT + ASSERT
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         null,
-                        directSaleMapperDouble)
+                        listingRepositoryDouble,
+                        publicationSampleRepositoryDouble,
+                        bibliographicalDataRepositoryDouble)
         );
     }
 
     @Test
-    void constructorShouldThrowExceptionWhenDirectSaleMapperIsNull() {
+    void constructorShouldThrowExceptionWhenListingRepositoryIsNull() {
 
-        // ACT + ASSERT
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
+                        null,
+                        publicationSampleRepositoryDouble,
+                        bibliographicalDataRepositoryDouble)
+        );
+    }
+
+    @Test
+    void constructorShouldThrowExceptionWhenPublicationSampleRepositoryIsNull() {
+
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
+                        authorRepositoryDouble,
+                        listingRepositoryDouble,
+                        null,
+                        bibliographicalDataRepositoryDouble)
+        );
+    }
+
+    @Test
+    void constructorShouldThrowExceptionWhenBibliographicalDataRepositoryIsNull() {
+
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
+                        authorRepositoryDouble,
+                        listingRepositoryDouble,
+                        publicationSampleRepositoryDouble,
                         null)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPublicationSampleNotFound() {
+
+        String authorIdStr = "author-123";
+        AuthorId authorIdDouble = new AuthorId(authorIdStr);
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorIdDouble);
+
+        PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
+
+        Listing listingDouble = mock(Listing.class);
+        when(listingDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
+
+        when(authorRepositoryDouble.findAuthorById(any(AuthorId.class)))
+                .thenReturn(Optional.of(authorDouble));
+        when(listingRepositoryDouble.findAllDirectSaleListings())
+                .thenReturn(List.of(listingDouble));
+        when(publicationSampleRepositoryDouble.findPublicationSampleById(itemIdDouble))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorIdStr)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBibliographicalDataNotFound() {
+
+        String authorIdStr = "author-123";
+        AuthorId authorIdDouble = new AuthorId(authorIdStr);
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorIdDouble);
+
+        PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+
+        Listing listingDouble = mock(Listing.class);
+        when(listingDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
+
+        PublicationSample itemDouble = mock(PublicationSample.class);
+        when(itemDouble.getBibliographicalDataID()).thenReturn(bdIdDouble);
+
+        when(authorRepositoryDouble.findAuthorById(any(AuthorId.class)))
+                .thenReturn(Optional.of(authorDouble));
+        when(listingRepositoryDouble.findAllDirectSaleListings())
+                .thenReturn(List.of(listingDouble));
+        when(publicationSampleRepositoryDouble.findPublicationSampleById(itemIdDouble))
+                .thenReturn(Optional.of(itemDouble));
+        when(bibliographicalDataRepositoryDouble.findBibliographicalDataById(bdIdDouble))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorIdStr)
         );
     }
 }

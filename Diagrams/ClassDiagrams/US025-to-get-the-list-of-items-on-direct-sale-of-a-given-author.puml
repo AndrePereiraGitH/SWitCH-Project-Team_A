@@ -8,7 +8,11 @@ class UI025 {
 ' Controller
 class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
   -authorRepository: IAuthorRepository
+  -listingRepository: IListingRepository
+  -publicationSampleRepository: IPublicationSampleRepository
+  -bibliographicalDataRepository: IBibliographicalDataRepository
   -directSaleMapper: DirectSaleMapper_US025
+  -authorMapper: AuthorMapper_US025
   +getAllAuthors(): List<AuthorDTO_US025>
   +getListOfItemsOnDirectSaleOfAGivenAuthor(authorId: String): List<DirectSaleDTO_US025>
 }
@@ -39,7 +43,7 @@ class AuthorDTO_US025 {
 class DirectSaleDTO_US025 {
   -publicationTitle: String
   -authors: List<String>
-  -price: BigDecimal
+  -price: double
   -listingTitle: String
   -seller: String
 }
@@ -51,22 +55,18 @@ class AuthorMapper_US025 {
 }
 
 class DirectSaleMapper_US025 {
-  -bibliographicalDataRepository: IBibliographicalDataRepository
-  -listingRepository: IListingRepository
-  -publicationSampleRepository: IPublicationSampleRepository
-  -toDTO(author: Author, item: PublicationSample, listing: Listing): DirectSaleDTO_US025
-  +toDTOListByAuthor(author: Author): List<DirectSaleDTO_US025>
+  +{static} toDTO(author: Author, listing: Listing, bd: BibliographicalData): DirectSaleDTO_US025
 }
 
 ' Interactions
 UI025 "1 " ..> "1 " US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController : uses
 US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1 " ..> "1 " IAuthorRepository : uses
+US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1 " ..> "1 " IListingRepository : uses
+US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1 " ..> "1 " IPublicationSampleRepository : uses
+US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1 " ..> "1 " IBibliographicalDataRepository : uses
 US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1 " ..> "1 " AuthorMapper_US025 : uses
 US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1 " ..> "1 " DirectSaleMapper_US025 : uses
-AuthorMapper_US025 "1  " ..> " *" AuthorDTO_US025 : creates
+AuthorMapper_US025 "1 " ..> "*" AuthorDTO_US025 : creates
 DirectSaleMapper_US025 "1 " ..> "*" DirectSaleDTO_US025 : creates
-DirectSaleMapper_US025 "1 " ..> "1 " IListingRepository : uses
-DirectSaleMapper_US025 "1 " ..> "1 " IPublicationSampleRepository : uses
-DirectSaleMapper_US025 "1 " ..> "1 " IBibliographicalDataRepository : uses
 
 @enduml

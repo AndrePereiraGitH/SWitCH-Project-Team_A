@@ -1,7 +1,6 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.dto.AuthorDTO_US025;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +8,10 @@ import java.util.List;
 /**
  * Mapper responsible for converting Author entities to DTOs.
  */
-public class AuthorMapper_US025 {
+public class US025AuthorMapper {
 
-    private AuthorMapper_US025() {
-        // Utility class — should not be instantiated
+    private US025AuthorMapper() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**
@@ -21,9 +20,10 @@ public class AuthorMapper_US025 {
      * @param author The Author entity to map.
      * @return A new AuthorDTO_US025, or null if author is null.
      */
-    public static AuthorDTO_US025 toDTO(Author author) {
-        if (author == null) return null;
-        return new AuthorDTO_US025(author.getName());
+    public static US025AuthorDTO toDTO(Author author) {
+        if (author == null)
+            throw new IllegalArgumentException("Author cannot be null");
+        return new US025AuthorDTO(author.getName());
     }
 
     /**
@@ -32,15 +32,13 @@ public class AuthorMapper_US025 {
      * @param authors List of Author entities.
      * @return List of AuthorDTO_US025. Returns an empty list if input is null.
      */
-    public static List<AuthorDTO_US025> toDTOList(List<Author> authors) {
-        List<AuthorDTO_US025> dtos = new ArrayList<>();
-        if (authors == null) return dtos;
+    public static List<US025AuthorDTO> toDTOList(List<Author> authors) {
+        if (authors == null)
+            throw new IllegalArgumentException("Authors list cannot be null");
 
+        List<US025AuthorDTO> dtos = new ArrayList<>();
         for (Author author : authors) {
-            AuthorDTO_US025 dto = toDTO(author);
-            if (dto != null) {
-                dtos.add(dto);
-            }
+            dtos.add(toDTO(author));
         }
         return dtos;
     }

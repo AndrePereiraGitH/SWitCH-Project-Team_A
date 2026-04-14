@@ -5,4 +5,4 @@ package TOPSECRET.dto;
  *
  * @param name the name of the author; must not be {@code null}
  */
-public record AuthorDTO_US025(String name) {}
+public record US025AuthorDTO(String name) {}

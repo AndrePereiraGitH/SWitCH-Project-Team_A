@@ -1,6 +1,5 @@
 package TOPSECRET.dto;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -12,9 +11,9 @@ import java.util.List;
  * @param listingTitle     the title of the listing; must not be {@code null}
  * @param seller           the identifier of the seller; must not be {@code null}
  */
-public record DirectSaleDTO_US025(
+public record US025DirectSaleDTO(
         String publicationTitle,
         List<String> authors,
-        BigDecimal price,
+        double price,
         String listingTitle,
         String seller) {}

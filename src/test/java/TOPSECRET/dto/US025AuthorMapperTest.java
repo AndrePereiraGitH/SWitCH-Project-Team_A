@@ -3,19 +3,21 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Author.Author;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link AuthorMapper_US025}.
+ * Unit tests for {@link US025AuthorMapper}.
  *
  * Verifies that Author entities are correctly converted to
- * {@link AuthorDTO_US025} representations, including edge cases
+ * {@link US025AuthorDTO} representations, including edge cases
  * such as null input and empty lists.
  */
-class AuthorMapper_US025Test {
+class US025AuthorMapperTest {
 
     // ===============================
     // Tests for toDTO()
@@ -29,7 +31,7 @@ class AuthorMapper_US025Test {
         when(authorDouble.getName()).thenReturn("Ken Follett");
 
         // Act
-        AuthorDTO_US025 dto = AuthorMapper_US025.toDTO(authorDouble);
+        US025AuthorDTO dto = US025AuthorMapper.toDTO(authorDouble);
 
         // Assert
         assertNotNull(dto);
@@ -44,7 +46,7 @@ class AuthorMapper_US025Test {
         when(authorDouble.getName()).thenReturn("Dan Brown");
 
         // Act
-        AuthorDTO_US025 dto = AuthorMapper_US025.toDTO(authorDouble);
+        US025AuthorDTO dto = US025AuthorMapper.toDTO(authorDouble);
 
         // Assert
         assertNotNull(dto);
@@ -52,13 +54,13 @@ class AuthorMapper_US025Test {
     }
 
     @Test
-    void toDTO_whenAuthorIsNull_shouldReturnNull() {
+    void toDTO_whenAuthorIsNull_shouldThrowException() {
 
-        // Act
-        AuthorDTO_US025 dto = AuthorMapper_US025.toDTO(null);
-
-        // Assert
-        assertNull(dto);
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> US025AuthorMapper.toDTO(null)
+        );
     }
 
     // ===============================
@@ -78,7 +80,7 @@ class AuthorMapper_US025Test {
         List<Author> authors = List.of(authorDouble1, authorDouble2);
 
         // Act
-        List<AuthorDTO_US025> dtos = AuthorMapper_US025.toDTOList(authors);
+        List<US025AuthorDTO> dtos = US025AuthorMapper.toDTOList(authors);
 
         // Assert
         assertEquals(2, dtos.size());
@@ -87,17 +89,30 @@ class AuthorMapper_US025Test {
     }
 
     @Test
-    void toDTOList_nullList_shouldReturnEmptyMutableList() {
+    void toDTOList_whenNullList_shouldThrowException() {
 
-        // Act
-        List<AuthorDTO_US025> dtos = AuthorMapper_US025.toDTOList(null);
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> US025AuthorMapper.toDTOList(null)
+        );
+    }
 
-        // Assert
-        assertNotNull(dtos);
-        assertTrue(dtos.isEmpty());
+    @Test
+    void constructor_shouldThrowUnsupportedOperationException() {
+        // Arrange
+        Constructor<US025AuthorMapper> constructor;
 
-        // Verify list is mutable
-        dtos.add(new AuthorDTO_US025("Teste"));
-        assertEquals(1, dtos.size());
+        // Act + Assert
+        try {
+            constructor = US025AuthorMapper.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            constructor.newInstance();
+            fail("Expected InvocationTargetException");
+        } catch (InvocationTargetException e) {
+            assertInstanceOf(UnsupportedOperationException.class, e.getCause());
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
     }
 }
