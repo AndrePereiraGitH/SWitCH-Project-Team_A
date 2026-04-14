@@ -1279,7 +1279,7 @@ class PublicationSampleRepositoryMemTest {
         );
 
         assertTrue(result);
-        verify(p).assignToCollection(collectionId);
+        verify(p).addPublicationToCollection(collectionId);
     }
 
     @Test
