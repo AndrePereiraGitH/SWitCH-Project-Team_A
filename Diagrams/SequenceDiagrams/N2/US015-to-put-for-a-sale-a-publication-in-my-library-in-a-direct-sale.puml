@@ -16,7 +16,7 @@ participant ":IPublicationSampleRepository" as PSRepo
 participant ":PublicationSample" as Pub
 
 participant "listOfLibraryPublications:\nList<PublicationSample" as ListLibraryPS
-participant "listOfAvailablePublication:\nList<PublicationSample>" as ListAvailablePub
+participant "listOfAvailablePublications:\nList<PublicationSample>" as ListAvailablePub
 
 participant ":US015PublicationSampleMapper" as Mapper
 participant "listOfPublicationSampleDTO:\nList<US015PublicationSampleDTO>" as listDTO
@@ -32,35 +32,27 @@ activate UI
 UI -> Ctrl : findLibraryPublicationsAvailableForSale()
 activate Ctrl
 
-' US012
 ' --- Step 2: find User's Library ---
 Ctrl -> LibRepo : getLibraryByUserId(userId)
 activate LibRepo
 LibRepo --> Ctrl : library
 deactivate LibRepo
 
-' --- Step 4: find Library's PublicationSamples ---
-Ctrl -> PSRepo : getPublicationsByLibraryID(library.libraryId)
+' --- Step 3: find Library's PublicationSamples ---
+Ctrl -> PSRepo: findLibraryPublicationsAvailableForSaleByLibraryId(library.libraryId)
 activate PSRepo
-PSRepo -->> ListLibraryPS ** : «create»
-PSRepo --> Ctrl : listOfLibraryPublications
-deactivate PSRepo
-' US012
-
-' --- Step 5: verifies if the PublicationSamples available for sale ---
-' Later, this should be done by the domain services (not the Controller)
-Ctrl -->> ListAvailablePub ** : «create»
+PSRepo -->> ListAvailablePub ** : «create»
+PSRepo -> PSRepo: getPublicationsByLibraryID(library.libraryId)
 loop for each PublicationSample
-    Ctrl -> Pub : isAvailableForSale()
-    activate Pub
-    Pub --> Ctrl : boolean
-    deactivate Pub
-    alt publicationSample is available
-        Ctrl -> ListAvailablePub : add(publicationSample)
-    end
+    PSRepo -> Pub : isAvailableForSale()
+        alt available
+        PSRepo -> ListAvailablePub : add(publicationSample)
+        end
 end
+PSRepo --> Ctrl: listOfAvailablePublications
+deactivate PSRepo
 
-' --- Step 6: Converts the list of available publications to DTOs ---
+' --- Step 4: Converts the list of available publications to DTOs ---
 Ctrl -> Mapper : toDTOs(listOfAvailablePublications)
 activate Mapper
 Mapper -->> listDTO ** : «create»
@@ -73,11 +65,11 @@ deactivate Mapper
 Ctrl --> UI : listOfPublicationSampleDTO
 deactivate Ctrl
 
-' --- Step 7: Returns the list of available publications to the user ---
+' --- Step 5: Returns the list of available publications to the user ---
 UI --> User : Which publication(s)?\nChoose from the list!
 deactivate UI
 
-' --- Step 8: User selects publications and provides listing details ---
+' --- Step 6: User selects publications and provides listing details ---
 User -> UI : Selected publication(s)
 activate UI
 UI --> User : Specify title, price,\nshort description and pictures
@@ -89,7 +81,7 @@ activate UI
 UI -> Ctrl : putPublicationForSale(title, selectedPublicationIds,\nprice, shortDescription, userId, pictures)
 activate Ctrl
 
-' --- Step 9: Listing creation ---
+' --- Step 7: Listing creation ---
 Ctrl -> LRepo : createAndAdd(title, selectedPublicationIds, SaleType.DIRECT_SALE, price, shortDescription, userId, pictures)
 activate LRepo
 

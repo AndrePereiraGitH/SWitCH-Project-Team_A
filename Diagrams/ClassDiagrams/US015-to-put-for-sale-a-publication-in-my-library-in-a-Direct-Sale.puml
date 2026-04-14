@@ -67,6 +67,7 @@ interface ILibraryRepository {
 }
 
 interface IPublicationSampleRepository {
+    + findLibraryPublicationsAvailableForSaleByLibraryId(library.libraryId): List<PublicationSample>
     + getPublicationsByLibraryID(library.libraryId): List<PublicationSample>
 }
 
