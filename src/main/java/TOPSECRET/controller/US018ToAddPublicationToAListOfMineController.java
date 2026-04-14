@@ -84,20 +84,13 @@ public class US018ToAddPublicationToAListOfMineController {
         return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
     }
 
-
     /**
      * Retrieves the list of publications that can be added to a collection.
      *
      * <p>
-     * The method:
-     * <ul>
-     *     <li>Receives the collection identifier</li>
-     *     <li>Retrieves all publications owned by the user</li>
-     *     <li>Retrieves publications already in the collection</li>
-     *     <li>Computes the difference</li>
-     *     <li>Retrieves titles associated with each publication</li>
-     *     <li>Converts the result into DTOs</li>
-     * </ul>
+     * The method delegates the retrieval of available publications to the repository,
+     * obtains their titles from the bibliographical repository, and converts the result
+     * into DTOs.
      * </p>
      *
      * @param collectionId identifier of the selected collection
@@ -112,14 +105,8 @@ public class US018ToAddPublicationToAListOfMineController {
             throw new IllegalArgumentException("collectionId cannot be null");
         }
 
-        List<PublicationSample> allUserPublications =
-                _publicationSampleRepo.getAllPublicationsInUserLibrary(_userId);
-
-        List<PublicationSample> publicationsInCollection =
-                _publicationSampleRepo.getPublicationsByCollectionID(collectionId);
-
         List<PublicationSample> available =
-                diff(allUserPublications, publicationsInCollection);
+                _publicationSampleRepo.getAvailablePublicationsForCollection(_userId, collectionId);
 
         List<String> titles = getTitles(available);
 
@@ -214,4 +201,5 @@ public class US018ToAddPublicationToAListOfMineController {
 
         return result;
     }
+
 }

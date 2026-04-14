@@ -153,6 +153,28 @@ public interface    IPublicationSampleRepository {
             List<PublicationSampleId> publicationSampleIds);
 
     /**
+     * Retrieves the list of publications owned by the user that are not yet
+     * assigned to the specified collection.
+     *
+     * <p>
+     * This method computes the difference between:
+     * <ul>
+     *     <li>All publications in the user's library</li>
+     *     <li>Publications already assigned to the collection</li>
+     * </ul>
+     * </p>
+     *
+     * @param userId identifier of the user
+     * @param collectionId identifier of the collection
+     * @return list of available publication samples
+     *
+     * @throws IllegalArgumentException if any argument is null
+     */
+    List<PublicationSample> getAvailablePublicationsForCollection(
+            UserId userId,
+            CollectionOfPublicationsID collectionId);
+
+    /**
      * Returns the subset of {@link PublicationSample} instances from the repository
      * that are not present in the provided list.
      * <p>

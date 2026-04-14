@@ -1255,6 +1255,42 @@ class PublicationSampleRepositoryMemTest {
                 ));
     }
 
+    @Test
+    void shouldReturnOnlyPublicationsNotInCollection() {
+
+        // ARRANGE
+        PublicationSampleFactory factory = mock(PublicationSampleFactory.class);
+        PublicationSampleRepositoryMem repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+
+        PublicationSample pub1 = mock(PublicationSample.class);
+        PublicationSample pub2 = mock(PublicationSample.class);
+
+        when(pub1.isOwnedByUser(userId)).thenReturn(true);
+        when(pub1.isInUserLibrary()).thenReturn(true);
+
+        when(pub2.isOwnedByUser(userId)).thenReturn(true);
+        when(pub2.isInUserLibrary()).thenReturn(true);
+
+        when(pub1.getCollecOfPubID()).thenReturn(null);
+        when(pub2.getCollecOfPubID()).thenReturn(collectionId);
+
+        repo.save(pub1);
+        repo.save(pub2);
+
+        // ACT
+        List<PublicationSample> result =
+                repo.getAvailablePublicationsForCollection(userId, collectionId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertTrue(result.contains(pub1));
+        assertFalse(result.contains(pub2));
+    }
+
 
 
 

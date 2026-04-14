@@ -14,15 +14,18 @@ class US018CollectionOfPublicationsMapperTest {
     @Test
     void shouldConvertListToDTO() {
 
+        // ARRANGE
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
 
         when(collection.id()).thenReturn(id);
         when(collection.getCollectionName()).thenReturn("Collection");
 
+        // ACT
         List<US018CollectionOfPublicationsDTO> result =
                 US018CollectionOfPublicationsMapper.toDTOs(List.of(collection));
 
+        // ASSERT
         assertEquals(1, result.size());
         assertEquals(id, result.get(0).id());
         assertEquals("Collection", result.get(0).collectionName());
@@ -31,9 +34,11 @@ class US018CollectionOfPublicationsMapperTest {
     @Test
     void shouldReturnEmptyListWhenInputIsNull() {
 
+        // ACT
         List<US018CollectionOfPublicationsDTO> result =
                 US018CollectionOfPublicationsMapper.toDTOs(null);
 
+        // ASSERT
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -41,6 +46,7 @@ class US018CollectionOfPublicationsMapperTest {
     @Test
     void shouldThrowExceptionWhenSingleCollectionIsNull() {
 
+        // ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> US018CollectionOfPublicationsMapper.toDTO(null));
     }
@@ -48,9 +54,11 @@ class US018CollectionOfPublicationsMapperTest {
     @Test
     void shouldReturnMutableListWhenInputIsNull() {
 
+        // ACT
         List<US018CollectionOfPublicationsDTO> result =
                 US018CollectionOfPublicationsMapper.toDTOs(null);
 
+        // ASSERT
         assertNotNull(result);
         assertTrue(result.isEmpty());
 

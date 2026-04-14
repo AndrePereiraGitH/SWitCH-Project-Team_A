@@ -31,25 +31,13 @@ UI -> Controller : getPublicationsForCollection(collectionId)
 activate Controller
 
 ' =====================================================
-' GET ALL USER PUBLICATIONS
+' GET AVAILABLE PUBLICATIONS
 ' =====================================================
-Controller -> PublicationSampleRepo : getAllPublicationsInUserLibrary(userId)
-activate PublicationSampleRepo
-PublicationSampleRepo --> Controller : allUserPublications
-deactivate PublicationSampleRepo
 
-' =====================================================
-' GET PUBLICATIONS ALREADY IN COLLECTION
-' =====================================================
-Controller -> PublicationSampleRepo : getPublicationsByCollectionID(collectionId)
+Controller -> PublicationSampleRepo : getAvailablePublicationsForCollection(userId, collectionId)
 activate PublicationSampleRepo
-PublicationSampleRepo --> Controller : publicationsInCollection
+PublicationSampleRepo --> Controller : publicationAvailable
 deactivate PublicationSampleRepo
-
-' =====================================================
-' CALCULATE DIFFERENCE
-' =====================================================
-Controller -> Controller : diff(allUserPublications, publicationsInCollection)
 
 ' =====================================================
 ' GET TITLES (Controller responsibility)

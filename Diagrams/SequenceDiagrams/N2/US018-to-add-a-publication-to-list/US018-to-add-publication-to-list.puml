@@ -85,28 +85,13 @@ UI -> Controller : getPublicationsForCollection(collectionId)
 activate Controller
 
 ' =====================================================
-' GET USER LIBRARY
+' GET AVAILABLE PUBLICATIONS
 ' =====================================================
 
-Controller -> PublicationSampleRepo : getAllPublicationsInUserLibrary(userId)
+Controller -> PublicationSampleRepo : getAvailablePublicationsForCollection(userId, collectionId)
 activate PublicationSampleRepo
-PublicationSampleRepo --> Controller : allUserPublications
+PublicationSampleRepo --> Controller : publicationAvailable
 deactivate PublicationSampleRepo
-
-' =====================================================
-' GET PUBLICATIONS ALREADY IN COLLECTION (NEW MODEL)
-' =====================================================
-
-Controller -> PublicationSampleRepo : getPublicationsByCollectionID(collectionId)
-activate PublicationSampleRepo
-PublicationSampleRepo --> Controller : publicationsInCollection
-deactivate PublicationSampleRepo
-
-' =====================================================
-' CALCULATE DIFFERENCE
-' =====================================================
-
-Controller -> Controller : diff(allUserPublications, publicationsInCollection)
 
 ' =====================================================
 ' GET TITLES (Controller responsibility)

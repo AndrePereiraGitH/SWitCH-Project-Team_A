@@ -238,6 +238,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return allPublications;
     }
 
+    // ------------------ US018 starts -----------------
     /**
      * {@inheritDoc}
      */
@@ -281,6 +282,34 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PublicationSample> getAvailablePublicationsForCollection(
+            UserId userId,
+            CollectionOfPublicationsID collectionId) {
 
+        if (userId == null || collectionId == null) {
+            throw new IllegalArgumentException("Arguments cannot be null");
+        }
 
+        List<PublicationSample> allUserPublications =
+                getAllPublicationsInUserLibrary(userId);
+
+        List<PublicationSample> publicationsInCollection =
+                getPublicationsByCollectionID(collectionId);
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSample p : allUserPublications) {
+            if (!publicationsInCollection.contains(p)) {
+                result.add(p);
+            }
+        }
+
+        return result;
+    }
+
+    // --------------------- US018 ends --------------------------
 }
