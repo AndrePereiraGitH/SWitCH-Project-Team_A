@@ -1519,7 +1519,6 @@ class PublicationSampleRepositoryMemTest {
 //                () -> repo.PublicationSampleDtoToDomain(library, dto));
 //    }
 
-
     // ===========================================================
     // =================== Helper Methods ========================
     // ===========================================================
