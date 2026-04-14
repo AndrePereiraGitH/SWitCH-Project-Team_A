@@ -17,10 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DirectSaleIDTest {
 
-    /**
-     * Tests if a DirectSaleID is successfully created
-     * when a valid non-null and non-blank string is provided.
-     */
+
     @Test
     void shouldCreateValidID() {
         //Arrange
@@ -30,11 +27,6 @@ class DirectSaleIDTest {
         assertEquals("1234", id.getID());
     }
 
-
-    /**
-     * Tests if the constructor throws IllegalArgumentException
-     * when the provided ID is null.
-     */
     @Test
     void shouldThrowExceptionWhenIDIsNull() {
         //Act & Assert
@@ -43,11 +35,6 @@ class DirectSaleIDTest {
         });
     }
 
-
-    /**
-     * Tests if the constructor throws IllegalArgumentException
-     * when the provided ID is blank.
-     */
     @Test
     void shouldThrowExceptionWhenIDIsBlank() {
         //Act & Assert
@@ -56,11 +43,6 @@ class DirectSaleIDTest {
         });
     }
 
-
-    /**
-     * Tests if two DirectSaleID objects are considered equal
-     * when they contain the same ID value.
-     */
     @Test
     void shouldBeEqualWhenIDsAreSame() {
         //Arrange
@@ -71,11 +53,6 @@ class DirectSaleIDTest {
         assertEquals(id1, id2);
     }
 
-
-    /**
-     * Tests if two DirectSaleID objects are not equal
-     * when they contain different ID values.
-     */
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
         //Arrange
@@ -86,10 +63,6 @@ class DirectSaleIDTest {
         assertNotEquals(id1, id2);
     }
 
-
-    /**
-     * Tests if a DirectSaleID object is not equal to null.
-     */
     @Test
     void shouldNotBeEqualToNull() {
         //Arrange
@@ -99,11 +72,6 @@ class DirectSaleIDTest {
         assertNotEquals(null, id);
     }
 
-
-    /**
-     * Tests if a DirectSaleID object is not equal
-     * to an object of a different class.
-     */
     @Test
     void shouldNotBeEqualToDifferentClass() {
         //Arrange
@@ -114,10 +82,6 @@ class DirectSaleIDTest {
         assertNotEquals(other, id);
     }
 
-
-    /**
-     * Tests if the getID() method returns the correct ID value.
-     */
     @Test
     void getterShouldReturnCorrectID() {
         //Arrange
@@ -127,11 +91,6 @@ class DirectSaleIDTest {
         assertEquals("1234", id.getID());
     }
 
-
-    /**
-     * Tests if two equal DirectSaleID objects
-     * produce the same hash code.
-     */
     @Test
     void hashCodeShouldBeEqualForSameID() {
         //Arrange
@@ -140,6 +99,16 @@ class DirectSaleIDTest {
 
         //Assert
         assertEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldNotBeEqualForDifferentID() {
+        //Arrange
+        DirectSaleID id1 = new DirectSaleID("1234");
+        DirectSaleID id2 = new DirectSaleID("5678");
+
+        //Assert
+        assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
 }
