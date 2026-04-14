@@ -34,13 +34,13 @@ activate Ctrl
 
 ' US012
 ' --- Step 2: find User's Library ---
-Ctrl -> LibRepo : getLibraryOfUser(userId)
+Ctrl -> LibRepo : getLibraryByUserId(userId)
 activate LibRepo
 LibRepo --> Ctrl : library
 deactivate LibRepo
 
 ' --- Step 4: find Library's PublicationSamples ---
-Ctrl -> PSRepo : findByLibraryId(library.libraryId)
+Ctrl -> PSRepo : getPublicationsByLibraryID(library.libraryId)
 activate PSRepo
 PSRepo -->> ListLibraryPS ** : «create»
 PSRepo --> Ctrl : listOfLibraryPublications

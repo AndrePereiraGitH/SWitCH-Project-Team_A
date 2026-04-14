@@ -32,10 +32,6 @@ class US015PublicationSampleMapper {
 ' DOMAIN LAYER
 ' -------------------------
 
-class PublicationSampleId {
-    - publicationSampleId: String
-}
-
 class PublicationSample {
     - publicationSampleId: PublicationSampleId
     - bibliographicalDataId: BibliographicalDataId
@@ -66,19 +62,15 @@ class ListingFactory {
 ' REPOSITORIES
 ' -------------------------
 
-class ILibraryRepository {
-    - libraries: List<Library>
-    + getLibraryOfUser(userId): Library
+interface ILibraryRepository {
+    + getLibraryByUserId(userId): Library
 }
 
-class IPublicationSampleRepository {
-    - allPublicationsInSystem: List<PublicationSample>
-    + findByLibraryId(library.libraryId): List<PublicationSample>
+interface IPublicationSampleRepository {
+    + getPublicationsByLibraryID(library.libraryId): List<PublicationSample>
 }
 
-class IListingRepository {
-    - listings: List<Listing>
-    - listingFactory: ListingFactory
+interface IListingRepository {
     + createAndAdd(title, publicationSampleIds, SaleType.DIRECT_SALE, price, shortDescription, userId, pictures): Listing
 }
 
@@ -97,17 +89,12 @@ US015ToPutPublicationInDirectSaleController "1" --> "1" US015PublicationSampleMa
 US015ToPutPublicationInDirectSaleController ..> PublicationSample : "invokes"
 
 ' --- Library ---
-'Library "1" --> "*" PublicationSampleId : "stores IDs of"
 Library <.. IPublicationSampleRepository : "queries by ID"
 
 ' --- PublicationSampleRepository ---
 IPublicationSampleRepository "1" --> "*" PublicationSample : "returns"
 
-' --- PublicationSample ---
-PublicationSample "1" --> "1" PublicationSampleId : "has"
-
 ' --- Listing ---
-Listing "0..1" --> "1..*" PublicationSampleId : "references IDs of"
 
 ' --- Listing ---
 IListingRepository "1" --> "1" ListingFactory : "uses"
