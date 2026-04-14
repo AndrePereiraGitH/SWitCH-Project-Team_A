@@ -308,7 +308,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             }
 
             PublicationSample publication = publicationOptional.get();
-            publication.assignToCollection(collectionId);
+            publication.addPublicationToCollection(collectionId);
         }
         return true;
     }

@@ -300,33 +300,4 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
             Condition condition
     ) {
     }
-
-    /**
-     * Assigns this publication to a collection.
-     *
-     * <p>
-     * This method updates the internal state of the entity by associating
-     * it with the given collection.
-     * </p>
-     *
-     * <p>
-     * This is a domain operation and must be performed inside the entity
-     * to preserve encapsulation and consistency.
-     * </p>
-     *
-     * @param collectionId identifier of the collection
-     * @return true if assignment succeeds
-     *
-     * @throws IllegalArgumentException if collectionId is null
-     */
-    public boolean assignToCollection(CollectionOfPublicationsID collectionId) {
-
-        if (collectionId == null) {
-            throw new IllegalArgumentException("Collection ID cannot be null.");
-        }
-
-        this._collecOfPubID = collectionId;
-
-        return true;
-    }
 }
