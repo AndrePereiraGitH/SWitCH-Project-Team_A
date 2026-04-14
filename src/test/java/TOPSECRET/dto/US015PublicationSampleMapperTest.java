@@ -94,7 +94,7 @@ class US015PublicationSampleMapperTest {
         String expectedCode = "12345678910";
         String expectedPubType = "Book";
 
-        PublicationSample publication = createMockPublicationSample(expectedTitle, expectedAuthors, expectedCode, expectedPubType);
+        PublicationSample publication = createDoublePublicationSample(expectedTitle, expectedAuthors, expectedCode, expectedPubType);
 
         // Act
         US015PublicationSampleDTO result = mapper.toDTO(publication);
@@ -125,7 +125,7 @@ class US015PublicationSampleMapperTest {
         List<String> expectedAuthors = List.of("Author1");
 
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
-        BibliographicalData bd = createMockBibliographicalData(expectedTitle, expectedAuthors);
+        BibliographicalData bd = createDoubleBibliographicalData(expectedTitle, expectedAuthors);
 
         EditionID editionId = mock(EditionID.class);
         PublicationSample publication = mock(PublicationSample.class);
@@ -150,7 +150,7 @@ class US015PublicationSampleMapperTest {
         when(bd.getAuthors()).thenReturn(List.of(authorId));
 
         EditionID editionId = mock(EditionID.class);
-        Edition edition = createMockEdition("12345678910", "Book");
+        Edition edition = createDoubleEdition("12345678910", "Book");
 
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
@@ -178,8 +178,8 @@ class US015PublicationSampleMapperTest {
         List<String> authors2 = List.of("Author3", "Author4");
         String code2 = "987654321";
 
-        PublicationSample pub1 = createMockPublicationSample(title1, authors1, code1, "Book");
-        PublicationSample pub2 = createMockPublicationSample(title2, authors2, code2, "Book");
+        PublicationSample pub1 = createDoublePublicationSample(title1, authors1, code1, "Book");
+        PublicationSample pub2 = createDoublePublicationSample(title2, authors2, code2, "Book");
 
         // Act
         List<US015PublicationSampleDTO> result = mapper.toDTOs(List.of(pub1, pub2));
@@ -208,12 +208,12 @@ class US015PublicationSampleMapperTest {
     //================= HELPERS ========================================================================================
     //==================================================================================================================
 
-    private PublicationSample createMockPublicationSample(String title, List<String> authorNames, String code, String pubType) {
+    private PublicationSample createDoublePublicationSample(String title, List<String> authorNames, String code, String pubType) {
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
         EditionID editionId = mock(EditionID.class);
 
-        BibliographicalData bd = createMockBibliographicalData(title, authorNames);
-        Edition edition = createMockEdition(code, pubType);
+        BibliographicalData bd = createDoubleBibliographicalData(title, authorNames);
+        Edition edition = createDoubleEdition(code, pubType);
 
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
@@ -224,7 +224,7 @@ class US015PublicationSampleMapperTest {
         return publication;
     }
 
-    private BibliographicalData createMockBibliographicalData(String title, List<String> authorNames) {
+    private BibliographicalData createDoubleBibliographicalData(String title, List<String> authorNames) {
         List<AuthorId> authorIds = authorNames.stream()
                 .map(name -> {
                     AuthorId authorId = mock(AuthorId.class);
@@ -242,7 +242,7 @@ class US015PublicationSampleMapperTest {
         return bd;
     }
 
-    private Edition createMockEdition(String code, String pubType) {
+    private Edition createDoubleEdition(String code, String pubType) {
         Code codeDouble = mock(Code.class);
         when(codeDouble.toString()).thenReturn(code);
 

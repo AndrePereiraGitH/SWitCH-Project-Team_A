@@ -1,7 +1,6 @@
 package TOPSECRET.repository;
 
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -394,23 +393,4 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 //                && Objects.equals(ps.getOwnerId().getUserName(), dto.getOwnerName())
 //                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
 //    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<PublicationSample> findByLibraryId(LibraryId libraryId) {
-
-        List<PublicationSample> libraryPublicationSamples = new ArrayList<>();
-
-        if (libraryId == null){
-            throw new IllegalArgumentException("LibraryId cannot be null");
-        }
-
-        for (PublicationSample publicationSample : allPublicationsInSystem){
-            if (libraryId.equals(publicationSample.getLibraryID())) {
-                libraryPublicationSamples.add(publicationSample);
-            }
-        }
-        return List.copyOf(libraryPublicationSamples);
-    }
 }

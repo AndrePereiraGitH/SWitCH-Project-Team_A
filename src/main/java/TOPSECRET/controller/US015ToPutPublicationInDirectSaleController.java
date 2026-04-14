@@ -90,7 +90,7 @@ public class US015ToPutPublicationInDirectSaleController {
         }
 
         // finds publication samples in that library
-        List<PublicationSample> libraryPubSamples = _pubSampleRepo.findByLibraryId(library.id());
+        List<PublicationSample> libraryPubSamples = _pubSampleRepo.getPublicationsByLibraryID(library.id());
 
         // filters only publications available for sale
         // Later, this should be done by the domain services

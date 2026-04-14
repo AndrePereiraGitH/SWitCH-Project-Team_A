@@ -1,7 +1,5 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
@@ -51,12 +49,12 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     private IListingRepository listingRepoDouble;
     private US015PublicationSampleMapper mapperDouble;
 
-    private UserId userId;
+    private UserId userIdDouble;
     private Library libraryDouble;
     private PublicationSample pubSample1Double;
     private PublicationSample pubSample2Double;
-    private PublicationSampleId pubSampleId1;
-    private PublicationSampleId pubSampleId2;
+    private PublicationSampleId pubSampleId1Double;
+    private PublicationSampleId pubSampleId2Double;
     private Price priceDouble;
     private List<Picture> picturesDouble;
 
@@ -72,24 +70,24 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         mapperDouble = mock(US015PublicationSampleMapper.class);
 
         // User
-        userId = new UserId("userId1");
+        userIdDouble = mock(UserId.class);
 
         // Library
         libraryDouble = mock(Library.class);
         LibraryId libraryId = new LibraryId("libId1");
         when(libraryDouble.id()).thenReturn(libraryId);
-        when(libraryRepoDouble.getLibraryByUserId(userId)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         // Publication Samples
         pubSample1Double = mock(PublicationSample.class);
-        pubSampleId1 = new PublicationSampleId("pubId1");
+        pubSampleId1Double = mock(PublicationSampleId.class);
         pubSample2Double = mock(PublicationSample.class);
-        pubSampleId2 = new PublicationSampleId("pubId2");
+        pubSampleId2Double = mock(PublicationSampleId.class);
 
         when(pubSample1Double.isAvailableForSale()).thenReturn(true);
         when(pubSample2Double.isAvailableForSale()).thenReturn(true);
 
-        when(pubSampleRepoDouble.findByLibraryId(libraryId)).thenReturn(List.of(pubSample1Double, pubSample2Double));
+        when(pubSampleRepoDouble.getPublicationsByLibraryID(libraryId)).thenReturn(List.of(pubSample1Double, pubSample2Double));
 
         // Price
         priceDouble = mock(Price.class);
@@ -153,7 +151,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
                         listingRepoDouble, mapperDouble);
 
         // Act
-        List<US015PublicationSampleDTO> listDTOs = controller.findLibraryPublicationsAvailableForSale(userId);
+        List<US015PublicationSampleDTO> listDTOs = controller.findLibraryPublicationsAvailableForSale(userIdDouble);
 
         // Assert
         assertNotNull(listDTOs);
@@ -163,7 +161,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     @Test
     void findLibraryPublicationsAvailableForSale_ShouldThrowExceptionWhenLibraryNotFound() throws InstanceNotFoundException {
         // Arrange
-        when(libraryRepoDouble.getLibraryByUserId(userId)).thenReturn(null);
+        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(null);
 
         US015ToPutPublicationInDirectSaleController controller =
                 new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
@@ -171,13 +169,13 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,
-                () -> controller.findLibraryPublicationsAvailableForSale(userId));
+                () -> controller.findLibraryPublicationsAvailableForSale(userIdDouble));
     }
 
     @Test
     void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenNoSamplesAvailable() throws Exception {
         // Arrange
-        when(pubSampleRepoDouble.findByLibraryId(libraryDouble.id())).thenReturn(List.of());
+        when(pubSampleRepoDouble.getAllPublicationsInUserLibrary(userIdDouble)).thenReturn(List.of());
 
         US015ToPutPublicationInDirectSaleController controller =
                 new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
@@ -185,7 +183,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act
         List<US015PublicationSampleDTO> result =
-                controller.findLibraryPublicationsAvailableForSale(userId);
+                controller.findLibraryPublicationsAvailableForSale(userIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -206,7 +204,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
                         listingRepoDouble, mapperDouble);
 
         // Act
-        List<US015PublicationSampleDTO> result = controller.findLibraryPublicationsAvailableForSale(userId);
+        List<US015PublicationSampleDTO> result = controller.findLibraryPublicationsAvailableForSale(userIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -226,8 +224,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.putPublicationForSale("   ", List.of(pubSampleId1), priceDouble, "desc",
-                        userId, picturesDouble));
+                controller.putPublicationForSale("   ", List.of(pubSampleId1Double), priceDouble, "desc",
+                        userIdDouble, picturesDouble));
     }
 
     @Test
@@ -240,7 +238,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 controller.putPublicationForSale("Valid Title", null, priceDouble, "desc",
-                        userId, picturesDouble));
+                        userIdDouble, picturesDouble));
     }
 
     @Test
@@ -255,8 +253,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1), null, "desc",
-                        userId, picturesDouble));
+                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1Double), null, "desc",
+                        userIdDouble, picturesDouble));
     }
 
     @Test
@@ -268,8 +266,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1), priceDouble, null,
-                        userId, picturesDouble));
+                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1Double), priceDouble, null,
+                        userIdDouble, picturesDouble));
     }
 
     @Test
@@ -281,7 +279,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1), priceDouble,
+                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1Double), priceDouble,
                         "short description", null, picturesDouble));
     }
 
@@ -294,8 +292,8 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1), priceDouble,
-                        "short description", userId, null));
+                controller.putPublicationForSale("Valid Title", List.of(pubSampleId1Double), priceDouble,
+                        "short description", userIdDouble, null));
     }
 
     @Test
@@ -307,12 +305,12 @@ class US015ToPutPublicationInDirectSaleControllerTest {
 
         Listing expectedListing = mock(Listing.class);
 
-        when(listingRepoDouble.createAndAdd("title", List.of(pubSampleId1), SaleType.DIRECT_SALE, priceDouble,
-                "short description", userId, picturesDouble)).thenReturn(expectedListing);
+        when(listingRepoDouble.createAndAdd("title", List.of(pubSampleId1Double), SaleType.DIRECT_SALE, priceDouble,
+                "short description", userIdDouble, picturesDouble)).thenReturn(expectedListing);
 
         // Act
-        Listing result = controller.putPublicationForSale("title", List.of(pubSampleId1), priceDouble,
-                "short description", userId, picturesDouble);
+        Listing result = controller.putPublicationForSale("title", List.of(pubSampleId1Double), priceDouble,
+                "short description", userIdDouble, picturesDouble);
 
         // Assert
         assertNotNull(result);
