@@ -45,7 +45,7 @@ ctrl -> ListingRepo : createAndAdd(listingTitle, selectedPublicationsID,\nSaleTy
 activate ListingRepo
 ListingRepo -> listingFactory : create()
 activate listingFactory
-listingFactory --> auctionListing** : <<create>>
+listingFactory -->> auctionListing** : <<create>>
 listingFactory --> ListingRepo : auctionListing
 deactivate listingFactory
 ListingRepo --> ctrl : auctionListing
@@ -53,7 +53,7 @@ deactivate ListingRepo
 
 ctrl -> AucRepo : createAndAdd(auctionListing.id(),\n initialDate, finalDate, initialPrice, buyOutPrice)
 activate AucRepo
-AucRepo --> auction** : <<create>>
+AucRepo -->> auction** : <<create>>
 AucRepo --> ctrl : auction
 deactivate AucRepo
 
