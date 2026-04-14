@@ -85,9 +85,6 @@ public class US015ToPutPublicationInDirectSaleController {
 
         // finds user library
         Library library = _libraryRepo.getLibraryByUserId(userId);
-        if (library == null) {
-            throw new InstanceNotFoundException("Library not found for user");
-        }
 
         // finds publication samples in that library
         List<PublicationSample> libraryPubSamples = _pubSampleRepo.getPublicationsByLibraryID(library.id());

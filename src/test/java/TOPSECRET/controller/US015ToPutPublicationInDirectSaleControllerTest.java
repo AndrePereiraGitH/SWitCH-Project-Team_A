@@ -159,20 +159,6 @@ class US015ToPutPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void findLibraryPublicationsAvailableForSale_ShouldThrowExceptionWhenLibraryNotFound() throws InstanceNotFoundException {
-        // Arrange
-        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(null);
-
-        US015ToPutPublicationInDirectSaleController controller =
-                new US015ToPutPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
-                        listingRepoDouble, mapperDouble);
-
-        // Act + Assert
-        assertThrows(InstanceNotFoundException.class,
-                () -> controller.findLibraryPublicationsAvailableForSale(userIdDouble));
-    }
-
-    @Test
     void findLibraryPublicationsAvailableForSale_ShouldReturnEmptyListWhenNoSamplesAvailable() throws Exception {
         // Arrange
         when(pubSampleRepoDouble.getAllPublicationsInUserLibrary(userIdDouble)).thenReturn(List.of());

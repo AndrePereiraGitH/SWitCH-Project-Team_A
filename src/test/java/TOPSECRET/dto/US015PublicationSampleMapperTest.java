@@ -50,14 +50,12 @@ class US015PublicationSampleMapperTest {
     private IBibliographicalDataRepository bdRepo;
     private IAuthorRepository authorRepo;
     private IEditionRepository editionRepo;
-    private US015PublicationSampleMapper mapper;
 
     @BeforeEach
     void setUp() {
         bdRepo = mock(IBibliographicalDataRepository.class);
         authorRepo = mock(IAuthorRepository.class);
         editionRepo = mock(IEditionRepository.class);
-        mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
     }
 
     //==================================================================================================================
@@ -66,18 +64,30 @@ class US015PublicationSampleMapperTest {
 
     @Test
     void constructor_shouldThrowException_whenBdRepoIsNull() {
+        // Arrange
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US015PublicationSampleMapper(null, authorRepo, editionRepo));
     }
 
     @Test
     void constructor_shouldThrowException_whenAuthorRepoIsNull() {
+        // Arrange
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US015PublicationSampleMapper(bdRepo, null, editionRepo));
     }
 
     @Test
     void constructor_shouldThrowException_whenEditionRepoIsNull() {
+        // Arrange
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new US015PublicationSampleMapper(bdRepo, authorRepo, null));
     }
@@ -96,6 +106,8 @@ class US015PublicationSampleMapperTest {
 
         PublicationSample publication = createDoublePublicationSample(expectedTitle, expectedAuthors, expectedCode, expectedPubType);
 
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
         // Act
         US015PublicationSampleDTO result = mapper.toDTO(publication);
 
@@ -113,6 +125,8 @@ class US015PublicationSampleMapperTest {
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.empty());
+
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(publication));
@@ -134,6 +148,8 @@ class US015PublicationSampleMapperTest {
         when(publication.getEditionID()).thenReturn(editionId);
         when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
         when(editionRepo.findEditionById(editionId)).thenReturn(Optional.empty());
+
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(publication));
@@ -159,6 +175,8 @@ class US015PublicationSampleMapperTest {
         when(editionRepo.findEditionById(editionId)).thenReturn(Optional.of(edition));
         when(authorRepo.findAuthorById(authorId)).thenReturn(Optional.empty());
 
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(publication));
     }
@@ -181,6 +199,8 @@ class US015PublicationSampleMapperTest {
         PublicationSample pub1 = createDoublePublicationSample(title1, authors1, code1, "Book");
         PublicationSample pub2 = createDoublePublicationSample(title2, authors2, code2, "Book");
 
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
         // Act
         List<US015PublicationSampleDTO> result = mapper.toDTOs(List.of(pub1, pub2));
 
@@ -196,6 +216,9 @@ class US015PublicationSampleMapperTest {
 
     @Test
     void toDTOs_shouldReturnEmptyList_whenInputIsEmpty() throws InstanceNotFoundException {
+        // Arrange
+        US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
+
         // Act
         List<US015PublicationSampleDTO> result = mapper.toDTOs(List.of());
 
