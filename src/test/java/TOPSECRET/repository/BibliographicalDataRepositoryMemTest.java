@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 class BibliographicalDataRepositoryMemTest {
 
     // =====================================================
-    // =================== SetUP ===========================
+    // =================== SetUp ===========================
     // =====================================================
 
     private BibliographicalData bd1Double;
