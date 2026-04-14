@@ -52,7 +52,7 @@ deactivate UI
 ' Section 3 - Get list of listings in direct sale
 Buyer -> UI : publication
 activate UI
-UI -> Ctrl : findListOfItemsOnDirectSale(publicationId)
+UI -> Ctrl : findListOfItemsOnDirectSale(bdId)
 activate Ctrl
 Ctrl -> ListingRepo : findAllDirectSaleListings()
 activate ListingRepo

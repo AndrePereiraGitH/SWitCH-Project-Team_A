@@ -20,7 +20,7 @@ import java.util.List;
  * @throws IllegalArgumentException if any parameter is {@code null}
  * @see BibliographicalData
  */
-public record US023BibliographicalDataDTO(BibliographicalDataID bdId, String pubTitle, List<String> authorName) {
+public record US023BibliographicalDataDTO(String bdId, String pubTitle, List<String> authorName) {
 
     public US023BibliographicalDataDTO {
         if (bdId == null) throw new IllegalArgumentException("bibliographicalDataID is null");

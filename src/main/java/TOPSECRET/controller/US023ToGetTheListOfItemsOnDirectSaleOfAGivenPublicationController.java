@@ -98,10 +98,8 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
      */
     public List<US023BibliographicalDataDTO> getAllPublicationBD() throws InstanceNotFoundException {
 
-        // Gets all the bibliographicalData on repository
         List<BibliographicalData> listOfAllPublicationBD = _bdRepo.getAllPublicationsBD();
 
-        // Converts to DTOs
         List<US023BibliographicalDataDTO> listOfAllBibliographicalDataDTO = _bdMapper.toDTOs(listOfAllPublicationBD);
 
         return listOfAllBibliographicalDataDTO;
@@ -121,18 +119,19 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
      *     <li>Convert the resulting publication samples to DTOs for presentation.</li>
      * </ol>
      *
-     * @param publicationId the ID of the publication for which to find direct sale items
+     * @param bdId the ID of the publication for which to find direct sale items
      * @return a list of {@link US023PublicationSampleDTO} representing the publication
      * samples on direct sale
      * @throws InstanceNotFoundException if no publication samples are found or
      *                                   the repository encounters an error
      */
-    public List<US023PublicationSampleDTO> findListOfItemsOnDirectSale(BibliographicalDataID publicationId) throws InstanceNotFoundException {
+    public List<US023PublicationSampleDTO> findListOfItemsOnDirectSale(BibliographicalDataID bdId) throws InstanceNotFoundException {
 
         // Gets all the listings for direct sale
         List<Listing> listOfDSListings = _listingRepo.findAllDirectSaleListings();
 
         // Gets all the publicationIds for each listing
+        // Later, this logic should be moved to an application service
         List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
 
         for (Listing listing : listOfDSListings) {
@@ -144,7 +143,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
         }
 
         // Gets all the publication samples related to the publicationId
-        List<PublicationSample> listOfPubSample = _pubSampleRepo.findItemsByIdsAndPublication(listOfPubSampleIds, publicationId);
+        List<PublicationSample> listOfPubSample = _pubSampleRepo.findItemsByIdsAndPublication(listOfPubSampleIds, bdId);
 
         // Converts to DTOs
         List<US023PublicationSampleDTO> listOfPubSampleDTO = _pubSampleMapper.toDTOs(listOfPubSample);

@@ -76,7 +76,7 @@ public class US023BibliographicalDataMapper {
             throw new NullPointerException("Publication can not be null");
         }
 
-        BibliographicalDataID bdId = bdPublication.id();
+        String bdId = bdPublication.id().toString();
         String titleDTO = bdPublication.getTitle();
         List<String> authorsDTO = getAuthors(bdPublication);
 

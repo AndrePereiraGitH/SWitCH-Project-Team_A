@@ -84,7 +84,7 @@ class US023BibliographicalDataMapperTest {
         US023BibliographicalDataDTO dto = mapper.toDTO(bd);
 
         // Assert
-        assertEquals(expectedBDId, dto.bdId());
+        assertEquals(expectedBDId.toString(), dto.bdId());
         assertEquals(expectedTitle, dto.pubTitle());
         assertEquals(expectedAuthors, dto.authorName());
     }

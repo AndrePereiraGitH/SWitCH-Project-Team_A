@@ -13,7 +13,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
   - listingRepository: IListingRepository
   - publicationSampleRepository: IPublicationSampleRepository
   + getAllPublicationsBD() : List<US023BibliographicalDataDTO>
-  + findListOfItemsOnDirectSale(publicationID) : List<US023PublicationSampleDTO>
+  + findListOfItemsOnDirectSale(bdID) : List<US023PublicationSampleDTO>
 }
 
 
