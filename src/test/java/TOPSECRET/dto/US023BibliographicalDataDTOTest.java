@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for the {@link US023BibliographicalDataDTO} record.
@@ -23,7 +24,7 @@ class US023BibliographicalDataDTOTest {
     @Test
     void constructor_shouldSetAllFields() {
         // Arrange
-        BibliographicalDataID expectedBDId = new BibliographicalDataID("bdId");
+        BibliographicalDataID expectedBDId = mock(BibliographicalDataID.class);
         String expectedTitle = "Os Maias";
         List<String> expectedAuthors = List.of("Eça de Queirós");
 
@@ -100,15 +101,20 @@ class US023BibliographicalDataDTOTest {
 
     @Test
     void toString_shouldContainAllFields() {
+        // Arrange
+        BibliographicalDataID expectedBDId = mock(BibliographicalDataID.class);
+        String expectedTitle = "Os Maias";
+        List<String> expectedAuthors = List.of("Eça de Queirós");
+
         // Act
         US023BibliographicalDataDTO dto =
-                new US023BibliographicalDataDTO(new BibliographicalDataID("bdId"), "Os Maias", List.of("Eça de Queirós"));
+                new US023BibliographicalDataDTO(expectedBDId, expectedTitle, expectedAuthors);
 
         String result = dto.toString();
 
         // Assert
-        assertTrue(result.contains("bdId"));
-        assertTrue(result.contains("Os Maias"));
-        assertTrue(result.contains("Eça de Queirós"));
+        assertTrue(result.contains(expectedBDId.toString()));
+        assertTrue(result.contains(expectedTitle));
+        assertTrue(result.contains(expectedAuthors.toString()));
     }
 }

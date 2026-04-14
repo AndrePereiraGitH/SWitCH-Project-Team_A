@@ -56,7 +56,7 @@ class US023BibliographicalDataMapperTest {
     @Test
     void toDTO_ShouldConvertBibliographicalDataCorrectly() throws Exception {
         // Arrange
-        BibliographicalDataID expectedBDId = new BibliographicalDataID("bdId1");
+        BibliographicalDataID expectedBDId = mock(BibliographicalDataID.class);
         String expectedTitle = "Title1";
         String expectedAuthor1 = "Author1";
         String expectedAuthor2 = "Author2";
@@ -106,10 +106,10 @@ class US023BibliographicalDataMapperTest {
         IAuthorRepository authorRepo = mock(IAuthorRepository.class);
         US023BibliographicalDataMapper mapper = new US023BibliographicalDataMapper(authorRepo);
 
-        AuthorId missingId = new AuthorId("A404");
+        AuthorId missingId = mock(AuthorId.class);
 
         BibliographicalData bd = mock(BibliographicalData.class);
-        when(bd.id()).thenReturn(new BibliographicalDataID("BD1"));
+        when(bd.id()).thenReturn(mock(BibliographicalDataID.class));
         when(bd.getTitle()).thenReturn("Some Book");
         when(bd.getAuthors()).thenReturn(List.of(missingId));
 
@@ -130,18 +130,18 @@ class US023BibliographicalDataMapperTest {
         IAuthorRepository authorRepo = mock(IAuthorRepository.class);
         US023BibliographicalDataMapper mapper = new US023BibliographicalDataMapper(authorRepo);
 
-        AuthorId authorId = new AuthorId("A1");
+        AuthorId authorId = mock(AuthorId.class);
         Author author = mock(Author.class);
         when(author.getName()).thenReturn("Author One");
         when(authorRepo.findAuthorById(authorId)).thenReturn(Optional.of(author));
 
         BibliographicalData bd1 = mock(BibliographicalData.class);
-        when(bd1.id()).thenReturn(new BibliographicalDataID("BD1"));
+        when(bd1.id()).thenReturn(mock(BibliographicalDataID.class));
         when(bd1.getTitle()).thenReturn("Book 1");
         when(bd1.getAuthors()).thenReturn(List.of(authorId));
 
         BibliographicalData bd2 = mock(BibliographicalData.class);
-        when(bd2.id()).thenReturn(new BibliographicalDataID("BD2"));
+        when(bd2.id()).thenReturn(mock(BibliographicalDataID.class));
         when(bd2.getTitle()).thenReturn("Book 2");
         when(bd2.getAuthors()).thenReturn(List.of(authorId));
 
