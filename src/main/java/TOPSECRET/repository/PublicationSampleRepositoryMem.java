@@ -254,6 +254,37 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
+    public List<PublicationSample> findItemsByIdsAndPublication(List<PublicationSampleId> pubSampleIds, BibliographicalDataID publicationId) {
+
+        List<PublicationSample> pubSamplesList = new ArrayList<>();
+
+        if (pubSampleIds == null) {
+            throw new IllegalArgumentException("PublicationSampleIds cannot be null");
+        }
+        if (publicationId == null) {
+            throw new IllegalArgumentException("PublicationId cannot be null");
+        }
+
+        for (PublicationSampleId psId : pubSampleIds) {
+
+            Optional<PublicationSample> psOpt = findPublicationSampleById(psId);
+
+            if (psOpt.isEmpty())
+                continue;           // if it doesn't find a corresponding pubSample, jumps the rest of the cycle
+
+            PublicationSample ps = psOpt.get();
+
+            if (ps.getBibliographicalDataID().equals(publicationId)) {
+                pubSamplesList.add(ps);
+            }
+        }
+        return List.copyOf(pubSamplesList);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean assignPublicationsToCollection(
             CollectionOfPublicationsID collectionId,
