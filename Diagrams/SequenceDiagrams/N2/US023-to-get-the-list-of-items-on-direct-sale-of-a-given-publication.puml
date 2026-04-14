@@ -10,18 +10,13 @@ end box
 
 participant ":US023ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
 
-participant ":IBibliographicalDataRepository" as BDRepo
-participant "listOfAllPublicationsBD:\n List<BibliographicalData>" as ListPub
-participant ":US023BibliographicalDataMapper" as BDMapper
-participant "bibliographicalDataDTO:\nUS023BibliographicalDataDTO" as BDDTO
-participant "listOfAllBibliographicalDataDTO:\nList<US023BibliographicalDataDTO>" as ListBDDTO
-participant ":IListingRepository" as ListingRepo
-participant "listOfDSListing:\nList<Listing>" as ListListing
-participant ":IPublicationSampleRepository" as PubSampleRepo
-participant "listOfPublicationSample:\nList<PublicationSample>" as ListPubSample
-participant ":US023PublicationSampleMapper" as PSMapper
-participant "publicationSampleDTO:\nUS023PublicationSampleDTO" as ItemDTO
-participant "listOfPubSampleDTO:\nList<US023PublicationSampleDTO>" as ListPubSampleDTO
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":US023Bibliographical\nDataMapper" as BDMapper
+
+participant ":IListing\nRepository" as ListingRepo
+
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":US023Publication\nSampleMapper" as PSMapper
 
 ' Section 1 - Get all publications
 Buyer -> UI : I want to get the list of items\n on direct sale of a given publication
@@ -30,17 +25,17 @@ UI -> Ctrl : getAllPublicationBD()
 activate Ctrl
 Ctrl -> BDRepo: getAllPublicationBD()
 activate BDRepo
-BDRepo -->> ListPub ** : «create»
+BDRepo -->> "listOfAllPublicationsBD:\n List<BibliographicalData>" ** : «create»
 BDRepo --> Ctrl: listOfAllPublicationsBD
 deactivate BDRepo
 
 ' Section 2 - Converts all publications list to DTO
 Ctrl -> BDMapper: toDTOs(listOfAllPublicationsBD)
 activate BDMapper
-BDMapper -->> ListBDDTO ** : «create»
+BDMapper -->> "bibliographicalDataDTO:\nUS023BibliographicalDataDTO" ** : «create»
 loop for each bibliographicalData
-   BDMapper -->> BDDTO **: «create»
-   BDMapper -> ListBDDTO: add(bibliographicalDataDTO)
+   BDMapper -->> "listOfAllBibliographicalDataDTO:\nList<US023BibliographicalDataDTO>" **: «create»
+   BDMapper -> "bibliographicalDataDTO:\nUS023BibliographicalDataDTO" : add(bibliographicalDataDTO)
 end
 BDMapper --> Ctrl : listOfAllBibliographicalDataDTO
 deactivate BDMapper
@@ -49,35 +44,36 @@ deactivate Ctrl
 Buyer <-- UI : Which publication? Choose!
 deactivate UI
 
-' Section 3 - Get list of listings in direct sale
 Buyer -> UI : publication
 activate UI
 UI -> Ctrl : findListOfItemsOnDirectSale(bdId)
 activate Ctrl
-Ctrl -> ListingRepo : findAllDirectSaleListings()
-activate ListingRepo
-ListingRepo -->> ListListing ** : «create»
-ListingRepo --> Ctrl : listOfDSListing
-deactivate ListingRepo
 
-' Section 4 - Get the PublicationSamples for those listings
-Ctrl -> PubSampleRepo : findItemsByIdsAndPublication(listOfPubSampleIds,publicationId)
+' Section 3 - Get PublicationSample IDs for that BibliographicalData ID
+Ctrl -> PubSampleRepo : findPubSampleIdsByBibliographicalDataId(bdId)
 activate PubSampleRepo
-PubSampleRepo -->> ListPubSample ** : «create»
-PubSampleRepo --> Ctrl : listOfPubSample
+PubSampleRepo -->> "listOfPubSampleId:\nList<PublicationSampleId" ** : «create»
+PubSampleRepo --> Ctrl : listOfPubSampleId
 deactivate PubSampleRepo
 
+' Section 4 - Get Direct Sale Listings for those PublicationSample IDs
+Ctrl -> ListingRepo : findDirectSaleListingsContaining(listOfPubSampleId)
+activate ListingRepo
+ListingRepo -->> "listOfDSListings:\nList<Listing>" ** : «create»
+ListingRepo --> Ctrl : listOfDSListings
+deactivate ListingRepo
+
 ' Section 5 - create DTO for items
-Ctrl -> PSMapper : toDTOs(listOfPublicationSample)
+Ctrl -> PSMapper : toDTOs(listOfDSListings)
 activate PSMapper
-PSMapper  -->> ListPubSampleDTO ** : «create»
-loop for each publicationSample
-    PSMapper -->> ItemDTO ** : «create»
-    PSMapper -> ListPubSampleDTO : add(publicationSampleDTO)
+PSMapper  -->> "listOfPubSampleDTO:\nList<US023PublicationSampleDTO>" ** : «create»
+loop for each listing
+    PSMapper -->> "listingDTO:\nUS023ListingDTO"** : «create»
+    PSMapper -> "listOfPubSampleDTO:\nList<US023PublicationSampleDTO>" : add(listingDTO)
 end
-PSMapper --> Ctrl : listOfPubSampleDTO
+PSMapper --> Ctrl : listOfListingDTOs
 deactivate PSMapper
-Ctrl --> UI : listOfPubSampleDTO
+Ctrl --> UI : listOfListingDTOs
 deactivate Ctrl
 UI --> Buyer : Shows the list of items on direct sale
 deactivate UI

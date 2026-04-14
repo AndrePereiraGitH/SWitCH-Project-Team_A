@@ -25,12 +25,12 @@ class US023BibliographicalDataMapper {
 record US023BibliographicalDataDTO {
 }
 
-class US023PublicationSampleMapper {
-    + toDTO(item) : US023PublicationSampleDTO
-    + toDTOs(listOfItems) : List<US023PublicationSampleDTO>
+class US023ListingMapper {
+    + toDTO(listing) : US023ListingDTO
+    + toDTOs(listOfDSListings) : List<US023ListingDTO>
 }
 
-record US023PublicationSampleDTO {
+record US023ListingDTO {
 }
 
 ' -------------------------
@@ -38,18 +38,15 @@ record US023PublicationSampleDTO {
 ' -------------------------
 
 interface IBibliographicalDataRepository {
-  - bdList : List<BibliographicalData>
   + getAllPublicationsBD() : List<BibliographicalData>
 }
 
 interface IListingRepository {
-  - listings : List<Listing>
-  + findAllDirectSaleListings() : List<Listing>
+    + findDirectSaleListingsContaining(listOfPubSampleId)
 }
 
 interface IPublicationSampleRepository {
-  - publicationSamples : List<PublicationSample>
-  + findItemsByIdsAndPublication(listOfPubSampleIds, publicationId) : List<PublicationSample>
+  + findPubSampleIdsByBibliographicalDataId(bdId)
 }
 
 ' -------------------------
@@ -74,10 +71,6 @@ class PublicationSample {
     - publicationSampleId: PublicationSampleId
     - bibliographicalDataId: BibliographicalDataId
     - ownerId: UserId
-    - publicationStatus: PublicationStatus
-    - editionId: EditionId
-    - condition: Condition
-    + getBibliographicalDataId() : BibliographicalDataId
 }
 
 ' Value Objects
@@ -98,7 +91,7 @@ US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IB
 US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IListingRepository : uses
 US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IPublicationSampleRepository : uses
 US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023BibliographicalDataMapper : creates DTO
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023PublicationSampleMapper : creates DTO
+US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023ListingMapper : creates DTO
 
 ' --- BD Repository ---
 IBibliographicalDataRepository "1" --> "*" BibliographicalData : persists
@@ -112,12 +105,10 @@ IPublicationSampleRepository "1" --> "*" PublicationSample : persists
 ' --- Listing ---
 Listing "*" --> "1" SaleType : for sale in
 
-' --- PubSample Mapper and DTO ---
-US023PublicationSampleMapper ..> PublicationSample : uses
-US023PublicationSampleMapper ..> US023PublicationSampleDTO : create
+' --- Listing Mapper and DTO ---
+US023ListingMapper ..> US023ListingDTO : create
 
 ' --- BD Mapper and DTO ---
-US023BibliographicalDataMapper ..> BibliographicalData : uses
 US023BibliographicalDataMapper ..> US023BibliographicalDataDTO : creates
 
 @enduml
