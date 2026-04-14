@@ -1,23 +1,20 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
 import TOPSECRET.dto.US018PublicationSampleDTO;
+import TOPSECRET.dto.US018PublicationSampleMapper;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,12 +27,12 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-        IBibliographicalDataRepository bibliographicalRepo = mock(IBibliographicalDataRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         US018ToAddPublicationToAListOfMineController controller =
                 new US018ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, bibliographicalRepo);
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
 
         List<CollectionOfPublications> collections = new ArrayList<>();
 
@@ -55,30 +52,26 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-        IBibliographicalDataRepository bibliographicalRepo = mock(IBibliographicalDataRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         US018ToAddPublicationToAListOfMineController controller =
                 new US018ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, bibliographicalRepo);
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
 
         CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
 
         PublicationSample publication = mock(PublicationSample.class);
         PublicationSampleId pubId = mock(PublicationSampleId.class);
-        BibliographicalDataID bId = mock(BibliographicalDataID.class);
-        BibliographicalData data = mock(BibliographicalData.class);
+        US018PublicationSampleDTO dto = mock(US018PublicationSampleDTO.class);
 
         when(publication.id()).thenReturn(pubId);
-        when(publication.getBibliographicalDataID()).thenReturn(bId);
 
         when(publicationRepo.getAvailablePublicationsForCollection(userId, collectionId))
                 .thenReturn(List.of(publication));
 
-        when(bibliographicalRepo.findBibliographicalDataById(bId))
-                .thenReturn(Optional.of(data));
-
-        when(data.getTitle()).thenReturn("Title");
+        when(publicationSampleMapper.toDTOs(List.of(publication)))
+                .thenReturn(List.of(dto));
 
         // ACT
         List<US018PublicationSampleDTO> result =
@@ -86,10 +79,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals(pubId, result.get(0).id());
-        assertEquals("Title", result.get(0).title());
-
-        verify(publicationRepo).getAvailablePublicationsForCollection(userId, collectionId);
+        assertEquals(dto, result.get(0));
     }
 
     @Test
@@ -101,7 +91,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
                         mock(IPublicationSampleRepository.class),
-                        mock(IBibliographicalDataRepository.class));
+                        mock(US018PublicationSampleMapper.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -114,12 +104,12 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-        IBibliographicalDataRepository bibliographicalRepo = mock(IBibliographicalDataRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         US018ToAddPublicationToAListOfMineController controller =
                 new US018ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, bibliographicalRepo);
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
 
         CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
         PublicationSampleId publicationId = mock(PublicationSampleId.class);
@@ -148,7 +138,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
                         mock(IPublicationSampleRepository.class),
-                        mock(IBibliographicalDataRepository.class));
+                        mock(US018PublicationSampleMapper.class));
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -164,7 +154,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
                         mock(IPublicationSampleRepository.class),
-                        mock(IBibliographicalDataRepository.class));
+                        mock(US018PublicationSampleMapper.class));
 
         CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
 
@@ -182,7 +172,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
                         mock(IPublicationSampleRepository.class),
-                        mock(IBibliographicalDataRepository.class));
+                        mock(US018PublicationSampleMapper.class));
 
         CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
 
@@ -197,12 +187,12 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-        IBibliographicalDataRepository bibliographicalRepo = mock(IBibliographicalDataRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         US018ToAddPublicationToAListOfMineController controller =
                 new US018ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, bibliographicalRepo
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper
                 );
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
@@ -227,12 +217,12 @@ class US018ToAddPublicationToAListOfMineControllerTest {
         // ARRANGE
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-        IBibliographicalDataRepository bibliographicalRepo = mock(IBibliographicalDataRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         US018ToAddPublicationToAListOfMineController controller =
                 new US018ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, bibliographicalRepo
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper
                 );
 
         CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);

@@ -36,7 +36,7 @@ public class US018ToAddPublicationToAListOfMineController {
 
     private final ICollectionOfPublicationsRepository _collectionRepo;
     private final IPublicationSampleRepository _publicationSampleRepo;
-    private final IBibliographicalDataRepository _bibliographicalRepo;
+    private final US018PublicationSampleMapper _publicationSampleMapper;
     private final UserId _userId;
 
     /**
@@ -44,8 +44,8 @@ public class US018ToAddPublicationToAListOfMineController {
      *
      * @param userId identifier of the current user
      * @param collectionRepo repository for collections
-     * @param publicationRepo repository for publications
-     * @param bibliographicalRepo repository for bibliographical data
+     * @param publicationRepo repository for publication samples
+     * @param publicationSampleMapper mapper for publication samples
      *
      * @throws IllegalArgumentException if any argument is null
      */
@@ -53,17 +53,18 @@ public class US018ToAddPublicationToAListOfMineController {
             UserId userId,
             ICollectionOfPublicationsRepository collectionRepo,
             IPublicationSampleRepository publicationRepo,
-            IBibliographicalDataRepository bibliographicalRepo) {
+            US018PublicationSampleMapper publicationSampleMapper) {
 
         if (userId == null || collectionRepo == null ||
-                publicationRepo == null || bibliographicalRepo == null) {
+                publicationRepo == null || publicationSampleMapper == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
+
 
         this._userId = userId;
         this._collectionRepo = collectionRepo;
         this._publicationSampleRepo = publicationRepo;
-        this._bibliographicalRepo = bibliographicalRepo;
+        this._publicationSampleMapper = publicationSampleMapper;
     }
 
     /**
@@ -88,9 +89,11 @@ public class US018ToAddPublicationToAListOfMineController {
      * Retrieves the list of publications that can be added to a collection.
      *
      * <p>
-     * The method delegates the retrieval of available publications to the repository,
-     * obtains their titles from the bibliographical repository, and converts the result
-     * into DTOs.
+     * The method delegates:
+     * <ul>
+     *     <li>Filtering logic to the repository</li>
+     *     <li>DTO transformation to the mapper</li>
+     * </ul>
      * </p>
      *
      * @param collectionId identifier of the selected collection
@@ -108,40 +111,7 @@ public class US018ToAddPublicationToAListOfMineController {
         List<PublicationSample> available =
                 _publicationSampleRepo.getAvailablePublicationsForCollection(_userId, collectionId);
 
-        List<String> titles = getTitles(available);
-
-        return US018PublicationSampleMapper.toDTOs(available, titles);
-    }
-
-    /**
-     * Retrieves the titles associated with a list of publications.
-     *
-     * <p>
-     * For each publication, the method obtains the corresponding
-     * bibliographical data and extracts its title.
-     * </p>
-     *
-     * @param publications list of publication samples
-     * @return list of titles in the same order as the publications
-     */
-    private List<String> getTitles(List<PublicationSample> publications) {
-
-        List<String> titles = new ArrayList<>();
-
-        for (PublicationSample publication : publications) {
-
-            BibliographicalDataID bibliographicalDataId =
-                    publication.getBibliographicalDataID();
-
-            String title = _bibliographicalRepo
-                    .findBibliographicalDataById(bibliographicalDataId)
-                    .get()
-                    .getTitle();
-
-            titles.add(title);
-        }
-
-        return titles;
+        return _publicationSampleMapper.toDTOs(available);
     }
 
     /**
@@ -179,27 +149,4 @@ public class US018ToAddPublicationToAListOfMineController {
 
         return _publicationSampleRepo.assignPublicationsToCollection(collectionId, selectedPublicationId);
     }
-
-    /**
-     * Computes the difference between two lists of publications.
-     *
-     * @param all all publications
-     * @param inCollection publications already in collection
-     * @return publications not yet in collection
-     */
-    private List<PublicationSample> diff(
-            List<PublicationSample> all,
-            List<PublicationSample> inCollection) {
-
-        List<PublicationSample> result = new ArrayList<>();
-
-        for (PublicationSample p : all) {
-            if (!inCollection.contains(p)) {
-                result.add(p);
-            }
-        }
-
-        return result;
-    }
-
 }
