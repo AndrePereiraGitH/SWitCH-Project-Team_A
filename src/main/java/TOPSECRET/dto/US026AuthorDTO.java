@@ -9,8 +9,18 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
  * @param name the author's name
  */
 public record US026AuthorDTO(
-        AuthorId id,
+        String authorId,
         String name
 ) {
+
+    public US026AuthorDTO {
+        if (authorId == null || authorId.isBlank()) {
+            throw new IllegalArgumentException("auctionId cannot be null or blank");
+        }
+
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name cannot be null or blank");
+        }
+    }
 
 }

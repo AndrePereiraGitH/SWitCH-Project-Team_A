@@ -1049,6 +1049,98 @@ class PublicationSampleRepositoryMemTest {
         assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));
     }
 
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldThrowException_whenListIsNull() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findAllItemsIdByBibliographicalDataId(null));
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldReturnMatchingIds() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+
+        PublicationSample psDouble = mock(PublicationSample.class);
+        PublicationSampleId psDoubleId = mock(PublicationSampleId.class);
+
+        when(psDouble.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+        when(psDouble.id()).thenReturn(psDoubleId);
+
+        repo.save(psDouble);
+
+        // Act
+        List<PublicationSampleId> result =
+                repo.findAllItemsIdByBibliographicalDataId(List.of(bibliographicalDataID_Double));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(psDoubleId));
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldReturnEmptyList_whenNoMatch() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        BibliographicalDataID bdIdDouble1 = mock(BibliographicalDataID.class);
+
+        PublicationSample psDouble = mock(PublicationSample.class);
+
+        when(psDouble.getBibliographicalDataID()).thenReturn(bdIdDouble1);
+
+        repo.save(psDouble);
+
+        // Act
+        List<PublicationSampleId> result =
+                repo.findAllItemsIdByBibliographicalDataId(List.of(bibliographicalDataID_Double));
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllItemsIdByBibliographicalDataId_shouldReturnMultipleMatches() {
+
+        // Arrange
+        IPublicationSampleRepository repo =
+                new PublicationSampleRepositoryMem(factory);
+
+        PublicationSample psDouble1 = mock(PublicationSample.class);
+        PublicationSample psDouble2 = mock(PublicationSample.class);
+
+        PublicationSampleId idDouble1 = mock(PublicationSampleId.class);
+        PublicationSampleId idDouble2 = mock(PublicationSampleId.class);
+
+        when(psDouble1.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+        when(psDouble2.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+
+        when(psDouble1.id()).thenReturn(idDouble1);
+        when(psDouble2.id()).thenReturn(idDouble2);
+
+        repo.save(psDouble1);
+        repo.save(psDouble2);
+
+        // Act
+        List<PublicationSampleId> result =
+                repo.findAllItemsIdByBibliographicalDataId(List.of(bibliographicalDataID_Double));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(idDouble1));
+        assertTrue(result.contains(idDouble2));
+    }
+
 
 
 

@@ -198,4 +198,55 @@ class DirectSaleTest {
         assertNull(details.listings());
         assertNull(details.buyer());
     }
+
+    @Test
+    void id_shouldReturnNonNull() {
+        // Arrange
+        List<ListingId> listings = List.of(new ListingId("L1"));
+        UserId buyer = new UserId("U1");
+
+        // Act
+        DirectSale sale = new DirectSale(listings, buyer, false);
+
+        // Assert
+        assertNotNull(sale.id());
+    }
+
+    // Same as tests
+    @Test
+    void sameAs_shouldReturnFalse_whenOtherIsNull() {
+        // Act
+        DirectSale sale = new DirectSale(List.of(new ListingId("L1")), new UserId("U1"), false);
+
+        // Assert
+        assertFalse(sale.sameAs(null));
+    }
+
+    @Test
+    void sameAs_shouldReturnFalse_whenDifferentType() {
+        // Act
+        DirectSale sale = new DirectSale(List.of(new ListingId("L1")), new UserId("U1"), false);
+
+        // Assert
+        assertFalse(sale.sameAs("not a DirectSale"));
+    }
+
+    @Test
+    void sameAs_shouldReturnTrue_whenSameInstance() {
+        // Arrange
+        DirectSale sale = new DirectSale(List.of(new ListingId("L1")), new UserId("U1"), false);
+
+        // Assert
+        assertTrue(sale.sameAs(sale));
+    }
+
+    @Test
+    void sameAs_shouldReturnFalse_whenDifferentInstance() {
+        // Arrange
+        DirectSale sale1 = new DirectSale(List.of(new ListingId("L1")), new UserId("U1"), false);
+        DirectSale sale2 = new DirectSale(List.of(new ListingId("L1")), new UserId("U1"), false);
+
+        // Assert
+        assertFalse(sale1.sameAs(sale2));
+    }
 }

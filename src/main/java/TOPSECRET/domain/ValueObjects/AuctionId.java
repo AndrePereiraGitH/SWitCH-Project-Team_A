@@ -23,7 +23,7 @@ public final class AuctionId implements DomainID {
      * Creates a new {@code AuctionId} with the given UUID string value.
      *
      * @param id the UUID string representing the auction's identity; must not be null, blank or empty
-     * @throws IllegalArgumentException if {@code id} is null, blank or empty
+     * @throws IllegalArgumentException if {@code auctionId} is null, blank or empty
      */
 
     public AuctionId(String id) {

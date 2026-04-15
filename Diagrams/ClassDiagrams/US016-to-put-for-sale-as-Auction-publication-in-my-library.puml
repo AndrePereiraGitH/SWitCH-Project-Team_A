@@ -1,5 +1,4 @@
 @startuml
-hide circle
 skinparam classAttributeIconSize 0
 title US016 - Put a publication from my library for sale in an auction
 
@@ -11,10 +10,23 @@ class US016ToPutPublicationInAuctionController {
 class Library {
 }
 
-class Listing
-class Auction
-class PublicationSample
-class BibliographicalData
+class Listing {
+    -id :ListingId
+    -pubSamplesIds :List<publicationSampleId>
+
+}
+class Auction {
+    -id :AuctionId
+    -listigs :List<ListingId>
+}
+class PublicationSample {
+    -id :PublicationSampleId
+    -biblioDataIds :List<BibliographicalDataId>
+
+}
+class BibliographicalData {
+ -id : BibliographicalDataId
+}
 
 interface ILibraryRepository {
   +getLibraryByUserId(userId: UserId): Library

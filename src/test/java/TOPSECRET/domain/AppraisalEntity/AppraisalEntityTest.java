@@ -11,12 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-/**
- * Tests for AppraisalEntity.
- *
- * Validates constructor rules, attribute initialization,
- * identity, equality, and general behavior.
- */
+
 class AppraisalEntityTest {
 
     // HELPER
@@ -310,7 +305,7 @@ class AppraisalEntityTest {
         AppraisalEntity entity = createValidEntity();
 
         // Act
-        AppraisalEntityId id1 = entity.getId();
+        AppraisalEntityId id1 = entity.id();
         AppraisalEntityId id2 = entity.id();
 
         // Assert
@@ -490,7 +485,7 @@ class AppraisalEntityTest {
         // ACT
 
         // ASSERT
-        assertNotNull(entity.getId());
+        assertNotNull(entity.id());
         assertNotNull(entity.identity());
         assertNotNull(entity.getName());
         assertNotNull(entity.getContact());
@@ -520,7 +515,7 @@ class AppraisalEntityTest {
         assertEquals(contactDouble, entity.getContact());
         assertEquals(List.of(pubDouble), entity.getPublicationTypeId());
         assertEquals(List.of(genreDouble), entity.getGenreId());
-        assertEquals(entity.getId(), entity.identity());
+        assertEquals(entity.id(), entity.identity());
     }
 
 

@@ -1,6 +1,5 @@
 @startuml
 top to bottom direction
-hide circle
 title US026 - To get the list of items on auction of a given author (DDD)
 
 class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
@@ -28,12 +27,12 @@ interface IPublicationSampleRepository {
 }
 
 interface IListingRepository {
-  +findListingsByPublicationID(publicationSamplesIds : List<PublicationSampleId>) : List<ListingId>
+  +findListingIdsByPublicationSampleIds(publicationSamplesIds : List<PublicationSampleId>) : List<ListingId>
   +findListingById(listingId : ListingId) : Optional<Listing>
 }
 
 interface IAuctionRepository {
-  +findAuctionsByListingId(listingIds : List<ListingId>) : List<Auction>
+  +findAuctionsByListingIds(listingIds : List<ListingId>) : List<Auction>
 }
 
 class Author {
@@ -52,7 +51,7 @@ class Listing {
 }
 
 class Auction {
-  -auctionId : AuctionId
+  -auc_id : AuctionId
   -listingId : ListingId
   -auctionStatus : AuctionStatus
   +id() : AuctionId
@@ -60,22 +59,16 @@ class Auction {
   +getAuctionStatus() : AuctionStatus
 }
 
-class AuthorId
-class BibliographicalDataID
-class PublicationSampleId
-class ListingId
-class AuctionId
-
 
 class US026AuthorDTO {
-  +authorID() : AuthorId
+  +authorID() : String
   +name() : String
 }
 
 class US026AuctionDTO {
-  +auctionId() : AuctionId
+  +id() : String
   +listingTitle() : String
-  +auctionStatus() : AuctionStatus
+  +auctionStatus() : String
 }
 
 class US026AuthorMapper {
@@ -92,46 +85,28 @@ class US026AuctionMapper {
 
 
 ' --- Controller to repositories / mappers ---
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ....> IAuthorRepository
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> IBibliographicalDataRepository
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> IPublicationSampleRepository
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> IListingRepository
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> IAuctionRepository
+US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ....> IAuthorRepository : interacts with
+US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController .....> IBibliographicalDataRepository : interacts with
+US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ......> IPublicationSampleRepository : interacts with
+US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController .> IListingRepository : interacts with
+US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ...> IAuctionRepository : interacts with
 US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> US026AuthorMapper
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> US026AuctionMapper
+US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ....> US026AuctionMapper
 
 ' --- Mapper dependencies ---
-US026AuthorMapper ..> Author
-US026AuthorMapper ..> US026AuthorDTO
+US026AuthorMapper ...> Author
+US026AuthorMapper ...> US026AuthorDTO
 
-US026AuctionMapper ..> Auction
-US026AuctionMapper ..> IListingRepository
-US026AuctionMapper ..> Listing
+US026AuctionMapper ...> Auction
+US026AuctionMapper ...> IListingRepository
 US026AuctionMapper ..> US026AuctionDTO
 
-' --- Aggregate references by ID only ---
-Author --> AuthorId
-Listing --> ListingId
-Listing --> PublicationSampleId
-Auction --> AuctionId
-Auction --> ListingId
-US026AuthorDTO --> AuthorId
-US026AuctionDTO --> AuctionId
 
 ' --- Repository contracts and ID flow ---
 IAuthorRepository ..> Author
 
-IBibliographicalDataRepository ..> AuthorId
-IBibliographicalDataRepository ..> BibliographicalDataID
+IListingRepository ..> Listing : manages
 
-IPublicationSampleRepository ..> BibliographicalDataID
-IPublicationSampleRepository ..> PublicationSampleId
-
-IListingRepository ..> PublicationSampleId
-IListingRepository ..> ListingId
-IListingRepository ..> Listing
-
-IAuctionRepository ..> ListingId
-IAuctionRepository ..> Auction
+IAuctionRepository .....> Auction : manages
 
 @enduml

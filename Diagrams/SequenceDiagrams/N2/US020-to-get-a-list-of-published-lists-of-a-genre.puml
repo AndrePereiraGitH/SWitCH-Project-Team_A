@@ -2,48 +2,100 @@
 hide footbox
 autonumber
 
-title US020 - Public lists by genre (returns DTO summary)
+title US020 - Get public lists of a given genre (returns DTO List)
 
 actor User
 participant ":UI020" as UI
 participant ":US020PublicListByGenreController" as Controller
 participant ":GenreRepository" as GenreRepo
+participant ":US013GenreDTOMapper" as GenreMapper
+participant ":genreDTOlist \n:List<US013GenreDTO>" as genreDTO
+participant "genreDto:US013GenreDTO" as genreDTO13
 participant ":CollectionOfPublicationsRepository" as CollectionRepo
-participant "CollectionOfPublications" as Collection
+participant "collections \n:List<CollectionOfPublications" as collectionsList
+participant ":CollectionOfPublications" as Collection
+participant ":US020CollectionOfPublicationsDTOMapper" as mapper
+participant "dtoList \n:List<US020CollectionOfPublicationsDTO>" as dtoList
+participant ":UserRepository" as userRepo
+participant ":User" as user
+participant "dto \n:USO20CollectionsOfPublicationsDTO" as dto
 
 User -> UI : Request public lists by genre
 UI -> Controller : getGenres()
 
 activate Controller
+
 Controller -> GenreRepo : getAllGenres()
-GenreRepo --> Controller : List<Genre>
-Controller --> UI : List<Genre>
-UI --> User : Select genre (List<Genre>)
+
+activate GenreRepo
+GenreRepo --> Controller : return List<Genre>
+deactivate GenreRepo
+
+Controller -> GenreMapper : toDTO(List<Genres>)
+activate GenreMapper
+GenreMapper -->> genreDTO** : <<create>>
+loop for every genre in List<Genre>
+GenreMapper -->> genreDTO13** : <<create>>
+GenreMapper -> GenreMapper : genreDTOList.add(genreDto)
+end
+GenreMapper --> Controller : genreDTOlist
+deactivate GenreMapper
+
+Controller --> UI : List<US013GenreDTO>
 deactivate Controller
+
+UI --> User : Select genre (List<US013GenreDTO>)
 
 User -> UI : Selected (genreId)
 UI -> Controller : getPublicListsByGenre(genreId)
 
 activate Controller
-Controller -> CollectionRepo : findPublicByGenre(genreId)
+Controller -> CollectionRepo : findPublicCollectionsByGenreId(genreId)
 activate CollectionRepo
 
-CollectionRepo -> CollectionRepo : result = new List<CollectionOfPublicationsDTO>()
+CollectionRepo -->> collectionsList** : <<create>>
 
-loop for each CollectionOfPublications in CollectionOfPublicationsRepo
-  CollectionRepo -> Collection : isPrivate()
-  Collection --> CollectionRepo : return isPrivate
-  CollectionRepo -> Collection : getCollectionGenre()
+loop for each CollectionOfPublications c in CollectionOfPublicationsRepo
+  CollectionRepo -> Collection : c.getCollectionGenre()
   Collection --> CollectionRepo : return collectionGenre
-  alt if is NOT private and matches genreId
-    create CollectionOfPublicationsDTO
-    CollectionRepo -> CollectionOfPublicationsDTO : result.add new CollectionOfPublicationsDTO(getCollectionName(), getOwner())
+  CollectionRepo -> Collection : !c.getIsPrivate()
+  Collection --> CollectionRepo : return isPrivate
+  alt if is NOT private and collectionGenre equals genreId
+    CollectionRepo -> CollectionRepo : collections.add(c)
   end
 end
 
-CollectionRepo --> Controller : List<CollectionOfPublicationsDTO>
+CollectionRepo --> Controller : return collections
 deactivate CollectionRepo
-Controller --> UI : List<CollectionOfPublicationsDTO>
+
+create mapper
+Controller -> mapper : toDTO(collections)
+
+activate mapper
+mapper -->> dtoList** : <<create>>
+loop for each CollectionOfPublications c in collections
+    mapper -> Collection : c.getCollectionName()
+    Collection --> mapper : return collectionName
+
+    mapper -> userRepo : userRepo.getUserId(c.getOwnerId)
+    activate userRepo
+
+    userRepo --> mapper : return ownerId
+    deactivate userRepo
+
+    mapper -> user : getUserName()
+    activate user
+    user --> mapper : return ownerName
+    deactivate user
+
+    mapper -->> dto** : <<create>>
+    mapper -> mapper : dtoList.add(dto)
+end
+
+mapper --> Controller : return dto
+deactivate mapper
+
+Controller --> UI : List<US020CollectionOfPublicationsDTO>
 deactivate Controller
 
 UI --> User : List of public lists by requested genre

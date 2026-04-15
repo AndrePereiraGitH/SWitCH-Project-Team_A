@@ -1,7 +1,5 @@
 package TOPSECRET.domain.Auction;
 
-import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -52,7 +50,7 @@ public interface IAuctionRepository {
      * Retrieves an {@link Auction} instance by its identifier.
      * <p>
      * This method searches the in-memory list of stored auctions and returns
-     * the first element whose {@code id()} matches the provided {@link AuctionId}.
+     * the first element whose {@code auctionId()} matches the provided {@link AuctionId}.
      * If no matching listing is found, an empty {@link Optional} is returned.
      * </p>
      *
@@ -60,11 +58,29 @@ public interface IAuctionRepository {
      * @return an {@link Optional} containing the matching auction if found,
      *         or an empty {@link Optional} otherwise
      *
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null}
      */
     Optional<Auction> findAuctionById(AuctionId id);
 
     /**
+     * Retrieves all {@link Auction} instances associated with the given
+     * {@link ListingId}.
+     *
+     * <p>This method searches the repository for auctions whose listing identifier
+     * matches any of the provided listing identifiers.</p>
+     *
+     * @param listingId the list of listing identifiers used to filter auctions;
+     *                   must not be {@code null}
+     * @return a list of {@link Auction} associated with the given listings;
+     *         may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code listingIds} is {@code null}
+     */
+    List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId);
+
+    /**
+     * Returns the list of auctions containing at least one item whose publication
+     * is associated with the given author.
      * Retrieves all auctions whose listing identifier is contained in the given list.
      *
      * @param listingIds the list of listing identifiers to search for

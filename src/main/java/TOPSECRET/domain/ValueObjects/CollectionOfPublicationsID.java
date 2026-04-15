@@ -21,7 +21,7 @@ public class CollectionOfPublicationsID implements DomainID {
      * Constructs a {@code CollectionOfPublicationsID} with the specified identifier.
      *
      * @param id the unique identifier for the collection of publications
-     * @throws IllegalArgumentException if {@code id} is null or blank
+     * @throws IllegalArgumentException if {@code auctionId} is null or blank
      */
 
     public CollectionOfPublicationsID(String id) {

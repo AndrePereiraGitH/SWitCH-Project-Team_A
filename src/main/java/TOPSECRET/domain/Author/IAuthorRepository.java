@@ -56,7 +56,7 @@ public interface IAuthorRepository {
      * Retrieves an {@link Author} instance by its identifier.
      * <p>
      * This method searches the in-memory list of stored authors and returns
-     * the first element whose {@code id()} matches the provided {@link AuthorId}.
+     * the first element whose {@code auctionId()} matches the provided {@link AuthorId}.
      * If no matching author is found, an empty {@link Optional} is returned.
      * </p>
      *
@@ -64,7 +64,7 @@ public interface IAuthorRepository {
      * @return an {@link Optional} containing the matching author if found,
      *         or an empty {@link Optional} otherwise
      *
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null}
      */
     Optional<Author> findAuthorById(AuthorId id);
 }

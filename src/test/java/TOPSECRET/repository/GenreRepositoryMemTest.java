@@ -152,6 +152,8 @@ class GenreRepositoryMemTest {
                 () -> repository.findByTitle(" "));
     }
 
+
+
     @Test
     void findGenreById_shouldThrowException_whenGenreIdIsNull() {
         // Arrange

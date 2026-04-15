@@ -95,7 +95,7 @@ public interface IListingRepository {
      * Retrieves an {@link Listing} instance by its identifier.
      * <p>
      * This method searches the in-memory list of stored listings and returns
-     * the first element whose {@code id()} matches the provided {@link ListingId}.
+     * the first element whose {@code auctionId()} matches the provided {@link ListingId}.
      * If no matching listing is found, an empty {@link Optional} is returned.
      * </p>
      *
@@ -103,9 +103,27 @@ public interface IListingRepository {
      * @return an {@link Optional} containing the matching listing if found,
      *         or an empty {@link Optional} otherwise
      *
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @throws IllegalArgumentException if {@code auctionId} is {@code null}
      */
     Optional<Listing> findListingById(ListingId id);
+
+
+    /**
+     * Retrieves all {@link ListingId} that contain at least one of the given
+     * {@link PublicationSampleId}.
+     *
+     * <p>This method searches the repository for all {@link Listing} instances
+     * whose collection of item identifiers includes at least one of the provided
+     * publication sample identifiers.</p>
+     *
+     * @param itemsId the list of publication sample identifiers used to filter listings;
+     *                must not be {@code null}
+     * @return a list of {@link ListingId} corresponding to listings that contain
+     *         at least one of the specified items; may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code itemsId} is {@code null}
+     */
+    List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId);
 
 
     /**
@@ -135,4 +153,5 @@ public interface IListingRepository {
      * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
      */
     List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
+
 }
