@@ -166,7 +166,6 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         }
         return result;
     }
-}
 
     /**
      * {@inheritDoc}
@@ -181,7 +180,4 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
 
         return listOfTitles;
     }
-
 }
-
-
