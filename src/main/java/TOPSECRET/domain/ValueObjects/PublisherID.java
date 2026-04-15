@@ -5,7 +5,7 @@ import TOPSECRET.ddd.DomainID;
 import java.util.Objects;
 
 /**
- * Value Object representing the unique identifier of a {@link Publisher} aggregate.
+ * Value Object representing the unique identifier of a Publisher aggregate.
  *
  * <p>Implements the {@link DomainID} marker interface as required by the DDD-layered structure.
  * Identity is based solely on the underlying {@code String} value, making two instances with

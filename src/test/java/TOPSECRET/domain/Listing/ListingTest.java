@@ -26,9 +26,9 @@ class ListingTest {
     private List<Picture> validPictures;
     private List<PublicationSampleId> oneItemList;
     private List<PublicationSampleId> severalItemList;
-    private PublicationSampleId pub1Id;
-    private PublicationSampleId pub2Id;
-    private UserId validSellerId;
+    private PublicationSampleId pub1IdDouble;
+    private PublicationSampleId pub2IdDouble;
+    private UserId validSellerIdDouble;
     private ListingFactory listingFactory;
 
     @BeforeEach
@@ -36,11 +36,11 @@ class ListingTest {
         validPrice = mock(Price.class);
         Picture pic1 = mock(Picture.class);
         validPictures = List.of(pic1);
-        pub1Id = new PublicationSampleId("pub1");
-        pub2Id = new PublicationSampleId("pub2");
-        oneItemList = List.of(pub1Id);
-        severalItemList = List.of(pub1Id, pub2Id);
-        validSellerId = new UserId("seller");
+        pub1IdDouble = mock(PublicationSampleId.class);
+        pub2IdDouble = mock(PublicationSampleId.class);
+        oneItemList = List.of(pub1IdDouble);
+        severalItemList = List.of(pub1IdDouble, pub2IdDouble);
+        validSellerIdDouble = mock(UserId.class);
         listingFactory = new ListingFactory();
     }
 
@@ -51,7 +51,7 @@ class ListingTest {
     void shouldCreateValidListingWhenDataIsValidAndListHasOnlyOneBook() {
         //Arrange
         //Act
-        Listing validListing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing validListing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertNotNull(validListing);
@@ -61,7 +61,7 @@ class ListingTest {
     void shouldCreateValidListingWhenDataIsValidAndListHasSeveralBooks() {
         //Arrange
         //Act
-        Listing validListing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing validListing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertNotNull(validListing);
@@ -77,7 +77,7 @@ class ListingTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(titleLessThanFiveCharacters, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
+                () -> listingFactory.create(titleLessThanFiveCharacters, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures));
     }
 
     @Test
@@ -87,7 +87,7 @@ class ListingTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(titleTooLong, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
+                () -> listingFactory.create(titleTooLong, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures));
     }
 
     @Test
@@ -96,7 +96,7 @@ class ListingTest {
         final String validTitle5Chars = "12345";
 
         //Act
-        Listing listing = listingFactory.create(validTitle5Chars, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle5Chars, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertNotNull(listing);
@@ -108,7 +108,7 @@ class ListingTest {
         final String validTitle100Chars = "1234567890".repeat(10);
 
         //Act
-        Listing listing = listingFactory.create(validTitle100Chars, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle100Chars, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertNotNull(listing);
@@ -124,7 +124,7 @@ class ListingTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, invalidDescription, validSellerId, validPictures));
+                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, invalidDescription, validSellerIdDouble, validPictures));
     }
 
     @Test
@@ -133,7 +133,7 @@ class ListingTest {
         final String descriptionWith10Char = "1234567890";
 
         //Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, descriptionWith10Char, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, descriptionWith10Char, validSellerIdDouble, validPictures);
 
         //Assert
         assertNotNull(listing);
@@ -145,7 +145,7 @@ class ListingTest {
         final String descriptionWith100Char = "This description is long enough to properly validate the one hundred character boundary rule.";
 
         //Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, descriptionWith100Char, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, descriptionWith100Char, validSellerIdDouble, validPictures);
 
         //Assert
         assertNotNull(listing);
@@ -159,7 +159,7 @@ class ListingTest {
         //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE,
-                        validPrice, descriptionTooLong, validSellerId, validPictures));
+                        validPrice, descriptionTooLong, validSellerIdDouble, validPictures));
     }
 
 
@@ -170,7 +170,7 @@ class ListingTest {
         //Arrange
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, null, validDescription, validSellerId, validPictures));
+                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, null, validDescription, validSellerIdDouble, validPictures));
     }
 
 
@@ -181,7 +181,7 @@ class ListingTest {
         //Arrange
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(validTitle, null, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
+                () -> listingFactory.create(validTitle, null, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures));
     }
 
     @Test
@@ -191,7 +191,7 @@ class ListingTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(validTitle, emptyItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures));
+                () -> listingFactory.create(validTitle, emptyItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures));
     }
 
     // ========== SELLER VALIDATION TESTS ==========
@@ -211,7 +211,7 @@ class ListingTest {
         //Arrange
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId,null));
+                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble,null));
     }
 
 
@@ -224,7 +224,7 @@ class ListingTest {
         when(price.getPrice()).thenReturn(BigDecimal.valueOf(25));
 
         //Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, price, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, price, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertEquals(price, listing.getPrice());
@@ -235,7 +235,7 @@ class ListingTest {
         //Arrange
 
         //Act
-        Listing validListing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing validListing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
         String actualTitle = validListing.getListingTitle();
 
         //Assert
@@ -245,17 +245,17 @@ class ListingTest {
     @Test
     void shouldReturnSellerId() {
         // Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
-        assertEquals(validSellerId, listing.getSellerId());
+        assertEquals(validSellerIdDouble, listing.getSellerId());
     }
 
     @Test
     void shouldReturnShortDescription() {
         //Arrange
         //Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertEquals(validDescription, listing.getShortDescription());
@@ -265,7 +265,7 @@ class ListingTest {
     void shouldReturnPictures() {
         //Arrange
         //Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertEquals(validPictures, listing.getPictures());
@@ -275,7 +275,7 @@ class ListingTest {
     void shouldReturnSaleType() {
         //Arrange
         //Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Assert
         assertEquals(SaleType.DIRECT_SALE, listing.getSaleType());
@@ -284,7 +284,7 @@ class ListingTest {
     @Test
     void picturesListShouldBeUnmodifiable() {
         // Arrange
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         List<Picture> pics = listing.getPictures();
@@ -296,7 +296,7 @@ class ListingTest {
     @Test
     void shouldReturnACopyOfItems() {
         //Arrange
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         //Act
         List<PublicationSampleId> itemsId = listing.getItemsId();
@@ -311,7 +311,7 @@ class ListingTest {
     @Test
     void idShouldNotBeNull() {
         // Arrange
-        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         var id = listing.id();
@@ -323,7 +323,7 @@ class ListingTest {
     @Test
     void idShouldReturnSameInstanceOnMultipleCalls() {
         // Arrange
-        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         var id1 = listing.id();
@@ -336,8 +336,8 @@ class ListingTest {
     @Test
     void eachListingShouldHaveUniqueId() {
         // Arrange
-        Listing l1 = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
-        Listing l2 = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing l1 = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+        Listing l2 = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act + Assert
         assertNotEquals(l1.id(), l2.id());
@@ -349,7 +349,7 @@ class ListingTest {
     @Test
     void equalsShouldReturnTrueWhenComparingSameInstance() {
         // Arrange
-        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing.equals(listing);
@@ -361,7 +361,7 @@ class ListingTest {
     @Test
     void equalsShouldReturnFalseWhenComparingWithNull() {
         // Arrange
-        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing.equals(null);
@@ -373,7 +373,7 @@ class ListingTest {
     @Test
     void equalsShouldReturnFalseWhenComparingWithDifferentType() {
         // Arrange
-        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing.equals("not a listing");
@@ -385,9 +385,9 @@ class ListingTest {
     @Test
     void equalsShouldReturnFalseWhenListingIdsAreDifferent() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing1.equals(listing2);
@@ -399,9 +399,9 @@ class ListingTest {
     @Test
     void equalsShouldReturnTrueWhenListingIdsAreEqual() throws Exception {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Forces the same ID (because, according to domain, we cannot have the same pub on different listings)
         var field = Listing.class.getDeclaredField("_listingId");
@@ -420,9 +420,9 @@ class ListingTest {
     @Test
     void sameAsShouldReturnTrueWhenAllFieldsMatch() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act + Assert
         assertTrue(listing1.sameAs(listing2));
@@ -431,9 +431,9 @@ class ListingTest {
     @Test
     void sameAsShouldReturnTrueWhenOneItemsDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.AUCTION, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -445,9 +445,9 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenTitleDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create("Title 1", List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create("Title 1", List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create("Title 2", List.of(pub2Id), SaleType.AUCTION, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create("Title 2", List.of(pub2IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -459,9 +459,9 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenSaleTypeDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.AUCTION, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -473,10 +473,10 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenPriceDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         Price validPrice2 = mock(Price.class);
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.AUCTION, validPrice2, validDescription, validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.AUCTION, validPrice2, validDescription, validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -488,9 +488,9 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenShortDescriptionDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.AUCTION, validPrice, "different description", validSellerId, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.AUCTION, validPrice, "different description", validSellerIdDouble, validPictures);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -502,10 +502,10 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenSellerIdDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         UserId validSellerId2 = new UserId("different seller");
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.AUCTION, validPrice, validDescription, validSellerId2, validPictures);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerId2, validPictures);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -517,11 +517,11 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenPicturesDiffers() {
         // Arrange
-        Listing listing1 = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         Picture pic2 = mock(Picture.class);
         List<Picture> validPictures2 = List.of(pic2);
-        Listing listing2 = listingFactory.create(validTitle, List.of(pub2Id), SaleType.AUCTION, validPrice, validDescription, validSellerId, validPictures2);
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub2IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerIdDouble, validPictures2);
 
         // Act
         boolean result = listing1.sameAs(listing2);
@@ -533,7 +533,7 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenObjectIsNotAListing() {
         // Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Assert
         assertFalse(listing.sameAs("not a listing"));
@@ -542,7 +542,7 @@ class ListingTest {
     @Test
     void sameAsShouldReturnFalseWhenObjectIsNull() {
         // Act
-        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerId, validPictures);
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
 
         // Assert
         assertFalse(listing.sameAs(null));
@@ -602,6 +602,101 @@ class ListingTest {
 //        //Assert
 //        assertEquals(PublicationStatus.FOR_SALE, actualStatus);
 //    }
+
+
+    // ========== isListingLinkedToAnAuction TESTS ==========
+
+
+    @Test
+    void isListingLinkedToAnAuction_shouldReturnTrue_ifSaleTypeIsAuction(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToAnAuction();
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isListingLinkedToAnAuction_shouldReturnFalse_ifSaleTypeIsNotAuction(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToAnAuction();
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    // ========== isListingLinkedToADirectSale TESTS ==========
+
+
+    @Test
+    void isListingLinkedToADirectSale_shouldReturnTrue_ifSaleTypeIsDirectSale(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToADirectSale();
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isListingLinkedToADirectSale_shouldReturnFalse_ifSaleTypeIsNotDirectSale(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.AUCTION, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        boolean result = validListing.isListingLinkedToADirectSale();
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    // ========== containsPubSampleId TESTS ==========
+
+    @Test
+    void containsPubSampleId_shouldReturnTrue_ifItemsContainPubSampleId(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        boolean result = validListing.containsPubSampleId(pub1IdDouble);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void containsPubSampleId_shouldReturnFalse_ifItemsDoesNotContainPubSampleId(){
+
+        //Arrange
+        Listing validListing = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        boolean result = validListing.containsPubSampleId(pub2IdDouble);
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+
 
     // ========== HELPER METHODS ==========
 

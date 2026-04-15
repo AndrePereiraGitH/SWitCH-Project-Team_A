@@ -77,6 +77,72 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return Optional.empty();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle){
+
+        if(bdTitle == null){
+            throw new NullPointerException("Title must not be null");
+        }
+
+        if(bdTitle.isBlank()){
+            throw new IllegalArgumentException("Title must not be blank");
+        }
+
+        String normalizedBdTitle = bdTitle.toLowerCase().trim();
+
+        for(BibliographicalData bd : _bdList){
+            if(bd.getTitle().toLowerCase().trim().equals(normalizedBdTitle)){
+                return Optional.of(bd.id());
+            }
+        }
+
+        return Optional.empty();
+    }
+    public List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId){
+
+        if (genreId == null) {
+            throw new IllegalArgumentException("genreId cannot be null");
+        }
+
+        List<BibliographicalDataID> result = new ArrayList<>();
+
+        for (BibliographicalData bd : _bdList) {
+            if (bd.getGenres().contains(genreId)) {
+                result.add(bd.id());
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BibliographicalDataID> findBibliographicalDataIdByAuthorId(AuthorId authorId) {
+
+        if (authorId == null) {
+            throw new IllegalArgumentException("authorId cannot be null.");
+        }
+
+        List<BibliographicalDataID> bdsOfAuthor = _bdList.stream()
+                .filter(bd -> bd.getAuthors().contains(authorId))
+                .map(BibliographicalData::id)
+                .toList();
+
+        return bdsOfAuthor;
+    }
+
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+
+
+    // Get all publications --------------------------------------------------------------------------------------------
     /**
      * {@inheritDoc}
      */
@@ -101,3 +167,21 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return result;
     }
 }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> getAllTitles(){
+        List<String> listOfTitles = new ArrayList<>();
+
+        for(BibliographicalData bd: _bdList){
+            String title = bd.getTitle();
+            listOfTitles.add(title);
+        }
+
+        return listOfTitles;
+    }
+
+}
+
+

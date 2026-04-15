@@ -1,7 +1,5 @@
 package TOPSECRET.domain.BibliographicalData;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
@@ -43,6 +41,57 @@ public interface IBibliographicalDataRepository {
 
 
     /**
+     * Finds bibliographical data in the repository by its unique identifier.
+     *
+     * <p>Iterates through all stored bibliographical data entries and returns
+     * the first one whose ID matches the provided {@link BibliographicalDataID}.</p>
+     *
+     * @param bibliographicalDataId the unique identifier of the bibliographical data
+     *                              to search for; must not be {@code null}
+     * @return an {@link Optional} containing the matching {@link BibliographicalData}
+     *         if found, or an empty {@link Optional} if no entry with the given ID exists
+     * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
+     */
+    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
+
+    /**
+     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreID}.
+     *
+     * <p>This method searches the repository for all {@link BibliographicalData}
+     * instances whose list of genres contains the provided genre identifier.</p>
+     *
+     * @param genreId the identifier of the genre used to filter bibliographical data;
+     *                must not be {@code null}
+     * @return a list of {@link BibliographicalDataID} that are associated with the given genre;
+     *         may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code genreId} is {@code null}
+     */
+    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId);
+
+    /**
+     * Finds the ID of a bibliographical data entry by its title, using case-insensitive
+     * and whitespace-trimmed matching.
+     *
+     * @param bdTitle the title to search for; must not be {@code null} or blank
+     * @return an {@link Optional} containing the {@link BibliographicalDataID} if a match
+     *         is found, or an empty {@link Optional} if no match exists
+     * @throws NullPointerException     if {@code bdTitle} is {@code null}
+     * @throws IllegalArgumentException if {@code bdTitle} is blank
+     */
+    Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle);
+
+    /**
+     * Retrieves the identifiers of all bibliographical data entries associated with a given author.
+     *
+     * @param authorId the identifier of the author whose bibliographical data identifiers are to be retrieved
+     * @return a list of {@link BibliographicalDataID} associated with the given author
+     * @throws IllegalArgumentException if {@code authorId} is null
+     */
+    List<BibliographicalDataID> findBibliographicalDataIdByAuthorId(AuthorId authorId);
+
+
+    /**
      * Returns the complete list of bibliographical data records stored in the repository.
      *
      * <p>The returned list reflects the repository's current internal state and
@@ -56,7 +105,7 @@ public interface IBibliographicalDataRepository {
     List<BibliographicalData> getAllPublicationsBD();
 
     /**
-     * Finds bibliographical data in the repository by its unique identifier.
+     * Retrieves the titles of all bibliographical entries in the list.
      *
      * <p>Iterates through all stored bibliographical data entries and returns
      * the first one whose ID matches the provided {@link BibliographicalDataID}.</p>
@@ -66,8 +115,13 @@ public interface IBibliographicalDataRepository {
      * @return an {@link Optional} containing the matching {@link BibliographicalData}
      * if found, or an empty {@link Optional} if no entry with the given ID exists
      * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
+     * @return a {@link List} of {@link String} containing all titles from {@code _bdList},
+     *         or an empty list if no entries are present.
      */
-    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
+    List<String> getAllTitles();
+
+
+
 
     /**
      * Returns all {@link BibliographicalData} records that include the given author.

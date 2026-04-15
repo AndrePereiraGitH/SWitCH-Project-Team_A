@@ -9,80 +9,98 @@ participant ":UI015" as UI
 end box
 
 participant ":US015ToPutPublicationInDirectSaleController" as Ctrl
-participant ":Library" as Lib
-participant ":PublicationSampleDTO_US015" as DTO
-participant "publicationSampleDTO:\nPublicationSampleDTO_US015" as DTO_O
+
+participant ":ILibraryRepository" as LibRepo
+
+participant ":IPublicationSampleRepository" as PSRepo
 participant ":PublicationSample" as Pub
-participant ":ListingRepository" as LRepo
+
+participant "listOfLibraryPublications:\nList<PublicationSample" as ListLibraryPS
+participant "listOfAvailablePublications:\nList<PublicationSample>" as ListAvailablePub
+
+participant ":US015PublicationSampleMapper" as Mapper
+participant "listOfPublicationSampleDTO:\nList<US015PublicationSampleDTO>" as listDTO
+participant "publicationSampleDTO:\nUS015PublicationSampleDTO" as DTO_O
+
+participant ":IListingRepository" as LRepo
 participant ":ListingFactory" as LFactory
+participant ":Listing" as Listing
 
-User -> UI : I want to put for sale a publication in my library in a direct sale
+' --- Step 1: User initiates the process ---
+User -> UI : I want to put for sale a publication\nin a direct sale
 activate UI
-UI -> Ctrl: findLibraryPublicationsAvailableForSale()
+UI -> Ctrl : findLibraryPublicationsAvailableForSale()
 activate Ctrl
-Ctrl-> Lib : findLibraryPublicationsAvailableForSale()
-activate Lib
-create "listOfAvailablePublications:\n List<PublicationSample>" as LP
-Lib -> LP : create()
-    loop for each PublicationSample
-        Lib -> Pub : getPublicationStatus()
-        activate Pub
-        Pub --> Lib : status
-        deactivate Pub
-        alt status != SOLD and status != FOR_SALE
-            Lib -> LP : add(publicationSample)
+
+' --- Step 2: find User's Library ---
+Ctrl -> LibRepo : getLibraryByUserId(userId)
+activate LibRepo
+LibRepo --> Ctrl : library
+deactivate LibRepo
+
+' --- Step 3: find Library's PublicationSamples ---
+Ctrl -> PSRepo: findLibraryPublicationsAvailableForSaleByLibraryId(library.libraryId)
+activate PSRepo
+PSRepo -->> ListAvailablePub ** : «create»
+PSRepo -> PSRepo: getPublicationsByLibraryID(library.libraryId)
+loop for each PublicationSample
+    PSRepo -> Pub : isAvailableForSale()
+        alt available
+        PSRepo -> ListAvailablePub : add(publicationSample)
         end
-    end
-Lib --> Ctrl: listOfAvailablePublications
-deactivate Lib
+end
+PSRepo --> Ctrl: listOfAvailablePublications
+deactivate PSRepo
 
-Ctrl-> DTO : toDTO(listOfAvailablePublications)
-activate DTO
-
-create "listOfPublicationSampleDTO:\nList<PublicationSampleDTO_US015>" as listDTO
-DTO -> listDTO : create()
-    loop for each PublicationSample
-        DTO -> Pub : getDetails()
-        activate Pub
-        Pub --> DTO : publicationSampleDetails
-        deactivate Pub
-        DTO -> DTO_O ** : createDTO(publicationSampleDetails)
-        DTO -> listDTO : add(publicationSampleDTO)
-    end
-DTO --> Ctrl: listOfPublicationSampleDTO
-deactivate DTO
-Ctrl--> UI : listOfPublicationSampleDTO
+' --- Step 4: Converts the list of available publications to DTOs ---
+Ctrl -> Mapper : toDTOs(listOfAvailablePublications)
+activate Mapper
+Mapper -->> listDTO ** : «create»
+loop for each publicationSample
+    Mapper -->> DTO_O **: «create»
+    Mapper -> listDTO: add(publicationSampleDTO)
+end
+Mapper --> Ctrl : listOfPublicationSampleDTO
+deactivate Mapper
+Ctrl --> UI : listOfPublicationSampleDTO
 deactivate Ctrl
 
-UI --> User : Which publication(s)? Choose from the list!
+' --- Step 5: Returns the list of available publications to the user ---
+UI --> User : Which publication(s)?\nChoose from the list!
 deactivate UI
 
+' --- Step 6: User selects publications and provides listing details ---
 User -> UI : Selected publication(s)
 activate UI
-UI --> User : Specify the title, price, short description and pictures for the listing
+UI --> User : Specify title, price,\nshort description and pictures
 deactivate UI
 
-User -> UI : Title, price, short description, pictures
+User -> UI : Title, price, short description,\npictures
 activate UI
 
-UI -> Ctrl: putPublicationForSale(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+UI -> Ctrl : putPublicationForSale(title, selectedPublicationIds,\nprice, shortDescription, userId, pictures)
 activate Ctrl
-Ctrl-> LRepo : createAndAdd(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+
+' --- Step 7: Listing creation ---
+Ctrl -> LRepo : createAndAdd(title, selectedPublicationIds, SaleType.DIRECT_SALE, price, shortDescription, userId, pictures)
 activate LRepo
-LRepo-> LFactory : create(title, selectedPublications,\n saleType, price, shortDescription, seller, pictures)
+
+LRepo -> LFactory : create(title, selectedPublicationIds, SaleType.DIRECT_SALE,\n price, shortDescription, userId, pictures)
 activate LFactory
 
-create "listing: Listing" as listing
-LFactory -> listing : create (title, selectedPublications, saleType, price, shortDescription, seller, pictures)
-LFactory --> LRepo: listing
+LFactory -->> Listing ** : «create»(title, selectedPublicationIds, SaleType.DIRECT_SALE,\n price, shortDescription, userId, pictures)
+LFactory --> LRepo : listing
 deactivate LFactory
-LRepo --> Ctrl: listing
+
+LRepo -> LRepo : add(listing)
+LRepo --> Ctrl : listing
 deactivate LRepo
 
-Ctrl--> UI: listing
+Ctrl --> UI : success
 deactivate Ctrl
 
-UI --> User : Publication(s) put for direct sale with success
+UI --> User : Publication(s) put for direct\n sale with success
 deactivate UI
 
 @enduml
+

@@ -11,19 +11,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link AppraisalEntityFactory}.
- *
- * <p>
- * Validates that the factory correctly creates AppraisalEntity
- * instances by invoking the constructor.
- * </p>
- *
- * <p>
- * Uses {@code mockConstruction} to intercept object creation
- * and verify that a new instance is created.
- * </p>
- */
 class AppraisalEntityFactoryTest {
 
     @Test

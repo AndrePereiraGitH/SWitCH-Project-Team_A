@@ -171,6 +171,4 @@ public class User implements AggregateRoot<UserId> {
     public int hashCode() {
         return Objects.hash(_id);
     }
-
 }
-
