@@ -30,7 +30,6 @@ class PublisherRepositoryMemTest {
     @Test
     void shouldThrowExceptionWhenFactoryIsNull() {
         // Arrange
-        // (no additional setup needed)
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(

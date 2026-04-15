@@ -1,20 +1,31 @@
 @startuml
-hide circle
-skinparam classAttributeIconSize 0
+
 title US016 - Put a publication from my library for sale in an auction
 
 class US016ToPutPublicationInAuctionController {
   +getAllPublicationsInUserLibrary(userId: UserId): List<US016_PublicationSampleDTO>
-  +createAuctionListing(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>, initialDate: LocalDateTime, finalDate: LocalDateTime, buyOutPrice: Price): boolean
+  +createAuctionListing(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>,\n initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>, initialDate: LocalDateTime,\n finalDate: LocalDateTime, buyOutPrice: Price): boolean
 }
 
-class Library {
-}
 
-class Listing
-class Auction
-class PublicationSample
-class BibliographicalData
+class Listing {
+    -id :ListingId
+    -pubSamplesIds :List<publicationSampleId>
+
+}
+class Auction {
+    -id :AuctionId
+    -listigs :List<ListingId>
+}
+class PublicationSample {
+    -id :PublicationSampleId
+    -biblioDataIds :List<BibliographicalDataId>
+    -libraryId : LibraryId
+
+}
+class BibliographicalData {
+ -id : BibliographicalDataId
+}
 
 interface ILibraryRepository {
   +getLibraryByUserId(userId: UserId): Library
@@ -29,33 +40,33 @@ interface IBibliographicalDataRepository {
 }
 
 interface IListingRepository {
-  +createAndAdd(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, saleType: SaleType, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>): Listing
+  +createAndAdd(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, \n saleType: SaleType, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>): Listing
 }
 
 interface IAuctionRepository {
-  +createAndAdd(listingId: ListingId, initialDate: LocalDateTime, finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price): Auction
+    +createAndAdd(listingId: ListingId, initialDate: LocalDateTime, \n finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price): Auction
 }
 
 class US016_PublicationSampleDTO
 
 class US016_PublicationSampleMapper {
-  +fromDomain(publicationSample: PublicationSample, bd: BibliographicalData): US016_PublicationSampleDTO
+  +fromDomain(publicationSample: PublicationSample, bd: BibliographicalData) : US016_PublicationSampleDTO
   +fromDomainList(publicationSamples: List<PublicationSample>): List<US016_PublicationSampleDTO>
 }
 
 class ListingFactory {
-  +create(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, saleType: SaleType, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>)
+  +create(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, \n saleType: SaleType, initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>)
 }
 
 class AuctionFactory {
-  +create(listingId: ListingId, initialDate: LocalDateTime, finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price)
+  +create(listingId: ListingId, initialDate: LocalDateTime, \n finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price)
 }
 
 US016ToPutPublicationInAuctionController ..> ILibraryRepository : invokes
 US016ToPutPublicationInAuctionController ..> IPublicationSampleRepository : invokes
 US016ToPutPublicationInAuctionController ..> IBibliographicalDataRepository : invokes
-US016ToPutPublicationInAuctionController ....> IListingRepository : invokes
-US016ToPutPublicationInAuctionController ....> IAuctionRepository : invokes
+US016ToPutPublicationInAuctionController ..> IListingRepository : invokes
+US016ToPutPublicationInAuctionController ..> IAuctionRepository : invokes
 US016ToPutPublicationInAuctionController ..> US016_PublicationSampleMapper : uses
 
 US016_PublicationSampleMapper ..> IBibliographicalDataRepository : retrieves
@@ -69,5 +80,4 @@ ListingFactory ..> Listing : creates
 IAuctionRepository --> AuctionFactory
 AuctionFactory ..> Auction : creates
 
-Library "1" -- "*" PublicationSample : contains
 @enduml

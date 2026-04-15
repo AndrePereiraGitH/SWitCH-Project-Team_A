@@ -43,15 +43,16 @@ public class US020CollectionOfPublicationsDTOMapper {
      */
     public List<US020CollectionOfPublicationsDTO> toDTO(List<CollectionOfPublications> collections) {
 
-        List<US020CollectionOfPublicationsDTO> dto = new ArrayList<>();
+        List<US020CollectionOfPublicationsDTO> dtoList = new ArrayList<>();
 
         for (CollectionOfPublications c : collections) {
             String collectionName = c.getCollectionName();
             String ownerName = userRepo.findUserByID(c.getOwnerId())
                     .map(User::getUserName)
                     .orElseThrow(() -> new IllegalStateException("User not found"));
-            dto.add(new US020CollectionOfPublicationsDTO(collectionName.trim(), ownerName.trim()));
+            US020CollectionOfPublicationsDTO dto = new US020CollectionOfPublicationsDTO(collectionName.trim(), ownerName.trim());
+            dtoList.add(dto);
         }
-        return dto;
+        return dtoList;
     }
 }

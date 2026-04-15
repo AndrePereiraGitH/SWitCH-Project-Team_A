@@ -56,7 +56,7 @@ public interface IAuthorRepository {
      * Retrieves an {@link Author} instance by its identifier.
      * <p>
      * This method searches the in-memory list of stored authors and returns
-     * the first element whose {@code id()} matches the provided {@link AuthorId}.
+     * the first element whose {@code id} matches the provided {@link AuthorId}.
      * If no matching author is found, an empty {@link Optional} is returned.
      * </p>
      *

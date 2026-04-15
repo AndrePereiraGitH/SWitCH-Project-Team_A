@@ -6,7 +6,7 @@ import TOPSECRET.ddd.DomainID;
  * Value Object representing the unique identity of an Auction.
  * <p>
  * This identifier is immutable and equality is based solely on its
- * underlying UUID string value. Two {@code AuctionId} instances are
+ * underlying UUID string value. Two {@code id} instances are
  * considered equal if they encapsulate the same UUID string identifier.
  * </p>
  */

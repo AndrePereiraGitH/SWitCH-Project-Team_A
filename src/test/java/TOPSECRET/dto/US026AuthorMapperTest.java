@@ -26,6 +26,7 @@ class US026AuthorMapperTest {
         AuthorId authorId = mock(AuthorId.class);
 
         when(author.id()).thenReturn(authorId);
+        when(authorId.getId()).thenReturn("authorId");
         when(author.getName()).thenReturn("José Saramago");
 
         // Act
@@ -33,7 +34,7 @@ class US026AuthorMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(authorId, result.id());
+        assertEquals(authorId.getId(), result.authorId());
         assertEquals("José Saramago", result.name());
     }
 
@@ -62,9 +63,11 @@ class US026AuthorMapperTest {
         AuthorId authorId2 = mock(AuthorId.class);
 
         when(author1.id()).thenReturn(authorId1);
+        when(authorId1.getId()).thenReturn("authorId1");
         when(author1.getName()).thenReturn("José Saramago");
 
         when(author2.id()).thenReturn(authorId2);
+        when(authorId2.getId()).thenReturn("authorId2");
         when(author2.getName()).thenReturn("Fernando Pessoa");
 
         List<Author> authors = List.of(author1, author2);
@@ -76,10 +79,10 @@ class US026AuthorMapperTest {
         assertNotNull(result);
         assertEquals(2, result.size());
 
-        assertEquals(authorId1, result.get(0).id());
+        assertEquals(authorId1.getId(), result.get(0).authorId());
         assertEquals("José Saramago", result.get(0).name());
 
-        assertEquals(authorId2, result.get(1).id());
+        assertEquals(authorId2.getId(), result.get(1).authorId());
         assertEquals("Fernando Pessoa", result.get(1).name());
     }
 
@@ -111,6 +114,7 @@ class US026AuthorMapperTest {
         AuthorId authorId = mock(AuthorId.class);
 
         when(author.id()).thenReturn(authorId);
+        when(authorId.getId()).thenReturn("authorId");
         when(author.getName()).thenReturn("José Saramago");
 
         List<Author> authors = java.util.Arrays.asList(author, null);

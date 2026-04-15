@@ -10,7 +10,6 @@ end box
 participant ":US006ToRegisterNewPublisherController" as Controller
 participant ":PublisherRepository" as PublisherRepository
 participant ":PublisherFactory" as PublisherFactory
-participant "contact:Contact" as Contact
 participant "publisher:Publisher" as Publisher
 
 Administrator -> UI : I want to register a Publishing Company
@@ -28,7 +27,6 @@ activate PublisherRepository
 
 PublisherRepository -> PublisherFactory : create(name, vatNumber, contact)
 activate PublisherFactory
-PublisherFactory -->> Contact ** : <<create>>\nContact(contact)
 PublisherFactory -->> Publisher ** : <<create>>\nPublisher(name, vatNumber, contact)
 PublisherFactory --> PublisherRepository : publisher
 deactivate PublisherFactory

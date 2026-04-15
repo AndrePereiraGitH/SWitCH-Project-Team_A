@@ -94,7 +94,7 @@ public interface IListingRepository {
      * Retrieves an {@link Listing} instance by its identifier.
      * <p>
      * This method searches the in-memory list of stored listings and returns
-     * the first element whose {@code id()} matches the provided {@link ListingId}.
+     * the first element whose {@code id} matches the provided {@link ListingId}.
      * If no matching listing is found, an empty {@link Optional} is returned.
      * </p>
      *

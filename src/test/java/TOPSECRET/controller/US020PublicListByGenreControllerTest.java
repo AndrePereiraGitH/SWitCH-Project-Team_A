@@ -8,6 +8,7 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,15 +44,13 @@ class US020PublicListByGenreControllerTest {
     void getAllGenresDelegatesToGenreRepoAndReturnsListOfGenres() {
         //Arrange
         controller =new US020PublicListByGenreController(genreRepo, collectionRepo , userRepo);
-        List<Genre> expected = List.of(genreDouble1, genreDouble2);
 
         //Act
-        when(genreRepo.getAllGenres()).thenReturn(expected);
-        List<Genre> result = controller.getGenres();
+        when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble1, genreDouble2));
+        List<US013GenreDTO> result = controller.getGenres();
 
         //Assert
         assertEquals(2, result.size());
-        assertEquals(expected, result);
     }
 
 

@@ -25,7 +25,7 @@ public class US026AuthorMapper {
             throw new IllegalArgumentException("author cannot be null");
         }
 
-        return new US026AuthorDTO(author.id(), author.getName());
+        return new US026AuthorDTO(author.id().getId(), author.getName());
     }
 
     /**
