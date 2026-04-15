@@ -1,102 +1,84 @@
 @startuml
-title US018 - Add Publication to Collection Of Publications
+title US018 - Add Publication to Collection Of Publication
 
-' ======================
-' Controller
-' ======================
+' ========================
+' APPLICATION LAYER
+' ========================
 
-class AddCollectionOfPublicationsController {
-    +getUserCollections(user)
-    +getPublicationsForCollection(selectedCollectionDTO)
-    +addPublicationToCollection(collectionSelectedDTO, selectedPublicationDTO)
-    -diff(allUserPublications, publicationsInCollection)
+class US018ToAddPublicationToAListOfMineController {
+  +getUserCollections: List<US018CollectionOfPublicationsDTO>
+  +getPublicationsForCollection: List<US018PublicationSampleDTO>
+  +addPublicationToCollection: boolean
 }
 
-' ======================
-' Repository
-' ======================
-
-class CollectionOfPublicationsRepository {
-    +getUserCollections(user)
-    +collectionDTOToDomain(selectedCollectionDTO)
-    +CollectionDTOToDomain(selectedCollectionDTO)
-    +addPublicationToCollection(userCollection, publicationSample)
-    -isFromUser()
-}
-
-class PublicationSampleRepository {
-    +PublicationSampleDtoToDomain(userLibrary, selectedPublicationDTO)
-}
-
-
-' ======================
-' DTO
-' ======================
-
-class CollectionOfPublicationsDTO {
-    +createDTO(collectionName)
-    +collectionOfPublicationToDTO(userCollections)
-}
-
-class PublicationSampleDTO {
-    +publicationToDTO(publicationAvailable)
-}
-
-' ======================
-' Domain
-' ======================
-
-class User {
-  - username : String
-  - library : Library
-  - collections : List<CollectionOfPublications>
-  + getLibrary() : Library
-  + getCollections() : List<CollectionOfPublications>
-}
-
+' ========================
+' DOMAIN LAYER
+' ========================
 
 class CollectionOfPublications {
-  - name : String
-  - publications : List<Publication>
-
-    +getCollectionName()
-    +getPublications(userCollectionSelected)
+  -mediaFormat: String
 }
 
-class Library {
-  - publicationSample : List<PublicationSample>
-    + getLibrary (user)
-    + getPublications(userLibrary) : List<PublicationSample>
-
+class CollectionOfPublicationsID {
+  -collectionId: String
 }
+
+CollectionOfPublications "1 " ---> "1 " CollectionOfPublicationsID : identifies
+
 
 class PublicationSample {
-    +getBibliographicalData()
+  -publicationSampleId: PublicationSampleId
+  -bibliographicalDataId: BibliographicalDataID
 }
 
-class BibliographicalData
+class PublicationSampleId {
+  -id: String
+}
 
+class BibliographicalDataID {
+  -id: String
+}
 
-' ======================
-' Associations
-' ======================
+PublicationSample "1    " ---> "  1  " PublicationSampleId : identifies
+PublicationSample "1" ---> "  1   " BibliographicalDataID : contains
+PublicationSample "1" ---> "  1   " CollectionOfPublicationsID : is part of
 
-AddCollectionOfPublicationsController ..> CollectionOfPublicationsRepository
-AddCollectionOfPublicationsController ..> CollectionOfPublicationsDTO
-AddCollectionOfPublicationsController ..> PublicationSampleDTO
-AddCollectionOfPublicationsController ..> PublicationSampleRepository
-AddCollectionOfPublicationsController ..> Library
-AddCollectionOfPublicationsController ..> CollectionOfPublications
+class BibliographicalData {
+  -title: String
+}
 
-CollectionOfPublicationsRepository "1" --> "*" CollectionOfPublications
+' ========================
+' REPOSITORIES
+' ========================
 
-CollectionOfPublicationsDTO ..> CollectionOfPublications
+interface ICollectionOfPublicationsRepository {
+  +getUserCollections: List<CollectionOfPublications>
+  +addPublicationToCollection: boolean
+}
 
-CollectionOfPublications "1" ..> "*" PublicationSample
+interface IPublicationSampleRepository {
+  +getAllPublicationsInUserLibrary: List<PublicationSample>
+  +getPublicationsByCollectionID: List<PublicationSample>
+  +findPublicationSampleById: PublicationSample
+}
 
-Library "1" --> "*" PublicationSample
+interface IBibliographicalDataRepository {
+  +findBibliographicalDataById: BibliographicalData
+}
 
-PublicationSampleDTO --> PublicationSample
-PublicationSample "1" --> "1" BibliographicalData
+' ========================
+' DEPENDENCIES
+' ========================
+
+US018ToAddPublicationToAListOfMineController ...> ICollectionOfPublicationsRepository : interacts with
+US018ToAddPublicationToAListOfMineController ...> IPublicationSampleRepository : interacts with
+US018ToAddPublicationToAListOfMineController ...> IBibliographicalDataRepository : interacts with
+
+ICollectionOfPublicationsRepository ..> CollectionOfPublications
+IPublicationSampleRepository ..> PublicationSample
+IBibliographicalDataRepository ..> BibliographicalData
+
+BibliographicalDataID *.. BibliographicalData
+BibliographicalData " 1 " ---> "  1" BibliographicalDataID : identifies
 
 @enduml

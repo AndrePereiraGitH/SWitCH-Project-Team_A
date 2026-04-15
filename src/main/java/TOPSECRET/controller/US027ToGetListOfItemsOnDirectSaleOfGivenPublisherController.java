@@ -1,39 +1,73 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.dto.PublicationSampleDTO_US027;
-import TOPSECRET.dto.PublisherDTO_US027;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.PublisherID;
+import TOPSECRET.dto.US027ListingDTO;
+import TOPSECRET.dto.US027ListingMapper;
+import TOPSECRET.dto.US027PublisherDTO;
+import TOPSECRET.dto.US027PublisherMapper;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 
-
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 /**
- * Controller responsible for the execution of the US027 use case.
+ * Controller for US027 — Retrieve all items on direct sale for a given publisher.
+ *
  * <p>
- * This controller coordinates the retrieval of publishers and the list of
- * publication samples that are available for direct sale from a given publisher.
- * It interacts with the {@link IPublisherRepository}, {@link IListingRepository},
- * and {@link IPublicationSampleRepository} to obtain the necessary domain data
- * and converts it into DTOs to be used by the application layer.
+ * This controller orchestrates the interaction between repositories and DTO mappers in order to:
+ * <ul>
+ *     <li>List all publishers available in the system</li>
+ *     <li>Retrieve all listings that correspond to direct sale for a specific publisher</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * It does not contain domain logic; instead, it coordinates domain operations by:
+ * <ul>
+ *     <li>Querying repositories for domain entities and identifiers</li>
+ *     <li>Delegating transformation of domain objects into DTOs to the appropriate mappers</li>
+ * </ul>
+ * </p>
  */
-
 public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
     private final IPublisherRepository _publisherRepo;
     private final IListingRepository _listingRepo;
     private final IPublicationSampleRepository _pubSampleRepo;
+    private final IEditionRepository _editionRepo;
+    private final US027ListingMapper _mapper;
 
+    // =================================================================================================================
     // ========= Constructor ===========================================================================================
+    // =================================================================================================================
+    /**
+     * Creates a new controller responsible for retrieving publishers and direct-sale listings
+     * associated with a given publisher.
+     *
+     * @param publisherRepo the repository used to retrieve publishers
+     * @param listingRepo the repository used to retrieve listings
+     * @param pubSampleRepo the repository used to retrieve publication samples
+     * @param editionRepo the repository used to retrieve editions
+     * @param mapper the mapper responsible for converting listings into DTOs
+     */
     public US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(IPublisherRepository publisherRepo,
                                                                        IListingRepository listingRepo,
-                                                                       IPublicationSampleRepository pubSampleRepo) {
+                                                                       IPublicationSampleRepository pubSampleRepo,
+                                                                       IEditionRepository editionRepo,
+                                                                       US027ListingMapper mapper) {
 
         this._publisherRepo = publisherRepo;
         this._listingRepo = listingRepo;
         this._pubSampleRepo = pubSampleRepo;
+        this._editionRepo = editionRepo;
+        this._mapper = mapper;
     }
 
      // ================================================================================================================
@@ -41,16 +75,15 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
     /**
      * Retrieves all publishers stored in the system and converts them into DTOs.
      *
-     * @return a list of {@link PublisherDTO_US027} representing all publishers
+     * @return a list of {@link US027PublisherMapper} representing all publishers
      */
-
-    public List<PublisherDTO_US027> getAllPublishers() {
+    public List<US027PublisherDTO> getAllPublishers() {
 
         // Gets all the publishers on repository
         List<Publisher> listOfAllPublishers = _publisherRepo.getAllPublishers();
 
         // Converts to DTOs
-        List<PublisherDTO_US027> listOfAllPublishersDTO = PublisherDTO_US027.toDTOs(listOfAllPublishers);
+        List<US027PublisherDTO> listOfAllPublishersDTO = US027PublisherMapper.toDTOs(listOfAllPublishers);
 
         return listOfAllPublishersDTO;
     }
@@ -59,29 +92,35 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * Retrieves all items on direct sale associated with the given publisher.
      *
      * <p>
-     * The process includes:
+     * The retrieval process follows these steps:
      * <ol>
-     *     <li>Retrieving all listings that correspond to direct sale</li>
-     *     <li>Filtering publication samples that belong to the specified publisher</li>
-     *     <li>Converting the resulting domain objects into DTOs</li>
+     *     <li>Find all {@link EditionID} values belonging to the given publisher</li>
+     *     <li>Find all {@link PublicationSampleId} values associated with those editions</li>
+     *     <li>Retrieve all direct-sale {@link Listing} objects that reference those publication samples</li>
+     *     <li>Convert the resulting listings into DTOs</li>
      * </ol>
      * </p>
      *
-     * @param publisher the publisher whose direct-sale items should be retrieved
-     * @return a list of {@link PublicationSampleDTO_US027} associated with the given publisher
+     * @param publisherId the unique identifier of the publisher whose direct-sale items should be retrieved
+     * @return a list of {@link US027ListingDTO} representing the direct-sale listings of the given publisher
+     * @throws InstanceNotFoundException if the publisher does not exist or no related data is found
      */
+    public List<US027ListingDTO> findListOfItemsOnDirectSaleByPublisherId(PublisherID publisherId) throws IllegalArgumentException, InstanceNotFoundException {
 
-//    public List<PublicationSampleDTO_US027> findListOfItemsOnDirectSaleByPublisher(Publisher publisher) {
-//
-//        // Gets all the listings for direct sale
-//        List<Listing> listOfListings = _listingRepo.findAllDirectSaleListings();
-//
-//        // Gets all the publication samples related to the that publisher
-//        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
-//
-//        // Converts to DTOs
-//        List<PublicationSampleDTO_US027> listOfPublicationSampleDTO = PublicationSampleDTO_US027.toDTOs(listOfItems);
-//
-//        return listOfPublicationSampleDTO;
-//    }
+        if (publisherId == null) throw new IllegalArgumentException("publisherId cannot be null");
+
+        //Gets all the edition Ids of that publisher
+        List<EditionID> listOfEditionIds = _editionRepo.findEditionIdsByPublisherId(publisherId);
+
+        // Gets all the publication samples related to the previous edition Ids
+        List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findPublicationSampleIdsByEditionIds(listOfEditionIds);
+
+        // Gets all the direct sale listings related to the previous publication sample Ids
+        List<Listing> listOfListings = _listingRepo.findDirectSaleListingsContaining(listOfPubSampleIds);
+
+        // Converts to DTOs
+        List<US027ListingDTO> listOfListingDTOs = _mapper.toDTOs(listOfListings);
+
+        return listOfListingDTOs;
+    }
 }

@@ -3,7 +3,17 @@
 hide footbox
 autonumber
 
-title US018 - Get Available Publications
+title US018 - Get Publications Available
+
+participant ":UI018" as UI
+participant ":US018ToAddPublicationToAListOfMineController" as Controller
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":US018PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant ":PublicationSample" as PublicationSample
+participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
+participant ":BibliographicalData" as BibliographicalData
 
 note over UI, Controller #E3F2FD
 <b>Fragment</b>
@@ -17,46 +27,46 @@ note over UI, Controller #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-participant ":UI018" as UI
-participant ":AddCollectionOfPublicationsController" as Controller
-participant ":CollectionOfPublicationsRepository" as CollectionRepo
-participant ":LibraryRepository" as LibraryRepo
-participant ":CollectionOfPublications" as CP
-participant ":Library" as Library
-
-participant ":PublicationSampleMapper" as PublicationSampleMapper
-participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
-participant ":PublicationSample" as PublicationSample
-participant ":BibliographicalDataRepository" as BibliographicalDataRepo
-participant ":BibliographicalData" as BibliographicalData
-participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
-
-UI -> Controller : getAvailablePublications(collectionDTO)
+UI -> Controller : getPublicationsForCollection(collectionId)
 activate Controller
 
-Controller -> CollectionRepo : findById(collectionDTO.id)
-activate CollectionRepo
-CollectionRepo --> Controller : userCollection
-deactivate CollectionRepo
+' =====================================================
+' GET AVAILABLE PUBLICATIONS
+' =====================================================
 
-Controller -> LibraryRepo : findById(username)
-activate LibraryRepo
-LibraryRepo --> Controller : userLibrary
-deactivate LibraryRepo
+Controller -> PublicationSampleRepo : getAvailablePublicationsForCollection(userId, collectionId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : publicationAvailable
+deactivate PublicationSampleRepo
 
-Controller -> Library : getAllPublications()
-activate Library
-Library --> Controller : allUserPublications
-deactivate Library
+' =====================================================
+' GET TITLES (Controller responsibility)
+' =====================================================
 
-Controller -> CP : getPublications(userCollection)
-activate CP
-CP --> Controller : publicationsInCollection
-deactivate CP
+loop for each publicationSample in publicationAvailable
+    Controller -> PublicationSample : getBibliographicalDataID()
+    activate PublicationSample
+    PublicationSample --> Controller : bibliographicalDataId
+    deactivate PublicationSample
 
-Controller -> Controller : diff(allUserPublications,\npublicationsInCollection)
+    Controller -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> Controller : bibliographicalData
+    deactivate BibliographicalDataRepo
 
-Controller -> PublicationSampleMapper : toDTO(publicationAvailable)
+    Controller -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> Controller : title
+    deactivate BibliographicalData
+
+    Controller -> Controller : titles.add(title)
+end
+
+' =====================================================
+' CONVERT RESULT TO DTO
+' =====================================================
+
+Controller -> PublicationSampleMapper : toDTOs(publicationAvailable, titles)
 activate PublicationSampleMapper
 
 PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
@@ -66,21 +76,6 @@ loop for each publicationSample
     activate PublicationSample
     PublicationSample --> PublicationSampleMapper : id
     deactivate PublicationSample
-
-    PublicationSampleMapper -> PublicationSample : getBibliographicalDataId()
-    activate PublicationSample
-    PublicationSample --> PublicationSampleMapper : bibliographicalDataId
-    deactivate PublicationSample
-
-    PublicationSampleMapper -> BibliographicalDataRepo : findById(bibliographicalDataId)
-    activate BibliographicalDataRepo
-    BibliographicalDataRepo --> PublicationSampleMapper : bibliographicalData
-    deactivate BibliographicalDataRepo
-
-    PublicationSampleMapper -> BibliographicalData : getTitle()
-    activate BibliographicalData
-    BibliographicalData --> PublicationSampleMapper : title
-    deactivate BibliographicalData
 
     PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
 
