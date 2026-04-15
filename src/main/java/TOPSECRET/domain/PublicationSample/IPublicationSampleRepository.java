@@ -151,6 +151,42 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
+     * Retrieves all {@link PublicationSample} instances that are owned by the given user
+     * and have not yet been added to any library.
+     * <p>
+     * This method is used to present the user with a list of publications available
+     * to be added to their library.
+     * </p>
+     *
+     * @param userId the ID of the user whose publications are to be retrieved;
+     *               must not be {@code null}
+     * @return a list of {@link PublicationSample} objects owned by the user that are
+     *         not currently assigned to any library; never {@code null}, may be empty
+     * @throws NullPointerException if {@code userId} is {@code null}
+     */
+    List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId);
+
+    /**
+     * Associates a given {@link PublicationSample} with a {@link LibraryId}
+     * and persists the updated publication in the repository.
+     *
+     * <p>This method delegates the association logic to the domain entity
+     * ({@link PublicationSample#addPublicationToLibrary(LibraryId)}) and
+     * then saves the updated entity in the repository.</p>
+     *
+     * @param publicationSample the publication sample to be added to a library
+     * @param libraryId the identifier of the library to associate with the publication
+     * @return {@code true} if the publication was successfully added to the library
+     *
+     * @throws IllegalArgumentException if {@code publicationSample} is null
+     * @throws IllegalArgumentException if {@code libraryId} is null
+     * @throws IllegalArgumentException if the publication is already assigned to a library
+     *                                  or already exists in the repository
+     * @throws NullPointerException if the domain method enforces additional null constraints
+     */
+    boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId);
+
+    /**
      * Retrieves all {@link PublicationSample} instances belonging to the library identified
      * by the given {@link LibraryId} and filters them to return only those that are
      * eligible to be put for sale in a direct sale listing.
