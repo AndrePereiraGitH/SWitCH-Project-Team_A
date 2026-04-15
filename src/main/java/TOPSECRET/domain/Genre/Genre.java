@@ -57,7 +57,7 @@ public class Genre implements AggregateRoot<GenreID>{
         if (this == o) return true;
         if (!(o instanceof Genre)) return false;
         Genre other = (Genre) o;
-        return _id.equals(other._id); // -auctionId is based on genreType.toLowerCase()
+        return _id.equals(other._id); // -id is based on genreType.toLowerCase()
     }
 
     @Override

@@ -21,7 +21,7 @@ public class US026AuctionMapper {
     /**
      * Creates a mapper with access to the listing repository.
      *
-     * @param listingRepo the repository used to retrieve listings by their auctionId
+     * @param listingRepo the repository used to retrieve listings by their id
      */
     public US026AuctionMapper(IListingRepository listingRepo) {
         this.listingRepo = listingRepo;

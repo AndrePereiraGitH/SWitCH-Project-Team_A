@@ -23,7 +23,7 @@ class US024AucListingDTOTest {
     @Test
     void shouldCreateDTOSuccessfully_whenAllFieldsAreValid() {
         // Arrange
-        String listingId   = "auctionId-1";
+        String listingId   = "id-1";
         String price       = "99.99";
         String description = "A nice item";
         String listing     = "Listing Title";
@@ -32,7 +32,7 @@ class US024AucListingDTOTest {
         US024AucListingDTO dto = new US024AucListingDTO(listingId, price, description, listing);
 
         // Assert
-        assertEquals("auctionId-1",          dto.listingId());
+        assertEquals("id-1",          dto.listingId());
         assertEquals("99.99",         dto.price());
         assertEquals("A nice item",   dto.description());
         assertEquals("Listing Title", dto.listing());
@@ -60,7 +60,7 @@ class US024AucListingDTOTest {
     @Test
     void shouldThrowNullPointerException_whenPriceIsNull() {
         // Arrange
-        String listingId   = "auctionId-1";
+        String listingId   = "id-1";
         String price       = null;
         String description = "A nice item";
         String listing     = "Listing Title";
@@ -75,7 +75,7 @@ class US024AucListingDTOTest {
     @Test
     void shouldThrowNullPointerException_whenDescriptionIsNull() {
         // Arrange
-        String listingId   = "auctionId-1";
+        String listingId   = "id-1";
         String price       = "99.99";
         String description = null;
         String listing     = "Listing Title";
@@ -90,7 +90,7 @@ class US024AucListingDTOTest {
     @Test
     void shouldThrowNullPointerException_whenListingIsNull() {
         // Arrange
-        String listingId   = "auctionId-1";
+        String listingId   = "id-1";
         String price       = "99.99";
         String description = "A nice item";
         String listing     = null;
@@ -109,8 +109,8 @@ class US024AucListingDTOTest {
     @Test
     void shouldBeEqual_whenTwoDTOsHaveTheSameValues() {
         // Arrange
-        US024AucListingDTO dto1 = new US024AucListingDTO("auctionId-1", "99.99", "A nice item", "Listing Title");
-        US024AucListingDTO dto2 = new US024AucListingDTO("auctionId-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto1 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto2 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         // Act & Assert
         assertEquals(dto1, dto2);
@@ -119,8 +119,8 @@ class US024AucListingDTOTest {
     @Test
     void shouldNotBeEqual_whenDTOsHaveDifferentValues() {
         // Arrange
-        US024AucListingDTO dto1 = new US024AucListingDTO("auctionId-1", "99.99", "A nice item",      "Listing Title");
-        US024AucListingDTO dto2 = new US024AucListingDTO("auctionId-2", "49.99", "A different item", "Other Title");
+        US024AucListingDTO dto1 = new US024AucListingDTO("id-1", "99.99", "A nice item",      "Listing Title");
+        US024AucListingDTO dto2 = new US024AucListingDTO("id-2", "49.99", "A different item", "Other Title");
 
         // Act & Assert
         assertNotEquals(dto1, dto2);
@@ -129,8 +129,8 @@ class US024AucListingDTOTest {
     @Test
     void shouldHaveSameHashCode_whenTwoDTOsAreEqual() {
         // Arrange
-        US024AucListingDTO dto1 = new US024AucListingDTO("auctionId-1", "99.99", "A nice item", "Listing Title");
-        US024AucListingDTO dto2 = new US024AucListingDTO("auctionId-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto1 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto2 = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         // Act & Assert
         assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -139,13 +139,13 @@ class US024AucListingDTOTest {
     @Test
     void shouldReturnMeaningfulToString() {
         // Arrange
-        US024AucListingDTO dto = new US024AucListingDTO("auctionId-1", "99.99", "A nice item", "Listing Title");
+        US024AucListingDTO dto = new US024AucListingDTO("id-1", "99.99", "A nice item", "Listing Title");
 
         // Act
         String result = dto.toString();
 
         // Assert
-        assertTrue(result.contains("auctionId-1"));
+        assertTrue(result.contains("id-1"));
         assertTrue(result.contains("99.99"));
         assertTrue(result.contains("A nice item"));
         assertTrue(result.contains("Listing Title"));

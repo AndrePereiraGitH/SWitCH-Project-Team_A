@@ -17,7 +17,7 @@ public record US004PublicationTypeDTO(
      *
      * @param id unique identifier of the publication type
      * @param mediaFormat media format description
-     * @throws IllegalArgumentException if auctionId is null or mediaFormat is null/blank
+     * @throws IllegalArgumentException if id is null or mediaFormat is null/blank
      */
     public US004PublicationTypeDTO {
         if (id == null) {

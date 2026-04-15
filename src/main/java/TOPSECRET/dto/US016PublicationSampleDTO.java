@@ -1,8 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
-
 import java.util.List;
 import java.util.Locale;
 
