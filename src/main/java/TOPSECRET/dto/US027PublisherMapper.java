@@ -43,7 +43,7 @@ public class US027PublisherMapper {
             throw new NullPointerException("Publisher cannot be null");
         }
 
-        PublisherID publisherId = publisher.id();
+        String publisherId = publisher.id().toString();
         String name = publisher.getName();
 
         US027PublisherDTO publisherDTO = new US027PublisherDTO(publisherId, name);

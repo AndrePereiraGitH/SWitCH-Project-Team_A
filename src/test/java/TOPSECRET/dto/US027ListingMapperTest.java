@@ -133,7 +133,7 @@ class US027ListingMapperTest {
 
         // Assert
         assertNotNull(dto);
-        assertEquals(listingDouble.id(), dto.listingId());
+        assertEquals(listingDouble.id().toString(), dto.listingId());
         assertEquals("listingTitle", dto.listingTitle());
         assertEquals(listingDouble.getPrice().toString(), dto.price());
         assertEquals(List.of("bdTitle1", "bdTitle2"), dto.pubTitles());

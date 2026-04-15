@@ -29,13 +29,14 @@ class US027PublisherMapperTest {
     // ================= Set Up ======================
     // ===============================================
 
-    private PublisherID publisherIdDouble;
+    private String publisherId;
     private String name;
     private Publisher publisherDouble;
 
     @BeforeEach
     void setUp() {
-        publisherIdDouble = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        publisherId = publisherIdDouble.toString();
         name = "Porto Editora";
 
         publisherDouble = mock(Publisher.class);
@@ -108,7 +109,7 @@ class US027PublisherMapperTest {
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> dtos.add(
-                new US027PublisherDTO(publisherIdDouble, "Casa das Letras")));
+                new US027PublisherDTO(publisherId, "Casa das Letras")));
     }
 
     @Test

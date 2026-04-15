@@ -21,7 +21,7 @@ class US027ListingDTOTest {
     @Test
     void shouldCreateDTOWhenArgumentsAreValid() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = "listingId";
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "Author Two");
 
@@ -52,7 +52,7 @@ class US027ListingDTOTest {
     @Test
     void shouldThrowWhenListingTitleIsNullOrBlank() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = "listingId";
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "Author Two");
 
@@ -67,7 +67,7 @@ class US027ListingDTOTest {
     @Test
     void shouldThrowWhenPriceIsNullOrBlank() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = "listingId";
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "Author Two");
 
@@ -82,7 +82,7 @@ class US027ListingDTOTest {
     @Test
     void shouldThrowWhenItemTitlesIsNullOrEmptyList() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = "listingId";
         List<String> authors = List.of("Author One", "Author Two");
 
         // Act + Assert
@@ -96,7 +96,7 @@ class US027ListingDTOTest {
     @Test
     void shouldThrowWhenAuthorsListIsNull() {
         // Arrange
-        ListingId id = mock(ListingId.class);;
+        String id = "listingId";
         List<String> itemsTitle = List.of("title1", "title2");
 
         // Act + Assert
@@ -107,7 +107,7 @@ class US027ListingDTOTest {
     @Test
     void shouldThrowWhenAuthorsListIsEmpty() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = "listingId";
         List<String> itemsTitle = List.of("title1", "title2");
 
         // Act + Assert
@@ -118,7 +118,7 @@ class US027ListingDTOTest {
     @Test
     void shouldThrowWhenAuthorsListContainsBlankNames() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = "listingId";
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "   ");
 

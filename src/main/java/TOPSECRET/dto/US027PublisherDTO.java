@@ -15,10 +15,10 @@ import TOPSECRET.domain.ValueObjects.PublisherID;
  * @throws IllegalArgumentException if {@code publisherId} is null,
  *                                  or if {@code name} is null or blank
  */
-public record US027PublisherDTO(PublisherID publisherId, String name) {
+public record US027PublisherDTO(String publisherId, String name) {
 
     public US027PublisherDTO {
-        if (publisherId == null) throw new IllegalArgumentException("publisherId cannot be null");
+        if (publisherId == null || publisherId.isBlank()) throw new IllegalArgumentException("publisherId cannot be null or blank");
         if (name == null || name.isBlank()) throw new IllegalArgumentException("name cannot be null or blank");
     }
 }

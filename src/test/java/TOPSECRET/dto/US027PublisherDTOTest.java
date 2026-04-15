@@ -20,13 +20,13 @@ class US027PublisherDTOTest {
     @Test
     void shouldCreateDTOWhenArgumentsAreValid() {
         // Arrange
-        PublisherID idDouble = mock(PublisherID.class);
+        String id = "id";
 
         // Act
-        US027PublisherDTO dto = new US027PublisherDTO(idDouble, "Penguin Books");
+        US027PublisherDTO dto = new US027PublisherDTO(id, "Penguin Books");
 
         // Assert
-        assertEquals(idDouble, dto.publisherId());
+        assertEquals(id, dto.publisherId());
         assertEquals("Penguin Books", dto.name());
     }
 
@@ -38,22 +38,29 @@ class US027PublisherDTOTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenPublisherIdIsBlank() {
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new US027PublisherDTO(" ", "Penguin Books"));
+    }
+
+    @Test
     void shouldThrowExceptionWhenNameIsNull() {
         // Arrange
-        PublisherID idDouble = mock(PublisherID.class);
+        String id = "id";
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new US027PublisherDTO(idDouble, null));
+                () -> new US027PublisherDTO(id, null));
     }
 
     @Test
     void shouldThrowExceptionWhenNameIsBlank() {
         // Arrange
-        PublisherID idDouble = mock(PublisherID.class);
+        String id = "id";
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new US027PublisherDTO(idDouble, "   "));
+                () -> new US027PublisherDTO(id, "   "));
     }
 }

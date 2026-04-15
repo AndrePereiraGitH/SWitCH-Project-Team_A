@@ -80,7 +80,7 @@ public class US027ListingMapper {
             throw new NullPointerException("Listing cannot be null");
         }
 
-        ListingId listingId = listing.id();
+        String listingId = listing.id().toString();
         String listingTitle = listing.getListingTitle();
         String price = listing.getPrice().toString();
         List<String> pubTitle = getTitle(listing);
