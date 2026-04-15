@@ -32,6 +32,20 @@ public interface IEditionRepository {
                                       PublisherID publisherID, String mediaFormat, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding);
 
     /**
+     * Saves the given {@link Edition} into the repository.
+     * <p>
+     * An edition is only added to the repository if it doesn't already exist.
+     * If it does exist, an exception is thrown.
+     * </p>
+     *
+     * @param edition the edition to be stored; must not be null
+     * @return the stored {@link Edition} instance
+     *
+     * @throws IllegalArgumentException if {@code edition} is null
+     */
+    Edition save(Edition edition);
+
+    /**
      * Finds an edition by its unique identifier.
      *
      * @param editionID the unique identifier of the edition to search for; must not be {@code null}
@@ -40,4 +54,21 @@ public interface IEditionRepository {
      * @throws NullPointerException if {@code editionID} is {@code null}
      */
     Optional<Edition> findEditionById(EditionID editionID);
+
+    /**
+     * Retrieves all {@link EditionID} values associated with the given {@link PublisherID}.
+     * <p>
+     * This method performs a repository-level query that returns the identifiers of all editions
+     * published by the specified publisher. If no editions exist for the given publisher, the method
+     * returns an empty list rather than null.
+     * </p>
+     *
+     * @param publisherId the identifier of the publisher whose edition IDs should be retrieved;
+     *                    must not be null
+     * @return an immutable list of {@link EditionID} values associated with the given publisher;
+     *         never null, but may be empty
+     *
+     * @throws IllegalArgumentException if {@code publisherId} is null
+     */
+    List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId);
 }

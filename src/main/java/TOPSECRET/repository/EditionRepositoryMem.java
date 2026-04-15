@@ -59,6 +59,17 @@ public class EditionRepositoryMem implements IEditionRepository {
     /**
      * {@inheritDoc}
      */
+    public Edition save(Edition edition) {
+        if (_editions.contains(edition)) {
+            throw new IllegalArgumentException("Edition already exists in the repository");
+        }
+        _editions.add(edition);
+        return edition;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Optional<Edition> findEditionById(EditionID editionID){
 
         if(editionID == null){
@@ -71,6 +82,26 @@ public class EditionRepositoryMem implements IEditionRepository {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId) {
+
+        if (publisherId == null) {
+            throw new IllegalArgumentException("publisherId must not be null");
+        }
+
+        List<EditionID> editionIDs = new ArrayList<>();
+
+        for (Edition edition : _editions) {
+            if (publisherId.equals(edition.getPublisherID())) {
+                editionIDs.add(edition.id());
+            }
+        }
+
+        return List.copyOf(editionIDs);
     }
 }
 
