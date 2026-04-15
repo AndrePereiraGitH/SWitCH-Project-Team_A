@@ -17,7 +17,7 @@ class US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController {
     + findListOfItemsOnDirectSale(publisherId): List<US027ListingDTO>
 }
 
-' --- MAPPERS E DTOS ---
+' --- MAPPERS and DTOs ---
 
 class US027PublisherMapper {
     + toDTOs(listOfAllPublishers):\nList<US027PublisherDTO>
