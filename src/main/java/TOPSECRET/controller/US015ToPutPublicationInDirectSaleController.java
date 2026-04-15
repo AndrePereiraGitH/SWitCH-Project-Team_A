@@ -1,123 +1,134 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
-import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.PublicationSampleDTO_US015;
+import TOPSECRET.dto.US015PublicationSampleDTO;
+import TOPSECRET.dto.US015PublicationSampleMapper;
+import TOPSECRET.repository.ListingRepositoryMem;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Controller for US015 – "To put for sale a publication in my library in a direct sale".
  * <p>
- * This controller coordinates the interaction between the UI layer and the domain layer.
- * It retrieves the list of publication samples available on the user's library for direct sale and delegates
- * the creation of a direct sale listing to the domain services.
+ * This controller coordinates the interaction between the UI layer and the domain layer
+ * for the direct sale listing workflow. It retrieves the publication samples available
+ * in the user's library that can be listed for sale and delegates the creation of
+ * direct sale listings to the {@link IListingRepository}.
  */
-
 public class US015ToPutPublicationInDirectSaleController {
 
-    private final Library _library;
-    private final ListingFactory _listingFactory;
-
-    // ========= Constructor ===========================================================================================
-    /**
-     * Creates a controller with the required domain dependencies.
-     *
-     * @param library        the user's library containing publication samples
-     * @param listingFactory the factory responsible for creating listings
-     */
-
-    public US015ToPutPublicationInDirectSaleController(Library library, ListingFactory listingFactory) {
-
-        if (library == null) throw new IllegalArgumentException("Library cannot be null");
-        if (listingFactory == null) throw new IllegalArgumentException("ListingFactory cannot be null");
-
-        this._library = library;
-        this._listingFactory = listingFactory;
-    }
-
-
-    // ================ Getter =========================================================================================
-
-    /**
-     * Returns the library associated with this controller.
-     * <p>
-     * The library contains the user's publication samples and is used to
-     * retrieve the publications eligible for direct sale.
-     * </p>
-     *
-     * @return the {@link Library} instance managed by this controller
-     */
-
-    public Library getLibrary() {
-        return _library;
-    }
-
-    /**
-     * Returns the listing factory used by this controller.
-     * <p>
-     * The factory is responsible for creating new listings, such as direct sale
-     * listings, based on the user's selected publication samples and listing details.
-     * </p>
-     *
-     * @return the {@link ListingFactory} instance used to create listings
-     */
-
-    public ListingFactory getListingFactory() {
-        return _listingFactory;
-    }
+    private final ILibraryRepository _libraryRepo;
+    private final IPublicationSampleRepository  _pubSampleRepo;
+    private final IListingRepository _listingRepo;
+    private final US015PublicationSampleMapper _pubSampleMapper;
 
     // =================================================================================================================
+    // ========= CONSTRUCTOR ===========================================================================================
+    // =================================================================================================================
 
+    /**
+     * Creates a controller for US015 with the required domain dependencies.
+     * <p>
+     * All repositories are injected to allow the controller
+     * to retrieve the user's library, its publication samples, and to create new direct sale listings.
+     * </p>
+     *
+     * @param libraryRepo   the repository used to retrieve the user's library; must not be {@code null}
+     * @param pubSampleRepo the repository used to retrieve publication samples; must not be {@code null}
+     * @param listingRepo the repository used for creating new listings; must not be {@code null}
+     * @param pubSampleMapper the mapper used for creating publication sample DTOs; must not be {@code null}
+     *
+     * @throws IllegalArgumentException if any of the provided dependencies are {@code null}
+     */
+    public US015ToPutPublicationInDirectSaleController(ILibraryRepository libraryRepo,
+                                                       IPublicationSampleRepository pubSampleRepo,
+                                                       IListingRepository listingRepo,
+                                                       US015PublicationSampleMapper pubSampleMapper) {
+
+        if (libraryRepo == null) throw new IllegalArgumentException("LibraryRepository cannot be null");
+        if(pubSampleRepo == null) throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+        if (listingRepo == null) throw new IllegalArgumentException("ListingRepository cannot be null");
+        if (pubSampleMapper == null) throw new IllegalArgumentException("US015PublicationSampleMapper cannot be null");
+
+        this._libraryRepo = libraryRepo;
+        this._pubSampleRepo = pubSampleRepo;
+        this._listingRepo = listingRepo;
+        this._pubSampleMapper = pubSampleMapper;
+    }
+
+
+    // =================================================================================================================
+    // ========= BUSINESS METHODS ======================================================================================
+    // =================================================================================================================
 
     /**
      * Retrieves all library publication samples that are eligible to be put for sale
      * in a direct sale listing and converts them into DTOs for UI presentation.
      *
-     * @return a list of {@link PublicationSampleDTO_US015} representing the available publications
+     * @return a list of {@link US015PublicationSampleDTO} representing the available publications
      */
 
-//    public List<PublicationSampleDTO_US015> findLibraryPublicationsAvailableForSale() {
-//        List<PublicationSample> available = _library.findLibraryPublicationsAvailableForSale();
-//        return available.stream()
-//                .map(PublicationSampleDTO_US015::toDTO)
-//                .toList();
-//    }
+    public List<US015PublicationSampleDTO> findLibraryPublicationsAvailableForSale(UserId userId) throws InstanceNotFoundException {
+
+        // finds user library
+        Library library = _libraryRepo.getLibraryByUserId(userId);
+
+        // finds publication samples in that library available for sale
+        List<PublicationSample> availablePubSamples = _pubSampleRepo.findPublicationSamplesAvailableForSaleByLibraryId(library.id());
+
+        // converts to DTO
+        List<US015PublicationSampleDTO> listOfPublicationSampleDTO = _pubSampleMapper.toDTOs(availablePubSamples);
+
+        return listOfPublicationSampleDTO;
+    }
 
     /**
-     * Creates a direct sale listing for the selected publication sample.
+     * Creates a new {@link Listing} for a direct sale.
+     * <p>
+     * This method validates all input parameters and delegates the creation of the
+     * listing to the {@link ListingRepositoryMem}. The sale type is fixed as
+     * {@link SaleType#DIRECT_SALE}, since this controller is specific to US015.
+     * </p>
      *
-     * @param listingTitle the title chosen by the user for the listing
-     * @param pubSamplesId the list of publication samples chosen by the user
-     * @param price  the price defined by the user
-     * @param shortDescription  the short description chosen by the user for the listing
-     * @param pictures  pictures chosen by the user for the listing
-     * @return the created {@link Listing}
-     * @throws IllegalArgumentException if the listingTitle, the pubSamples, price, shortDescription or pictures are invalid
+     * @param listingTitle     the title of the listing; must not be {@code null} or blank
+     * @param pubSampleIds     the identifiers of the publication samples to be listed; must not be {@code null}
+     * @param price            the price associated with the listing; must not be {@code null}
+     * @param shortDescription a short description of the listing; must not be {@code null} or blank
+     * @param sellerId         the identifier of the seller creating the listing; must not be {@code null}
+     * @param pictures         the pictures associated with the listing; must not be {@code null}
+     *
+     * @return the newly created {@link Listing}
+     *
+     * @throws IllegalArgumentException if any of the required parameters are {@code null} or invalid
+     * @throws InstanceAlreadyExistsException if a listing already exists for any of the selected publications
      */
-
-    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleId> pubSamplesId, SaleType saleType,
-                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
+    public Listing putPublicationForSale(String listingTitle, List<PublicationSampleId> pubSampleIds,
+                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceAlreadyExistsException {
 
         if (listingTitle == null || listingTitle.isBlank())
-            throw new IllegalArgumentException("Listing title cannot be empty.");
+            throw new IllegalArgumentException("Listing title cannot be null or blank.");
 
-        if (pubSamplesId == null)
-            throw new IllegalArgumentException("Publication samples ID cannot be null.");
-
-        if (saleType == null)
-            throw new IllegalArgumentException("Sale type samples cannot be null.");
+        if (pubSampleIds == null)
+            throw new IllegalArgumentException("Publication samples IDs cannot be null.");
 
         if (price == null)
             throw new IllegalArgumentException("Price cannot be null.");
 
         if (shortDescription == null || shortDescription.isBlank())
-            throw new IllegalArgumentException("Short description cannot be empty.");
+            throw new IllegalArgumentException("Short description cannot be null or blank.");
 
         if (sellerId == null)
             throw new IllegalArgumentException("Seller ID cannot be empty.");
@@ -125,8 +136,6 @@ public class US015ToPutPublicationInDirectSaleController {
         if (pictures == null)
             throw new IllegalArgumentException("Pictures cannot be null.");
 
-        return _listingFactory.create(listingTitle, pubSamplesId, SaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures);
+        return _listingRepo.createAndAdd(listingTitle, pubSampleIds, SaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures);
     }
-
-    // The Listing class already sets the seller as the publication's owner.
 }

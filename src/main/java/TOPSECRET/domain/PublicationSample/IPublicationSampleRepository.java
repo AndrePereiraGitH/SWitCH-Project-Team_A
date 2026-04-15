@@ -4,13 +4,10 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.domain.ValueObjects.LibraryId;
-import TOPSECRET.dto.PublicationSampleDTO_US018;
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.US018PublicationSampleDTO;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -137,6 +134,59 @@ public interface    IPublicationSampleRepository {
     List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
 
     /**
+     * Retrieves all {@link PublicationSample} instances belonging to the library identified
+     * by the given {@link LibraryId} and filters them to return only those that are
+     * eligible to be put for sale in a direct sale listing.
+     *
+     * @param libraryId the identifier of the library whose publication samples should be inspected
+     * @return a list containing only the publication samples that are available for sale
+     * @throws NullPointerException if {@code libraryId} is null
+     */
+    List<PublicationSample> findPublicationSamplesAvailableForSaleByLibraryId(LibraryId libraryId);
+
+    /**
+     * Retrieves all publication samples that belong to a collection.
+     *
+     * @param collectionID the identifier of the collection of publication whose publication samples are to be retrieved
+     * @return a list containing all publication samples associated with the given collection;
+     * returns an empty list if no publication samples are found
+     */
+    List<PublicationSample> getPublicationsByCollectionID (CollectionOfPublicationsID collectionID);
+
+    /**
+     * Assigns a collection to a list of publication samples.
+     *
+     * @param collectionId collection identifier
+     * @param publicationSampleIds publication identifiers
+     * @return true if operation succeeds
+     */
+    boolean assignPublicationsToCollection(
+            CollectionOfPublicationsID collectionId,
+            List<PublicationSampleId> publicationSampleIds);
+
+    /**
+     * Retrieves the list of publications owned by the user that are not yet
+     * assigned to the specified collection.
+     *
+     * <p>
+     * This method computes the difference between:
+     * <ul>
+     *     <li>All publications in the user's library</li>
+     *     <li>Publications already assigned to the collection</li>
+     * </ul>
+     * </p>
+     *
+     * @param userId identifier of the user
+     * @param collectionId identifier of the collection
+     * @return list of available publication samples
+     *
+     * @throws IllegalArgumentException if any argument is null
+     */
+    List<PublicationSample> getAvailablePublicationsForCollection(
+            UserId userId,
+            CollectionOfPublicationsID collectionId);
+
+    /**
      * Returns the subset of {@link PublicationSample} instances from the repository
      * that are not present in the provided list.
      * <p>
@@ -164,7 +214,7 @@ public interface    IPublicationSampleRepository {
 //    List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher);
 
     /**
-     * Converts a {@link PublicationSampleDTO_US018} transfer object into a domain
+     * Converts a {@link US018PublicationSampleDTO} transfer object into a domain
      * {@link PublicationSample}, resolved in the context of the given {@link Library}.
      *
      * @param userLibrary the library context used to resolve the publication sample;
@@ -176,14 +226,14 @@ public interface    IPublicationSampleRepository {
 
     /**
      * Finds all {@link PublicationSample} instances associated with any of the
-     * provided {@link Listing} objects and matching the specified
+     * provided {@link PublicationSampleId} objects and matching the specified
      * {@link BibliographicalData}.
      *
-     * @param listings    the list of listings to filter by; must not be null
-     * @param publication the bibliographical data identifying the target publication;
-     *                    must not be null
+     * @param pubSampleIds    the list of publication sample identifiers to filter by; must not be null
+     * @param publicationId   the bibliographical data identifying the target publication;
+     *                      must not be null
      * @return a {@link List} of matching {@link PublicationSample} instances;
      *         never {@code null}, but may be empty if no matches are found
      */
-//    List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication);
+    List<PublicationSample> findItemsByIdsAndPublication(List<PublicationSampleId> pubSampleIds, BibliographicalDataID publicationId);
 }
