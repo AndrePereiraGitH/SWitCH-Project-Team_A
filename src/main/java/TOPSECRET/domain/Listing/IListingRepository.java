@@ -1,6 +1,5 @@
 package TOPSECRET.domain.Listing;
 
-
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.ValueObjects.Picture;

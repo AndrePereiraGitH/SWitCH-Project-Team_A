@@ -1,7 +1,6 @@
 package TOPSECRET.repository;
 
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * In-memory implementation of {@link IPublicationSampleRepository}.
@@ -261,157 +258,126 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return allPublications;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSample> findPublicationSamplesAvailableForSaleByLibraryId(LibraryId libraryId) {
+
+        List<PublicationSample> allPublications = getPublicationsByLibraryID(libraryId);
+
+        List<PublicationSample> listOfAvailablePublications = new ArrayList<>();
+
+        for (PublicationSample pbSample : allPublications) {
+            if(pbSample.isAvailableForSale()) {
+                listOfAvailablePublications.add(pbSample);
+            }
+        }
+        return listOfAvailablePublications;
+    }
+
+    // ------------------ US018 starts -----------------
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSample> getPublicationsByCollectionID (CollectionOfPublicationsID collectionID) {
+
+        List<PublicationSample> allPublications = allPublicationsInSystem.stream()
+                .filter(p -> Objects.equals(p.getCollecOfPubID(), collectionID))
+                .toList();
+
+        return allPublications;
+    }
 
     /**
      * {@inheritDoc}
      */
-//    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary) {
-//        List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
-//
-//        for (PublicationSample publication : allPublicationsInSystem) {
-//            if (!listOfPublicationsInLibrary.contains(publication)) {
-//                listOfDifferentPublications.add(publication);
-//            }
-//        }
-//        return List.copyOf(listOfDifferentPublications);
-//    }
+    public List<PublicationSample> findItemsByIdsAndPublication(List<PublicationSampleId> pubSampleIds, BibliographicalDataID publicationId) {
+
+        List<PublicationSample> pubSamplesList = new ArrayList<>();
+
+        if (pubSampleIds == null) {
+            throw new IllegalArgumentException("PublicationSampleIds cannot be null");
+        }
+        if (publicationId == null) {
+            throw new IllegalArgumentException("PublicationId cannot be null");
+        }
+
+        for (PublicationSampleId psId : pubSampleIds) {
+
+            Optional<PublicationSample> psOpt = findPublicationSampleById(psId);
+
+            if (psOpt.isEmpty())
+                continue;           // if it doesn't find a corresponding pubSample, jumps the rest of the cycle
+
+            PublicationSample ps = psOpt.get();
+
+            if (ps.getBibliographicalDataID().equals(publicationId)) {
+                pubSamplesList.add(ps);
+            }
+        }
+        return List.copyOf(pubSamplesList);
+    }
 
 
     /**
      * {@inheritDoc}
      */
-//    public List<PublicationSample> findItemsByListingAndPublication(List<Listing> listings, BibliographicalData publication) {
-//        List<PublicationSample> pubSamplesList = new ArrayList<>();
-//
-//        if (listings == null) {
-//            throw new IllegalArgumentException("List of listings cannot be null");
-//        }
-//        if (publication == null) {
-//            throw new IllegalArgumentException("Publication cannot be null");
-//        }
-//
-//        for (Listing listing : listings) {
-//            for (PublicationSample pubSample : listing.getItems()) {
-//                if (pubSample.getBibliographicalDataID().equals(publication)) {
-//                    pubSamplesList.add(pubSample);
-//                }
-//            }
-//        }
-//        return List.copyOf(pubSamplesList);
-//    }
+    @Override
+    public boolean assignPublicationsToCollection(
+            CollectionOfPublicationsID collectionId,
+            List<PublicationSampleId> publicationSampleIds) {
 
+        if (collectionId == null) {
+            throw new IllegalArgumentException("Collection ID cannot be null.");
+        }
 
+        if (publicationSampleIds == null || publicationSampleIds.isEmpty()) {
+            throw new IllegalArgumentException("Publication IDs cannot be null or empty.");
+        }
 
+        for (PublicationSampleId id : publicationSampleIds) {
 
-    // --------------------------------------- US018 starts ----------------------------------------
+            Optional<PublicationSample> publicationOptional =
+                    findPublicationSampleById(id);
 
-    /**
-     * {@inheritDoc}
-     */
-//    public PublicationSample PublicationSampleDtoToDomain(
-//            Library userLibrary,
-//            PublicationSampleDTO_US018 dto) {
-//
-//        if (userLibrary == null)
-//            throw new IllegalArgumentException("Library cannot be null");
-//
-//        if (dto == null)
-//            throw new IllegalArgumentException("DTO cannot be null");
-//
-//        for (PublicationSample publication : userLibrary.getAllPublications()) {
-//
-//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
-//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
-//                    && publication.getOwnerId().getUserName().equals(dto.getOwnerUsername())) {
-//
-//                return publication;
-//            }
-//        }
-//
-//        throw new IllegalArgumentException("Publication not found in user's library");
-//    }
+            if (publicationOptional.isEmpty()) {
+                throw new IllegalArgumentException("Publication not found.");
+            }
+
+            PublicationSample publication = publicationOptional.get();
+            publication.addPublicationToCollection(collectionId);
+        }
+        return true;
+    }
 
     /**
      * {@inheritDoc}
      */
-//    public List<PublicationSample> findItemsByListingAndPublisher(List<Listing> listings, Publisher publisher) {
-//        List<PublicationSample> pubSamplesList = new ArrayList<>();
-//
-//        if (listings == null) {
-//            throw new IllegalArgumentException("List of listings cannot be null");
-//        }
-//        if (publisher == null) {
-//            throw new IllegalArgumentException("Publisher cannot be null");
-//        }
-//        for (Listing listing : listings) {
-//            if (listing == null)
-//                throw new IllegalArgumentException("Listings cannot contain null elements");
-//        }
-//
-//        for (Listing listing : listings) {
-//            for (PublicationSample pubSample : listing.getItems()) {
-//                if (pubSample == null) {
-//                    throw new IllegalArgumentException("Listings must not contain null PublicationSample items");
-//                }
-//                if (pubSample.getEdition().getPublisher().equals(publisher)) {
-//                    pubSamplesList.add(pubSample);
-//                }
-//            }
-//        }
-//        return List.copyOf(pubSamplesList);
-//    }
+    @Override
+    public List<PublicationSample> getAvailablePublicationsForCollection(
+            UserId userId,
+            CollectionOfPublicationsID collectionId) {
 
-    /**
-     * {@inheritDoc}
-     */
-//    public PublicationSample PublicationSampleDtoToDomain(Library userLibrary, PublicationSampleDTO_US018 dto) {
-//        if (userLibrary == null)
-//            throw new IllegalArgumentException("Library cannot be null");
-//        if (dto == null)
-//            throw new IllegalArgumentException("DTO cannot be null");
-//
-//        for (PublicationSample publication : userLibrary.getAllPublications()) {
-//            if (publication.getBibliographicalData().getTitle().equals(dto.getTitle())
-//                    && publication.getEdition().getEditionNumber().equals(dto.getEditionNumber())
-//                    && publication.getOwnerId().getUserName().equals(dto.getOwnerUsername())) {
-//                return publication;
-//            }
-//        }
-//        throw new IllegalArgumentException("Publication not found in user's library");
-//    }
+        if (userId == null || collectionId == null) {
+            throw new IllegalArgumentException("Arguments cannot be null");
+        }
 
-    // -------------------------------------------------------------------------
-    // Private Helper Methods
-    // -------------------------------------------------------------------------
+        List<PublicationSample> allUserPublications =
+                getAllPublicationsInUserLibrary(userId);
 
-    /**
-     * Determines whether a {@link PublicationSample} matches the criteria defined in a
-     * {@link PublicationSampleDTO_US016}.
-     * <p>
-     * Equality is checked across: title, author names (order-sensitive), original language,
-     * genre types (order-sensitive), owner username, and condition description.
-     * </p>
-     *
-     * @param ps  the publication sample to evaluate; must not be {@code null}
-     * @param dto the DTO containing the filter criteria; must not be {@code null}
-     * @return {@code true} if all fields match; {@code false} otherwise
-     */
-//    private static boolean matches(PublicationSample ps, PublicationSampleDTO_US016 dto) {
-//        BibliographicalData bd = ps.getBibliographicalData();
-//
-//        List<String> authorNames = bd.getAuthors().stream()
-//                .map(a -> a.getName())
-//                .toList();
-//
-//        List<String> genreTypes = bd.getGenres().stream()
-//                .map(Genre::getGenreType)
-//                .toList();
-//
-//        return Objects.equals(bd.getTitle(), dto.getTitle())
-//                && Objects.equals(authorNames, dto.getAuthorName())
-//                && Objects.equals(bd.getOriginalLanguage(), dto.getLanguage())
-//                && Objects.equals(genreTypes, dto.getGenreType())
-//                && Objects.equals(ps.getOwnerId().getUserName(), dto.getOwnerName())
-//                && Objects.equals(ps.getCondition().getDescription(), dto.getCondition());
-//    }
+        List<PublicationSample> publicationsInCollection =
+                getPublicationsByCollectionID(collectionId);
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSample p : allUserPublications) {
+            if (!publicationsInCollection.contains(p)) {
+                result.add(p);
+            }
+        }
+
+        return result;
+    }
+
+    // --------------------- US018 ends --------------------------
 }

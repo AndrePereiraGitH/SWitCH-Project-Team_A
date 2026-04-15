@@ -2,76 +2,84 @@
 
 hide footbox
 autonumber
-title US018 - Add Publication to Collection (Main)
+title US018 - Add Publication to Collection Of Publication (Main)
 
 actor User
 participant ":UI018" as UI
-participant ":AddCollectionOfPublicationsController" as Controller
-participant ":CollectionOfPublicationRepository" as CollectionRepo
-participant ":PublicationSampleRepository" as PublicationSampleRepo
+participant ":US018ToAddPublicationToAListOfMineController" as Controller
+participant ":ICollectionOfPublicationsRepository" as CollectionRepo
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":PublicationSample" as PublicationSample
 
 ' --- Start ---
-User -> UI : I want to add a publication\nto one of my collections
+User -> UI : I want to add one of my publications to one of my collections
 activate UI
 
 ' =========================
-' Get User Collections
+' Get Collection Of Publications (reference)
 ' =========================
-UI -> Controller : getUserCollections(user)
+UI -> Controller : getUserCollections(userId)
 activate Controller
 
-ref over UI, Controller
-[[2.GetUserCollections.puml Get User Collections]]
+ref over Controller
+[[2.GetCollection.puml Get Collection Of Publications]]
 end ref
 
 Controller --> UI : listOfCollectionsDTO
 deactivate Controller
 
-UI --> User : Select collection
+UI --> User : Which collection? Select one!
 deactivate UI
 
 User -> UI : Selected collection
 activate UI
 
 ' =========================
-' Get Available Publications
+' Get Publications Available (reference)
 ' =========================
-UI -> Controller : getAvailablePublications\n(collectionDTO)
+UI -> Controller : getPublicationsForCollection(collectionId)
 activate Controller
 
-ref over UI, Controller
-[[3.GetAvailablePublications.puml Get Available Publications]]
+ref over Controller
+[[3.GetPublicationsAvailable.puml Get Publications Available]]
 end ref
 
 Controller --> UI : listOfAvailablePublicationDTO
 deactivate Controller
 
-UI --> User : Select publication(s)
+UI --> User : Which publication? Select one or more publications!
 deactivate UI
 
+' =========================
+' Add Publication To Collection
+' =========================
 User -> UI : Selected publications
 activate UI
 
-' =========================
-' Add Publication (FULL)
-' =========================
-UI -> Controller : addPublicationToCollection\n(collectionDTO, selectedPublicationDTO)
+UI -> Controller : addPublicationToCollection(collectionId, publicationSampleIds)
 activate Controller
 
-Controller -> CollectionRepo : findById(collectionDTO.id)
+' =====================================================
+' CALL REPOSITORY WITH IDS
+' =====================================================
+Controller -> CollectionRepo : addPublicationToCollection(collectionId, publicationSampleIds)
 activate CollectionRepo
-CollectionRepo --> Controller : userCollection
-deactivate CollectionRepo
 
-loop for each publicationSampleDTO
-    Controller -> PublicationSampleRepo : findById(publicationSampleDTO.id)
+' =====================================================
+' ASSIGN COLLECTION TO PUBLICATIONS
+' =====================================================
+loop for each publicationSampleId
+    CollectionRepo -> PublicationSampleRepo : findPublicationSampleById(publicationSampleId)
     activate PublicationSampleRepo
-    PublicationSampleRepo --> Controller : publicationSample
+    PublicationSampleRepo --> CollectionRepo : publicationSample
     deactivate PublicationSampleRepo
+
+    CollectionRepo -> PublicationSample : assignToCollection(collectionId)
+    activate PublicationSample
+    PublicationSample --> CollectionRepo : true
+    deactivate PublicationSample
 end
 
-Controller -> CollectionRepo : addPublicationToCollection\n(userCollection, publicationSample)
-activate CollectionRepo
 CollectionRepo --> Controller : true
 deactivate CollectionRepo
 

@@ -4,8 +4,9 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.domain.ValueObjects.Code;
+import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
