@@ -95,6 +95,8 @@ public interface    IPublicationSampleRepository {
      * @throws IllegalArgumentException if {@code bibliographicalData} is {@code null}
      */
     List<PublicationSample> findByBibliographicalData(List<BibliographicalData> bibliographicalData);
+
+    /**
      * Retrieves all publication sample IDs associated with a given bibliographical data ID.
      *
      * @param bdId the bibliographical data ID to search for; must not be {@code null}
