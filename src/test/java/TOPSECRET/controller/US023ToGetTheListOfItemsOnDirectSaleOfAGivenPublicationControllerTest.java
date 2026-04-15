@@ -236,23 +236,6 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void findListOfItemsOnDirectSale_ShouldThrowWhenListingNotFound() throws Exception {
-        // Arrange
-        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
-
-        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
-
-        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.empty());
-
-        US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
-                new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
-
-        // Act + Assert
-        assertThrows(InstanceNotFoundException.class,
-                () -> controller.findListOfItemsOnDirectSale(bdId1Double));
-    }
 
     @Test
     void findListOfItemsOnDirectSale_ShouldReturnDTOs() throws Exception {
@@ -261,10 +244,8 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
 
-        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.of(listing1Double));
-
         US023ListingDTO dto = mock(US023ListingDTO.class);
-        when(listingMapperDouble.toDTOs(List.of(listing1Double))).thenReturn(List.of(dto));
+        when(listingMapperDouble.toDTOs(List.of(listingId1Double))).thenReturn(List.of(dto));
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
@@ -285,9 +266,7 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
 
-        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.of(listing1Double));
-
-        when(listingMapperDouble.toDTOs(List.of(listing1Double))).thenReturn(List.of());
+        when(listingMapperDouble.toDTOs(List.of(listingId1Double))).thenReturn(List.of());
 
         US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(

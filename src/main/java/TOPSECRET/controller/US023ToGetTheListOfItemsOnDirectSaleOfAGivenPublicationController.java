@@ -108,8 +108,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
     /**
      * Retrieves all direct‑sale listings that contain publication samples linked to the
-     * given {@link BibliographicalDataID}, resolves each {@link Listing}, and converts
-     * them into {@link US023ListingDTO}.
+     * given {@link BibliographicalDataID}, and converts them into {@link US023ListingDTO}.
      *
      * @param bdId the bibliographical data identifier
      * @return a list of listing DTOs
@@ -125,19 +124,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
         List<ListingId> listOfDSListingIds = _listingRepo.findAllListingIdByPublicationSampleId(listOfPubSample);
 
-        List<Listing> listOfDSListings = new ArrayList<>();
-        for (ListingId listingId : listOfDSListingIds) {
-            Optional<Listing> listingOpt = _listingRepo.findListingById(listingId);
-
-            if (listingOpt.isPresent()) {
-                listOfDSListings.add(listingOpt.get());
-            } else {
-                throw new InstanceNotFoundException("Listing with id " + listingId + " not found");
-            }
-        }
-
-        // Converts to DTOs
-        List<US023ListingDTO> listOfListingDTO = _listingMapper.toDTOs(listOfDSListings);
+        List<US023ListingDTO> listOfListingDTO = _listingMapper.toDTOs(listOfDSListingIds);
 
         return listOfListingDTO;
     }

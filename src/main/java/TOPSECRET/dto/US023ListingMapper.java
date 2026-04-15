@@ -5,6 +5,7 @@ import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Edition.IEditionRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -29,6 +30,7 @@ import java.util.Optional;
  */
 public class US023ListingMapper {
 
+    private final IListingRepository _listingRepo;
     private final IPublicationSampleRepository _pubSampleRepo;
     private final IBibliographicalDataRepository _bdRepo;
     private final IAuthorRepository _authorRepo;
@@ -41,23 +43,28 @@ public class US023ListingMapper {
     /**
      * Constructs a new mapper with the required repositories.
      *
+     * @param listingRepo       the repository used to resolve listing; must not be {@code null}
      * @param pubSampleRepo     the repository used to resolve publication sample; must not be {@code null}
      * @param bdRepo            the repository used to resolve bibliographical data; must not be {@code null}
      * @param authorRepo        the repository used to resolve authors; must not be {@code null}
      * @throws IllegalArgumentException if any of the provided repositories is {@code null}
      */
-    public US023ListingMapper(IPublicationSampleRepository pubSampleRepo ,IBibliographicalDataRepository bdRepo,
-                              IAuthorRepository authorRepo) {
+    public US023ListingMapper(IListingRepository listingRepo,IPublicationSampleRepository pubSampleRepo ,
+                              IBibliographicalDataRepository bdRepo, IAuthorRepository authorRepo) {
+        if(listingRepo==null) {
+            throw new IllegalArgumentException("ListingRepository is null");
+        }
         if(pubSampleRepo==null) {
             throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         }
         if (bdRepo == null) {
-            throw new IllegalArgumentException("BibliographicalDataRepo can not be null");
+            throw new IllegalArgumentException("BibliographicalDataRepository can not be null");
         }
         if (authorRepo == null) {
-            throw new IllegalArgumentException("AuthorRepo can not be null");
+            throw new IllegalArgumentException("AuthorRepository can not be null");
         }
 
+        _listingRepo = listingRepo;
         _pubSampleRepo = pubSampleRepo;
         _bdRepo = bdRepo;
         _authorRepo = authorRepo;
@@ -71,20 +78,20 @@ public class US023ListingMapper {
     /**
      * Converts a list of {@link Listing} objects into a list of DTOs.
      *
-     * @param listings the list of direct sale listings to convert; must not be {@code null}
+     * @param listingIds the list of identifiers of direct sale listings to convert; must not be {@code null}
      * @return a list of {@link US023ListingDTO}; never {@code null}, may be empty
      * @throws InstanceNotFoundException if any referenced bibliographical data, edition, or author
      *                                   cannot be found in their respective repositories
      */
-    public List<US023ListingDTO> toDTOs(List<Listing> listings) throws InstanceNotFoundException {
+    public List<US023ListingDTO> toDTOs(List<ListingId> listingIds) throws InstanceNotFoundException {
         List<US023ListingDTO> listOfListingDTO = new ArrayList<>();
 
-        if  (listings == null) {
-            throw new IllegalArgumentException("List of listings can not be null");
+        if  (listingIds == null) {
+            throw new IllegalArgumentException("List of listings Ids can not be null");
         }
 
-        for (Listing listing : listings) {
-            US023ListingDTO listingDTO = toDTO(listing);
+        for (ListingId listingId : listingIds) {
+            US023ListingDTO listingDTO = toDTO(listingId);
             listOfListingDTO.add(listingDTO);
         }
 
@@ -94,22 +101,26 @@ public class US023ListingMapper {
     /**
      * Converts a single {@link Listing} into a {@link US023ListingDTO}.
      *
-     * @param listing the publication sample to convert; must not be {@code null}
+     * @param listingId the identifier of direct sale listing to convert; must not be {@code null}
      * @return a fully populated {@link US023ListingDTO}
      * @throws InstanceNotFoundException if any referenced bibliographical data, edition, or author
      *                                   cannot be found in their respective repositories
      */
-    public US023ListingDTO toDTO(Listing listing) throws InstanceNotFoundException {
+    public US023ListingDTO toDTO(ListingId listingId) throws InstanceNotFoundException {
 
-        if  (listing == null) {
-            throw new IllegalArgumentException("Listing cannot be null");
+        if  (listingId == null) {
+            throw new IllegalArgumentException("ListingId cannot be null");
         }
 
-        ListingId listingId = listing.id();
-        String listingTitle = listing.getListingTitle();
-        String price = listing.getPrice().toString();
-        List<String> pubTitle = getTitle(listing);
-        List<String> authorsName = getAuthors(listing);
+        Optional<Listing> listingOpt = _listingRepo.findListingById(listingId);
+        if (listingOpt.isEmpty()) {
+            throw new InstanceNotFoundException("Listing with id " + listingId + " not found");
+        }
+
+        String listingTitle = listingOpt.get().getListingTitle();
+        String price = listingOpt.get().getPrice().toString();
+        List<String> pubTitle = getTitle(listingOpt.get());
+        List<String> authorsName = getAuthors(listingOpt.get());
 
         US023ListingDTO listingDTO = new US023ListingDTO(listingId, listingTitle, price, pubTitle, authorsName);
 

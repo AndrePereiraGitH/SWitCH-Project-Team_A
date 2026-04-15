@@ -4,6 +4,7 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -36,11 +37,13 @@ class US023ListingMapperTest {
     // ================ Set Up ================================
     // ========================================================
 
+    private IListingRepository listingRepoDouble;
     private IPublicationSampleRepository pubSampleRepoDouble;
     private IBibliographicalDataRepository bdRepoDouble;
     private IAuthorRepository authorRepoDouble;
     private US023ListingMapper mapper;
     private Listing listingDouble;
+    private ListingId listingIdDouble;
 
     @BeforeEach
     void setup() {
@@ -103,16 +106,18 @@ class US023ListingMapperTest {
 
         // Listing
         listingDouble = mock(Listing.class);
-        ListingId listingIdDouble = mock(ListingId.class);
+        listingIdDouble = mock(ListingId.class);
 
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getListingTitle()).thenReturn("listingTitle");
         when(listingDouble.getItemsId()).thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
         when(listingDouble.getPrice()).thenReturn(mock(Price.class));
 
+        listingRepoDouble = mock(IListingRepository.class);
+        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.of(listingDouble));
 
         // Mapper
-        mapper = new US023ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+        mapper = new US023ListingMapper(listingRepoDouble, pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
     }
 
 
@@ -123,7 +128,7 @@ class US023ListingMapperTest {
     @Test
     void toDTO_ShouldMapAllFieldsCorrectly() throws InstanceNotFoundException {
         // Act
-        US023ListingDTO dto = mapper.toDTO(listingDouble);
+        US023ListingDTO dto = mapper.toDTO(listingIdDouble);
 
         // Assert
         assertNotNull(dto);
@@ -149,7 +154,7 @@ class US023ListingMapperTest {
                 .thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingDouble));
+        assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingIdDouble));
     }
 
     @Test
@@ -164,7 +169,7 @@ class US023ListingMapperTest {
                 .thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingDouble));
+        assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingIdDouble));
     }
 
     @Test
@@ -180,8 +185,19 @@ class US023ListingMapperTest {
                 .thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingDouble));
+        assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingIdDouble));
     }
+
+    @Test
+    void toDTO_ShouldThrowInstanceNotFoundExceptionWhenListingDoesNotExist() throws Exception {
+        // Arrange
+        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> mapper.toDTO(listingIdDouble));
+    }
+
 
 
     // =================================================================================================================
@@ -197,8 +213,8 @@ class US023ListingMapperTest {
     @Test
     void toDTOs_ShouldThrowExceptionWhenListContainsNullElement() {
         // Arrange
-        List<Listing> listWithNull = new ArrayList<>();
-        listWithNull.add(listingDouble);
+        List<ListingId> listWithNull = new ArrayList<>();
+        listWithNull.add(listingIdDouble);
         listWithNull.add(null);
 
         // Act + Assert
@@ -218,7 +234,7 @@ class US023ListingMapperTest {
     @Test
     void toDTOs_ShouldReturnListWithOneDTOWhenListHasOneElement() throws InstanceNotFoundException {
         // Act
-        List<US023ListingDTO> dtoList = mapper.toDTOs(List.of(listingDouble));
+        List<US023ListingDTO> dtoList = mapper.toDTOs(List.of(listingIdDouble));
 
         // Assert
         assertNotNull(dtoList);
@@ -228,7 +244,7 @@ class US023ListingMapperTest {
     @Test
     void toDTOs_ShouldReturnListWithSameSizeAsInputList() throws InstanceNotFoundException {
         // Act
-        List<US023ListingDTO> dtoList = mapper.toDTOs(List.of(listingDouble, listingDouble));
+        List<US023ListingDTO> dtoList = mapper.toDTOs(List.of(listingIdDouble, listingIdDouble));
 
         // Assert
         assertEquals(2, dtoList.size());
@@ -237,10 +253,24 @@ class US023ListingMapperTest {
     @Test
     void toDTOs_ShouldBeImmutableList() throws InstanceNotFoundException {
         // Act
-        List<US023ListingDTO> dtoList = mapper.toDTOs(List.of(listingDouble));
+        List<US023ListingDTO> dtoList = mapper.toDTOs(List.of(listingIdDouble));
 
         // Assert
         assertThrows(UnsupportedOperationException.class,
                 () -> dtoList.add(mock(US023ListingDTO.class)));
     }
+
+    @Test
+    void toDTOs_ShouldThrowInstanceNotFoundExceptionWhenToDTORaisesException() throws Exception {
+        // Arrange
+        US023ListingMapper mapper =
+                new US023ListingMapper(listingRepoDouble, pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
+        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> mapper.toDTOs(List.of(listingIdDouble)));
+    }
+
 }
