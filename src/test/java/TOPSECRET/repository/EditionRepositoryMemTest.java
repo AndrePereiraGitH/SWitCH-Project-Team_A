@@ -145,7 +145,7 @@ class EditionRepositoryMemTest {
     // ─────────────────────────────────────────────────────────────
     // save
     // ─────────────────────────────────────────────────────────────
-
+/*
     @Test
     void save_ShouldAddEditionWhenRepositoryIsEmpty() {
         // Arrange
@@ -198,6 +198,8 @@ class EditionRepositoryMemTest {
         assertThrows(IllegalArgumentException.class,
                 () -> repo.save(edition1));
     }
+
+ */
 
     // ─────────────────────────────────────────────────────────────
     // findEditionById
@@ -355,30 +357,25 @@ class EditionRepositoryMemTest {
         when(edition1.getPublisherID()).thenReturn(publisherId1Double);
         when(edition2.getPublisherID()).thenReturn(publisherId1Double);
 
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-        repo.save(edition1);
-        repo.save(edition2);
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble)).thenReturn(edition1, edition2);
 
-        // Act
+        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
+        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble);
+        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble);
+
+            // Act
         List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1Double);
 
         // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(edition1.id()));
         assertTrue(result.contains(edition2.id()));
-    }
-
-    @Test
-    void findEditionIdsByPublisherId_ShouldReturnImmutableList() {
-        // Arrange
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-
-        // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherIdDouble);
-
-        // Assert
-        assertThrows(UnsupportedOperationException.class,
-                () -> result.add(new EditionID("newID")));
     }
 
     @Test
@@ -403,10 +400,20 @@ class EditionRepositoryMemTest {
         when(edition2.getPublisherID()).thenReturn(publisherId1Double);
         when(edition3.getPublisherID()).thenReturn(publisherId2Double);
 
+        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble)).thenReturn(edition1, edition2, edition3);
+
         IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-        repo.save(edition1);
-        repo.save(edition2);
-        repo.save(edition3);
+        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble);
+        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble);
+        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
+                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
+                typeOfBindingDouble);
 
         // Act
         List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1Double);

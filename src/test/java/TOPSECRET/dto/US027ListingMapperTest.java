@@ -239,14 +239,4 @@ class US027ListingMapperTest {
         // Assert
         assertEquals(2, dtoList.size());
     }
-
-    @Test
-    void toDTOs_ShouldBeImmutableList() throws InstanceNotFoundException {
-        // Act
-        List<US027ListingDTO> dtoList = mapper.toDTOs(List.of(listingDouble));
-
-        // Assert
-        assertThrows(UnsupportedOperationException.class,
-                () -> dtoList.add(mock(US027ListingDTO.class)));
-    }
 }

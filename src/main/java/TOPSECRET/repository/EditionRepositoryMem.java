@@ -59,17 +59,6 @@ public class EditionRepositoryMem implements IEditionRepository {
     /**
      * {@inheritDoc}
      */
-    public Edition save(Edition edition) {
-        if (_editions.contains(edition)) {
-            throw new IllegalArgumentException("Edition already exists in the repository");
-        }
-        _editions.add(edition);
-        return edition;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Optional<Edition> findEditionById(EditionID editionID){
 
         if(editionID == null){
@@ -101,7 +90,7 @@ public class EditionRepositoryMem implements IEditionRepository {
             }
         }
 
-        return List.copyOf(editionIDs);
+        return editionIDs;
     }
 }
 

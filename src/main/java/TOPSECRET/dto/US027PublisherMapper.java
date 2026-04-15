@@ -80,6 +80,6 @@ public class US027PublisherMapper {
             listOfPublishersDTO.add(toDTO(publisher));
         }
 
-        return List.copyOf(listOfPublishersDTO);
+        return listOfPublishersDTO;
     }
 }

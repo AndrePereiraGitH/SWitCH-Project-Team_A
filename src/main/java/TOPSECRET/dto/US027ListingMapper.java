@@ -118,7 +118,7 @@ public class US027ListingMapper {
             listOfListingDTO.add(toDTO(listing));
         }
 
-        return List.copyOf(listOfListingDTO);
+        return listOfListingDTO;
     }
 
     // =================================================================================================================

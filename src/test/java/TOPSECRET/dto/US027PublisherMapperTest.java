@@ -100,19 +100,6 @@ class US027PublisherMapperTest {
     }
 
     @Test
-    void toDTOs_ShouldReturnImmutableList() {
-        // Arrange
-        List<Publisher> publishers = List.of(publisherDouble);
-
-        // Act
-        List<US027PublisherDTO> dtos = US027PublisherMapper.toDTOs(publishers);
-
-        // Assert
-        assertThrows(UnsupportedOperationException.class, () -> dtos.add(
-                new US027PublisherDTO(publisherId, "Casa das Letras")));
-    }
-
-    @Test
     void toDTOs_ShouldThrowExceptionWhenListIsNull() {
         // Assert
         assertThrows(NullPointerException.class, () -> US027PublisherMapper.toDTOs(null));

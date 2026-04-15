@@ -32,20 +32,6 @@ public interface IEditionRepository {
                                       PublisherID publisherID, String mediaFormat, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding);
 
     /**
-     * Saves the given {@link Edition} into the repository.
-     * <p>
-     * An edition is only added to the repository if it doesn't already exist.
-     * If it does exist, an exception is thrown.
-     * </p>
-     *
-     * @param edition the edition to be stored; must not be null
-     * @return the stored {@link Edition} instance
-     *
-     * @throws IllegalArgumentException if {@code edition} is null
-     */
-    Edition save(Edition edition);
-
-    /**
      * Finds an edition by its unique identifier.
      *
      * @param editionID the unique identifier of the edition to search for; must not be {@code null}
