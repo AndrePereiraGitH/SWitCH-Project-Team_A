@@ -14,6 +14,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should create DTO successfully when all fields are valid")
     void shouldCreateDTOWhenAllFieldsAreValid() {
+
+        // act
         US016PublicationSampleDTO dto = new US016PublicationSampleDTO(
                 "validPublicationSampleId",
                 "Clean Code",
@@ -24,6 +26,7 @@ class US016PublicationSampleDTOTest {
                 "GOOD"
         );
 
+        // assert
         assertNotNull(dto);
         assertEquals("validPublicationSampleId", dto.publicationSampleID());
         assertEquals("Clean Code", dto.title());
@@ -37,6 +40,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when publicationSampleID is null")
     void shouldThrowExceptionWhenPublicationSampleIdIsNull() {
+
+        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         null,
@@ -55,6 +60,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when title is null")
     void shouldThrowExceptionWhenTitleIsNull() {
+
+        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         "validPublicationSampleId",
@@ -73,6 +80,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when authorName is null")
     void shouldThrowExceptionWhenAuthorNameIsNull() {
+
+        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         "validPublicationSampleId",
@@ -91,6 +100,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when language is null")
     void shouldThrowExceptionWhenLanguageIsNull() {
+
+        // act + asser
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         "validPublicationSampleId",
@@ -109,6 +120,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when genreType is null")
     void shouldThrowExceptionWhenGenreTypeIsNull() {
+
+        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         "validPublicationSampleId",
@@ -127,6 +140,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when ownerName is null")
     void shouldThrowExceptionWhenOwnerNameIsNull() {
+
+        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         "validPublicationSampleId",
@@ -145,6 +160,8 @@ class US016PublicationSampleDTOTest {
     @Test
     @DisplayName("Should throw exception when condition is null")
     void shouldThrowExceptionWhenConditionIsNull() {
+
+        // act + assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new US016PublicationSampleDTO(
                         "validPublicationSampleId",
