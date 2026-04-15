@@ -170,4 +170,16 @@ public interface IListingRepository {
      * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
      */
     List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
+
+    /**
+    * Retrieves all listings that are linked to a direct sale and contain at least
+    * one of the given publication sample identifiers.
+    *
+    * @param listOfPubSampleIds the list of publication sample identifiers to search for
+    * @return a list of listings that are linked to a direct sale and contain at least
+    *         one of the given publication sample identifiers; returns an empty list if
+    *         no matching listings are found
+    * @throws NullPointerException if {@code listOfPubSampleIds} is {@code null} or empty
+    */
+    List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
 }
