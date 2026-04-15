@@ -1,5 +1,6 @@
 package TOPSECRET.repository;
 
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -157,6 +158,32 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         }
 
         return listOfPublications;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PublicationSample> findByBibliographicalData(List<BibliographicalData> bibliographicalData) {
+
+        if (bibliographicalData == null) {
+            throw new IllegalArgumentException("bibliographicalData must not be null");
+        }
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSample ps : allPublicationsInSystem) {
+
+            for (BibliographicalData bd : bibliographicalData) {
+
+                if (ps.getBibliographicalDataID().equals(bd.id())) {
+                    result.add(ps);
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     /**

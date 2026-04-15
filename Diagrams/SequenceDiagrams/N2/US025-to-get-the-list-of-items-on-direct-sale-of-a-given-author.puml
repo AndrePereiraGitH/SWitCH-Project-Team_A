@@ -9,12 +9,12 @@ actor Buyer
 ' Participants
 participant ":UI025" as UI025
 participant ":US025ToGetTheListOfItemsOnDirectSale\nOfAGivenAuthorController" as Ctrl
-participant ":AuthorRepository" as AuthorRepository
-participant ":AuthorMapper_US025" as AuthorMapper
-participant ":DirectSaleMapper_US025" as Mapper
-participant ":ListingRepository" as ListingRepository
-participant ":PublicationSampleRepository" as PublicationSampleRepository
-participant ":BibliographicalDataRepository" as BibliographicalDataRepository
+participant ":IAuthorRepository" as AuthorRepository
+participant ":US025AuthorMapper" as AuthorMapper
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepository
+participant ":IPublicationSampleRepository" as PublicationSampleRepository
+participant ":IListingRepository" as ListingRepository
+participant ":US025DirectSaleMapper" as Mapper
 
 ' Interactions
 Buyer -> UI025 : I want to get the list of items\non direct sale of a given author
@@ -50,31 +50,27 @@ activate AuthorRepository
 AuthorRepository --> Ctrl : author
 deactivate AuthorRepository
 
-Ctrl -> ListingRepository : findAllDirectSaleListings()
+Ctrl -> BibliographicalDataRepository : findByAuthorId(authorId)
+activate BibliographicalDataRepository
+BibliographicalDataRepository --> Ctrl : bds
+deactivate BibliographicalDataRepository
+
+Ctrl -> PublicationSampleRepository : findByBibliographicalData(bds)
+activate PublicationSampleRepository
+PublicationSampleRepository --> Ctrl : samples
+deactivate PublicationSampleRepository
+
+Ctrl -> Ctrl : extractIds(samples)
+
+Ctrl -> ListingRepository : findDirectSaleListingsContaining(sampleIds)
 activate ListingRepository
-ListingRepository --> Ctrl : allListings
+ListingRepository --> Ctrl : listings
 deactivate ListingRepository
 
-loop for each listing / for each itemId in listing
-
-    Ctrl -> PublicationSampleRepository : findPublicationSampleById(itemId)
-    activate PublicationSampleRepository
-    PublicationSampleRepository --> Ctrl : item
-    deactivate PublicationSampleRepository
-
-    Ctrl -> BibliographicalDataRepository : findBibliographicalDataById(item.getBibliographicalDataID())
-    activate BibliographicalDataRepository
-    BibliographicalDataRepository --> Ctrl : bd
-    deactivate BibliographicalDataRepository
-
-    alt bd.getAuthors().contains(author.id())
-        Ctrl -> Mapper : toDTO(author, item, listing, bd)
-        activate Mapper
-        Mapper --> Ctrl : directSaleDTO
-        deactivate Mapper
-    end
-
-end
+Ctrl -> Mapper : toDTO(author, listings, samples, bds)
+activate Mapper
+Mapper --> Ctrl : listOfDirectSaleDTOs
+deactivate Mapper
 
 Ctrl --> UI025 : listOfDirectSaleDTOs
 deactivate Ctrl

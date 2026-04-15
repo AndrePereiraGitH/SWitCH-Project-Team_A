@@ -2,6 +2,7 @@ package TOPSECRET.domain.Listing;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -111,4 +112,22 @@ public interface IListingRepository {
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
     Optional<Listing> findListingById(ListingId id);
+
+    /**
+     * Retrieves all direct sale listings that contain any of the specified publication samples.
+     *
+     * <p>This method iterates through the repository's internal collection of
+     * {@link Listing} and selects those classified as direct sale that contain
+     * at least one of the provided {@link PublicationSampleId} identifiers.</p>
+     *
+     * <p>A listing is included in the result if it is marked as a direct sale and
+     * its list of items includes at least one of the given publication samples.</p>
+     *
+     * @param publicationSamplesID the list of publication samples used to filter listings;
+     *                           must not be {@code null}
+     * @return a list of direct sale {@link Listing} objects that contain the given samples;
+     *         may be empty if no matches are found, but never {@code null}
+     * @throws IllegalArgumentException if {@code publicationSamples} is {@code null}
+     */
+    List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> publicationSamplesID);
 }

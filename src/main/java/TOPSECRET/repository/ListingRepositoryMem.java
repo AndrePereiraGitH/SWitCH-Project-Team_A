@@ -4,6 +4,7 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -103,31 +104,6 @@ public class ListingRepositoryMem implements IListingRepository {
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
-//
-//        if (author == null) {
-//            throw new IllegalArgumentException("Author cannot be null");
-//        }
-//
-//        List<PublicationSample> listOfPublicationSample = new ArrayList<>();
-//
-//        for (Listing listing : listings) {
-//            if (listing.getSaleType() == SaleType.DIRECT_SALE) {
-//                for (PublicationSample PublicationSample : listing.getItems()) {
-//                    if (PublicationSample.getBibliographicalData().getAuthors().contains(author)) {
-//                        listOfPublicationSample.add(PublicationSample);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfPublicationSample;
-//    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Listing> getAllListings() {
         return List.copyOf(listings);
@@ -175,5 +151,35 @@ public class ListingRepositoryMem implements IListingRepository {
         return listings.stream()
                 .filter(listing -> listing.id().equals(id))
                 .findFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> publicationSamplesID) {
+
+        if (publicationSamplesID == null) {
+            throw new IllegalArgumentException("publicationSamples must not be null");
+        }
+
+        List<Listing> result = new ArrayList<>();
+
+        for (Listing listing : listings) {
+
+            if (listing.getSaleType() != SaleType.DIRECT_SALE) {
+                continue;
+            }
+
+            for (PublicationSampleId ps : publicationSamplesID) {
+
+                if (listing.getItemsId().contains(ps.getID())) {
+                    result.add(listing);
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

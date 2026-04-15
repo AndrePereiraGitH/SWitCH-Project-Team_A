@@ -5,6 +5,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -27,12 +28,12 @@ public interface IBibliographicalDataRepository {
      * Creates a new bibliographical data record and adds it to the repository
      * if it does not already exist.
      *
-     * @param title the title of the publication
-     * @param authors the authors associated with the publication
+     * @param title            the title of the publication
+     * @param authors          the authors associated with the publication
      * @param originalLanguage the original language of the publication
-     * @param publicationDate the publication date
-     * @param genres the genres associated with the publication
-     * @param chunksOfText textual content or excerpts associated with the publication
+     * @param publicationDate  the publication date
+     * @param genres           the genres associated with the publication
+     * @param chunksOfText     textual content or excerpts associated with the publication
      * @return the created and stored bibliographical data record
      * @throws InstanceAlreadyExistsException if an equivalent bibliographical data record already exists
      */
@@ -63,9 +64,17 @@ public interface IBibliographicalDataRepository {
      * @param bibliographicalDataId the unique identifier of the bibliographical data
      *                              to search for; must not be {@code null}
      * @return an {@link Optional} containing the matching {@link BibliographicalData}
-     *         if found, or an empty {@link Optional} if no entry with the given ID exists
+     * if found, or an empty {@link Optional} if no entry with the given ID exists
      * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
      */
     Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
 
+    /**
+     * Returns all {@link BibliographicalData} records that include the given author.
+     *
+     * @param authorId the identifier of the author; must not be {@code null}
+     * @return a list of bibliographical data records; never {@code null}, may be empty
+     * @throws IllegalArgumentException if {@code authorId} is {@code null}
+     */
+    List<BibliographicalData> findByAuthorId(AuthorId authorId);
 }
