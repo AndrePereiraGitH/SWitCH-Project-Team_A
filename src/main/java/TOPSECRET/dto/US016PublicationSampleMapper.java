@@ -8,6 +8,7 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 
 import javax.management.InstanceNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +24,13 @@ public class US016PublicationSampleMapper {
 
     private final IBibliographicalDataRepository _bdRepository;
 
+
     /**
      * Creates a new mapper with access to the bibliographical data repository.
      *
      * @param bdRepo repository used to retrieve bibliographical data
      */
-    public US016PublicationSampleMapper(IBibliographicalDataRepository bdRepo) {
-        this._bdRepository = bdRepo;
-    }
+    public US016PublicationSampleMapper(IBibliographicalDataRepository bdRepo) {this._bdRepository = bdRepo;}
 
     /**
      * Converts a publication sample and its corresponding bibliographical data
@@ -42,13 +42,21 @@ public class US016PublicationSampleMapper {
      */
     public static US016PublicationSampleDTO fromDomain(PublicationSample publicationSample, BibliographicalData bd) {
 
+        if (publicationSample == null) {
+            throw new IllegalArgumentException("PublicationSample cannot be null");
+        }
+
+        if (bd == null) {
+            throw new IllegalArgumentException("BibliographicalData is missing.");
+        }
+
         return new US016PublicationSampleDTO(
-                publicationSample.id(),
+                publicationSample.id().getID(),
                 bd.getTitle(),
                 bd.getAuthors().stream().map(AuthorId::getId).toList(),
                 bd.getOriginalLanguage(),
                 bd.getGenres().stream().map(GenreID::getID).toList(),
-                publicationSample.getOwnerID(),
+                publicationSample.getOwnerID().getUsername(),
                 publicationSample.getCondition().toString()
         );
     }
@@ -66,7 +74,11 @@ public class US016PublicationSampleMapper {
      */
     public List<US016PublicationSampleDTO> fromDomainList(List<PublicationSample> publicationSamples) throws InstanceNotFoundException {
 
-        Map<BibliographicalDataID, BibliographicalData> bibliographicalDataMap = new HashMap<>();
+        if (publicationSamples == null) {
+            throw new IllegalArgumentException("List of PublicationSamples cannot be null");
+        }
+
+        List<US016PublicationSampleDTO> pubSampleDTOs = new ArrayList<>();
 
         for (PublicationSample pub : publicationSamples) {
             BibliographicalData bd = _bdRepository
@@ -75,11 +87,10 @@ public class US016PublicationSampleMapper {
                             "BibliographicalData not found for auctionId: " + pub.getBibliographicalDataID()
                     ));
 
-            bibliographicalDataMap.put(pub.getBibliographicalDataID(), bd);
+            pubSampleDTOs.add(fromDomain(pub, bd));
+
         }
 
-        return publicationSamples.stream()
-                .map(pub -> fromDomain(pub, bibliographicalDataMap.get(pub.getBibliographicalDataID())))
-                .toList();
+        return pubSampleDTOs;
     }
 }

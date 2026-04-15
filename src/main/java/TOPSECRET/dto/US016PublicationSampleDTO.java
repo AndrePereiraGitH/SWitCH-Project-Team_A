@@ -18,12 +18,18 @@ import java.util.Locale;
  * @param condition the condition of the publication sample
  */
 public record US016PublicationSampleDTO(
-        PublicationSampleId publicationSampleID,
+        String publicationSampleID,
         String title,
         List<String>authorName,
         Locale language,
         List<String> genreType,
-        UserId ownerName,
+        String ownerName,
         String condition
 ) {
+    public US016PublicationSampleDTO {
+        if (publicationSampleID == null || title == null || authorName == null || language == null || genreType == null || ownerName == null || condition == null
+        ) {
+            throw new IllegalArgumentException("All fields must be not-null!");
+        }
+    }
 }
