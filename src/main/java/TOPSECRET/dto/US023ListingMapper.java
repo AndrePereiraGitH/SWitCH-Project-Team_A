@@ -122,7 +122,7 @@ public class US023ListingMapper {
         List<String> pubTitle = getTitle(listingOpt.get());
         List<String> authorsName = getAuthors(listingOpt.get());
 
-        US023ListingDTO listingDTO = new US023ListingDTO(listingId, listingTitle, price, pubTitle, authorsName);
+        US023ListingDTO listingDTO = new US023ListingDTO(listingId.toString(), listingTitle, price, pubTitle, authorsName);
 
         return listingDTO;
     }

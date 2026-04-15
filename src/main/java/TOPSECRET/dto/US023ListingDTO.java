@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @throws IllegalArgumentException if any argument is null, blank, or invalid
  */
-public record US023ListingDTO(ListingId listingId, String listingTitle, String price, List<String> pubTitles, List<String> authorsName) {
+public record US023ListingDTO(String listingId, String listingTitle, String price, List<String> pubTitles, List<String> authorsName) {
 
     public US023ListingDTO {
         if (listingId == null) throw new IllegalArgumentException("ListingId cannot be null");

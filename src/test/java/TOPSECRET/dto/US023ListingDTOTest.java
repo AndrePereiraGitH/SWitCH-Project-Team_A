@@ -20,7 +20,7 @@ class US023ListingDTOTest {
     @Test
     void shouldCreateDTOWhenArgumentsAreValid() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = mock(ListingId.class).toString();
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "Author Two");
 
@@ -51,7 +51,7 @@ class US023ListingDTOTest {
     @Test
     void shouldThrowWhenListingTitleIsNullOrBlank() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = mock(ListingId.class).toString();
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "Author Two");
 
@@ -66,7 +66,7 @@ class US023ListingDTOTest {
     @Test
     void shouldThrowWhenPriceIsNullOrBlank() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = mock(ListingId.class).toString();
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "Author Two");
 
@@ -81,7 +81,7 @@ class US023ListingDTOTest {
     @Test
     void shouldThrowWhenItemTitlesIsNullOrEmptyList() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = mock(ListingId.class).toString();
         List<String> authors = List.of("Author One", "Author Two");
 
         // Act + Assert
@@ -95,7 +95,7 @@ class US023ListingDTOTest {
     @Test
     void shouldThrowWhenAuthorsListIsNull() {
         // Arrange
-        ListingId id = mock(ListingId.class);;
+        String id = mock(ListingId.class).toString();
         List<String> itemsTitle = List.of("title1", "title2");
 
         // Act + Assert
@@ -106,7 +106,7 @@ class US023ListingDTOTest {
     @Test
     void shouldThrowWhenAuthorsListIsEmpty() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = mock(ListingId.class).toString();
         List<String> itemsTitle = List.of("title1", "title2");
 
         // Act + Assert
@@ -117,7 +117,7 @@ class US023ListingDTOTest {
     @Test
     void shouldThrowWhenAuthorsListContainsBlankNames() {
         // Arrange
-        ListingId id = mock(ListingId.class);
+        String id = mock(ListingId.class).toString();;
         List<String> itemsTitle = List.of("title1", "title2");
         List<String> authors = List.of("Author One", "   ");
 
