@@ -13,8 +13,6 @@ participant "library : Library" as library
 participant ":IPublicationSampleRepository" as PubRepo
 participant "samplesList \n:List<PublicationSample>" as samplesList
 
-participant ":IBibliographicalDataRepository" as BdRepo
-
 participant ":US016_PublicationSampleMapper" as PubMapper
 participant "bibliographicalDataMap : \n Map<BibliographicalDataID, BibliographicalData>" as bdMap
 
