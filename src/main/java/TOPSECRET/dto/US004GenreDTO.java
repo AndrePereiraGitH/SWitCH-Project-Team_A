@@ -15,7 +15,7 @@ public record US004GenreDTO(
      *
      * @param id unique identifier of the genre
      * @param title genre title
-     * @throws IllegalArgumentException if auctionId is null or title is null/blank
+     * @throws IllegalArgumentException if id is null or title is null/blank
      */
     public US004GenreDTO {
         if (id == null) {

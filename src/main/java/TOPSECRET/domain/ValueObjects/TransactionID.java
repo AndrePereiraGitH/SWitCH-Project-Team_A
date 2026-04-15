@@ -21,7 +21,7 @@ public class TransactionID implements DomainID {
      * Constructs a {@code TransactionID} with the specified identifier.
      *
      * @param id the unique transaction identifier
-     * @throws IllegalArgumentException if {@code auctionId} is null or blank
+     * @throws IllegalArgumentException if {@code id} is null or blank
      */
 
     public TransactionID(String id) {

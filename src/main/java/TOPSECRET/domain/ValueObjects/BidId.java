@@ -27,7 +27,7 @@ public final class BidId implements DomainID {
      * </p>
      *
      * @param id the UUID string representing the bid's identity
-     * @throws IllegalArgumentException if {@code auctionId} is null, blank or empty
+     * @throws IllegalArgumentException if {@code id} is null, blank or empty
      */
     public BidId(String id) {
         if (id != null  && !id.isBlank() && !id.isEmpty())

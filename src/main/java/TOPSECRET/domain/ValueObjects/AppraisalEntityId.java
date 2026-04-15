@@ -18,7 +18,7 @@ public class AppraisalEntityId implements DomainID {
      * Creates an AppraisalEntityId with the given string.
      *
      * @param apId the identifier value
-     * @throws IllegalArgumentException if the auctionId is null or blank
+     * @throws IllegalArgumentException if the id is null or blank
      */
     public AppraisalEntityId(String apId) {
 
@@ -34,7 +34,7 @@ public class AppraisalEntityId implements DomainID {
      * Compares this object with another for equality.
      *
      * @param object the object to compare
-     * @return true if both have the same auctionId, false otherwise
+     * @return true if both have the same id, false otherwise
      */
     @Override
     public boolean equals(Object object) {
@@ -51,7 +51,7 @@ public class AppraisalEntityId implements DomainID {
     }
 
     /**
-     * Returns the hash code of the auctionId.
+     * Returns the hash code of the id.
      *
      * @return hash code value
      */
@@ -61,7 +61,7 @@ public class AppraisalEntityId implements DomainID {
     }
 
     /**
-     * Returns the string representation of the auctionId.
+     * Returns the string representation of the id.
      *
      * @return auctionId as string
      */
