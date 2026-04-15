@@ -79,10 +79,8 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      */
     public List<US027PublisherDTO> getAllPublishers() {
 
-        // Gets all the publishers on repository
         List<Publisher> listOfAllPublishers = _publisherRepo.getAllPublishers();
 
-        // Converts to DTOs
         List<US027PublisherDTO> listOfAllPublishersDTO = US027PublisherMapper.toDTOs(listOfAllPublishers);
 
         return listOfAllPublishersDTO;
@@ -109,16 +107,12 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         if (publisherId == null) throw new IllegalArgumentException("publisherId cannot be null");
 
-        //Gets all the edition Ids of that publisher
         List<EditionID> listOfEditionIds = _editionRepo.findEditionIdsByPublisherId(publisherId);
 
-        // Gets all the publication samples related to the previous edition Ids
         List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findPublicationSampleIdsByEditionIds(listOfEditionIds);
 
-        // Gets all the direct sale listings related to the previous publication sample Ids
         List<Listing> listOfListings = _listingRepo.findDirectSaleListingsContaining(listOfPubSampleIds);
 
-        // Converts to DTOs
         List<US027ListingDTO> listOfListingDTOs = _mapper.toDTOs(listOfListings);
 
         return listOfListingDTOs;

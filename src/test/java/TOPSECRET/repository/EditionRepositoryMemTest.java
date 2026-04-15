@@ -143,65 +143,6 @@ class EditionRepositoryMemTest {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // save
-    // ─────────────────────────────────────────────────────────────
-/*
-    @Test
-    void save_ShouldAddEditionWhenRepositoryIsEmpty() {
-        // Arrange
-        EditionID editionIdDouble = mock(EditionID.class);
-        Edition edition = mock(Edition.class);
-        when(edition.id()).thenReturn(editionIdDouble);
-
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-
-        // Act
-        Edition result = repo.save(edition);
-
-        // Assert
-        assertEquals(edition, result);
-    }
-
-    @Test
-    void save_ShouldAddEditionWhenEditionDoesNotExist() {
-        // Arrange
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
-
-        Edition edition1 = mock(Edition.class);
-        Edition edition2 = mock(Edition.class);
-
-        when(edition1.id()).thenReturn(editionId1Double);
-        when(edition2.id()).thenReturn(editionId2Double);
-
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-        repo.save(edition1);
-
-        // Act
-        Edition result = repo.save(edition2);
-
-        // Assert
-        assertEquals(edition2, result);
-        assertEquals(Optional.of(edition1), repo.findEditionById(editionId1Double));
-        assertEquals(Optional.of(edition2), repo.findEditionById(editionId2Double));
-    }
-
-    @Test
-    void save_ShouldThrowExceptionWhenEditionAlreadyExists() {
-        // Arrange
-        Edition edition1 = mock(Edition.class);
-
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-        repo.save(edition1);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.save(edition1));
-    }
-
- */
-
-    // ─────────────────────────────────────────────────────────────
     // findEditionById
     // ─────────────────────────────────────────────────────────────
 

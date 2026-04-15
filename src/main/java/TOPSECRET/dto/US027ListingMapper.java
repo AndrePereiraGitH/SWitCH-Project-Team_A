@@ -112,9 +112,6 @@ public class US027ListingMapper {
         List<US027ListingDTO> listOfListingDTO = new ArrayList<>();
 
         for (Listing listing : listOfListings) {
-            if (listing == null) {
-                throw new IllegalArgumentException("List of listings must not contain null elements");
-            }
             listOfListingDTO.add(toDTO(listing));
         }
 

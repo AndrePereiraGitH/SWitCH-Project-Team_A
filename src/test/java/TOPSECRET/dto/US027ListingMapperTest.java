@@ -45,7 +45,6 @@ class US027ListingMapperTest {
     private IPublicationSampleRepository pubSampleRepoDouble;
     private IBibliographicalDataRepository bdRepoDouble;
     private IAuthorRepository authorRepoDouble;
-    private US027ListingMapper mapper;
     private Listing listingDouble;
 
     @BeforeEach
@@ -115,10 +114,6 @@ class US027ListingMapperTest {
         when(listingDouble.getListingTitle()).thenReturn("listingTitle");
         when(listingDouble.getItemsId()).thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
         when(listingDouble.getPrice()).thenReturn(mock(Price.class));
-
-
-        // Mapper
-        mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
     }
 
 
@@ -129,6 +124,8 @@ class US027ListingMapperTest {
     @Test
     void toDTO_ShouldMapAllFieldsCorrectly() throws InstanceNotFoundException {
         // Act
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         US027ListingDTO dto = mapper.toDTO(listingDouble);
 
         // Assert
@@ -142,6 +139,9 @@ class US027ListingMapperTest {
 
     @Test
     void toDTO_ShouldThrowExceptionWhenListingIsNull() {
+        // Arrange
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () -> mapper.toDTO(null));
     }
@@ -153,6 +153,8 @@ class US027ListingMapperTest {
         when(listingDouble.getItemsId()).thenReturn(List.of(wrongIdDouble));
         when(pubSampleRepoDouble.findPublicationSampleById(wrongIdDouble))
                 .thenReturn(Optional.empty());
+
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingDouble));
@@ -168,6 +170,8 @@ class US027ListingMapperTest {
         when(pubSampleDouble.getBibliographicalDataID()).thenReturn(wrongIdDouble);
         when(bdRepoDouble.findBibliographicalDataById(wrongIdDouble))
                 .thenReturn(Optional.empty());
+
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingDouble));
@@ -185,6 +189,8 @@ class US027ListingMapperTest {
         when(authorRepoDouble.findAuthorById(missingAuthorIdDouble))
                 .thenReturn(Optional.empty());
 
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         // Act + Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(listingDouble));
     }
@@ -196,23 +202,18 @@ class US027ListingMapperTest {
 
     @Test
     void toDTOs_ShouldThrowExceptionWhenListIsNull() {
+        // Arrange
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () -> mapper.toDTOs(null));
     }
 
     @Test
-    void toDTOs_ShouldThrowExceptionWhenListContainsNullElement() {
-        // Arrange
-        List<Listing> listWithNull = new ArrayList<>();
-        listWithNull.add(listingDouble);
-        listWithNull.add(null);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> mapper.toDTOs(listWithNull));
-    }
-
-    @Test
     void toDTOs_ShouldReturnEmptyListWhenInputListIsEmpty() throws InstanceNotFoundException {
+        // Arrange
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         // Act
         List<US027ListingDTO> dtoList = mapper.toDTOs(List.of());
 
@@ -223,6 +224,9 @@ class US027ListingMapperTest {
 
     @Test
     void toDTOs_ShouldReturnListWithOneDTOWhenListHasOneElement() throws InstanceNotFoundException {
+        // Arrange
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         // Act
         List<US027ListingDTO> dtoList = mapper.toDTOs(List.of(listingDouble));
 
@@ -233,6 +237,9 @@ class US027ListingMapperTest {
 
     @Test
     void toDTOs_ShouldReturnListWithSameSizeAsInputList() throws InstanceNotFoundException {
+        // Arrange
+        US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
+
         // Act
         List<US027ListingDTO> dtoList = mapper.toDTOs(List.of(listingDouble, listingDouble));
 
