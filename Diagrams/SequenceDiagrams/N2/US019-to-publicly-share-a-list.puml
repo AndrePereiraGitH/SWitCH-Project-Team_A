@@ -26,7 +26,7 @@ activate Controller
 
 Controller -->> CollectionRepository: getUserCollections(userId)
 activate CollectionRepository
-CollectionRepository -> LUC ** : «create»
+CollectionRepository -->> LUC ** : «create»
 CollectionRepository --> Controller: listOfUserCollections
 deactivate CollectionRepository
 
@@ -36,7 +36,7 @@ Mapper  -->> listCollectionsDTO ** : «create»
 
     loop for each collection in listOfUserCollections
         Mapper -> "collectionDTO:\nUS019CollectionOfPublicationsDTO" ** : toDTO(collection)
-        Mapper -> listCollectionsDTO : add(US019CollectionOfPublicationsDTO)
+        Mapper -> listCollectionsDTO : add(collectionDTO)
     end
     Mapper  -->> Controller : listCollectionsDTO
 deactivate Mapper
@@ -69,7 +69,7 @@ Controller --> Controller : verifies ownerId.equals(userId)
 
 Controller -> Collection : set_isPrivate(false)
 activate Collection
-Collection --> Controller : true
+Collection --> Controller : false
 deactivate Collection
 
 Controller --> UI : false
