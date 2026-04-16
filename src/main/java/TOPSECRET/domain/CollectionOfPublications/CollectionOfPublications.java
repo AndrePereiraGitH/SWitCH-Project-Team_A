@@ -92,8 +92,10 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      *
      * @param _isPrivate new privacy value
      */
-    public void set_isPrivate(boolean _isPrivate) {
+    public boolean set_isPrivate(boolean _isPrivate) {
+
         this._isPrivate = _isPrivate;
+        return  _isPrivate;
     }
 
     // ============================== end US019 ==============================

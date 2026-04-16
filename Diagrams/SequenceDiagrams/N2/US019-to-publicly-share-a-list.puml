@@ -55,22 +55,22 @@ UI -> Controller : makeCollectionPublic(collectionId, userId)
 
 activate Controller
 
-Controller -> CollectionRepository : findCollectionOfPublicationsById(collectionId)
+Controller -> CollectionRepository : makeCollectionPublic(collectionId)
 activate CollectionRepository
-CollectionRepository --> Controller : collection
+
+loop for each collection in _collectionOfPublicationsList
+    CollectionRepository -> Collection : id()
+    activate Collection
+    alt id equals target id
+        CollectionRepository -> Collection : set_isPrivate(false)
+        Collection --> CollectionRepository : false
+        deactivate Collection
+    end
+end
+
+deactivate Collection
+CollectionRepository --> Controller : false
 deactivate CollectionRepository
-
-Controller -> Collection : getOwnerId()
-activate Collection
-Collection --> Controller : ownerId
-deactivate Collection
-
-Controller --> Controller : verifies ownerId.equals(userId)
-
-Controller -> Collection : set_isPrivate(false)
-activate Collection
-Collection --> Controller : false
-deactivate Collection
 
 Controller --> UI : false
 deactivate Controller

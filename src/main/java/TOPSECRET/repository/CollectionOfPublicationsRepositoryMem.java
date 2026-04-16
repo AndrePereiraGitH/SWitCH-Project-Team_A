@@ -130,7 +130,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * @return an {@link Optional} containing the collection if found, or empty if not
      * @throws NullPointerException if {@code id} is null
      */
-    public Optional<CollectionOfPublications> findCollectionOfPublicationsById(CollectionOfPublicationsID id) {
+    public boolean makeCollectionPublic(CollectionOfPublicationsID id) {
 
         if (id == null) {
             throw new NullPointerException("Collection ID must not be null");
@@ -138,11 +138,10 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         for (CollectionOfPublications collection : _collectionOfPublicationsList) {
             if (collection.id().equals(id)) {
-                return Optional.of(collection);
+                return collection.set_isPrivate(false);
             }
         }
-
-        return Optional.empty();
+        return true;
     }
 
     /**

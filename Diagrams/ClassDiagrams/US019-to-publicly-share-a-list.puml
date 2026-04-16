@@ -18,7 +18,7 @@ class "US019ToPubliclyShareCollectionOfPublicationsController" as US019Controlle
 'Repository Interfaces
 interface "ICollectionOfPublicationRepository" as ICollectionOfPublicationsRepository  {
  + getUserCollections(userId : UserId) : List<CollectionOfPublications>
- + findCollectionOfPublicationsById(id : CollectionOfPublicationsID) : Optional<CollectionOfPublications>
+ + makeCollectionPublic(id : CollectionOfPublicationsID) : boolean
 }
 
 'Domain
@@ -31,7 +31,7 @@ class CollectionOfPublications {
   + getCollectionName() : String
   + getCollectionGenre() : GenreID
   + getOwnerId() : UserId
-  + set_isPrivate(value : boolean) : void
+  + set_isPrivate(value : boolean) : boolean
 }
 
 class US019CollectionOfPublicationsMapper {
@@ -40,6 +40,9 @@ class US019CollectionOfPublicationsMapper {
 }
 
 class "US019CollectionOfPublicationsDTO" as DTO{
+        + name : String
+        + genreName : String
+        + ownerName : String
 }
 
 ' Interactions

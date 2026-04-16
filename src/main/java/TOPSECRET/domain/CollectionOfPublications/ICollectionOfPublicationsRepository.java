@@ -48,13 +48,13 @@ public interface ICollectionOfPublicationsRepository {
     List<CollectionOfPublications> getUserCollections(UserId userId) throws IllegalArgumentException;
 
     /**
-     * Finds a collection by its unique identifier — US019.
+     * Makes a collection of publications public — US019.
      *
      * @param id the ID of the collection to search for; must not be null
-     * @return an {@link Optional} containing the collection if found, or empty if not
+     * @return an {boolean} false, to confirm collection is now public
      * @throws NullPointerException if {@code id} is null
      */
-    Optional<CollectionOfPublications> findCollectionOfPublicationsById(CollectionOfPublicationsID id);
+    boolean makeCollectionPublic(CollectionOfPublicationsID id);
 
     /**
      * Returns all public collections that belong to a given genre — US020.

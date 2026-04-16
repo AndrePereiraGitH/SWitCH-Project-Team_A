@@ -71,19 +71,7 @@ public class US019ToPubliclyShareCollectionOfPublicationsController {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        CollectionOfPublications collection =
-                _collectionRepo.findCollectionOfPublicationsById(collectionId)
-                        .orElseThrow(() ->
-                                new IllegalArgumentException("Collection not found"));
-
-        if (!collection.getOwnerId().equals(userId)) {
-            throw new IllegalArgumentException(
-                    "Collection does not belong to the given user");
-        }
-
-        collection.set_isPrivate(false);
-
-        return collection.getIsPrivate();
+        return _collectionRepo.makeCollectionPublic(collectionId);
     }
 }
 

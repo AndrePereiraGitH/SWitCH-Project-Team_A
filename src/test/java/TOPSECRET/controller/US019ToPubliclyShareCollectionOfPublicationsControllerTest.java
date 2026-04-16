@@ -195,57 +195,11 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     }
 
     @Test
-    void ensureMakeCollectionPublicThrowsExceptionWhenCollectionNotFound() {
-        // Arrange
-        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
-                .thenReturn(Optional.empty());
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                controller.makeCollectionPublic(testCollectionId, testUserId));
-
-        assertEquals("Collection not found", exception.getMessage());
-    }
-
-    @Test
-    void ensureMakeCollectionPublicThrowsExceptionWhenCollectionDoesNotBelongToUser() {
-        // Arrange
-        UserId differentUserId = mock(UserId.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.getOwnerId()).thenReturn(differentUserId);
-        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
-                .thenReturn(Optional.of(collection));
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                controller.makeCollectionPublic(testCollectionId, testUserId));
-
-        assertEquals("Collection does not belong to the given user", exception.getMessage());
-    }
-
-    @Test
-    void ensureMakeCollectionPublicSucceedsWhenCollectionBelongsToUser() {
-        // Arrange
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.getOwnerId()).thenReturn(testUserId);
-        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
-                .thenReturn(Optional.of(collection));
-
-        // Act & Assert — if isPrivate = false, collection is now public
-        assertFalse(controller.makeCollectionPublic(testCollectionId, testUserId));
-    }
-
-    @Test
     void ensureMakeCollectionPublicSetsCollectionToPublic() {
         // Arrange
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
-        when(collection.getOwnerId()).thenReturn(testUserId);
         when(collection.getIsPrivate()).thenReturn(false);
-        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
-                .thenReturn(Optional.of(collection));
 
         // Act & Assert — observable outcome: if isPrivate = false, collection is now public
         assertFalse(controller.makeCollectionPublic(testCollectionId, testUserId));

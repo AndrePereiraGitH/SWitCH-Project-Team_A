@@ -168,67 +168,26 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(0, result.size());
     }
 
-    @Test
-    void ensureFindByIdReturnsCollectionWhenIdFound() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.getOwnerId()).thenReturn(userId);
-        when(collection.getCollectionName()).thenReturn("My Collection");
-        when(collection.getCollectionGenre()).thenReturn(genre);
-        when(collection.id()).thenReturn(collectionId);
-        when(factory.create("My Collection", genre, userId)).thenReturn(collection);
-
-        repository.createAndAdd(userId, "My Collection", genre);
-
-        // Act
-        Optional<CollectionOfPublications> result = repository.findCollectionOfPublicationsById(collectionId);
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(collection, result.get());
-    }
 
     @Test
-    void ensureFindByIdReturnsCorrectCollectionWhenMultipleExist() {
+    void makeCollectionPublicShouldReturnFalseAndSetCollectionToPublic() {
         // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
+        UserId userIdDouble = mock(UserId.class);
+        GenreID genreIdDouble = mock(GenreID.class);
+        CollectionOfPublicationsID idDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
 
-        CollectionOfPublicationsID targetId = mock(CollectionOfPublicationsID.class);
-        CollectionOfPublicationsID otherId = mock(CollectionOfPublicationsID.class);
+        when(factory.create("Name", genreIdDouble, userIdDouble)).thenReturn(collectionDouble);
+        when(collectionDouble.id()).thenReturn(idDouble);
+        when(collectionDouble.getIsPrivate()).thenReturn(false);
 
-        CollectionOfPublications target = mock(CollectionOfPublications.class);
-        CollectionOfPublications other = mock(CollectionOfPublications.class);
-
-        when(target.getOwnerId()).thenReturn(userId);
-        when(target.getCollectionName()).thenReturn("Target");
-        when(target.getCollectionGenre()).thenReturn(genre1);
-        when(target.id()).thenReturn(targetId);
-        when(factory.create("Target", genre1, userId)).thenReturn(target);
-
-        when(other.getOwnerId()).thenReturn(userId);
-        when(other.getCollectionName()).thenReturn("Other");
-        when(other.getCollectionGenre()).thenReturn(genre2);
-        when(other.id()).thenReturn(otherId);
-        when(factory.create("Other", genre2, userId)).thenReturn(other);
-
-        repository.createAndAdd(userId, "Target", genre1);
-        repository.createAndAdd(userId, "Other", genre2);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
         // Act
-        Optional<CollectionOfPublications> result = repository.findCollectionOfPublicationsById(targetId);
+        CollectionOfPublications collection = sut.createAndAdd(userIdDouble, "Name", genreIdDouble);
+        boolean result = sut.makeCollectionPublic(idDouble);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(target, result.get());
+        assertFalse(result);
     }
 }
