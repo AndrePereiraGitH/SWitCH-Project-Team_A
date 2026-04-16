@@ -26,7 +26,7 @@ class US021DirectSaleDTOTest {
     }
 
     // ============
-    // equals tests - CORRIGIDOS
+    // equals tests
     // ============
     @Test
     void shouldReturnTrueWhenSameObject() {
