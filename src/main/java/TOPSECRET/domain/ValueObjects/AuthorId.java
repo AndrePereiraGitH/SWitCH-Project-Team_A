@@ -49,15 +49,6 @@ public class AuthorId implements DomainID {
         return Objects.equals(_authorId, authorId._authorId);
     }
 
-    /**
-     * Returns a hash code value for this {@code AuthorId}.
-     * <p>
-     * The hash code is derived solely from the underlying identifier string,
-     * consistent with the {@link #equals(Object)} implementation.
-     * </p>
-     *
-     * @return the hash code value for this {@code AuthorId}
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_authorId);

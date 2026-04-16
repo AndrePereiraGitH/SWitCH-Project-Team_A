@@ -108,9 +108,16 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         when(authorRepositoryDouble.findAuthorById(authorIdDouble))
                 .thenReturn(Optional.of(authorDouble));
-        when(bibliographicalDataRepositoryDouble.findBibliographicalDataByAuthorId(authorIdDouble)).thenReturn(List.of(bdDouble));
-        when(publicationSampleRepositoryDouble.findPublicationSampleByBibliographicalDataIds(List.of(bdIdDouble))).thenReturn(List.of(sampleDouble));
-        when(listingRepositoryDouble.findDirectSaleListingsContaining(List.of(psIdDouble))).thenReturn(List.of(listingDouble));
+        when(bibliographicalDataRepositoryDouble.findBibliographicalDataByAuthorId(authorIdDouble))
+                .thenReturn(List.of(bdDouble));
+        when(bibliographicalDataRepositoryDouble.findBibliographicalDataIdByAuthorId(authorIdDouble))
+                .thenReturn(List.of(bdIdDouble));
+        when(publicationSampleRepositoryDouble.findPublicationSampleByBibliographicalDataIds(List.of(bdIdDouble)))
+                .thenReturn(List.of(sampleDouble));
+        when(publicationSampleRepositoryDouble.findPublicationSamplesIdsByBiblioDataIds(List.of(bdIdDouble)))
+                .thenReturn(List.of(psIdDouble));
+        when(listingRepositoryDouble.findDirectSaleListingsContaining(List.of(psIdDouble)))
+                .thenReturn(List.of(listingDouble));
 
         // Act
         List<US025DirectSaleDTO> result = sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorIdDouble);

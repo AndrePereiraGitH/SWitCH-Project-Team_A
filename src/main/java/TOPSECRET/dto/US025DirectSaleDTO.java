@@ -16,4 +16,16 @@ public record US025DirectSaleDTO(
         List<String> authors,
         double price,
         String listingTitle,
-        String seller) {}
+        String seller) {
+
+    public US025DirectSaleDTO {
+        if (publicationTitle == null || publicationTitle.isBlank())
+            throw new IllegalArgumentException("Publication title cannot be null or blank");
+        if (authors == null || authors.isEmpty())
+            throw new IllegalArgumentException("Authors cannot be null or empty");
+        if (price < 0) throw new IllegalArgumentException("Price cannot be negative");
+        if (listingTitle == null || listingTitle.isBlank())
+            throw new IllegalArgumentException("Listing title cannot be null or blank");
+        if (seller == null || seller.isBlank()) throw new IllegalArgumentException("Seller cannot be null or blank");
+    }
+}
