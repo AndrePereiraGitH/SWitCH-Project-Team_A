@@ -174,35 +174,6 @@ public class ListingRepositoryMem implements IListingRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> publicationSamplesID) {
-
-        if (publicationSamplesID == null) {
-            throw new IllegalArgumentException("publicationSamples must not be null");
-        }
-
-        List<Listing> result = new ArrayList<>();
-
-        for (Listing listing : listings) {
-
-            if (listing.getSaleType() != SaleType.DIRECT_SALE) {
-                continue;
-            }
-
-            for (PublicationSampleId ps : publicationSamplesID) {
-
-                if (listing.getItemsId().contains(ps.getID())) {
-                    result.add(listing);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
 
     if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
