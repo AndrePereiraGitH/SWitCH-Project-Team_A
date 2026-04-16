@@ -83,19 +83,6 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         return newCollection;
     }
 
-//    /**
-//     * {@inheritDoc}
-//     */
-/*
-    public List<CollectionOfPublications> getUserCollections(UserId userId) {
-
-        if (userId == null) {
-            throw new IllegalArgumentException("User cannot be null");
-        }
-
-        return getAllCollectionOfPublicationsByUser(userId);
-    }
-*/
     /**
      * {@inheritDoc}
      */

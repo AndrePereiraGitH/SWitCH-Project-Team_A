@@ -765,9 +765,9 @@ class ListingRepositoryMemTest {
         ListingId listingId2 = new ListingId("listing2");
         ListingId listingId3 = new ListingId("listing3");
 
-        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1IdDouble, pub2IdDouble));
-        when(listing2Double.get_itemsId()).thenReturn(List.of(pub3IdDouble));
-        when(listing3Double.get_itemsId()).thenReturn(List.of(pub2IdDouble));
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble, pub2IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub3IdDouble));
+        when(listing3Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
 
         when(listing1Double.id()).thenReturn(listingId1);
         when(listing2Double.id()).thenReturn(listingId2);
@@ -785,7 +785,7 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title3", List.of(pub2IdDouble), SaleType.AUCTION, price3, "description3", sellerIdDouble, List.of(pic3));
 
         // Act
-        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub2IdDouble));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub2IdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -805,9 +805,9 @@ class ListingRepositoryMemTest {
         ListingId listingId2 = new ListingId("listing2");
         ListingId listingId3 = new ListingId("listing3");
 
-        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1IdDouble));
-        when(listing2Double.get_itemsId()).thenReturn(List.of(pub2IdDouble));
-        when(listing3Double.get_itemsId()).thenReturn(List.of(pub3IdDouble));
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
+        when(listing3Double.getItemsId()).thenReturn(List.of(pub3IdDouble));
 
         when(listing1Double.id()).thenReturn(listingId1);
         when(listing2Double.id()).thenReturn(listingId2);
@@ -825,7 +825,7 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title3", List.of(pub3IdDouble), SaleType.AUCTION, price3, "description3", sellerIdDouble, List.of(pic3));
 
         // Act
-        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub1IdDouble));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub1IdDouble));
 
         // Assert
         assertEquals(1, result.size());
@@ -843,9 +843,9 @@ class ListingRepositoryMemTest {
         ListingId listingId2 = new ListingId("listing2");
         ListingId listingId3 = new ListingId("listing3");
 
-        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1IdDouble));
-        when(listing2Double.get_itemsId()).thenReturn(List.of(pub2IdDouble));
-        when(listing3Double.get_itemsId()).thenReturn(List.of(pub3IdDouble));
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
+        when(listing3Double.getItemsId()).thenReturn(List.of(pub3IdDouble));
 
         when(listing1Double.id()).thenReturn(listingId1);
         when(listing2Double.id()).thenReturn(listingId2);
@@ -863,7 +863,7 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title3", List.of(pub3IdDouble), SaleType.AUCTION, price3, "description3", sellerIdDouble, List.of(pic3));
 
         // Act
-        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub1IdDouble, pub3IdDouble));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub1IdDouble, pub3IdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -884,8 +884,8 @@ class ListingRepositoryMemTest {
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
 
-        when(listing1Double.get_itemsId()).thenReturn(List.of(pub1IdDouble));
-        when(listing2Double.get_itemsId()).thenReturn(List.of(pub2IdDouble));
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
 
         when(listing1Double.id()).thenReturn(listingId1);
         when(listing2Double.id()).thenReturn(listingId2);
@@ -899,7 +899,7 @@ class ListingRepositoryMemTest {
         repo.createAndAdd("title2", List.of(pub2IdDouble), SaleType.DIRECT_SALE, price2, "description2", sellerIdDouble, List.of(pic2));
 
         // Act
-        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub4Id));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub4Id));
 
         // Assert
         assertNotNull(result);
@@ -914,7 +914,7 @@ class ListingRepositoryMemTest {
         IListingRepository repo = new ListingRepositoryMem(factory);
 
         // Act
-        List<ListingId> result = repo.findListingIdsByPublicationSampleIds(List.of(pub1IdDouble));
+        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub1IdDouble));
 
         // Assert
         assertNotNull(result);
@@ -929,7 +929,7 @@ class ListingRepositoryMemTest {
         IListingRepository repo = new ListingRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findListingIdsByPublicationSampleIds(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findAllListingIdByPublicationSampleId(null));
     }
 
     // ======================================================
