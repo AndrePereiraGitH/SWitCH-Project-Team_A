@@ -1,5 +1,6 @@
 package TOPSECRET.repository;
 
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
@@ -232,6 +233,42 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
+    @Override
+    public List<PublicationSample> findByBibliographicalData(List<BibliographicalData> bibliographicalData) {
+
+        if (bibliographicalData == null) {
+            throw new IllegalArgumentException("bibliographicalData must not be null");
+        }
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSample ps : allPublicationsInSystem) {
+
+            for (BibliographicalData bd : bibliographicalData) {
+
+                if (ps.getBibliographicalDataID().equals(bd.id())) {
+                    result.add(ps);
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+//    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary) {
+//        List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
+//
+//        for (PublicationSample publication : allPublicationsInSystem) {
+//            if (!listOfPublicationsInLibrary.contains(publication)) {
+//                listOfDifferentPublications.add(publication);
+//            }
+//        }
+//        return List.copyOf(listOfDifferentPublications);
+//    }
     public List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId){
 
         if(userId == null){
@@ -415,6 +452,29 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         for (PublicationSample p : allUserPublications) {
             if (!publicationsInCollection.contains(p)) {
                 result.add(p);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PublicationSample> findPublicationSampleByBibliographicalDataIds(List<BibliographicalDataID> bdIds) {
+        if (bdIds == null) {
+            throw new IllegalArgumentException("List of BibliographicalDataID cannot be null");
+        }
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSample ps : allPublicationsInSystem) {
+            for (BibliographicalDataID bdId : bdIds) {
+                if (ps.getBibliographicalDataID().equals(bdId)) {
+                    result.add(ps);
+                    break;
+                }
             }
         }
 

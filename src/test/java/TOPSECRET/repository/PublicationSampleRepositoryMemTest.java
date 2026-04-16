@@ -1453,7 +1453,7 @@ class PublicationSampleRepositoryMemTest {
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
-        repo.save(publication); // já existe
+        repo.save(publication);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -1463,19 +1463,23 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void addPublicationToLibrary_shouldThrowException_whenPublicationIsNull() {
 
+        //Arrange
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
         LibraryId libraryId = mock(LibraryId.class);
 
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 repo.addPublicationToLibrary(null, libraryId));
     }
     @Test
     void addPublicationToLibrary_shouldThrowException_whenLibraryIsNull() {
 
+        //Arrange
         PublicationSample publication = mock(PublicationSample.class);
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
 
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 repo.addPublicationToLibrary(publication, null));
     }
