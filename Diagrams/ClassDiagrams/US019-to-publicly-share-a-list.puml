@@ -12,7 +12,7 @@ class "US019ToPubliclyShareCollectionOfPublicationsController" as US019Controlle
   -genreRepository: IGenreRepository
   -userRepository: IUserRepository
   +getUserCollections(userId: UserId): List<CollectionOfPublicationsDTO>
-  +makeCollectionPublic(collectionId: CollectionID, userId: UserId): boolean
+  +makeCollectionPublic(collectionId: CollectionID): boolean
 }
 
 'Repository Interfaces
