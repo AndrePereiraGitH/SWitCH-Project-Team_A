@@ -101,31 +101,6 @@ public class ListingRepositoryMem implements IListingRepository {
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
-//
-//        if (author == null) {
-//            throw new IllegalArgumentException("Author cannot be null");
-//        }
-//
-//        List<PublicationSample> listOfPublicationSample = new ArrayList<>();
-//
-//        for (Listing listing : listings) {
-//            if (listing.getSaleType() == SaleType.DIRECT_SALE) {
-//                for (PublicationSample PublicationSample : listing.getItems()) {
-//                    if (PublicationSample.getBibliographicalData().getAuthors().contains(author)) {
-//                        listOfPublicationSample.add(PublicationSample);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfPublicationSample;
-//    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Listing> getAllListings() {
         return List.copyOf(listings);
@@ -164,7 +139,6 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listingIds;
-
     }
 
     /**
@@ -200,6 +174,27 @@ public class ListingRepositoryMem implements IListingRepository {
      * {@inheritDoc}
      */
     @Override
+    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
+
+    if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
+        throw new NullPointerException("The list can not be null or empty");
+    }
+
+    List<Listing> listOfListings = new ArrayList<>();
+
+    for (Listing listing : listings) {
+        if (listing.isListingLinkedToADirectSale()) {
+            for(PublicationSampleId id: listOfPubSampleIds){
+                if(listing.containsPubSampleId(id)){
+                    listOfListings.add(listing);
+                    break;
+                }
+            }
+        }
+    }
+    return listOfListings;
+}
+    
     public List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
 
         if(listOfPubSampleIds == null){
@@ -244,30 +239,5 @@ public class ListingRepositoryMem implements IListingRepository {
                 .toList();
 
         return listingIdsWithSamples;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
-
-        if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
-            throw new NullPointerException("The list can not be null or empty");
-        }
-
-        List<Listing> listOfListings = new ArrayList<>();
-
-        for (Listing listing : listings) {
-            if (listing.isListingLinkedToADirectSale()) {
-                for(PublicationSampleId id: listOfPubSampleIds){
-                    if(listing.containsPubSampleId(id)){
-                        listOfListings.add(listing);
-                        break;
-                    }
-                }
-            }
-        }
-        return listOfListings;
     }
 }
