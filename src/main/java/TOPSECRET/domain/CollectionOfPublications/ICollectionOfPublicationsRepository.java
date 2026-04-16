@@ -38,14 +38,13 @@ public interface ICollectionOfPublicationsRepository {
             GenreID genreId) throws IllegalArgumentException;
 
     /**
-     * Returns all collections that belong to a given userId — US018 / US019.
+     * Returns all collections owned by a given user — US019.
      *
-     * @param userId the owner of the collections
-     * @return list of collections owned by the userId
-     * @throws IllegalArgumentException if userId is null
+     * @param ownerId the user to search for
+     * @return list of collections owned by the user
+     * @throws IllegalArgumentException if ownerId is null
      */
-
-    List<CollectionOfPublications> getUserCollections(UserId userId) throws IllegalArgumentException;
+    List<CollectionOfPublications> getUserCollections(UserId ownerId) throws IllegalArgumentException;
 
     /**
      * Makes a collection of publications public — US019.

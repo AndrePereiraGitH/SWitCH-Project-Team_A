@@ -88,25 +88,8 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
     /**
      * {@inheritDoc}
      */
-
-    public List<CollectionOfPublications> getUserCollections(UserId userId) {
-
-        if (userId == null) {
-            throw new IllegalArgumentException("User cannot be null");
-        }
-
-        return getAllCollectionOfPublicationsByUser(userId);
-    }
-
-    /**
-     * Returns all collections owned by a given user — US019.
-     *
-     * @param ownerId the user to search for
-     * @return list of collections owned by the user
-     * @throws IllegalArgumentException if ownerId is null
-     */
-
-    private List<CollectionOfPublications> getAllCollectionOfPublicationsByUser(UserId ownerId) {
+    @Override
+    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
 
         if (ownerId == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -122,6 +105,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         return userCollections;
     }
+
 
     /**
      * Finds a collection by its unique identifier — US019.
