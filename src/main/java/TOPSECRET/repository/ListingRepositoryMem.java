@@ -72,31 +72,19 @@ public class ListingRepositoryMem implements IListingRepository {
         return listings.contains(listing);
     }
 
-  // US021
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre) {
-//
-//        if (genre == null) {
-//            throw new IllegalArgumentException("Genre cannot be null");
-//        }
-//
-//        List<PublicationSample> listOfPublicationSample = new ArrayList<>();
-//
-//        for (Listing listing : listings) {
-//            if (listing.getSaleType() == SaleType.DIRECT_SALE) {
-//                for (PublicationSample PublicationSample : listing.getItems()) {
-//                    if (PublicationSample.hasGenre(genre)) {
-//                        listOfPublicationSample.add(PublicationSample);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfPublicationSample;
-//    }
+    @Override
+    public Optional<Listing> findListingById(ListingId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ListingId cannot be null");
+        }
+
+        return listings.stream()
+                .filter(listing -> listing.id().equals(id))
+                .findFirst();
+    }
 
     /**
      * {@inheritDoc}
@@ -156,19 +144,7 @@ public class ListingRepositoryMem implements IListingRepository {
         return auctionListings;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Listing> findListingById(ListingId id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ListingId cannot be null");
-        }
 
-        return listings.stream()
-                .filter(listing -> listing.id().equals(id))
-                .findFirst();
-    }
 
     /**
      * {@inheritDoc}

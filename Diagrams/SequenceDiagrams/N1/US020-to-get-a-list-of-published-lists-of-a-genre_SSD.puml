@@ -14,11 +14,11 @@ activate System
 
 User --> System: I want to see public lists of a certain genre
 
-System --> User: select genre (genres)
+System --> User: Select genre (List<Genre>)
 
-User --> System: selected! (genre)
+User --> System: Selected! (genreId)
 
-System -->  User: done! (list name, ownerUserID)
+System -->  User: Done! (List<US020CollectionOfPublicationsDTO>)
 
 
 @enduml

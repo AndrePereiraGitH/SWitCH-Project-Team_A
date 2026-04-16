@@ -59,6 +59,7 @@ class US026AuctionMapperTest {
         // Arrange
         when(auction1.getListingId()).thenReturn(listingId1);
         when(auction1.id()).thenReturn(auctionId1);
+        when(auctionId1.getId()).thenReturn("A1");
         when(auction1.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
 
         when(listingRepo.findListingById(listingId1)).thenReturn(Optional.of(listing1));
@@ -69,9 +70,9 @@ class US026AuctionMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(auctionId1, result.id());
+        assertEquals(auctionId1.getId(), result.auctionId());
         assertEquals("Listing Title 1", result.listingTitle());
-        assertEquals(AuctionStatus.ACTIVE, result.auctionStatus());
+        assertEquals(AuctionStatus.ACTIVE.name(), result.auctionStatus());
     }
 
     @Test
@@ -94,10 +95,12 @@ class US026AuctionMapperTest {
         // Arrange
         when(auction1.getListingId()).thenReturn(listingId1);
         when(auction1.id()).thenReturn(auctionId1);
+        when(auctionId1.getId()).thenReturn("auctionId1");
         when(auction1.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
 
         when(auction2.getListingId()).thenReturn(listingId2);
         when(auction2.id()).thenReturn(auctionId2);
+        when(auctionId2.getId()).thenReturn("auctionId2");
         when(auction2.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
 
         when(listingRepo.findListingById(listingId1)).thenReturn(Optional.of(listing1));
@@ -112,13 +115,13 @@ class US026AuctionMapperTest {
         // Assert
         assertEquals(2, result.size());
 
-        assertEquals(auctionId1, result.get(0).id());
+        assertEquals(auctionId1.getId(), result.get(0).auctionId());
         assertEquals("Listing Title 1", result.get(0).listingTitle());
-        assertEquals(AuctionStatus.ACTIVE, result.get(0).auctionStatus());
+        assertEquals("ACTIVE", result.get(0).auctionStatus());
 
-        assertEquals(auctionId2, result.get(1).id());
+        assertEquals(auctionId2.getId(), result.get(1).auctionId());
         assertEquals("Listing Title 2", result.get(1).listingTitle());
-        assertEquals(AuctionStatus.ENDED_WITH_WINNER, result.get(1).auctionStatus());
+        assertEquals("ENDED_WITH_WINNER", result.get(1).auctionStatus());
     }
 
     @Test
@@ -136,6 +139,7 @@ class US026AuctionMapperTest {
         // Arrange
         when(auction1.getListingId()).thenReturn(listingId1);
         when(auction1.id()).thenReturn(auctionId1);
+        when(auctionId1.getId()).thenReturn("auctionId1");
         when(auction1.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
 
         when(auction2.getListingId()).thenReturn(listingId2);

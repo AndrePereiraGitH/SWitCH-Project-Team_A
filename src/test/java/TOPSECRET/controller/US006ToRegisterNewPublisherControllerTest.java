@@ -23,7 +23,7 @@ class US006ToRegisterNewPublisherControllerTest {
     @Test
     void shouldBuildControllerSuccessfully() {
         // Arrange
-        // (no additional setup needed)
+
 
         // Act
         US006ToRegisterNewPublisherController ctrl =
@@ -36,7 +36,6 @@ class US006ToRegisterNewPublisherControllerTest {
     @Test
     void shouldThrowExceptionWhenRepositoryIsNull() {
         // Arrange
-        // (no additional setup needed)
 
         // Act + Assert
         assertThrows(NullPointerException.class,

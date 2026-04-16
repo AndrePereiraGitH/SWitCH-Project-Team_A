@@ -67,13 +67,31 @@ class US016PublicationSampleMapperTest {
     // ===================================================
 
     @Test
+    void fromDomain_shouldThrow_whenPublicationSampleIsNull() {
+        // act + assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> US016PublicationSampleMapper.fromDomain(null, bd));
+
+        assertEquals("PublicationSample cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void fromDomain_shouldThrow_whenBibliographicalDataIsNull() {
+        // act + assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> US016PublicationSampleMapper.fromDomain(publicationSample, null));
+
+        assertEquals("BibliographicalData is missing.", ex.getMessage());
+    }
+
+    @Test
     void fromDomain_shouldMapAllFieldsCorrectly() {
 
         // arrange
         Locale language = Locale.ENGLISH;
 
         when(publicationSample.id()).thenReturn(publicationSampleId);
+        when(publicationSampleId.getID()).thenReturn("publicationId");
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
+        when(ownerId.getUsername()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bd.getTitle()).thenReturn("The Hobbit");
@@ -92,12 +110,12 @@ class US016PublicationSampleMapperTest {
 
         // assert
         assertNotNull(dto);
-        assertEquals(publicationSampleId, dto.publicationSampleID());
+        assertEquals(publicationSampleId.getID(), dto.publicationSampleID());
         assertEquals("The Hobbit", dto.title());
         assertEquals(List.of("Author 1", "Author 2"), dto.authorName());
         assertEquals(language, dto.language());
         assertEquals(List.of("Fantasy", "Adventure"), dto.genreType());
-        assertEquals(ownerId, dto.ownerName());
+        assertEquals(ownerId.getUsername(), dto.ownerName());
         assertEquals("USED", dto.condition());
     }
 
@@ -108,7 +126,9 @@ class US016PublicationSampleMapperTest {
         Locale language = Locale.FRENCH;
 
         when(publicationSample.id()).thenReturn(publicationSampleId);
+        when(publicationSampleId.getID()).thenReturn("publicationId");
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
+        when(ownerId.getUsername()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bd.getTitle()).thenReturn("Dune");
@@ -124,12 +144,12 @@ class US016PublicationSampleMapperTest {
         US016PublicationSampleDTO dto = US016PublicationSampleMapper.fromDomain(publicationSample, bd);
 
         // assert
-        assertEquals(publicationSampleId, dto.publicationSampleID());
+        assertEquals(publicationSampleId.getID(), dto.publicationSampleID());
         assertEquals("Dune", dto.title());
         assertEquals(List.of("Frank Herbert"), dto.authorName());
         assertEquals(language, dto.language());
         assertEquals(List.of("Sci-Fi"), dto.genreType());
-        assertEquals(ownerId, dto.ownerName());
+        assertEquals(ownerId.getUsername(), dto.ownerName());
         assertEquals("NEW", dto.condition());
     }
 
@@ -144,8 +164,10 @@ class US016PublicationSampleMapperTest {
         Locale language = Locale.ENGLISH;
 
         when(publicationSample.id()).thenReturn(publicationSampleId);
+        when(publicationSampleId.getID()).thenReturn("publicationId");
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
+        when(ownerId.getUsername()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bdRepository.findBibliographicalDataById(bibliographicalDataId))
@@ -169,12 +191,12 @@ class US016PublicationSampleMapperTest {
 
         US016PublicationSampleDTO dto = result.get(0);
         assertNotNull(dto);
-        assertEquals(publicationSampleId, dto.publicationSampleID());
+        assertEquals(publicationSampleId.getID(), dto.publicationSampleID());
         assertEquals("The Hobbit", dto.title());
         assertEquals(List.of("Tolkien"), dto.authorName());
         assertEquals(language, dto.language());
         assertEquals(List.of("Fantasy"), dto.genreType());
-        assertEquals(ownerId, dto.ownerName());
+        assertEquals(ownerId.getUsername(), dto.ownerName());
         assertEquals("USED", dto.condition());
     }
 
@@ -194,7 +216,7 @@ class US016PublicationSampleMapperTest {
 
         // assert
         assertEquals(
-                "BibliographicalData not found for id: " + bibliographicalDataId,
+                "BibliographicalData not found for auctionId: " + bibliographicalDataId,
                 ex.getMessage()
         );
     }
