@@ -177,21 +177,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     void ensureMakeCollectionPublicThrowsExceptionWhenCollectionIdIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.makeCollectionPublic(null, testUserId));
-    }
-
-    @Test
-    void ensureMakeCollectionPublicThrowsExceptionWhenUserIdIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.makeCollectionPublic(testCollectionId, null));
-    }
-
-    @Test
-    void ensureMakeCollectionPublicThrowsExceptionWhenBothParametersAreNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.makeCollectionPublic(null, null));
+                controller.makeCollectionPublic(null));
     }
 
     @Test
@@ -202,6 +188,6 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         when(collection.getIsPrivate()).thenReturn(false);
 
         // Act & Assert — observable outcome: if isPrivate = false, collection is now public
-        assertFalse(controller.makeCollectionPublic(testCollectionId, testUserId));
+        assertFalse(controller.makeCollectionPublic(testCollectionId));
     }
 }

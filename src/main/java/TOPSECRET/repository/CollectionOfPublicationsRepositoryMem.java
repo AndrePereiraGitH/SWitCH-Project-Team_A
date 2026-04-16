@@ -138,10 +138,11 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         for (CollectionOfPublications collection : _collectionOfPublicationsList) {
             if (collection.id().equals(id)) {
-                return collection.set_isPrivate(false);
+                collection.set_isPrivate();
             }
         }
-        return true;
+
+        return false; // isPrivate = false, means its public
     }
 
     /**

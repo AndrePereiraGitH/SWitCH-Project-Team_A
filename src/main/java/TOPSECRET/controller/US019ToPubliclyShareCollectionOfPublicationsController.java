@@ -56,19 +56,14 @@ public class US019ToPubliclyShareCollectionOfPublicationsController {
      * after verifying it belongs to {@code userId}.
      *
      * @param collectionId the ID of the collection to make public; must not be null
-     * @param userId       the ID of the user requesting the change; must not be null
      * @throws IllegalArgumentException if either parameter is null,
      *                                  if the collection is not found,
      *                                  or if the collection does not belong to the user
      */
-    public boolean makeCollectionPublic(CollectionOfPublicationsID collectionId, UserId userId) {
+    public boolean makeCollectionPublic(CollectionOfPublicationsID collectionId) {
 
         if (collectionId == null) {
             throw new IllegalArgumentException("CollectionId cannot be null");
-        }
-
-        if (userId == null) {
-            throw new IllegalArgumentException("UserId cannot be null");
         }
 
         return _collectionRepo.makeCollectionPublic(collectionId);
