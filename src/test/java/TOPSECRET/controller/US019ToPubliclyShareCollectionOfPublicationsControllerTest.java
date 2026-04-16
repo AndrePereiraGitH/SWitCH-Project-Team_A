@@ -34,15 +34,15 @@ import static org.mockito.Mockito.when;
  */
 class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
 
-    private ICollectionOfPublicationsRepository mockRepository;
+    private ICollectionOfPublicationsRepository repositoryDouble;
     private US019ToPubliclyShareCollectionOfPublicationsController controller;
     private UserId testUserId;
     private CollectionOfPublicationsID testCollectionId;
 
     @BeforeEach
     void setUp() {
-        mockRepository = mock(ICollectionOfPublicationsRepository.class);
-        controller = new US019ToPubliclyShareCollectionOfPublicationsController(mockRepository);
+        repositoryDouble = mock(ICollectionOfPublicationsRepository.class);
+        controller = new US019ToPubliclyShareCollectionOfPublicationsController(repositoryDouble);
         testUserId = mock(UserId.class);
         testCollectionId = mock(CollectionOfPublicationsID.class);
     }
@@ -78,7 +78,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void ensureGetUserCollectionsReturnsEmptyListWhenUserHasNoCollections() {
         // Arrange
-        when(mockRepository.getUserCollections(testUserId)).thenReturn(new ArrayList<>());
+        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(new ArrayList<>());
 
         // Act
         List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
@@ -107,7 +107,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         when(col2.getOwnerId()).thenReturn(testUserId);
         when(genre2.getID()).thenReturn("drama");
 
-        when(mockRepository.getUserCollections(testUserId)).thenReturn(List.of(col1, col2));
+        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(col1, col2));
 
         // Act
         List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
@@ -128,7 +128,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         when(genre.getID()).thenReturn("fantasy");
         when(testUserId.getUsername()).thenReturn("bob");
 
-        when(mockRepository.getUserCollections(testUserId)).thenReturn(List.of(collection));
+        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(collection));
 
         // Act
         List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
@@ -160,7 +160,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
             mockCollections.add(collection);
         }
 
-        when(mockRepository.getUserCollections(testUserId)).thenReturn(mockCollections);
+        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(mockCollections);
 
         // Act
         List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
@@ -197,7 +197,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void ensureMakeCollectionPublicThrowsExceptionWhenCollectionNotFound() {
         // Arrange
-        when(mockRepository.findCollectionOfPublicationsById(testCollectionId))
+        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
                 .thenReturn(Optional.empty());
 
         // Act & Assert
@@ -214,7 +214,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
         when(collection.getOwnerId()).thenReturn(differentUserId);
-        when(mockRepository.findCollectionOfPublicationsById(testCollectionId))
+        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
                 .thenReturn(Optional.of(collection));
 
         // Act & Assert
@@ -230,12 +230,11 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
         when(collection.getOwnerId()).thenReturn(testUserId);
-        when(mockRepository.findCollectionOfPublicationsById(testCollectionId))
+        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
                 .thenReturn(Optional.of(collection));
 
-        // Act & Assert — no exception means success
-        assertDoesNotThrow(() ->
-                controller.makeCollectionPublic(testCollectionId, testUserId));
+        // Act & Assert — if isPrivate = false, collection is now public
+        assertFalse(controller.makeCollectionPublic(testCollectionId, testUserId));
     }
 
     @Test
@@ -245,13 +244,10 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
 
         when(collection.getOwnerId()).thenReturn(testUserId);
         when(collection.getIsPrivate()).thenReturn(false);
-        when(mockRepository.findCollectionOfPublicationsById(testCollectionId))
+        when(repositoryDouble.findCollectionOfPublicationsById(testCollectionId))
                 .thenReturn(Optional.of(collection));
 
-        // Act
-        controller.makeCollectionPublic(testCollectionId, testUserId);
-
-        // Assert — observable outcome: collection is now public
-        assertFalse(collection.getIsPrivate());
+        // Act & Assert — observable outcome: if isPrivate = false, collection is now public
+        assertFalse(controller.makeCollectionPublic(testCollectionId, testUserId));
     }
 }

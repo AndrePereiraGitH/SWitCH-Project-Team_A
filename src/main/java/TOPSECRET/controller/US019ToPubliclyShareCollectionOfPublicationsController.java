@@ -61,7 +61,7 @@ public class US019ToPubliclyShareCollectionOfPublicationsController {
      *                                  if the collection is not found,
      *                                  or if the collection does not belong to the user
      */
-    public void makeCollectionPublic(CollectionOfPublicationsID collectionId, UserId userId) {
+    public boolean makeCollectionPublic(CollectionOfPublicationsID collectionId, UserId userId) {
 
         if (collectionId == null) {
             throw new IllegalArgumentException("CollectionId cannot be null");
@@ -82,6 +82,8 @@ public class US019ToPubliclyShareCollectionOfPublicationsController {
         }
 
         collection.set_isPrivate(false);
+
+        return collection.getIsPrivate();
     }
 }
 
