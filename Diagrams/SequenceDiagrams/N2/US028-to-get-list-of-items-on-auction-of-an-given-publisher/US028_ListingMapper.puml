@@ -1,0 +1,40 @@
+@startuml
+
+hide footbox
+autonumber
+title US028 - Listing mapping details
+
+participant ":US028ToGetTheListOfItemsOn\nAuctionOfAGivenPublisherController" as Ctrl
+participant ":US028ListingMapper" as ListingMapper
+participant "listOfListings:\nList<Listing>" as ListListings
+participant ":Listing" as Listing
+participant ":US028ListingDTO" as ListingDTO
+participant "listOfListingsDTO:\nList<US028ListingDTO>" as ListListingsDTO
+
+Ctrl -> ListingMapper: toDTO(listOfListings)
+activate ListingMapper
+ListingMapper -> ListListingsDTO ** : create()
+
+loop for each listing
+    ListingMapper -> Listing: id()
+    activate Listing
+    Listing -->> ListingMapper: listingId
+
+    ListingMapper -> Listing: getPrice()
+    Listing -->> ListingMapper: price
+
+    ListingMapper -> Listing: getShortDescription()
+    Listing -->> ListingMapper: shortDescription
+
+    ListingMapper -> Listing: getListingTitle()
+    Listing -->> ListingMapper: listingTitle
+    deactivate Listing
+
+    ListingMapper -> ListingDTO ** : create(listingId.toString(), price.toString(), shortDescription, listingTitle)
+    ListingMapper -> ListListingsDTO: add(dto)
+end
+
+ListingMapper -->> Ctrl: listOfListingsDTO
+deactivate ListingMapper
+
+@enduml

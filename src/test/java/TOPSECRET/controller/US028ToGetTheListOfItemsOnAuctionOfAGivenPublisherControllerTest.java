@@ -1,59 +1,80 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.dto.PublisherDTO_US028;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
+import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.PublisherID;
+import TOPSECRET.dto.US028ListingDTO;
+import TOPSECRET.dto.US028ListingMapper;
+import TOPSECRET.dto.US028PublisherDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
-    // ===============================================
-    // ================== Set Up =====================
-    // ===============================================
-
-    IPublisherRepository publisherRepoDouble;
-    IListingRepository listingRepoDouble;
-    IPublicationSampleRepository pubSampleRepoDouble;
-
-    US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller;
+    private IPublisherRepository publisherRepoDouble;
+    private IListingRepository listingRepoDouble;
+    private IPublicationSampleRepository pubSampleRepoDouble;
+    private IEditionRepository editionRepoDouble;
+    private US028ListingMapper listingMapperDouble;
 
     @BeforeEach
     void setUp() {
         publisherRepoDouble = mock(IPublisherRepository.class);
         listingRepoDouble = mock(IListingRepository.class);
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
+        editionRepoDouble = mock(IEditionRepository.class);
+        listingMapperDouble = mock(US028ListingMapper.class);
     }
 
     // ===============================================
-    // ================== Tests ======================
+    // =============== getAllPublishers ==============
     // ===============================================
-
-    // ======= getAllPublishers ========================================================================================
 
     @Test
     void getAllPublishers_ShouldConvertPublishersToDTOs() {
         // Arrange
         Publisher pub1 = mock(Publisher.class);
         Publisher pub2 = mock(Publisher.class);
+
+        PublisherID publisherId1 = mock(PublisherID.class);
+        PublisherID publisherId2 = mock(PublisherID.class);
+
+        when(pub1.getName()).thenReturn("Publisher One");
+        when(pub1.id()).thenReturn(publisherId1);
+
+        when(pub2.getName()).thenReturn("Publisher Two");
+        when(pub2.id()).thenReturn(publisherId2);
+
         when(publisherRepoDouble.getAllPublishers()).thenReturn(List.of(pub1, pub2));
 
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
 
         // Act
-        List<PublisherDTO_US028> result = controller.getAllPublishers();
+        List<US028PublisherDTO> result = controller.getAllPublishers();
 
         // Assert
         assertEquals(2, result.size());
+
+        assertEquals("Publisher One", result.get(0).name());
+        assertEquals(publisherId1, result.get(0).publisherId());
+
+        assertEquals("Publisher Two", result.get(1).name());
+        assertEquals(publisherId2, result.get(1).publisherId());
     }
 
     @Test
@@ -61,134 +82,267 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Arrange
         when(publisherRepoDouble.getAllPublishers()).thenReturn(List.of());
 
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
 
         // Act
-        List<PublisherDTO_US028> result = controller.getAllPublishers();
+        List<US028PublisherDTO> result = controller.getAllPublishers();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ===============================================
+    // ===== findListOfItemsOnAuctionByPublisher =====
+    // ===============================================
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldThrowWhenPublisherIdIsNull() {
+        // Arrange
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findListOfItemsOnAuctionByPublisherId(null));
+    }
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldReturnEmptyListWhenNoEditionsFound()  throws InstanceNotFoundException {
+        // Arrange
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+                .thenReturn(List.of());
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of()))
+                .thenReturn(List.of());
+        when(listingRepoDouble.getAuctionListingsContaining(List.of()))
+                .thenReturn(List.of());
+        when(listingMapperDouble.toDTO(List.of()))
+                .thenReturn(List.of());
+
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act
+        List<US028ListingDTO> result = controller.findListOfItemsOnAuctionByPublisherId(publisherIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAllPublishers_ShouldPropagateExceptionFromRepository() {
+    void findListOfItemsOnAuctionByPublisherId_ShouldReturnEmptyListWhenNoListingsFound() throws InstanceNotFoundException {
         // Arrange
-        when(publisherRepoDouble.getAllPublishers()).thenThrow(new RuntimeException("DB error"));
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionIdDouble);
+        PublicationSampleId sampleIdDouble = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleIdDouble);
 
-        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+                .thenReturn(editionIds);
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+                .thenReturn(sampleIds);
+        when(listingRepoDouble.getAuctionListingsContaining(sampleIds))
+                .thenReturn(List.of());
+        when(listingMapperDouble.toDTO(List.of()))
+                .thenReturn(List.of());
 
-        // Act + Assert
-        assertThrows(RuntimeException.class, () -> controller.getAllPublishers());
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act
+        List<US028ListingDTO> result = controller.findListOfItemsOnAuctionByPublisherId(publisherIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
-    // ======= findListOfItemsOnAuctionByPublisher ==================================================================
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldReturnConvertedDTOs()  throws InstanceNotFoundException {
+        // Arrange
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionIdDouble);
+        PublicationSampleId sampleIdDouble = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleIdDouble);
+        Listing listingDouble = mock(Listing.class);
+        US028ListingDTO listingDTODouble = mock(US028ListingDTO.class);
 
-//    @Test
-//    void findListOfItemsOnAuctionByPublisher_ShouldReturnEmptyListWhenNoItemsFound() {
-//        // Arrange
-//        Publisher publisher = mock(Publisher.class);
-//        when(listingRepoDouble.findAllAuctionListings()).thenReturn(List.of());
-//        when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any()))
-//                .thenReturn(List.of());
-//
-//        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-//                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-//
-//        // Act
-//        List<PublicationSampleDTO_US028> result =
-//                controller.findListOfItemsOnAuctionByPublisher(publisher);
-//
-//        // Assert
-//        assertTrue(result.isEmpty());
-//    }
-//
-//    @Test
-//    void findListOfItemsOnAuctionByPublisher_ShouldPropagateExceptionFromListingRepoDouble() {
-//        // Arrange
-//        Publisher publisher = mock(Publisher.class);
-//        when(listingRepoDouble.findAllAuctionListings())
-//                .thenThrow(new RuntimeException("DB error"));
-//
-//        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-//                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-//
-//        // Act + Assert
-//        assertThrows(RuntimeException.class,
-//                () -> controller.findListOfItemsOnAuctionByPublisher(publisher));
-//    }
-//
-//    @Test
-//    void findListOfItemsOnAuctionByPublisher_ShouldPropagateExceptionFromPubSampleRepo() {
-//        // Arrange
-//        Publisher publisher = mock(Publisher.class);
-//        when(listingRepoDouble.findAllAuctionListings()).thenReturn(List.of());
-//        when(pubSampleRepoDouble.findItemsByListingAndPublisher(any(), any()))
-//                .thenThrow(new RuntimeException("DB error"));
-//
-//        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-//                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-//
-//        // Act + Assert
-//        assertThrows(RuntimeException.class,
-//                () -> controller.findListOfItemsOnAuctionByPublisher(publisher));
-//    }
-//
-//    @Test
-//    void findListOfItemsOnAuctionByPublisher_ShouldReturnConvertedDTOs() {
-//        // Arrange
-//        Publisher publisher = mock(Publisher.class);
-//
-//        Listing listing = mock(Listing.class);
-//        PublicationSample sample = mock(PublicationSample.class);
-//
-//        when(listingRepoDouble.findAllAuctionListings()).thenReturn(List.of(listing));
-//        when(pubSampleRepoDouble.findItemsByListingAndPublisher(List.of(listing), publisher))
-//                .thenReturn(List.of(sample));
-//
-//        BibliographicalData bd = mock(BibliographicalData.class);
-//        when(sample.getBibliographicalData()).thenReturn(bd);
-//        when(bd.getTitle()).thenReturn("title1");
-//        when(bd.getAuthors()).thenReturn(List.of());
-//        when(bd.getGenres()).thenReturn(List.of());
-//
-//        User owner = mock(User.class);
-//        when(sample.getOwner()).thenReturn(owner);
-//        when(owner.getUserName()).thenReturn("u");
-//
-//        PublicationStatus status = mock(PublicationStatus.class);
-//        when(sample.getPublicationStatus()).thenReturn(status);
-//        when(status.toString()).thenReturn("S");
-//
-//        Edition edition = mock(Edition.class);
-//        when(sample.getEdition()).thenReturn(edition);
-//        when(edition.getEditionNumber()).thenReturn("1");
-//        Code code = mock(Code.class);
-//        when(edition.getCode()).thenReturn(code);
-//        when(code.toString()).thenReturn("C");
-//        PublicationType type = mock(PublicationType.class);
-//        when(edition.getPublicationType()).thenReturn(type);
-//        String format = "Book";
-//        when(type.getMediaFormat()).thenReturn(format);
-//        when(edition.getEditionLanguage()).thenReturn(Locale.US);
-//        Publisher pub = mock(Publisher.class);
-//        when(edition.getPublisher()).thenReturn(pub);
-//        when(pub.getName()).thenReturn("P");
-//
-//        Condition cond = mock(Condition.class);
-//        when(sample.getCondition()).thenReturn(cond);
-//        when(cond.toString()).thenReturn("NEW");
-//
-//        controller = new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
-//                publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble);
-//
-//        // Act
-//        List<PublicationSampleDTO_US028> result =
-//                controller.findListOfItemsOnAuctionByPublisher(publisher);
-//
-//        // Assert
-//        assertEquals(1, result.size());
-//    }
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+                .thenReturn(editionIds);
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))  // whole list, not single EditionID
+                .thenReturn(sampleIds);
+        when(listingRepoDouble.getAuctionListingsContaining(sampleIds))
+                .thenReturn(List.of(listingDouble));
+        when(listingMapperDouble.toDTO(List.of(listingDouble)))
+                .thenReturn(List.of(listingDTODouble));
 
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act
+        List<US028ListingDTO> result = controller.findListOfItemsOnAuctionByPublisherId(publisherIdDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(listingDTODouble, result.get(0));
+    }
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_MultipleEditions_ShouldReturnAllMatchingDTOs() throws InstanceNotFoundException {
+        // Arrange
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+
+        EditionID editionId1 = mock(EditionID.class);
+        EditionID editionId2 = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionId1, editionId2);  // whole list passed at once
+
+        PublicationSampleId sampleId1 = mock(PublicationSampleId.class);
+        PublicationSampleId sampleId2 = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId1, sampleId2);
+
+        Listing listing1 = mock(Listing.class);
+        Listing listing2 = mock(Listing.class);
+
+        US028ListingDTO dto1 = mock(US028ListingDTO.class);
+        US028ListingDTO dto2 = mock(US028ListingDTO.class);
+
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+                .thenReturn(editionIds);
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+                .thenReturn(sampleIds);
+        when(listingRepoDouble.getAuctionListingsContaining(sampleIds))
+                .thenReturn(List.of(listing1, listing2));
+        when(listingMapperDouble.toDTO(List.of(listing1, listing2)))
+                .thenReturn(List.of(dto1, dto2));
+
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act
+        List<US028ListingDTO> result = controller.findListOfItemsOnAuctionByPublisherId(publisherIdDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertSame(dto1, result.get(0));
+        assertSame(dto2, result.get(1));
+    }
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldPropagateExceptionFromEditionRepo() {
+        // Arrange
+        PublisherID publisherId = mock(PublisherID.class);
+
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+                .thenThrow(new RuntimeException("DB error"));
+
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act + Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> controller.findListOfItemsOnAuctionByPublisherId(publisherId));
+
+        assertEquals("DB error", ex.getMessage());
+    }
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldPropagateExceptionFromPublicationSampleRepo() {
+        // Arrange
+        PublisherID publisherId = mock(PublisherID.class);
+        EditionID editionId = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionId);
+
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+                .thenReturn(editionIds);
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+                .thenThrow(new RuntimeException("DB error"));
+
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act + Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> controller.findListOfItemsOnAuctionByPublisherId(publisherId));
+
+        assertEquals("DB error", ex.getMessage());
+    }
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldPropagateExceptionFromListingRepo() {
+        // Arrange
+        PublisherID publisherId = mock(PublisherID.class);
+        EditionID editionId = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionId);
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId);
+
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+                .thenReturn(editionIds);
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+                .thenReturn(sampleIds);
+        when(listingRepoDouble.getAuctionListingsContaining(sampleIds))
+                .thenThrow(new RuntimeException("DB error"));
+
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act + Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> controller.findListOfItemsOnAuctionByPublisherId(publisherId));
+
+        assertEquals("DB error", ex.getMessage());
+    }
+
+    @Test
+    void findListOfItemsOnAuctionByPublisherId_ShouldPropagateExceptionFromMapper() {
+        // Arrange
+        PublisherID publisherId = mock(PublisherID.class);
+        EditionID editionId = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionId);
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId);
+        Listing listing = mock(Listing.class);
+
+        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+                .thenReturn(editionIds);
+        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+                .thenReturn(sampleIds);
+        when(listingRepoDouble.getAuctionListingsContaining(sampleIds))
+                .thenReturn(List.of(listing));
+        when(listingMapperDouble.toDTO(List.of(listing)))
+                .thenThrow(new RuntimeException("Mapping error"));
+
+        US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
+                new US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble,
+                        listingMapperDouble, editionRepoDouble);
+
+        // Act + Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> controller.findListOfItemsOnAuctionByPublisherId(publisherId));
+
+        assertEquals("Mapping error", ex.getMessage());
+    }
 }
