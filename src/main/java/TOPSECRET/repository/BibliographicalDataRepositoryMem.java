@@ -155,7 +155,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      * {@inheritDoc}
      */
     @Override
-    public List<BibliographicalData> findByAuthorId(AuthorId authorId) {
+    public List<BibliographicalData> findBibliographicalDataByAuthorId(AuthorId authorId) {
         if (authorId == null)
             throw new IllegalArgumentException("authorId must not be null");
 

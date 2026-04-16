@@ -50,12 +50,14 @@ activate AuthorRepository
 AuthorRepository --> Ctrl : author
 deactivate AuthorRepository
 
-Ctrl -> BibliographicalDataRepository : findByAuthorId(authorId)
+Ctrl -> BibliographicalDataRepository : findBibliographicalDataByAuthorId(authorId)
 activate BibliographicalDataRepository
 BibliographicalDataRepository --> Ctrl : bds
 deactivate BibliographicalDataRepository
 
-Ctrl -> PublicationSampleRepository : findByBibliographicalData(bds)
+Ctrl -> Ctrl : extractBDIds(bds)
+
+Ctrl -> PublicationSampleRepository : findPublicationSampleByBibliographicalDataId(bd Ids)
 activate PublicationSampleRepository
 PublicationSampleRepository --> Ctrl : samples
 deactivate PublicationSampleRepository
@@ -67,7 +69,7 @@ activate ListingRepository
 ListingRepository --> Ctrl : listings
 deactivate ListingRepository
 
-Ctrl -> Mapper : toDTO(author, listings, samples, bds)
+Ctrl -> Mapper : toDTOs(author, listings, samples, bds)
 activate Mapper
 Mapper --> Ctrl : listOfDirectSaleDTOs
 deactivate Mapper

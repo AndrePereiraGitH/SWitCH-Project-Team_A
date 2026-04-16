@@ -10,6 +10,7 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.dto.US025AuthorDTO;
 import TOPSECRET.dto.US025AuthorMapper;
 import TOPSECRET.dto.US025DirectSaleDTO;
@@ -80,22 +81,26 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      * @return list of DirectSaleDTO_US025 representing the author's direct sale items
      * @throws IllegalArgumentException if authorId is null or blank, or if the author is not found
      */
-    public List<US025DirectSaleDTO> getListOfItemsOnDirectSaleOfAGivenAuthor(String authorId)
+    public List<US025DirectSaleDTO> getListOfItemsOnDirectSaleOfAGivenAuthor(AuthorId authorId)
             throws IllegalArgumentException {
 
         if (authorId == null)
             throw new IllegalArgumentException("AuthorID cannot be null");
 
-        AuthorId id = new AuthorId(authorId);
-
-        Author author = authorRepository.findAuthorById(id)
+        Author author = authorRepository.findAuthorById(authorId)
                 .orElseThrow(() -> new IllegalArgumentException("Author not found"));
 
-        List<BibliographicalData> bds = bibliographicalDataRepository.findByAuthorId(id);
-        List<PublicationSample> samples = publicationSampleRepository.findByBibliographicalData(bds);
+        AuthorId id = author.id();
+
+        List<BibliographicalData> bds = bibliographicalDataRepository.findBibliographicalDataByAuthorId(id);
+
+        List<BibliographicalDataID> bdIds = extractBibliographicalDataIds(bds);
+
+        List<PublicationSample> samples = publicationSampleRepository.findPublicationSampleByBibliographicalDataIds(bdIds);
+
         List<PublicationSampleId> sampleIds = extractIds(samples);
         List<Listing> listings = listingRepository.findDirectSaleListingsContaining(sampleIds);
-        return US025DirectSaleMapper.toDTO(author, listings, samples, bds);
+        return US025DirectSaleMapper.toDTOs(author, listings, samples, bds);
     }
 
     /**
@@ -108,6 +113,20 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         List<PublicationSampleId> ids = new ArrayList<>();
         for (PublicationSample ps : samples) {
             ids.add(ps.id());
+        }
+        return ids;
+    }
+
+    /**
+     * Helper to extract the identifiers from a list of {@link BibliographicalData} instances.
+     *
+     * @param bds the list of bibliographical data; must not be {@code null}
+     * @return a list of {@link BibliographicalDataID} in the same order as the input; never {@code null}
+     */
+    private List<BibliographicalDataID> extractBibliographicalDataIds(List<BibliographicalData> bds) {
+        List<BibliographicalDataID> ids = new ArrayList<>();
+        for (BibliographicalData bd : bds) {
+            ids.add(bd.id());
         }
         return ids;
     }

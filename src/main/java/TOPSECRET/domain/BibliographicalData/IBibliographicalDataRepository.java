@@ -110,8 +110,6 @@ public interface IBibliographicalDataRepository {
      * <p>Iterates through all stored bibliographical data entries and returns
      * the first one whose ID matches the provided {@link BibliographicalDataID}.</p>
      *
-     * @param bibliographicalDataId the unique identifier of the bibliographical data
-     *                              to search for; must not be {@code null}
      * @return an {@link Optional} containing the matching {@link BibliographicalData}
      * if found, or an empty {@link Optional} if no entry with the given ID exists
      * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
@@ -121,8 +119,6 @@ public interface IBibliographicalDataRepository {
     List<String> getAllTitles();
 
 
-
-
     /**
      * Returns all {@link BibliographicalData} records that include the given author.
      *
@@ -130,5 +126,5 @@ public interface IBibliographicalDataRepository {
      * @return a list of bibliographical data records; never {@code null}, may be empty
      * @throws IllegalArgumentException if {@code authorId} is {@code null}
      */
-    List<BibliographicalData> findByAuthorId(AuthorId authorId);
+    List<BibliographicalData> findBibliographicalDataByAuthorId(AuthorId authorId);
 }

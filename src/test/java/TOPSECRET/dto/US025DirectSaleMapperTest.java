@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class US025DirectSaleMapperTest {
 
     @Test
-    void toDTO_whenValidInputs_shouldMapFieldsCorrectly() {
+    void toDTOs_whenValidInputs_shouldMapFieldsCorrectly() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
@@ -57,7 +57,7 @@ class US025DirectSaleMapperTest {
         when(bdDouble.getTitle()).thenReturn("Title One");
 
         // Act
-        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTO(
+        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTOs(
                 authorDouble,
                 List.of(listingDouble),
                 List.of(sampleDouble),
@@ -75,17 +75,17 @@ class US025DirectSaleMapperTest {
     }
 
     @Test
-    void toDTO_whenAuthorIsNull_shouldThrowException() {
+    void toDTOs_whenAuthorIsNull_shouldThrowException() {
 
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> US025DirectSaleMapper.toDTO(null, List.of(), List.of(), List.of())
+                () -> US025DirectSaleMapper.toDTOs(null, List.of(), List.of(), List.of())
         );
     }
 
     @Test
-    void toDTO_whenListingsIsNull_shouldThrowException() {
+    void toDTOs_whenListingsIsNull_shouldThrowException() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
@@ -93,12 +93,12 @@ class US025DirectSaleMapperTest {
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> US025DirectSaleMapper.toDTO(authorDouble, null, List.of(), List.of())
+                () -> US025DirectSaleMapper.toDTOs(authorDouble, null, List.of(), List.of())
         );
     }
 
     @Test
-    void toDTO_whenBibliographicalDataIsNull_shouldThrowException() {
+    void toDTOs_whenBibliographicalDataIsNull_shouldThrowException() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
@@ -106,18 +106,18 @@ class US025DirectSaleMapperTest {
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> US025DirectSaleMapper.toDTO(authorDouble, List.of(), List.of(), null)
+                () -> US025DirectSaleMapper.toDTOs(authorDouble, List.of(), List.of(), null)
         );
     }
 
     @Test
-    void toDTO_whenEmptyListings_shouldReturnEmptyList() {
+    void toDTOs_whenEmptyListings_shouldReturnEmptyList() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
 
         // Act
-        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTO(
+        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTOs(
                 authorDouble, List.of(), List.of(), List.of()
         );
 
@@ -143,7 +143,7 @@ class US025DirectSaleMapperTest {
     }
 
     @Test
-    void toDTO_whenSamplesIsNull_shouldThrowException() {
+    void toDTOs_whenSamplesIsNull_shouldThrowException() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
@@ -151,12 +151,12 @@ class US025DirectSaleMapperTest {
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> US025DirectSaleMapper.toDTO(authorDouble, List.of(), null, List.of())
+                () -> US025DirectSaleMapper.toDTOs(authorDouble, List.of(), null, List.of())
         );
     }
 
     @Test
-    void toDTO_whenSampleNotFoundForListingItem_shouldSkipItem() {
+    void toDTOs_whenSampleNotFoundForListingItem_shouldSkipItem() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
@@ -172,7 +172,7 @@ class US025DirectSaleMapperTest {
         when(sampleDouble.id()).thenReturn(differentPsIdDouble);
 
         // Act
-        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTO(
+        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTOs(
                 authorDouble, List.of(listingDouble), List.of(sampleDouble), List.of()
         );
 
@@ -182,7 +182,7 @@ class US025DirectSaleMapperTest {
     }
 
     @Test
-    void toDTO_whenBdNotFoundForSample_shouldSkipItem() {
+    void toDTOs_whenBdNotFoundForSample_shouldSkipItem() {
 
         // Arrange
         Author authorDouble = mock(Author.class);
@@ -203,7 +203,7 @@ class US025DirectSaleMapperTest {
         when(bdDouble.id()).thenReturn(differentBdIdDouble);
 
         // Act
-        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTO(
+        List<US025DirectSaleDTO> result = US025DirectSaleMapper.toDTOs(
                 authorDouble, List.of(listingDouble), List.of(sampleDouble), List.of(bdDouble)
         );
 

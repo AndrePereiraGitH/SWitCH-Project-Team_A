@@ -28,7 +28,7 @@ public class US025DirectSaleMapper {
      * @return a list of {@link US025DirectSaleDTO}; never {@code null}, may be empty
      * @throws IllegalArgumentException if any parameter is {@code null}
      */
-    public static List<US025DirectSaleDTO> toDTO(Author author, List<Listing> listings, List<PublicationSample> samples, List<BibliographicalData> bds) {
+    public static List<US025DirectSaleDTO> toDTOs(Author author, List<Listing> listings, List<PublicationSample> samples, List<BibliographicalData> bds) {
 
         if (author == null)
             throw new IllegalArgumentException("Author cannot be null");
