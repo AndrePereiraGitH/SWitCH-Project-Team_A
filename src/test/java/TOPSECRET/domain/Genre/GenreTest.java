@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Genre;
 
+import TOPSECRET.domain.ValueObjects.GenreID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,7 +59,7 @@ class GenreTest {
         //Arrange
         Genre g1 = new Genre("Fantasy");
         //Act & Assert
-        assertEquals(g1, g1); // ✅ same reference = same ID
+        assertEquals(g1, g1);
     }
 
     // equals() — two genres with the same type ARE now equal (ID is based on genreType)
@@ -113,5 +114,62 @@ class GenreTest {
         //Assert
         assertFalse(genre.equals(null));
         assertFalse(genre.equals("not a genre"));
+    }
+
+    // Kills NO_COVERAGE on id()
+    @Test
+    void idShouldReturnGenreID() {
+        // Arrange
+        Genre genre = new Genre("Fantasy");
+
+        // Act
+        GenreID id = genre.id();
+
+        // Assert
+        assertNotNull(id);
+    }
+
+    // Kills SURVIVED on sameAs() returns true
+    @Test
+    void sameAsShouldReturnFalseForDifferentGenres() {
+        // Arrange
+        Genre genre1 = new Genre("Fantasy");
+        Genre genre2 = new Genre("Science Fiction");
+
+        // Act & Assert
+        assertFalse(genre1.sameAs(genre2));
+    }
+
+    // Kills NO_COVERAGE on sameAs() line 48
+    @Test
+    void sameAsShouldReturnFalseForNonGenreObject() {
+        // Arrange
+        Genre genre = new Genre("Fantasy");
+
+        // Act & Assert
+        assertFalse(genre.sameAs("not a genre"));
+    }
+    @Test
+    void hashCodeShouldNotBeZeroForValidGenre() {
+        // Arrange
+        Genre genre = new Genre("Fantasy");
+
+        // Act
+        int hashCode = genre.hashCode();
+
+        // Assert
+        assertNotEquals(0, hashCode);
+    }
+
+    @Test
+    void hashCodeShouldBeConsistentWithEquals() {
+        // Arrange
+        Genre genre1 = new Genre("Fantasy");
+        Genre genre2 = new Genre("Fantasy");
+        Genre genre3 = new Genre("Science Fiction");
+
+        // Act & Assert
+        assertEquals(genre1.hashCode(), genre2.hashCode());
+        assertNotEquals(genre1.hashCode(), genre3.hashCode());
     }
 }

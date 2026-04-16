@@ -1,56 +1,87 @@
 @startuml
 skinparam classAttributeIconSize 0
 
-title US020 - Get list of public lists by a given genre
+title US020 - Class Diagram
 
-class US020_PublicListByGenreController {
-  - _genreRepository : GenreRepository
-  - _collectionRepo : CollectionOfPublicationsRepository
-  + getGenres() : List<Genre>
-  + getPublicListsByGenre(genre : Genre) : List<CollectionOfPublicationsDTO>
+class US020PublicListByGenreController {
+  -_genreRepo : IGenreRepository
+  -_collectionRepo : ICollectionOfPublicationsRepository
+  -_userRepo : IUserRepository
+  +getGenres() : List<US013GenreDTO>
+  +getPublicListsByGenre(genreId : GenreId) : List<US020CollectionOfPublicationsDTO>
 }
 
-class GenreRepository {
-  + getAllGenres() : List<Genre>
+Interface IGenreRepository {
+  +getAllGenres() : List<Genre>
 }
 
-class CollectionOfPublicationsRepository {
-  + findPublicByGenre(genre : Genre) : List<CollectionOfPublicationsDTO>
+Interface ICollectionOfPublicationsRepository {
+  +findPublicCollectionsByGenreId(genreId : GenreId) : List<CollectionOfPublications>
+}
+
+class US020CollectionOfPublicationsDTOMapper {
+  -userRepo : IUserRepository
+  +toDTO(collections : List<CollectionOfPublications>) : List<US020CollectionOfPublicationsDTO>
+}
+
+Interface IUserRepository {
+  +findById(userId : UserId) : Optional<User>
+}
+
+class CollectionOfPublications <<AggregateRoot>> {
+  -_collectionName : String
+  -_ownerId : String
+  -_isPrivate : boolean
+  -_collectionGenreId : GenreID
+  +getCollectionName() : String
+  +getOwnerId() : UserId
+  +getIsPrivate() : boolean
+  +getCollectionGenre() : GenreID
 }
 
 class Genre {
-  - _genreType : String
+  -_id : GenreID
+  -_genreType : String
+  +id() : GenreID
+  +getGenreType() : String
 }
 
 class User {
-  - _userName : String
+  -userId : String
+  -userName : String
+  +getUserName() : String
 }
 
-class CollectionOfPublications {
-  - _collectionName : String
-  - _isPrivate : boolean
-  - _collectionGenre : Genre
-  - _owner : User
-  - _collectionOfPublications : List<Publication>
-  + getCollectionGenre() : Genre
-  + getCollectionName() : String
-  + getIsPrivate() : boolean
-  + getOwner() : User
+class US013GenreDTO {
+  -genreName : String
 }
 
-class CollectionOfPublicationsDTO {
-  - listName : String
-  - ownerUsername : String
+class US020CollectionOfPublicationsDTO {
+  -collectionName : String
+  -userName : String
 }
 
-US020_PublicListByGenreController ..> GenreRepository : uses
-US020_PublicListByGenreController ..> CollectionOfPublicationsRepository : uses
+class US013GenreDTOMapper {
+  +toDTO(List<Genre> genres) : List<US013GenreDTO>
+}
 
-CollectionOfPublicationsRepository "1" --> "0..*" CollectionOfPublications : has
+UI020 --> US020PublicListByGenreController : uses
 
-CollectionOfPublications "0..*" --> "1" Genre : genre
-CollectionOfPublications "0..*" --> "1" User : owner
+US020PublicListByGenreController --> IGenreRepository : uses
+US020PublicListByGenreController --> ICollectionOfPublicationsRepository : uses
+US020PublicListByGenreController --> US020CollectionOfPublicationsDTOMapper : uses
+US020PublicListByGenreController --> US013GenreDTOMapper : uses
 
-CollectionOfPublicationsRepository ..> CollectionOfPublicationsDTO : returns
+US020CollectionOfPublicationsDTOMapper --> IUserRepository : uses
+
+CollectionOfPublications --> Genre : has
+US013GenreDTOMapper ..> US013GenreDTO : creates
+US013GenreDTO ..> Genre : created from
+US020CollectionOfPublicationsDTO ..> CollectionOfPublications : created from
+US020CollectionOfPublicationsDTOMapper ..> US020CollectionOfPublicationsDTO : creates
+
+IUserRepository --> User : retrieves
+ICollectionOfPublicationsRepository --> CollectionOfPublications : retrieves
+IGenreRepository --> Genre : retrieves
 
 @enduml

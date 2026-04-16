@@ -123,7 +123,9 @@ class GenreRepositoryMemTest {
     @Test
     void shouldThrowExceptionWhenGenreNotFound() {
         // Arrange
-        IGenreRepository repository = new GenreRepositoryMem(genreFactory);
+        GenreFactory realFactory = new GenreFactory();
+        IGenreRepository repository = new GenreRepositoryMem(realFactory);
+        repository.createAndAdd("Fantasy");
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -189,5 +191,30 @@ class GenreRepositoryMemTest {
         Optional<Genre> result = repo.findGenreById(genreId);
 
         assertTrue(result.isEmpty());
+    }
+    @Test
+    void findGenreById_shouldReturnCorrectGenre_whenMultipleGenresExist() {
+        // Arrange
+        GenreFactory realFactory = new GenreFactory();
+        GenreRepositoryMem repo = new GenreRepositoryMem(realFactory);
+
+        repo.createAndAdd("Fantasy");
+        Genre genre2 = repo.createAndAdd("Science Fiction");
+
+        GenreID id2 = genre2.id();
+
+        // Act
+        Optional<Genre> result = repo.findGenreById(id2);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals("science fiction", result.get().id().getID());
+    }
+
+    @Test
+    void shouldThrowWhenGenreFactoryIsNull() {
+        // Arrange & Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new GenreRepositoryMem(null));
     }
 }

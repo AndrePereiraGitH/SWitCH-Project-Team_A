@@ -93,16 +93,13 @@ public class US011AddPublicationToLibraryController {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        // Step 1: get the user's library and its ID
         Library library = _libraryRepository.getLibraryByUserId(userId);
         LibraryId libraryId = library.id();
 
-        // Step 2: get the selected publication sample
         PublicationSample publicationSample = _publicationSampleRepository
                 .findPublicationSampleById(publicationSampleId)
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
 
-        // Step 3: associate the publication with the library
         _publicationSampleRepository.addPublicationToLibrary(publicationSample, libraryId);
 
         return true;

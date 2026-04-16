@@ -16,11 +16,10 @@ participant "listOfPublications \n :List<PublicationSample>" as listPub
 participant "listOfPublicationSamples \n :List<PublicationSample>" as listPubSelected
 
 
-participant ":PublicationSampleMapper_US016" as pubMapper
+participant ":US016PublicationSampleMapper" as pubMapper
 
 participant "listOfPublicationsDTO \n: List<PublicationSampleDTO" as listPubDTO
-
-participant ":PublicationSample" as pubSample
+participant "pubDTO \n:US016PublicationSampleDto" as pubDto
 
 
 
@@ -29,7 +28,7 @@ participant ":ListingRepository" as ListingRepo
 
 participant ":ListingFactory" as ListingFactory
 
-participant "listing :Listing" as listing
+participant "auctionListing :Listing" as listing
 participant ":IAuctionRepository" as AucRepo
 
 participant ":AuctionFactory" as AuctionFactory
@@ -52,7 +51,7 @@ deactivate LibRepo
 ctrl -> pubRepo : getAllPublicationsInLibrary(LibraryId)
 activate pubRepo
 
-pubRepo --> listPub **: <<create>>
+pubRepo -->> listPub **: <<create>>
 
 pubRepo --> ctrl : listOfPublications
 deactivate pubRepo
@@ -60,17 +59,12 @@ deactivate pubRepo
 'create "listOfPublicationsDTO : List<PublicationSampleDTO" as pubDtoList
 ctrl -> pubMapper : fromDomainList(listOfPublications)
 activate pubMapper
-pubMapper --> listPubDTO ** : <<create>>
+pubMapper -->> listPubDTO ** : <<create>>
 
-loop for each PublicationAmple in Library
+loop for each PublicationSample in Library
     '--------
-    pubMapper -> pubSample : getDetails()
-    activate pubSample
-    pubSample --> pubMapper : dtoDetails
-    deactivate pubSample
 
-
-    pubMapper -> pubMapper : toDto
+    pubMapper -> pubDto** : fromDomain(publicationSample)
     pubMapper -> pubMapper : listOfPublicationsDTO.add(pubDto)
 end
     pubMapper --> ctrl : listOfPublicationsDTO
@@ -92,54 +86,40 @@ UI --> User : Please, insert listingPrice, shortDescription, \n listingTitle, se
 deactivate UI
 User -> UI : provide data
 activate UI
-UI -> ctrl : createAuctionListing(listingTitle, selectedPublicationsID, price, \n shortDescription, pictures, initialDate, finalDate, buyOutPrice)
+UI -> ctrl : createAuctionListing(listingTitle, selectedPublicationsID, initialPrice, \n shortDescription, sellerId, pictures, initialDate, finalDate, buyoutPrice)
 activate ctrl
 
-ctrl -> pubRepo : getPublicationByID(listOfPublicationsID)
-activate pubRepo
-
-'create "listOfPublicationSamples \n :List<PublicationSample>" as listPubSelected
-
-pubRepo --> listPubSelected ** : <<create>>
-
-loop for each PublicationSampleDTO in pubDtoList
-    pubRepo -> pubRepo : getPublicationByID()
-    pubRepo -> pubRepo : listOfPublicationSamples.add(publicationByDto)
-end
-
-pubRepo --> ctrl : listOfPublicationSamples
-deactivate pubRepo
 
 /' ====== ===== LISTING ========= '/
 
-ctrl -> ListingRepo : createAndAdd ( listing_title, listOfPublicationSamplesID, SaleType.AUCTION, price, shortDescription, pictures )
+ctrl -> ListingRepo : createAndAdd ( listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures )
 activate ListingRepo
 
-ListingRepo -> ListingFactory : create(listing_title, listOfPublicationSamples, \n SaleType.AUCTION, price, shortDescription, pictures)
+ListingRepo -> ListingFactory : create(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures)
 activate ListingFactory
 'create "listing :Listing" as listing
-ListingFactory --> listing **: <<create>>
-ListingFactory --> ListingRepo : listing
+ListingFactory -->> listing **: <<create>>
+ListingFactory --> ListingRepo : auctionListing
 deactivate ListingFactory
 ListingRepo -> ListingRepo : isExistent(l1)
 ListingRepo -> ListingRepo : add(l1)
-ListingRepo --> ctrl : listing
+ListingRepo --> ctrl : auctionListing
 deactivate ListingRepo
 
 /' ====== ===== AUCTION ========= '/
-ctrl -> AucRepo : createAndAdd(listingID, initialDate, finalDate, buyOutPrice)
+ctrl -> AucRepo : createAndAdd ( auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice )
 activate AucRepo
 
-AucRepo -> AuctionFactory : create(listingID, initialDate, finalDate, buyOutPrice)
+AucRepo -> AuctionFactory : create(auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice)
 activate AuctionFactory
-create "auction1:Auction" as a1
-AuctionFactory --> a1 : <<create>>
-AuctionFactory --> AucRepo : auction1
+create "auction:Auction" as a1
+AuctionFactory -->> a1 : <<create>>
+AuctionFactory --> AucRepo : auction
 deactivate AuctionFactory
 
-AucRepo -> AucRepo : validateAuction(auction1)
-AucRepo -> AucRepo : addAuction(auction1)
-AucRepo --> ctrl : auction1
+AucRepo -> AucRepo : validateAuction(auction)
+AucRepo -> AucRepo : addAuction(auction)
+AucRepo --> ctrl : auction
 deactivate AucRepo
 
 /'========== RETURN SUCCESS ========== '/

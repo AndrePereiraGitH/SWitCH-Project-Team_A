@@ -47,14 +47,14 @@ public class US024AucListingMapper {
      *
      * <p>The following fields are mapped:</p>
      * <ul>
-     *   <li>{@code listingId}   — extracted via {@code listing.id().getId()}</li>
+     *   <li>{@code listingId}   — extracted via {@code listing.id.getId()}</li>
      *   <li>{@code price}       — derived from {@code listing.getPrice().toString()}</li>
      *   <li>{@code description} — extracted via {@code listing.getShortDescription()}</li>
      *   <li>{@code listing}     — extracted via {@code listing.getListingTitle()}</li>
      * </ul>
      *
      * @param listing the {@link Listing} to convert; must not be {@code null},
-     *                and its {@code id()}, {@code getPrice()}, {@code getShortDescription()},
+     *                and its {@code id}, {@code getPrice()}, {@code getShortDescription()},
      *                and {@code getListingTitle()} must not return {@code null}
      * @return a {@link US024AucListingDTO} populated with data from the given {@link Listing}
      * @throws NullPointerException if {@code listing} or any of its required fields are {@code null}

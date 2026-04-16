@@ -45,9 +45,9 @@ public class US026AuctionMapper {
             throw new InstanceNotFoundException("Listing not found");
         }
         return new US026AuctionDTO(
-                auction.id(),
+                auction.id().getId(),
                 listing.get().getListingTitle(),
-                auction.getAuctionStatus()
+                auction.getAuctionStatus().name()
         );
     }
 

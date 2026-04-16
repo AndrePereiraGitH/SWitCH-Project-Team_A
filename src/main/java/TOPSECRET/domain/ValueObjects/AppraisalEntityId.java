@@ -63,7 +63,7 @@ public class AppraisalEntityId implements DomainID {
     /**
      * Returns the string representation of the id.
      *
-     * @return id as string
+     * @return auctionId as string
      */
     public String getId() {
         return ap_id;

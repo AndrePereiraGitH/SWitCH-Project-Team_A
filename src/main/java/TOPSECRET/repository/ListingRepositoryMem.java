@@ -75,27 +75,16 @@ public class ListingRepositoryMem implements IListingRepository {
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenAuthor(Author author) {
-//
-//        if (author == null) {
-//            throw new IllegalArgumentException("Author cannot be null");
-//        }
-//
-//        List<PublicationSample> listOfPublicationSample = new ArrayList<>();
-//
-//        for (Listing listing : listings) {
-//            if (listing.getSaleType() == SaleType.DIRECT_SALE) {
-//                for (PublicationSample PublicationSample : listing.getItems()) {
-//                    if (PublicationSample.getBibliographicalData().getAuthors().contains(author)) {
-//                        listOfPublicationSample.add(PublicationSample);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return listOfPublicationSample;
-//    }
+    @Override
+    public Optional<Listing> findListingById(ListingId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ListingId cannot be null");
+        }
+
+        return listings.stream()
+                .filter(listing -> listing.id().equals(id))
+                .findFirst();
+    }
 
     /**
      * {@inheritDoc}
@@ -156,19 +145,7 @@ public class ListingRepositoryMem implements IListingRepository {
         return auctionListings;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Listing> findListingById(ListingId id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ListingId cannot be null");
-        }
 
-        return listings.stream()
-                .filter(listing -> listing.id().equals(id))
-                .findFirst();
-    }
 
     /**
      * {@inheritDoc}
@@ -226,8 +203,12 @@ public class ListingRepositoryMem implements IListingRepository {
     @Override
     public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
 
-        if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
-            throw new NullPointerException("The list can not be null or empty");
+        if (listOfPubSampleIds == null) {
+            throw new IllegalArgumentException("The list cannot be null");
+        }
+
+        if (listOfPubSampleIds.isEmpty()) {
+            return new ArrayList<>();
         }
 
         List<Listing> listOfListings = new ArrayList<>();

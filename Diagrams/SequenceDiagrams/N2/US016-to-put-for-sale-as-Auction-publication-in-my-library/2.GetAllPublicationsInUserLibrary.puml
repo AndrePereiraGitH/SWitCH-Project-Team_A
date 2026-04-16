@@ -13,8 +13,6 @@ participant "library : Library" as library
 participant ":IPublicationSampleRepository" as PubRepo
 participant "samplesList \n:List<PublicationSample>" as samplesList
 
-participant ":IBibliographicalDataRepository" as BdRepo
-
 participant ":US016_PublicationSampleMapper" as PubMapper
 participant "bibliographicalDataMap : \n Map<BibliographicalDataID, BibliographicalData>" as bdMap
 
@@ -41,7 +39,7 @@ deactivate LibRepo
 ctrl -> PubRepo : getPublicationsByLibraryID(library.id())
 activate ctrl
 activate PubRepo
-PubRepo --> samplesList ** : <<create>>
+PubRepo -->> samplesList ** : <<create>>
 PubRepo --> ctrl : samplesList
 deactivate ctrl
 deactivate PubRepo
@@ -63,7 +61,7 @@ ctrl -> PubMapper : fromDomainList(samplesList, bibliographicalDataMap)
 activate ctrl
 activate PubMapper
 
-PubMapper --> bdMap** : <<create>>
+PubMapper -->> bdMap** : <<create>>
 
 loop for each pub in samplesList
     PubMapper -> PubMapper : findBibliographicalDataById(pub.getBibliographicalDataID())
@@ -73,7 +71,7 @@ loop for each pub in samplesList
     PubMapper -> PubMapper : bibliographicalDataMap.put(pub.getBibliographicalDataID(), bd)
 end
 
-PubMapper --> dtoList ** : <<create>>
+PubMapper -->> dtoList ** : <<create>>
 
 loop for each pub in samplesList
     PubMapper -> PubMapper : dto = fromDomain(pub, bibliographicalDataMap.get(pub.getBibliographicalDataID()))
