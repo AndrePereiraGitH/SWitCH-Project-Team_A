@@ -127,7 +127,6 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listingIds;
-
     }
 
     /**
