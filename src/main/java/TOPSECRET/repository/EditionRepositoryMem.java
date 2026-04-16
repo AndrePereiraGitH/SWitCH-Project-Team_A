@@ -72,5 +72,25 @@ public class EditionRepositoryMem implements IEditionRepository {
         }
         return Optional.empty();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId) {
+
+        if (publisherId == null) {
+            throw new IllegalArgumentException("publisherId must not be null");
+        }
+
+        List<EditionID> editionIDs = new ArrayList<>();
+
+        for (Edition edition : _editions) {
+            if (publisherId.equals(edition.getPublisherID())) {
+                editionIDs.add(edition.id());
+            }
+        }
+
+        return editionIDs;
+    }
 }
 

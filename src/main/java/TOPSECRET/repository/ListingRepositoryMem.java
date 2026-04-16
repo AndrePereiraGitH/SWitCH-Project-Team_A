@@ -196,4 +196,29 @@ public class ListingRepositoryMem implements IListingRepository {
 
         return listingIdsWithSamples;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
+
+        if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
+            throw new NullPointerException("The list can not be null or empty");
+        }
+
+        List<Listing> listOfListings = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            if (listing.isListingLinkedToADirectSale()) {
+                for(PublicationSampleId id: listOfPubSampleIds){
+                    if(listing.containsPubSampleId(id)){
+                        listOfListings.add(listing);
+                        break;
+                    }
+                }
+            }
+        }
+        return listOfListings;
+    }
 }

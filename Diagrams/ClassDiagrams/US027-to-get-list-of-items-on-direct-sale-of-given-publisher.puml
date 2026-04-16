@@ -1,100 +1,158 @@
 @startuml
 title US027 - To get the list of items on direct sale of a given publisher
 
+' -------------------------
+' APPLICATION LAYER
+' -------------------------
+
 class UI027 {
 }
 
 class US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController {
-    + getAllPublishers(): List<PublisherDTO_US027>
-    + findListOfItemsOnDirectSale(publisher): List<PublicationSampleDTO_US027>
+    - publisherRepo: PublisherRepository
+    - editionRepo: EditionRepository
+    - publicationSampleRepo: PublicationSampleRepository
+    - listingRepo: ListingRepository
+    + getAllPublishers(): List<US027PublisherDTO>
+    + findListOfItemsOnDirectSale(publisherId): List<US027ListingDTO>
 }
 
-class PublisherRepository {
+' --- MAPPERS and DTOs ---
+
+class US027PublisherMapper {
+    + toDTOs(listOfAllPublishers):\nList<US027PublisherDTO>
+}
+
+class US027PublisherDTO {
+    + publisherId: PublisherId
+    + name: String
+}
+
+class US027ListingMapper {
+    + toDTOs(listOfListings):\nList<US027ListingDTO>
+}
+
+class US027ListingDTO {
+    + listingId: ListingId
+    + listingTitle: String
+    + price: String
+    + pubTitle: String
+    + authorsName: List<String>
+}
+
+' -------------------------
+' REPOSITORIES
+' -------------------------
+
+interface IPublicationSampleRepository {
+    - publicationSamples:List<PublicationSample>
+    + findPublicationSampleIdsByEditionIds\n(editionIds): List<PublicationSampleId>
+}
+
+interface IPublisherRepository {
     - publishers: List<Publisher>
-    + getAllPublishers: List<Publisher>
+    + getAllPublishers(): List<Publisher>
 }
 
-class PublisherDTO_US027 {
-    + toDTOs(listOfAllPublishers): List<PublisherDTO_US027>
+interface IEditionRepository {
+    - editions: List<Edition>
+    + findEditionIdsByPublisherId\n(publisherId): List<EditionId>
 }
+
+interface IListingRepository {
+    - listings: List<Listing>
+    + findDirectSaleListingsContaining\n(pubSampleIds): List<Listing>
+}
+
+' -------------------------
+' DOMAIN
+' -------------------------
 
 class Publisher {
+    - publisherId: PublisherId
     - name: String
-    - vatNumber: String
-    - contact: Contact
-    + getPublisherDetails(): Publisher
-}
-
-class ListingRepository {
-    - listings: List<Listing>
-    + findAllDirectSaleListings() : List<Listing>
-}
-
-class PublicationSampleRepository {
-    - publicationSamples: List<PublicationSample>
-    + findItemsByListingAndPublisher(listOfListings, publisher): List<PublicationSample>
-}
-
-class PublicationSampleDTO_US027 {
-    + toDTOs(lisOfItems): List<PublicationSampleDTO_US027>
 }
 
 class PublicationSample {
-    - bibliographicalData: BibliographicalData
-    - publicationType: PublicationType
-    - userName: User
-    - publicationStatus: PublicationStatus
-    - edition: String
-    - code: Code
-    + getDetails(): PublicationSample
+    - publicationSampleId:\n PublicationSampleId
+    - editionId: EditionId
 }
 
 class Listing {
+    - listingId: ListingId
     - listingTitle: String
-    - items: List<PublicationSample>
+    - publicationSampleId:\nList<PublicationSampleId>
     - saleType: SaleType
     - price: Price
-    - shortDescription: String
-    - seller: User
-    - pictures: List<Picture>
 }
 
+class Edition {
+    - editionId: EditionId
+    - publisherId: PublisherId
+}
+
+' --- VALUE OBJECTS ---
+/'
 enum SaleType {
     DIRECT_SALE
     AUCTION
 }
 
-class Edition {
-    - publisher: Publisher
+class PublisherId {
 }
 
-' Interactions
+class PublicationSampleId {
+}
 
-' Interactions
+class EditionId {
+}
 
-UI027 "1" ..> "1" US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController : uses
+class ListingId {
+}
+'/
 
-US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherRepository: uses
-US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublisherDTO_US027 : uses
-US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" ListingRepository : uses
-US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleRepository : uses
-US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" ..> "1" PublicationSampleDTO_US027 : uses
+' -------------------------
+' RELATIONSHIPS
+' -------------------------
 
-PublisherRepository "1" ..> "*" Publisher : communicates with
+' --- UI ---
+UI027 ..> US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController : invokes
 
-PublisherDTO_US027 "1" ..> "1" Publisher : transfers
+' --- Controller ---
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IPublisherRepository: uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IListingRepository : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IPublicationSampleRepository : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IEditionRepository : uses
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController ..> US027PublisherMapper : creates DTO
+US027ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController ..> US027ListingMapper : creates DTO
 
-ListingRepository "1" ..> "*" Listing: communicates with
+' --- Listing ---
+IListingRepository "1" -> "*" Listing: persists
 
-PublicationSampleRepository "1" ..> "*" PublicationSample: communicates with
+US027ListingMapper ..> Listing : maps
+US027ListingMapper ..> US027ListingDTO : maps to
 
-PublicationSampleDTO_US027 "1" ..> "1" PublicationSample : transfers
+'Listing "1" -> "1..*" PublicationSampleId: refers to
+Listing "*" -> "1" SaleType: for sale in
+'Listing "1" -> "1" ListingId: has
 
-' Domain classes interactions
+' --- PubSample ---
+IPublicationSampleRepository "1" -> "*" PublicationSample: persists
 
-Listing "1" -> "1..*" PublicationSample: contains
-PublicationSample "*" -> "1" Edition: has
-Edition "*" -> "1" Publisher: published by
-Listing "1" -> "1" SaleType: for sale on
+'PublicationSample "1" -> "1" PublicationSampleId: has
+'PublicationSample "*" -> "1" EditionId: refers to
+
+' --- Edition ---
+IEditionRepository "1" -> "*" Edition: persists
+
+'Edition "*" -> "1" PublisherId: refers to
+'Edition "1" -> "1" EditionId: has
+
+' --- Publisher ---
+IPublisherRepository "1" -> "*" Publisher : persists
+
+US027PublisherMapper ..> Publisher : maps
+US027PublisherMapper ..> US027PublisherDTO : maps to
+'Publisher "1" -> "1" PublisherId: has
 
 @enduml
