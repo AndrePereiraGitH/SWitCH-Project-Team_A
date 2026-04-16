@@ -3,19 +3,28 @@ package TOPSECRET.controller;
 import java.util.List;
 
 
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.dto.PublisherDTO_US028;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.PublisherID;
+import TOPSECRET.dto.US028ListingDTO;
+import TOPSECRET.dto.US028ListingMapper;
+import TOPSECRET.dto.US028PublisherDTO;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
+import TOPSECRET.dto.US028PublisherMapper;
 
+import javax.management.InstanceNotFoundException;
 
 
 /**
  * Controller responsible for use case US028:
  * "Get the list of items currently on auction for a given publisher".
  * This controller receives requests from the UI and
- *  * gets the required data from the repositories.
+ * * gets the required data from the repositories.
  */
 public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
 
@@ -23,27 +32,32 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
     private final IPublisherRepository _publisherRepo;
     private final IListingRepository _listingRepo;
     private final IPublicationSampleRepository _pubSampleRepo;
+    private final IEditionRepository _editionRepo;
+    private final US028ListingMapper _us028ListingMapper;
 
     /**
      * Constructor that receives all dependencies required by the controller.
      * These objects are saved so the controller can use them later.
      *
      * @param publisherRepository repository for publisher-related operations
-     * @param listingRepo   repository for listing-related operations
-     * @param pubSampleRepo   repository for publicationSample-related operations
+     * @param listingRepo         repository for listing-related operations
+     * @param pubSampleRepo       repository for publicationSample-related operations
      *
      */
-    public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController( IPublisherRepository publisherRepository,
-                                                                         IListingRepository listingRepo,
-                                                                         IPublicationSampleRepository pubSampleRepo) {
+    public US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController(IPublisherRepository publisherRepository,
+                                                                        IListingRepository listingRepo,
+                                                                        IPublicationSampleRepository pubSampleRepo,
+                                                                        US028ListingMapper publicationSampleMapper,
+                                                                        IEditionRepository editionRepo) {
 
         // Store injected dependencies for later use
         this._publisherRepo = publisherRepository;
         this._listingRepo = listingRepo;
         this._pubSampleRepo = pubSampleRepo;
-    }
+        this._us028ListingMapper = publicationSampleMapper;
+        this._editionRepo = editionRepo;
 
-    // methods
+    }
 
     /**
      * Returns a list of all publishers.
@@ -51,12 +65,11 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
      *
      * @return a list of PublisherDTO objects for presentation
      */
-    public List<PublisherDTO_US028> getAllPublishers() {
+    public List<US028PublisherDTO> getAllPublishers() {
 
-        // Retrieve all publishers from the repository
         List<Publisher> listOfAllPublishers = _publisherRepo.getAllPublishers();
 
-        List<PublisherDTO_US028> listOfAllPublishersDTO = PublisherDTO_US028.toDTOs(listOfAllPublishers);
+        List<US028PublisherDTO> listOfAllPublishersDTO = US028PublisherMapper.toDTOs(listOfAllPublishers);
 
         return listOfAllPublishersDTO;
     }
@@ -69,23 +82,22 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
      * publication samples associated with those listings and the given publisher,
      * and finally converts the results into DTOs.</p>
      *
-     * @param publisher the publisher whose items should be retrieved; must not be null
+     * @param publisherId the publisher whose items should be retrieved; must not be null
      * @return a list of DTOs representing the publisher's items on auction;
-     *         never null, but may be empty
+     * never null, but may be empty.
      */
 
 
-//    public List<PublicationSampleDTO_US028> findListOfItemsOnAuctionByPublisher(Publisher publisher) {
-//
-//        // Gets all the listings for auction
-//        List<Listing> listOfListings = _listingRepo.findAllAuctionListings();
-//
-//        // Gets all the publication samples related to the that publisher
-//        List<PublicationSample> listOfItems = _pubSampleRepo.findItemsByListingAndPublisher(listOfListings, publisher);
-//
-//        // Converts to DTOs
-//        List<PublicationSampleDTO_US028> listOfPublicationSampleDTO = PublicationSampleDTO_US028.toDTOs(listOfItems);
-//
-//        return listOfPublicationSampleDTO;
-//    }
+    public List<US028ListingDTO> findListOfItemsOnAuctionByPublisherId(PublisherID publisherId) throws InstanceNotFoundException {
+
+        if (publisherId == null) throw new IllegalArgumentException("publisherId cannot be null");
+
+        List<EditionID> listOfEditionIds = _editionRepo.findEditionIdsByPublisherId(publisherId);
+
+        List<PublicationSampleId> listOfPubSampleId =_pubSampleRepo.findPublicationSampleIdsByEditionIds(listOfEditionIds);
+
+        List<Listing> listOfListings = _listingRepo.getAuctionListingsContaining(listOfPubSampleId);
+
+        return _us028ListingMapper.toDTO(listOfListings);
+    }
 }
