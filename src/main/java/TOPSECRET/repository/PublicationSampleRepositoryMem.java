@@ -233,32 +233,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    @Override
-    public List<PublicationSample> findByBibliographicalData(List<BibliographicalData> bibliographicalData) {
-
-        if (bibliographicalData == null) {
-            throw new IllegalArgumentException("bibliographicalData must not be null");
-        }
-
-        List<PublicationSample> result = new ArrayList<>();
-
-        for (PublicationSample ps : allPublicationsInSystem) {
-
-            for (BibliographicalData bd : bibliographicalData) {
-
-                if (ps.getBibliographicalDataID().equals(bd.id())) {
-                    result.add(ps);
-                    break;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
 //    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary) {
 //        List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
 //

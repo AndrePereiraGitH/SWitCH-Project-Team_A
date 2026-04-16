@@ -16,7 +16,6 @@ import TOPSECRET.dto.US025AuthorMapper;
 import TOPSECRET.dto.US025DirectSaleDTO;
 import TOPSECRET.dto.US025DirectSaleMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -90,44 +89,13 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         Author author = authorRepository.findAuthorById(authorId)
                 .orElseThrow(() -> new IllegalArgumentException("Author not found"));
 
-        AuthorId id = author.id();
-
-        List<BibliographicalData> bds = bibliographicalDataRepository.findBibliographicalDataByAuthorId(id);
-
-        List<BibliographicalDataID> bdIds = extractBibliographicalDataIds(bds);
+        List<BibliographicalData> bds = bibliographicalDataRepository.findBibliographicalDataByAuthorId(authorId);
+        List<BibliographicalDataID> bdIds = bibliographicalDataRepository.findBibliographicalDataIdByAuthorId(authorId);
 
         List<PublicationSample> samples = publicationSampleRepository.findPublicationSampleByBibliographicalDataIds(bdIds);
+        List<PublicationSampleId> sampleIds = publicationSampleRepository.findPublicationSamplesIdsByBiblioDataIds(bdIds);
 
-        List<PublicationSampleId> sampleIds = extractIds(samples);
         List<Listing> listings = listingRepository.findDirectSaleListingsContaining(sampleIds);
         return US025DirectSaleMapper.toDTOs(author, listings, samples, bds);
-    }
-
-    /**
-     * Helper to extract the identifiers from a list of {@link PublicationSample} instances.
-     *
-     * @param samples the list of publication samples; must not be {@code null}
-     * @return a list of {@link PublicationSampleId} in the same order as the input; never {@code null}
-     */
-    private List<PublicationSampleId> extractIds(List<PublicationSample> samples) {
-        List<PublicationSampleId> ids = new ArrayList<>();
-        for (PublicationSample ps : samples) {
-            ids.add(ps.id());
-        }
-        return ids;
-    }
-
-    /**
-     * Helper to extract the identifiers from a list of {@link BibliographicalData} instances.
-     *
-     * @param bds the list of bibliographical data; must not be {@code null}
-     * @return a list of {@link BibliographicalDataID} in the same order as the input; never {@code null}
-     */
-    private List<BibliographicalDataID> extractBibliographicalDataIds(List<BibliographicalData> bds) {
-        List<BibliographicalDataID> ids = new ArrayList<>();
-        for (BibliographicalData bd : bds) {
-            ids.add(bd.id());
-        }
-        return ids;
     }
 }

@@ -47,15 +47,6 @@ public class PublicationSampleId implements DomainID {
         return Objects.equals(pubSampleID, that.pubSampleID);
     }
 
-    /**
-     * Returns a hash code value for this {@code PublicationSampleId}.
-     * <p>
-     * The hash code is derived solely from the underlying identifier string,
-     * consistent with the {@link #equals(Object)} implementation.
-     * </p>
-     *
-     * @return the hash code value for this {@code PublicationSampleId}
-     */
     @Override
     public int hashCode() {
         return Objects.hash(pubSampleID);

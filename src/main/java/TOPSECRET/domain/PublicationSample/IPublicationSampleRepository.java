@@ -78,25 +78,6 @@ public interface    IPublicationSampleRepository {
     Optional<PublicationSample> findPublicationSampleById(PublicationSampleId id);
 
     /**
-     * Retrieves all publication samples associated with a given list of bibliographical data.
-     *
-     * <p>This method iterates through the repository's internal collection of
-     * {@link PublicationSample} and selects those whose associated
-     * {@link BibliographicalData} identifier matches any of the provided
-     * bibliographical data entries.</p>
-     *
-     * <p>A match occurs when the bibliographical data identifier of a publication
-     * sample is contained within the provided list of bibliographical data.</p>
-     *
-     * @param bibliographicalData the list of bibliographical data used as a filter;
-     *                            must not be {@code null}
-     * @return a list of {@link PublicationSample} associated with the given bibliographical data;
-     *         may be empty if no matches are found, but never {@code null}
-     * @throws IllegalArgumentException if {@code bibliographicalData} is {@code null}
-     */
-    List<PublicationSample> findByBibliographicalData(List<BibliographicalData> bibliographicalData);
-
-    /**
      * Retrieves all publication sample IDs associated with a given bibliographical data ID.
      *
      * @param bdId the bibliographical data ID to search for; must not be {@code null}
