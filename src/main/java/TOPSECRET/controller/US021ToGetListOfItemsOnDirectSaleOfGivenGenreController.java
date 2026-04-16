@@ -1,22 +1,19 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
+import TOPSECRET.dto.US021GenreDTO;
+import TOPSECRET.dto.US021GenreMapper;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for US021 - get the list of items on direct sale of a given genre.
@@ -58,13 +55,12 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
     }
 
     /**
-     * Returns all available genres.
+     * Returns all available genres as DTOs.
      *
      * @return list of all genres
      */
-    // Gets all the genres so that the user chooses
-    public List<Genre> getAllGenres(){
-        return genreRepository.getAllGenres();
+    public List<US021GenreDTO> getAllGenres() {
+        return US021GenreMapper.toDTOList(genreRepository.getAllGenres());
     }
 
 
@@ -80,36 +76,15 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
             throw new IllegalArgumentException("Genre cannot be null");
         }
 
-        // Step 1: Get all the direct sale listings
-        List<Listing> directSaleListings = listingRepository.findAllDirectSaleListings();
-        List<Listing> resultList = new ArrayList<>();
+        List<BibliographicalDataID> bdIds =
+                bibliographicalDataRepository.findAllBibliographicalDataByGenreId(selectedGenre);
 
-        // Step 2: only get the listings that have the chosen genre
-        for (Listing listing : directSaleListings) {
-            for (PublicationSampleId pubSampleId : listing.getItemsId()) {
+        List<PublicationSampleId> pubSampleIds =
+                publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdIds);
 
-                // Step 2.1: get PublicationSample
-                Optional<PublicationSample> psOpt = publicationSampleRepository.findPublicationSampleById(pubSampleId);
-                if (psOpt.isEmpty()) {
-                    continue;
-                }
+        List<Listing> directSaleListings =
+                listingRepository.findDirectSaleListingsContaining(pubSampleIds);
 
-                // Step 2.2: get BibliographicalData
-                BibliographicalDataID bdId = psOpt.get().getBibliographicalDataID();
-                Optional<BibliographicalData> bdOpt = bibliographicalDataRepository.findBibliographicalDataById(bdId);
-                if (bdOpt.isEmpty()) {
-                    continue;
-                }
-
-                // Step 2.3: verifies if it has the genre
-                if (bdOpt.get().hasGenre(selectedGenre)) {
-                    resultList.add(listing);
-                    break; // this break avoid duplicates, if various items of listing have the same genre
-                }
-            }
-        }
-
-        // Step 3: convert to DTOs and return
-        return mapper.toDTOs(resultList);
+        return mapper.toDTOs(directSaleListings);
     }
   }
