@@ -3,6 +3,7 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -153,6 +154,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<PublicationSampleId> findPublicationSampleIdsByEditionIds (List<EditionID> listOfEditionIds) {
+        if (listOfEditionIds == null) {
+            throw new NullPointerException("listOfEditionIds cannot be null");
+        }
+
+        List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
+
+        for(EditionID editionId: listOfEditionIds) {
+            for (PublicationSample pbSample : allPublicationsInSystem) {
+                if (pbSample.getEditionID().equals(editionId)) {
+                    listOfPubSampleIds.add(pbSample.id());
+                }
+            }
+        }
+        return listOfPubSampleIds;
+    }
+
     // -------------------------------------------------------------------------
     // Specific Queries
     // -------------------------------------------------------------------------
@@ -211,6 +232,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
+    public List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId){
+
+        if(userId == null){
+            throw new NullPointerException("UserId must not be null");
+        }
+
+        List<PublicationSample> listOfPublicationsNotInLibrary = new ArrayList<>();
+
+        for(PublicationSample pubSample: allPublicationsInSystem){
+            if(pubSample.isOwnedByUser(userId) && !pubSample.isInUserLibrary()){
+                listOfPublicationsNotInLibrary.add(pubSample);
+            }
+        }
+
+        return listOfPublicationsNotInLibrary;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds) {
 
@@ -237,6 +278,27 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
         return allPublications;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId){
+
+        if (publicationSample == null) {
+            throw new IllegalArgumentException("PublicationSample cannot be null");
+        }
+
+        if (libraryId == null) {
+            throw new IllegalArgumentException("LibraryId cannot be null");
+        }
+
+        publicationSample.addPublicationToLibrary(libraryId);
+
+        save(publicationSample);
+
+        return true;
+    }
+
 
     /**
      * {@inheritDoc}

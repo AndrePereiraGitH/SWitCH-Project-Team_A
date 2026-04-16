@@ -8,54 +8,54 @@ title US011 - Add publication to library
 actor "User" as User
 participant ":UI011" as UI
 
-
-
 participant ":AddPublicationToLibraryController" as Ctrl
 
+participant ":IPublicationSampleRepository" as PubRepo
 
+participant ":ILibraryRepository" as LibDomain
 
-participant ":PublicationRepository" as PubRepo
+participant ":PublicationSample" as PublicationSample
 
-
-
-participant "Library" as LibDomain
 
 autonumber
 
-User -> UI : asks to add publication to library
+User -> UI : "I want to add a publication\n to my library"
 activate UI
-UI -> Ctrl : getListOfOtherPublications()
+UI -> Ctrl : getListOfPublicationsNotInLibrary(userId)
 activate Ctrl
 
-Ctrl -> LibDomain: getAllPublications()
-activate LibDomain
-LibDomain --> Ctrl: listOfPublicationsInLibrary
-deactivate LibDomain
-
-Ctrl -> PubRepo: getListOfDifferentPublications(listOfPublicationsInLibrary)
+Ctrl -> PubRepo: getAllPublicationsFromUserWithoutLibrary\n(userId)
 activate PubRepo
-PubRepo -> Ctrl : ListOfDifferentPublications
+PubRepo --> Ctrl: listOfPublicationsNotInLibrary
 deactivate PubRepo
-Ctrl --> UI: ListOfDifferentPublications
+Ctrl --> UI: listOfPublicationsNotInLibrary
 deactivate Ctrl
-
-UI --> User: List of publications, select one!
+UI --> User: "Select Publication you wish\n to add to your Library"
 deactivate UI
 
-User -> UI: selectedPub
+User -> UI: "I want to add <publicationSample>\n to my Library!"
 activate UI
-UI -> Ctrl: addPublicationToLib(selectedPub)
+UI -> Ctrl: addPublicationToLibrary\n(UserId userId, PublicationSampleId publicationSampleId)
 activate Ctrl
-
-Ctrl -> LibDomain: addPublication(selectedPub)
+Ctrl -> LibDomain: getLibraryByUserId(userId)
 activate LibDomain
-LibDomain -> LibDomain: add(selectedPub)
-LibDomain --> Ctrl: selectedPub
+LibDomain --> Ctrl: library
 deactivate LibDomain
-
+Ctrl -> PubRepo: findPublicationSampleById\n(publicationSampleId)
+activate PubRepo
+PubRepo --> Ctrl: pbSample
+deactivate PubRepo
+Ctrl -> PubRepo: addPublicationToLibrary\n(userId, publicationSampleId)
+activate PubRepo
+PubRepo -> PublicationSample: addPublicationToLibrary\n(publicationSample, libraryId)
+activate PublicationSample
+PublicationSample --> PubRepo: true
+deactivate PublicationSample
+PubRepo --> Ctrl: true
+deactivate PubRepo
 Ctrl --> UI: true
 deactivate Ctrl
-UI --> User: Done!
+UI --> User: "<publicationSample>\n successfully added to your Library!"
 deactivate UI
 
 @enduml
