@@ -1,8 +1,19 @@
 @startuml
+
 hide footbox
 autonumber
 
-title US018 - Get User Collections
+title US018 - Get Publications Available
+
+participant ":UI018" as UI
+participant ":US018ToAddPublicationToAListOfMineController" as Controller
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":US018PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant ":PublicationSample" as PublicationSample
+participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
+participant ":BibliographicalData" as BibliographicalData
 
 note over UI, Controller #E3F2FD
 <b>Fragment</b>
@@ -16,51 +27,67 @@ note over UI, Controller #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-participant ":UI018" as UI
-participant ":AddCollectionOfPublicationsController" as Controller
-participant ":CollectionOfPublicationsRepository" as CollectionRepo
-participant "userCollections : List<CollectionOfPublications>" as userCollections
-participant ":CollectionOfPublicationsMapper" as CollectionMapper
-participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
-participant ":CollectionOfPublications" as CP
-participant "collectionDTO: CollectionOfPublicationsDTO" as collectionDTO
-
-UI -> Controller : getUserCollections(user)
+UI -> Controller : getPublicationsForCollection(collectionId)
 activate Controller
 
-Controller -> CollectionRepo : getUserCollections(user)
-activate CollectionRepo
+' =====================================================
+' GET ALL USER PUBLICATIONS
+' =====================================================
+Controller -> PublicationSampleRepo : getAllPublicationsInUserLibrary(userId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : allUserPublications
+deactivate PublicationSampleRepo
 
-CollectionRepo -> CollectionRepo : isFromUser(user)
-CollectionRepo -->> userCollections ** : <<create>>
-CollectionRepo --> Controller : userCollections
-deactivate CollectionRepo
+' =====================================================
+' GET PUBLICATIONS ALREADY IN COLLECTION
+' =====================================================
+Controller -> PublicationSampleRepo : getPublicationsByCollectionID(collectionId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : publicationsInCollection
+deactivate PublicationSampleRepo
 
-Controller -> CollectionMapper : toDTO(userCollections)
-activate CollectionMapper
+' =====================================================
+' CALCULATE DIFFERENCE
+' =====================================================
+Controller -> Controller : diff(allUserPublications, publicationsInCollection)
 
-CollectionMapper -->> listOfCollectionsDTO ** : <<create>>
+' =====================================================
+' CONVERT RESULT TO DTO
+' =====================================================
+Controller -> PublicationSampleMapper : toDTO(publicationAvailable)
+activate PublicationSampleMapper
 
-loop for each collection in userCollections
-    CollectionMapper -> CP : getId()
-    activate CP
-    CP --> CollectionMapper : id
-    deactivate CP
+PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
 
-    CollectionMapper -> CP : getCollectionName()
-    activate CP
-    CP --> CollectionMapper : collectionName
-    deactivate CP
+loop for each publicationSample in publicationAvailable
+    PublicationSampleMapper -> PublicationSample : getId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : id
+    deactivate PublicationSample
 
-    CollectionMapper -->> collectionDTO ** : <<create>>
+    PublicationSampleMapper -> PublicationSample : getBibliographicalDataId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : bibliographicalDataId
+    deactivate PublicationSample
 
-    CollectionMapper -> CollectionMapper : listOfCollectionsDTO.add(collectionDTO)
+    PublicationSampleMapper -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> PublicationSampleMapper : bibliographicalData
+    deactivate BibliographicalDataRepo
+
+    PublicationSampleMapper -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> PublicationSampleMapper : title
+    deactivate BibliographicalData
+
+    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+    PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
 end
 
-CollectionMapper --> Controller : listOfCollectionsDTO
-deactivate CollectionMapper
+PublicationSampleMapper --> Controller : listOfAvailablePublicationDTO
+deactivate PublicationSampleMapper
 
-Controller --> UI : listOfCollectionsDTO
+Controller --> UI : listOfAvailablePublicationDTO
 deactivate Controller
 
 @enduml

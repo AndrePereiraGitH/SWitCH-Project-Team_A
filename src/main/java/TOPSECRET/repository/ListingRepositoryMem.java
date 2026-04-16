@@ -4,12 +4,15 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * In-memory implementation of {@link IListingRepository}.
@@ -65,12 +68,6 @@ public class ListingRepositoryMem implements IListingRepository {
         return newListing;
     }
 
-
-    // for tests purpose
-    void addListing(Listing listing) {
-        listings.add(listing);
-    }
-
     private boolean existsById(Listing listing) {
         return listings.contains(listing);
     }
@@ -100,7 +97,6 @@ public class ListingRepositoryMem implements IListingRepository {
 //        return listOfPublicationSample;
 //    }
 
-
     /**
      * {@inheritDoc}
      */
@@ -122,6 +118,27 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return dsListings;
+    }
+
+    @Override
+    public List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId) {
+        if(itemsId == null){
+            throw new IllegalArgumentException("itemsId cannot be null");
+        }
+        List<ListingId> listingIds = new ArrayList<>();
+        for (Listing listing : listings) {
+
+            List<PublicationSampleId> listingItems = listing.getItemsId();
+
+            for(PublicationSampleId itemId : itemsId){
+                if(listingItems.contains(itemId)){
+                    listingIds.add(listing.id());
+                    break;
+                }
+            }
+        }
+        return listingIds;
+
     }
 
     /**
@@ -181,5 +198,50 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listOfAuctionListingsOfGivenPublication;
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds) {
+
+        if (publicationSamplesIds == null) {
+            throw new IllegalArgumentException("List of PublicationSamplesId cannot be null.");
+        }
+
+        List<ListingId> listingIdsWithSamples = listings.stream()
+                .filter(listing -> listing.get_itemsId()
+                        .stream()
+                        .anyMatch(publicationSamplesIds::contains))
+                .map(Listing::id)
+                .toList();
+
+        return listingIdsWithSamples;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
+
+        if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
+            throw new NullPointerException("The list can not be null or empty");
+        }
+
+        List<Listing> listOfListings = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            if (listing.isListingLinkedToADirectSale()) {
+                for(PublicationSampleId id: listOfPubSampleIds){
+                    if(listing.containsPubSampleId(id)){
+                        listOfListings.add(listing);
+                        break;
+                    }
+                }
+            }
+        }
+        return listOfListings;
     }
 }

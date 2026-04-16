@@ -3,9 +3,11 @@ package TOPSECRET.repository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository responsible for creating and storing Genre objects.
@@ -69,7 +71,8 @@ public class GenreRepositoryMem implements IGenreRepository {
         }
         throw new IllegalArgumentException("Genre not found.");
     }
-    // ----------------------------- US004 ends -------------------------------
+
+
     // ----------------------------- US013 starts -------------------------------
 
     /**
@@ -79,6 +82,7 @@ public class GenreRepositoryMem implements IGenreRepository {
     public List<Genre> getAllGenres() {
         return List.copyOf(_genres);            // Defensive copy + unmodifiable list: protects repository state from external changes
     }
+    // ----------------------------- US004 ends -------------------------------
 
     /**
      * Checks whether a genre already exists in the genre collection.
@@ -98,5 +102,20 @@ public class GenreRepositoryMem implements IGenreRepository {
         return false;
     }
     // ----------------------------- US013 ends -------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Genre> findGenreById(GenreID genreId){
+        if (genreId == null) {
+            throw new IllegalArgumentException("GenreId cannot be null");
+        }
+
+        return _genres.stream()
+                .filter(genre -> genre.id().equals(genreId))
+                .findFirst();
+    }
+
 }
 

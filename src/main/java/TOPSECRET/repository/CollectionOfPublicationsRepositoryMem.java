@@ -83,10 +83,10 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         return newCollection;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-
+//    /**
+//     * {@inheritDoc}
+//     */
+/*
     public List<CollectionOfPublications> getUserCollections(UserId userId) {
 
         if (userId == null) {
@@ -95,29 +95,45 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         return getAllCollectionOfPublicationsByUser(userId);
     }
-
+*/
     /**
-     * Returns all collections owned by a given user — US019.
-     *
-     * @param ownerId the user to search for
-     * @return list of collections owned by the user
-     * @throws IllegalArgumentException if ownerId is null
+     * {@inheritDoc}
      */
 
-    private List<CollectionOfPublications> getAllCollectionOfPublicationsByUser(UserId ownerId) {
-
-        if (ownerId == null) {
+    @Override
+    public List<CollectionOfPublications> getUserCollections(UserId userId) {
+        if (userId == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
 
         List<CollectionOfPublications> userCollections = new ArrayList<>();
 
         _collectionOfPublicationsList.forEach(collection -> {
-            if (collection.getOwnerId().equals(ownerId)) {
+            if (collection.getOwnerId().equals(userId)) {
                 userCollections.add(collection);
             }
         });
 
         return userCollections;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+        if (genreId == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+
+        List<CollectionOfPublications> collections = new ArrayList<>();
+
+        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+            if (c.getCollectionGenre().equals(genreId) && !c.getIsPrivate()) {
+                collections.add(c);
+            }
+        }
+        return collections;
     }
 }

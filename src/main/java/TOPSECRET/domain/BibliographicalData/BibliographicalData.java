@@ -1,7 +1,6 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
@@ -81,6 +80,14 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
     // Getters =========================================================================================================
 
     /**
+     * Returns the ID of the BibliographicalData.
+     *
+     * @return the non-null ID
+     */
+
+    public BibliographicalDataID id() { return _bibliographicalDataID; }
+
+    /**
      * Returns the title of the work.
      *
      * @return the non-null title
@@ -140,7 +147,33 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
         return _chunksOfText;
     }
 
-    // Equals and HashCode =============================================================================================
+    // US021 Start ======================================================================================================
+
+    /**
+     * Indicates whether this work is associated with the specified genre.
+     *
+     * @param genreId the genre to check; may be {@code null}
+     * @return {@code true} if the genre is present, {@code false} otherwise
+     */
+
+    public boolean hasGenre(GenreID genreId) {
+        if (genreId == null) return false;
+        return _genres.contains(genreId);
+    }
+    // US021 End ========================================================================================================
+
+    public BibliographicalData.BibliographicalDataDetails getBibliographicalDataDetails () {
+        return new BibliographicalData.BibliographicalDataDetails(
+                _title,
+                _authors,
+                _originalLanguage,
+                _publicationDate,
+                _genres,
+                _chunksOfText
+        );
+    }
+
+    // Equals, HashCode, sameAs =============================================================================================
 
     @Override
     public boolean equals(Object o) {
@@ -162,49 +195,15 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
         return Objects.hash(_title, _authors, _originalLanguage, _publicationDate, _genres, _chunksOfText);
     }
 
-    //US021 Start ======================================================================================================
-
-    /**
-     * Indicates whether this work is associated with the specified genre ID.
-     *
-     * @param genreId the genre ID to check; may be {@code null}
-     * @return {@code true} if the genre ID is present, {@code false} otherwise
-     */
-    public boolean hasGenre(GenreID genreId) {
-        if (genreId == null) return false;
-        return _genres.contains(genreId);
-    }
-
-    //US021 End ========================================================================================================
-
-    public BibliographicalData.BibliographicalDataDetails getBibliographicalDataDetails () {
-        return new BibliographicalData.BibliographicalDataDetails(
-                _title,
-                _authors,
-                _originalLanguage,
-                _publicationDate,
-                _genres,
-                _chunksOfText
-        );
-    }
-
-    @Override
-    public BibliographicalDataID id() { return _bibliographicalDataID; }
-
-    /**
-     * Determines whether this bibliographical data shares the same identity
-     * as the given object, based solely on {@link BibliographicalDataID}.
-     *
-     * @param o the object to compare against
-     * @return {@code true} if both objects are {@code BibliographicalData} instances
-     *         with equal identifiers; {@code false} otherwise
-     */
     @Override
     public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         BibliographicalData that = (BibliographicalData) o;
         return Objects.equals(_bibliographicalDataID, that._bibliographicalDataID);
     }
+
+
+    // Record =====================================================================================
 
     public record BibliographicalDataDetails(
             String title,

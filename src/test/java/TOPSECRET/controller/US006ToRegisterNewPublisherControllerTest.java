@@ -9,55 +9,56 @@ import org.junit.jupiter.api.Test;
 import javax.management.InstanceAlreadyExistsException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class US006ToRegisterNewPublisherControllerTest {
 
     private IPublisherRepository repo;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         repo = mock(IPublisherRepository.class);
     }
 
-
     @Test
-    void ensureConstructorIsBuildSucessfully(){
-        //Arrange
+    void shouldBuildControllerSuccessfully() {
+        // Arrange
+        // (no additional setup needed)
 
-        //Act
-        US006ToRegisterNewPublisherController ctrl = new US006ToRegisterNewPublisherController(repo);
+        // Act
+        US006ToRegisterNewPublisherController ctrl =
+                new US006ToRegisterNewPublisherController(repo);
 
-        //Assert
+        // Assert
         assertNotNull(ctrl);
     }
 
     @Test
-    void ensure_ConstructorThrowsException_WhenRepositoryIsNull() {
-        // Act & Assert
-        assertThrows(NullPointerException.class, () -> new US006ToRegisterNewPublisherController(null));
+    void shouldThrowExceptionWhenRepositoryIsNull() {
+        // Arrange
+        // (no additional setup needed)
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> new US006ToRegisterNewPublisherController(null));
     }
+
 
     @Test
-    void registerPublisher_returnTrue_WhenPublisherIsCreated() throws InstanceAlreadyExistsException {
-        //Arrange
+    void shouldReturnTrueWhenPublisherIsRegistered() throws InstanceAlreadyExistsException {
+        // Arrange
         String name = "Publisher1";
-        String vatNumber = "12345679";
-
-        Publisher publisherDouble = mock(Publisher.class);
+        String vatNumber = "123456789";
         Contact contactDouble = mock(Contact.class);
+        Publisher publisherDouble = mock(Publisher.class);
+        when(repo.createAndAdd(name, vatNumber, contactDouble)).thenReturn(publisherDouble);
+        US006ToRegisterNewPublisherController ctrl =
+                new US006ToRegisterNewPublisherController(repo);
 
-        when(repo.createAndAdd(name,vatNumber,contactDouble)).thenReturn(publisherDouble);
+        // Act
+        boolean result = ctrl.registerPublisher(name, vatNumber, contactDouble);
 
-        US006ToRegisterNewPublisherController ctrl = new US006ToRegisterNewPublisherController(repo);
-
-
-        //Act
-        boolean result = ctrl.registerPublisher(name,vatNumber,contactDouble);
-
-        //Assert
+        // Assert
         assertTrue(result);
     }
-
 }

@@ -584,8 +584,40 @@ class EditionTest {
     }
 
     @Test
+    void equals_null_returnsFalse() {
+
+        // Act
+        Edition e = createValidEdition();
+
+        // Assert
+        assertFalse(e.equals(null));
+    }
+
+    @Test
+    void equals_differentClass_returnsFalse() {
+
+        // Act
+        Edition e = createValidEdition();
+
+
+        // Assert
+        assertFalse(e.equals("not an edition"));
+    }
+
+    @Test
+    void equals_sameInstance_returnsTrue() {
+
+        // Act
+        Edition e = createValidEdition();
+
+        // Assert
+        assertTrue(e.equals(e));
+    }
+
+    @Test
     void equals_differentInstances_returnsFalse() {
 
+        // Arrange
         TypeOfBinding binding = mock(TypeOfBinding.class);
 
         Edition e1 = new Edition("1st", codeWithIsbn13,
@@ -598,14 +630,18 @@ class EditionTest {
                 "Book",
                 Locale.ENGLISH, LocalDate.of(2020, 1, 1), binding);
 
+
+        // Assert
         assertFalse(e1.equals(e2));
     }
 
     @Test
     void givenValidEditionThenReturnValidEdition(){
 
+        // Arrange
         TypeOfBinding binding = mock(TypeOfBinding.class);
 
+        // Act
         Edition e = new Edition("1st", codeWithIsbn13,
                 validPhysicalAttributes, publicationTypeId, validPublisherID,
                 "Book",
@@ -613,29 +649,36 @@ class EditionTest {
 
         EditionID id = e.id();
 
+        // Assert
         assertFalse(id.getID().isBlank());
         assertDoesNotThrow(() -> UUID.fromString(id.getID()));
     }
 
     @Test
     void sameAs_null_returnsFalse() {
+        // Act
         Edition e = createValidEdition();
+        // Assert
         assertFalse(e.sameAs(null));
     }
 
     @Test
     void sameAs_differentClass_returnsFalse() {
+        // Act
         Edition e = createValidEdition();
+        // Assert
         assertFalse(e.sameAs("not an edition"));
     }
 
     @Test
     void sameAs_sameId_returnsTrue() {
 
+        // Act
         Edition e1 = createValidEdition();
 
         Edition e2 = e1;
 
+        // Assert
         assertTrue(e1.sameAs(e2));
     }
 }

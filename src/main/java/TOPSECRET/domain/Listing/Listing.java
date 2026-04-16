@@ -168,6 +168,18 @@ public class Listing implements AggregateRoot<ListingId> {
         return false;
     }
 
+    /**
+     * Checks whether this listing is linked to a direct sale.
+     *
+     * @return {@code true} if the sale type is {@link SaleType#DIRECT_SALE}, {@code false} otherwise.
+     */
+    public boolean isListingLinkedToADirectSale(){
+        if(_saleType.equals(SaleType.DIRECT_SALE)){
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Checks whether the given {@link PublicationSampleId} is present in the items ID collection.
@@ -214,6 +226,10 @@ public class Listing implements AggregateRoot<ListingId> {
 
     public List<Picture> getPictures() {
         return _pictures;
+    }
+
+    public List<PublicationSampleId> get_itemsId() {
+        return _itemsId;
     }
 
     @Override

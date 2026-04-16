@@ -18,10 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class BibliographicalDataIDTest {
 
 
-    /**
-     * Tests if a BibliographicalDataID is successfully created
-     * when a valid non-null and non-blank string is provided.
-     */
     @Test
     void shouldCreateValidID() {
         //Arrange
@@ -31,11 +27,6 @@ class BibliographicalDataIDTest {
         assertEquals("1234", id.getID());
     }
 
-
-    /**
-     * Tests if the constructor throws IllegalArgumentException
-     * when the provided ID is null.
-     */
     @Test
     void shouldThrowExceptionWhenIDIsNull() {
         //Act & Assert
@@ -44,11 +35,6 @@ class BibliographicalDataIDTest {
         });
     }
 
-
-    /**
-     * Tests if the constructor throws IllegalArgumentException
-     * when the provided ID is blank.
-     */
     @Test
     void shouldThrowExceptionWhenIDIsBlank() {
         //Act & Assert
@@ -57,11 +43,12 @@ class BibliographicalDataIDTest {
         });
     }
 
+    @Test
+    void shouldNotBeEqualWhenObjectIsNull() {
+        BibliographicalDataID id = new BibliographicalDataID("1234");
+        assertNotEquals(null, id);
+    }
 
-    /**
-     * Tests if two BibliographicalDataID objects are considered equal
-     * when they contain the same ID value.
-     */
     @Test
     void shouldBeEqualWhenIDsAreSame() {
         //Arrange
@@ -72,11 +59,6 @@ class BibliographicalDataIDTest {
         assertEquals(id1, id2);
     }
 
-
-    /**
-     * Tests if two BibliographicalDataID objects are not equal
-     * when they contain different ID values.
-     */
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
         //Arrange
@@ -87,10 +69,6 @@ class BibliographicalDataIDTest {
         assertNotEquals(id1, id2);
     }
 
-
-    /**
-     * Tests if a BibliographicalDataID object is not equal to null.
-     */
     @Test
     void shouldNotBeEqualToNull() {
         //Arrange
@@ -100,11 +78,6 @@ class BibliographicalDataIDTest {
         assertNotEquals(null, id);
     }
 
-
-    /**
-     * Tests if a BibliographicalDataID object is not equal
-     * to an object of a different class.
-     */
     @Test
     void shouldNotBeEqualToDifferentClass() {
         //Arrange
@@ -115,10 +88,6 @@ class BibliographicalDataIDTest {
         assertNotEquals(other, id);
     }
 
-
-    /**
-     * Tests if the getID() method returns the correct ID value.
-     */
     @Test
     void getterShouldReturnCorrectID() {
         //Arrange
@@ -128,11 +97,6 @@ class BibliographicalDataIDTest {
         assertEquals("1234", id.getID());
     }
 
-
-    /**
-     * Tests if two equal BibliographicalDataID objects
-     * produce the same hash code.
-     */
     @Test
     void hashCodeShouldBeEqualForSameID() {
         //Arrange
@@ -141,6 +105,16 @@ class BibliographicalDataIDTest {
 
         //Assert
         assertEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldNotBeEqualForDifferentID() {
+        //Arrange
+        BibliographicalDataID id1 = new BibliographicalDataID("1234");
+        BibliographicalDataID id2 = new BibliographicalDataID("5678");
+
+        //Assert
+        assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
 }
