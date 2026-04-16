@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
+import java.lang.reflect.Field;
+
 /**
  * Unit tests for the {@link Library} class.
  * <p>
@@ -206,6 +208,7 @@ class LibraryTest {
         assertTrue(result);
     }
 
+
     @Test
     void givenDifferentNamesWhenSameAsThenReturnsFalse() {
         // Arrange
@@ -238,6 +241,62 @@ class LibraryTest {
         boolean result = library.sameAs(new Object());
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void shouldNotBeEqual_whenDifferentInstancesHaveDifferentIdsEvenWithSameNameAndUser() {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+
+        // Act
+        Library first = new Library("My Library", userDouble);
+        Library second = new Library("My Library", userDouble);
+
+        // Assert
+        assertNotEquals(first, second);
+    }
+
+    @Test
+    void shouldReturnSameIdOnMultipleCalls() {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+        Library library = new Library("My Library", userDouble);
+
+        // Act
+        LibraryId firstId = library.id();
+        LibraryId secondId = library.id();
+
+        // Assert
+        assertSame(firstId, secondId);
+    }
+
+    @Test
+    void sameAsShouldReturnTrue_whenNamesAreEqualEvenIfIdsAreDifferent() {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+        Library first = new Library("Library A", userDouble);
+        Library second = new Library("Library A", userDouble);
+
+        // Act
+        boolean result = first.sameAs(second);
+
+        // Assert
+        assertTrue(result);
+        assertNotEquals(first.id(), second.id());
+    }
+
+
+
+    @Test
+    void constructorShouldAcceptNonBlankNameWithLeadingAndTrailingSpaces() {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+
+        // Act
+        Library library = new Library("  My Library  ", userDouble);
+
+        // Assert
+        assertEquals("  My Library  ", library.getLibraryName());
     }
 
     // -------------------------------------------------------------------------
