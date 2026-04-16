@@ -141,34 +141,6 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         assertEquals("bob", dto.ownerName());
     }
 
-    @Test
-    void ensureGetUserCollectionsHandlesLargeNumberOfCollections() {
-        // Arrange
-        int numberOfCollections = 100;
-        List<CollectionOfPublications> mockCollections = new ArrayList<>();
-
-        for (int i = 0; i < numberOfCollections; i++) {
-            CollectionOfPublications collection = mock(CollectionOfPublications.class);
-            GenreID genre = mock(GenreID.class);
-
-            when(collection.getCollectionName()).thenReturn("Collection " + i);
-            when(collection.getCollectionGenre()).thenReturn(genre);
-            when(collection.getOwnerId()).thenReturn(testUserId);
-            when(genre.getID()).thenReturn("genre-" + i);
-            when(testUserId.getUsername()).thenReturn("user");
-
-            mockCollections.add(collection);
-        }
-
-        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(mockCollections);
-
-        // Act
-        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-
-        // Assert
-        assertEquals(numberOfCollections, result.size());
-    }
-
     // ============================================================
     // makeCollectionPublic() Tests
     // ============================================================

@@ -206,24 +206,24 @@ class US019CollectionOfPublicationsMapperTest {
             String genreIdValue,
             String username) {
 
-        // Mock CollectionOfPublicationsID
-        CollectionOfPublicationsID idMock = mock(CollectionOfPublicationsID.class);
-        when(idMock.toString()).thenReturn(UUID.randomUUID().toString());
+        // CollectionOfPublicationsID
+        CollectionOfPublicationsID collectionIdDouble = mock(CollectionOfPublicationsID.class);
+        when(collectionIdDouble.toString()).thenReturn(UUID.randomUUID().toString());
 
-        // Mock GenreID
-        GenreID genreIdMock = mock(GenreID.class);
-        when(genreIdMock.getID()).thenReturn(genreIdValue);
+        // GenreID
+        GenreID genreIdDouble = mock(GenreID.class);
+        when(genreIdDouble.getID()).thenReturn(genreIdValue);
 
-        // Mock UserId
-        UserId userIdMock = mock(UserId.class);
-        when(userIdMock.getUsername()).thenReturn(username);
+        // UserId
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.getUsername()).thenReturn(username);
 
-        // Mock CollectionOfPublications
+        // CollectionOfPublications
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
-        when(collectionDouble.id()).thenReturn(idMock);
+        when(collectionDouble.id()).thenReturn(collectionIdDouble);
         when(collectionDouble.getCollectionName()).thenReturn(collectionName);
-        when(collectionDouble.getCollectionGenre()).thenReturn(genreIdMock);
-        when(collectionDouble.getOwnerId()).thenReturn(userIdMock);
+        when(collectionDouble.getCollectionGenre()).thenReturn(genreIdDouble);
+        when(collectionDouble.getOwnerId()).thenReturn(userIdDouble);
 
         return collectionDouble;
     }
