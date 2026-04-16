@@ -2,12 +2,11 @@
 title US021 - To get the list of items on direct sale of a given genre
 
 class UI021 {
-
 }
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
-  +getAllGenres()
-  +getListOfItemsOnDirectSale(selectedGenreId: GenreId)
+  +getAllGenres() : List<US021GenreDTO>
+  +getListOfItemsOnDirectSale(selectedGenreId: GenreID) : List<US021DirSaleListingDTO>
 }
 
 interface IGenreRepository {
@@ -15,65 +14,69 @@ interface IGenreRepository {
 }
 
 class Genre {
-   - id: GenreID
-    -genreType: String
+  -id: GenreID
+  -genreType: String
 }
 
+class US021GenreMapper {
+  +{static} toDTO(genre: Genre) : US021GenreDTO
+  +{static} toDTOList(genres: List<Genre>) : List<US021GenreDTO>
+}
+
+class US021GenreDTO {
+  -genreId: GenreID
+  -name: String
+}
+
+interface IBibliographicalDataRepository {
+  +findAllBibliographicalDataByGenreId(genreId: GenreID) : List<BibliographicalDataID>
+}
+
+interface IPublicationSampleRepository {
+  +findAllItemsIdByBibliographicalDataId(bdIds: List<BibliographicalDataID>) : List<PublicationSampleId>
+}
 
 interface IListingRepository {
-  + findAllDirectSaleListings(): List<Listing>
+  +findDirectSaleListingsContaining(pubSampleIds: List<PublicationSampleId>) : List<Listing>
 }
-
 
 class Listing {
-  getSaleType(): SaleType
-  getItemsId(): List<PublicationSampleId>
+  -id: ListingId
+  -listingTitle: String
+  -price: Price
+  -shortDescription: String
+  -sellerId: UserId
 }
 
-interface "IPublicationSampleRepository" as IPSR {
-    + findPublicationSampleById(id) : Optional<PublicationSample>
+class US021DirSaleListingMapper {
+  +toDTO(listing: Listing) : US021DirSaleListingDTO
+  +toDTOs(listings: List<Listing>) : List<US021DirSaleListingDTO>
 }
 
-
-class "PublicationSample" as PS {
-    + getBibliographicalDataID() : BibliographicalDataID
+class US021DirSaleListingDTO {
+  -listingId: String
+  -listingTitle: String
+  -price: BigDecimal
+  -shortDescription: String
+  -sellerId: String
 }
 
-
-interface "IBibliographicalDataRepository" as IBDR {
-    + findBibliographicalDataById(id) : Optional<BibliographicalData>
-}
-
-class "BibliographicalData" as BD {
-    + hasGenre(genre) : boolean
-}
-
-class "US021DirSaleListingMapper" as Mapper {
-    + toDTO(listing: Listing): US021DirSaleListingDTO
-}
-
-
-class "US021DirSaleListingDTO" as DTO {
-
-}
-
-
-
-
-' Interactions
+' Relationships
 UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> IGenreRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IPSR : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IBDR : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> IListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> Mapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IGenreRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IBibliographicalDataRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IPublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021GenreMapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021DirSaleListingMapper : uses
 
-IGenreRepository "1 " --> "                   *" Genre : manages
-IPSR  "1 "-->  "*" PS : manages
-IBDR  "1 " -->  "*" BD : manages
-IListingRepository "1 " --> "*" Listing : manages
+IGenreRepository "1" --> "*" Genre : manages
+IListingRepository "1" --> "*" Listing : manages
 
-Mapper ..> Listing : maps from
-Mapper ..> DTO : creates
+US021GenreMapper ..> Genre : maps from
+US021GenreMapper ..> US021GenreDTO : creates
+
+US021DirSaleListingMapper ..> Listing : maps from
+US021DirSaleListingMapper ..> US021DirSaleListingDTO : creates
 
 @enduml

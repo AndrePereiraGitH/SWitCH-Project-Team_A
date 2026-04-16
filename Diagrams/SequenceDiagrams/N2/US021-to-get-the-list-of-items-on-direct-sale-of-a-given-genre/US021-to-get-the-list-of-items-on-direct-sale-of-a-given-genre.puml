@@ -9,13 +9,13 @@ actor Buyer
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
 participant ":IGenreRepository" as IGenreRepo
-participant "CopylistOfAllGenres:\nList<Genre>" as LG
-participant ":IListingRepository" as IListingRepo
-participant "resultList:\nList<Listing>" as ResultList 
-participant ":IPublicationSampleRepository" as IPSRepo
+participant ":US021GenreMapper" as GenreMapper
+participant "listOfGenreDTO:\nList<US021GenreDTO>" as LGDTO
 participant ":IBibliographicalDataRepository" as IBDRepo
+participant ":IPublicationSampleRepository" as IPSRepo
+participant ":IListingRepository" as IListingRepo
 participant ":US021DirSaleListingMapper" as Mapper
-participant "listOfDirectSaleDTO:\nList<US021DirectSaleDTO>" as LDTO
+participant "listOfDirectSaleDTO:\nList<US021DirSaleListingDTO>" as LDTO
 
 
 ' Interactions
@@ -29,65 +29,59 @@ activate Ctrl
 
 Ctrl -> IGenreRepo : getAllGenres()
 activate IGenreRepo
-
-IGenreRepo -->> LG ** : «create»
-
-IGenreRepo --> Ctrl : CopylistOfAllGenres
+IGenreRepo -->> "listOfAllGenres:\nList<Genre>" ** : «create»
+IGenreRepo --> Ctrl : listOfAllGenres
 deactivate IGenreRepo
 
-Ctrl --> UI : CopylistOfAllGenres
+Ctrl -> GenreMapper : toDTOList(listOfAllGenres)
+activate GenreMapper
+GenreMapper -->> LGDTO ** : «create»
+loop for each genre in listOfAllGenres
+    GenreMapper -->> "genreDTO:\nUS021GenreDTO" ** : toDTO(genre)
+    GenreMapper -> LGDTO : add(genreDTO)
+end
+GenreMapper --> Ctrl : listOfGenreDTO
+deactivate GenreMapper
+
+Ctrl --> UI : listOfGenreDTO
 deactivate Ctrl
 
 UI --> Buyer : Which genre? Choose!
 deactivate UI
 
 ' Section 2 - Get list of direct sales with the genre chosen
-Buyer -> UI : selectedGenre
+Buyer -> UI : selectedGenreDTO
 activate UI
 
 UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
 activate Ctrl
 
-Ctrl -> IListingRepo : findAllDirectSaleListings()
+Ctrl -> IBDRepo : findAllBibliographicalDataByGenreId(selectedGenreId)
+activate IBDRepo
+IBDRepo -->> "listOfBdIds:\nList<BibliographicalDataID>" ** : «create»
+IBDRepo --> Ctrl : listOfBdIds
+deactivate IBDRepo
+
+Ctrl -> IPSRepo : findAllItemsIdByBibliographicalDataId(listOfBdIds)
+activate IPSRepo
+IPSRepo -->> "listOfPubSampleIds:\nList<PublicationSampleId>" ** : «create»
+IPSRepo --> Ctrl : listOfPubSampleIds
+deactivate IPSRepo
+
+Ctrl -> IListingRepo : findDirectSaleListingsContaining(listOfPubSampleIds)
 activate IListingRepo
-
-IListingRepo -->> ResultList ** : «create»
-
-IListingRepo --> Ctrl : resultList
+IListingRepo -->> "listOfDirectSaleListings:\nList<Listing>" ** : «create»
+IListingRepo --> Ctrl : listOfDirectSaleListings
 deactivate IListingRepo
 
-
-loop for each listing in List<Listing>
-    loop for each PublicationSampleId in listing.getItemsId()
-        Ctrl -> IPSRepo : findPublicationSampleById(id)
-        activate IPSRepo
-        IPSRepo --> Ctrl : PublicationSample
-        deactivate IPSRepo
-
-        Ctrl -> IBDRepo : findBibliographicalDataById(bdId)
-        activate IBDRepo
-        IBDRepo --> Ctrl : BibliographicalData
-        deactivate IBDRepo
-
-        Ctrl -> Ctrl : bd.hasGenre(selectedGenreId)
-
-        alt hasGenre == true
-            Ctrl -> ResultList : add(listing)
-        end
-    end
-end
-
 ' Section 3 - Convert to DTO
-Ctrl -> Mapper : toDTOs(resultList)
+Ctrl -> Mapper : toDTOs(listOfDirectSaleListings)
 activate Mapper
-
-Mapper -->> LDTO ** : <<create>>
-
-loop for each listing in resultList
-    Mapper -->> directSaleDTO ** : toDTO(listing)
-    Mapper -->> LDTO : add(US021DirectSaleDTO)
+Mapper -->> LDTO ** : «create»
+loop for each listing in listOfDirectSaleListings
+    Mapper -->> "dirSaleDTO:\nUS021DirSaleListingDTO" ** : toDTO(listing)
+    Mapper -> LDTO : add(dirSaleDTO)
 end
-
 Mapper --> Ctrl : listOfDirectSaleDTO
 deactivate Mapper
 

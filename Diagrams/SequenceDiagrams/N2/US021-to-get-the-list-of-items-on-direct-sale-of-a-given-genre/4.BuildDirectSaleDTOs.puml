@@ -4,33 +4,32 @@ autonumber
 title US021 - Build Direct Sale DTOs
 
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant "resultList:\nList<Listing>" as ResultList
-participant ":US021DirSaleListingMapper" as mapper
-participant "listOfDirectSaleDTO:\nList<US021DirectSaleDTO>" as listOfDirectSaleDTO
+participant ":US021DirSaleListingMapper" as Mapper
+participant "listOfDirectSaleDTO:\nList<US021DirSaleListingDTO>" as LDTO
 
-note over Ctrl, mapper #E3F2FD
+note over Ctrl, Mapper #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over Ctrl, mapper #E3F2FD
+note over Ctrl, Mapper #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> mapper : toDTOs(resultList)
-activate mapper
+Ctrl -> Mapper : toDTOs(listOfDirectSaleListings)
+activate Mapper
 
-mapper -->> listOfDirectSaleDTO ** : <<create>>
+Mapper -->> LDTO ** : «create»
 
-loop for each listing in resultList
-    mapper -->> directSaleDTO ** : toDTO(listing)
-    mapper -->> LDTO : add(US021DirectSaleDTO)
+loop for each listing in listOfDirectSaleListings
+    Mapper -->> "dirSaleDTO:\nUS021DirSaleListingDTO" ** : toDTO(listing)
+    Mapper -> LDTO : add(dirSaleDTO)
 end
 
-mapper --> Ctrl : listOfDirectSaleDTO
-deactivate mapper
+Mapper --> Ctrl : listOfDirectSaleDTO
+deactivate Mapper
 
 @enduml

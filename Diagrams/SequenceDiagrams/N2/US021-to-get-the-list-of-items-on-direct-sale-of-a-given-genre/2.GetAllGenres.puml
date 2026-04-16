@@ -5,8 +5,9 @@ title US021 - Get All Genres
 
 participant ":UI021" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":IGenreRepository" as IgenreRepo
-participant "CopylistOfAllGenres:\nList<Genre>" as LG
+participant ":IGenreRepository" as IGenreRepo
+participant ":US021GenreMapper" as GenreMapper
+participant "listOfGenreDTO:\nList<US021GenreDTO>" as LGDTO
 
 note over UI, Ctrl #E3F2FD
 <b>Fragment</b>
@@ -23,15 +24,23 @@ end note
 UI -> Ctrl : getAllGenres()
 activate Ctrl
 
-Ctrl -> IgenreRepo : getAllGenres()
-activate IgenreRepo
+Ctrl -> IGenreRepo : getAllGenres()
+activate IGenreRepo
+IGenreRepo -->> "listOfAllGenres:\nList<Genre>" ** : «create»
+IGenreRepo --> Ctrl : listOfAllGenres
+deactivate IGenreRepo
 
-IgenreRepo -->> LG ** : «create»
+Ctrl -> GenreMapper : toDTOList(listOfAllGenres)
+activate GenreMapper
+GenreMapper -->> LGDTO ** : «create»
+loop for each genre in listOfAllGenres
+    GenreMapper -->> "genreDTO:\nUS021GenreDTO" ** : toDTO(genre)
+    GenreMapper -> LGDTO : add(genreDTO)
+end
+GenreMapper --> Ctrl : listOfGenreDTO
+deactivate GenreMapper
 
-IgenreRepo --> Ctrl : CopylistOfAllGenres
-deactivate IgenreRepo
-
-Ctrl --> UI : CopylistOfAllGenres
+Ctrl --> UI : listOfGenreDTO
 deactivate Ctrl
 
 @enduml

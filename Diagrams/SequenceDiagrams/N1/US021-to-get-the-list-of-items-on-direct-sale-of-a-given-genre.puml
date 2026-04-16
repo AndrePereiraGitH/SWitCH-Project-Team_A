@@ -2,21 +2,21 @@
 
 hide footbox
 autonumber
+
 title US021 - To get the list of items on direct sale of a given genre
 
 actor Buyer
 
-' Participants
 participant ":System" as System
 
-' Interactions
 Buyer -> System : I want to get the list of items on direct sale of a given genre
 activate System
-Buyer <-- System : Which genre? Choose!
+System --> Buyer : Which genre? Choose!
 deactivate System
-Buyer -> System : selectedgenre
+
+Buyer -> System : selectedGenre
 activate System
-System --> Buyer : Shows the list of items on direct sale
+System --> Buyer : Shows the list of items on direct sale of the selected genre
 deactivate System
 
 @enduml
