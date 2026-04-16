@@ -2,15 +2,13 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US025AuthorDTO;
 import TOPSECRET.dto.US025AuthorMapper;
 import TOPSECRET.dto.US025DirectSaleDTO;
@@ -23,8 +21,9 @@ import java.util.List;
  * 1. A list of all authors.
  * 2. A list of items on direct sale of a specific author.
  *
- * The controller orchestrates all repository calls and delegates
- * DTO conversion to the Mapper classes.
+ * The controller orchestrates repository calls by passing identifiers between
+ * repositories and delegates all DTO conversion, including domain object resolution,
+ * to the mapper classes.
  */
 public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
@@ -32,6 +31,7 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
     private final IListingRepository listingRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
+    private final US025DirectSaleMapper directSaleMapper;
 
     /**
      * Constructs a new {@code US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController}
@@ -62,12 +62,13 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         this.listingRepository = listingRepository;
         this.publicationSampleRepository = publicationSampleRepository;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
+        this.directSaleMapper = new US025DirectSaleMapper(publicationSampleRepository, bibliographicalDataRepository);
     }
 
     /**
      * Returns all authors in the system, converted into DTOs.
      *
-     * @return list of AuthorDTO_US025 representing all authors
+     * @return list of {@link US025AuthorDTO} representing all authors
      */
     public List<US025AuthorDTO> getAllAuthors() {
         return US025AuthorMapper.toDTOList(authorRepository.getAllAuthors());
@@ -76,12 +77,15 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
     /**
      * Returns the list of items on direct sale for a specific author, converted into DTOs.
      *
-     * @param authorId the string identifier of the author being queried; must not be {@code null}
-     * @return list of DirectSaleDTO_US025 representing the author's direct sale items
-     * @throws IllegalArgumentException if authorId is null or blank, or if the author is not found
+     * <p>The controller retrieves the author, then chains repository calls using identifiers
+     * to obtain the relevant listings. Domain object resolution for DTO construction is
+     * delegated to {@link US025DirectSaleMapper}.
+     *
+     * @param authorId the identifier of the author being queried; must not be {@code null}
+     * @return list of {@link US025DirectSaleDTO} representing the author's direct sale items
+     * @throws IllegalArgumentException if {@code authorId} is {@code null} or the author is not found
      */
-    public List<US025DirectSaleDTO> getListOfItemsOnDirectSaleOfAGivenAuthor(AuthorId authorId)
-            throws IllegalArgumentException {
+    public List<US025DirectSaleDTO> getListOfItemsOnDirectSaleOfAGivenAuthor(AuthorId authorId) {
 
         if (authorId == null)
             throw new IllegalArgumentException("AuthorID cannot be null");
@@ -89,13 +93,15 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         Author author = authorRepository.findAuthorById(authorId)
                 .orElseThrow(() -> new IllegalArgumentException("Author not found"));
 
-        List<BibliographicalData> bds = bibliographicalDataRepository.findBibliographicalDataByAuthorId(authorId);
-        List<BibliographicalDataID> bdIds = bibliographicalDataRepository.findBibliographicalDataIdByAuthorId(authorId);
+        List<BibliographicalDataID> bdIds = bibliographicalDataRepository
+                .findBibliographicalDataIdByAuthorId(authorId);
 
-        List<PublicationSample> samples = publicationSampleRepository.findPublicationSampleByBibliographicalDataIds(bdIds);
-        List<PublicationSampleId> sampleIds = publicationSampleRepository.findPublicationSamplesIdsByBiblioDataIds(bdIds);
+        List<PublicationSampleId> sampleIds = publicationSampleRepository
+                .findPublicationSamplesIdsByBiblioDataIds(bdIds);
 
-        List<Listing> listings = listingRepository.findDirectSaleListingsContaining(sampleIds);
-        return US025DirectSaleMapper.toDTOs(author, listings, samples, bds);
+        List<Listing> listings = listingRepository
+                .findDirectSaleListingsContaining(sampleIds);
+
+        return directSaleMapper.toDTOs(author, listings, bdIds);
     }
 }
