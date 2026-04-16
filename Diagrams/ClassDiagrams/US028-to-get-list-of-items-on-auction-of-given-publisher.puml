@@ -1,100 +1,64 @@
 @startuml
-title US028 - To get the list of items on auction of a given publisher
 
-class UI028 {
+title US028 - Class Diagram: Get List of Items on Auction of a Given Publisher
+
+hide empty members
+
+class US028Controller {
+  + getAllPublishers() : List<US028PublisherDTO>
+  + findListOfItemsOnAuctionByPublisher(publisherId) : List<US028ListingDTO>
 }
 
-class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
-    + getAllPublishers(): List<PublisherDTO_US028>
-    + findListOfItemsOnAuction(publisher): List<PublicationSampleDTO_US028>
+interface PublisherRepository {
+  + getAllPublishers() : List<US028PublisherDTO>
 }
 
-class PublisherRepository {
-    - publishers: List<Publisher>
-    + getAllPublishers: List<Publisher>
+interface EditionRepository {
+  + findEditionIdsByPublisherId(publisherId) : List<EditionID>
 }
 
-class PublisherDTO_US028 {
-    + toDTOs(listOfAllPublishers): List<PublisherDTO_US028>
+interface PublicationSampleRepository {
+  + findPublicationSampleIdsByEditionId(editionIds : List<EditionID>) : List<PublicationSampleId>
 }
 
-class Publisher {
-    - name: String
-    - vatNumber: String
-    - contact: Contact
-    + getPublisherDetails(): Publisher
+interface ListingRepository {
+  + findAuctionListingsContaining(pubSampleIds : List<PublicationSampleId>) : List<Listing>
 }
 
-class ListingRepository {
-    - listings: List<Listing>
-    + findAllAuctionListings() : List<Listing>
+class US028PublisherMapper {
+  + toDTO(publishers) : List<US028PublisherDTO>
 }
 
-class PublicationSampleRepository {
-    - publicationSamples: List<PublicationSample>
-    + findItemsByListingAndPublisher(listOfListings, publisher): List<PublicationSample>
+class US028ListingMapper {
+  + toDTO(listings : List<Listing>) : List<US028ListingDTO>
 }
 
-class PublicationSampleDTO_US028 {
-    + toDTOs(listOfItems): List<PublicationSampleDTO_US028>
+class EditionID <<value object>> {
 }
 
-class PublicationSample {
-    - bibliographicalData: BibliographicalData
-    - publicationType: PublicationType
-    - userName: User
-    - publicationStatus: PublicationStatus
-    - edition: String
-    - code: Code
-    + getDetails(): PublicationSample
+class PublicationSampleId <<value object>> {
 }
 
-class Listing {
-    - listingTitle: String
-    - items: List<PublicationSample>
-    - saleType: SaleType
-    - price: Price
-    - shortDescription: String
-    - seller: User
-    - pictures: List<Picture>
+class Listing <<entity>> {
 }
 
-enum SaleType {
-    DIRECT_SALE
-    AUCTION
+class US028PublisherDTO <<DTO>> {
 }
 
-class Edition {
-    - publisher: Publisher
+class US028ListingDTO <<DTO>> {
 }
 
-' Interactions
+US028Controller ..> PublisherRepository : uses
+US028Controller ..> EditionRepository : uses
+US028Controller ..> PublicationSampleRepository : uses
+US028Controller ..> ListingRepository : uses
+US028Controller ..> US028PublisherMapper : uses
+US028Controller ..> US028ListingMapper : uses
 
-' Interactions
-
-UI028 "1" ..> "1" US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController : uses
-
-US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" PublisherRepository: uses
-US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" PublisherDTO_US028 : uses
-US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" ListingRepository : uses
-US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" PublicationSampleRepository : uses
-US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" PublicationSampleDTO_US028 : uses
-
-PublisherRepository "1" ..> "*" Publisher : communicates with
-
-PublisherDTO_US028 "1" ..> "1" Publisher : transfers
-
-ListingRepository "1" ..> "*" Listing: communicates with
-
-PublicationSampleRepository "1" ..> "*" PublicationSample: communicates with
-
-PublicationSampleDTO_US028 "1" ..> "1" PublicationSample : transfers
-
-' Domain classes interactions
-
-Listing "1" -> "1..*" PublicationSample: contains
-PublicationSample "*" -> "1" Edition: has
-Edition "*" -> "1" Publisher: published by
-Listing "1" -> "1" SaleType: for sale on
+EditionRepository ..> EditionID : creates
+PublicationSampleRepository ..> PublicationSampleId : creates
+ListingRepository ..> Listing : creates
+US028PublisherMapper ..> US028PublisherDTO : creates
+US028ListingMapper ..> US028ListingDTO : creates
 
 @enduml

@@ -1,0 +1,88 @@
+@startuml
+
+hide footbox
+autonumber
+title US028 - Get the list of items on auction of a given publisher
+
+box #whitesmoke
+actor Buyer
+participant ":UI028" as UI
+end box
+
+participant ":US028ToGetTheListOfItemsOnAuction\nOfAGivenPublisherController" as Ctrl
+participant ":PublisherRepository" as PublisherRepo
+participant ":US028PublisherMapper" as PublisherMapper
+participant ":EditionRepository" as EditionRepo
+participant ":PublicationSampleRepository" as PubSampleRepo
+participant ":ListingRepository" as ListingRepo
+participant ":US028ListingMapper" as ListingMapper
+
+participant "listOfEditionIds:\nList<EditionID>" as ListEditionIds
+participant "listOfPubSampleIds:\nList<PublicationSampleId>" as ListPubSampleIds
+participant "listOfListings:\nList<Listing>" as ListListings
+participant "listOfListingsDTO:\nList<US028ListingDTO>" as ListListingsDTO
+
+Buyer -> UI : I want to get the list of items\non auction of a given publisher
+activate UI
+
+UI -> Ctrl : getAllPublishers()
+activate Ctrl
+Ctrl -> PublisherRepo : getAllPublishers()
+
+activate PublisherRepo
+PublisherRepo -->> Ctrl : listOfAllPublishersDTO
+
+deactivate PublisherRepo
+
+note right of PublisherRepo
+[[US028_PublisherMapper.puml View method details]]
+end note
+
+Ctrl -->> UI : listOfAllPublishersDTO
+deactivate Ctrl
+
+UI -->> Buyer : Which publisher? Choose one!
+deactivate UI
+
+Buyer -> UI : publisherId
+activate UI
+
+UI -> Ctrl : findListOfItemsOnAuctionByPublisher(publisherId)
+activate Ctrl
+
+Ctrl -> EditionRepo : findEditionIdsByPublisherId(publisherId)
+activate EditionRepo
+EditionRepo -> ListEditionIds ** : create()
+
+
+EditionRepo -->> Ctrl : listOfEditionIds
+deactivate EditionRepo
+
+Ctrl -> PubSampleRepo : findPublicationSampleIdsByEditionId(listOfEditionIds)
+activate PubSampleRepo
+PubSampleRepo -> ListPubSampleIds ** : create()
+PubSampleRepo -->> Ctrl : listOfPubSampleIds
+deactivate PubSampleRepo
+
+Ctrl -> ListingRepo : findAuctionListingsContaining(listOfPubSampleIds)
+activate ListingRepo
+ListingRepo -> ListListings ** : create()
+ListingRepo -->> Ctrl : listOfListings
+deactivate ListingRepo
+
+Ctrl -> ListingMapper : toDTO(listOfListings)
+activate ListingMapper
+note right of ListingMapper
+[[US028_ListingMapper.puml View method details]]
+end note
+ListingMapper -> ListListingsDTO ** : create()
+ListingMapper -->> Ctrl : listOfListingsDTO
+deactivate ListingMapper
+
+Ctrl -->> UI : listOfListingsDTO
+deactivate Ctrl
+
+UI -->> Buyer : Shows the list of items on auction for the publisher
+deactivate UI
+
+@enduml
