@@ -6,6 +6,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -29,77 +30,50 @@ import java.util.Optional;
 public class BibliographicalDataRepositoryMem implements IBibliographicalDataRepository {
 
     private BibliographicalDataFactory _bibliographicalDataFactory;
-
     private final List<BibliographicalData> _bdList;
 
-    // Constructor -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Constructs an in-memory bibliographical data repository with the given factory
-     * and initial list of bibliographical data.
-     *
-     * @param bibliographicalDataFactory the factory used to create {@link BibliographicalData} instances
-     * @param bdList the initial list of bibliographical data to populate the repository
-     */
     public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory, List<BibliographicalData> bdList) {
-        _bdList = new ArrayList<>(bdList);// throws automatically NullPointerException if bdList = null
+        _bdList = new ArrayList<>(bdList);
         _bibliographicalDataFactory = bibliographicalDataFactory;
     }
 
-
-    /**
-     * Constructs an empty in-memory bibliographical data repository with the given factory.
-     *
-     * @param bibliographicalDataFactory the factory used to create {@link BibliographicalData} instances
-     */
     public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory) {
         _bdList = new ArrayList<>();
         _bibliographicalDataFactory = bibliographicalDataFactory;
     }
-
 
     /**
      * {@inheritDoc}
      */
     @Override
     public BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                                            List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException
-    {
-        if(title == null){
+                                            List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException {
+        if (title == null)
             throw new IllegalArgumentException("title cannot be null");
-        }
-        if(authors == null){
+        if (authors == null)
             throw new IllegalArgumentException("authors cannot be null");
-        }
-        if(genres == null){
+        if (genres == null)
             throw new IllegalArgumentException("genres cannot be null");
-        }
-        if(chunksOfText == null){
+        if (chunksOfText == null)
             throw new IllegalArgumentException("chunksOfText cannot be null");
-        }
 
         BibliographicalData newBibliographicalData = _bibliographicalDataFactory.create(title, authors, originalLanguage, publicationDate, genres, chunksOfText);
-
         _bdList.add(newBibliographicalData);
-
         return newBibliographicalData;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId){
-
-        if(bibliographicalDataId == null){
+    @Override
+    public Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId) {
+        if (bibliographicalDataId == null)
             throw new NullPointerException("BibliographicalDataId must not be null");
-        }
 
-        for(BibliographicalData bd : _bdList){
-            if(bd.id().equals(bibliographicalDataId)){
+        for (BibliographicalData bd : _bdList) {
+            if (bd.id().equals(bibliographicalDataId))
                 return Optional.of(bd);
-            }
         }
-
         return Optional.empty();
     }
 
@@ -127,6 +101,23 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
 
         return Optional.empty();
     }
+    public List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId){
+
+        if (genreId == null) {
+            throw new IllegalArgumentException("genreId cannot be null");
+        }
+
+        List<BibliographicalDataID> result = new ArrayList<>();
+
+        for (BibliographicalData bd : _bdList) {
+            if (bd.getGenres().contains(genreId)) {
+                result.add(bd.id());
+            }
+        }
+
+        return result;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -160,6 +151,21 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
         return List.copyOf(_bdList);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BibliographicalData> findBibliographicalDataByAuthorId(AuthorId authorId) {
+        if (authorId == null)
+            throw new IllegalArgumentException("authorId must not be null");
+
+        List<BibliographicalData> result = new ArrayList<>();
+        for (BibliographicalData bd : _bdList) {
+            if (bd.getAuthors().contains(authorId))
+                result.add(bd);
+        }
+        return result;
+    }
 
     /**
      * {@inheritDoc}
@@ -174,7 +180,4 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
 
         return listOfTitles;
     }
-
 }
-
-

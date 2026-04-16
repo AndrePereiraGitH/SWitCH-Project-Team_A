@@ -5,32 +5,39 @@ hide circle
 class UI011 {
 }
 
-class AddPublicationToLibraryController {
-    + getListOfOtherPublications()
-    + addPublicationSampleToLib(selectedPub)
+class US011AddPublicationToLibraryController {
+    + getListOfPublicationsNotInLibrary(UserId userId) : List<PublicationSample>
+    + addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : boolean
 }
 
 
 
-class PublicationSampleRepository {
-    + getListOfDifferentPublications(listOfPublicationsInLibrary)
+class IPublicationSampleRepository {
+    + getAllPublicationsFromUserWithoutLibrary(UserId userId) : List<PublicationSample>
+    + findPublicationSampleById(publicationSampleId) : Optional.of(pbSample)
+    + addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : boolean
+
+}
+
+class PublicationSample {
+    + addPublicationToLibrary(LibraryId libraryId) : LibraryId
+
 }
 
 
 
-class Library {
-    + getAll()
-    + addPublicationSample(selectedPub)
-    - verifyUnique(selectedPub)
-    - add(selectedPub)
+class ILibraryRepository {
+    + getLibraryByUserId(UserId userId) : Library
+
 }
 
 
 ' ---------------- Relationships ----------------
 
-UI011 ..> AddPublicationToLibraryController : uses
-AddPublicationToLibraryController ..> PublicationSampleRepository:uses
-AddPublicationToLibraryController -->Library : interacts with
+UI011 ..> US011AddPublicationToLibraryController : uses
+US011AddPublicationToLibraryController ..> IPublicationSampleRepository: interacts with
+US011AddPublicationToLibraryController ..>ILibraryRepository : interacts with
+IPublicationSampleRepository ..> PublicationSample : calls for
 
 
 

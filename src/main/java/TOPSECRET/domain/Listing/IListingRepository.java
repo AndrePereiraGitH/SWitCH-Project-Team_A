@@ -1,7 +1,7 @@
 package TOPSECRET.domain.Listing;
 
-
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -107,6 +107,23 @@ public interface IListingRepository {
      */
     Optional<Listing> findListingById(ListingId id);
 
+    /**
+     * Retrieves all {@link ListingId} that contain at least one of the given
+     * {@link PublicationSampleId}.
+     *
+     * <p>This method searches the repository for all {@link Listing} instances
+     * whose collection of item identifiers includes at least one of the provided
+     * publication sample identifiers.</p>
+     *
+     * @param itemsId the list of publication sample identifiers used to filter listings;
+     *                must not be {@code null}
+     * @return a list of {@link ListingId} corresponding to listings that contain
+     *         at least one of the specified items; may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code itemsId} is {@code null}
+     */
+    List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId);
+
 
     /**
      * Returns all auction listings that contain at least one item matching
@@ -135,4 +152,16 @@ public interface IListingRepository {
      * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
      */
     List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
+
+    /**
+    * Retrieves all listings that are linked to a direct sale and contain at least
+    * one of the given publication sample identifiers.
+    *
+    * @param listOfPubSampleIds the list of publication sample identifiers to search for
+    * @return a list of listings that are linked to a direct sale and contain at least
+    *         one of the given publication sample identifiers; returns an empty list if
+    *         no matching listings are found
+    * @throws NullPointerException if {@code listOfPubSampleIds} is {@code null} or empty
+    */
+    List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
 }

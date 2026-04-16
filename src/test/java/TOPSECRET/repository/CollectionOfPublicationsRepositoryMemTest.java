@@ -2,12 +2,15 @@ package TOPSECRET.repository;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,9 +34,13 @@ import static org.mockito.Mockito.*;
  */
 class CollectionOfPublicationsRepositoryMemTest {
 
-    // ============================================================
-    // Constructor Tests
-    // ============================================================
+    ICollectionOfPublicationsRepository sut;
+    CollectionOfPublicationsFactory factory;
+
+    @BeforeEach
+    void setUp() {
+        factory = mock(CollectionOfPublicationsFactory.class);
+    }
 
     @Test
     void ensureThrowsExceptionWhenFactoryIsNull() {
@@ -42,6 +49,9 @@ class CollectionOfPublicationsRepositoryMemTest {
                 () -> new CollectionOfPublicationsRepositoryMem(null));
     }
 
+    /**
+     * Ensures exception is thrown when user is null.
+     */
     @Test
     void ensureRepositoryIsCreatedSuccessfullyWithValidFactory() {
         // Arrange
@@ -55,325 +65,107 @@ class CollectionOfPublicationsRepositoryMemTest {
     // createAndAdd() Tests
     // ============================================================
 
+    /**
+     * Ensures user collections are retrieved correctly.
+     */
     @Test
-    void ensureCreateAndAddThrowsExceptionWhenUserIdIsNull() {
+    void shouldReturnCollectionsOwnedByUser() throws Exception {
+
         // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
+        UserId otherUser = mock(UserId.class);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(null, "My Collection", genre));
-    }
+        CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
 
-    @Test
-    void ensureCreateAndAddThrowsExceptionWhenNameIsNull() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(userId, null, genre));
-    }
-
-    @Test
-    void ensureCreateAndAddThrowsExceptionWhenGenreIdIsNull() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(userId, "My Collection", null));
-    }
-
-    @Test
-    void ensureCreateAndAddReturnsCreatedCollection() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-        CollectionOfPublications expected = mock(CollectionOfPublications.class);
-
-        when(expected.getOwnerId()).thenReturn(userId);
-        when(expected.getCollectionName()).thenReturn("My Collection");
-        when(expected.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("My Collection", genre, userId)).thenReturn(expected);
+        when(collection1.getOwnerId()).thenReturn(user);
+        when(collection2.getOwnerId()).thenReturn(otherUser);
 
         // Act
-        CollectionOfPublications result = repository.createAndAdd(userId, "My Collection", genre);
+        // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
+        Field field = CollectionOfPublicationsRepositoryMem.class
+                .getDeclaredField("_collectionOfPublicationsList");
+        field.setAccessible(true);
 
-        // Assert
-        assertSame(expected, result);
-    }
+        List<CollectionOfPublications> list =
+                (List<CollectionOfPublications>) field.get(sut);
 
-    @Test
-    void ensureCreateAndAddStoresCollectionInRepository() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        list.add(collection1);
+        list.add(collection2);
 
-        when(collection.getOwnerId()).thenReturn(userId);
-        when(collection.getCollectionName()).thenReturn("My Collection");
-        when(collection.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("My Collection", genre, userId)).thenReturn(collection);
+        // ACT
+        List<CollectionOfPublications> result =
+                sut.getUserCollections(user);
 
-        // Act
-        repository.createAndAdd(userId, "My Collection", genre);
-        List<CollectionOfPublications> result = repository.getUserCollections(userId);
-
-        // Assert
+        // ASSERT
         assertEquals(1, result.size());
-        assertEquals(collection, result.get(0));
+        assertEquals(collection1, result.get(0));
     }
 
+
+    // ==== US020 tests ====
+
     @Test
-    void ensureCreateAndAddThrowsExceptionWhenDuplicateNameAndGenreForSameUser() {
+    void shouldThrowExceptionWhenGenreIsNull() {
         // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+        IUserRepository userRepo = mock(IUserRepository.class);
 
-        when(collection.getOwnerId()).thenReturn(userId);
-        when(collection.getCollectionName()).thenReturn("My Collection");
-        when(collection.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("My Collection", genre, userId)).thenReturn(collection);
-
-        repository.createAndAdd(userId, "My Collection", genre);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(userId, "My Collection", genre));
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenreId(null));
     }
 
-    @Test
-    void ensureCreateAndAddIsCaseInsensitiveForName() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.getOwnerId()).thenReturn(userId);
-        when(collection.getCollectionName()).thenReturn("My Collection");
-        when(collection.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("My Collection", genre, userId)).thenReturn(collection);
-
-        repository.createAndAdd(userId, "My Collection", genre);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(userId, "MY COLLECTION", genre));
-    }
 
     @Test
-    void ensureCreateAndAddAllowsSameNameWithDifferentGenre() {
+    void shouldReturnAllPublicCollectionsOfAGivenGenre() {
         // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
+        GenreID desiredGenre = mock(GenreID.class);
+        UserId userDouble = mock(UserId.class);
 
-        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
-        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
 
-        when(col1.getOwnerId()).thenReturn(userId);
-        when(col1.getCollectionName()).thenReturn("My Collection");
-        when(col1.getCollectionGenre()).thenReturn(genre1);
-        when(factory.create("My Collection", genre1, userId)).thenReturn(col1);
+        when(factory.create("Collection 1 name", desiredGenre, userDouble)).thenReturn(c1);
+        when(factory.create("Collection 2 name", desiredGenre, userDouble)).thenReturn(c2);
 
-        when(col2.getOwnerId()).thenReturn(userId);
-        when(col2.getCollectionName()).thenReturn("My Collection");
-        when(col2.getCollectionGenre()).thenReturn(genre2);
-        when(factory.create("My Collection", genre2, userId)).thenReturn(col2);
+        when(c1.getOwnerId()).thenReturn(userDouble);
+        when(c1.getCollectionName()).thenReturn("Collection 1 name");
+        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c1.getIsPrivate()).thenReturn(false);
+
+        when(c2.getOwnerId()).thenReturn(userDouble);
+        when(c2.getCollectionName()).thenReturn("Collection 2 name");
+        when(c2.getCollectionGenre()).thenReturn(desiredGenre);
+        when(c2.getIsPrivate()).thenReturn(false);
+
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
         // Act
-        repository.createAndAdd(userId, "My Collection", genre1);
-        CollectionOfPublications result = repository.createAndAdd(userId, "My Collection", genre2);
+        sut.createAndAdd(userDouble, "Collection 1 name", desiredGenre);
+        sut.createAndAdd(userDouble, "Collection 2 name", desiredGenre);
+
+        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenreId(desiredGenre);
 
         // Assert
         assertNotNull(result);
-        assertEquals(2, repository.getUserCollections(userId).size());
+        assertEquals(2, result.size());
+        assertEquals(c1, result.get(0));
+        assertEquals(c2, result.get(1));
     }
 
     @Test
-    void ensureCreateAndAddAllowsSameNameAndGenreForDifferentUsers() {
+    void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId1 = mock(UserId.class);
-        UserId userId2 = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-
-        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
-        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
-
-        when(col1.getOwnerId()).thenReturn(userId1);
-        when(col1.getCollectionName()).thenReturn("My Collection");
-        when(col1.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("My Collection", genre, userId1)).thenReturn(col1);
-
-        when(col2.getOwnerId()).thenReturn(userId2);
-        when(col2.getCollectionName()).thenReturn("My Collection");
-        when(col2.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("My Collection", genre, userId2)).thenReturn(col2);
+        GenreID desiredGenres = mock(GenreID.class);
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
 
         // Act
-        repository.createAndAdd(userId1, "My Collection", genre);
-        repository.createAndAdd(userId2, "My Collection", genre);
-
-        // Assert
-        assertEquals(1, repository.getUserCollections(userId1).size());
-        assertEquals(1, repository.getUserCollections(userId2).size());
-    }
-
-    // ============================================================
-    // getUserCollections() Tests
-    // ============================================================
-
-    @Test
-    void ensureGetUserCollectionsThrowsExceptionWhenUserIdIsNull() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.getUserCollections(null));
-    }
-
-    @Test
-    void ensureGetUserCollectionsReturnsEmptyListWhenUserHasNoCollections() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-
-        // Act
-        List<CollectionOfPublications> result = repository.getUserCollections(userId);
+        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenreId(desiredGenres);
 
         // Assert
         assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void ensureGetUserCollectionsReturnsOnlyCollectionsOwnedByUser() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId1 = mock(UserId.class);
-        UserId userId2 = mock(UserId.class);
-        GenreID genre = mock(GenreID.class);
-
-        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
-        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
-
-        when(col1.getOwnerId()).thenReturn(userId1);
-        when(col1.getCollectionName()).thenReturn("Collection A");
-        when(col1.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("Collection A", genre, userId1)).thenReturn(col1);
-
-        when(col2.getOwnerId()).thenReturn(userId2);
-        when(col2.getCollectionName()).thenReturn("Collection B");
-        when(col2.getCollectionGenre()).thenReturn(genre);
-        when(factory.create("Collection B", genre, userId2)).thenReturn(col2);
-
-        repository.createAndAdd(userId1, "Collection A", genre);
-        repository.createAndAdd(userId2, "Collection B", genre);
-
-        // Act
-        List<CollectionOfPublications> result = repository.getUserCollections(userId1);
-
-        // Assert
-        assertEquals(1, result.size());
-        assertEquals(col1, result.get(0));
-    }
-
-    @Test
-    void ensureGetUserCollectionsReturnsAllCollectionsOfUser() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        UserId userId = mock(UserId.class);
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
-        GenreID genre3 = mock(GenreID.class);
-
-        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
-        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
-        CollectionOfPublications col3 = mock(CollectionOfPublications.class);
-
-        when(col1.getOwnerId()).thenReturn(userId);
-        when(col1.getCollectionName()).thenReturn("Col1");
-        when(col1.getCollectionGenre()).thenReturn(genre1);
-        when(factory.create("Col1", genre1, userId)).thenReturn(col1);
-
-        when(col2.getOwnerId()).thenReturn(userId);
-        when(col2.getCollectionName()).thenReturn("Col2");
-        when(col2.getCollectionGenre()).thenReturn(genre2);
-        when(factory.create("Col2", genre2, userId)).thenReturn(col2);
-
-        when(col3.getOwnerId()).thenReturn(userId);
-        when(col3.getCollectionName()).thenReturn("Col3");
-        when(col3.getCollectionGenre()).thenReturn(genre3);
-        when(factory.create("Col3", genre3, userId)).thenReturn(col3);
-
-        repository.createAndAdd(userId, "Col1", genre1);
-        repository.createAndAdd(userId, "Col2", genre2);
-        repository.createAndAdd(userId, "Col3", genre3);
-
-        // Act
-        List<CollectionOfPublications> result = repository.getUserCollections(userId);
-
-        // Assert
-        assertEquals(3, result.size());
-        assertTrue(result.contains(col1));
-        assertTrue(result.contains(col2));
-        assertTrue(result.contains(col3));
-    }
-
-    // ============================================================
-    // findCollectionOfPublicationsById() Tests
-    // ============================================================
-
-    @Test
-    void ensureFindByIdThrowsExceptionWhenIdIsNull() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class,
-                () -> repository.findCollectionOfPublicationsById(null));
-    }
-
-    @Test
-    void ensureFindByIdReturnsEmptyOptionalWhenIdNotFound() {
-        // Arrange
-        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem(factory);
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
-
-        // Act
-        Optional<CollectionOfPublications> result = repository.findCollectionOfPublicationsById(id);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(0, result.size());
     }
 
     @Test

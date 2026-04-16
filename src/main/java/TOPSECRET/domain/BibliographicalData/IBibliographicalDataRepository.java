@@ -3,6 +3,7 @@ package TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -25,12 +26,12 @@ public interface IBibliographicalDataRepository {
      * Creates a new bibliographical data record and adds it to the repository
      * if it does not already exist.
      *
-     * @param title the title of the publication
-     * @param authors the authors associated with the publication
+     * @param title            the title of the publication
+     * @param authors          the authors associated with the publication
      * @param originalLanguage the original language of the publication
-     * @param publicationDate the publication date
-     * @param genres the genres associated with the publication
-     * @param chunksOfText textual content or excerpts associated with the publication
+     * @param publicationDate  the publication date
+     * @param genres           the genres associated with the publication
+     * @param chunksOfText     textual content or excerpts associated with the publication
      * @return the created and stored bibliographical data record
      * @throws InstanceAlreadyExistsException if an equivalent bibliographical data record already exists
      */
@@ -52,6 +53,21 @@ public interface IBibliographicalDataRepository {
      * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
      */
     Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
+
+    /**
+     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreID}.
+     *
+     * <p>This method searches the repository for all {@link BibliographicalData}
+     * instances whose list of genres contains the provided genre identifier.</p>
+     *
+     * @param genreId the identifier of the genre used to filter bibliographical data;
+     *                must not be {@code null}
+     * @return a list of {@link BibliographicalDataID} that are associated with the given genre;
+     *         may be empty if no matches are found
+     *
+     * @throws IllegalArgumentException if {@code genreId} is {@code null}
+     */
+    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId);
 
     /**
      * Finds the ID of a bibliographical data entry by its title, using case-insensitive
@@ -91,12 +107,24 @@ public interface IBibliographicalDataRepository {
     /**
      * Retrieves the titles of all bibliographical entries in the list.
      *
+     * <p>Iterates through all stored bibliographical data entries and returns
+     * the first one whose ID matches the provided {@link BibliographicalDataID}.</p>
+     *
+     * @return an {@link Optional} containing the matching {@link BibliographicalData}
+     * if found, or an empty {@link Optional} if no entry with the given ID exists
+     * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
      * @return a {@link List} of {@link String} containing all titles from {@code _bdList},
      *         or an empty list if no entries are present.
      */
     List<String> getAllTitles();
 
 
-
-
+    /**
+     * Returns all {@link BibliographicalData} records that include the given author.
+     *
+     * @param authorId the identifier of the author; must not be {@code null}
+     * @return a list of bibliographical data records; never {@code null}, may be empty
+     * @throws IllegalArgumentException if {@code authorId} is {@code null}
+     */
+    List<BibliographicalData> findBibliographicalDataByAuthorId(AuthorId authorId);
 }

@@ -40,6 +40,7 @@ public class UserRepositoryMem implements IUserRepository {
     /** {@inheritDoc} */
     @Override
     public User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
+
         if (exists(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -70,6 +71,25 @@ public class UserRepositoryMem implements IUserRepository {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> findUserByID(UserId userID){
+
+        if(userID == null){
+            throw new IllegalArgumentException("Username must not be null or empty");
+        }
+
+        for(User user: _userList){
+            if(user.getId().equals(userID)){
+                return Optional.of(user);
+            }
+        }
+
+        return Optional.empty();
+    }
+
     /** {@inheritDoc} */
     @Override
     public Optional<UserId> findUserIdByUsername(String username) {
@@ -95,4 +115,8 @@ public class UserRepositoryMem implements IUserRepository {
     public int getUserCount() {
         return _userList.size();
     }
+
+
+
+
 }
