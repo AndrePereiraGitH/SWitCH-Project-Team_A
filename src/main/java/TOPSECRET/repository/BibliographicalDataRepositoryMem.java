@@ -32,11 +32,6 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
     private BibliographicalDataFactory _bibliographicalDataFactory;
     private final List<BibliographicalData> _bdList;
 
-    public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory, List<BibliographicalData> bdList) {
-        _bdList = new ArrayList<>(bdList);
-        _bibliographicalDataFactory = bibliographicalDataFactory;
-    }
-
     public BibliographicalDataRepositoryMem(BibliographicalDataFactory bibliographicalDataFactory) {
         _bdList = new ArrayList<>();
         _bibliographicalDataFactory = bibliographicalDataFactory;

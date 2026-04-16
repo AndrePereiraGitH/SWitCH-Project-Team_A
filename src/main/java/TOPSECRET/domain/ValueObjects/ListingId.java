@@ -56,15 +56,6 @@ public final class ListingId implements DomainID {
         return Objects.equals(_listingId, other._listingId);
     }
 
-    /**
-     * Returns a hash code value for this {@code ListingId}.
-     * <p>
-     * The hash code is derived solely from the underlying identifier string,
-     * consistent with the {@link #equals(Object)} implementation.
-     * </p>
-     *
-     * @return the hash code value for this {@code ListingId}
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_listingId);
