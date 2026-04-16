@@ -220,4 +220,27 @@ public class ListingRepositoryMem implements IListingRepository {
         }
         return listOfAuctionListingsOfGivenPublication;
     }
+
+    @Override
+    public List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds) {
+
+    if (publicationSamplesIds == null) {
+        throw new IllegalArgumentException("List of PublicationSampleIds cannot be null");
+    }
+
+    List<ListingId> result = new ArrayList<>();
+
+    for (Listing listing : listings) {
+
+        for (PublicationSampleId id : publicationSamplesIds) {
+
+            if (listing.getItemsId().contains(id)) {
+                result.add(listing.id());
+                break;
+            }
+        }
+    }
+
+    return result;
+    }
 }
