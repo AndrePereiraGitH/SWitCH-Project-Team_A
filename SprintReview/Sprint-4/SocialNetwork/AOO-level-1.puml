@@ -1,0 +1,104 @@
+@startuml
+
+title Mite Lovers - SocialNetwork -AOO Level 1
+skinparam title {
+  FontSize 24
+}
+
+skinparam ArrowColor #333
+skinparam ClassBackgroundColor #DDDDFF
+skinparam ClassBorderColor #0000FF
+skinparam Shadowing false
+skinparam componentStyle rectangle
+skinparam componentBorderColor DarkBlue
+skinparam component<<highlight>> {
+    BackgroundColor LightBlue
+}
+skinparam legend {
+  BackgroundColor LightBlue
+  FontSize 14
+}
+
+'======= USER =====
+User "1" -- "1" Author : > as an
+User "1" -- "1" Publisher : > as a
+User "1" -- "1" NormalUser : > as a
+User "1" -- "1" Moderator : > as a
+User "1" -- "*" Ban : < applied
+User "1" -- "*" Denunciation : > can do
+
+Moderator "1" --- "*" Post : > can delete
+Moderator "1" -- "*" Comment : > can delete
+
+'======= Author =====
+Author "1" -- "*" Post : > can create
+Author "1" -- "*" Comment : > is able to
+
+
+'======= Post
+Post "1" -- "*" Comment : > can have
+Post "1" -- "0..1" PublicationSample : > can refer
+Post "1" -- "0..1" BibliographicalData : > can refer
+
+Tag "*" -- "*" Post : < can have
+
+
+'======= Publisher
+Publisher "1" -- "*" Post : > can create
+Publisher "1" -- "*" Comment : > is able to
+
+
+'======== NormalUser
+NormalUser "1" -- "*" Post : > can create
+NormalUser "1" -- "*" Comment : > is able to
+
+
+
+' ======= Denunciation
+
+Denunciation "1" -- "1" Post : > flags a
+Denunciation "1" -- "1" Comment : > flags a
+
+' ======= Ban
+Ban "*" -- "1" Moderator : < can apply
+
+Component User {
+}
+
+Component NormalUser {
+}
+
+Component Author {
+}
+
+Component Publisher {
+}
+
+Component Moderator {
+}
+
+Component Post {
+}
+
+Component Tag {
+}
+
+Component Comment {
+}
+
+Component Denunciation {
+}
+
+Component Ban {
+}
+
+Component PublicationSample {
+}
+
+component BibliographicalData {
+}
+
+
+
+
+@enduml
