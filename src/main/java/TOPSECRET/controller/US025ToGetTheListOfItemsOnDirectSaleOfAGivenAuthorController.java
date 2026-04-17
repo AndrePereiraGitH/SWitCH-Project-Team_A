@@ -47,7 +47,8 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
             IAuthorRepository authorRepository,
             IListingRepository listingRepository,
             IPublicationSampleRepository publicationSampleRepository,
-            IBibliographicalDataRepository bibliographicalDataRepository) {
+            IBibliographicalDataRepository bibliographicalDataRepository,
+            US025DirectSaleMapper directSaleMapper) {
 
         if (authorRepository == null)
             throw new IllegalArgumentException("AuthorRepository cannot be null");
@@ -57,12 +58,14 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
             throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         if (bibliographicalDataRepository == null)
             throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
+        if (directSaleMapper == null)
+            throw new IllegalArgumentException("DirectSaleMapper cannot be null");
 
         this.authorRepository = authorRepository;
         this.listingRepository = listingRepository;
         this.publicationSampleRepository = publicationSampleRepository;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
-        this.directSaleMapper = new US025DirectSaleMapper(publicationSampleRepository, bibliographicalDataRepository);
+        this.directSaleMapper = directSaleMapper;
     }
 
     /**

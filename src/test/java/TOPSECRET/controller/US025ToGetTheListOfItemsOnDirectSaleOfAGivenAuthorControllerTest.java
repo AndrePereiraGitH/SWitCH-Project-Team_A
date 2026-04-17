@@ -11,6 +11,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US025AuthorDTO;
 import TOPSECRET.dto.US025DirectSaleDTO;
+import TOPSECRET.dto.US025DirectSaleMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
     private IListingRepository listingRepositoryDouble;
     private IPublicationSampleRepository publicationSampleRepositoryDouble;
     private IBibliographicalDataRepository bibliographicalDataRepositoryDouble;
+    private US025DirectSaleMapper directSaleMapperDouble;
 
     @BeforeEach
     void setUp() {
@@ -40,6 +42,7 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         listingRepositoryDouble = mock(IListingRepository.class);
         publicationSampleRepositoryDouble = mock(IPublicationSampleRepository.class);
         bibliographicalDataRepositoryDouble = mock(IBibliographicalDataRepository.class);
+        directSaleMapperDouble = mock(US025DirectSaleMapper.class);
     }
 
     @Test
@@ -51,7 +54,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble);
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble);
 
         Author author1Double = mock(Author.class);
         Author author2Double = mock(Author.class);
@@ -114,12 +118,17 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         when(bibliographicalDataRepositoryDouble.findBibliographicalDataByAuthorId(any(AuthorId.class)))
                 .thenReturn(List.of(bdDouble));
 
+        US025DirectSaleDTO dtoDouble = mock(US025DirectSaleDTO.class);
+        when(directSaleMapperDouble.toDTOs(any(Author.class), anyList(), anyList()))
+                .thenReturn(List.of(dtoDouble));
+
         US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble);
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble);
 
         // Act
         List<US025DirectSaleDTO> result = sut.getListOfItemsOnDirectSaleOfAGivenAuthor(authorId);
@@ -138,7 +147,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble);
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble);
 
         Author authorDouble = mock(Author.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
@@ -170,7 +180,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble);
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble);
 
         when(authorRepositoryDouble.findAuthorById(authorIdDouble))
                 .thenReturn(Optional.empty());
@@ -191,7 +202,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble);
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble);
 
         // Act + Assert
         assertThrows(
@@ -213,7 +225,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble);
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble);
 
         // Act + Assert
         assertThrows(
@@ -232,7 +245,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         null,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble)
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble)
         );
     }
 
@@ -246,7 +260,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         null,
                         publicationSampleRepositoryDouble,
-                        bibliographicalDataRepositoryDouble)
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble)
         );
     }
 
@@ -260,7 +275,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         null,
-                        bibliographicalDataRepositoryDouble)
+                        bibliographicalDataRepositoryDouble,
+                        directSaleMapperDouble)
         );
     }
 
@@ -274,7 +290,8 @@ class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                         authorRepositoryDouble,
                         listingRepositoryDouble,
                         publicationSampleRepositoryDouble,
-                        null)
+                        null,
+                        directSaleMapperDouble)
         );
     }
 }
