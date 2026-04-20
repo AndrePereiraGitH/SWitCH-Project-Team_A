@@ -230,19 +230,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return listOfPublications;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-//    public List<PublicationSample> getListOfDifferentPublications(List<PublicationSample> listOfPublicationsInLibrary) {
-//        List<PublicationSample> listOfDifferentPublications = new ArrayList<>();
-//
-//        for (PublicationSample publication : allPublicationsInSystem) {
-//            if (!listOfPublicationsInLibrary.contains(publication)) {
-//                listOfDifferentPublications.add(publication);
-//            }
-//        }
-//        return List.copyOf(listOfDifferentPublications);
-//    }
     public List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId){
 
         if(userId == null){
