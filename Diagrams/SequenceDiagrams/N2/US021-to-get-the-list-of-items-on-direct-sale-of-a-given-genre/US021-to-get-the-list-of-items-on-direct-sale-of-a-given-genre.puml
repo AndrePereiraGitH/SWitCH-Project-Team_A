@@ -1,0 +1,94 @@
+@startuml
+hide footbox
+autonumber
+title US021 - To get the list of items on direct sale of a given genre
+
+actor Buyer
+
+' Participants
+participant ":UI021" as UI
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+participant ":IGenreRepository" as IGenreRepo
+participant ":US021GenreMapper" as GenreMapper
+participant "listOfGenreDTO:\nList<US021GenreDTO>" as LGDTO
+participant ":IBibliographicalDataRepository" as IBDRepo
+participant ":IPublicationSampleRepository" as IPSRepo
+participant ":IListingRepository" as IListingRepo
+participant ":US021DirSaleListingMapper" as Mapper
+participant "listOfDirectSaleDTO:\nList<US021DirSaleListingDTO>" as LDTO
+
+
+' Interactions
+
+' Section 1 - Get all genres
+Buyer -> UI : I want to get the list of items on direct sale of a given genre
+activate UI
+
+UI -> Ctrl : getAllGenres()
+activate Ctrl
+
+Ctrl -> IGenreRepo : getAllGenres()
+activate IGenreRepo
+IGenreRepo -->> "listOfAllGenres:\nList<Genre>" ** : «create»
+IGenreRepo --> Ctrl : listOfAllGenres
+deactivate IGenreRepo
+
+Ctrl -> GenreMapper : toDTOList(listOfAllGenres)
+activate GenreMapper
+GenreMapper -->> LGDTO ** : «create»
+loop for each genre in listOfAllGenres
+    GenreMapper -->> "genreDTO:\nUS021GenreDTO" ** : toDTO(genre)
+    GenreMapper -> LGDTO : add(genreDTO)
+end
+GenreMapper --> Ctrl : listOfGenreDTO
+deactivate GenreMapper
+
+Ctrl --> UI : listOfGenreDTO
+deactivate Ctrl
+
+UI --> Buyer : Which genre? Choose!
+deactivate UI
+
+' Section 2 - Get list of direct sales with the genre chosen
+Buyer -> UI : selectedGenreDTO
+activate UI
+
+UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
+activate Ctrl
+
+Ctrl -> IBDRepo : findAllBibliographicalDataByGenreId(selectedGenreId)
+activate IBDRepo
+IBDRepo -->> "listOfBdIds:\nList<BibliographicalDataID>" ** : «create»
+IBDRepo --> Ctrl : listOfBdIds
+deactivate IBDRepo
+
+Ctrl -> IPSRepo : findAllItemsIdByBibliographicalDataId(listOfBdIds)
+activate IPSRepo
+IPSRepo -->> "listOfPubSampleIds:\nList<PublicationSampleId>" ** : «create»
+IPSRepo --> Ctrl : listOfPubSampleIds
+deactivate IPSRepo
+
+Ctrl -> IListingRepo : findDirectSaleListingsContaining(listOfPubSampleIds)
+activate IListingRepo
+IListingRepo -->> "listOfDirectSaleListings:\nList<Listing>" ** : «create»
+IListingRepo --> Ctrl : listOfDirectSaleListings
+deactivate IListingRepo
+
+' Section 3 - Convert to DTO
+Ctrl -> Mapper : toDTOs(listOfDirectSaleListings)
+activate Mapper
+Mapper -->> LDTO ** : «create»
+loop for each listing in listOfDirectSaleListings
+    Mapper -->> "dirSaleDTO:\nUS021DirSaleListingDTO" ** : toDTO(listing)
+    Mapper -> LDTO : add(dirSaleDTO)
+end
+Mapper --> Ctrl : listOfDirectSaleDTO
+deactivate Mapper
+
+Ctrl --> UI : listOfDirectSaleDTO
+deactivate Ctrl
+
+UI --> Buyer : Shows the list of items on direct sale
+deactivate UI
+
+@enduml
