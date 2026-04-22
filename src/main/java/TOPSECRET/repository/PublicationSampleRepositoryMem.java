@@ -1,5 +1,6 @@
 package TOPSECRET.repository;
 
+import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
@@ -229,9 +230,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return listOfPublications;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId){
 
         if(userId == null){
@@ -415,6 +413,29 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         for (PublicationSample p : allUserPublications) {
             if (!publicationsInCollection.contains(p)) {
                 result.add(p);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PublicationSample> findPublicationSampleByBibliographicalDataIds(List<BibliographicalDataID> bdIds) {
+        if (bdIds == null) {
+            throw new IllegalArgumentException("List of BibliographicalDataID cannot be null");
+        }
+
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSample ps : allPublicationsInSystem) {
+            for (BibliographicalDataID bdId : bdIds) {
+                if (ps.getBibliographicalDataID().equals(bdId)) {
+                    result.add(ps);
+                    break;
+                }
             }
         }
 

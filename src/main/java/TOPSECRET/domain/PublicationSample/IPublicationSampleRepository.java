@@ -289,4 +289,14 @@ public interface    IPublicationSampleRepository {
      *         never {@code null}, but may be empty if no matches are found
      */
     List<PublicationSample> findItemsByIdsAndPublication(List<PublicationSampleId> pubSampleIds, BibliographicalDataID publicationId);
+
+    /**
+     * Returns all {@link PublicationSample} instances whose bibliographical data ID
+     * matches any of the provided {@link BibliographicalDataID} values.
+     *
+     * @param bdIds the list of bibliographical data IDs to search by; must not be {@code null}
+     * @return a list of matching {@link PublicationSample} instances; never {@code null}
+     * @throws IllegalArgumentException if {@code bdIds} is {@code null}
+     */
+    List<PublicationSample> findPublicationSampleByBibliographicalDataIds(List<BibliographicalDataID> bdIds);
 }
