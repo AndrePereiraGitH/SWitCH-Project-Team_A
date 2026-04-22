@@ -372,4 +372,109 @@ class TransactionTest {
                 )
         );
     }
+
+    @Test
+    void sameAsShouldReturnTrueForSameData() {
+
+        //Arrange
+        UserId buyer = mock(UserId.class);
+        Price price = mock(Price.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
+        Transaction transaction1 = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        Transaction transaction2 = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        //Act + assert
+        assertTrue(transaction1.sameAs(transaction2));
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentTransactions() {
+
+        //Arrange
+        UserId buyer = mock(UserId.class);
+        Price price = mock(Price.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
+        Transaction transaction1 = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        Transaction transaction2 = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        //Act + assert
+        assertFalse(transaction1.equals(transaction2));
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentObjectType() {
+
+        //Arrange
+        UserId buyer = mock(UserId.class);
+        Price price = mock(Price.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
+        Transaction transaction = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        //Act + assert
+        assertFalse(transaction.equals("this is not a transaction"));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenBuyerDiffers() {
+
+        //Arrange
+        Price price = mock(Price.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
+        Transaction transaction1 = transactionFactory.createFromAuction(
+                mock(UserId.class), mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        Transaction transaction2 = transactionFactory.createFromAuction(
+                mock(UserId.class), mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        //Act + assert
+        assertFalse(transaction1.sameAs(transaction2));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenStatusDiffers() {
+
+        //Arrange
+        UserId buyer = mock(UserId.class);
+        Price price = mock(Price.class);
+        UserId seller = mock(UserId.class);
+        List<UserId> sellers = List.of(seller);
+        LocalDateTime now = LocalDateTime.now();
+
+        Transaction transaction1 = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.PENDING
+        );
+
+        Transaction transaction2 = transactionFactory.createFromAuction(
+                buyer, mock(AuctionId.class), price, now, now, sellers, TransactionStatus.COMPLETED
+        );
+
+        //Act + assert
+        assertFalse(transaction1.sameAs(transaction2));
+    }
 }

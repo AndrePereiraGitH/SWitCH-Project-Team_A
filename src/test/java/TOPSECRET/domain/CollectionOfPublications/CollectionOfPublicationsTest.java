@@ -38,63 +38,291 @@ class CollectionOfPublicationsTest {
     @Test
     void shouldThrowExceptionWhenCollectionNameIsNull() {
         // Arrange
-        GenreID mockGenre = mock(GenreID.class);
-        UserId mockUser = mock(UserId.class);
+        GenreID genreDouble = mock(GenreID.class);
+        UserId userDouble = mock(UserId.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublications(null, mockGenre, mockUser));
+                new CollectionOfPublications(null, genreDouble, userDouble));
     }
 
 
     @Test
     void shouldThrowExceptionWhenCollectionNameIsBlank() {
         // Arrange
-        GenreID mockGenre = mock(GenreID.class);
-        UserId mockUser = mock(UserId.class);
+        GenreID genreDouble = mock(GenreID.class);
+        UserId userDouble = mock(UserId.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublications(" ", mockGenre, mockUser));
+                new CollectionOfPublications(" ", genreDouble, userDouble));
     }
 
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
         // Arrange
-        UserId mockUser = mock(UserId.class);
+        UserId userDouble = mock(UserId.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublications("Favorites", null, mockUser));
+                new CollectionOfPublications("Favorites", null, userDouble));
     }
 
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
         // Arrange
-        GenreID mockGenre = mock(GenreID.class);
+        GenreID genreDouble = mock(GenreID.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new CollectionOfPublications("Favorites", mockGenre, null));
+                new CollectionOfPublications("Favorites", genreDouble, null));
     }
 
     @Test
     void shouldInitializeInstanceWhenValidParameters() {
         // Arrange
         String name = "Favorites";
-        GenreID mockGenre = mock(GenreID.class);
-        UserId mockUser = mock(UserId.class);
+        GenreID genreDouble = mock(GenreID.class);
+        UserId userDouble = mock(UserId.class);
 
         // Act
-        CollectionOfPublications result = new CollectionOfPublications(name, mockGenre, mockUser);
+        CollectionOfPublications result = new CollectionOfPublications(name, genreDouble, userDouble);
 
         // Assert
         assertEquals(name, result.getCollectionName());
-        assertEquals(mockGenre, result.getCollectionGenre());
-        assertEquals(mockUser, result.getOwnerId());
+        assertEquals(genreDouble, result.getCollectionGenre());
+        assertEquals(userDouble, result.getOwnerId());
         assertTrue(result.getIsPrivate());          // US017 rule: always private at creation
     }
 
     // ============================== end US017 ==============================
 
+
+    @Test
+    void shouldReturnNonNullId() {
+
+        //Arrange
+        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications result
+                = new CollectionOfPublications("Cool books", genre, user);
+
+        //Act + assert
+        assertNotNull(result.id());
+    }
+
+    @Test
+    void equals_shouldReturnTrueWhenSameInstance() {
+
+        //Arrange
+        UserId user1 = mock(UserId.class);
+        GenreID genre1 = mock(GenreID.class);
+
+        CollectionOfPublications sameCollection =
+                new CollectionOfPublications("Nice books", genre1, user1);
+
+        //Act + assert
+        assertTrue(sameCollection.equals(sameCollection));
+    }
+
+    @Test
+    void shouldReturnFalseWhenNull() {
+
+        //Arrange
+        UserId user1 = mock(UserId.class);
+        GenreID genre1 = mock(GenreID.class);
+
+        CollectionOfPublications anyCollection =
+                new CollectionOfPublications("Not null", genre1, user1);
+
+        //Act + assert
+        assertFalse(anyCollection.equals(null));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenComparedToNotACollection() {
+
+        //Arrange
+        UserId user1 = mock(UserId.class);
+        GenreID genre1 = mock(GenreID.class);
+
+        CollectionOfPublications realCollection =
+                new CollectionOfPublications("I have books", genre1, user1);
+
+        //Act + assert
+        assertFalse(realCollection.equals("This is not a collection"));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenDifferentIds() {
+
+        //Arrange
+        GenreID genre1 = mock(GenreID.class);
+        UserId user1 = mock(UserId.class);
+
+        CollectionOfPublications anyCollection =
+                new CollectionOfPublications("I also have books", genre1, user1);
+
+        CollectionOfPublications anotherCollection =
+                new CollectionOfPublications("I also have books", genre1, user1);
+
+        //Act + assert
+        assertFalse(anyCollection.equals(anotherCollection));
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenIdsAreEqual() throws Exception {
+
+        //Arrange
+        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collection007 = new CollectionOfPublications("A", genre, user);
+        CollectionOfPublications collection008 = new CollectionOfPublications("B", genre, user);
+
+        //Act
+        var field = CollectionOfPublications.class.getDeclaredField("_id");
+        field.setAccessible(true);
+        field.set(collection008, field.get(collection007)); // force same ID
+
+        //Assert
+        assertTrue(collection007.equals(collection008));
+    }
+
+    @Test
+    void hashCodeShouldMatchWhenIdsAreEqual() throws Exception {
+
+        //Arrange
+        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collectionMerry =
+                new CollectionOfPublications("Favorites", genre, user);
+        CollectionOfPublications collectionPippin =
+                new CollectionOfPublications("Favorites", genre, user);
+
+        //Act
+        var field = CollectionOfPublications.class.getDeclaredField("_id");
+        field.setAccessible(true);
+        field.set(collectionPippin, field.get(collectionMerry));
+
+        //Assert
+        assertEquals(collectionMerry.hashCode(), collectionPippin.hashCode());
+    }
+
+    @Test
+    void sameAsShouldReturnTrueWhenAllAttributesAreEqual() {
+
+        //Arrange
+        GenreID genre1 = mock(GenreID.class);
+        UserId user1 = mock(UserId.class);
+
+        CollectionOfPublications collectionGrace =
+                new CollectionOfPublications("Collection, I am", genre1, user1);
+
+        CollectionOfPublications collectionRocky =
+                new CollectionOfPublications("Collection, I am", genre1, user1);
+
+        //Act + assert
+        assertTrue(collectionGrace.sameAs(collectionRocky));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenIdsDiffer() {
+
+        //Assert
+        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collectionLegolas =
+                new CollectionOfPublications("A", genre, user);
+
+        CollectionOfPublications collectionGimli =
+                new CollectionOfPublications("A", genre, user);
+
+        //Act + assert
+        assertFalse(collectionLegolas.equals(collectionGimli));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentName() {
+
+        //Arrange
+        GenreID genre1 = mock(GenreID.class);
+        UserId user1 = mock(UserId.class);
+
+        CollectionOfPublications collectionDante =
+                new CollectionOfPublications("I am here", genre1, user1);
+
+        CollectionOfPublications collectionVergil =
+                new CollectionOfPublications("I am there", genre1, user1);
+
+        //Act + assert
+        assertFalse(collectionDante.sameAs(collectionVergil));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentGenre() {
+
+        //Arrange
+        GenreID genre1 = mock(GenreID.class);
+        GenreID genre2 = mock(GenreID.class);
+        UserId user1 = mock(UserId.class);
+
+        CollectionOfPublications collectionFrodo =
+                new CollectionOfPublications("Really Cool Books", genre1, user1);
+
+        CollectionOfPublications collectionAragorn =
+                new CollectionOfPublications("Really Cool Books", genre2, user1);
+
+        //Act + assert
+        assertFalse(collectionFrodo.sameAs(collectionAragorn));
+    }
+
+    @Test
+    void hashCodeShouldBeEqualForSameDataIgnoringCase() {
+
+        //Arrange
+        GenreID genre = mock(GenreID.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collectionEdgar =
+                new CollectionOfPublications("EAP", genre, user);
+
+        CollectionOfPublications collectionAllenPoe =
+                new CollectionOfPublications("EAP", genre, user);
+
+        //Act + assert
+        assertEquals(collectionEdgar.hashCode(), collectionAllenPoe.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldBeConsistent() {
+
+        //Arrange
+        CollectionOfPublications collectionGondor =
+                new CollectionOfPublications("Gondor", mock(GenreID.class), mock(UserId.class));
+
+        int hash1 = collectionGondor.hashCode();
+        int hash2 = collectionGondor.hashCode();
+
+        //Act + assert
+        assertEquals(hash1, hash2);
+    }
+
+    @Test
+    void hashCodeShouldDifferForDifferentObjects() {
+
+        //Arrange
+        CollectionOfPublications collectionRohan =
+                new CollectionOfPublications("Rohan", mock(GenreID.class), mock(UserId.class));
+
+
+        CollectionOfPublications collectionShire =
+                new CollectionOfPublications("Gohan", mock(GenreID.class), mock(UserId.class));
+
+        //Act + assert
+        assertNotEquals(collectionRohan.hashCode(), collectionShire.hashCode());
+    }
 }
