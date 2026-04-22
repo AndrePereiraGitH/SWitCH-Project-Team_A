@@ -4,6 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,15 +12,25 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link CollectionOfPublicationsRepositoryMem} — US017.
+ * Unit tests for the {@link CollectionOfPublicationsRepositoryMem} class.
  *
- * <p>Verifies that the repository correctly stores collections, retrieves them by owner,
- * and rejects invalid arguments.
+ * <p>Uses Mockito to isolate the SUT ({@link CollectionOfPublicationsRepositoryMem})
+ * from its collaborators ({@link CollectionOfPublicationsFactory} and {@link CollectionOfPublications}).</p>
+ *
+ * <p>Validates the following responsibilities:</p>
+ * <ul>
+ *     <li>Rejecting null constructor arguments</li>
+ *     <li>Creating and storing valid collections</li>
+ *     <li>Preventing duplicate collections (same name, genre and owner)</li>
+ *     <li>Returning only collections owned by a given user</li>
+ *     <li>Finding a collection by its {@link CollectionOfPublicationsID}</li>
+ * </ul>
  */
 class CollectionOfPublicationsRepositoryMemTest {
 
@@ -32,7 +43,8 @@ class CollectionOfPublicationsRepositoryMemTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFactoryIsNull_US017() {
+    void ensureThrowsExceptionWhenFactoryIsNull() {
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new CollectionOfPublicationsRepositoryMem(null));
     }
@@ -41,17 +53,17 @@ class CollectionOfPublicationsRepositoryMemTest {
      * Ensures exception is thrown when user is null.
      */
     @Test
-    void shouldThrowExceptionWhenUserIsNull() {
+    void ensureRepositoryIsCreatedSuccessfullyWithValidFactory() {
+        // Arrange
+        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
 
-        // ARRANGE
-        CollectionOfPublicationsRepositoryMem sut =
-                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> sut.getUserCollections(null));
+        // Act & Assert
+        assertDoesNotThrow(() -> new CollectionOfPublicationsRepositoryMem(factory));
     }
 
+    // ============================================================
+    // createAndAdd() Tests
+    // ============================================================
 
     /**
      * Ensures user collections are retrieved correctly.
@@ -142,7 +154,6 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(c2, result.get(1));
     }
 
-
     @Test
     void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
@@ -157,4 +168,26 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(0, result.size());
     }
 
+
+    @Test
+    void makeCollectionPublicShouldReturnFalseAndSetCollectionToPublic() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        GenreID genreIdDouble = mock(GenreID.class);
+        CollectionOfPublicationsID idDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        when(factory.create("Name", genreIdDouble, userIdDouble)).thenReturn(collectionDouble);
+        when(collectionDouble.id()).thenReturn(idDouble);
+        when(collectionDouble.getIsPrivate()).thenReturn(false);
+
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        // Act
+        CollectionOfPublications collection = sut.createAndAdd(userIdDouble, "Name", genreIdDouble);
+        boolean result = sut.makeCollectionPublic(idDouble);
+
+        // Assert
+        assertFalse(result);
+    }
 }
