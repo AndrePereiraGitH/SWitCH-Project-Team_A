@@ -124,7 +124,6 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listingIds;
-
     }
 
 
@@ -200,5 +199,25 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listOfListings;
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds) {
+
+        if (publicationSamplesIds == null) {
+            throw new IllegalArgumentException("List of PublicationSamplesId cannot be null.");
+        }
+
+        List<ListingId> listingIdsWithSamples = listings.stream()
+                .filter(listing -> listing.getItemsId()
+                        .stream()
+                        .anyMatch(publicationSamplesIds::contains))
+                .map(Listing::id)
+                .toList();
+
+        return listingIdsWithSamples;
     }
 }
