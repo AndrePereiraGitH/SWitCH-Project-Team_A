@@ -47,11 +47,6 @@ public class PublicationSampleId implements DomainID {
         return Objects.equals(pubSampleID, that.pubSampleID);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(pubSampleID);
-    }
-
     /**
      * Returns the underlying string value of this ID.
      *

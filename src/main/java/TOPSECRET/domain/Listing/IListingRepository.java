@@ -106,6 +106,7 @@ public interface IListingRepository {
      */
     Optional<Listing> findListingById(ListingId id);
 
+
     /**
      * Retrieves all {@link ListingId} that contain at least one of the given
      * {@link PublicationSampleId}.
@@ -139,18 +140,6 @@ public interface IListingRepository {
      */
     List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
 
-
-    /**
-     * Retrieves the identifiers of all listings that contain at least one of the
-     * given publication sample identifiers.
-     *
-     * @param publicationSamplesIds the list of publication sample identifiers to search for
-     * @return a list of listing identifiers for listings that contain at least one
-     *         of the given publication sample identifiers; returns an empty list if
-     *         no matching listings are found
-     * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null}
-     */
-    List<ListingId> findListingIdsByPublicationSampleIds(List<PublicationSampleId> publicationSamplesIds);
 
     /**
      * Returns all direct sale listings that contain at least one item matching

@@ -42,6 +42,33 @@ class BibliographicalDataRepositoryMemTest {
     // =====================================================
 
     // Constructor -----------------------------------------------------------------------------------------------------
+    @Test
+    void constructor_CopiesListDefensively() {
+        // Arrange
+        List<BibliographicalData> original = new ArrayList<>();
+        original.add(bd1Double);
+        original.add(bd2Double);
+
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        // Act
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
+        original.add(bd3Double);                                                           // Modifies the original list
+
+        // Assert
+        assertEquals(2, repo.getAllPublicationsBD().size());        // The repository should have the same size
+    }
+
+    @Test
+    void constructor_ThrowsExceptionWhenListIsNull() {
+        // Arrange
+        List<BibliographicalData> nullList = null;
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> new BibliographicalDataRepositoryMem(factory, nullList));
+
+    }
 
     @Test
     void constructor_AllowsEmptyList() {
@@ -50,7 +77,7 @@ class BibliographicalDataRepositoryMemTest {
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
         // Act
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, empty);
 
         // Assert
         assertTrue(repo.getAllPublicationsBD().isEmpty());
@@ -394,21 +421,25 @@ class BibliographicalDataRepositoryMemTest {
     @Test
     void getAllPublicationsBD_ReturnsAllItems() {
         // Arrange
+        List<BibliographicalData> original = List.of(bd1Double, bd2Double);
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
 
         // Act
         List<BibliographicalData> result = repo.getAllPublicationsBD();
 
         // Assert
-        assertTrue(result.isEmpty());
+        assertEquals(2, result.size());
+        assertTrue(result.contains(bd1Double));
+        assertTrue(result.contains(bd2Double));
     }
 
     @Test
     void getAllPublicationsBD_ReturnsUnmodifiableList() {
         // Arrange
+        List<BibliographicalData> original = List.of(bd1Double, bd2Double);
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
 
         // Act
         List<BibliographicalData> result = repo.getAllPublicationsBD();
@@ -418,13 +449,11 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void getAllPublicationsBD_ReturnsNewCopyEachTime() throws Exception {
+    void getAllPublicationsBD_ReturnsNewCopyEachTime() {
         // Arrange
-        BibliographicalDataFactory factoryDouble = mock(BibliographicalDataFactory.class);
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any())).thenReturn(bd1Double);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factoryDouble);
-        repo.createAndAdd("title1", List.of(), null, null, List.of(), "");
+        List<BibliographicalData> original = List.of(bd1Double, bd2Double);
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
 
         // Act
         List<BibliographicalData> first = repo.getAllPublicationsBD();
@@ -607,39 +636,36 @@ class BibliographicalDataRepositoryMemTest {
     // Method findBibliographicalDataIdByAuthorId -------------------------------------------------------------------------
 
     @Test
-    void findBibliographicalDataIdByAuthorId_shouldReturnBibliographicalDataIds_whenAuthorExistsInMultipleBibliographicalData() throws Exception {
+    void findBibliographicalDataIdByAuthorId_shouldReturnBibliographicalDataIds_whenAuthorExistsInMultipleBibliographicalData() {
         // Arrange
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        AuthorId otherAuthorIdDouble = mock(AuthorId.class);
+        AuthorId authorId = mock(AuthorId.class);
+        AuthorId otherAuthorId = mock(AuthorId.class);
 
-        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId3Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId1 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId3 = mock(BibliographicalDataID.class);
 
-        when(bd1Double.getAuthors()).thenReturn(List.of(authorIdDouble, otherAuthorIdDouble));
-        when(bd2Double.getAuthors()).thenReturn(List.of(authorIdDouble));
-        when(bd3Double.getAuthors()).thenReturn(List.of(otherAuthorIdDouble));
+        when(bd1Double.getAuthors()).thenReturn(List.of(authorId, otherAuthorId));
+        when(bd2Double.getAuthors()).thenReturn(List.of(authorId));
+        when(bd3Double.getAuthors()).thenReturn(List.of(otherAuthorId));
 
-        when(bd1Double.id()).thenReturn(bdId1Double);
-        when(bd2Double.id()).thenReturn(bdId2Double);
-        when(bd3Double.id()).thenReturn(bdId3Double);
+        when(bd1Double.id()).thenReturn(bdId1);
+        when(bd2Double.id()).thenReturn(bdId2);
+        when(bd3Double.id()).thenReturn(bdId3);
 
-        BibliographicalDataFactory factoryDouble = mock(BibliographicalDataFactory.class);
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any()))
-                .thenReturn(bd1Double, bd2Double, bd3Double);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factoryDouble);
-        repo.createAndAdd("title1", List.of(authorIdDouble), null, null, List.of(), "");
-        repo.createAndAdd("title2", List.of(authorIdDouble), null, null, List.of(), "");
-        repo.createAndAdd("title3", List.of(otherAuthorIdDouble), null, null, List.of(), "");
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
+                factory,
+                List.of(bd1Double, bd2Double, bd3Double)
+        );
 
         // Act
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorIdDouble);
+        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(bdId1Double));
-        assertTrue(result.contains(bdId2Double));
+        assertTrue(result.contains(bdId1));
+        assertTrue(result.contains(bdId2));
     }
 
     @Test
@@ -654,7 +680,9 @@ class BibliographicalDataRepositoryMemTest {
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
-                factory);
+                factory,
+                List.of(bd1Double, bd2Double, bd3Double)
+        );
 
         // Act
         List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
@@ -664,34 +692,31 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void findBibliographicalDataIdByAuthorId_shouldReturnSingleBibliographicalDataId_whenAuthorExistsInOneBibliographicalData() throws Exception {
+    void findBibliographicalDataIdByAuthorId_shouldReturnSingleBibliographicalDataId_whenAuthorExistsInOneBibliographicalData() {
         // Arrange
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        AuthorId otherAuthorIdDouble = mock(AuthorId.class);
+        AuthorId authorId = mock(AuthorId.class);
+        AuthorId otherAuthorId = mock(AuthorId.class);
 
-        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
+        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
 
-        when(bd1Double.getAuthors()).thenReturn(List.of(otherAuthorIdDouble));
-        when(bd2Double.getAuthors()).thenReturn(List.of(authorIdDouble));
-        when(bd3Double.getAuthors()).thenReturn(List.of(otherAuthorIdDouble));
+        when(bd1Double.getAuthors()).thenReturn(List.of(otherAuthorId));
+        when(bd2Double.getAuthors()).thenReturn(List.of(authorId));
+        when(bd3Double.getAuthors()).thenReturn(List.of(otherAuthorId));
 
-        when(bd2Double.id()).thenReturn(bdId2Double);
+        when(bd2Double.id()).thenReturn(bdId2);
 
-        BibliographicalDataFactory factoryDouble = mock(BibliographicalDataFactory.class);
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any()))
-                .thenReturn(bd1Double, bd2Double, bd3Double);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factoryDouble);
-        repo.createAndAdd("title1", List.of(otherAuthorIdDouble), null, null, List.of(), "");
-        repo.createAndAdd("title2", List.of(authorIdDouble), null, null, List.of(), "");
-        repo.createAndAdd("title3", List.of(otherAuthorIdDouble), null, null, List.of(), "");
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
+                factory,
+                List.of(bd1Double, bd2Double, bd3Double)
+        );
 
         // Act
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorIdDouble);
+        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals(bdId2Double, result.get(0));
+        assertEquals(bdId2, result.get(0));
     }
 
     @Test
@@ -699,7 +724,9 @@ class BibliographicalDataRepositoryMemTest {
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
-                factory);
+                factory,
+                List.of(bd1Double, bd2Double, bd3Double)
+        );
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
@@ -723,9 +750,12 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void findAllBibliographicalDataByGenreId_shouldReturnIds_whenGenreMatches() throws Exception {
+    void findAllBibliographicalDataByGenreId_shouldReturnIds_whenGenreMatches() {
+
         // Arrange
-        BibliographicalDataFactory factoryDouble = mock(BibliographicalDataFactory.class);
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+
         GenreID genreIdDouble = mock(GenreID.class);
 
         BibliographicalData bdDouble = mock(BibliographicalData.class);
@@ -733,13 +763,12 @@ class BibliographicalDataRepositoryMemTest {
 
         when(bdDouble.getGenres()).thenReturn(List.of(genreIdDouble));
         when(bdDouble.id()).thenReturn(bdIdDouble);
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any())).thenReturn(bdDouble);
 
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factoryDouble);
-        repo.createAndAdd("title1", List.of(), null, null, List.of(), "");
+        repo = new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
 
         // Act
-        List<BibliographicalDataID> result = repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+        List<BibliographicalDataID> result =
+                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -759,7 +788,7 @@ class BibliographicalDataRepositoryMemTest {
         when(bdDouble.getGenres()).thenReturn(List.of(genreDouble1));
 
         IBibliographicalDataRepository repo =
-                new BibliographicalDataRepositoryMem(factory);
+                new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
 
         // Act
         List<BibliographicalDataID> result =
@@ -770,9 +799,11 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void findAllBibliographicalDataByGenreId_shouldReturnMultipleIds_whenMultipleMatch() throws Exception {
+    void findAllBibliographicalDataByGenreId_shouldReturnMultipleIds_whenMultipleMatch() {
+
         // Arrange
-        BibliographicalDataFactory factoryDouble = mock(BibliographicalDataFactory.class);
+        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+
         GenreID genreIdDouble = mock(GenreID.class);
 
         BibliographicalData bdDouble1 = mock(BibliographicalData.class);
@@ -787,19 +818,19 @@ class BibliographicalDataRepositoryMemTest {
         when(bdDouble1.id()).thenReturn(idDouble1);
         when(bdDouble2.id()).thenReturn(idDouble2);
 
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any()))
-                .thenReturn(bdDouble1, bdDouble2);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factoryDouble);
-        repo.createAndAdd("title1", List.of(), null, null, List.of(), "");
-        repo.createAndAdd("title2", List.of(), null, null, List.of(), "");
+        IBibliographicalDataRepository repo =
+                new BibliographicalDataRepositoryMem(factory, List.of(bdDouble1, bdDouble2));
 
         // Act
-        List<BibliographicalDataID> result = repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+        List<BibliographicalDataID> result =
+                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(idDouble1));
         assertTrue(result.contains(idDouble2));
     }
+
+
+
 }
