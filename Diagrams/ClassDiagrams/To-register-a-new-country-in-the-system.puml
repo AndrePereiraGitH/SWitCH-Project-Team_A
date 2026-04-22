@@ -1,0 +1,35 @@
+@startuml
+
+title Class Diagram - Register a new country in the System
+hide circle
+
+/'class User {
+-username: String
+  -contact: Contact
+  -profile: Profile
+  +User(username: String, contact: Contact, profile: Profile)
+}
+'/
+
+class ICountryRepository {
+    +createAndAdd (countryName: String)
+    }
+
+class CountryFactory {
+    +create
+}
+
+class US007RegisterNewCountryController{
+  + registerNewCountry(countryName : String)
+}
+
+class Country {
+-countryName: String
+-_countryID : CountryID
+}
+
+' Interactions
+US007RegisterNewCountryController "1" .--> "1" ICountryRepository : request registering country
+ICountryRepository "1" .--> "1" CountryFactory : requests creation
+CountryFactory "1" .--> "*" Country : creates
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+title Add Publication to Collection Of Publication
+
+' ========================
+' APPLICATION LAYER
+' ========================
+
+class US018ToAddPublicationToAListOfMineController {
+  +getUserCollections: List<US018CollectionOfPublicationsDTO>
+  +getPublicationsForCollection: List<US018PublicationSampleDTO>
+  +addPublicationToCollection: boolean
+}
+
+' ========================
+' DOMAIN LAYER
+' ========================
+
+class CollectionOfPublications {
+  -mediaFormat: String
+}
+
+class CollectionOfPublicationsID {
+  -collectionId: String
+}
+
+CollectionOfPublications "1 " ---> "1 " CollectionOfPublicationsID : identifies
+
+
+class PublicationSample {
+  -publicationSampleId: PublicationSampleId
+  -bibliographicalDataId: BibliographicalDataID
+}
+
+class PublicationSampleId {
+  -id: String
+}
+
+class BibliographicalDataID {
+  -id: String
+}
+
+PublicationSample "1    " ---> "  1  " PublicationSampleId : identifies
+PublicationSample "1" ---> "  1   " BibliographicalDataID : contains
+PublicationSample "1" ---> "  1   " CollectionOfPublicationsID : is part of
+
+class BibliographicalData {
+  -title: String
+}
+
+' ========================
+' REPOSITORIES
+' ========================
+
+interface ICollectionOfPublicationsRepository {
+  +getUserCollections: List<CollectionOfPublications>
+  +addPublicationToCollection: boolean
+}
+
+interface IPublicationSampleRepository {
+  +getAllPublicationsInUserLibrary: List<PublicationSample>
+  +getPublicationsByCollectionID: List<PublicationSample>
+  +findPublicationSampleById: PublicationSample
+}
+
+interface IBibliographicalDataRepository {
+  +findBibliographicalDataById: BibliographicalData
+}
+
+' ========================
+' DEPENDENCIES
+' ========================
+
+US018ToAddPublicationToAListOfMineController ...> ICollectionOfPublicationsRepository : interacts with
+US018ToAddPublicationToAListOfMineController ...> IPublicationSampleRepository : interacts with
+US018ToAddPublicationToAListOfMineController ...> IBibliographicalDataRepository : interacts with
+
+ICollectionOfPublicationsRepository ..> CollectionOfPublications
+IPublicationSampleRepository ..> PublicationSample
+IBibliographicalDataRepository ..> BibliographicalData
+
+BibliographicalDataID *.. BibliographicalData
+BibliographicalData " 1 " ---> "  1" BibliographicalDataID : identifies
+
+@enduml

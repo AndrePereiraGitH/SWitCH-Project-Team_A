@@ -1,0 +1,60 @@
+@startuml
+title To get the list of items on direct sale of a given genre
+
+class UI021 {
+
+}
+
+class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
+  +getAllGenres()
+  +getListOfItemsOnDirectSale(genre: Genre)
+}
+
+class GenreRepository {
+  +getAllGenres()
+}
+
+class FactoryGenre  <<Factory>> {
+}
+
+class FactoryListing <<Factory>> {
+}
+
+
+class Genre {
+    -genreType: String
+    +getDetails()
+}
+
+class ListingRepository {
+  +getListOfItemsOnDirectSale(genre: Genre)
+  -isDirectSaleFromGenre(genre)
+}
+
+class DirectSale {
+  - listing: Listing
+  - directSaleDate: LocalDateTime
+  +getDetails()
+}
+
+class Item{
+-condition: Condition
+-dimension: Dimension
+-publication: Publication
+-weight: double
+}
+
+' Interactions
+UI021 "1 " ..>  ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> ListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> GenreRepository : uses
+
+GenreRepository ..>  FactoryGenre : uses
+GenreRepository "1 " --> "                   *" Genre : stores
+
+ListingRepository ..> FactoryListing : uses
+
+ListingRepository "1 " --> "*" DirectSale : stores
+Genre "1 " --> "1 " Item : categorizes
+DirectSale "1 " -->  "1 " Item : has
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+hide footbox
+title To get all official genres list
+
+actor "User" as User
+participant ":System" as System
+
+
+    User -> System : I want to see an official genres in the system,
+    activate System
+
+    System --> User : Here's the list of available genres!
+    deactivate System
+
+@enduml

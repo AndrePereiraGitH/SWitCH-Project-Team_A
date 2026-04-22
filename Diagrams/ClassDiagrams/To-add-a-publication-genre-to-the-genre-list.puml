@@ -1,0 +1,63 @@
+@startuml
+title To add a publication genre to the genre list
+
+' _____________________
+' DOMAIN
+' _____________________
+
+interface IGenreRepository {
+  + createAndAdd(genreType : String) : Genre
+  + findByTitle(title : String) : Genre
+  + getAllGenres() : List<Genre>
+}
+
+class Genre {
+  - _id : GenreID
+  - _genreType : String
+  + id() : GenreID
+  + getGenreType() : String
+  + sameAs(object : Object) : boolean
+}
+
+class GenreID {
+  - genreID : String
+  + getID() : String
+}
+
+class GenreFactory {
+  + create(genreType : String) : Genre
+}
+
+Genre "1" --> "1" GenreID : identified by
+GenreFactory ..> Genre : <<creates>>
+
+' ______________________
+' APPLICATION
+' ______________________
+
+class US003ToRegisterGenreController {
+  - _genreRepository : IGenreRepository
+  + registerGenre(genreType : String) : boolean
+}
+
+' ___________________
+' PERSISTENCE
+' ___________________
+
+class GenreRepositoryMem {
+  - _genres : List<Genre>
+  - _genreFactory : GenreFactory
+  - exists(genre : Genre) : boolean
+}
+
+GenreRepositoryMem ..|> IGenreRepository : <<implements>>
+GenreRepositoryMem "1" --> "*" Genre : stores
+GenreRepositoryMem --> GenreFactory : has
+
+' _____________________
+' DEPENDENCIES
+' _____________________
+
+US003ToRegisterGenreController --> IGenreRepository : uses
+
+@enduml

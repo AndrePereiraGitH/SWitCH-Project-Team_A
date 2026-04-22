@@ -1,0 +1,32 @@
+@startuml
+title Register a new publication in MiteLovers (Class Diagram)
+
+hide circle
+
+class UI010 {
+}
+
+class US010ToRegisterNewPublicationCtrl {
+  +registerNewPublication(bdId, userId, status, editionId, condition) : boolean
+}
+
+interface IPublicationSampleRepository {
+  +createAndAdd(bdId, userId, status, editionId, condition) : PublicationSample
+}
+
+class PublicationSampleFactory {
+  +create(bdId, userId, status, editionId, condition) : PublicationSample
+}
+
+class PublicationSample {
+}
+
+UI010 "1" ..> "1" US010ToRegisterNewPublicationCtrl : uses
+
+US010ToRegisterNewPublicationCtrl "1" ..> "1" IPublicationSampleRepository : depends on
+
+IPublicationSampleRepository "1" ..> "1" PublicationSampleFactory : uses
+
+IPublicationSampleRepository "1" --> "*" PublicationSample : manages
+
+@enduml

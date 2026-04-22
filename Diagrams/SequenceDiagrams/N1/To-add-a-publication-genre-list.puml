@@ -1,0 +1,18 @@
+@startuml
+hide footbox
+autonumber
+title To add a publication genre to the genre list
+
+actor Administrator
+participant ":MiteLovers" as UI
+
+Administrator -> UI : I want to add a new genre to the official list
+activate UI
+UI --> Administrator : What is the genre name?
+deactivate UI
+Administrator -> UI : name("romance")
+activate UI
+UI --> Administrator : Genre successfully added!
+deactivate UI
+
+@enduml

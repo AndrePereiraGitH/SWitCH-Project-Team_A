@@ -1,0 +1,50 @@
+@startuml
+hide circle
+title To publicly share a list of mine
+
+skinparam classAttributeIconSize 0
+
+class "UI019" as UI019 {
+
+}
+
+class "US019ToPubliclyShareCollectionOfPublicationsController" as Controller {
+  +requestAllCollectionOfPublicationsByUser(user: User): List<CollectionOfPublicationsDTO>
+  +shareCollectionOfPublications(dto: CollectionOfPublicationsDTO): boolean
+}
+
+class "CollectionOfPublicationRepository" as Repository  {
+  +getAllCollectionOfPublicationsByUser(user: User): List<CollectionOfPublications>
+  +makeCollectionOfPublicationsPublic(dto: CollectionOfPublicationsDTO): boolean
+  -getCollectionByDTO(dto: CollectionOfPublicationsDTO): CollectionOfPublications
+}
+
+class "CollectionOfPublications" as Collection  {
+  -isPrivate: boolean
+  +verifyIfCollectionBelongsToUser(user: User): boolean
+  +set_isPrivate(value: boolean): void
+}
+
+class "CollectionOfPublicationsDTO" as DTO {
+  +username: String
+  +name: String
+  +genreName: String
+  +toDTO(collection: CollectionOfPublications): CollectionOfPublicationsDTO
+}
+
+class User {
+  +username: String
+}
+
+' Associations / Dependencies
+UI019 ..> Controller : uses
+Controller ..> Repository : uses
+Repository --> Collection : manages
+Controller ..> DTO : creates/maps
+Repository ..> DTO : uses (lookup)
+Collection ..> User : verify owner
+
+' Multiplicities (implicit in the sequence)
+'Repository "1" o-- "0..*" Collection : collections
+
+@enduml

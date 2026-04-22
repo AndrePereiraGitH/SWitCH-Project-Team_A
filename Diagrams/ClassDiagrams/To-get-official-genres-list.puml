@@ -1,0 +1,32 @@
+@startuml
+hide circle
+
+title To get official genres list
+
+class ToGetListOfGenreController {
+  +getGenresList() : List<US013GenreDTO>
+}
+class US013GenreMapper{
+  +toDTO : List<allGenresList>
+}
+
+class US013GenreDTO {
+toDTO(Genre) : US013GenreDTO
+}
+
+class IGenreRepository {
+  +getAllGenres() : List<Genre>
+}
+
+class Genre {
+    +getGenreType() : String
+}
+
+' Interactions
+ToGetListOfGenreController "1"..> "1" US013GenreMapper : Invokes to convert into DTO
+US013GenreMapper "1" ..> "1" US013GenreDTO
+US013GenreMapper "1" -> "1" Genre : request GenreType
+ToGetListOfGenreController "1"--> "1" IGenreRepository : requests list to
+IGenreRepository "1"-----> "   * _genres" Genre : stores
+
+@enduml

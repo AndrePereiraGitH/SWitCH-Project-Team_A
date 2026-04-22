@@ -1,0 +1,23 @@
+@startuml
+
+autonumber
+hide footbox
+title SSD: Add publication to library
+
+actor "User" as User
+participant ":MiteLovers" as System
+
+
+
+    User -> System : I want to add a publication to my library
+
+
+    System --> User : Here's the list of publications, select one!
+
+    User -> System: selected a publication
+
+    System --> User: done!
+
+
+
+@enduml

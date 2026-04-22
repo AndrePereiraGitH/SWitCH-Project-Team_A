@@ -1,0 +1,25 @@
+@startuml
+
+autonumber
+hide footbox
+
+title Add Publication to Collection Of Publication
+
+actor "User" as User
+participant ":System" as System
+
+User -> System : I want to add a publication to one of my collections
+activate System
+
+System --> User : Here's your collections, select one
+
+User -> System : Selected collection
+
+System --> User :  Here's your publications, select one
+
+User -> System : Selected publication
+
+System --> User : Publication added to the collection
+deactivate System
+
+@enduml

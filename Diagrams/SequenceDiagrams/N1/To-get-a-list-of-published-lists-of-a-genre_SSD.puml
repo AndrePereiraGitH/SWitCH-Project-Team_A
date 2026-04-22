@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+autonumber
+
+title   As a user, I want to get a list (name and user) of the publicly published lists of a given genre
+
+actor User
+participant ":System" as System
+
+activate User
+activate System
+
+User --> System: I want to see public lists of a certain genre
+
+System --> User: Select genre (List<Genre>)
+
+User --> System: Selected! (genreId)
+
+System -->  User: Done! (List<US020CollectionOfPublicationsDTO>)
+
+
+@enduml
