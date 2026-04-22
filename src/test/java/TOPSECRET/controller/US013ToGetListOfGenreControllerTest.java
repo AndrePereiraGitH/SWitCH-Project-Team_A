@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US013GenreMapper;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.persistence.mem.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

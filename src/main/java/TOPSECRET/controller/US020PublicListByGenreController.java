@@ -10,9 +10,8 @@ import TOPSECRET.dto.US013GenreMapper;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.persistence.mem.GenreRepositoryMem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

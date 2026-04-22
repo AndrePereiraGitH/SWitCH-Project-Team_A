@@ -2,8 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.repository.GenreRepositoryMem;
-import TOPSECRET.repository.ListingRepositoryMem;
+import TOPSECRET.persistence.mem.GenreRepositoryMem;
+import TOPSECRET.persistence.mem.ListingRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

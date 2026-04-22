@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.persistence.mem.GenreRepositoryMem;
 
 import java.util.List;
 

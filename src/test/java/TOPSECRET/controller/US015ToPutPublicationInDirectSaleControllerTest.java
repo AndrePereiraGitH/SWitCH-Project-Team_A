@@ -10,7 +10,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US015PublicationSampleDTO;
 import TOPSECRET.dto.US015PublicationSampleMapper;
-import TOPSECRET.repository.ListingRepositoryMem;
+import TOPSECRET.persistence.mem.ListingRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

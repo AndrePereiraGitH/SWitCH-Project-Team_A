@@ -4,7 +4,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US013GenreMapper;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.persistence.mem.GenreRepositoryMem;
 
 import java.util.List;
 
