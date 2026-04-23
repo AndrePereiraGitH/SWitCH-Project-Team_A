@@ -11,7 +11,7 @@ on:
       - teamA_2
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,5 +25,22 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Run tests
-        run: mvn test
+      # Compiles, runs tests, checks 85% line coverage + 95% mutation coverage
+      - name: Build, test & enforce coverage (Maven verify)
+        run: mvn clean verify
+
+      # Upload JaCoCo line coverage report
+      - name: Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
+      # Upload PITest mutation coverage report
+      - name: Upload PITest report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pitest-report
+          path: target/pit-reports/
