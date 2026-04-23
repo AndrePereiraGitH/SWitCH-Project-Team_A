@@ -1,0 +1,19 @@
+#!/bin/sh
+
+OS="$(uname -s 2>/dev/null)"
+
+case "$OS" in
+  Linux*|Darwin*)
+    echo "Detected OS: $OS"
+    sh lint.sh && mvn clean verify
+    ;;
+  CYGWIN*|MINGW*|MSYS*)
+    echo "Detected OS: Windows (Unix shell)"
+    sh lint.sh && mvn clean verify
+    ;;
+  *)
+    echo "Unknown OS: $OS"
+    echo "Attempting to run anyway..."
+    sh lint.sh && mvn clean verify
+    ;;
+esac
