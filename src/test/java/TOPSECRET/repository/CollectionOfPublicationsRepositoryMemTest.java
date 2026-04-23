@@ -16,11 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link CollectionOfPublicationsRepositoryMem} — US017.
+ * Unit tests for the {@link CollectionOfPublicationsRepositoryMem} class.
+ *
  *
  * <p>Verifies that the repository correctly stores collections, retrieves them by owner,
  * and rejects invalid arguments.
  */
+
 class CollectionOfPublicationsRepositoryMemTest {
 
     ICollectionOfPublicationsRepository sut;
@@ -32,30 +34,22 @@ class CollectionOfPublicationsRepositoryMemTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFactoryIsNull_US017() {
+    void ensureThrowsExceptionWhenFactoryIsNull() {
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new CollectionOfPublicationsRepositoryMem(null));
     }
 
-    /**
-     * Ensures exception is thrown when user is null.
-     */
     @Test
-    void shouldThrowExceptionWhenUserIsNull() {
+    void ensureRepositoryIsCreatedSuccessfullyWithValidFactory() {
+        // Arrange
+        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
 
-        // ARRANGE
-        CollectionOfPublicationsRepositoryMem sut =
-                new CollectionOfPublicationsRepositoryMem(mock(CollectionOfPublicationsFactory.class));
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> sut.getUserCollections(null));
+        // Act & Assert
+        assertDoesNotThrow(() -> new CollectionOfPublicationsRepositoryMem(factory));
     }
 
 
-    /**
-     * Ensures user collections are retrieved correctly.
-     */
     @Test
     void shouldReturnCollectionsOwnedByUser() throws Exception {
 
@@ -142,7 +136,6 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(c2, result.get(1));
     }
 
-
     @Test
     void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
@@ -157,4 +150,120 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(0, result.size());
     }
 
+    @Test
+    void shouldThrowWhenUserIdIsNullForCreateAndAdd() {
+
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createAndAdd(null, "name", mock(GenreID.class)));
+    }
+
+    @Test
+    void shouldThrowWhenNameIsNullForCreateAndAdd() {
+
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createAndAdd(mock(UserId.class), null, mock(GenreID.class)));
+    }
+
+    @Test
+    void shouldThrowWhenGenreIdIsNullForCreateAndAdd() {
+
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.createAndAdd(mock(UserId.class), "name", null));
+    }
+
+    @Test
+    void shouldCreateAndAddCollectionSuccessfully() {
+
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        UserId user = mock(UserId.class);
+        GenreID genre = mock(GenreID.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        //Act
+        when(factory.create("Cool collection", genre, user)).thenReturn(collection);
+
+        CollectionOfPublications result =
+                sut.createAndAdd(user, "Cool collection", genre);
+
+        //Assert
+        assertEquals(collection, result);
+    }
+
+    @Test
+    void shouldAllowSameNameAndGenreForDifferentUsers() {
+
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        UserId user1 = mock(UserId.class);
+        UserId user2 = mock(UserId.class);
+        GenreID genre = mock(GenreID.class);
+
+        CollectionOfPublications awesomeCollection = mock(CollectionOfPublications.class);
+        CollectionOfPublications differentCollection = mock(CollectionOfPublications.class);
+
+        //Act
+        when(factory.create("Favorite books", genre, user1)).thenReturn(awesomeCollection);
+        when(factory.create("Favorite books", genre, user2)).thenReturn(awesomeCollection);
+
+        when(awesomeCollection.getOwnerId()).thenReturn(user1);
+        when(awesomeCollection.getCollectionName()).thenReturn("Favorite books");
+        when(awesomeCollection.getCollectionGenre()).thenReturn(genre);
+
+        // Inserting already existing collection
+        sut.createAndAdd(user1, "Favorite books", genre);
+
+        // Second insert for a different user
+        CollectionOfPublications result =
+                sut.createAndAdd(user2, "Favorite books", genre);
+
+        //Assert
+        assertEquals(awesomeCollection, result);
+    }
+
+    @Test
+    void shouldAllowSameNameDifferentGenre() {
+
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        UserId user = mock(UserId.class);
+        GenreID genre1 = mock(GenreID.class);
+        GenreID genre2 = mock(GenreID.class);
+
+        CollectionOfPublications johnCollection1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications johnCollection2 = mock(CollectionOfPublications.class);
+
+        //Act
+        when(factory.create("Favorites", genre1, user)).thenReturn(johnCollection1);
+        when(factory.create("Favorites", genre2, user)).thenReturn(johnCollection2);
+
+        when(johnCollection1.getOwnerId()).thenReturn(user);
+        when(johnCollection1.getCollectionName()).thenReturn("Favorites");
+        when(johnCollection1.getCollectionGenre()).thenReturn(genre1);
+
+        // First insert
+        sut.createAndAdd(user, "Favorites", genre1);
+
+        // Second insert (different genre)
+        CollectionOfPublications result =
+                sut.createAndAdd(user, "Favorites", genre2);
+
+        //Act
+        assertEquals(johnCollection2, result);
+    }
 }

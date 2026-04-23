@@ -90,10 +90,9 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      *
      * <p>Pass {@code false} to make the collection public, {@code true} to make it private again.
      *
-     * @param _isPrivate new privacy value
      */
-    public void set_isPrivate(boolean _isPrivate) {
-        this._isPrivate = _isPrivate;
+    public void set_isPrivate() {
+        this._isPrivate = false;
     }
 
     // ============================== end US019 ==============================

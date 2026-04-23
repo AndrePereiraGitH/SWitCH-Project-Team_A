@@ -1,8 +1,17 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.repository.GenreRepositoryMem;
+import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.dto.US021DirSaleListingDTO;
+import TOPSECRET.dto.US021DirSaleListingMapper;
+import TOPSECRET.dto.US021GenreDTO;
+import TOPSECRET.dto.US021GenreMapper;
 
 import java.util.List;
 
@@ -10,44 +19,72 @@ import java.util.List;
  * Controller for US021 - get the list of items on direct sale of a given genre.
  */
 public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
-    private IListingRepository listingRepository;
-    private GenreRepositoryMem genreRepository;
+    private final IGenreRepository genreRepository;
+    private final IListingRepository listingRepository;
+    private final IPublicationSampleRepository publicationSampleRepository;
+    private final IBibliographicalDataRepository bibliographicalDataRepository;
+    private final US021DirSaleListingMapper mapper;
 
     /**
      * Constructor.
      *
      * @param genreRepository genre repository
-     * @param listingRepository direct sale repository
+     * @param listingRepository listing repository
+     * @param publicationSampleRepository publication sample repository
+     * @param bibliographicalDataRepository bibliographical data repository
+     * @param mapper mapper to convert Listing to DTO
      */
-    public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController (GenreRepositoryMem genreRepository, IListingRepository listingRepository) {
-        if (genreRepository == null || listingRepository == null) {
-            throw new IllegalArgumentException("GenreRepository and ListingRepository cannot be null");
+    public US021ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+            IGenreRepository genreRepository,
+            IListingRepository listingRepository,
+            IPublicationSampleRepository publicationSampleRepository,
+            IBibliographicalDataRepository bibliographicalDataRepository,
+            US021DirSaleListingMapper mapper) {
+
+        if (genreRepository == null || listingRepository == null ||
+                publicationSampleRepository == null || bibliographicalDataRepository == null ||
+                mapper == null) {
+            throw new IllegalArgumentException("Repositories and Mapper cannot be null");
         }
 
         this.genreRepository = genreRepository;
         this.listingRepository = listingRepository;
+        this.publicationSampleRepository = publicationSampleRepository;
+        this.bibliographicalDataRepository = bibliographicalDataRepository;
+        this.mapper = mapper;
     }
 
     /**
-     * Returns all available genres.
+     * Returns all available genres as DTOs.
      *
      * @return list of all genres
      */
-    // Vai buscar todos os géneros para o utilizador escolher
-    public List<Genre> getAllGenres(){
-        return genreRepository.getAllGenres();
+    public List<US021GenreDTO> getAllGenres() {
+        return US021GenreMapper.toDTOList(genreRepository.getAllGenres());
     }
+
 
     /**
      * Returns the list of items on direct sale of a given genre.
      *
      * @param selectedGenre genre selected by the buyer
-     * @return list of items matching the given genre
+     * @return list of DTOs matching the given genre
+     * @throws IllegalArgumentException if selectedGenre is null
      */
-//    public List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre selectedGenre) {
-//        if (selectedGenre == null) {
-//            throw new IllegalArgumentException("Genre cannot be null");
-//        }
-//        return listingRepository.getListOfItemsOnDirectSaleOfAGivenGenre(selectedGenre);
-//    }
+    public List<US021DirSaleListingDTO> getListOfItemsOnDirectSale(GenreID selectedGenre) {
+        if (selectedGenre == null) {
+            throw new IllegalArgumentException("Genre cannot be null");
+        }
+
+        List<BibliographicalDataID> bdIds =
+                bibliographicalDataRepository.findAllBibliographicalDataByGenreId(selectedGenre);
+
+        List<PublicationSampleId> pubSampleIds =
+                publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdIds);
+
+        List<Listing> directSaleListings =
+                listingRepository.findDirectSaleListingsContaining(pubSampleIds);
+
+        return mapper.toDTOs(directSaleListings);
+    }
   }
