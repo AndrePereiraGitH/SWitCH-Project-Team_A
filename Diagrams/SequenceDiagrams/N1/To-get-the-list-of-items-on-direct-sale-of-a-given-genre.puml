@@ -1,0 +1,21 @@
+@startuml
+
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given genre
+
+actor Buyer
+
+participant ":System" as System
+
+Buyer -> System : I want to get the list of items on direct sale of a given genre
+activate System
+System --> Buyer : Which genre? Choose!
+deactivate System
+
+Buyer -> System : selectedGenre
+activate System
+System --> Buyer : Shows the list of items on direct sale of the selected genre
+deactivate System
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+title To register a user in the system
+
+interface IUserRepository {
+  +exists(username: String) : boolean
+  +save(user: User) : void
+}
+
+class UserRepositoryMem {
+  -_userList : List<User>
+  -_userFactory : UserFactory
+}
+
+class UserFactory {
+  +create(username: String, contact: Contact, profile: Profile, userRole: UserRole) : User
+}
+
+class US001ToRegisterUserController {
+  -userRepository : IUserRepository
+  -userFactory : UserFactory
+  +registerUser(username: String, contact: Contact, profile: Profile, userRole: UserRole) : void
+}
+
+class User {
+  -_id : UserId
+  -_userName : String
+  -_contact : Contact
+  -_profile : Profile
+  -_userRole : UserRole
+  +getUserName() : String
+}
+
+US001ToRegisterUserController "1" ..> "1" IUserRepository : uses
+US001ToRegisterUserController "1" ..> "1   " UserFactory : uses
+UserRepositoryMem "1" ..|> "1    " IUserRepository : implements
+UserRepositoryMem "1  " --> "                *" User : stores
+UserFactory "1" ..> "*" User : creates
+
+@enduml

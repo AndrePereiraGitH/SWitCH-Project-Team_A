@@ -95,16 +95,6 @@ public class Listing implements AggregateRoot<ListingId> {
         _shortDescription = shortDescription;
         _sellerId = sellerId;
         _pictures = List.copyOf(pictures);
-
-//        if(checkIfItemIsAlreadyInAListing()){
-//            throw new IllegalArgumentException("Item is already on a listing");
-//        }
-//
-//        if(checkIfItemIsAlreadySold()){
-//            throw new IllegalArgumentException("Item was already sold");
-//        }
-//
-//        changePublicationSampleStatusToSale();
     }
 
 
@@ -116,45 +106,6 @@ public class Listing implements AggregateRoot<ListingId> {
     // With DDD (and the use of IDs to communicate between aggregates) the following methods don't apply (they should be on
     // the application layer, but we don't have it yet)
 
-//    /**
-//     * Changes the status of all publication samples in the listing to FOR_SALE.
-//     * Only updates items that are not already marked as FOR_SALE.
-//     */
-//    private void changePublicationSampleStatusToSale(){
-//        for(PublicationSample item: _itemsId){
-//            if(!item.getPublicationStatus().equals(PublicationStatus.FOR_SALE)){
-//                item.changeStatusToForSale();
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Checks if any item in the listing is already marked as FOR_SALE.
-//     *
-//     * @return true if at least one item has status FOR_SALE, false otherwise
-//     */
-//    private boolean checkIfItemIsAlreadyInAListing(){
-//        for(PublicationSample item: _itemsId){
-//            if(item.getPublicationStatus().equals(PublicationStatus.FOR_SALE)){
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    /**
-//     * Checks if any item in the listing is already marked as SOLD.
-//     *
-//     * @return true if at least one item has status SOLD, false otherwise
-//     */
-//    private boolean checkIfItemIsAlreadySold(){
-//        for(PublicationSample item: _itemsId){
-//            if(item.getPublicationStatus().equals(PublicationStatus.SOLD)){
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     /**
      * Checks whether this listing is linked to an auction.
@@ -226,10 +177,6 @@ public class Listing implements AggregateRoot<ListingId> {
 
     public List<Picture> getPictures() {
         return _pictures;
-    }
-
-    public List<PublicationSampleId> get_itemsId() {
-        return _itemsId;
     }
 
     @Override

@@ -1,271 +1,192 @@
-
 # MITE LOVERS - TEAM A
 
-## Issue Template
 
-### Main issue: US[NUMBER] - [US Text]
+# DevSecOps Process Documentation
 
-- **sub-issue:** US[NUMBER] - Analysis & Design
-
-  **Description:**
-     - Acceptance Criteria:
-          - SSD covers the main success scenario.
-          - SD is consistent with the SSD and reflects the chosen design.
-          - CD includes all classes involved and their relationships.
-          - Diagrams are reviewed and approved by the team (at least one team member).
-
-
-- (if needed) **sub-issue:** US[NUMBER] - Implement domain class and unit tests.
-
-  **Description:**
-     - Acceptance Criteria:
-          - Class follows domain rules and OOD best practices.
-          - All edge cases are covered by unit tests.
-          - Test coverage ≥ 95%.
-          - Code is documented with JavaDoc.
-          - Code reviewed and approved by the team (at least one team member).
-
-
-
-- **sub-issue:** US[NUMBER] - Implement repository class and unit tests.
-
-  **Description:**
-     - Acceptance Criteria:
-          - Repository correctly retrieves domain objects.
-          - All edge cases are covered by unit tests.
-          - Test coverage ≥ 95%.
-          - Code is documented with JavaDoc.
-          - Code reviewed and approved by the team (at least one team member).
-
-
-
-- **sub-issue:** US[NUMBER] - Implement controller class and unit tests.
-
-  **Description:**
-     - Acceptance Criteria:
-          - Controller correctly orchestrates domain and repository interactions.
-          - All edge cases are covered by unit tests.
-          - Test coverage ≥ 95%.
-          - Code is documented with JavaDoc.
-          - Code reviewed and approved by the team (at least one team member).
-
-
-__All acceptance criteria must be reviewed and adjusted to fit each US. 
-Additional criteria may be added as needed to ensure completeness.__
+**Project:** MiteLovers — SWitCH Dev 2025/2026
 
 ---
 
+## Overview
 
-
-## Main issue: Mock implementation related to US...
-
-**Description:**
-
-<br>
-
-**sub-issue:** US[NUMBER] - Implement mocking to domain class tests.
-
-**Description:**
-- Acceptance Criteria:
-    - All critical business logic paths are validated with unit tests, including boundary conditions and error scenarios.
-    - Test coverage ≥ 95%.
-    - All public methods include JavaDoc.
-    - All mocks are properly configured.
-    - Code reviewed and approved by at least one team member with no unresolved comments.
-    - All tests execute successfully and pass.
-
-<br>
-
-- **sub-issue:** US[NUMBER] - Implement mocking to repository class tests.
-
-
-  **Description:**
-- Acceptance Criteria:
-    - Mock database responses cover both success paths and exception handling.
-    - Test coverage ≥ 95%.
-    - All public methods include JavaDoc.
-    - Code reviewed and approved by at least one team member with no unresolved comments.
-    - All tests execute successfully and pass.
-
-<br>
-
-- **sub-issue:** US[NUMBER] - Implement mocking to controller class tests.
-
-
-  **Description:**
-- Acceptance Criteria:
-    - Mock service dependencies return realistic responses covering success, validation errors, and system failures.
-    - Test coverage ≥ 95%.
-    - All public methods include JavaDoc.
-    - Code reviewed and approved by at least one team member with no unresolved comments.
-    - All tests execute successfully.
-
-__All acceptance criteria must be reviewed and adjusted to fit each US context.__
-__Additional criteria may be added as needed to ensure completeness and quality standards.__
-
-
-
-
-
-
+This document describes the DevSecOps workflow adopted by Team A. It covers the local development scripts, static analysis tools, test coverage enforcement, and the automated CI pipeline. The goal is to ensure every change is built, linted, tested, and validated before being integrated into shared branches.
 
 ---
 
-## Main issue: Creation of Factory Class
+## Repository Structure (relevant files)
 
-- **sub-issue:** - Refactor SD & CD diagrams to include X Factory in the design
-
-  **Description:**
-    - Acceptance Criteria:
-        - SD is updated to reflect the Factory's role in object creation.
-        - CD includes the Factory class and its relationships with relevant classes.
-        - Diagrams are reviewed and approved by the team (at least one team member).
-
-
-- **sub-issue:** - Implement Factory Class methods & tests
-
-  **Description:**
-    - Acceptance Criteria:
-        - Factory class follows OOD best practices and the chosen design pattern.
-        - All factory methods are correctly implemented and delegate object creation appropriately.
-        - All edge cases are covered by unit tests.
-        - Test coverage ≥ 95%.
-        - Code is documented with JavaDoc.
-        - Code reviewed and approved by the team (at least one team member).
-
-<br>
+```
+project-root/
+├── .github/
+│   └── workflows/
+│       └── pr-tests.yml       # CI pipeline (GitHub Actions)
+├── src/
+│   └── main/java/...
+├── checkstyle.xml              # Checkstyle rules
+├── lint                        # Lint script (Unix)
+├── lint.bat                    # Lint script (Windows)
+├── run                         # Build + test script (Unix)
+├── run.bat                     # Build + test script (Windows)
+└── pom.xml                     # Maven build + plugins config
+```
 
 ---
 
-## Refinement Issue if needed
+## Local Development Scripts
 
+Two pairs of cross-platform scripts are provided so all developers can run the same commands regardless of their OS.
 
-### Domain class Refinement
+### `lint` / `lint.bat` — Static Analysis
 
-**Main issue (if needed):** Refinement - [Domain Class Name] - [Brief Description of Change]
+Runs Checkstyle and PMD to enforce code style and detect code smells.
 
-**Description:** [What needs to be clarified, revised or reworked — e.g. domain class restructure, new edge cases discovered, design corrections.]
+**Usage:**
+```bash
+# Unix / macOS / Git Bash
+./lint
 
-**Acceptance Criteria:**
-- [Domain Class Name] correctly reflects the updated domain rules and OOD best practices.
-- Any impacted classes or tests are updated accordingly.
-- All edge cases are covered by unit tests.
-- Test coverage ≥ 95%.
-- Code is documented with JavaDoc.
-- Changes are reviewed and approved by the team (at least one team member).
+# Windows (Command Prompt)
+lint.bat
+```
 
-<br>
+**What it runs:**
+```
+mvn checkstyle:check pmd:check
+```
 
-### US Refinement
+| Tool | Purpose |
+|---|---|
+| Checkstyle | Enforces code style rules defined in `checkstyle.xml` |
+| PMD | Detects bad practices and code smells |
 
-**Main issue (if needed):** US[NUMBER] - Refinement - [Topic]
+> Both tools are configured to **warn only** in the lint script — violations are printed but do not stop the build. Hard enforcement happens in CI via `mvn clean verify`.
 
-**Description:** [What needs to be clarified, revised or reworked — e.g. domain changes, design corrections, new edge cases discovered mid-sprint.]
+### Checkstyle Rules
 
-**Acceptance Criteria:**
-- All open questions related to [Topic] are documented and resolved.
-- Any impacted diagrams (SSD/SD/CD) are updated to reflect the changes.
-- Any impacted classes or tests are updated and still meet ≥ 95% coverage.
-- Changes are reviewed and approved by the team (at least one team member).
+Rules are defined in `checkstyle.xml` at the project root:
 
+| Rule | Description                                                                  |
+|---|------------------------------------------------------------------------------|
+| `EmptyBlock` | No empty code blocks (e.g. empty catch blocks)                               |
+| `MethodLength` | Methods must not exceed 40 lines                                             |
+| `CyclomaticComplexity` | Method complexity must not exceed 15 branches/paths                          |
+| `InterfaceIsType` | Interfaces must define types, not just constants                             |
+| `MethodName` | Method names must follow lowerCamelCase (`^[a-z][a-zA-Z0-9]*$`)              |
+| `JavadocType` | Public classes must have a JavaDoc comment                                   |
+| `StringLiteralEquality` | Strings must be compared with `.equals()`, not `==`                          |
+| `IllegalInstantiation` | Prevents unnecessary instantiation of `Boolean`, `Integer`, `Long`, `Double` |
 
----
+### `run` / `run.bat` — Full Build & Test
 
-## Commit template
+Runs linting first, then a full Maven build with tests and coverage checks.
 
-Design implementation/creation:
+**Usage:**
+```bash
+# Unix / macOS / Git Bash
+./run
 
-````
-Working on #Issue, created SSD, SD & CD related to US_NUMBER
+# Windows (Command Prompt)
+run.bat
+```
 
-Working on #Issue, implemented tests & class for X domain class 
+**What it runs:**
+```
+lint  →  mvn clean verify
+```
 
-Working on #Issue, implemented tests & class for X repository class 
-
-Working on #Issue, implemented tests & class for X controller class related to US_NUMBER
-
-````
-
-Additional work (new methods, corrections, updates):
-
-````
-Working on #Issue, implemented additional tests & method(s) in X domain class
-
-Working on #Issue, implemented additional tests & method(s) in X repository class
-
-Working on #Issue, corrected mistakes in X class (write details here)
-
-Working on #Issue, updated X class to reflect new design (write details here)
-
-Working on #Issue, updated (SSD/SD/CD) to reflect new design
-````
-
-- When the item meets the definition of done, the commit message should end with (@close #ISSUENUMBER)
-
-
-- When working with someone else, you should reference that person in the commit message (@Github_Username)
-
-
-
----
-
-## Definition of Done
-
-A user story or task in the MiteLovers project is considered Done when:
-
-✔️  The functionality is fully implemented according to the requirements and acceptance criteria.
-
-✔️  All edge cases are handled and no known functional defects remain.
-
-✔️  The solution follows Object-Oriented Design (OOD) principles and best practices.
-
-✔️  UML diagrams are updated whenever structural changes occur.
-
-✔️  Development follows Test-Driven Development (TDD).
-
-✔️  All tests pass and overall test coverage is at least 95%.
-
-✔️  All public classes and methods are documented using JavaDoc.
-
-✔️  Work is tracked through GitHub Issues and every commit references at least one issue.
-
-✔️  The code compiles without errors and complies with all non-functional requirements.
-
-<br>
-
-**Only when all these conditions are satisfied can a user story be considered complete.**
-
---- 
-
-# Sprint 4
-
-#### Insert this information when creating issues related to the sprint 4:
-
-- Label: sprint4
-
-- Project : MiteLovers
+`mvn clean verify` triggers the full pipeline:
+1. Compiles source and test code
+2. Runs all unit tests via Surefire
+3. Measures line coverage via JaCoCo
+4. Measures mutation coverage via PITest
+5. Fails the build if thresholds are not met
 
 ---
 
-## Main Issue: Implementation of [RepositoryName] Repository Interface
+## Quality Gates
 
-### Description
-Implement the [RepositoryName] Repository Interface to abstract and standardize 
-data access operations, following object-oriented design (OOD) 
-best practices and the chosen design pattern.
+The following thresholds are enforced both locally (via `run`) and in CI (via the pipeline).
 
+| Tool | Metric | Threshold | Scope |
+|---|---|---|---|
+| JaCoCo | Line coverage | ≥ 85% | All code except `**/ui/**` |
+| PITest | Mutation coverage | ≥ 95% | All code except `domain.Enum.*` |
 
-### Sub-issue: Implement and Test [RepositoryName] Repository Interface
+If either threshold is not met, `mvn clean verify` exits with a non-zero code and the build fails.
 
-### Description
-Implement the [RepositoryName] Repository Interface and provide comprehensive unit test coverage to ensure correctness and reliability.
+---
 
-### Acceptance Criteria
+## CI Pipeline — GitHub Actions
 
-- The implementation correctly fulfills the [RepositoryName] Repository Interface contract.
-- All methods delegate data access operations appropriately to the underlying data source.
-- The implementation is documented using JavaDoc.
-- All interface methods are covered by unit tests.
-- All edge cases are handled and tested (e.g., null inputs, empty results, duplicate entries).
-- Test coverage is ≥ 95%.
-- The code is reviewed and approved by at least one team member.
+File: `.github/workflows/pr-tests.yml`
+
+### Trigger
+
+The pipeline runs automatically on every **Pull Request** that targets any of the following branches:
+
+- `main`
+- `teamA_1`
+- `teamA_2`
+
+It is triggered when a PR is **opened** or **updated** (new commits pushed).
+
+### Pipeline Steps
+
+```
+Code checkout
+     ↓
+Install Java 17 (Temurin, with Maven cache)
+     ↓
+mvn clean verify
+  ├── Compile
+  ├── Run tests (Surefire)
+  ├── JaCoCo: measure line coverage → fail if < 85%
+  └── PITest: measure mutation coverage → fail if < 95%
+     ↓
+Upload JaCoCo report (artifact)
+     ↓
+Upload PITest report (artifact)
+```
+
+### Artifacts
+
+After each pipeline run (even if the build fails), two reports are uploaded and accessible from the GitHub Actions run page:
+
+| Artifact | Path | Description |
+|---|---|---|
+| `jacoco-report` | `target/site/jacoco/` | HTML line coverage report |
+| `pitest-report` | `target/pit-reports/` | HTML + XML mutation coverage report |
+
+---
+
+## Developer Workflow
+
+The expected workflow for each team member is as follows:
+
+1. **Pick up an issue** from the sprint backlog. All commits must reference at least one issue number.
+2. **Work on your feature branch**
+3. **Before committing**, run `./lint` locally to catch style violations early.
+4. **Before opening a PR**, run `./run` locally to verify the build and all coverage thresholds pass.
+5. **Open a Pull Request** targeting the appropriate base branch. This triggers the CI pipeline automatically.
+6. **CI must pass** before the PR can be merged. A failing pipeline (build error, test failure, or coverage below threshold) blocks integration.
+7. **Review** the JaCoCo and PITest reports attached to the CI run if the build fails.
+
+---
+
+## Tools & Versions
+
+| Tool | Version |
+|---|---|
+| Java | 17 (Temurin) |
+| Spring Boot | 3.2.5 |
+| Maven Surefire | 3.2.5 |
+| JaCoCo | 0.8.11 |
+| PITest | 1.15.8 |
+| PITest JUnit5 plugin | 1.1.2 |
+| Checkstyle plugin | 3.3.1 |
+| PMD plugin | 3.21.2 |
+| JUnit Jupiter | 5.10.2 |
+| Mockito | 5.10.0 |
+| GitHub Actions runner | ubuntu-latest |
+
+---

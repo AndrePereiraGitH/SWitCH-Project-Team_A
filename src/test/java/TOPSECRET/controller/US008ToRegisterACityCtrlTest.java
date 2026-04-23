@@ -4,7 +4,7 @@ import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
-import TOPSECRET.repository.CityRepositoryMem;
+import TOPSECRET.persistence.mem.CityRepositoryMem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

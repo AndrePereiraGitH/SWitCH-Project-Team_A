@@ -1,0 +1,12 @@
+@startuml
+hide footbox
+title Register Publication type to Official List
+
+actor Administrator
+participant ":System" as System
+
+Administrator -> System : **1** I want to add a new publication type to the official list
+System --->> Administrator : **2** Please enter the publication type
+Administrator -> System : **3** Book
+System --->> Administrator : **4** Success
+@enduml

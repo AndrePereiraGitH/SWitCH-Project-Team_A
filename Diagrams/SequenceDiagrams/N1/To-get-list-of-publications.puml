@@ -1,0 +1,30 @@
+@startuml
+
+autonumber
+hide footbox
+title Get the list of publications in my library.
+
+actor "User" as User
+participant ":MiteLovers" as System
+
+
+
+    User -> System : I want a list of publications from my library
+
+    activate System
+
+    System -> User : Enter your username
+
+    deactivate System
+
+    User -> System: username
+
+    activate System
+
+    System --> User : return list of publications
+
+    deactivate System
+
+
+
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+title Get Publication Types
+
+class UI014{}
+
+class ToGetPublicationTypeController {
+    +getAllPublicationTypes() : List<PublicationTypeDTO>
+}
+
+class PublicationTypeRepository {
+    -publicationTypes : List<PublicationType>
+    +getAllPublicationTypes() : List<PublicationType>
+}
+
+class PublicationTypeDTO {
+    +typeOfBinding : String
+    +details : String
+
+    +fromDomainList(list : List<PublicationTypeDTO>)
+}
+
+class PublicationType {
+    -typeOfBinding : TypeOfBinding
+    -details : String
+}
+
+UI014 "1" -.-> "1" ToGetPublicationTypeController : uses
+ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses
+ToGetPublicationTypeController "1" -.> "1" PublicationTypeDTO : uses
+PublicationTypeRepository "1" --> "1..*" PublicationType : contains
+@enduml

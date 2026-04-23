@@ -13,11 +13,10 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US015PublicationSampleDTO;
 import TOPSECRET.dto.US015PublicationSampleMapper;
-import TOPSECRET.repository.ListingRepositoryMem;
+import TOPSECRET.persistence.mem.ListingRepositoryMem;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

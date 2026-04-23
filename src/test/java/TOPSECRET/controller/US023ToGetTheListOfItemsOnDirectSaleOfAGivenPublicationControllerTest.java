@@ -13,8 +13,8 @@ import TOPSECRET.dto.US023BibliographicalDataDTO;
 import TOPSECRET.dto.US023BibliographicalDataMapper;
 import TOPSECRET.dto.US023ListingDTO;
 import TOPSECRET.dto.US023ListingMapper;
-import TOPSECRET.repository.BibliographicalDataRepositoryMem;
-import TOPSECRET.repository.ListingRepositoryMem;
+import TOPSECRET.persistence.mem.BibliographicalDataRepositoryMem;
+import TOPSECRET.persistence.mem.ListingRepositoryMem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import javax.management.InstanceNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

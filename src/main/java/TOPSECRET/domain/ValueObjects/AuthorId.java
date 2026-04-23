@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class AuthorId implements DomainID {
 
-    private final String _authorId;
+    private String _authorId;
 
     /**
      * Creates a new {@code AuthorId} instance.
@@ -49,8 +49,5 @@ public class AuthorId implements DomainID {
         return Objects.equals(_authorId, authorId._authorId);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(_authorId);
-    }
+
 }

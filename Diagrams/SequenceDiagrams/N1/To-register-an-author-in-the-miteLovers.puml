@@ -1,0 +1,18 @@
+@startuml
+hide footbox
+title Register Author in MiteLovers
+autoNumber
+actor Administrator
+participant ":System" as System
+
+Administrator -> System :  I want to register an author in MiteLovers
+activate System
+System -->> Administrator :  Please provide author information
+deactivate System
+
+Administrator -> System :  Here's the information
+activate System
+
+System -->> Administrator :  Success
+deactivate System
+@enduml

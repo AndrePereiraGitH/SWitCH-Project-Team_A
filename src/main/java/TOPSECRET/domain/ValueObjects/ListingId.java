@@ -55,9 +55,4 @@ public final class ListingId implements DomainID {
         if (!(o instanceof ListingId other)) return false;
         return Objects.equals(_listingId, other._listingId);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(_listingId);
-    }
 }

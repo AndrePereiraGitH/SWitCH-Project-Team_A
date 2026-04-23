@@ -1,0 +1,60 @@
+@startuml
+hide circle
+title To publicly share a list of mine
+
+class "UI019" as UI019 {
+
+}
+
+'Controller
+class "US019ToPubliclyShareCollectionOfPublicationsController" as US019Controller {
+  -collectionRepository: ICollectionOfPublicationsRepository
+  -genreRepository: IGenreRepository
+  -userRepository: IUserRepository
+  +getUserCollections(userId: UserId): List<CollectionOfPublicationsDTO>
+  +makeCollectionPublic(collectionId: CollectionID): boolean
+}
+
+'Repository Interfaces
+interface "ICollectionOfPublicationRepository" as ICollectionOfPublicationsRepository  {
+ + getUserCollections(userId : UserId) : List<CollectionOfPublications>
+ + makeCollectionPublic(id : CollectionOfPublicationsID) : boolean
+}
+
+'Domain
+class CollectionOfPublications {
+  - id : CollectionOfPublicationsID
+  - collectionName : String
+  - collectionGenreId : GenreID
+  - ownerId : UserId
+  - isPrivate : boolean
+  + getCollectionName() : String
+  + getCollectionGenre() : GenreID
+  + getOwnerId() : UserId
+  + set_isPrivate(value : boolean) : boolean
+}
+
+class US019CollectionOfPublicationsMapper {
+  + toDTO(collection : CollectionOfPublications) : US019CollectionOfPublicationsDTO
+  + toDTOs(collections : List<CollectionOfPublications>) : List<US019CollectionOfPublicationsDTO>
+}
+
+class "US019CollectionOfPublicationsDTO" as DTO{
+        + name : String
+        + genreName : String
+        + ownerName : String
+}
+
+' Interactions
+UI019 ..> US019Controller : uses
+
+US019Controller ..> ICollectionOfPublicationsRepository : uses
+US019Controller ..> US019CollectionOfPublicationsMapper : uses
+
+ICollectionOfPublicationsRepository "1" --> "*" CollectionOfPublications : manages
+
+US019CollectionOfPublicationsMapper ..> CollectionOfPublications : maps from
+US019CollectionOfPublicationsMapper ..> DTO : creates
+
+
+@enduml

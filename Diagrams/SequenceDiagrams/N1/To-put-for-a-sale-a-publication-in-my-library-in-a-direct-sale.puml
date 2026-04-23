@@ -1,0 +1,23 @@
+@startuml
+
+autonumber
+hide footbox
+title To put for a sale a publication in my library in a direct sale
+
+actor "User" as User
+participant ":System" as System
+
+User -> System : I want to put for sale a publication in a direct sale
+activate System
+System --> User : Which publication(s)? Choose from the list!
+deactivate System
+User -> System : Selected publication(s)
+activate System
+System --> User : Specify title, price, short description and pictures for the listing
+deactivate System
+User -> System : Title, price, short description, pictures
+activate System
+System --> User : Publication(s) put for direct sale with success
+deactivate System
+
+@enduml
