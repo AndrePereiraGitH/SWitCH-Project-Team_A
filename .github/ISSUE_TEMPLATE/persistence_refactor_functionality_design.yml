@@ -1,0 +1,98 @@
+name: "Design Refactor -- Persistence Layer"
+description: "Sub-issue: Extend a functionality design to include persistence mappings and reconstruction flow"
+title: "Persistence Design: Extend <FUNCTIONALITY> design to include persistence layer"
+labels: ["sprint5"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Overview
+        This issue tracks the extension of the existing DDD-compliant design for `<FUNCTIONALITY>` 
+        to include the **persistence layer** — data model entities, repository implementations, 
+        assemblers, and reconstruction flows.
+
+        The domain model is already designed and approved. This issue focuses exclusively on 
+        defining how domain objects are persisted and reconstructed without violating DDD principles.
+
+        > **Implementation is blocked** until all persistence design artifacts below are reviewed and approved.
+
+        ---
+
+        ## Business Goal
+        Extend the current design of the functionality `<FUNCTIONALITY>` so that:
+        - persistence concerns are explicitly modeled outside the Domain Layer;
+        - the reconstruction flow between persistence data and domain objects is clearly defined;
+        - the save flow from domain objects to persistence is clearly defined.
+
+        The persistence design must ensure a clean separation between:
+        - **Persistence/Data Model**
+        - **Assemblers / Mappers**
+        - **Factories for reconstruction**
+        - **Repository contracts and implementations**
+
+        ---
+
+        ## Persistence & Mapping Checklist
+        - [ ] **Persistence Ignorance** preserved: no JPA, database, or framework annotations/logic in the Domain Layer.
+        - [ ] **Data Model Separation** ensured: persistence entities are distinct from domain entities.
+        - [ ] **Reconstruction Flow** documented: persisted data → assembler/factory → domain object.
+        - [ ] **Save Flow** documented: domain object → assembler → data model entity.
+        - [ ] **RepositoryJPA Responsibility** limited to persistence access and orchestration of reconstruction.
+        - [ ] **Assemblers** contain only translation/mapping logic, not business rules.
+        - [ ] **Factories** are responsible for valid object reconstitution, not persistence logic.
+        - [ ] **IRepositoryJPA / Repository Implementation** defined in the infrastructure layer.
+        - [ ] **Data Model Entities** defined specifically for persistence concerns.
+
+        ---
+
+        ## Service Checklist
+        - [ ] **Service method** designed for the creation use case.
+        - [ ] **Service** delegates instantiation to the Domain Factory.
+        - [ ] **Service** delegates persistence to the Repository.
+
+        ---
+
+        ## Boundary & Integrity Checklist
+        - [ ] **Persistence Ignorance**: no database or framework-specific logic exists in the Domain Layer.
+        - [ ] **Infrastructure Isolation**: JPA repositories, persistence entities, and assemblers remain outside the Domain Layer.
+        - [ ] **Reconstitution Safety**: reconstruction from persistence does not bypass domain consistency rules.
+        - [ ] **External References** use only **ID Value Objects** — no direct references to external aggregates.
+
+        ---
+
+        ## Acceptance Criteria
+        - [ ] Persistence-related classes are identified (Data Model entities, IRepositoryJPA, Assemblers, Reconstitution Factories).
+        - [ ] No direct references to other aggregate objects — only IDs (Value Objects) are used.
+        - [ ] Domain Layer remains free of JPA/database/framework concerns.
+        - [ ] Reconstruction and save flows between persistence and domain are explicitly represented and justified.
+        - [ ] Updated CD reflects the persistence layer alongside the existing domain classes.
+        - [ ] Service design is consistent with the SD and delegates correctly to Factory and Repository.
+        - [ ] Diagrams are reviewed and approved by at least one team member.
+
+        ---
+
+        ## Design Artifacts & Links
+        <!-- Paste links to PlantUML files, diagrams, or add specific design notes here. -->
+
+        Artifacts to produce or update:
+        - CD (updated to include persistence layer)
+        - SD (updated to include persistence layer)
+        - Persistence / Data Model Diagram
+        - Mapping / Reconstruction notes
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, blockers, or references. -->
+
+        Persistence design must explicitly show:
+        - which classes belong to the Domain Layer;
+        - which classes belong to the Infrastructure/Persistence Layer;
+        - how `IRepositoryJPA`, Data Model entities, Assemblers, and Factories collaborate;
+        - how domain objects are reconstructed from persisted state without violating DDD principles.
+    validations:
+      required: true
