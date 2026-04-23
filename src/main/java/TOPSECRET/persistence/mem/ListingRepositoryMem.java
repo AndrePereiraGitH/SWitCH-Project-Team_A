@@ -124,9 +124,7 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listingIds;
-
     }
-
 
     /**
      * {@inheritDoc}
@@ -174,17 +172,18 @@ public class ListingRepositoryMem implements IListingRepository {
         }
         return listOfAuctionListingsOfGivenPublication;
     }
-
-
-
     /**
      * {@inheritDoc}
      */
     @Override
     public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
 
-        if(listOfPubSampleIds == null || listOfPubSampleIds.isEmpty()){
-            throw new NullPointerException("The list can not be null or empty");
+        if (listOfPubSampleIds == null) {
+            throw new IllegalArgumentException("The list cannot be null");
+        }
+
+        if (listOfPubSampleIds.isEmpty()) {
+            return new ArrayList<>();
         }
 
         List<Listing> listOfListings = new ArrayList<>();

@@ -2,59 +2,81 @@
 title To get the list of items on direct sale of a given genre
 
 class UI021 {
-
 }
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
-  +getAllGenres()
-  +getListOfItemsOnDirectSale(genre: Genre)
+  +getAllGenres() : List<US021GenreDTO>
+  +getListOfItemsOnDirectSale(selectedGenreId: GenreID) : List<US021DirSaleListingDTO>
 }
 
-class GenreRepository {
-  +getAllGenres()
+interface IGenreRepository {
+  +getAllGenres() : List<Genre>
 }
-
-class FactoryGenre  <<Factory>> {
-}
-
-class FactoryListing <<Factory>> {
-}
-
 
 class Genre {
-    -genreType: String
-    +getDetails()
+  -id: GenreID
+  -genreType: String
 }
 
-class ListingRepository {
-  +getListOfItemsOnDirectSale(genre: Genre)
-  -isDirectSaleFromGenre(genre)
+class US021GenreMapper {
+  +{static} toDTO(genre: Genre) : US021GenreDTO
+  +{static} toDTOList(genres: List<Genre>) : List<US021GenreDTO>
 }
 
-class DirectSale {
-  - listing: Listing
-  - directSaleDate: LocalDateTime
-  +getDetails()
+class US021GenreDTO {
+  -genreId: GenreID
+  -name: String
 }
 
-class Item{
--condition: Condition
--dimension: Dimension
--publication: Publication
--weight: double
+interface IBibliographicalDataRepository {
+  +findAllBibliographicalDataByGenreId(genreId: GenreID) : List<BibliographicalDataID>
 }
 
-' Interactions
-UI021 "1 " ..>  ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> ListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController  ..> GenreRepository : uses
+interface IPublicationSampleRepository {
+  +findAllItemsIdByBibliographicalDataId(bdIds: List<BibliographicalDataID>) : List<PublicationSampleId>
+}
 
-GenreRepository ..>  FactoryGenre : uses
-GenreRepository "1 " --> "                   *" Genre : stores
+interface IListingRepository {
+  +findDirectSaleListingsContaining(pubSampleIds: List<PublicationSampleId>) : List<Listing>
+}
 
-ListingRepository ..> FactoryListing : uses
+class Listing {
+  -id: ListingId
+  -listingTitle: String
+  -price: Price
+  -shortDescription: String
+  -sellerId: UserId
+}
 
-ListingRepository "1 " --> "*" DirectSale : stores
-Genre "1 " --> "1 " Item : categorizes
-DirectSale "1 " -->  "1 " Item : has
+class US021DirSaleListingMapper {
+  +toDTO(listing: Listing) : US021DirSaleListingDTO
+  +toDTOs(listings: List<Listing>) : List<US021DirSaleListingDTO>
+}
+
+class US021DirSaleListingDTO {
+  -listingId: String
+  -listingTitle: String
+  -price: BigDecimal
+  -shortDescription: String
+  -sellerId: String
+}
+
+' Relationships
+UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IGenreRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IBibliographicalDataRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IPublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021GenreMapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021DirSaleListingMapper : uses
+
+IGenreRepository "1" --> "*" Genre : manages
+IListingRepository "1" --> "*" Listing : manages
+
+US021GenreMapper ..> Genre : maps from
+US021GenreMapper ..> US021GenreDTO : creates
+
+US021DirSaleListingMapper ..> Listing : maps from
+US021DirSaleListingMapper ..> US021DirSaleListingDTO : creates
+
 @enduml

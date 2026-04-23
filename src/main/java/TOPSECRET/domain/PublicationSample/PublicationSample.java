@@ -3,7 +3,6 @@ package TOPSECRET.domain.PublicationSample;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.Objects;
@@ -192,18 +191,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         return true;
     }
 
-    /**
-     * Checks whether this publication belongs to the given genre.
-     *
-     * @param genre the {@link Genre} to check against
-     * @return {@code true} if the bibliographical data contains the specified genre;
-     *         {@code false} otherwise
-     */
-//    public boolean hasGenre(Genre genre) {
-//        return _bdID.hasGenre(genre);
-//    }
-
-    /**
+     /**
      * Retrieves the full set of details associated with this publication.
      *
      * <p>This method returns a {@link PublicationDetails} record containing

@@ -11,74 +11,68 @@ participant ":UI019" as UI
 end box
 
 participant ":US019ToPubliclyShareCollectionOfPublicationsController" as Controller
-participant ":CollectionOfPublicationRepository" as CollectionRepository
-participant "collectionOfPublication: CollectionOfPublications" as CollectionOfPublications
-participant "CollectionOfPublicationsDTO_US019" as dto
+participant ":ICollectionOfPublicationRepository" as CollectionRepository
+participant "listOfUserCollections:\nList<CollectionOfPublications" as LUC
+participant ":US019CollectionOfPublicationsMapper" as Mapper
+participant "listCollectionsDTO:\nList<US019CollectionOfPublicationsDTO>" as listCollectionsDTO
+participant ":CollectionOfPublications" as Collection
 
-activate UI
-
+' == Section 1 - get user colllections ==
 User -> UI : I want to publicly share a CollectionOfPublications of mine
-UI --> Controller: requestAllCollectionOfPublicationsByUser(user)
+activate UI
+UI --> Controller: getUserCollections(userId)
 
 activate Controller
-Controller --> CollectionRepository: getAllCollectionOfPublicationsByUser(user)
+
+Controller -> CollectionRepository: getUserCollections(userId)
 activate CollectionRepository
-create "listOfUserCollections:List<CollectionOfPublications>" as CollectionOfPublicationsList
-CollectionRepository -> CollectionOfPublicationsList : create()
-
-loop for each CollectionOfPublications in list
-    CollectionRepository -> CollectionOfPublications : verifyIfCollectionBelongsToUser(user)
-    activate CollectionOfPublications
-    CollectionOfPublications --> CollectionRepository : true
-
-    deactivate CollectionOfPublications
-
-    CollectionRepository -> CollectionRepository : listOfUserCollections.add(collectionOfPublication)
-
-
-
-end
-
-
+CollectionRepository -->> LUC ** : «create»
 CollectionRepository --> Controller: listOfUserCollections
 deactivate CollectionRepository
 
-'Controller --> UI: listOfUserCollections
-create "listCollectionsDTO : List<CollectionOfPublicationsDTO>" as CollectionDTOList
-Controller -> CollectionDTOList : create()
-loop for each collection in listOfUserCollections
-    Controller -> dto : toDTO(collection)
-    activate dto
-    dto --> Controller : collectionDTO
-    deactivate dto
-    Controller -> Controller : listCollectionsDTO.add(collectionDTO)
+Controller -> Mapper : toDTOs(listOfUserCollections)
+activate Mapper
+Mapper  -->> listCollectionsDTO ** : «create»
 
-end
+    loop for each collection in listOfUserCollections
+        Mapper -> "collectionDTO:\nUS019CollectionOfPublicationsDTO" ** : toDTO(collection)
+        Mapper -> listCollectionsDTO : add(collectionDTO)
+    end
+    Mapper  -->> Controller : listCollectionsDTO
+deactivate Mapper
+
 Controller --> UI : listCollectionsDTO
 deactivate Controller
 
 UI -->> User : Select the list you want to share : collectionDTO_A, collectionDTO_B, ...
+deactivate UI
+
+' == Section 2 - Make collection public ==
 User -> UI : Selected collection (collectionDTO_A)
-UI -> Controller : shareCollectionOfPublications(collectionDTO_A)
+activate UI
+UI -> Controller : makeCollectionPublic(collectionId)
 
 
 activate Controller
 
-Controller -> CollectionRepository : makeCollectionOfPublicationsPublic(collectionDTO_A)
+Controller -> CollectionRepository : makeCollectionPublic(collectionId)
 activate CollectionRepository
-CollectionRepository -> CollectionRepository : getCollectionByDTO()
 
-CollectionRepository -> CollectionOfPublications : set_isPrivate(false)
+loop for each collection in _collectionOfPublicationsList
+    CollectionRepository -> Collection : id()
+    activate Collection
+    alt id equals target id
+        CollectionRepository -> Collection : set_isPrivate(false)
+        Collection --> CollectionRepository : false
+        deactivate Collection
+    end
+end
 
-activate CollectionOfPublications
-CollectionOfPublications --> CollectionRepository
-deactivate CollectionOfPublications
-
-CollectionRepository --> Controller : true
-
+deactivate Collection
+CollectionRepository --> Controller : false
 deactivate CollectionRepository
 
-Controller --> UI : true
+Controller --> UI : false
 deactivate Controller
 
 UI --> User: Your collection is public now!

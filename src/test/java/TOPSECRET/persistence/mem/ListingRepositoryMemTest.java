@@ -1102,22 +1102,23 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 repo.findDirectSaleListingsContaining(null)
         );
     }
 
     @Test
-    void findDirectSaleListingsContaining_throwsException_whenListIsEmpty() throws InstanceAlreadyExistsException {
+    void findDirectSaleListingsContaining_returnsEmptyList_whenInputListIsEmpty() throws InstanceAlreadyExistsException {
 
         // Arrange
         ListingFactory factory = mock(ListingFactory.class);
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                repo.findDirectSaleListingsContaining(List.of())
-        );
+        // Act
+        List<Listing> result = repo.findDirectSaleListingsContaining(List.of());
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
 

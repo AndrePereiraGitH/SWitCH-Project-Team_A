@@ -1,9 +1,11 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ICollectionOfPublicationsRepository {
 
@@ -36,14 +38,22 @@ public interface ICollectionOfPublicationsRepository {
             GenreID genreId) throws IllegalArgumentException;
 
     /**
-     * Returns all collections that belong to a given userId — US018 / US019.
+     * Returns all collections owned by a given user — US019.
      *
-     * @param userId the owner of the collections
-     * @return list of collections owned by the userId
-     * @throws IllegalArgumentException if userId is null
+     * @param ownerId the user to search for
+     * @return list of collections owned by the user
+     * @throws IllegalArgumentException if ownerId is null
      */
+    List<CollectionOfPublications> getUserCollections(UserId ownerId) throws IllegalArgumentException;
 
-    List<CollectionOfPublications> getUserCollections(UserId userId) throws IllegalArgumentException;
+    /**
+     * Makes a collection of publications public — US019.
+     *
+     * @param id the ID of the collection to search for; must not be null
+     * @return an {boolean} false, to confirm collection is now public
+     * @throws NullPointerException if {@code id} is null
+     */
+    boolean makeCollectionPublic(CollectionOfPublicationsID id);
 
     /**
      * Returns all public collections that belong to a given genre — US020.
@@ -53,4 +63,5 @@ public interface ICollectionOfPublicationsRepository {
      * @throws IllegalArgumentException if genreId is null
      */
     List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
+
 }

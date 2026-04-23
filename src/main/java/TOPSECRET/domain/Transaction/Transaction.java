@@ -80,8 +80,6 @@ public class Transaction implements AggregateRoot<TransactionID> {
         this._auctionId = auctionId;
     }
 
-    // ====================================
-
     /**
      * Constructs a transaction resulting from a direct sale.
      *
@@ -110,7 +108,6 @@ public class Transaction implements AggregateRoot<TransactionID> {
             throw new IllegalArgumentException("Cart cannot be null");
         }
         this._directSaleId = directSaleId;
-
     }
 
     /**
@@ -193,7 +190,5 @@ public class Transaction implements AggregateRoot<TransactionID> {
                 this._paymentDate.equals(newObj._paymentDate) &&
                 this._sellersId.equals(newObj._sellersId) &&
                 this._status.equals(newObj._status);
-
     }
 }
-
