@@ -1,31 +1,65 @@
 @startuml
-title Get Publication Types
+title Class Diagram - Get All Publication Types
 
-class UI014{}
-
-class ToGetPublicationTypeController {
-    +getAllPublicationTypes() : List<PublicationTypeDTO>
+' ====== UI & Controller ======
+class UI {
+  +getAllPublicationTypes()
 }
 
-class PublicationTypeRepository {
-    -publicationTypes : List<PublicationType>
-    +getAllPublicationTypes() : List<PublicationType>
+class Controller {
+  +getAllPublicationTypes(): List<PublicationTypeDTO>
 }
 
-class PublicationTypeDTO {
-    +typeOfBinding : String
-    +details : String
+UI -.-> Controller : uses
 
-    +fromDomainList(list : List<PublicationTypeDTO>)
+' ====== Repository Layer ======
+interface IPublicationTypeRepository {
+  +getAllPublicationTypes(): List<PublicationType>
 }
 
+interface IPublicationTypeRepositoryJPA {
+  +getAllPublicationTypes(): List<PublicationType>
+}
+
+IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA : implements
+
+Controller -.-> IPublicationTypeRepository : uses
+
+
+' ====== Domain ======
 class PublicationType {
-    -typeOfBinding : TypeOfBinding
-    -details : String
+  -id: PublicationTypeId
+  -mediaFormat: String
+  +getId(): publicationTypeId
+  +getMediaFormat(): String
 }
 
-UI014 "1" -.-> "1" ToGetPublicationTypeController : uses
-ToGetPublicationTypeController "1" -.-> "1" PublicationTypeRepository : uses
-ToGetPublicationTypeController "1" -.> "1" PublicationTypeDTO : uses
-PublicationTypeRepository "1" --> "1..*" PublicationType : contains
+' ====== Assembler & Factory ======
+class PublicationTypeAssembler {
+  +toDomainList(pubTypesPersisted): List<PublicationType>
+}
+
+class PublicationTypeFactory {
+  +create(publicationType.id, mediaFormat): PublicationType
+}
+
+PublicationTypeAssembler -.-> PublicationTypeFactory : uses
+PublicationTypeAssembler --> PublicationType
+
+IPublicationTypeRepository -.-> PublicationTypeAssembler : uses
+
+' ====== DTO & Mapper ======
+class US014PublicationTypeDTO {
+  -id: String
+  -mediaFormat: String
+}
+
+class US014PublicationTypeMapper {
+  +toDTOList(pubTypeList): List<US014PublicationTypeDTO>
+}
+
+Controller -.-> US014PublicationTypeMapper : uses
+US014PublicationTypeMapper --> PublicationType
+US014PublicationTypeMapper --> US014PublicationTypeDTO
+
 @enduml

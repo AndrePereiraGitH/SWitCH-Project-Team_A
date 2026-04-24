@@ -1,0 +1,100 @@
+@startuml
+autonumber
+hide footbox
+title To Get All Publication Types List (with JPA)
+
+actor User
+
+participant ":UI" as UI
+participant ":Controller" as C
+participant ":IPublicationType\nRepository" as PTR
+participant ":IPublicationType\nRepositoryJPA" as PTRJPA
+participant "DataBase" as EM
+participant ":PublicationType\nAssembler" as Assembler
+participant ":PublicationType\nFactory" as Factory
+participant ":US014Publication\nTypeMapper" as MAPPER
+participant ":PublicationType" as ENTITY
+
+User -> UI : I want to get a list\n of all publication types
+activate UI
+
+UI -> C : getAllPublicationTypes()
+activate C
+
+C -> PTR : getAllPublicationTypes()
+activate PTR
+
+PTR -> PTRJPA : getAllPublicationTypes()
+activate PTRJPA
+
+PTRJPA -> EM : createQuery / execute
+activate EM
+
+note over EM
+Query database (SELECT * FROM publication_type)
+end note
+
+EM --> PTRJPA : data
+deactivate EM
+
+PTRJPA --> PTR : pubTypesPersisted
+deactivate PTRJPA
+
+PTR -> Assembler : toDomainList(pubTypesPersisted)
+activate Assembler
+
+Assembler -->> "pubTypeList\nList<PublicationType>" ** : <<create>>
+
+loop for each Publication Type
+Assembler -> Factory : create\n(pubType.id, mediaFormat)
+activate Factory
+
+create "pubTypeDomain\n:PublicationType" as pubTypeDomain
+Factory -->> pubTypeDomain : <<create>>
+
+Factory --> Assembler : pubTypeDomain
+deactivate Factory
+
+Assembler -> "pubTypeList\nList<PublicationType>" : add(pubTypeDomain)
+end
+
+Assembler --> PTR : pubTypeList
+deactivate Assembler
+
+
+PTR --> C : pubTypeList
+deactivate PTR
+
+C -> MAPPER : toDTOList(pubTypeList)
+activate MAPPER
+
+create "listOfPublicationTypeDTO:\nList<US014PublicationTypeDTO>" as listDTO
+MAPPER -->> listDTO : <<create>>
+
+loop for each PublicationType
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : id
+    deactivate ENTITY
+
+    MAPPER -> ENTITY : getMediaFormat()
+    activate ENTITY
+    ENTITY --> MAPPER : mediaFormat
+    deactivate ENTITY
+
+    create "pubTypeDTO:\nUS014PublicationTypeDTO" as pubTypeDTO
+    MAPPER -> pubTypeDTO : toDTO()
+
+    MAPPER -> listDTO : add(pubTypeDTO)
+end
+
+MAPPER --> C : listOfPublicationTypeDTO
+deactivate MAPPER
+
+C --> UI : listOfPublicationTypeDTO
+deactivate C
+
+UI --> User : Show list of\n publication types
+deactivate UI
+
+@enduml
