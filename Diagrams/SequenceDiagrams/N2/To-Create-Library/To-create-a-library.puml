@@ -1,0 +1,116 @@
+@startuml
+hide footbox
+autonumber
+title To create a library
+
+actor User
+participant ":UI" as UI
+participant ":ToCreateLibraryCtrl" as Ctrl
+participant ":LibraryService" as service
+participant ":IUserRepository" as userRepo
+participant ":IUserRepositoryJPA" as userJpa
+participant ":ILibraryRepository" as LibraryRepo
+participant ":LibraryAssembler" as assembler
+participant "libraryDM:LibraryDM" as dm
+participant ":LibraryFactory" as factory
+participant "persistedLib:Library" as persistedLib
+participant "library:Library" as lib
+participant ":ILibraryRepositoryJPA" as libraryJpa
+participant "Database" as db
+
+
+User -> UI : I want to create a library.
+activate UI
+UI --> User : What name?
+deactivate UI
+User -> UI : libraryName, username
+
+activate UI
+
+UI -> Ctrl : createLibrary(libraryName, username)
+activate Ctrl
+
+Ctrl -> userRepo: findIdByUsername(username)
+activate userRepo
+
+userRepo -> userJpa: findByUsername(username)
+activate userJpa
+
+userJpa -> db: SELECT WHERE username
+activate db
+db --> userJpa: userDM
+deactivate db
+userJpa --> userRepo: userDM
+deactivate userJpa
+
+userRepo -> userRepo : userId = userDM.userId()
+
+userRepo --> Ctrl: userId
+deactivate userRepo
+
+Ctrl -> service: createAndSave(libraryName, userId)
+activate service
+
+service -> factory: create(libraryName, userId)
+activate factory
+
+factory -->> lib**: <<create>>
+factory --> service: library
+deactivate factory
+
+service -> LibraryRepo: save(library)
+activate LibraryRepo
+
+LibraryRepo -> libraryJpa: findByUserId(userId)
+activate libraryJpa
+
+libraryJpa -> db: SELECT WHERE userId
+activate db
+db --> libraryJpa: result
+deactivate db
+libraryJpa --> LibraryRepo: result
+deactivate libraryJpa
+
+LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
+
+LibraryRepo -> assembler: toDM(library)
+activate assembler
+
+assembler -->> dm**: <<create>>
+assembler --> LibraryRepo: libraryDM
+deactivate assembler
+
+LibraryRepo -> libraryJpa: save(libraryDM)
+activate libraryJpa
+libraryJpa -> db: INSERT libraryDM
+activate db
+db --> libraryJpa: libraryDM
+deactivate db
+libraryJpa --> LibraryRepo: libraryDM
+deactivate libraryJpa
+
+LibraryRepo -> assembler: toDomain(libraryDM)
+activate assembler
+
+assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())
+activate factory
+
+factory -->> persistedLib**: <<create>>
+factory --> assembler: persistedLib
+deactivate factory
+
+assembler --> LibraryRepo: persistedLib
+deactivate assembler
+
+LibraryRepo --> service: persistedLib
+deactivate LibraryRepo
+
+service --> Ctrl: persistedLib
+deactivate service
+
+Ctrl --> UI : true
+deactivate Ctrl
+UI --> User : Your library was created
+deactivate UI
+
+@enduml

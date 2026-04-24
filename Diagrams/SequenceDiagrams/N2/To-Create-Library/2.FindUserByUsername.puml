@@ -1,0 +1,37 @@
+@startuml
+hide footbox
+autonumber 2
+title Find User By Username
+
+participant ":ToCreateLibraryCtrl" as Ctrl
+participant ":IUserRepository" as userRepo
+participant ":IUserRepositoryJPA" as userJpa
+participant "Database" as db
+
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> userRepo: findIdByUsername(username)
+activate userRepo
+
+userRepo -> userJpa: findByUsername(username)
+activate userJpa
+
+userJpa -> db: SELECT WHERE username
+activate db
+db --> userJpa: data
+deactivate db
+
+userJpa --> userRepo: userDM
+deactivate userJpa
+
+userRepo -> userRepo : userId = userDM.userId()
+
+userRepo --> Ctrl: userId
+deactivate userRepo
+
+@enduml

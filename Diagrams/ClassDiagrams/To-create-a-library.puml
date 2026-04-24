@@ -1,43 +1,88 @@
 @startuml
-title To create a library - Class Diagram
+title To create a library
 
-
-class UI009 {
+class UI {
 }
 
-
-class US009ToCreateLibraryCtrl {
-    - libraryRepository: ILibraryRepository
+class ToCreateLibraryCtrl {
+    - libraryService: LibraryService
     - userRepository: IUserRepository
-    + createAndAddLibrary(libraryName, username): boolean
+    + createLibrary(libraryName, username): boolean
+}
+
+class LibraryService {
+    - libraryRepository: ILibraryRepository
+    - libraryFactory: LibraryFactory
+    + createAndSave(libraryName, userId): Library
 }
 
 interface IUserRepository {
     + findIdByUsername(username): UserId
 }
 
-interface ILibraryRepository {
-    - libraries: Map<UserId, Library>
-    + createAndAdd(libraryName, userId): Library
-    - verifyIfUserHasALibrary(userId): boolean
+class UserRepositoryImpl {
+    - userRepositoryJPA: IUserRepositoryJPA
+    + findIdByUsername(username): UserId
 }
 
+interface IUserRepositoryJPA {
+    + findByUsername(username): UserDM
+}
+
+interface ILibraryRepository {
+    + save(library): Library
+    - verifyIfUserHasALibrary(result): void
+}
+
+class LibraryRepositoryImpl {
+    - libraryRepositoryJPA: ILibraryRepositoryJPA
+    - assembler: LibraryAssembler
+    - factory: LibraryFactory
+    + save(library): Library
+    - verifyIfUserHasALibrary(result): void
+}
+
+interface ILibraryRepositoryJPA {
+    + findByUserId(userId): Optional<LibraryDM>
+    + save(libraryDM): LibraryDM
+}
+
+class LibraryAssembler {
+    + toDM(library): LibraryDM
+    + toDomain(libraryDM): Library
+}
 
 class LibraryFactory {
     + create(libraryName, userId): Library
+    + reconstitute(id, libraryName, userId): Library
 }
-
 
 class Library {
+    - id: LibraryId
+    - name: LibraryName
+    - userId: UserId
 }
 
+class LibraryDM {
+    - id: Long
+    - name: String
+    - userId: Long
+}
 
 ' Relationships
-UI009 ..> US009ToCreateLibraryCtrl: uses
-US009ToCreateLibraryCtrl ..> IUserRepository: uses
-US009ToCreateLibraryCtrl ..> ILibraryRepository: uses
-ILibraryRepository "1" --> "1" LibraryFactory: uses
-ILibraryRepository "1" --> "*" Library: manages
+UI ..> ToCreateLibraryCtrl: uses
+ToCreateLibraryCtrl ..> LibraryService: uses
+ToCreateLibraryCtrl ..> IUserRepository: uses
+IUserRepository <|.. UserRepositoryImpl: implements
+UserRepositoryImpl ..> IUserRepositoryJPA: uses
+LibraryService ..> ILibraryRepository: uses
+LibraryService ..> LibraryFactory: uses
+ILibraryRepository <|.. LibraryRepositoryImpl: implements
+LibraryRepositoryImpl ..> ILibraryRepositoryJPA: uses
+LibraryRepositoryImpl ..> LibraryAssembler: uses
+LibraryRepositoryImpl ..> LibraryFactory: uses
+LibraryAssembler ..> LibraryDM: creates
+LibraryAssembler ..> Library: creates
 LibraryFactory ..> Library: creates
 
 @enduml
