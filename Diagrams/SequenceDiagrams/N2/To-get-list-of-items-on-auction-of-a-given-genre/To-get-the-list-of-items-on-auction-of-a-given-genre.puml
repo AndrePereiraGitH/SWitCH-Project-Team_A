@@ -1,0 +1,128 @@
+@startuml
+
+hide footbox
+autonumber
+title To Get a List Of Items On Auction By A Given Genre
+
+actor Buyer
+
+participant ":UI" as UI
+participant ":GetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+participant ":IGenre\nRepository" as GenreRepo
+participant ":US022GenreMapper" as GenreMapper
+participant "allGenreList: List<Genre>" as allGenreList
+participant "listOfGenreDTO: List<GenreDTO>" as listOfGenreDTO
+participant ":Genre" as Genre
+participant "genreDTO: GenreDTO" as genreDTO
+
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant "listOfBioDataId:\nList<BibliographicalData>"
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant "listOfItemsId:\nList<PublicationSample>"
+participant ":IListing\nRepository" as ListingRepo
+participant "listOfListingId:\nList<Listing>"
+participant ":IAuction\nRepository" as AuctionRepo
+participant "listOfAuctionOfGivenGenre:\nList<Auction>"
+participant ":US022Auction\nMapper" as AuctionMapper
+
+' --- Start ---
+Buyer -> UI : I want to get a list of items\n on auction of a given genre
+activate UI
+
+' =========================
+' Get All Genres
+' =========================
+UI -> Controller : getAllGenres()
+activate Controller
+
+Controller -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo -->> allGenreList ** : <<create>>
+GenreRepo --> Controller : allGenreList
+deactivate GenreRepo
+
+Controller -> GenreMapper : toDTO(allGenreList)
+activate GenreMapper
+GenreMapper -->> listOfGenreDTO ** : <<create>>
+
+loop for each genre in allGenreList
+    GenreMapper -> Genre : getId()
+    activate Genre
+    Genre --> GenreMapper : id
+    deactivate Genre
+
+    GenreMapper -> Genre : getTitle()
+    activate Genre
+    Genre --> GenreMapper : title
+    deactivate Genre
+
+    GenreMapper -> genreDTO ** : toDTO
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+end
+
+GenreMapper --> Controller : listOfGenreDTO
+deactivate GenreMapper
+
+Controller --> UI : List<GenreDTO>
+deactivate Controller
+
+UI --> Buyer : Show genres! Choose
+deactivate UI
+
+' =========================
+' Get Items By Genre
+' =========================
+Buyer -> UI : Select genre
+activate UI
+
+UI -> Controller : getListOfItems\nOnAuction(selectedGenreDTO)
+activate Controller
+
+Controller -> GenreRepo : findById(selectedGenreDTO.id)
+activate GenreRepo
+GenreRepo --> Controller : genreId
+deactivate GenreRepo
+
+Controller -> BDRepo : findAllBibliographicalDataID(genreId)
+activate BDRepo
+BDRepo -->> "listOfBioDataId:\nList<BibliographicalData>" ** : <<create>>
+BDRepo --> Controller : listOfBioDataId
+deactivate BDRepo
+
+Controller -> PubSampleRepo : findItemsIdBy\nBibliographicalDataId(listOfBioDataId)
+activate PubSampleRepo
+PubSampleRepo -->> "listOfItemsId:\nList<PublicationSample>" ** : <<create>>
+PubSampleRepo --> Controller : listOfItemsId
+deactivate PubSampleRepo
+
+Controller -> ListingRepo : findAllListingId(listOfItemsId)
+activate ListingRepo
+ListingRepo -->> "listOfListingId:\nList<Listing>" ** : <<create>>
+ListingRepo --> Controller : listOfListingId
+deactivate ListingRepo
+
+Controller -> AuctionRepo : getAllAuctionsIdOnListing(listOfListing)
+activate AuctionRepo
+AuctionRepo -->> "listOfAuctionOfGivenGenre:\nList<Auction>" ** : <<create>>
+AuctionRepo --> Controller : listOfAuctionOfGivenGenre
+deactivate AuctionRepo
+
+Controller -> AuctionMapper : toDTOList(listOfAuctionOfGivenGenre)
+activate AuctionMapper
+AuctionMapper -->> "listOfAuctionDTO:\nList<US022AuctionDTO>" ** : <<create>>
+
+loop for each Auction in listOfAuctionOfGivenGenre
+    AuctionMapper -> "AuctionDTO:\nUS022AuctionDTO" ** : toDTO
+    AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
+end
+
+AuctionMapper --> Controller : listOfAuctionDTO
+deactivate AuctionMapper
+
+Controller --> UI : listOfAuctionDTO
+deactivate Controller
+
+UI --> Buyer : Display items
+deactivate UI
+
+@enduml

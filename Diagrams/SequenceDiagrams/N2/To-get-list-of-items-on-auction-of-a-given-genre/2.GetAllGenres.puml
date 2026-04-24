@@ -1,0 +1,57 @@
+@startuml
+hide footbox
+autonumber
+
+title UGet All Genres
+
+participant ":Controller" as Controller
+participant ":US022GetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+participant ":IGenreRepository" as GenreRepo
+participant "allGenreList: List<Genre>" as allGenreList
+participant ":US022GenreMapper" as GenreMapper
+participant "listOfGenreDTO: List<GenreDTO>" as listOfGenreDTO
+participant ":Genre" as Genre
+participant "genreDTO: GenreDTO" as genreDTO
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Controller -> GenreRepo : getAllGenres()
+
+activate GenreRepo
+GenreRepo -->> allGenreList ** : <<create>>
+GenreRepo --> Controller : allGenreList
+deactivate GenreRepo
+
+Controller -> GenreMapper : toDTO(allGenreList)
+activate GenreMapper
+GenreMapper -->> listOfGenreDTO ** : <<create>>
+
+loop for each genre in allGenreList
+    GenreMapper -> Genre : getId()
+    activate Genre
+    Genre --> GenreMapper : id
+    deactivate Genre
+
+    GenreMapper -> Genre : getTitle()
+    activate Genre
+    Genre --> GenreMapper : title
+    deactivate Genre
+
+    GenreMapper -> genreDTO ** : toDTO
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+end
+
+GenreMapper --> Controller : listOfGenreDTO
+deactivate GenreMapper
+
+@enduml
