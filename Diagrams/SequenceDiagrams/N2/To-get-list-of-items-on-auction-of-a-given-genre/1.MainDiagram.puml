@@ -1,0 +1,88 @@
+@startuml
+
+hide footbox
+autonumber
+title To Get a List Of Items On Auction By A Given Genre
+
+actor Buyer
+participant ":UI" as UI
+participant ":GetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+participant ":IGenre\nRepository" as GenreRepo
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant "listOfBioDataId:\nList<BibliographicalData>"
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant "listOfItemsId:\nList<PublicationSample>"
+participant ":IListing\nRepository" as ListingRepo
+participant "listOfListingId:\nList<Listing>"
+participant ":IAuction\nRepository" as AuctionRepo
+participant "listOfAuctionOfGivenGenre:\nList<Auction>"
+participant ":US022Auction\nMapper" as AuctionMapper
+
+Buyer -> UI : I want to get a list of items\n on auction of a given genre
+activate UI
+
+UI -> Controller : getAllGenres()
+activate Controller
+ref over Controller
+[[2.GetAllGenres.puml Get All Genres]]
+end ref
+Controller --> UI : List<GenreDTO>
+deactivate Controller
+
+UI --> Buyer : Show genres! Choose
+deactivate UI
+
+Buyer -> UI : Select genre
+activate UI
+
+UI -> Controller : getListOfItems\nOnAuction(selectedGenreDTO)
+activate Controller
+
+Controller -> GenreRepo : findById(selectedGenreDTO.id)
+activate GenreRepo
+GenreRepo --> Controller : genreId
+deactivate GenreRepo
+
+Controller -> BDRepo : findAllBibliographicalDataID(genreId)
+activate BDRepo
+BDRepo -->> "listOfBioDataId:\nList<BibliographicalData>" ** : <<create>>
+BDRepo --> Controller : listOfBioDataId
+deactivate BDRepo
+
+Controller -> PubSampleRepo : findItemsIdBy\nBibliographicalDataId(listOfBioDataId)
+activate PubSampleRepo
+PubSampleRepo -->> "listOfItemsId:\nList<PublicationSample>" ** : <<create>>
+PubSampleRepo --> Controller : listOfItemsId
+deactivate PubSampleRepo
+
+Controller -> ListingRepo : findAllListingId(listOfItemsId)
+activate ListingRepo
+ListingRepo -->> "listOfListingId:\nList<Listing>" ** : <<create>>
+ListingRepo --> Controller : listOfListingId
+deactivate ListingRepo
+
+Controller -> AuctionRepo : getAllAuctionsIdOnListing(listOfListing)
+activate AuctionRepo
+AuctionRepo -->> "listOfAuctionOfGivenGenre:\nList<Auction>" ** : <<create>>
+AuctionRepo --> Controller : listOfAuctionOfGivenGenre
+deactivate AuctionRepo
+
+Controller -> AuctionMapper : toDTOList(listOfAuctionOfGivenGenre)
+activate AuctionMapper
+AuctionMapper -->> "listOfAuctionDTO:\nList<US022AuctionDTO>" ** : <<create>>
+
+loop for each Auction in listOfAuctionOfGivenGenre
+
+    AuctionMapper -> "AuctionDTO:\nUS022AuctionDTO" ** : toDTO
+    AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
+end
+AuctionMapper --> Controller : listOfAuctionDTO
+deactivate AuctionMapper
+
+Controller --> UI : listOfAuctionDTO
+deactivate Controller
+
+UI --> Buyer : Display items
+deactivate UI
+
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+hide footbox
+autonumber
+title Register a Publishing Company (Main)
+box #WhiteSmoke
+actor Administrator
+participant ":UI" as UI
+end box
+participant ":ToRegisterNewPublisherController" as Controller
+participant ":PublisherFactory" as PublisherFactory
+participant ":PublisherRepository" as PublisherRepository
+
+Administrator -> UI : I want to register a Publishing Company
+activate UI
+UI --> Administrator : Please provide name, vatNumber and contact
+deactivate UI
+
+Administrator -> UI : Name: Cambridge; VatNumber: 123456; Contact: +4412345678
+activate UI
+UI -> Controller : registerPublisher(name, vatNumber, contact)
+activate Controller
+
+ref over Controller, PublisherFactory, PublisherRepository
+    Register Publisher
+    [see full detail diagram]
+end ref
+
+Controller --> UI : publisher
+deactivate Controller
+UI --> Administrator : success
+deactivate UI
+@enduml

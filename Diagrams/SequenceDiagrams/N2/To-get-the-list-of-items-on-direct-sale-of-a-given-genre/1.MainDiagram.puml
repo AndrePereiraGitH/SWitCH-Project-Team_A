@@ -1,0 +1,52 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given genre (Main)
+
+actor Buyer
+participant ":UI" as UI
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+participant ":IGenreRepository" as IGenreRepo
+participant ":US021GenreMapper" as GenreMapper
+participant ":IBibliographicalDataRepository" as IBDRepo
+participant ":IPublicationSampleRepository" as IPSRepo
+participant ":IListingRepository" as IListingRepo
+participant ":US021DirSaleListingMapper" as Mapper
+
+Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
+activate UI
+
+UI -> Ctrl : getAllGenres()
+activate Ctrl
+
+ref over Ctrl, GenreMapper
+[[2.GetAllGenres.puml Get All Genres]]
+end ref
+
+Ctrl --> UI : listOfGenreDTO
+deactivate Ctrl
+
+UI --> Buyer : Which genre? Choose!
+deactivate UI
+
+Buyer -> UI : selectedGenreDTO
+activate UI
+
+UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
+activate Ctrl
+
+ref over Ctrl, IBDRepo, IPSRepo, IListingRepo
+[[3.GetDirectSaleListingsByGenre.puml Get Direct Sale Listings By Genre]]
+end ref
+
+ref over Ctrl, Mapper
+[[4.BuildDirectSaleDTOs.puml Build Direct Sale DTOs]]
+end ref
+
+Ctrl --> UI : listOfDirectSaleDTO
+deactivate Ctrl
+
+UI --> Buyer : Shows the list of items on direct sale
+deactivate UI
+
+@enduml
