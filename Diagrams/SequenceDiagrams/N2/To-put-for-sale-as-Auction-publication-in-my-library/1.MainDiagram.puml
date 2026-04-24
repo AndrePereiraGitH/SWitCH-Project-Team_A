@@ -8,7 +8,7 @@ box #whitesmoke
     participant ":UI" as UI
 end box
 
-participant ":ToPutPublicationInAuctionController" as ctrl
+participant ":SalePublicationInAuction\nController" as ctrl
 participant ":ListingService" as listingService
 
 participant "AuctionService" as auctionService

@@ -2,9 +2,19 @@
 
 title Put a publication from my library for sale in an auction
 
-class US016ToPutPublicationInAuctionController {
+class SalePublicationInAuctionController {
   +getAllPublicationsInUserLibrary(userId: UserId): List<US016_PublicationSampleDTO>
   +createAuctionListing(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>,\n initialPrice: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>, initialDate: LocalDateTime,\n finalDate: LocalDateTime, buyOutPrice: Price): boolean
+} as ctrl
+
+class ListingService {
+    - listingRepo : IListingRepository
+    +createAndSave(listingTitle, selectedPublicationsID, SaleType.AUCTION,\n initialPrice, shortDescription, sellerId, pictures)
+}
+
+class AuctionService {
+    -auctionRepo : IAuctionRepository
+    +createAndSave(persistedListing.id(), initialDate, finalDate, initialPrice, buyOutPrice)
 }
 
 
@@ -47,6 +57,24 @@ interface IAuctionRepository {
     +createAndAdd(listingId: ListingId, initialDate: LocalDateTime, \n finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price): Auction
 }
 
+interface IListingRepositoryJPA
+
+interface IAuctionRepositoryJPA
+
+class ListingAssembler {
+    +toDM(listing : Listing) : ListingDM
+    +toDomain(listingDM : ListingDM) : Listing
+}
+
+class AuctionAssembler {
+    +toDM(auction : Auction) : AuctionDM
+    +toDomain(listingDM : ListingDM) : Listing
+}
+
+class AuctionDM
+class ListingDM
+
+
 class US016_PublicationSampleDTO
 
 class US016_PublicationSampleMapper {
@@ -62,22 +90,12 @@ class AuctionFactory {
   +create(listingId: ListingId, initialDate: LocalDateTime, \n finalDate: LocalDateTime, initialPrice: Price, buyOutPrice: Price)
 }
 
-US016ToPutPublicationInAuctionController ..> ILibraryRepository : invokes
-US016ToPutPublicationInAuctionController ..> IPublicationSampleRepository : invokes
-US016ToPutPublicationInAuctionController ..> IBibliographicalDataRepository : invokes
-US016ToPutPublicationInAuctionController ..> IListingRepository : invokes
-US016ToPutPublicationInAuctionController ..> IAuctionRepository : invokes
-US016ToPutPublicationInAuctionController ..> US016_PublicationSampleMapper : uses
+SalePublicationInAuctionController ..> ListingService
+SalePublicationInAuctionController ..> AuctionService
 
-US016_PublicationSampleMapper ..> IBibliographicalDataRepository : retrieves
-US016_PublicationSampleMapper ..> US016_PublicationSampleDTO : creates
-US016_PublicationSampleMapper ..> PublicationSample : maps
-US016_PublicationSampleMapper ..> BibliographicalData : maps
+ListingService -> IListingRepository
+ListingService -> ListingFactory
 
-IListingRepository --> ListingFactory
-ListingFactory ..> Listing : creates
 
-IAuctionRepository --> AuctionFactory
-AuctionFactory ..> Auction : creates
 
 @enduml
