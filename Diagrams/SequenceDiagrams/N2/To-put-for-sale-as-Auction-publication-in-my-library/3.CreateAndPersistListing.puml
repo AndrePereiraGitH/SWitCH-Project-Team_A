@@ -1,0 +1,93 @@
+@startuml
+
+autonumber
+hide footbox
+title Create and persist a Listing
+
+participant ":Ctrl" as ctrl
+participant ":ListingService" as listingService
+
+participant ":IListingRepository" as listingRepo
+
+participant ":ListingAssembler" as listingAssembler
+participant "DMListing:\nListingDM" as DMListing
+
+participant ":IListingRepositoryJPA" as listingRepoJPA
+
+participant ":ListingFactory" as listingFactory
+participant "auctionListing\n:Listing" as auctionListing
+
+participant "persistedListing\n:Listing" as persistedListing
+
+
+database "Database" as db
+
+
+ref over listingService
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+note over listingService #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+' ------- CREATE LISTING INSTANCE ---------------------
+
+
+ctrl -> listingService : createAndSave(listingTitle, selectedPublicationsID,\n SaleType.AUCTION, initialPrice, shortDescription,\n sellerId, pictures)
+activate listingService
+
+listingService -> listingFactory : create ( listingTitle, selectedPublicationsID, SaleType.AUCTION,\n initialPrice, shortDescription, sellerId, pictures )
+activate listingFactory
+listingFactory -->> auctionListing** : <<create>>
+listingFactory --> listingService : auctionListing
+deactivate listingFactory
+
+
+' ------ save Listing ------
+listingService -> listingRepo : save (auctionListing)
+activate listingRepo
+
+' ------ CONVERT DOMAIN INSTANCE IN DOMAIN MODEL --------
+
+listingRepo -> listingAssembler : toDM ( auctionListing )
+activate listingAssembler
+listingAssembler -->> DMListing** : <<create>>
+listingAssembler --> listingRepo : DMListing
+deactivate listingAssembler
+
+
+' ------------- JPA PERSISTENCE ----------------
+listingRepo -> listingRepoJPA : save (DMListing)
+activate listingRepoJPA
+listingRepoJPA -> db : INSERT Listing
+activate db
+db --> listingRepoJPA : data
+deactivate db
+listingRepoJPA --> listingRepo : ListingDMPersisted
+deactivate listingRepoJPA
+
+
+
+' ----------- CONVERT PERSISTED DATA FROM DM TO DOMAIN -------
+listingRepo -> listingAssembler : toDomain (ListingDMPersisted)
+activate listingAssembler
+
+listingAssembler -> listingFactory : create (DMAuction.id, listingTitle,\n selectedPublicationsID, SaleType.AUCTION,\n initialPrice, shortDescription, sellerId, pictures)
+activate listingFactory
+listingFactory -->> persistedListing** : <<create>>
+listingFactory --> listingAssembler : persistedListing
+deactivate listingFactory
+
+listingAssembler --> listingRepo : persistedListing
+deactivate listingAssembler
+
+listingRepo --> listingService : persistedListing
+deactivate listingRepo
+listingService --> ctrl : persistedListing
+deactivate listingService
+
+
+@enduml

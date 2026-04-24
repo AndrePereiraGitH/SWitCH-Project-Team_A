@@ -1,0 +1,72 @@
+@startuml
+hide footbox
+autonumber
+
+title Create an Auction
+participant ":AuctionService" as auctionService
+participant ":IAuctionRepository" as AucRepo
+
+participant ":AuctionAssembler" as auctionAssembler
+participant "DMAuction\n:AuctionDM" as DMAuction
+participant ":AuctionFactory" as aucFactory
+
+participant ":IAuctionRepositoryJPA" as auctionRepoJPA
+
+participant "auction: Auction" as auction
+
+participant ":persistedAuction:Auction" as persistedAuction
+
+database "Database" as db
+
+ref over auctionService
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+note over auctionService #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+auctionService -> aucFactory : create ( persistedListing.id(), initialDate,\n finalDate, initialPrice, buyOutPrice)
+activate auctionService
+activate aucFactory
+aucFactory -->> auction** : <<create>>
+aucFactory --> auctionService : auction
+deactivate aucFactory
+
+auctionService -> AucRepo : save(auction)
+activate AucRepo
+
+' ------ CONVERT DOMAIN INSTANCE INTO DM -------
+AucRepo -> auctionAssembler : toDM (auction)
+activate auctionAssembler
+auctionAssembler -->> DMAuction** : <<create>>
+auctionAssembler --> AucRepo : DMAuction
+deactivate auctionAssembler
+
+
+' ------ JPA PERSISTENCE ---------------
+AucRepo -> auctionRepoJPA : save (DMAuction)
+activate auctionRepoJPA
+auctionRepoJPA -> db : INSERT DMAuction
+activate db
+db -->> auctionRepoJPA : DMAuction
+deactivate db
+auctionRepoJPA --> AucRepo : DMAuction
+deactivate auctionRepoJPA
+
+AucRepo -> auctionAssembler : toDomain(DMAuction)
+activate auctionAssembler
+auctionAssembler -> aucFactory : create (DMAuction.id(),\n persistedListing.id(),\n initialDate, finalDate,\n initialPrice,\n buyOutPrice)
+activate aucFactory
+aucFactory -->> persistedAuction ** : <<create>>
+aucFactory -->> auctionAssembler : persistedAuction
+deactivate aucFactory
+
+auctionAssembler --> AucRepo : persitedAuction
+deactivate auctionAssembler
+AucRepo --> auctionService : persistedAuction
+deactivate AucRepo
+
+@enduml

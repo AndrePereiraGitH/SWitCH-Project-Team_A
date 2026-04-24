@@ -1,0 +1,47 @@
+@startuml
+hide footbox
+autonumber
+
+title "Convert From List of PublicationSample to List of PublicationSampleDTO"
+
+participant "Ctrl" as ctrl
+participant ":US016_PublicationSample\nMapper" as pubMapper
+participant "bibliographicalDataList : \n List<BibliographicalData>" as bdMap
+participant ":IBibliographicalData\nRepository" as biblioRepo
+
+participant "listOfPublicationsDTO \n :List<US016_PublicationSampleDTO>" as dtoList
+
+
+ref over ctrl
+[[2.GetAllPublicationsInUserLibrary.puml Back to GetAllPublicationsInUSerLibrary diagram]]
+end ref
+
+note over ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the GetAllPublicationsInUserLibrary sequence diagram.
+end note
+
+ctrl -> pubMapper : fromDomainList(pubDomainList, bibliographicalDataMap)
+activate pubMapper
+
+pubMapper -->> dtoList ** : <<create>>
+
+loop for each pub in samplesList
+    pubMapper -> biblioRepo : findById (pub.getBibliographicalDataID())
+    activate biblioRepo
+    biblioRepo --> pubMapper : optionalBd
+    deactivate biblioRepo
+
+    pubMapper -> pubMapper : bd = optionalBd.get()
+
+    pubMapper -> pubMapper : dto = fromDomain(pub, bd)
+    pubMapper -> pubMapper : listOfPublicationsDTO.add(dto)
+
+end
+
+
+pubMapper --> ctrl : listOfPublicationsDTO
+deactivate pubMapper
+deactivate ctrl
+@enduml
