@@ -7,9 +7,28 @@ import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+
+
+/**
+ * Unit tests for {@link PublicationSampleDM}.
+ *
+ * <p>Covers three areas:</p>
+ * <ul>
+ *   <li><b>Constructor — happy path</b>: verifies successful instantiation with all valid arguments.</li>
+ *   <li><b>Constructor — null rejection</b>: verifies that mandatory fields ({@code pubSampleId},
+ *       {@code bdId}, {@code ownerId}, {@code editionId}, {@code publicationStatus}, {@code condition})
+ *       throw {@link NullPointerException} when {@code null}. {@code libraryId} and
+ *       {@code collectionOfPublicationsId} are optional and verified to accept {@code null}.</li>
+ *   <li><b>Getters</b>: verifies that each getter returns the exact value supplied at construction,
+ *       killing all {@code NO_COVERAGE} mutations on getter return values.</li>
+ * </ul>
+ *
+ */
 
 class PublicationSampleDMTest {
 
@@ -34,6 +53,9 @@ class PublicationSampleDMTest {
         condition = Condition.LIKE_NEW;
     }
 
+    // =========================================================================
+    // Constructor
+    // =========================================================================
 
     @Test
     void constructorShouldInitializeEveryFieldSuccessfully() {
@@ -50,7 +72,6 @@ class PublicationSampleDMTest {
     @Test
     void shouldThrowException_WhenPubSampleIdIsNull() {
 
-        //Assert
         assertThrows(NullPointerException.class, () ->
                 new PublicationSampleDM(null, bdId, ownerId, editionId, libraryId,
                         collectionOfPublicationsId, publicationStatus, condition));
@@ -84,24 +105,6 @@ class PublicationSampleDMTest {
     }
 
     @Test
-    void shouldThrowException_WhenLibraryIdIsNull() {
-
-        //Assert
-        assertThrows(NullPointerException.class, () ->
-                new PublicationSampleDM(pubSampleId, bdId, ownerId, editionId, null,
-                        collectionOfPublicationsId, publicationStatus, condition));
-    }
-
-    @Test
-    void shouldThrowException_WhenCollectionOfPublicationsIdIsNull() {
-
-        //Assert
-        assertThrows(NullPointerException.class, () ->
-                new PublicationSampleDM(pubSampleId, bdId, ownerId, editionId, libraryId,
-                        null, publicationStatus, condition));
-    }
-
-    @Test
     void shouldThrowException_WhenPublicationStatusIsNull() {
 
         //Assert
@@ -117,6 +120,140 @@ class PublicationSampleDMTest {
         assertThrows(NullPointerException.class, () ->
                 new PublicationSampleDM(pubSampleId, bdId, ownerId, editionId, libraryId,
                         collectionOfPublicationsId, publicationStatus, null));
+    }
+
+    @Test
+    void shouldAllowNullLibraryId() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, null,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Assert
+        assertNotNull(result);
+        assertNull(result.getLibraryId());
+    }
+
+    @Test
+    void shouldAllowNullCollectionOfPublicationsId() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                null, publicationStatus, condition);
+
+        //Assert
+        assertNotNull(result);
+        assertNull(result.getCollectionOfPublicationsId());
+    }
+
+    @Test
+    void noArgConstructor_shouldBeProtected() throws NoSuchMethodException {
+        Constructor<PublicationSampleDM> constructor =
+                PublicationSampleDM.class.getDeclaredConstructor();
+
+        assertTrue(Modifier.isProtected(constructor.getModifiers()));
+    }
+
+    // =========================================================================
+    // Getter
+    // =========================================================================
+
+    @Test
+    void getPubSampleId_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(pubSampleId, result.getPubSampleId());
+    }
+
+    @Test
+    void getBdId_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(bdId, result.getBdId());
+    }
+
+    @Test
+    void getOwnerId_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(ownerId, result.getOwnerId());
+    }
+
+    @Test
+    void getEditionId_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(editionId, result.getEditionId());
+    }
+
+    @Test
+    void getLibraryId_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(libraryId, result.getLibraryId());
+    }
+
+    @Test
+    void getCollectionOfPublicationsId_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(collectionOfPublicationsId, result.getCollectionOfPublicationsId());
+    }
+
+    @Test
+    void getPublicationStatus_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(publicationStatus, result.getPublicationStatus());
+    }
+
+    @Test
+    void getCondition_shouldReturnCorrectValue() {
+
+        //Arrange
+        PublicationSampleDM result = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        //Act + Assert
+        assertEquals(condition, result.getCondition());
     }
 
 }

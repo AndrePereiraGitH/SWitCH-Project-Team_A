@@ -64,18 +64,21 @@ public class PublicationSampleDM {
 
     /**
      * Constructs a fully initialized {@code PublicationSampleDM}.
-     * All parameters are mandatory — passing {@code null} for any argument
-     * will throw a {@link NullPointerException}.
+     *
+     * <p>Most parameters are mandatory — passing {@code null} will throw a
+     * {@link NullPointerException}. {@code libraryId} and {@code collectionOfPublicationsId}
+     * are optional and may be {@code null}, representing a sample not yet assigned
+     * to a library or collection.</p>
      *
      * @param pubSampleId                the unique identifier for this sample; must not be {@code null}
      * @param bdId                       the bibliographical data identifier; must not be {@code null}
      * @param ownerId                    the identifier of the owning user; must not be {@code null}
      * @param editionId                  the edition identifier; must not be {@code null}
-     * @param libraryId                  the library identifier; must not be {@code null}
-     * @param collectionOfPublicationsId the collection identifier; must not be {@code null}
+     * @param libraryId                  the library identifier; may be {@code null}
+     * @param collectionOfPublicationsId the collection identifier; may be {@code null}
      * @param publicationStatus          the current publication status; must not be {@code null}
      * @param condition                  the physical condition of the sample; must not be {@code null}
-     * @throws NullPointerException if any parameter is {@code null}
+     * @throws NullPointerException if any mandatory parameter is {@code null}
      */
     public PublicationSampleDM(PublicationSampleId pubSampleId, BibliographicalDataID bdId,
                                UserId ownerId, EditionID editionId, LibraryId libraryId,
@@ -86,8 +89,8 @@ public class PublicationSampleDM {
         this.bdId = Objects.requireNonNull(bdId,"BibliographicalDataId cannot be null");
         this.ownerId = Objects.requireNonNull(ownerId,"OwnerId cannot be null");
         this.editionId = Objects.requireNonNull(editionId, "EditionId cannot be null");
-        this.libraryId = Objects.requireNonNull(libraryId, "LibraryId cannot be null");
-        this.collectionOfPublicationsId = Objects.requireNonNull(collectionOfPublicationsId,"CollectionOfPublicationsId cannot be null");
+        this.libraryId = libraryId;
+        this.collectionOfPublicationsId = collectionOfPublicationsId;
         this.publicationStatus = Objects.requireNonNull(publicationStatus,"PublicationStatus cannot be null");
         this.condition = Objects.requireNonNull(condition,"Condition cannot be null");
 
