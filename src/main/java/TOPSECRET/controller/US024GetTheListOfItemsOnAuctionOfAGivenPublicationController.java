@@ -90,7 +90,7 @@ public class US024GetTheListOfItemsOnAuctionOfAGivenPublicationController {
                         new IllegalArgumentException("Title is not valid or not found"));
 
 
-        List<PublicationSampleId> listOfPubSampleId = _pubRepo.findPubSampleIdsByBibliographicalDataId(bdId);
+        List<PublicationSampleId> listOfPubSampleId = _pubRepo.findIdsByBibliographicalDataId(bdId);
 
         List<Listing> listOfAuctionListingsOfGivenPublication = _listingRepo.getAuctionListingsContaining(listOfPubSampleId);
 

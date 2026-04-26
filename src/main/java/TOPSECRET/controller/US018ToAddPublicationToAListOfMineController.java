@@ -1,11 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -14,7 +12,6 @@ import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018CollectionOfPublicationsMapper;
 import TOPSECRET.dto.US018PublicationSampleMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,7 +106,7 @@ public class US018ToAddPublicationToAListOfMineController {
         }
 
         List<PublicationSample> available =
-                _publicationSampleRepo.getAvailablePublicationsForCollection(_userId, collectionId);
+                _publicationSampleRepo.findAvailableForCollection(_userId, collectionId);
 
         return _publicationSampleMapper.toDTOs(available);
     }

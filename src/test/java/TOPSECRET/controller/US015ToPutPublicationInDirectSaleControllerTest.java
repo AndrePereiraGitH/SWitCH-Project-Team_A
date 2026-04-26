@@ -87,7 +87,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         when(pubSample1Double.isAvailableForSale()).thenReturn(true);
         when(pubSample2Double.isAvailableForSale()).thenReturn(true);
 
-        when(pubSampleRepoDouble.getPublicationsByLibraryID(libraryId)).thenReturn(List.of(pubSample1Double, pubSample2Double));
+        when(pubSampleRepoDouble.findByLibraryId(libraryId)).thenReturn(List.of(pubSample1Double, pubSample2Double));
 
         // Price
         priceDouble = mock(Price.class);
@@ -145,7 +145,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
-        when(pubSampleRepoDouble.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(pubSamples);
+        when(pubSampleRepoDouble.findAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(pubSamples);
 
         List<US015PublicationSampleDTO> dtoFromMapper = List.of(
                 new US015PublicationSampleDTO("title1", List.of("author1"), "1234567890", "BOOK"),
@@ -173,7 +173,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
         when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
 
-        when(pubSampleRepoDouble.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(List.of());
+        when(pubSampleRepoDouble.findAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(List.of());
 
         when(mapperDouble.toDTOs(List.of())).thenReturn(List.of());
 
@@ -198,7 +198,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double);
-        when(pubSampleRepoDouble.findPublicationSamplesAvailableForSaleByLibraryId(libraryIdDouble))
+        when(pubSampleRepoDouble.findAvailableForSaleByLibraryId(libraryIdDouble))
                 .thenReturn(pubSamples);
 
         List<US015PublicationSampleDTO> dtoList =

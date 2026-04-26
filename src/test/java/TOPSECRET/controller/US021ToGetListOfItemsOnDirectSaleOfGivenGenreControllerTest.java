@@ -13,8 +13,6 @@ import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
 import TOPSECRET.dto.US021GenreDTO;
 
-import TOPSECRET.persistence.mem.GenreRepositoryMem;
-import TOPSECRET.persistence.mem.ListingRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -261,7 +259,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(new ArrayList<>()))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
                 .thenReturn(new ArrayList<>());
         when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
 
@@ -291,7 +289,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(new ArrayList<>()))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
                 .thenReturn(new ArrayList<>());
         when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
 
@@ -329,7 +327,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(bdIds);
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
         when(listingRepositoryMock.findDirectSaleListingsContaining(pubSampleIds))
                 .thenReturn(listings);
@@ -374,7 +372,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(bdIds);
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
         when(listingRepositoryMock.findDirectSaleListingsContaining(pubSampleIds))
                 .thenReturn(listings);
@@ -408,7 +406,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(bdIds);
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(new ArrayList<>());
         when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
 

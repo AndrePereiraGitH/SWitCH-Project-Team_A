@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
@@ -11,9 +10,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
 import javax.management.InstanceNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for US023: "As a Buyer, I want to get the list of items on direct sale
@@ -120,7 +117,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
             throw new IllegalArgumentException("bdId cannot be null");
         }
 
-        List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findPubSampleIdsByBibliographicalDataId(bdId);
+        List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findIdsByBibliographicalDataId(bdId);
 
         List<ListingId> listOfDSListingIds = _listingRepo.findAllListingIdByPublicationSampleId(listOfPubSample);
 

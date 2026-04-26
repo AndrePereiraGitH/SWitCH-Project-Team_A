@@ -74,7 +74,7 @@ public class US016ToPutPublicationInAuctionController {
             throw new InstanceNotFoundException("There is no library for the userID: " + userId);
         }
 
-        List<PublicationSample> samplesList = publicationSampleRepository.getPublicationsByLibraryID(library.id());
+        List<PublicationSample> samplesList = publicationSampleRepository.findByLibraryId(library.id());
 
         return mapper.fromDomainList(samplesList);
     }

@@ -86,7 +86,7 @@ public class US015ToPutPublicationInDirectSaleController {
         Library library = _libraryRepo.getLibraryByUserId(userId);
 
         // finds publication samples in that library available for sale
-        List<PublicationSample> availablePubSamples = _pubSampleRepo.findPublicationSamplesAvailableForSaleByLibraryId(library.id());
+        List<PublicationSample> availablePubSamples = _pubSampleRepo.findAvailableForSaleByLibraryId(library.id());
 
         // converts to DTO
         List<US015PublicationSampleDTO> listOfPublicationSampleDTO = _pubSampleMapper.toDTOs(availablePubSamples);

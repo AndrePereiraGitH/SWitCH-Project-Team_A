@@ -9,7 +9,6 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceNotFoundException;
@@ -138,7 +137,7 @@ public class US027ListingMapper {
         List<PublicationSample> pubSamples = new ArrayList<>();
 
         for (PublicationSampleId pubSampleId : pubSampleIds) {
-            Optional<PublicationSample> pubSample = pubSampleRepo.findPublicationSampleById(pubSampleId);
+            Optional<PublicationSample> pubSample = pubSampleRepo.findById(pubSampleId);
             if (pubSample.isPresent()) {
                 pubSamples.add(pubSample.get());
             }
