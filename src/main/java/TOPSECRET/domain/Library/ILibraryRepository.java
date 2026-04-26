@@ -25,16 +25,11 @@ public interface ILibraryRepository {
     Library getLibraryByUserId(UserId userId) throws InstanceNotFoundException;
 
     /**
-     * Creates a new library for the specified user and adds it to the repository.
+     * Adds a {@link Library}   to the repository.
      *
-     * @param libraryName the name of the library to create; must not be null or empty
-     * @param userId       the user who will own the library; must not be null
-     * @return the newly created {@link Library} instance
-     * @throws IllegalArgumentException       if {@code libraryName} is null or empty,
-     *                                        or if {@code owner} is null
-     * @throws InstanceAlreadyExistsException if the user already has a library
+     * @throws InstanceAlreadyExistsException if the Library already exists.
      */
-    Library createAndAdd(String libraryName, UserId userId) throws InstanceAlreadyExistsException;
+    Library save(Library library) throws InstanceAlreadyExistsException;
 
     /**
      * Verifies whether the specified user already has a library.

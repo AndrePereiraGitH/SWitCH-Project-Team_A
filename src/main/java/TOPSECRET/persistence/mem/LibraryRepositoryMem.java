@@ -18,9 +18,9 @@ import java.util.Map;
  * Uses a {@link LibraryFactory} to create new library instances.
  * </p>
  */
+
 public class LibraryRepositoryMem implements ILibraryRepository {
 
-    private final LibraryFactory _libraryFactory;
     private final Map<String, Library> _libraries;
 
     /**
@@ -35,28 +35,18 @@ public class LibraryRepositoryMem implements ILibraryRepository {
             throw new IllegalArgumentException("LibraryFactory cannot be null");
         }
         _libraries = new HashMap<>();
-        _libraryFactory = libraryFactory;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Library createAndAdd(String libraryName, UserId userId) throws InstanceAlreadyExistsException {
-        if (libraryName == null) {
+    public Library save(Library library) throws InstanceAlreadyExistsException {
+        if (library == null) {
             throw new IllegalArgumentException("Library name can not be null");
         }
-        if (libraryName.isEmpty()) {
-            throw new IllegalArgumentException("Library name must have one or more characters");
-        }
-        if (userId == null) {
-            throw new IllegalArgumentException("UserId can not be null");
-        }
-        if (verifyIfUserHasALibrary(userId)) {
-            throw new InstanceAlreadyExistsException("The user already has a library");
-        }
-        Library newLibrary = _libraryFactory.create(libraryName, userId);
-        _libraries.put(userId.getUsername(), newLibrary);
-        return newLibrary;
+
+        _libraries.put(library.id().toString(), library);
+        return library;
     }
 
     /**
