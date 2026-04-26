@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 
 /**
  * Unit tests for the {@link Author} domain class.
@@ -101,6 +102,164 @@ class AuthorTest {
                 IllegalArgumentException.class,
                 () -> new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "   ")
         );
+        assertEquals("Biography cannot be null or blank", ex.getMessage());
+    }
+    // ========================================
+    // CONSTRUCTOR WITH ID TESTS
+    // ========================================
+
+    @Test
+    void should_CreateAuthor_WithValidDataAndId() {
+        // Arrange
+        AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act
+        Author author = new Author(
+                authorIdDouble,
+                "Ken Follett",
+                countryDouble,
+                LocalDate.of(1949, 6, 5),
+                "bio"
+        );
+
+        // Assert
+        assertSame(authorIdDouble, author.id());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_IdIsNull() {
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        null,
+                        "Jane",
+                        countryDouble,
+                        LocalDate.of(1990, 1, 1),
+                        "valid bio"
+                )
+        );
+
+        assertEquals("Id cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_NameIsNull_WithIdConstructor() {
+        // Arrange
+        AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        authorIdDouble,
+                        null,
+                        countryDouble,
+                        LocalDate.of(1990, 1, 1),
+                        "valid bio"
+                )
+        );
+
+        assertEquals("Name cannot be null or blank", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_NameIsBlank_WithIdConstructor() {
+        // Arrange
+        AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        authorIdDouble,
+                        "   ",
+                        countryDouble,
+                        LocalDate.of(1990, 1, 1),
+                        "valid bio"
+                )
+        );
+
+        assertEquals("Name cannot be null or blank", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_CountryIsNull_WithIdConstructor() {
+        // Arrange
+        AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        authorIdDouble,
+                        "Ken Follett",
+                        null,
+                        LocalDate.of(1990, 1, 1),
+                        "bio"
+                )
+        );
+
+        assertEquals("Country cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_DateOfBirthIsNull_WithIdConstructor() {
+        // Arrange
+        AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        authorIdDouble,
+                        "Ken Follett",
+                        countryDouble,
+                        null,
+                        "bio"
+                )
+        );
+
+        assertEquals("DateOfBirth cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_BiographyIsNull_WithIdConstructor() {
+        // Arrange
+       AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        authorIdDouble,
+                        "Ken Follett",
+                        countryDouble,
+                        LocalDate.of(1990, 1, 1),
+                        null
+                )
+        );
+
+        assertEquals("Biography cannot be null or blank", ex.getMessage());
+    }
+
+    @Test
+    void should_ThrowExceptionWhen_BiographyIsBlank_WithIdConstructor() {
+        // Arrange
+        AuthorId authorIdDouble = mock(AuthorId.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Author(
+                        authorIdDouble,
+                        "Ken Follett",
+                        countryDouble,
+                        LocalDate.of(1990, 1, 1),
+                        "   "
+                )
+        );
+
         assertEquals("Biography cannot be null or blank", ex.getMessage());
     }
 
