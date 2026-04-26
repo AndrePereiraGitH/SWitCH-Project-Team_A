@@ -256,4 +256,128 @@ class PublicationSampleDMTest {
         assertEquals(condition, result.getCondition());
     }
 
+    // =========================================================================
+// @Data tests — equals, hashCode, toString
+// =========================================================================
+
+    @Test
+    void equals_shouldReturnTrue_whenTwoInstancesHaveSameFields() {
+
+        // Arrange
+        PublicationSampleDM dm1 = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        PublicationSampleDM dm2 = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertEquals(dm1, dm2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenPubSampleIdDiffers() {
+
+        // Arrange
+        PublicationSampleId otherId = mock(PublicationSampleId.class);
+
+        PublicationSampleDM dm1 = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        PublicationSampleDM dm2 = new PublicationSampleDM(
+                otherId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertNotEquals(dm1, dm2);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenComparedToNull() {
+
+        // Arrange
+        PublicationSampleDM dm = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertNotEquals(null, dm);
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenComparedToDifferentType() {
+
+        // Arrange
+        PublicationSampleDM dm = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertNotEquals("not a PublicationSampleDM", dm);
+    }
+
+    @Test
+    void equals_shouldReturnTrue_whenSameReference() {
+
+        // Arrange
+        PublicationSampleDM dm = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertEquals(dm, dm);
+    }
+
+    @Test
+    void hashCode_shouldBeEqual_whenTwoInstancesHaveSameFields() {
+
+        // Arrange
+        PublicationSampleDM dm1 = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        PublicationSampleDM dm2 = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertEquals(dm1.hashCode(), dm2.hashCode());
+    }
+
+    @Test
+    void hashCode_shouldDiffer_whenPubSampleIdDiffers() {
+
+        // Arrange
+        PublicationSampleId otherId = mock(PublicationSampleId.class);
+
+        PublicationSampleDM dm1 = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        PublicationSampleDM dm2 = new PublicationSampleDM(
+                otherId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act + Assert
+        assertNotEquals(dm1.hashCode(), dm2.hashCode());
+    }
+
+    @Test
+    void toString_shouldContainAllFieldValues() {
+
+        // Arrange
+        PublicationSampleDM dm = new PublicationSampleDM(
+                pubSampleId, bdId, ownerId, editionId, libraryId,
+                collectionOfPublicationsId, publicationStatus, condition);
+
+        // Act
+        String result = dm.toString();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.contains("PublicationSampleDM"));
+    }
+
 }

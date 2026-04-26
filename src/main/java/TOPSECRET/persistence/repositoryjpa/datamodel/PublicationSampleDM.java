@@ -6,6 +6,7 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,8 +24,9 @@ import java.util.Objects;
  * <p>Instantiation is restricted to the provided constructor — the no-argument
  * constructor is reserved for JPA's internal use only.</p>
  */
+@Data
 @Entity
-@Table(name = "PublicationSamples")
+@Table(name = "publicationSamples")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PublicationSampleDM {

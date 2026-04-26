@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -13,9 +15,11 @@ import java.util.Objects;
  *
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
+@NoArgsConstructor
+@Embeddable
 public class PublicationSampleId implements DomainID {
 
-    private final String pubSampleID;
+    private String pubSampleID;
 
     /**
      * Constructs a new {@code PublicationSampleID} with the given value.
