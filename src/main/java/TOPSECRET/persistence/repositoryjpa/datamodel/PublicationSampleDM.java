@@ -24,7 +24,6 @@ import java.util.Objects;
  * <p>Instantiation is restricted to the provided constructor — the no-argument
  * constructor is reserved for JPA's internal use only.</p>
  */
-@Data
 @Entity
 @Table(name = "publicationSamples")
 @Getter
