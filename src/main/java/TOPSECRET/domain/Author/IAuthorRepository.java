@@ -1,10 +1,8 @@
 package TOPSECRET.domain.Author;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,5 +70,5 @@ public interface IAuthorRepository {
      *
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
-    Optional<Author> findAuthorById(AuthorId id);
+    Optional<Author> findById(AuthorId id);
 }

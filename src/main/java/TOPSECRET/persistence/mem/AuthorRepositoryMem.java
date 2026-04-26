@@ -97,7 +97,7 @@ public class AuthorRepositoryMem implements IAuthorRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Author> findAuthorById(AuthorId id) {
+    public Optional<Author> findById(AuthorId id) {
         if (id == null) {
             throw new IllegalArgumentException("AuthorId cannot be null");
         }

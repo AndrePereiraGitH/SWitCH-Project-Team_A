@@ -204,7 +204,7 @@ class AuthorRepositoryMemTest {
     // ========================================
 
     @Test
-    void findAuthorById_ShouldReturnAuthor_WhenIdExists() throws InstanceAlreadyExistsException {
+    void findAuthorById_ShouldReturn_WhenIdExists() throws InstanceAlreadyExistsException {
         // Arrange
         AuthorId id1 = new AuthorId("a1");
         AuthorId id2 = new AuthorId("a2");
@@ -224,7 +224,7 @@ class AuthorRepositoryMemTest {
         repo.save(author3Double);
 
         // Act
-        Optional<Author> result = repo.findAuthorById(id2);
+        Optional<Author> result = repo.findById(id2);
 
         // Assert
         assertTrue(result.isPresent());
@@ -232,7 +232,7 @@ class AuthorRepositoryMemTest {
     }
 
     @Test
-    void findAuthorById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() throws InstanceAlreadyExistsException {
+    void findById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
         AuthorId id1 = new AuthorId("a1");
         AuthorId id2 = new AuthorId("a2");
@@ -253,21 +253,21 @@ class AuthorRepositoryMemTest {
         repo.save(author3Double);
 
         // Act
-        Optional<Author> result = repo.findAuthorById(unknownId);
+        Optional<Author> result = repo.findById(unknownId);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findAuthorById_ShouldThrowException_WhenIdIsNull() {
+    void findById_ShouldThrowException_WhenIdIsNull() {
         // Arrange
         AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.findAuthorById(null)
+                () -> repo.findById(null)
         );
 
         assertEquals("AuthorId cannot be null", ex.getMessage());
