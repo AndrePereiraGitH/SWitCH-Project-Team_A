@@ -2,11 +2,8 @@ package TOPSECRET.domain.Listing;
 
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
-import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,26 +17,15 @@ import java.util.Optional;
  */
 public interface IListingRepository {
 
-
     /**
-     * Creates a new listing and adds it to the repository if it does not already exist.
+     * Persists the given {@link Listing} to the repository.
      *
-     * @param listingTitle the title of the listing
-     * @param itemsId the publication samples IDs associated with the listing
-     * @param saleType the type of sale for the listing
-     * @param price the price defined for the listing
-     * @param shortDescription a short description of the listing
-     * @param pictures the pictures associated with the listing
-     * @return the created and stored listing
-     * @throws InstanceAlreadyExistsException if an equivalent listing already exists
+     * @param listing the {@link Listing} instance to store; must not be {@code null}
+     *                and must not already exist in the repository
+     * @return the saved {@link Listing} instance
+     * @throws IllegalArgumentException if the listing already exists in the repository
      */
-    Listing createAndAdd(String listingTitle,
-                         List<PublicationSampleId> itemsId,
-                         SaleType saleType,
-                         Price price,
-                         String shortDescription,
-                         UserId sellerId,
-                         List<Picture> pictures) throws InstanceAlreadyExistsException;
+    Listing save(Listing listing);
 
 
     /**

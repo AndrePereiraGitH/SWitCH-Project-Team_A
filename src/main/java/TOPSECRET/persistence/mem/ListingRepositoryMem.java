@@ -6,7 +6,6 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
 import TOPSECRET.domain.ValueObjects.*;
 
-import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,25 +44,14 @@ public class ListingRepositoryMem implements IListingRepository {
      * {@inheritDoc}
      */
     @Override
-    public Listing createAndAdd(
-            String listingTitle,
-            List<PublicationSampleId> itemsId,
-            SaleType saleType,
-            Price price,
-            String shortDescription,
-            UserId sellerId,
-            List<Picture> pictures
-    ) throws InstanceAlreadyExistsException {
-
-        Listing newListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
-
-        if (existsById(newListing))
-            throw new InstanceAlreadyExistsException("Listing already exists.");
-
-        listings.add(newListing);
-
-        return newListing;
+    public Listing save(Listing listing) {
+        if (existsById(listing)) {
+            throw new IllegalArgumentException("PublicationSample already exists in the repository");
+        }
+        listings.add(listing);
+        return listing;
     }
+
 
     private boolean existsById(Listing listing) {
         return listings.contains(listing);
