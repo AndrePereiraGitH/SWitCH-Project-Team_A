@@ -7,28 +7,14 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link AuthorRepositoryMem}.
- *
- * <p>Both collaborators — {@link AuthorFactory} and the backing {@link List} —
- * are mocked, isolating the repository's own logic completely.
- *
- * <p><b>What is tested here (repository logic only):</b>
- * <ul>
- *   <li>Constructor — null list, null factory</li>
- *   <li>{@link AuthorRepositoryMem#createAndAddAuthor} — delegates to factory,
- *       adds result to list, rejects duplicates</li>
- *   <li>{@link AuthorRepositoryMem#getAllAuthors} — returns unmodifiable copy</li>
- * </ul>
- *
- */
+
 class AuthorRepositoryMemTest {
 
     private final AuthorFactory authorFactory = mock(AuthorFactory.class);
@@ -52,42 +38,127 @@ class AuthorRepositoryMemTest {
     }
 
     // ========================================
-    // CREATE AND ADD TESTS
+    // SAVE TESTS
     // ========================================
 
     @Test
-    void shouldDelegateCreationToFactoryAndAddToList() {
+    void save_shouldAddAuthorAndReturnSameAuthor_whenAuthorDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
-        Author mockAuthor = mock(Author.class);
-        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
-                .thenReturn(mockAuthor);
-        IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
+        AuthorId authorId = new AuthorId("a1");
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorId);
 
         // Act
-        Author result = IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
+        Author result = repo.save(authorDouble);
 
         // Assert
-        assertSame(mockAuthor, result);
-        verify(authorFactory).create(name, countryID, LocalDate.of(1978, 5, 12), validBio);
+        assertSame(authorDouble, result);
     }
 
     @Test
-    void shouldThrowExceptionWhenAuthorAlreadyExists() {
+    void save_shouldAddAuthorToRepository_whenAuthorDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
-        Author mockAuthor = mock(Author.class);
-        when(mockAuthor.sameAs(mockAuthor)).thenReturn(true);
-        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
-                .thenReturn(mockAuthor);
-
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        repo.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
+        AuthorId authorId = new AuthorId("a1");
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorId);
+
+        // Act
+        repo.save(authorDouble);
+
+        // Assert
+        assertTrue(repo.getAllAuthors().contains(authorDouble));
+    }
+
+    @Test
+    void save_shouldThrowException_whenAuthorAlreadyExists() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
+        AuthorId authorId = new AuthorId("a1");
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorId);
+
+        repo.save(authorDouble);
+
+        // Act + Assert
+        InstanceAlreadyExistsException ex = assertThrows(
+                InstanceAlreadyExistsException.class,
+                () -> repo.save(authorDouble)
+        );
+
+        assertEquals("Author already exists", ex.getMessage());
+    }
+
+    // ========================================
+    // EXISTS BY ID TESTS
+    // ========================================
+
+    @Test
+    void existsById_shouldReturnTrue_whenAuthorIdExists() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
+        AuthorId authorId = new AuthorId("a1");
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorId);
+
+        repo.save(authorDouble);
+
+        // Act
+        boolean result = repo.existsById(authorId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void existsById_shouldReturnFalse_whenAuthorIdDoesNotExist() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
+        AuthorId existingId = new AuthorId("a1");
+        AuthorId unknownId = new AuthorId("unknown");
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(existingId);
+
+        repo.save(authorDouble);
+
+        // Act
+        boolean result = repo.existsById(unknownId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void existsById_shouldReturnFalse_whenRepositoryIsEmpty() {
+        // Arrange
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
+        AuthorId authorId = new AuthorId("a1");
+
+        // Act
+        boolean result = repo.existsById(authorId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void existsById_shouldThrowException_whenAuthorIdIsNull() {
+        // Arrange
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio)
+                () -> repo.existsById(null)
         );
-        assertEquals("Author already exists", ex.getMessage());
+
+        assertEquals("authorId cannot be null", ex.getMessage());
     }
 
     // ========================================
@@ -107,19 +178,20 @@ class AuthorRepositoryMemTest {
     }
 
     @Test
-    void shouldReturnDefensiveCopy() {
+    void shouldReturnDefensiveCopy() throws InstanceAlreadyExistsException {
         // Arrange
-        IAuthorRepository IAuthorRepository = new AuthorRepositoryMem(authorFactory);
-        Author mockAuthor = mock(Author.class);
+        IAuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
+        AuthorId authorId = new AuthorId("id1");
 
-        when(authorFactory.create(name, countryID, LocalDate.of(1978, 5, 12), validBio))
-                .thenReturn(mockAuthor);
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.id()).thenReturn(authorId);
 
-        IAuthorRepository.createAndAddAuthor(name, countryID, LocalDate.of(1978, 5, 12), validBio);
+        authorRepository.save(authorDouble);
+
 
         // Act
-        List<Author> result1 = IAuthorRepository.getAllAuthors();
-        List<Author> result2 = IAuthorRepository.getAllAuthors();
+        List<Author> result1 = authorRepository.getAllAuthors();
+        List<Author> result2 = authorRepository.getAllAuthors();
 
         // Assert
         assertNotSame(result1, result2);
@@ -132,7 +204,7 @@ class AuthorRepositoryMemTest {
     // ========================================
 
     @Test
-    void findAuthorById_ShouldReturnAuthor_WhenIdExists() {
+    void findAuthorById_ShouldReturnAuthor_WhenIdExists() throws InstanceAlreadyExistsException {
         // Arrange
         AuthorId id1 = new AuthorId("a1");
         AuthorId id2 = new AuthorId("a2");
@@ -147,11 +219,9 @@ class AuthorRepositoryMemTest {
 
         AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
 
-        when(authorFactory.create(any(),  any(), any(), any())).thenReturn(author1Double, author2Double, author3Double);
-
-        repo.createAndAddAuthor("author1", countryID, LocalDate.of(1978, 5, 12), validBio);
-        repo.createAndAddAuthor("author2", countryID, LocalDate.of(1978, 5, 12), validBio);
-        repo.createAndAddAuthor("author3", countryID, LocalDate.of(1978, 5, 12), validBio);
+        repo.save(author1Double);
+        repo.save(author2Double);
+        repo.save(author3Double);
 
         // Act
         Optional<Author> result = repo.findAuthorById(id2);
@@ -162,7 +232,7 @@ class AuthorRepositoryMemTest {
     }
 
     @Test
-    void findAuthorById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() {
+    void findAuthorById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
         AuthorId id1 = new AuthorId("a1");
         AuthorId id2 = new AuthorId("a2");
@@ -178,11 +248,9 @@ class AuthorRepositoryMemTest {
 
         AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
 
-        when(authorFactory.create(any(),  any(), any(), any())).thenReturn(author1Double, author2Double, author3Double);
-
-        repo.createAndAddAuthor("author1", countryID, LocalDate.of(1978, 5, 12), validBio);
-        repo.createAndAddAuthor("author2", countryID, LocalDate.of(1978, 5, 12), validBio);
-        repo.createAndAddAuthor("author3", countryID, LocalDate.of(1978, 5, 12), validBio);;
+        repo.save(author1Double);
+        repo.save(author2Double);
+        repo.save(author3Double);
 
         // Act
         Optional<Author> result = repo.findAuthorById(unknownId);

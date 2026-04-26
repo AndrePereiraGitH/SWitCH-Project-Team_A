@@ -4,9 +4,8 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
 
-import java.time.LocalDate;
+import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ import java.util.Optional;
  */
 public class AuthorRepositoryMem implements IAuthorRepository {
 
-    private final List<Author> _authors = new ArrayList<>();
+    private final List<Author> _authors;
     private final AuthorFactory _authorFactory;
 
     // -------------------------------------------------------------------------
@@ -44,6 +43,7 @@ public class AuthorRepositoryMem implements IAuthorRepository {
         if (authorFactory == null) {
             throw new IllegalArgumentException("AuthorFactory cannot be null");
         }
+        this._authors = new ArrayList<>();
         this._authorFactory = authorFactory;
     }
 
@@ -54,31 +54,28 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     /**
      * {@inheritDoc}
      *
-     * @throws IllegalArgumentException if an author with the same identity already exists
      */
-    public Author createAndAddAuthor(String name, CountryID countryID, LocalDate dateOfBirth, String biography) {
-        // Creates Author
-        Author author = _authorFactory.create(name, countryID, dateOfBirth, biography);
-        if (!exists(author)) {
+    public Author save(Author author) throws InstanceAlreadyExistsException {
+
+        if (!existsById(author.id())) {
             this._authors.add(author);  // Add the author that was passed in
             return author;
         }
-        throw new IllegalArgumentException("Author already exists");
+        throw new InstanceAlreadyExistsException("Author already exists");
     }
 
+
     /**
-     * Checks whether the given author already exists in the repository.
-     *
-     * <p>An author is considered to exist if another stored {@link Author}
-     * is equal to it according to {@link Author#equals(Object)}.</p>
-     *
-     * @param author the author to search for
-     * @return {@code true} if the author already exists in the repository;
-     *         {@code false} otherwise
+     * {@inheritDoc}
      */
-    private boolean exists(Author author) {
+    @Override
+    public boolean existsById(AuthorId authorId) {
+        if (authorId == null) {
+            throw new IllegalArgumentException("authorId cannot be null");
+        }
+
         for (Author existingAuthor : this._authors) {
-            if (author.sameAs(existingAuthor)) {
+            if (authorId.equals(existingAuthor.id())) {
                 return true;
             }
         }
