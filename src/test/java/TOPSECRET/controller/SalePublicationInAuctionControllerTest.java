@@ -23,7 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class US016ToPutPublicationInAuctionControllerTest {
+class SalePublicationInAuctionControllerTest {
 
     private ILibraryRepository libraryRepo;
     private IListingRepository listingRepository;
@@ -34,7 +34,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     private Listing listing;
     private Auction auction;
 
-    private US016ToPutPublicationInAuctionController controller;
+    private SalePublicationInAuctionController controller;
 
     private UserId userId;
     private LibraryId libraryId;
@@ -67,7 +67,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         selectedPublications = List.of(publicationSampleId);
         mapper = mock(US016PublicationSampleMapper.class);
 
-        controller = new US016ToPutPublicationInAuctionController(
+        controller = new SalePublicationInAuctionController(
                 libraryRepo,
                 listingRepository,
                 auctionRepository,
@@ -84,8 +84,8 @@ class US016ToPutPublicationInAuctionControllerTest {
     void testConstructor() {
 
         // act
-        US016ToPutPublicationInAuctionController localController =
-                new US016ToPutPublicationInAuctionController(
+        SalePublicationInAuctionController localController =
+                new SalePublicationInAuctionController(
                         libraryRepo,
                         listingRepository,
                         auctionRepository,
