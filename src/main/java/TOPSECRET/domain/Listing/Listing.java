@@ -6,6 +6,7 @@ import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -40,63 +41,77 @@ public class Listing implements AggregateRoot<ListingId> {
     // ============================================================
 
     /**
-     * Creates a new listing with the specified details.
-     * Upon creation, all items in the listing are automatically marked as FOR_SALE.
+     * Creates a new {@link Listing} with a generated identifier and validates all input fields.
      *
-     * @param listingTitle the title of the listing (must be between 5 and 100 characters)
-     * @param itemsId the list of unique identifiers of publication samples to include in the listing (must contain at least one item)
-     * @param saleType the type of sale (e.g., direct sale, auction)
-     * @param price the price for the listing
-     * @param shortDescription a brief description of the listing (must be at least 10 characters)
-     * @param pictures the list of pictures associated with the listing
-     * @throws IllegalArgumentException if listingTitle is null or not between 5 and 100 characters
-     * @throws IllegalArgumentException if shortDescription is null or less than 10 characters
-     * @throws IllegalArgumentException if items is null or empty
-     * @throws IllegalArgumentException if price is null
-     * @throws IllegalArgumentException if pictures is null
-     * @throws IllegalArgumentException if any item is already in a listing (status is FOR_SALE)
-     * @throws IllegalArgumentException if any item is already sold (status is SOLD)
+     * <p>This constructor is protected and intended for use by
+     * {@link ListingFactory#create(String, List, SaleType, Price, String, UserId, List)} only.
+     * A new {@link ListingId} is generated automatically via {@link UUID#randomUUID()}.
+     *
+     * <p>Delegates field assignment to
+     * {@link #Listing(ListingId, String, List, SaleType, Price, String, UserId, List)}
+     * after validating all parameters.
+     *
+     * @param listingTitle     the title of the listing; must be between 5 and 100 characters
+     * @param itemsId          the list of publication sample IDs; must not be {@code null} or empty
+     * @param saleType         the type of sale (e.g. direct sale, auction)
+     * @param price            the price of the listing; must not be {@code null}
+     * @param shortDescription a brief description of the listing; must be between 10 and 100 characters
+     * @param sellerId         the ID of the seller; must not be {@code null}
+     * @param pictures         the list of pictures associated with the listing; must not be {@code null}
+     * @throws IllegalArgumentException if {@code listingTitle} is {@code null} or not between 5 and 100 characters
+     * @throws IllegalArgumentException if {@code shortDescription} is {@code null} or not between 10 and 100 characters
+     * @throws IllegalArgumentException if {@code itemsId} is {@code null} or empty
+     * @throws IllegalArgumentException if {@code price} is {@code null}
+     * @throws IllegalArgumentException if {@code sellerId} is {@code null}
+     * @throws IllegalArgumentException if {@code pictures} is {@code null}
      */
     protected Listing(String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,
-                   Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
-
-        if (listingTitle == null || listingTitle.length() < 5) {
-            throw new IllegalArgumentException("Listing title must be at least 5 characters.");
-        }
-        if (listingTitle.length() > 100) {
-            throw new IllegalArgumentException("Listing title must be at most 100 characters.");
-        }
-
-        if (shortDescription == null || shortDescription.length() < 10 || shortDescription.length() > 100) {
-            throw new IllegalArgumentException("Listing shortDescription must be between 10 and 100 characters.");
-        }
-
-        if (itemsId == null || itemsId.isEmpty()) {
-            throw new IllegalArgumentException("A listing must contain at least one item ID");
-        }
-
-        if (price == null) {
-            throw new IllegalArgumentException("Price cannot be null");
-        }
-
-        if (sellerId == null) {
-            throw new IllegalArgumentException("Seller ID cannot be null.");
-        }
-
-        if (pictures == null) {
-            throw new IllegalArgumentException("Pictures cannot be null");
-        }
+                      Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
 
         _listingId = new ListingId(UUID.randomUUID().toString());
-        _listingTitle = listingTitle;
-        _itemsId = List.copyOf(itemsId);
-        _saleType = saleType;
-        _price = price;
-        _shortDescription = shortDescription;
-        _sellerId = sellerId;
-        _pictures = List.copyOf(pictures);
+        _listingTitle = validateTitle(listingTitle);
+        _itemsId = List.copyOf(validateItemsId(itemsId));
+        _saleType = Objects.requireNonNull(saleType, "Sale type cannot be null.");
+        _price = validatePrice(price);
+        _shortDescription = validateDescription(shortDescription);
+        _sellerId = validateSellerId(sellerId);
+        _pictures = List.copyOf(validatePictures(pictures));
     }
 
+    /**
+     * Reconstructs an existing {@link Listing} from a known state, typically when rehydrating
+     * from persistence.
+     *
+     * <p>This constructor is protected and intended for use by the domain factory only,
+     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List)}.
+     * Unlike the creation constructor, this does not generate a new identifier —
+     * it uses the {@link ListingId} provided.
+     *
+     * <p>No domain validation is applied here — data is assumed to be already valid
+     * since it originates from a trusted persistence source.
+     *
+     * @param listingId        the existing unique identifier of the listing; must not be {@code null}
+     * @param listingTitle     the display title of the listing; must not be {@code null}
+     * @param itemsId          the list of publication sample IDs grouped in this listing; must not be {@code null}
+     * @param saleType         the type of sale; must not be {@code null}
+     * @param price            the price of the listing; must not be {@code null}
+     * @param shortDescription a brief description of the listing; must not be {@code null}
+     * @param sellerId         the ID of the seller; must not be {@code null}
+     * @param pictures         the list of pictures associated with the listing; must not be {@code null}
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    protected Listing(ListingId listingId, String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,
+                      Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
+
+        _listingId = Objects.requireNonNull(listingId, "Listing ID cannot be null.");
+        _listingTitle = validateTitle(listingTitle);
+        _itemsId = List.copyOf(validateItemsId(itemsId));
+        _saleType = Objects.requireNonNull(saleType, "Sale type cannot be null.");
+        _price = validatePrice(price);
+        _shortDescription = validateDescription(shortDescription);
+        _sellerId = validateSellerId(sellerId);
+        _pictures = List.copyOf(validatePictures(pictures));
+    }
 
     // ============================================================
     // ================= BUSINESS METHODS =========================
@@ -209,5 +224,46 @@ public class Listing implements AggregateRoot<ListingId> {
                 && this._shortDescription.equals(other._shortDescription)
                 && this._sellerId.equals(other._sellerId)
                 && this._pictures.equals(other._pictures);
+    }
+
+
+    // ========== CONSTRUCTOR HELPERS ==========
+
+    private static String validateTitle(String title) {
+        if (title == null || title.length() < 5)
+            throw new IllegalArgumentException("Listing title must be at least 5 characters.");
+        if (title.length() > 100)
+            throw new IllegalArgumentException("Listing title must be at most 100 characters.");
+        return title;
+    }
+
+    private static List<PublicationSampleId> validateItemsId(List<PublicationSampleId> itemsId) {
+        if (itemsId == null || itemsId.isEmpty())
+            throw new IllegalArgumentException("A listing must contain at least one item ID.");
+        return itemsId;
+    }
+
+    private static Price validatePrice(Price price) {
+        if (price == null)
+            throw new IllegalArgumentException("Price cannot be null.");
+        return price;
+    }
+
+    private static String validateDescription(String description) {
+        if (description == null || description.length() < 10 || description.length() > 100)
+            throw new IllegalArgumentException("Listing shortDescription must be between 10 and 100 characters.");
+        return description;
+    }
+
+    private static UserId validateSellerId(UserId sellerId) {
+        if (sellerId == null)
+            throw new IllegalArgumentException("Seller ID cannot be null.");
+        return sellerId;
+    }
+
+    private static List<Picture> validatePictures(List<Picture> pictures) {
+        if (pictures == null)
+            throw new IllegalArgumentException("Pictures cannot be null.");
+        return pictures;
     }
 }
