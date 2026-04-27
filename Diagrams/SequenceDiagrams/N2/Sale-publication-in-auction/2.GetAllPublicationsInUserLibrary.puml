@@ -19,7 +19,7 @@ participant ":IPublicationSample\nRepository" as pubRepo
 
 
 participant ":IPublicationSample\nRepositoryJPA" as pubRepoJPA
-participant "samplesListDM\n:List<PublicationSampleDM>" as samplesListDM
+participant "samplesDMList\n:List<PublicationSampleDM>" as samplesListDM
 
 
 participant "pubSampleDM\n:PublicationSampleDM" as pubSampleDM
@@ -55,16 +55,17 @@ activate ctrl
 activate libRepo
 libRepo -> libRepoJPA : getByUserId (userId)
 activate libRepoJPA
-libRepoJPA -> db
+libRepoJPA -> db : query library by userId
 activate db
 db --> libRepoJPA : data
 deactivate db
 
 libRepoJPA -->> libraryDM ** : <<create>>
-
 libRepoJPA --> libRepo : libraryDM
 deactivate libRepoJPA
 
+
+' ---- CONVERT DM TO DOMAIN ------
 libRepo -> libAssembler : toDomain(libraryDM)
 activate libAssembler
 
@@ -98,37 +99,77 @@ libRepo --> ctrl : library
 deactivate libRepo
 
 
-
 ' ======== GET ALL PUBLICATIONS IN USER'S LIBRARY ============
 
-ctrl -> pubRepo : getAllByLibraryID ( library.id())
-activate pubRepo
-pubRepo -> pubRepoJPA : getAllByLibraryId (library.id())
-activate pubRepoJPA
-pubRepoJPA -> samplesListDM** : <<create>>
+ctrl -> library : id()
+activate library
+library --> ctrl : libraryId
+deactivate library
 
-loop for each publicationSampleDM
-pubRepoJPA -> db
+ctrl -> pubRepo : getAllByLibraryID ( libraryId)
+activate pubRepo
+pubRepo -> pubRepoJPA : getAllByLibraryId ( libraryId)
+
+
+activate pubRepoJPA
+pubRepoJPA -> db : query publication samples by libraryId
 activate db
-db --> pubRepoJPA : data
+db --> pubRepoJPA : publicationSamples data
 deactivate db
 
+
+pubRepoJPA -> samplesListDM** : <<create>>
+
+loop for each publicationSample data
+
 pubRepoJPA --> pubSampleDM ** : <<create>>
-pubRepoJPA -> pubRepoJPA : samplesListDM.add(pubSampleDM)
+pubRepoJPA -> pubRepoJPA : samplesDMList.add( pubSampleDM)
 end
 
-pubRepoJPA --> pubRepo : samplesListDM
+pubRepoJPA --> pubRepo : samplesDMList
 deactivate pubRepoJPA
 
 
 
-pubRepo -> pubAssembler : toDomainList(samplesListDM)
+pubRepo -> pubAssembler : toDomainList ( samplesDMList)
 activate pubAssembler
 pubAssembler -->> pubDomainList** : <<create>>
 
 
 loop for each pubDM in samplesListDM
-pubAssembler -> pubFactory : create (pubDM.id, bibliographicalDataId,\n userId, publicationStatus, editionId,\n condition)
+
+' ------ GET PUBLICATION DM DATA -----
+pubAssembler -> pubSampleDM : id()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : pubId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getBibliographicalDataID()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : bdId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getOwnerID()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : ownerId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getPublicationStatus()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : pubStatus
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getEditionID()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : editionId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getCondition()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : condition
+deactivate pubSampleDM
+
+pubAssembler -> pubFactory : create (pubId, bdId, ownerId,\n pubStatus,editionId, condition)
 activate pubFactory
 pubFactory -->> pubSampleDomain** : <<create>>
 pubFactory --> pubAssembler : pubSampleDomain

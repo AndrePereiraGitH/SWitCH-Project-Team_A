@@ -9,15 +9,15 @@ participant ":AuctionService" as auctionService
 participant ":IAuctionRepository" as AucRepo
 
 participant ":AuctionAssembler" as auctionAssembler
-participant "DMAuction\n:AuctionDM" as DMAuction
+participant "auctionDM\n:AuctionDM" as DMAuction
 participant ":AuctionFactory" as aucFactory
 
 participant ":IAuctionRepositoryJPA" as auctionRepoJPA
 
 participant "auction: Auction" as auction
 
-participant ":persistedAuction:Auction" as persistedAuction
-
+participant ":persistedAuction\n:Auction" as persistedAuction
+participant ":auctionDMPersisted\n:AuctionDM" as auctionDMPersisted
 database "Database" as db
 
 ref over auctionService
@@ -46,23 +46,57 @@ activate AucRepo
 AucRepo -> auctionAssembler : toDM (auction)
 activate auctionAssembler
 auctionAssembler -->> DMAuction** : <<create>>
-auctionAssembler --> AucRepo : DMAuction
+auctionAssembler --> AucRepo : auctionDM
 deactivate auctionAssembler
 
 
 ' ------ JPA PERSISTENCE ---------------
-AucRepo -> auctionRepoJPA : save (DMAuction)
+AucRepo -> auctionRepoJPA : save (auctionDM)
 activate auctionRepoJPA
-auctionRepoJPA -> db : INSERT DMAuction
+auctionRepoJPA -> db : INSERT auctionDM
 activate db
-db -->> auctionRepoJPA : DMAuction
+db -->> auctionRepoJPA : data
 deactivate db
-auctionRepoJPA --> AucRepo : DMAuction
+auctionRepoJPA -->> auctionDMPersisted ** : <<create>>
+auctionRepoJPA --> AucRepo : auctionDMPersisted
 deactivate auctionRepoJPA
 
-AucRepo -> auctionAssembler : toDomain(DMAuction)
+AucRepo -> auctionAssembler : toDomain(auctionDMPersisted)
 activate auctionAssembler
-auctionAssembler -> aucFactory : create (DMAuction.id(),\n persistedListing.id(),\n initialDate, finalDate,\n initialPrice,\n buyOutPrice)
+
+' --------- GET DATA FROM AUCTION DM
+auctionAssembler -> auctionDMPersisted : id()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : id
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getListingId()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : listingId
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getAuctionStartDateTime()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : startDate
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getAuctionFinalDateTime()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : finalDate
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getInitialPrice()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : initialPrice
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getBuyoutPrice()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : buyoutPrice
+deactivate auctionDMPersisted
+
+
+auctionAssembler -> aucFactory : create ( id, listingId, startDate,\n finalDate, initialPrice, buyOutPrice)
 activate aucFactory
 aucFactory -->> persistedAuction ** : <<create>>
 aucFactory -->> auctionAssembler : persistedAuction

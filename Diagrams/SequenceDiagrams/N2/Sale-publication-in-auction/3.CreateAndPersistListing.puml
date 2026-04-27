@@ -17,6 +17,8 @@ participant ":IListingRepositoryJPA" as listingRepoJPA
 participant ":ListingFactory" as listingFactory
 participant "auctionListing\n:Listing" as auctionListing
 
+participant "ListingDMPersisted\n:ListingDM" as ListingDMPersisted
+
 participant "persistedListing\n:Listing" as persistedListing
 
 
@@ -39,7 +41,10 @@ end note
 ctrl -> listingService : createAndSave(listingTitle, selectedPublicationsID,\n SaleType.AUCTION, initialPrice, shortDescription,\n sellerId, pictures)
 activate listingService
 
-listingService -> listingFactory : create ( listingTitle, selectedPublicationsID, SaleType.AUCTION,\n initialPrice, shortDescription, sellerId, pictures )
+
+
+
+listingService -> listingFactory : create ( listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures )
 activate listingFactory
 listingFactory -->> auctionListing** : <<create>>
 listingFactory --> listingService : auctionListing
@@ -66,8 +71,10 @@ listingRepoJPA -> db : INSERT Listing
 activate db
 db --> listingRepoJPA : data
 deactivate db
+listingRepoJPA --> ListingDMPersisted** : <<create>>
 listingRepoJPA --> listingRepo : ListingDMPersisted
 deactivate listingRepoJPA
+
 
 
 
@@ -75,7 +82,47 @@ deactivate listingRepoJPA
 listingRepo -> listingAssembler : toDomain (ListingDMPersisted)
 activate listingAssembler
 
-listingAssembler -> listingFactory : create (DMAuction.id, listingTitle,\n selectedPublicationsID, SaleType.AUCTION,\n initialPrice, shortDescription, sellerId, pictures)
+listingAssembler -> ListingDMPersisted : id()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : id
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getListingTitle()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : listingTitle
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getItemsId()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : sampleIds
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getSaleType()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : saleType
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getPrice()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : price
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getShortDescription()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : shortDescription
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getSellerId()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : sellerId
+deactivate ListingDMPersisted
+
+listingAssembler -> ListingDMPersisted : getPictures()
+activate ListingDMPersisted
+ListingDMPersisted --> listingAssembler : pictures
+deactivate ListingDMPersisted
+
+listingAssembler -> listingFactory : create ( id, listingTitle, sampleIds, saleType, price,\n shortDescription, sellerId, pictures)
 activate listingFactory
 listingFactory -->> persistedListing** : <<create>>
 listingFactory --> listingAssembler : persistedListing
