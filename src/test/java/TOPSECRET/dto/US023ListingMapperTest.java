@@ -114,7 +114,7 @@ class US023ListingMapperTest {
         when(listingDouble.getPrice()).thenReturn(mock(Price.class));
 
         listingRepoDouble = mock(IListingRepository.class);
-        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.of(listingDouble));
+        when(listingRepoDouble.findById(listingIdDouble)).thenReturn(Optional.of(listingDouble));
 
         // Mapper
         mapper = new US023ListingMapper(listingRepoDouble, pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
@@ -191,7 +191,7 @@ class US023ListingMapperTest {
     @Test
     void toDTO_ShouldThrowInstanceNotFoundExceptionWhenListingDoesNotExist() throws Exception {
         // Arrange
-        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.empty());
+        when(listingRepoDouble.findById(listingIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,
@@ -266,7 +266,7 @@ class US023ListingMapperTest {
         US023ListingMapper mapper =
                 new US023ListingMapper(listingRepoDouble, pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
 
-        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.empty());
+        when(listingRepoDouble.findById(listingIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,

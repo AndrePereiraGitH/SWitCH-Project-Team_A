@@ -112,7 +112,7 @@ public class US023ListingMapper {
             throw new IllegalArgumentException("ListingId cannot be null");
         }
 
-        Optional<Listing> listingOpt = _listingRepo.findListingById(listingId);
+        Optional<Listing> listingOpt = _listingRepo.findById(listingId);
         if (listingOpt.isEmpty()) {
             throw new InstanceNotFoundException("Listing with id " + listingId + " not found");
         }

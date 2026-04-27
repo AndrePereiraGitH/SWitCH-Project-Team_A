@@ -40,6 +40,11 @@ public class ListingRepositoryMem implements IListingRepository {
         this.listingFactory = listingFactory;
     }
 
+
+    // =========================================================================
+    // Persistence
+    // =========================================================================
+
     /**
      * {@inheritDoc}
      */
@@ -52,16 +57,20 @@ public class ListingRepositoryMem implements IListingRepository {
         return listing;
     }
 
-
     private boolean existsById(Listing listing) {
         return listings.contains(listing);
     }
+
+
+    // =========================================================================
+    // Lookup — by identity
+    // =========================================================================
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Optional<Listing> findListingById(ListingId id) {
+    public Optional<Listing> findById(ListingId id) {
         if (id == null) {
             throw new IllegalArgumentException("ListingId cannot be null");
         }
@@ -75,15 +84,20 @@ public class ListingRepositoryMem implements IListingRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Listing> getAllListings() {
+    public List<Listing> findAll() {
         return List.copyOf(listings);
     }
+
+
+    // =========================================================================
+    // Lookup — by sale type
+    // =========================================================================
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Listing> findAllDirectSaleListings() {
+    public List<Listing> findAllByDirectSale() {
 
         List<Listing> dsListings = new ArrayList<>();
         for (Listing listing : listings) {
@@ -94,8 +108,28 @@ public class ListingRepositoryMem implements IListingRepository {
         return dsListings;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId) {
+    public List<Listing> findAllByAuction() {
+
+        List<Listing> auctionListings = new ArrayList<>();
+        for (Listing listing : listings) {
+            if (listing.getSaleType() == SaleType.AUCTION) {
+                auctionListings.add(listing);
+            }
+        }
+        return auctionListings;
+    }
+
+
+    // =========================================================================
+    // Lookup — by associated identifiers
+    // =========================================================================
+
+    @Override
+    public List<ListingId> findIdsByPublicationSampleIdIn(List<PublicationSampleId> itemsId) {
         if(itemsId == null){
             throw new IllegalArgumentException("itemsId cannot be null");
         }
@@ -114,28 +148,16 @@ public class ListingRepositoryMem implements IListingRepository {
         return listingIds;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Listing> findAllAuctionListings() {
 
-        List<Listing> auctionListings = new ArrayList<>();
-        for (Listing listing : listings) {
-            if (listing.getSaleType() == SaleType.AUCTION) {
-                auctionListings.add(listing);
-            }
-        }
-        return auctionListings;
-    }
-
-
+    // =========================================================================
+    // Domain Operations
+    // =========================================================================
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
+    public List<Listing> findAllByAuctionAndPublicationSampleIdIn(List<PublicationSampleId> listOfPubSampleIds) {
 
         if(listOfPubSampleIds == null){
             throw new NullPointerException("The list can not be null");
@@ -160,11 +182,12 @@ public class ListingRepositoryMem implements IListingRepository {
         }
         return listOfAuctionListingsOfGivenPublication;
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds) {
+    public List<Listing> findAllByDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> listOfPubSampleIds) {
 
         if (listOfPubSampleIds == null) {
             throw new IllegalArgumentException("The list cannot be null");

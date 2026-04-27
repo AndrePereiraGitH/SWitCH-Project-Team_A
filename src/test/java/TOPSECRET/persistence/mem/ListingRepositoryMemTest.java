@@ -115,7 +115,7 @@ class ListingRepositoryMemTest {
 
         // assert
         assertEquals(listing1Double, result);
-        assertTrue(repo.getAllListings().contains(result));
+        assertTrue(repo.findAll().contains(result));
     }
 
     @Test
@@ -135,7 +135,7 @@ class ListingRepositoryMemTest {
         repo.save(listing2Double);
 
         // assert
-        assertEquals(2, repo.getAllListings().size());
+        assertEquals(2, repo.findAll().size());
     }
 
     // ======================================================
@@ -155,7 +155,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.findAllDirectSaleListings();
+        List<Listing> result = repo.findAllByDirectSale();
 
         // Assert
         assertEquals(2, result.size());
@@ -173,7 +173,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.findAllDirectSaleListings();
+        List<Listing> result = repo.findAllByDirectSale();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -186,7 +186,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         // Act
-        List<Listing> result = repo.findAllDirectSaleListings();
+        List<Listing> result = repo.findAllByDirectSale();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -202,10 +202,10 @@ class ListingRepositoryMemTest {
         repo.save(listing1Double);
 
         // Act
-        List<Listing> firstCall = repo.findAllDirectSaleListings();
+        List<Listing> firstCall = repo.findAllByDirectSale();
         firstCall.clear(); // tries to modify the list
 
-        List<Listing> secondCall = repo.findAllDirectSaleListings();
+        List<Listing> secondCall = repo.findAllByDirectSale();
 
         assertEquals(1, secondCall.size());
     }
@@ -226,7 +226,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.findAllAuctionListings();
+        List<Listing> result = repo.findAllByAuction();
 
         // Assert
         assertEquals(1, result.size());
@@ -243,7 +243,7 @@ class ListingRepositoryMemTest {
         repo.save(listing1Double);
 
         // Act
-        List<Listing> result = repo.findAllAuctionListings();
+        List<Listing> result = repo.findAllByAuction();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -256,7 +256,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(listingFactoryDouble);
 
         // Act
-        List<Listing> result = repo.findAllAuctionListings();
+        List<Listing> result = repo.findAllByAuction();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -272,10 +272,10 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> firstCall = repo.findAllAuctionListings();
+        List<Listing> firstCall = repo.findAllByAuction();
         firstCall.clear(); // tries to modify the list
 
-        List<Listing> secondCall = repo.findAllAuctionListings();
+        List<Listing> secondCall = repo.findAllByAuction();
 
         assertEquals(1, secondCall.size());
     }
@@ -294,7 +294,7 @@ class ListingRepositoryMemTest {
         repo.save(listing2Double);
 
         // act
-        List<Listing> allListings = repo.getAllListings();
+        List<Listing> allListings = repo.findAll();
 
         // assert
         assertEquals(2, allListings.size(), "getAllListings should return all listings added to the repository");
@@ -311,7 +311,7 @@ class ListingRepositoryMemTest {
         repo.save(listing1Double);
 
         // act
-        List<Listing> result = repo.getAllListings();
+        List<Listing> result = repo.findAll();
 
         // assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(listing2Double));
@@ -329,7 +329,7 @@ class ListingRepositoryMemTest {
 
         // act + Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            repo.findListingById(null);
+            repo.findById(null);
         });
     }
 
@@ -345,7 +345,7 @@ class ListingRepositoryMemTest {
         repo.save(listing1Double);
 
         // act
-        Optional<Listing> result = repo.findListingById(id1);
+        Optional<Listing> result = repo.findById(id1);
 
         // assert
         assertTrue(result.isPresent());
@@ -364,9 +364,28 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // act (nothing saved — repo is empty)
-        Optional<Listing> result = repo.findListingById(newId);
+        Optional<Listing> result = repo.findById(newId);
 
         // assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findListingById_shouldReturnEmpty_whenIdDoesNotExistInNonEmptyRepository() {
+        // Arrange
+        ListingFactory factory = mock(ListingFactory.class);
+        ListingRepositoryMem repo = new ListingRepositoryMem(factory);
+        Listing listing = mock(Listing.class);
+        ListingId presentId = mock(ListingId.class);
+        ListingId absentId = mock(ListingId.class);
+
+        when(listing.id()).thenReturn(presentId);
+        repo.save(listing);
+
+        // Act
+        Optional<Listing> result = repo.findById(absentId);
+
+        // Assert
         assertTrue(result.isEmpty());
     }
 
@@ -393,7 +412,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1IdDouble));
+        List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub1IdDouble));
 
         // Assert
         assertEquals(1, result.size());
@@ -421,7 +440,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1IdDouble, pub2IdDouble));
+        List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub1IdDouble, pub2IdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -449,7 +468,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1IdDouble, pub2IdDouble));
+        List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub1IdDouble, pub2IdDouble));
 
         // Assert
         assertEquals(0, result.size());
@@ -476,7 +495,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub4Id));
+        List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub4Id));
 
         // Assert
         assertEquals(0, result.size());
@@ -489,7 +508,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // Act
-        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1IdDouble));
+        List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub1IdDouble));
 
         // Assert
         assertEquals(0, result.size());
@@ -503,7 +522,7 @@ class ListingRepositoryMemTest {
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                repo.getAuctionListingsContaining(null)
+                repo.findAllByAuctionAndPublicationSampleIdIn(null)
         );
     }
 
@@ -515,7 +534,7 @@ class ListingRepositoryMemTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repo.getAuctionListingsContaining(List.of())
+                repo.findAllByAuctionAndPublicationSampleIdIn(List.of())
         );
     }
 
@@ -527,7 +546,7 @@ class ListingRepositoryMemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findAllListingIdByPublicationSampleId(null));
+                () -> repo.findIdsByPublicationSampleIdIn(null));
     }
 
     @Test
@@ -546,7 +565,7 @@ class ListingRepositoryMemTest {
         repo.save(listingDouble);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(itemIdDouble));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(itemIdDouble));
 
         // Assert
         assertEquals(1, result.size());
@@ -567,7 +586,7 @@ class ListingRepositoryMemTest {
         repo.save(listing1Double);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(itemDouble2));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(itemDouble2));
 
         // Assert
         assertTrue(result.isEmpty());
@@ -597,7 +616,7 @@ class ListingRepositoryMemTest {
         repo.save(listingDouble2);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(itemIdDouble));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(itemIdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -632,7 +651,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub2IdDouble));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pub2IdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -664,7 +683,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub1IdDouble));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pub1IdDouble));
 
         // Assert
         assertEquals(1, result.size());
@@ -694,7 +713,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub1IdDouble, pub3IdDouble));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pub1IdDouble, pub3IdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -724,7 +743,7 @@ class ListingRepositoryMemTest {
         repo.save(listing2Double);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub4Id));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pub4Id));
 
         // Assert
         assertNotNull(result);
@@ -738,7 +757,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // Act
-        List<ListingId> result = repo.findAllListingIdByPublicationSampleId(List.of(pub1IdDouble));
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pub1IdDouble));
 
         // Assert
         assertNotNull(result);
@@ -752,7 +771,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findAllListingIdByPublicationSampleId(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findIdsByPublicationSampleIdIn(null));
     }
 
     // ======================================================
@@ -778,7 +797,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.findDirectSaleListingsContaining(List.of(pub1IdDouble));
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pub1IdDouble));
 
         // Assert
         assertEquals(1, result.size());
@@ -806,7 +825,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.findDirectSaleListingsContaining(List.of(pub1IdDouble, pub2IdDouble));
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pub1IdDouble, pub2IdDouble));
 
         // Assert
         assertEquals(2, result.size());
@@ -834,7 +853,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.getAuctionListingsContaining(List.of(pub1IdDouble, pub2IdDouble));
+        List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub1IdDouble, pub2IdDouble));
 
         // Assert
         assertEquals(0, result.size());
@@ -861,7 +880,7 @@ class ListingRepositoryMemTest {
         repo.save(listing3Double);
 
         // Act
-        List<Listing> result = repo.findDirectSaleListingsContaining(List.of(pub4Id));
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pub4Id));
 
         // Assert
         assertEquals(0, result.size());
@@ -874,7 +893,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // Act
-        List<Listing> result = repo.findDirectSaleListingsContaining(List.of(pub1IdDouble));
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pub1IdDouble));
 
         // Assert
         assertEquals(0, result.size());
@@ -888,7 +907,7 @@ class ListingRepositoryMemTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repo.findDirectSaleListingsContaining(null)
+                repo.findAllByDirectSaleAndPublicationSampleIdIn(null)
         );
     }
 
@@ -899,7 +918,7 @@ class ListingRepositoryMemTest {
         ListingRepositoryMem repo = new ListingRepositoryMem(factory);
 
         // Act
-        List<Listing> result = repo.findDirectSaleListingsContaining(List.of());
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of());
 
         // Assert
         assertTrue(result.isEmpty());

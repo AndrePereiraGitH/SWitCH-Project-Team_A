@@ -80,7 +80,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(anyList()))
                 .thenReturn(itemIds);
 
-        when(listingRepository.findAllListingIdByPublicationSampleId(anyList()))
+        when(listingRepository.findIdsByPublicationSampleIdIn(anyList()))
                 .thenReturn(listingIds);
 
         when(auctionRepository.getListOfItemsOnAuctionGivenGenre(anyList()))
@@ -115,7 +115,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genreIdDouble)).thenReturn(List.of());
         when(publicationSampleRepository.findAllItemsIdByBibliographicalDataId(List.of())).thenReturn(List.of());
-        when(listingRepository.findAllListingIdByPublicationSampleId(List.of())).thenReturn(List.of());
+        when(listingRepository.findIdsByPublicationSampleIdIn(List.of())).thenReturn(List.of());
         when(auctionRepository.getListOfItemsOnAuctionGivenGenre(List.of())).thenReturn(List.of());
 
         // Act
