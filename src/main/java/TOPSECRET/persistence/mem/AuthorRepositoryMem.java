@@ -48,7 +48,7 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     }
 
     // -------------------------------------------------------------------------
-    // Construction (createAndAdd)
+    // Save
     // -------------------------------------------------------------------------
 
     /**
@@ -89,7 +89,7 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     /**
      * {@inheritDoc}
      */
-    public List<Author> getAllAuthors() {
+    public List<Author> findAll() {
         return List.copyOf(this._authors);
     }
 

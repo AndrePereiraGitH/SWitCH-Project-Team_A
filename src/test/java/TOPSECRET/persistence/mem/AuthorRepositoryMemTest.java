@@ -70,7 +70,7 @@ class AuthorRepositoryMemTest {
         repo.save(authorDouble);
 
         // Assert
-        assertTrue(repo.getAllAuthors().contains(authorDouble));
+        assertTrue(repo.findAll().contains(authorDouble));
     }
 
     @Test
@@ -171,7 +171,7 @@ class AuthorRepositoryMemTest {
         IAuthorRepository IAuthorRepositoryMem = new AuthorRepositoryMem(authorFactory);
 
         // Act
-        List<Author> result = IAuthorRepositoryMem.getAllAuthors();
+        List<Author> result = IAuthorRepositoryMem.findAll();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Author.class)));
@@ -190,8 +190,8 @@ class AuthorRepositoryMemTest {
 
 
         // Act
-        List<Author> result1 = authorRepository.getAllAuthors();
-        List<Author> result2 = authorRepository.getAllAuthors();
+        List<Author> result1 = authorRepository.findAll();
+        List<Author> result2 = authorRepository.findAll();
 
         // Assert
         assertNotSame(result1, result2);

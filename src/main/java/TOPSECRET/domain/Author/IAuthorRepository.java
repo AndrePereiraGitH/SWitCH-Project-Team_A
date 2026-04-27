@@ -54,7 +54,7 @@ public interface IAuthorRepository {
      *
      * @return a list containing all stored {@link Author} instances
      */
-    List<Author> getAllAuthors();
+    List<Author> findAll();
 
     /**
      * Retrieves an {@link Author} instance by its identifier.
