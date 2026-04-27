@@ -1,7 +1,7 @@
 @startuml
 autonumber
 hide footbox
-title To Put a publication from my library for sale in an auction
+title Sale a Publication in an auction
 
 box #whitesmoke
     actor User

@@ -5,11 +5,14 @@ title To Get All Publications In User's Library
 
 
 
-participant ":Controller" as ctrl
+participant ":Ctrl" as ctrl
 
 participant ":ILibraryRepository" as libRepo
 participant ":ILibraryRepositoryJPA" as libRepoJPA
+participant "libraryDM:LibraryDM" as libraryDM
+participant "libAssembler\n:LibraryAssembler" as libAssembler
 participant ":LibraryFactory" as libFactory
+
 participant "library : Library" as library
 
 participant ":IPublicationSample\nRepository" as pubRepo
@@ -18,6 +21,9 @@ participant ":IPublicationSample\nRepository" as pubRepo
 participant ":IPublicationSample\nRepositoryJPA" as pubRepoJPA
 participant "samplesListDM\n:List<PublicationSampleDM>" as samplesListDM
 
+
+participant "pubSampleDM\n:PublicationSampleDM" as pubSampleDM
+database "DataBase" as db
 
 participant ":PublicationSamples\nAssembler" as pubAssembler
 
@@ -30,7 +36,6 @@ participant "samplesList \n:List<PublicationSample>" as samplesList
 
 participant ":US016_PublicationSample\nMapper" as pubMapper
 
-database "DataBase" as db
 
 ref over ctrl
 [[1.MainDiagram.puml Back to main diagram]]
@@ -54,13 +59,23 @@ libRepoJPA -> db
 activate db
 db --> libRepoJPA : data
 deactivate db
-libRepoJPA -> libFactory : create ( libraryDM.id, listingTitle,\n listOfItemsId, saleType, price,\n shortDescription, sellerId, pictures)
+
+libRepoJPA -->> libraryDM ** : <<create>>
+
+libRepoJPA --> libRepo : libraryDM
+deactivate libRepoJPA
+
+libRepo -> libAssembler : toDomain(libraryDM)
+activate libAssembler
+
+libAssembler -> libFactory : create ( libraryDM.id, listingTitle,\n listOfItemsId, saleType, price,\n shortDescription, sellerId, pictures)
+
 activate libFactory
 libFactory -->> library ** : <<create>>
-libFactory --> libRepoJPA : library
+libFactory --> libAssembler : library
 deactivate libFactory
-libRepoJPA --> libRepo : library
-deactivate libRepoJPA
+libAssembler --> libRepo : library
+deactivate libAssembler
 libRepo --> ctrl : library
 deactivate libRepo
 
@@ -79,7 +94,9 @@ pubRepoJPA -> db
 activate db
 db --> pubRepoJPA : data
 deactivate db
-pubRepoJPA -> pubRepoJPA : samplesListDM.add(data)
+
+pubRepoJPA --> pubSampleDM ** : <<create>>
+pubRepoJPA -> pubRepoJPA : samplesListDM.add(pubSampleDM)
 end
 
 pubRepoJPA --> pubRepo : samplesListDM

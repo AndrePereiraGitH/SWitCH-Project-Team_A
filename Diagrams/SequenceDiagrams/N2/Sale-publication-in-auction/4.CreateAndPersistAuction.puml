@@ -2,7 +2,9 @@
 hide footbox
 autonumber
 
-title Create an Auction
+title Create and Persist an Auction
+
+participant ":Ctrl" as ctrl
 participant ":AuctionService" as auctionService
 participant ":IAuctionRepository" as AucRepo
 
@@ -28,8 +30,10 @@ note over auctionService #E3F2FD
 This diagram is a fragment of the main sequence diagram.
 end note
 
-auctionService -> aucFactory : create ( persistedListing.id(), initialDate,\n finalDate, initialPrice, buyOutPrice)
+ctrl -> auctionService : createAndSave()
 activate auctionService
+
+auctionService -> aucFactory : create ( persistedListing.id(), initialDate,\n finalDate, initialPrice, buyOutPrice)
 activate aucFactory
 aucFactory -->> auction** : <<create>>
 aucFactory --> auctionService : auction
@@ -68,5 +72,7 @@ auctionAssembler --> AucRepo : persitedAuction
 deactivate auctionAssembler
 AucRepo --> auctionService : persistedAuction
 deactivate AucRepo
+auctionService --> ctrl : persistedAuction
+deactivate auctionService
 
 @enduml

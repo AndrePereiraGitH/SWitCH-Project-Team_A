@@ -4,7 +4,7 @@ autonumber
 
 title "Convert From List of PublicationSample to List of PublicationSampleDTO"
 
-participant "Ctrl" as ctrl
+participant ":Ctrl" as ctrl
 participant ":US016_PublicationSample\nMapper" as pubMapper
 participant "bibliographicalDataList : \n List<BibliographicalData>" as bdMap
 participant ":IBibliographicalData\nRepository" as biblioRepo
