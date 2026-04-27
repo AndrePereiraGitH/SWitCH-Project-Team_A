@@ -68,7 +68,25 @@ deactivate libRepoJPA
 libRepo -> libAssembler : toDomain(libraryDM)
 activate libAssembler
 
-libAssembler -> libFactory : create ( libraryDM.id, listingTitle,\n listOfItemsId, saleType, price,\n shortDescription, sellerId, pictures)
+' ---- GET LIBRARY DM DATA -----
+
+libAssembler -> libraryDM : id()
+activate libraryDM
+libraryDM --> libAssembler : id
+deactivate libraryDM
+
+libAssembler -> libraryDM : getLibraryName()
+activate libraryDM
+libraryDM --> libAssembler : libraryName
+deactivate libraryDM
+
+libAssembler -> libraryDM : getUserID()
+activate libraryDM
+libraryDM --> libAssembler : userId
+deactivate libraryDM
+
+
+libAssembler -> libFactory : create ( id, libraryName,\n userId)
 
 activate libFactory
 libFactory -->> library ** : <<create>>
