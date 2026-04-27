@@ -78,15 +78,9 @@ public class AuthorRepositoryJPAImpl implements IAuthorRepository {
     @Override
     public List<Author> findAll() {
 
-        Iterable<AuthorDM> allAuthorsIt = authorRepositoryJpa.findAll();
+        List<AuthorDM> allAuthors = authorRepositoryJpa.findAll();
 
-        List<AuthorDM> authorDMList = StreamSupport
-                .stream(allAuthorsIt.spliterator(), false)
-                .toList();
-
-        List<Author> allAuthors = authorDMList.stream().map(authorAssembler::toDomain).toList();
-
-        return allAuthors;
+        return allAuthors.stream().map(authorAssembler::toDomain).toList();
     }
 
     /**

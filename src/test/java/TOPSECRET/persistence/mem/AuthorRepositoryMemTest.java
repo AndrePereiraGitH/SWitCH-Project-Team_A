@@ -20,7 +20,6 @@ class AuthorRepositoryMemTest {
     private final AuthorFactory authorFactory = mock(AuthorFactory.class);
     private final CountryID countryID = mock(CountryID.class);
     private final String name = "João";
-    String validBio = "bio";
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -45,7 +44,7 @@ class AuthorRepositoryMemTest {
     void save_shouldAddAuthorAndReturnSameAuthor_whenAuthorDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        AuthorId authorId = new AuthorId("a1");
+        AuthorId authorId = mock(AuthorId.class);
 
         Author authorDouble = mock(Author.class);
         when(authorDouble.id()).thenReturn(authorId);
@@ -61,8 +60,7 @@ class AuthorRepositoryMemTest {
     void save_shouldAddAuthorToRepository_whenAuthorDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        AuthorId authorId = new AuthorId("a1");
-
+        AuthorId authorId = mock(AuthorId.class);
         Author authorDouble = mock(Author.class);
         when(authorDouble.id()).thenReturn(authorId);
 
@@ -77,8 +75,7 @@ class AuthorRepositoryMemTest {
     void save_shouldThrowException_whenAuthorAlreadyExists() throws InstanceAlreadyExistsException {
         // Arrange
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        AuthorId authorId = new AuthorId("a1");
-
+        AuthorId authorId = mock(AuthorId.class);
         Author authorDouble = mock(Author.class);
         when(authorDouble.id()).thenReturn(authorId);
 
@@ -101,8 +98,7 @@ class AuthorRepositoryMemTest {
     void existsById_shouldReturnTrue_whenAuthorIdExists() throws InstanceAlreadyExistsException {
         // Arrange
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        AuthorId authorId = new AuthorId("a1");
-
+        AuthorId authorId = mock(AuthorId.class);
         Author authorDouble = mock(Author.class);
         when(authorDouble.id()).thenReturn(authorId);
 
@@ -119,8 +115,8 @@ class AuthorRepositoryMemTest {
     void existsById_shouldReturnFalse_whenAuthorIdDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        AuthorId existingId = new AuthorId("a1");
-        AuthorId unknownId = new AuthorId("unknown");
+        AuthorId existingId = mock(AuthorId.class);
+        AuthorId unknownId = mock(AuthorId.class);
 
         Author authorDouble = mock(Author.class);
         when(authorDouble.id()).thenReturn(existingId);
@@ -138,7 +134,7 @@ class AuthorRepositoryMemTest {
     void existsById_shouldReturnFalse_whenRepositoryIsEmpty() {
         // Arrange
         IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
-        AuthorId authorId = new AuthorId("a1");
+        AuthorId authorId = mock(AuthorId.class);
 
         // Act
         boolean result = repo.existsById(authorId);
@@ -181,7 +177,7 @@ class AuthorRepositoryMemTest {
     void shouldReturnDefensiveCopy() throws InstanceAlreadyExistsException {
         // Arrange
         IAuthorRepository authorRepository = new AuthorRepositoryMem(authorFactory);
-        AuthorId authorId = new AuthorId("id1");
+        AuthorId authorId = mock(AuthorId.class);
 
         Author authorDouble = mock(Author.class);
         when(authorDouble.id()).thenReturn(authorId);
@@ -206,9 +202,9 @@ class AuthorRepositoryMemTest {
     @Test
     void findAuthorById_ShouldReturn_WhenIdExists() throws InstanceAlreadyExistsException {
         // Arrange
-        AuthorId id1 = new AuthorId("a1");
-        AuthorId id2 = new AuthorId("a2");
-        AuthorId id3 = new AuthorId("a3");
+        AuthorId id1 = mock(AuthorId.class);
+        AuthorId id2 = mock(AuthorId.class);
+        AuthorId id3 = mock(AuthorId.class);
 
         Author author1Double = mock(Author.class);
         when(author1Double.id()).thenReturn(id1);
@@ -217,7 +213,7 @@ class AuthorRepositoryMemTest {
         Author author3Double = mock(Author.class);
         when(author3Double.id()).thenReturn(id3);
 
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
 
         repo.save(author1Double);
         repo.save(author2Double);
@@ -234,10 +230,10 @@ class AuthorRepositoryMemTest {
     @Test
     void findById_ShouldReturnEmptyOptional_WhenIdDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
-        AuthorId id1 = new AuthorId("a1");
-        AuthorId id2 = new AuthorId("a2");
-        AuthorId id3 = new AuthorId("a3");
-        AuthorId unknownId = new AuthorId("unknown");
+        AuthorId id1 = mock(AuthorId.class);
+        AuthorId id2 = mock(AuthorId.class);
+        AuthorId id3 = mock(AuthorId.class);
+        AuthorId unknownId = mock(AuthorId.class);
 
         Author author1Double = mock(Author.class);
         when(author1Double.id()).thenReturn(id1);
@@ -246,7 +242,7 @@ class AuthorRepositoryMemTest {
         Author author3Double = mock(Author.class);
         when(author3Double.id()).thenReturn(id3);
 
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
 
         repo.save(author1Double);
         repo.save(author2Double);
@@ -262,7 +258,7 @@ class AuthorRepositoryMemTest {
     @Test
     void findById_ShouldThrowException_WhenIdIsNull() {
         // Arrange
-        AuthorRepositoryMem repo = new AuthorRepositoryMem(authorFactory);
+        IAuthorRepository repo = new AuthorRepositoryMem(authorFactory);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
