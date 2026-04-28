@@ -28,18 +28,13 @@ import java.util.Objects;
 @Service
 public class PublicationSampleService {
 
-    @Autowired
-    private IPublicationSampleRepository publicationSampleRepository;
-    @Autowired
-    private PublicationSampleFactory factory;
+    private final IPublicationSampleRepository publicationSampleRepository;
+    private final PublicationSampleFactory factory;
 
-//    private final IPublicationSampleRepository publicationSampleRepository;
-//    private final PublicationSampleFactory factory;
-//
-//    public PublicationSampleService(IPublicationSampleRepository publicationSampleRepository, PublicationSampleFactory factory) {
-//        this.publicationSampleRepository = publicationSampleRepository;
-//        this.factory = factory;
-//    }
+    public PublicationSampleService(IPublicationSampleRepository publicationSampleRepository, PublicationSampleFactory factory) {
+        this.publicationSampleRepository = publicationSampleRepository;
+        this.factory = factory;
+    }
 
     /**
      * Creates a new {@link PublicationSample} and persists it to the repository.

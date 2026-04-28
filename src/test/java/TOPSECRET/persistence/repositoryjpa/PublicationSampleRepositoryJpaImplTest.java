@@ -9,9 +9,8 @@ import TOPSECRET.persistence.repositoryjpa.jpa.IPublicationSampleRepositoryJpa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,19 +33,15 @@ import static org.mockito.Mockito.*;
  *   <li><b>findById</b> — retrieval by identity, empty result, and null guards.</li>
  *   <li><b>findIdsByBibliographicalDataId</b> — filtering by bibliographical data ID.</li>
  *
- * <h2>Test setup</h2>
- * <p>{@code @SpringBootTest} is used so that {@code @MockBean} can register doubles in the
- * Spring Application Context. {@code MockitoAnnotations.openMocks(this)} is called in
- * {@code @BeforeEach} to wire those doubles into the {@code @InjectMocks} target.</p>
  */
 
-@SpringBootTest
+
 class PublicationSampleRepositoryJpaImplTest {
 
-    @MockBean
+    @Mock
     private PublicationSampleAssembler assembler;
 
-    @MockBean
+    @Mock
     private IPublicationSampleRepositoryJpa jpa;
 
     @InjectMocks

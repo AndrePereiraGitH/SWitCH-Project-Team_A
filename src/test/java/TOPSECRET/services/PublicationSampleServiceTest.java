@@ -11,9 +11,8 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -33,22 +32,18 @@ import static org.mockito.Mockito.when;
  *       when {@code null}.</li>
  * </ul>
  *
- * <h2>Test setup</h2>
- * <p>{@code @SpringBootTest} is used so that {@code @MockBean} can register doubles in the
- * Spring Application Context. {@code MockitoAnnotations.openMocks(this)} is called in
- * {@code @BeforeEach} to wire those doubles into the {@code @InjectMocks} target.</p>
  */
-@SpringBootTest
+
 class PublicationSampleServiceTest {
 
     // =========================================================================
     // Dependencies
     // =========================================================================
 
-    @MockBean
+    @Mock
     IPublicationSampleRepository publicationSampleRepository;
 
-    @MockBean
+    @Mock
     PublicationSampleFactory factory;
 
     @InjectMocks

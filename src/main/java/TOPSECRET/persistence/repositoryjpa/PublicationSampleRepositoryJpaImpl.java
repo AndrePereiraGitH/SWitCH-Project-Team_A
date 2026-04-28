@@ -7,7 +7,6 @@ import TOPSECRET.persistence.repositoryjpa.assembler.PublicationSampleAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IPublicationSampleRepositoryJpa;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,10 +16,14 @@ import java.util.Optional;
 @Repository
 public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRepository {
 
-    @Autowired
-    IPublicationSampleRepositoryJpa publicationSampleRepositoryJpa;
-    @Autowired
-    PublicationSampleAssembler publicationSampleAssembler;
+
+    private final IPublicationSampleRepositoryJpa publicationSampleRepositoryJpa;
+    private final PublicationSampleAssembler publicationSampleAssembler;
+
+    public PublicationSampleRepositoryJpaImpl(IPublicationSampleRepositoryJpa publicationSampleRepositoryJpa, PublicationSampleAssembler publicationSampleAssembler) {
+        this.publicationSampleRepositoryJpa = publicationSampleRepositoryJpa;
+        this.publicationSampleAssembler = publicationSampleAssembler;
+    }
 
     // =========================================================================
     // Persistence
