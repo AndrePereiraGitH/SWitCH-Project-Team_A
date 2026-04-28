@@ -1,124 +1,83 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.ICityRepository;
-import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
-import TOPSECRET.persistence.mem.CityRepositoryMem;
+import TOPSECRET.services.CityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ToRegisterACityCtrl}.
+ * Unit tests for {@link US008ToRegisterACityCtrl}.
  *
  * <p>This test suite verifies the behavior of the controller responsible for
  * registering new cities in the system. The controller depends on
- * {@link CityRepositoryMem}, which is mocked in order to isolate the controller logic.</p>
+ * {@link CityService}, which is mocked in order to isolate the controller logic.</p>
  *
  * <p>The {@link City} domain object is mocked because its constructor is protected
- * and the controller only needs to forward the object returned by the repository.</p>
+ * and the controller only needs to forward the object returned by the service.</p>
  */
 class ToRegisterACityCtrlTest {
-    private ICityRepository doubleCityRepo;
-    private ICountryRepository doubleCountryRepo;
+
+    private CityService doubleCityService;
     private ToRegisterACityCtrl controller;
 
     @BeforeEach
     void setUp() {
-        doubleCityRepo = mock(ICityRepository.class);
-        doubleCountryRepo = mock(ICountryRepository.class);
+        doubleCityService = mock(CityService.class);
+        controller = new ToRegisterACityCtrl(doubleCityService);
     }
 
     @Test
-    void throwsConstructorWhenNullCityRepository() {
-
-        //Arrange
-        controller = new ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
+    void throwsConstructorWhenNullCityService() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                new ToRegisterACityCtrl(null, doubleCountryRepo)
+                new ToRegisterACityCtrl(null)
         );
-
-        //Act + assert
-        assertEquals("ICityRepository must not be left null", ex.getMessage());
-    }
-
-    @Test
-    void throwsConstructorIfNullCountryRepository() {
-
-        //Arrange
-        controller = new ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                new ToRegisterACityCtrl(doubleCityRepo, null)
-        );
-
-        //Act + assert
-        assertEquals("ICountryRepository must not be left null", ex.getMessage());
+        assertEquals("CityService must not be left null", ex.getMessage());
     }
 
     @Test
     void registerNewCitySuccess() {
-
-        //Arrange
-        controller = new ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
-        CountryID doubleCountryId = new CountryID("PORTUGAL_ID");
-
-        // Configure country repo to return a CountryID
-        when(doubleCountryRepo.findCountryIdByCountryName("Portugal"))
-                .thenReturn(Optional.of(doubleCountryId));
-
-        // Configure city repo to return a new City when createAndAdd is called
+        // Arrange
+        CountryID countryID = new CountryID("PORTUGAL_ID");
         City doubleCity = mock(City.class);
-        when(doubleCityRepo.createAndAdd(doubleCountryId, "Lisbon"))
-                .thenReturn(doubleCity);
+        when(doubleCityService.createAndSave(countryID, "Lisbon")).thenReturn(doubleCity);
 
-        //Act
-        boolean result = controller.registerNewCity("Portugal", "Lisbon");
+        // Act
+        City result = controller.registerNewCity(countryID, "Lisbon");
 
-        //Assert
-        assertTrue(result);
+        // Assert
+        assertEquals(doubleCity, result);
+        verify(doubleCityService).createAndSave(countryID, "Lisbon");
     }
 
     @Test
     void registerNewCitySuccess2() {
-
-        //Arrange
-        controller = new ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
-        CountryID doubleCountryId = new CountryID("CZECH_REPUBLIC_ID");
-
-        when(doubleCountryRepo.findCountryIdByCountryName("Czech Republic"))
-                .thenReturn(Optional.of(doubleCountryId));
-
+        // Arrange
+        CountryID countryID = new CountryID("CZECH_REPUBLIC_ID");
         City doubleCity = mock(City.class);
-        when(doubleCityRepo.createAndAdd(doubleCountryId, "Prague"))
-                .thenReturn(doubleCity);
+        when(doubleCityService.createAndSave(countryID, "Prague")).thenReturn(doubleCity);
 
-        //Act
-        boolean result = controller.registerNewCity("Czech Republic", "Prague");
+        // Act
+        City result = controller.registerNewCity(countryID, "Prague");
 
-        //Assert
-        assertTrue(result);
+        // Assert
+        assertEquals(doubleCity, result);
+        verify(doubleCityService).createAndSave(countryID, "Prague");
     }
 
     @Test
-    void registerNewCityWhenCountryNotFound() {
+    void registerNewCityWhenServiceThrows() {
+        // Arrange
+        CountryID countryID = new CountryID("INVALID_ID");
+        when(doubleCityService.createAndSave(countryID, "anyCity"))
+                .thenThrow(new IllegalArgumentException("Country not found"));
 
-        //Arrange
-        controller = new ToRegisterACityCtrl(doubleCityRepo, doubleCountryRepo);
-        // Country repo returns empty optional
-        when(doubleCountryRepo.findCountryIdByCountryName("Gondor"))
-                .thenReturn(Optional.empty());
-
-        //Act
+        // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                controller.registerNewCity("Gondor", "anyCity")
+                controller.registerNewCity(countryID, "anyCity")
         );
-
-        //Assert
-        assertEquals("Country with name Gondor not found", ex.getMessage());
+        assertEquals("Country not found", ex.getMessage());
     }
 }

@@ -23,7 +23,7 @@ import java.util.Optional;
  * <p>Use Case: <b>US008 – Register a new city</b></p>
  */
 
-public class ToRegisterACityCtrl {
+public class US008ToRegisterACityCtrl {
 
     private final ICityRepository _cityRepository;
     private final ICountryRepository _countryRepository;
@@ -31,7 +31,7 @@ public class ToRegisterACityCtrl {
     //Again, how do we validate it's a user admin here? Should the method receive a User as input and not allow the role
     // to be anything else other than ADMIN?
 
-    public ToRegisterACityCtrl(ICityRepository cityRepository, ICountryRepository countryRepository) {
+    public US008ToRegisterACityCtrl(ICityRepository cityRepository, ICountryRepository countryRepository) {
         if (cityRepository == null) {
             throw new IllegalArgumentException("ICityRepository must not be left null");
         }
