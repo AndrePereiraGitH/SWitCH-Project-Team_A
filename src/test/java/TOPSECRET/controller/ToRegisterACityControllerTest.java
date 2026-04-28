@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link US008ToRegisterACityCtrl}.
+ * Unit tests for {@link ToRegisterACityController}.
  *
  * <p>This test suite verifies the behavior of the controller responsible for
  * registering new cities in the system. The controller depends on
@@ -18,21 +18,21 @@ import static org.mockito.Mockito.*;
  * <p>The {@link City} domain object is mocked because its constructor is protected
  * and the controller only needs to forward the object returned by the service.</p>
  */
-class ToRegisterACityCtrlTest {
+class ToRegisterACityControllerTest {
 
     private CityService doubleCityService;
-    private ToRegisterACityCtrl controller;
+    private ToRegisterACityController controller;
 
     @BeforeEach
     void setUp() {
         doubleCityService = mock(CityService.class);
-        controller = new ToRegisterACityCtrl(doubleCityService);
+        controller = new ToRegisterACityController(doubleCityService);
     }
 
     @Test
     void throwsConstructorWhenNullCityService() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                new ToRegisterACityCtrl(null)
+                new ToRegisterACityController(null)
         );
         assertEquals("CityService must not be left null", ex.getMessage());
     }
