@@ -78,9 +78,15 @@ class PublicationSampleAssemblerTest {
     @Test
     void toDomain_shouldReturnAValidDomainObject() {
         // Arrange
-        PublicationSampleDM pbSampleDM = new PublicationSampleDM(
-                pubSampleIdDouble, bdIdDouble, userIdDouble, editionIdDouble,
-                libraryIdDouble, collectionOfPublicationsIdDouble, status, condition);
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        when(dm.getPubSampleId()).thenReturn(pubSampleIdDouble);
+        when(dm.getBdId()).thenReturn(bdIdDouble);
+        when(dm.getOwnerId()).thenReturn(userIdDouble);
+        when(dm.getEditionId()).thenReturn(editionIdDouble);
+        when(dm.getLibraryId()).thenReturn(libraryIdDouble);
+        when(dm.getCollectionOfPublicationsId()).thenReturn(collectionOfPublicationsIdDouble);
+        when(dm.getPublicationStatus()).thenReturn(status);
+        when(dm.getCondition()).thenReturn(condition);
 
         PublicationSample pbSampleDouble = mock(PublicationSample.class);
         when(factoryDouble.create(
@@ -89,7 +95,7 @@ class PublicationSampleAssemblerTest {
         ).thenReturn(pbSampleDouble);
 
         // Act
-        PublicationSample result = assembler.toDomain(pbSampleDM);
+        PublicationSample result = assembler.toDomain(dm);
 
         // Assert
         assertNotNull(result);
