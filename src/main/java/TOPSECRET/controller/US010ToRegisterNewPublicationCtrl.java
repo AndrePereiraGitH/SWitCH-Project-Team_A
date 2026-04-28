@@ -30,16 +30,16 @@ import javax.management.InstanceAlreadyExistsException;
 
 public class US010ToRegisterNewPublicationCtrl {
 
-    private final PublicationSampleService _service;
+    private final PublicationSampleService _publicationSampleService;
 
-    public US010ToRegisterNewPublicationCtrl(PublicationSampleService service) {
+    public US010ToRegisterNewPublicationCtrl(PublicationSampleService publicationSampleService) {
 
-        if (service == null) {
+        if (publicationSampleService == null) {
             throw new IllegalArgumentException("PublicationRepository cannot be left blank");
 
         }
 
-        _service = service;
+        _publicationSampleService = publicationSampleService;
     }
 
     /**
@@ -80,7 +80,7 @@ public class US010ToRegisterNewPublicationCtrl {
             throw new IllegalArgumentException("Condition cannot be left null");
         }
 
-        PublicationSample newPublication = _service.createAndSave(bibliographicalData1, user1,
+        PublicationSample newPublication = _publicationSampleService.createAndSave(bibliographicalData1, user1,
                 publicationStatus1, _edition, condition);
 
         return true;
