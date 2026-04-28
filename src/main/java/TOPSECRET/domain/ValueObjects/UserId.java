@@ -2,9 +2,10 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class UserId implements DomainID {
     /**
