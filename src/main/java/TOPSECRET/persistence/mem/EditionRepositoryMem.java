@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.ValueObjects.*;
 

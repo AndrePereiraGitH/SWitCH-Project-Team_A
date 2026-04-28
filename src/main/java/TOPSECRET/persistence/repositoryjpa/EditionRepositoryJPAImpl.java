@@ -7,7 +7,6 @@ import TOPSECRET.persistence.repositoryjpa.assembler.EditionAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.EditionDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IEditionRepositoryJpa;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -37,11 +36,14 @@ import java.util.Optional;
 @Repository
 public class EditionRepositoryJPAImpl implements IEditionRepository {
 
-    @Autowired
-    private IEditionRepositoryJpa editionRepositoryJpa;
+    private final IEditionRepositoryJpa editionRepositoryJpa;
 
-    @Autowired
-    private EditionAssembler editionAssembler;
+    private final EditionAssembler editionAssembler;
+
+    public EditionRepositoryJPAImpl(IEditionRepositoryJpa editionRepositoryJpa,  EditionAssembler editionAssembler){
+        this.editionRepositoryJpa = Objects.requireNonNull(editionRepositoryJpa);
+        this.editionAssembler = Objects.requireNonNull(editionAssembler);
+    }
 
     /**
      * Saves an Edition aggregate to the database.

@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -12,20 +14,12 @@ import java.util.Objects;
  * when using the parameterized constructor.
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PhysicalAttributes {
 
     private Dimensions _dimensions;
     private double _weight;
     private int _numberOfPages;
-
-    /**
-     * Creates an empty {@code PhysicalAttributes} instance.
-     * <p>
-     * This constructor does not perform validation and leaves fields uninitialized
-     * (default values apply) until they are set elsewhere.
-     */
-    public PhysicalAttributes() {
-    }
 
     /**
      * Creates a {@code PhysicalAttributes} instance with validated physical data.

@@ -2,6 +2,8 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -15,6 +17,7 @@ import java.util.Objects;
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PublisherID implements DomainID {
 
     private String _publisherID;
@@ -32,9 +35,6 @@ public class PublisherID implements DomainID {
         this._publisherID = publisherID;
     }
 
-    public PublisherID() {
-
-    }
 
     public String getId() {
         return _publisherID;

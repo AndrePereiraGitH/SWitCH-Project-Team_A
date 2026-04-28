@@ -1,6 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
  * - depth  > 0
  */
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Dimensions {
     private double _height;
     private double _width;

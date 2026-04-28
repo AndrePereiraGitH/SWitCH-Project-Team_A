@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
@@ -9,8 +10,6 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.EditionDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IEditionRepositoryJpa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -53,12 +52,11 @@ class EditionRepositoryJPAImplTest {
     @MockBean
     private IEditionRepositoryJpa jpa;
 
-    @InjectMocks
-    private EditionRepositoryJPAImpl repo;
+    private IEditionRepository repo;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
     }
 
     // ─────────────────────────────────────────────

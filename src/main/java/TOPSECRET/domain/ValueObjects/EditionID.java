@@ -2,6 +2,7 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ import java.util.Objects;
  */
 
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EditionID implements DomainID {
 
     private String editionID;

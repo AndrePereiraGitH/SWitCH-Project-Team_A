@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -11,6 +13,7 @@ import java.util.Objects;
  * Use the static factory methods to create instances: fromIsbn10, fromIsbn13, fromIssn.
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Code {
 
     // only one of these will have a value — the other two will be null
@@ -25,10 +28,6 @@ public class Code {
         this.isbn10 = isbn10;
         this.isbn13 = isbn13;
         this.issn = issn;
-    }
-
-    public Code() {
-
     }
 
     /**
