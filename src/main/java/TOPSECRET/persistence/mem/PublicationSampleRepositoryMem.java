@@ -33,7 +33,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // Fields
     // -------------------------------------------------------------------------
 
-    private final PublicationSampleFactory _publicationSampleFactory;
     private List<PublicationSample> allPublicationsInSystem;
 
     // -------------------------------------------------------------------------
@@ -41,17 +40,12 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // -------------------------------------------------------------------------
 
     /**
-     * Constructs a new {@code PublicationSampleRepositoryMem} with the given factory.
+     * Constructs a new {@code PublicationSampleRepositoryMem}
      * Initializes an empty internal list of publication samples.
      *
-     * @param publicationSampleFactory the factory used to create {@link PublicationSample} instances
      */
-    public PublicationSampleRepositoryMem(PublicationSampleFactory publicationSampleFactory) {
-        if (publicationSampleFactory == null) {
-            throw new NullPointerException("PublicationSampleFactory can not be null");
-        }
+    public PublicationSampleRepositoryMem() {
         allPublicationsInSystem = new ArrayList<>();
-        _publicationSampleFactory = publicationSampleFactory;
     }
 
     // -------------------------------------------------------------------------

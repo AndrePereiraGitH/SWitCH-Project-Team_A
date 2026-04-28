@@ -59,32 +59,17 @@ import static org.mockito.Mockito.*;
  */
 class PublicationSampleRepositoryMemTest {
 
-    private PublicationSampleFactory factory;
     private BibliographicalDataID bibliographicalDataID_Double;
     private EditionID editionID_Double;
     private UserId userID_Double;
 
     @BeforeEach
     void setUp() {
-        factory = mock(PublicationSampleFactory.class);
         userID_Double = createDoubleUserID();
         editionID_Double = createDoubleEditionID();
         bibliographicalDataID_Double = createDoubleBibliographicalDataID();
     }
 
-    // ===========================================================
-    // ========== Tests for Constructor ==========================
-    // ===========================================================
-
-    @Test
-    void constructor_shouldCreateRepository_whenValidFactoryIsProvided() {
-        assertDoesNotThrow(() -> new PublicationSampleRepositoryMem(factory));
-    }
-
-    @Test
-    void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
-        assertThrows(NullPointerException.class, () -> new PublicationSampleRepositoryMem(null));
-    }
 
     // ===========================================================
     // ========== Tests for save =================================
@@ -96,7 +81,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample pbSample = mock(PublicationSample.class);
         PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
         when(pbSample.id()).thenReturn(pbSampleId);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         PublicationSample result = repo.save(pbSample);
@@ -111,7 +96,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(pbSampleId);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         repo.save(pbSample);
@@ -126,7 +111,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(pbSampleId);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample);
 
         // Act + Assert
@@ -136,7 +121,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void save_shouldThrowException_whenPublicationSampleIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.save(null));
@@ -151,7 +136,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample pbSample_2 = mock(PublicationSample.class);
         when(pbSample_1.id()).thenReturn(pbSampleId_1);
         when(pbSample_2.id()).thenReturn(pbSampleId_2);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         repo.save(pbSample_1);
@@ -170,7 +155,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(pbSampleId);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample);
 
         assertThrows(IllegalArgumentException.class, () -> repo.save(pbSample));
@@ -185,7 +170,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findAll_shouldReturnEmptyList_whenRepositoryIsEmpty() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findAll();
@@ -201,10 +186,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(publicationSampleId);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample);
-
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample);
 
         // Act
@@ -227,12 +209,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample pbSample_2 = mock(PublicationSample.class);
         when(pbSample_2.id()).thenReturn(pbId_2);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -250,10 +228,8 @@ class PublicationSampleRepositoryMemTest {
     void findAll_shouldReturnImmutableList() {
         // Arrange
         PublicationSample pbSample = mock(PublicationSample.class);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findAll();
@@ -269,7 +245,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findById_shouldThrowException_whenIdIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.findById(null));
@@ -281,10 +257,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId id = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(id);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample);
 
@@ -301,7 +275,7 @@ class PublicationSampleRepositoryMemTest {
     void findById_shouldReturnEmptyOptional_whenIdDoesNotExist() {
         // Arrange
         PublicationSampleId id = mock(PublicationSampleId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         Optional<PublicationSample> result = repo.findById(id);
@@ -322,12 +296,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.id()).thenReturn(id_1);
         when(pbSample_2.id()).thenReturn(id_2);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -350,10 +319,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
         PublicationSample pbSample = mock(PublicationSample.class);
         when(pbSample.id()).thenReturn(pbSampleId);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample);
 
         // Act
@@ -367,7 +334,7 @@ class PublicationSampleRepositoryMemTest {
     void existsById_shouldReturnFalse_whenPublicationSampleDoesNotExist() {
         // Arrange
         PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         boolean result = repo.existsById(pbSampleId);
@@ -380,7 +347,7 @@ class PublicationSampleRepositoryMemTest {
     void existsById_returnsFalse_whenEmptyRepo() {
         // Arrange
         PublicationSampleId psId = mock(PublicationSampleId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertFalse(repo.existsById(psId));
@@ -389,7 +356,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void existsById_shouldThrowException_whenPublicationSampleIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repo.existsById(null));
@@ -422,14 +389,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_2);
         when(pbSample_3.id()).thenReturn(pbId_3);
 
-        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -466,14 +427,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_2);
         when(pbSample_3.id()).thenReturn(pbId_3);
 
-        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
-                .thenReturn(pbSample_3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -490,7 +445,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPubSampleIdsByBibliographicalDataId_shouldThrowNullPointerException_whenBdIdIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.findIdsByBibliographicalDataId(null));
@@ -511,14 +466,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample pbSample_3 = mock(PublicationSample.class);
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_2);
 
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
-                .thenReturn(pbSample_3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSampleId> result = repo.findIdsByBibliographicalDataId(bdId_1);
@@ -557,14 +506,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample3.getEditionID()).thenReturn(editionId1Double);
         when(pbSample3.id()).thenReturn(pbId_3);
 
-        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW))
-                .thenReturn(pbSample1);
-        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId2Double, Condition.POOR))
-                .thenReturn(pbSample2);
-        when(factory.create(bdId2Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.POOR))
-                .thenReturn(pbSample3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample1);
         repo.save(pbSample2);
         repo.save(pbSample3);
@@ -598,12 +541,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_2.getEditionID()).thenReturn(editionId2Double);
         when(pbSample_2.id()).thenReturn(id_2);
 
-        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId2Double, userID_Double, PublicationStatus.READ, editionId2Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -618,7 +557,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findIdsByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.findIdsByEditionIdIn(null));
@@ -639,12 +578,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample pbSample_2 = mock(PublicationSample.class);
         when(pbSample_2.getEditionID()).thenReturn(editionId1Double);
 
-        when(factory.create(bdId1Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId2Double, userID_Double, PublicationStatus.READ, editionId1Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSampleId> result = repo.findIdsByEditionIdIn(List.of(editionId2Double));
@@ -675,12 +610,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
         when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(true);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample_1);
         repo.save(pbSample_2);
 
@@ -711,12 +642,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
         when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(true);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNotNull(userID_Double);
@@ -745,12 +672,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
         when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(false);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userId_Other, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -781,12 +704,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isOwnedByUser(userID_Double)).thenReturn(true);
         when(pbSample_2.isOwnedByUser(userID_Double)).thenReturn(true);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -802,7 +721,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findByUserIdAndLibraryIdIsNotNull_shouldThrowException_whenUserIdIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.findByUserIdAndLibraryIdIsNotNull(null));
@@ -834,7 +753,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_2.getLibraryID()).thenReturn(libraryId_1);
         when(pbSample_3.getLibraryID()).thenReturn(libraryId_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample_1);
         repo.save(pbSample_2);
         repo.save(pbSample_3);
@@ -867,7 +786,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.getLibraryID()).thenReturn(libraryId_1);
         when(pbSample_2.getLibraryID()).thenReturn(libraryId_1);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample_1);
         repo.save(pbSample_2);
 
@@ -883,7 +802,7 @@ class PublicationSampleRepositoryMemTest {
     void findByLibraryId_shouldReturnEmptyList_whenRepositoryIsEmpty() {
         // Arrange
         LibraryId libraryId = mock(LibraryId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findByLibraryId(libraryId);
@@ -914,7 +833,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_2.getLibraryID()).thenReturn(null);
         when(pbSample_3.getLibraryID()).thenReturn(mock(LibraryId.class));
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample_1);
         repo.save(pbSample_2);
         repo.save(pbSample_3);
@@ -948,7 +867,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_2.getLibraryID()).thenReturn(libraryId);
         when(pbSample_3.getLibraryID()).thenReturn(null);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pbSample_1);
         repo.save(pbSample_2);
         repo.save(pbSample_3);
@@ -985,12 +904,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isInUserLibrary()).thenReturn(false);
         when(pbSample_2.isInUserLibrary()).thenReturn(false);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1022,12 +937,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isInUserLibrary()).thenReturn(true);
         when(pbSample_2.isInUserLibrary()).thenReturn(true);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNull(userID_Double);
@@ -1056,12 +967,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isInUserLibrary()).thenReturn(false);
         when(pbSample_2.isInUserLibrary()).thenReturn(false);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userId_Other, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1093,12 +999,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_1.isInUserLibrary()).thenReturn(false);
         when(pbSample_2.isInUserLibrary()).thenReturn(true);
 
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bibliographicalDataID_Double, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1116,7 +1018,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findByUserIdAndLibraryIdIsNull_shouldReturnEmptyList_whenRepositoryIsEmpty() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNull(userID_Double);
@@ -1128,7 +1030,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findByUserIdAndLibraryIdIsNull_shouldThrowNullPointerException_whenUserIdIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class,
@@ -1163,7 +1065,7 @@ class PublicationSampleRepositoryMemTest {
         when(ps2Double.getLibraryID()).thenReturn(libraryIdDouble);
         when(ps3Double.getLibraryID()).thenReturn(libraryIdDouble);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(ps1Double);
         repo.save(ps2Double);
         repo.save(ps3Double);
@@ -1197,7 +1099,7 @@ class PublicationSampleRepositoryMemTest {
         when(ps1Double.getLibraryID()).thenReturn(libraryIdDouble);
         when(ps2Double.getLibraryID()).thenReturn(libraryIdDouble);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(ps1Double);
         repo.save(ps2Double);
 
@@ -1212,7 +1114,7 @@ class PublicationSampleRepositoryMemTest {
     void findAvailableForSaleByLibraryId_shouldReturnEmptyListWhenLibraryHasNoSamples() {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         List<PublicationSample> result = repo.findAvailableForSaleByLibraryId(libraryIdDouble);
@@ -1248,14 +1150,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
         when(pbSample_3.id()).thenReturn(psId_3);
 
-        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-        when(factory.create(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
-                .thenReturn(pbSample_3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1296,14 +1192,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
         when(pbSample_3.id()).thenReturn(psId_3);
 
-        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-        when(factory.create(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
-                .thenReturn(pbSample_3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1338,14 +1228,8 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
         when(pbSample_3.id()).thenReturn(mock(PublicationSampleId.class));
 
-        when(factory.create(bdId_1, userID_Double, PublicationStatus.READ, editionID_Double, Condition.NEW))
-                .thenReturn(pbSample_1);
-        when(factory.create(bdId_2, userID_Double, PublicationStatus.READ, editionID_Double, Condition.POOR))
-                .thenReturn(pbSample_2);
-        when(factory.create(bdId_3, userID_Double, PublicationStatus.READ, editionID_Double, Condition.LIKE_NEW))
-                .thenReturn(pbSample_3);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         List<BibliographicalDataID> bds = List.of(mock(BibliographicalDataID.class));
 
@@ -1359,7 +1243,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPublicationSamplesIdsByBiblioDataIds_shouldThrowException_whenBdIdsListIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));
@@ -1377,7 +1261,7 @@ class PublicationSampleRepositoryMemTest {
         when(publication.id()).thenReturn(pbSampleId);
 
         LibraryId libraryId = mock(LibraryId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act
         boolean result = repo.addPublicationToLibrary(publication, libraryId);
@@ -1394,7 +1278,7 @@ class PublicationSampleRepositoryMemTest {
         doThrow(new IllegalArgumentException("LibraryID can not be null"))
                 .when(publication).addPublicationToLibrary(null);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -1409,7 +1293,7 @@ class PublicationSampleRepositoryMemTest {
         doThrow(new IllegalArgumentException("Already assigned to a library"))
                 .when(publication).addPublicationToLibrary(libraryId);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -1424,7 +1308,7 @@ class PublicationSampleRepositoryMemTest {
         when(publication.id()).thenReturn(pbSampleId);
 
         LibraryId libraryId = mock(LibraryId.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(publication);
 
         // Act + Assert
@@ -1435,7 +1319,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void addPublicationToLibrary_shouldThrowException_whenPublicationIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         LibraryId libraryId = mock(LibraryId.class);
 
         // Act + Assert
@@ -1447,7 +1331,7 @@ class PublicationSampleRepositoryMemTest {
     void addPublicationToLibrary_shouldThrowException_whenLibraryIsNull() {
         // Arrange
         PublicationSample publication = mock(PublicationSample.class);
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -1461,7 +1345,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findIdsByBibliographicalDataIdIn_shouldThrowException_whenListIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -1476,7 +1360,7 @@ class PublicationSampleRepositoryMemTest {
         when(psDouble.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
         when(psDouble.id()).thenReturn(psDoubleId);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(psDouble);
 
         // Act
@@ -1497,7 +1381,7 @@ class PublicationSampleRepositoryMemTest {
         when(psDouble.getBibliographicalDataID()).thenReturn(bdIdDouble1);
         when(psDouble.id()).thenReturn(psDoubleId);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(psDouble);
 
         // Act
@@ -1522,7 +1406,7 @@ class PublicationSampleRepositoryMemTest {
         when(psDouble1.id()).thenReturn(idDouble1);
         when(psDouble2.id()).thenReturn(idDouble2);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(psDouble1);
         repo.save(psDouble2);
 
@@ -1556,7 +1440,7 @@ class PublicationSampleRepositoryMemTest {
         when(p1.getCollecOfPubID()).thenReturn(id);
         when(p2.getCollecOfPubID()).thenReturn(null);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(p1);
         repo.save(p2);
 
@@ -1576,7 +1460,7 @@ class PublicationSampleRepositoryMemTest {
         when(p.id()).thenReturn(id_1);
         when(p.getCollecOfPubID()).thenReturn(null);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(p);
 
         // Act
@@ -1599,7 +1483,7 @@ class PublicationSampleRepositoryMemTest {
         CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
         when(p.id()).thenReturn(id);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(p);
 
         // Act
@@ -1613,7 +1497,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void shouldThrowWhenPublicationNotFound() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -1625,7 +1509,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void shouldThrowWhenCollectionIdIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -1635,7 +1519,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void shouldThrowWhenPublicationListIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -1646,7 +1530,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void shouldThrowWhenPublicationListIsEmpty() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -1682,7 +1566,7 @@ class PublicationSampleRepositoryMemTest {
         when(pub1.getCollecOfPubID()).thenReturn(null);
         when(pub2.getCollecOfPubID()).thenReturn(collectionId);
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem(factory);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
         repo.save(pub1);
         repo.save(pub2);
 
