@@ -413,6 +413,136 @@ class PublicationSampleRepositoryJpaImplTest {
     }
 
 
+    // ===========================================================
+    // ========== Tests for findByUserIdAndLibraryIdIsNotNull ====
+    // ===========================================================
+
+
+    @Test
+    void findByUserIdAndLibraryIdIsNotNull_WhenUserHasPublicationsInLibrary_ShouldReturnFilteredList() {
+        // Arrange
+        PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_2 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_3 = mock(PublicationSampleDM.class);
+
+        UserId id = mock(UserId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getOwnerID()).thenReturn(id);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getOwnerID()).thenReturn(id);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getOwnerID()).thenReturn(id);
+
+        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
+        when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
+        when(assembler.toDomain(dm_3)).thenReturn(pbSample_3);
+
+        when(pbSample_1.isOwnedByUser(id)).thenReturn(true);
+        when(pbSample_2.isOwnedByUser(id)).thenReturn(true);
+        when(pbSample_3.isOwnedByUser(id)).thenReturn(true);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(true);
+        when(pbSample_2.isInUserLibrary()).thenReturn(true);
+        when(pbSample_3.isInUserLibrary()).thenReturn(true);
+
+
+        // Act
+        List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNotNull(id);
+
+        // Assert
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void findByUserIdAndLibraryIdIsNotNull_WhenPublicationIsOwnedButNotInLibrary_ShouldReturnEmptyList() {
+        // Arrange
+        PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_2 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_3 = mock(PublicationSampleDM.class);
+
+        UserId id = mock(UserId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getOwnerID()).thenReturn(id);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getOwnerID()).thenReturn(id);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getOwnerID()).thenReturn(id);
+
+        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
+        when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
+        when(assembler.toDomain(dm_3)).thenReturn(pbSample_3);
+
+        when(pbSample_1.isOwnedByUser(id)).thenReturn(true);
+        when(pbSample_2.isOwnedByUser(id)).thenReturn(true);
+        when(pbSample_3.isOwnedByUser(id)).thenReturn(true);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(false);
+        when(pbSample_2.isInUserLibrary()).thenReturn(false);
+        when(pbSample_3.isInUserLibrary()).thenReturn(false);
+
+
+        // Act
+        List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNotNull(id);
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void findByUserIdAndLibraryIdIsNotNull_WhenUserHasNoPublications_ShouldReturnEmptyList() {
+        // Arrange
+        PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_2 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_3 = mock(PublicationSampleDM.class);
+
+        UserId id = mock(UserId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getOwnerID()).thenReturn(id);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getOwnerID()).thenReturn(id);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getOwnerID()).thenReturn(id);
+
+        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
+        when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
+        when(assembler.toDomain(dm_3)).thenReturn(pbSample_3);
+
+        when(pbSample_1.isOwnedByUser(id)).thenReturn(false);
+        when(pbSample_2.isOwnedByUser(id)).thenReturn(false);
+        when(pbSample_3.isOwnedByUser(id)).thenReturn(false);
+
+        when(pbSample_1.isInUserLibrary()).thenReturn(false);
+        when(pbSample_2.isInUserLibrary()).thenReturn(false);
+        when(pbSample_3.isInUserLibrary()).thenReturn(false);
+
+
+        // Act
+        List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNotNull(id);
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void findByUserIdAndLibraryIdIsNotNull_WhenUserIdIsNull_ShouldThrowIllegalArgumentException() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repo.findByUserIdAndLibraryIdIsNotNull(null));
+    }
+
+
     // THIS TESTS WERE ONLY USED TO COVER THE MUTATION COVERAGE AND LINE COVERAGE!
     // THEY NEED TO BE UPDATED
 
@@ -430,12 +560,6 @@ class PublicationSampleRepositoryJpaImplTest {
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void findByUserIdAndLibraryIdIsNotNull_shouldReturnEmptyList() {
-        UserId userId = mock(UserId.class);
-        List<PublicationSample> result = repo.findByUserIdAndLibraryIdIsNotNull(userId);
-        assertTrue(result.isEmpty());
-    }
 
     @Test
     void findPublicationSamplesIdsByBiblioDataIds_shouldReturnEmptyList() {

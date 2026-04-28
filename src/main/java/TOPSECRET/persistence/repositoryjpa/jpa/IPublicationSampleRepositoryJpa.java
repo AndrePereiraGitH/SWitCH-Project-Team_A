@@ -2,6 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -22,4 +23,13 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      * @return a list of matching data models; never {@code null}, may be empty
      */
     List<PublicationSampleDM> findAllByBdId(BibliographicalDataID bdId);
+
+    /**
+     * Retrieves all publication samples owned by the given user.
+     *
+     * @param ownerId the ID of the user whose publications are to be retrieved; must not be null
+     * @return a list of {@link PublicationSampleDM} owned by the given user;
+     *         returns an empty list if no publications are found
+     */
+    List<PublicationSampleDM> findAllByOwnerId(UserId ownerId);
 }
