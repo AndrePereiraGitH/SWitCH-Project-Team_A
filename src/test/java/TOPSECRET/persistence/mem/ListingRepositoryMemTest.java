@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
 import TOPSECRET.domain.ValueObjects.*;
@@ -94,7 +95,7 @@ class ListingRepositoryMemTest {
     void save_shouldThrowExceptionWhenListingAlreadyExists() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         repo.save(listing1Double);
 
@@ -108,7 +109,7 @@ class ListingRepositoryMemTest {
     void save_shouldAddAndReturnNewListing() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // act
         Listing result = repo.save(listing1Double);
@@ -123,7 +124,7 @@ class ListingRepositoryMemTest {
     void save_ShouldAllowDifferentListingsWithDifferentIds() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // act
         repo.save(listing1Double);
@@ -141,7 +142,7 @@ class ListingRepositoryMemTest {
     void findAllDirectSaleListings_ShouldReturnOnlyDirectSaleListings() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // listing1Double and listing2Double: DIRECT_SALE (stubbed in setUp)
         // listing3Double: AUCTION (stubbed in setUp)
@@ -162,7 +163,7 @@ class ListingRepositoryMemTest {
     void findAllDirectSaleListings_ShouldReturnEmptyListWhenNoDirectSaleListingsExist() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // listing3Double: AUCTION (stubbed in setUp)
         repo.save(listing3Double);
@@ -178,7 +179,7 @@ class ListingRepositoryMemTest {
     void findAllDirectSaleListings_ShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act
         List<Listing> result = repo.findAllByDirectSale();
@@ -191,7 +192,7 @@ class ListingRepositoryMemTest {
     void findAllDirectSaleListings_ShouldReturnNewIndependentList() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // listing1Double: DIRECT_SALE (stubbed in setUp)
         repo.save(listing1Double);
@@ -213,7 +214,7 @@ class ListingRepositoryMemTest {
     void findAllAuctionListings_ShouldReturnOnlyAuctionListings() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // listing1Double: DIRECT_SALE, listing2Double: DIRECT_SALE, listing3Double: AUCTION (all stubbed in setUp)
         repo.save(listing1Double);
@@ -232,7 +233,7 @@ class ListingRepositoryMemTest {
     void findAllAuctionListings_ShouldReturnEmptyListWhenNoAuctionListingsExist() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // listing1Double: DIRECT_SALE (stubbed in setUp)
         repo.save(listing1Double);
@@ -248,7 +249,7 @@ class ListingRepositoryMemTest {
     void findAllAuctionListings_ShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act
         List<Listing> result = repo.findAllByAuction();
@@ -261,7 +262,7 @@ class ListingRepositoryMemTest {
     void findAllAuctionListings_ShouldReturnNewIndependentList() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // listing3Double: AUCTION (stubbed in setUp)
         repo.save(listing3Double);
@@ -283,7 +284,7 @@ class ListingRepositoryMemTest {
     void getAllListings_ShouldReturnAllListingsInRepository() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         repo.save(listing1Double);
         repo.save(listing2Double);
@@ -301,7 +302,7 @@ class ListingRepositoryMemTest {
     void getAllListings_ShouldReturnUnmodifiableList() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         repo.save(listing1Double);
 
@@ -320,7 +321,7 @@ class ListingRepositoryMemTest {
     void findListingById_shouldThrowExceptionWhenIdIsNull() {
         // arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // act + Assert
         assertThrows(IllegalArgumentException.class, () -> {
@@ -335,7 +336,7 @@ class ListingRepositoryMemTest {
         when(listing1Double.id()).thenReturn(id1);
 
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         repo.save(listing1Double);
 
@@ -356,7 +357,7 @@ class ListingRepositoryMemTest {
         when(listing1Double.id()).thenReturn(id1);
 
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // act (nothing saved — repo is empty)
         Optional<Listing> result = repo.findById(newId);
@@ -369,7 +370,7 @@ class ListingRepositoryMemTest {
     void findListingById_shouldReturnEmpty_whenIdDoesNotExistInNonEmptyRepository() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
         Listing listing = mock(Listing.class);
         ListingId presentId = mock(ListingId.class);
         ListingId absentId = mock(ListingId.class);
@@ -392,7 +393,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_returnsListings_whenMatchingIdExists() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         when(listing1Double.isListingLinkedToAnAuction()).thenReturn(true);
         when(listing2Double.isListingLinkedToAnAuction()).thenReturn(true);
@@ -420,7 +421,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_returnsMultipleListings_whenMultipleListingsMatch() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         when(listing1Double.isListingLinkedToAnAuction()).thenReturn(true);
         when(listing2Double.isListingLinkedToAnAuction()).thenReturn(true);
@@ -448,7 +449,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_excludesListing_whenNotLinkedToAuction() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         when(listing1Double.isListingLinkedToAnAuction()).thenReturn(false);
         when(listing2Double.isListingLinkedToAnAuction()).thenReturn(false);
@@ -473,7 +474,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_excludesListing_whenNoItemIdMatches() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         PublicationSampleId pub4Id = mock(PublicationSampleId.class);
 
@@ -500,7 +501,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_returnsEmptyList_whenListingsIsEmpty() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act
         List<Listing> result = repo.findAllByAuctionAndPublicationSampleIdIn(List.of(pub1IdDouble));
@@ -513,7 +514,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_throwsException_whenListIsNull() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
@@ -525,7 +526,7 @@ class ListingRepositoryMemTest {
     void getAuctionListingsContaining_throwsException_whenListIsEmpty() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -537,7 +538,7 @@ class ListingRepositoryMemTest {
     void findAllListingId_shouldThrowException_whenItemsIdByPublicationSampleIdIsNull() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -548,7 +549,7 @@ class ListingRepositoryMemTest {
     void findAllListingId_shouldReturnListingIdByPublicationSampleId_whenItemMatches() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
         Listing listingDouble = mock(Listing.class);
@@ -571,7 +572,7 @@ class ListingRepositoryMemTest {
     void findAllListingIdByPublicationSampleId_shouldReturnEmpty_whenNoItemMatches() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         PublicationSampleId itemDouble1 = mock(PublicationSampleId.class);
         PublicationSampleId itemDouble2 = mock(PublicationSampleId.class);
@@ -591,7 +592,7 @@ class ListingRepositoryMemTest {
     void findAllListingId_shouldReturnMultipleListingIdByPublicationSampleIds_whenMultipleMatches() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         PublicationSampleId itemIdDouble = mock(PublicationSampleId.class);
 
@@ -627,7 +628,7 @@ class ListingRepositoryMemTest {
     void findListingIdsByPublicationSampleIds_shouldReturnListingIds_whenListingsContainGivenPublicationSampleIds() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
@@ -659,7 +660,7 @@ class ListingRepositoryMemTest {
     void findListingIdsByPublicationSampleIds_shouldReturnSingleListingId_whenOnlyOneListingContainsGivenPublicationSampleIds() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
@@ -688,7 +689,7 @@ class ListingRepositoryMemTest {
     @Test
     void findListingIdsByPublicationSampleIds_shouldReturnMultipleListingIds_whenSearchingMultiplePublicationSampleIds() {
         // Arrange
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         ListingId listingId1 = new ListingId("listing1");
         ListingId listingId2 = new ListingId("listing2");
@@ -720,7 +721,7 @@ class ListingRepositoryMemTest {
     void findListingIdsByPublicationSampleIds_shouldReturnEmptyList_whenNoListingContainsGivenPublicationSampleIds() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         PublicationSampleId pub4Id = new PublicationSampleId("pub4Id");
 
@@ -748,7 +749,7 @@ class ListingRepositoryMemTest {
     void findListingIdsByPublicationSampleIds_shouldReturnEmptyList_whenRepositoryIsEmpty() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act
         List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pub1IdDouble));
@@ -762,7 +763,7 @@ class ListingRepositoryMemTest {
     void findListingIdsByPublicationSampleIds_shouldThrowException_whenPublicationSamplesIdsIsNull() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repo.findIdsByPublicationSampleIdIn(null));
@@ -776,7 +777,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_returnsListings_whenMatchingIdExists() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         when(listing1Double.isListingLinkedToADirectSale()).thenReturn(true);
         when(listing2Double.isListingLinkedToADirectSale()).thenReturn(true);
@@ -804,7 +805,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_returnsMultipleListings_whenMultipleListingsMatch() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         when(listing1Double.isListingLinkedToADirectSale()).thenReturn(true);
         when(listing2Double.isListingLinkedToADirectSale()).thenReturn(true);
@@ -832,7 +833,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_excludesListing_whenNotLinkedToADirectSale() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         when(listing1Double.isListingLinkedToADirectSale()).thenReturn(false);
         when(listing2Double.isListingLinkedToADirectSale()).thenReturn(false);
@@ -857,7 +858,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_excludesListing_whenNoItemIdMatches() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         PublicationSampleId pub4Id = mock(PublicationSampleId.class);
 
@@ -884,7 +885,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_returnsEmptyList_whenListingsIsEmpty() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act
         List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pub1IdDouble));
@@ -897,7 +898,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_throwsException_whenListIsNull() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -909,7 +910,7 @@ class ListingRepositoryMemTest {
     void findDirectSaleListingsContaining_returnsEmptyList_whenInputListIsEmpty() {
         // Arrange
 
-        ListingRepositoryMem repo = new ListingRepositoryMem();
+        IListingRepository repo = new ListingRepositoryMem();
 
         // Act
         List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of());
