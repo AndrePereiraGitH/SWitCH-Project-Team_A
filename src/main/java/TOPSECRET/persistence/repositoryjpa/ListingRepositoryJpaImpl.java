@@ -14,6 +14,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * JPA-backed implementation of {@link IListingRepository}.
+ *
+ * <p>Delegates all persistence operations to {@link IListingRepositoryJpa} and uses
+ * {@link ListingAssembler} to convert between the domain model ({@link Listing}) and
+ * the persistence data model ({@link ListingDM}).</p>
+ *
+ */
 @Repository
 public class ListingRepositoryJpaImpl implements IListingRepository {
 
