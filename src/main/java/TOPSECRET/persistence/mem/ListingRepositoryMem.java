@@ -24,20 +24,13 @@ import java.util.Optional;
 public class ListingRepositoryMem implements IListingRepository {
 
     private final List<Listing> listings;
-    private final ListingFactory listingFactory;
 
     /**
-     * Constructs an in-memory listing repository with the given listing factory.
-     *
-     * @param listingFactory the factory used to create {@link Listing} instances
+     * Constructs an in-memory listing repository.
      */
-    public ListingRepositoryMem(ListingFactory listingFactory) {
-
-        if (listingFactory == null)
-            throw new IllegalArgumentException("ListingFactory cannot be null");
+    public ListingRepositoryMem() {
 
         this.listings = new ArrayList<>();
-        this.listingFactory = listingFactory;
     }
 
 
