@@ -1,18 +1,25 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
 
+import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
-
 
 /**
  * Value object that represents the identifier of an Appraisal Entity.
  * Ensures the ID is not null or blank.
  */
-public class AppraisalEntityId implements DomainID {
+@Embeddable
+public class AppraisalEntityId implements DomainID, Serializable {
 
-    private final String ap_id;
+    private String ap_id;
+
+    /**
+     * Required by JPA
+     */
+    protected AppraisalEntityId() {
+    }
 
     /**
      * Creates an AppraisalEntityId with the given string.
@@ -29,32 +36,32 @@ public class AppraisalEntityId implements DomainID {
         this.ap_id = apId;
     }
 
-
     /**
-     * Compares this object with another for equality.
+     * Generates a new unique AppraisalEntityId.
      *
-     * @param object the object to compare
-     * @return true if both have the same id, false otherwise
+     * <p>
+     * Encapsulates the ID creation logic, hiding the underlying
+     * implementation (e.g., UUID) from the rest of the domain.
+     * This allows the generation strategy to change without
+     * impacting other classes.
+     * </p>
+     *
+     * @return a newly generated AppraisalEntityId
      */
+    public static AppraisalEntityId generate() {
+        return new AppraisalEntityId(java.util.UUID.randomUUID().toString());
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
 
-        if (object instanceof AppraisalEntityId) {
-
-            AppraisalEntityId exApEnId = (AppraisalEntityId) object;
-
-            if (this.ap_id.equals(exApEnId.ap_id))
-                return true;
+        if (object instanceof AppraisalEntityId other) {
+            return Objects.equals(this.ap_id, other.ap_id);
         }
         return false;
     }
 
-    /**
-     * Returns the hash code of the id.
-     *
-     * @return hash code value
-     */
     @Override
     public int hashCode() {
         return Objects.hash(ap_id);
@@ -62,8 +69,6 @@ public class AppraisalEntityId implements DomainID {
 
     /**
      * Returns the string representation of the id.
-     *
-     * @return auctionId as string
      */
     public String getId() {
         return ap_id;

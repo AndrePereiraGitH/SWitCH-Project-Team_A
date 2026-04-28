@@ -1,5 +1,6 @@
 package TOPSECRET.domain.AppraisalEntity;
 
+import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
@@ -33,10 +34,37 @@ public class AppraisalEntityFactory {
             {
 
             return new AppraisalEntity(
+                    AppraisalEntityId.generate(),
                     name,
                     contact,
                     publicationTypes,
                     genres
             );
+    }
+
+    /**
+     * Recreates a AppraisalEntity from DataBase data.
+     *
+     * @param id appraisal entity id
+     * @param name name of the entity
+     * @param contact contact information
+     * @param genres list of genres
+     * @param publicationTypes list of publication types
+     * @return a AppraisalEntity instance
+     */
+    public AppraisalEntity create(AppraisalEntityId id,
+                                  String name,
+                                  Contact contact,
+                                  List<PublicationTypeId> publicationTypes,
+                                  List<GenreID> genres)
+    {
+
+        return new AppraisalEntity(
+                id,
+                name,
+                contact,
+                publicationTypes,
+                genres
+        );
     }
 }

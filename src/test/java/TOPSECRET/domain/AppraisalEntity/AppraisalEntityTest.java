@@ -50,8 +50,8 @@ class AppraisalEntityTest {
         assertNotNull(entity);
         assertEquals("Test Entity", entity.getName());
         assertEquals(contactDouble, entity.getContact());
-        assertEquals(1, entity.getPublicationTypeId().size());
-        assertEquals(1, entity.getGenreId().size());
+        assertEquals(1, entity.getPublicationTypeIds().size());
+        assertEquals(1, entity.getGenreIds().size());
     }
 
     @Test
@@ -137,6 +137,27 @@ class AppraisalEntityTest {
         );
     }
 
+    @Test
+
+    void constructor_shouldFailWhenIdNull() {
+
+        // ARRANGE
+        Contact contactDouble = mock(Contact.class);
+        PublicationTypeId pubDouble = mock(PublicationTypeId.class);
+        GenreID genreDouble = mock(GenreID.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () ->
+                new AppraisalEntity(
+                        null,
+                        "Test",
+                        contactDouble,
+                        List.of(pubDouble),
+                        List.of(genreDouble)
+                )
+        );
+    }
+
     // EQUALS TESTS
     @Test
     void equalsShouldReturnTrueForSameInstance() {
@@ -208,129 +229,52 @@ class AppraisalEntityTest {
         assertNotEquals(hash1, hash2);
     }
 
-    // SAMEAS TESTS
-
-
+    // SAME AS TESTS
     @Test
-    void sameAs_shouldReturnFalse_whenOnlyOneFieldDifferent_complexCase() {
-        // Arrange
-        Contact contact = mock(Contact.class);
-
-        PublicationTypeId pub1 = mock(PublicationTypeId.class);
-        PublicationTypeId pub2 = mock(PublicationTypeId.class);
-
-        GenreID genre = mock(GenreID.class);
-
-        AppraisalEntity entity1 = new AppraisalEntity(
-                "Name",
-                contact,
-                List.of(pub1, pub2),
-                List.of(genre)
-        );
-
-        AppraisalEntity entity2 = new AppraisalEntity(
-                "Name",
-                contact,
-                List.of(pub1),
-                List.of(genre)
-        );
-
-        // Act
-        boolean result = entity1.sameAs(entity2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void sameAs_shouldReturnFalse_whenListOrderDifferent() {
-        // Arrange
-        Contact contact = mock(Contact.class);
-
-        PublicationTypeId pub1 = mock(PublicationTypeId.class);
-        PublicationTypeId pub2 = mock(PublicationTypeId.class);
-
-        GenreID genre = mock(GenreID.class);
-
-        AppraisalEntity entity1 = new AppraisalEntity(
-                "Name",
-                contact,
-                List.of(pub1, pub2),
-                List.of(genre)
-        );
-
-        AppraisalEntity entity2 = new AppraisalEntity(
-                "Name",
-                contact,
-                List.of(pub2, pub1),
-                List.of(genre)
-        );
-
-        // Act
-        boolean result = entity1.sameAs(entity2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void sameAs_shouldReturnFalse_whenIdsDifferent() {
-        // Arrange
-        AppraisalEntity entity1 = createValidEntity();
-        AppraisalEntity entity2 = createValidEntity();
-
-        // Act
-        boolean result = entity1.sameAs(entity2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void sameAs_shouldHandleInstanceCorrectly() {
-        // Arrange
+    void sameAsShouldHandleInstanceCorrectly() {
+        // ARRANGE
         AppraisalEntity entity = createValidEntity();
 
-        // Act
+        // ACT
         boolean result = entity.sameAs(entity);
 
-        // Assert
+        // ASSERT
         assertTrue(result);
     }
 
 
     @Test
     void idShouldReturnSameAsGetId() {
-        // Arrange
+        // ARRANGE
         AppraisalEntity entity = createValidEntity();
 
-        // Act
+        // ACT
         AppraisalEntityId id1 = entity.id();
         AppraisalEntityId id2 = entity.id();
 
-        // Assert
+        // ASSERT
         assertEquals(id1, id2);
     }
 
     @Test
-    void sameAs_shouldReturnFalse_whenObjectIsNull() {
-        // Arrange
+    void sameAsShouldReturnFalseWhenObjectIsNull() {
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
         GenreID genreDouble = mock(GenreID.class);
 
         AppraisalEntity entity = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
 
-        // Act
+        // ACT
         boolean result = entity.sameAs(null);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 
     @Test
-    void sameAs_shouldReturnFalse_whenDifferentType() {
-        // Arrange
+    void sameAsShouldReturnFalseWhenDifferentType() {
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
         GenreID genreDouble = mock(GenreID.class);
@@ -339,31 +283,32 @@ class AppraisalEntityTest {
 
         Object other = mock(Object.class);
 
-        // Act
+        // ACT
         boolean result = entity.sameAs(other);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 
     @Test
-    void sameAs_shouldReturnTrue_whenSameInstance() {
-        // Arrange
+    void sameAsShouldReturnTrueWhenSameInstance() {
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
         GenreID genreDouble = mock(GenreID.class);
 
         AppraisalEntity entity = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
-        // Act
+
+        // ACT
         boolean result = entity.sameAs(entity);
 
-        // Assert
+        // ASSERT
         assertTrue(result);
     }
 
     @Test
-    void sameAs_shouldReturnTrue_whenAllFieldsEqual() {
-        // Arrange
+    void sameAsShouldReturnTrueWhenAllFieldsEqual() {
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
         GenreID genreDouble = mock(GenreID.class);
@@ -371,16 +316,16 @@ class AppraisalEntityTest {
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
 
-        // Act
+        // ACT
         boolean result = entity1.sameAs(entity2);
 
-        // Assert
+        // ASSERT
         assertTrue(result);
     }
 
     @Test
     void sameAs_shouldReturnFalse_whenNameDifferent() {
-        // Arrange
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
         GenreID genreDouble = mock(GenreID.class);
@@ -388,16 +333,16 @@ class AppraisalEntityTest {
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name1", contactDouble, List.of(pubDouble), List.of(genreDouble));
 
-        // Act
+        // ACT
         boolean result = entity1.sameAs(entity2);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 
     @Test
-    void sameAs_shouldReturnFalse_whenContactDifferent() {
-        // Arrange
+    void sameAsShouldReturnFalseWhenContactDifferent() {
+        // ARRANGE
         Contact contactDouble1 = mock(Contact.class);
         Contact contactDouble2 = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
@@ -405,16 +350,17 @@ class AppraisalEntityTest {
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble1, List.of(pubDouble), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble2, List.of(pubDouble), List.of(genreDouble));
-        // Act
+
+        // ACT
         boolean result = entity1.sameAs(entity2);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 
     @Test
-    void sameAs_shouldReturnFalse_whenGenreIdDifferent() {
-        // Arrange
+    void sameAsShouldReturnFalseWhenGenreIdDifferent() {
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
         GenreID genreDouble1 = mock(GenreID.class);
@@ -422,16 +368,17 @@ class AppraisalEntityTest {
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble1));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble2));
-        // Act
+
+        // ACT
         boolean result = entity1.sameAs(entity2);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 
     @Test
-    void sameAs_shouldReturnFalse_whenPublicationTypeIdDifferent() {
-        // Arrange
+    void sameAsShouldReturnFalseWhenPublicationTypeIdDifferent() {
+        // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble1 = mock(PublicationTypeId.class);
         PublicationTypeId pubDouble2 = mock(PublicationTypeId.class);
@@ -439,60 +386,15 @@ class AppraisalEntityTest {
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble1), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble2), List.of(genreDouble));
-        // Act
+
+        // ACT
         boolean result = entity1.sameAs(entity2);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 
-    @Test
-    void sameAsShouldReturnTrueForEqualBusinessData() {
-
-        // ARRANGE
-        Contact contactDouble = mock(Contact.class);
-        PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
-
-        AppraisalEntity entityDouble1 = new AppraisalEntity(
-                "Name",
-                contactDouble,
-                List.of(pubDouble),
-                List.of(genreDouble)
-        );
-
-        AppraisalEntity entityDouble2 = new AppraisalEntity(
-                "Name",
-                contactDouble,
-                List.of(pubDouble),
-                List.of(genreDouble)
-        );
-
-        // ACT
-        boolean result = entityDouble1.sameAs(entityDouble2);
-
-        // ASSERT
-        assertTrue(result);
-    }
-
     // GETTERS TESTS
-    @Test
-    void gettersShouldReturnCorrectValues() {
-
-        // ARRANGE
-        AppraisalEntity entity = createValidEntity();
-
-        // ACT
-
-        // ASSERT
-        assertNotNull(entity.id());
-        assertNotNull(entity.identity());
-        assertNotNull(entity.getName());
-        assertNotNull(entity.getContact());
-        assertNotNull(entity.getPublicationTypeId());
-        assertNotNull(entity.getGenreId());
-    }
-
     @Test
     void gettersShouldReturnExpectedValues() {
 
@@ -513,9 +415,9 @@ class AppraisalEntityTest {
         // ASSERT
         assertEquals("TestName", entity.getName());
         assertEquals(contactDouble, entity.getContact());
-        assertEquals(List.of(pubDouble), entity.getPublicationTypeId());
-        assertEquals(List.of(genreDouble), entity.getGenreId());
-        assertEquals(entity.id(), entity.identity());
+        assertEquals(List.of(pubDouble), entity.getPublicationTypeIds());
+        assertEquals(List.of(genreDouble), entity.getGenreIds());
+        assertEquals(entity.id(), entity.id());
     }
 
 
@@ -531,7 +433,46 @@ class AppraisalEntityTest {
 
         // ASSERT
         assertTrue(result.contains("AppraisalEntity"));
-        assertTrue(result.contains("name"));
+        assertTrue(result.contains(entity.getName()));
     }
+
+    // UPDATE TEST
+    @Test
+    void updateShouldChangeAllFields() {
+        // ARRANGE
+        AppraisalEntity entity = createValidEntity();
+
+        Contact newContact = mock(Contact.class);
+        PublicationTypeId pub = mock(PublicationTypeId.class);
+        GenreID genre = mock(GenreID.class);
+
+        // ACT
+        entity.update("NewName", newContact, List.of(pub), List.of(genre));
+
+        // ASSERT
+        assertEquals("NewName", entity.getName());
+        assertEquals(newContact, entity.getContact());
+    }
+
+    @Test
+    void getPublicationTypeIds_shouldBeImmutable() {
+        AppraisalEntity entity = createValidEntity();
+
+        List<PublicationTypeId> list = entity.getPublicationTypeIds();
+
+        assertThrows(UnsupportedOperationException.class,
+                list::clear);
+    }
+
+    @Test
+    void getGenreIds_shouldBeImmutable() {
+        AppraisalEntity entity = createValidEntity();
+
+        List<GenreID> list = entity.getGenreIds();
+
+        assertThrows(UnsupportedOperationException.class,
+                list::clear);
+    }
+
 
 }

@@ -15,7 +15,12 @@ import java.util.Objects;
  */
 public class GenreID implements DomainID {
 
-    private final String genreID;
+    private String genreID;
+
+    /**
+     * Required by JPA
+     */
+    protected GenreID() {}
 
     /**
      * Constructs a new {@code GenreID} with the given value.

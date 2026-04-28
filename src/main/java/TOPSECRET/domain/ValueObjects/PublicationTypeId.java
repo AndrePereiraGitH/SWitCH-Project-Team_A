@@ -11,8 +11,13 @@ import java.util.Objects;
  */
 public class PublicationTypeId implements DomainID {
 
-    private final String pbType_id;
+    private String pbType_id;
 
+
+    /**
+     * Required by JPA
+     */
+    protected PublicationTypeId() {}
 
     /**
      * Creates a PublicationTypeId with the given string.
