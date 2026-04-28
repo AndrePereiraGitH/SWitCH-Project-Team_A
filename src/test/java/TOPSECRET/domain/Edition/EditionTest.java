@@ -681,5 +681,32 @@ class EditionTest {
         // Assert
         assertTrue(e1.sameAs(e2));
     }
+
+    // ===============================================
+    // Tests reCreate
+    // ===============================================
+
+    @Test
+    void reCreate_shouldPreserveId() {
+
+        EditionID id = new EditionID("123");
+
+        TypeOfBinding binding = mock(TypeOfBinding.class);
+
+        Edition e = new Edition(
+                id,
+                "1st",
+                codeWithIsbn13,
+                validPhysicalAttributes,
+                publicationTypeId,
+                validPublisherID,
+                "Book",
+                Locale.ENGLISH,
+                LocalDate.of(2020,1,1),
+                binding
+        );
+
+        assertEquals(id, e.id());
+    }
 }
 
