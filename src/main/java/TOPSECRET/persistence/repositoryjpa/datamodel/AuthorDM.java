@@ -3,6 +3,7 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "Authors")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuthorDM {
     @EmbeddedId
     private AuthorId id;
