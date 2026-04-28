@@ -68,7 +68,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         mapper = mock(US016PublicationSampleMapper.class);
 
         controller = new US016ToPutPublicationInAuctionController(
-                listingService,         // FIXED: was libraryRepo, listingRepository
+                listingService,
                 libraryRepo,
                 auctionRepository,
                 publicationSampleRepository,
@@ -86,7 +86,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         // act
         US016ToPutPublicationInAuctionController localController =
                 new US016ToPutPublicationInAuctionController(
-                        listingService,         // FIXED: was libraryRepo, listingRepository
+                        listingService,
                         libraryRepo,
                         auctionRepository,
                         publicationSampleRepository,
@@ -230,7 +230,7 @@ class US016ToPutPublicationInAuctionControllerTest {
                 anyString(),
                 eq(userId),
                 eq(pictures)
-        )).thenThrow(new IllegalArgumentException("Listing already exists")); // match actual declared exception
+        )).thenThrow(new IllegalArgumentException("Listing already exists"));
 
         // act + assert
         IllegalArgumentException ex = assertThrows(
@@ -259,7 +259,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
-        when(listingService.createAndSave(  // FIXED: was listingRepository.createAndAdd
+        when(listingService.createAndSave(
                 anyString(),
                 anyList(),
                 eq(SaleType.AUCTION),

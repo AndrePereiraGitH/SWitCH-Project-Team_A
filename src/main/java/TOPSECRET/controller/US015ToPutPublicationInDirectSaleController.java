@@ -58,13 +58,13 @@ public class US015ToPutPublicationInDirectSaleController {
                                                        IPublicationSampleRepository pubSampleRepo,
                                                        IListingRepository listingRepo,
                                                        US015PublicationSampleMapper pubSampleMapper,
-                                                       ListingService listingService) {  // ← add parameter
+                                                       ListingService listingService) {
 
         if (libraryRepo == null) throw new IllegalArgumentException("LibraryRepository cannot be null");
         if (pubSampleRepo == null) throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         if (listingRepo == null) throw new IllegalArgumentException("ListingRepository cannot be null");
         if (pubSampleMapper == null) throw new IllegalArgumentException("US015PublicationSampleMapper cannot be null");
-        if (listingService == null) throw new IllegalArgumentException("ListingService cannot be null");  // ← add guard
+        if (listingService == null) throw new IllegalArgumentException("ListingService cannot be null");
 
         this._libraryRepo = libraryRepo;
         this._pubSampleRepo = pubSampleRepo;
