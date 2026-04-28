@@ -18,13 +18,13 @@ UI -> Ctrl : createLibrary(libraryName, username)
 activate Ctrl
 
 ref over Ctrl
-[[2.FindUserByUsername.puml Find User By Username]]
+[[2.FindUserByUsername.puml Find User by Username]]
 end ref
 
 Ctrl -> Ctrl : userId
 
 ref over Ctrl
-[[3.CreateLibrary.puml]]
+[[3.CreateLibrary.puml Create Library]]
 end ref
 
 Ctrl -> Ctrl : library

@@ -9,11 +9,12 @@ participant ":ToCreateLibraryCtrl" as Ctrl
 participant ":LibraryService" as service
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
+participant ":UserAssembler" as userAssembler
 participant ":ILibraryRepository" as LibraryRepo
 participant ":LibraryAssembler" as assembler
 participant "libraryDM:LibraryDM" as dm
 participant ":LibraryFactory" as factory
-participant "persistedLib:Library" as persistedLib
+participant "savedLib:Library" as persistedLib
 participant "library:Library" as lib
 participant ":ILibraryRepositoryJPA" as libraryJpa
 participant "Database" as db
@@ -38,12 +39,17 @@ activate userJpa
 
 userJpa -> db: SELECT WHERE username
 activate db
-db --> userJpa: userDM
+db --> userJpa: data
 deactivate db
 userJpa --> userRepo: userDM
 deactivate userJpa
 
-userRepo -> userRepo : userId = userDM.userId()
+userRepo -> userAssembler: toDomain(userDM)
+activate userAssembler
+userAssembler --> userRepo: user
+deactivate userAssembler
+
+userRepo -> userRepo : userId = user.getId()
 
 userRepo --> Ctrl: userId
 deactivate userRepo
@@ -66,7 +72,7 @@ activate libraryJpa
 
 libraryJpa -> db: SELECT WHERE userId
 activate db
-db --> libraryJpa: result
+db --> libraryJpa: data
 deactivate db
 libraryJpa --> LibraryRepo: result
 deactivate libraryJpa
@@ -84,7 +90,7 @@ LibraryRepo -> libraryJpa: save(libraryDM)
 activate libraryJpa
 libraryJpa -> db: INSERT libraryDM
 activate db
-db --> libraryJpa: libraryDM
+db --> libraryJpa: data
 deactivate db
 libraryJpa --> LibraryRepo: libraryDM
 deactivate libraryJpa
@@ -96,16 +102,16 @@ assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId(
 activate factory
 
 factory -->> persistedLib**: <<create>>
-factory --> assembler: persistedLib
+factory --> assembler: savedLib
 deactivate factory
 
-assembler --> LibraryRepo: persistedLib
+assembler --> LibraryRepo: savedLib
 deactivate assembler
 
-LibraryRepo --> service: persistedLib
+LibraryRepo --> service: savedLib
 deactivate LibraryRepo
 
-service --> Ctrl: persistedLib
+service --> Ctrl: savedLib
 deactivate service
 
 Ctrl --> UI : true

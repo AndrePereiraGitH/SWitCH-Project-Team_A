@@ -1,6 +1,6 @@
 @startuml
 hide footbox
-autonumber 3
+autonumber
 title Create Library
 
 

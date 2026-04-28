@@ -20,24 +20,15 @@ interface IUserRepository {
     + findIdByUsername(username): UserId
 }
 
-class UserRepositoryImpl {
-    - userRepositoryJPA: IUserRepositoryJPA
-    + findIdByUsername(username): UserId
-}
-
 interface IUserRepositoryJPA {
     + findByUsername(username): UserDM
 }
 
-interface ILibraryRepository {
-    + save(library): Library
-    - verifyIfUserHasALibrary(result): void
+class UserAssembler {
+    + toDomain(userDM): User
 }
 
-class LibraryRepositoryImpl {
-    - libraryRepositoryJPA: ILibraryRepositoryJPA
-    - assembler: LibraryAssembler
-    - factory: LibraryFactory
+interface ILibraryRepository {
     + save(library): Library
     - verifyIfUserHasALibrary(result): void
 }
@@ -73,16 +64,16 @@ class LibraryDM {
 UI ..> ToCreateLibraryCtrl: uses
 ToCreateLibraryCtrl ..> LibraryService: uses
 ToCreateLibraryCtrl ..> IUserRepository: uses
-IUserRepository <|.. UserRepositoryImpl: implements
-UserRepositoryImpl ..> IUserRepositoryJPA: uses
+IUserRepository ..> IUserRepositoryJPA: uses
+IUserRepository ..> UserAssembler: uses
 LibraryService ..> ILibraryRepository: uses
 LibraryService ..> LibraryFactory: uses
-ILibraryRepository <|.. LibraryRepositoryImpl: implements
-LibraryRepositoryImpl ..> ILibraryRepositoryJPA: uses
-LibraryRepositoryImpl ..> LibraryAssembler: uses
-LibraryRepositoryImpl ..> LibraryFactory: uses
+ILibraryRepository ..> ILibraryRepositoryJPA: uses
+ILibraryRepository ..> LibraryAssembler: uses
+ILibraryRepository ..> LibraryFactory: uses
 LibraryAssembler ..> LibraryDM: creates
 LibraryAssembler ..> Library: creates
+LibraryAssembler ..> LibraryFactory: uses
 LibraryFactory ..> Library: creates
 
 @enduml

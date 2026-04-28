@@ -1,11 +1,12 @@
 @startuml
 hide footbox
-autonumber 2
+autonumber
 title Find User By Username
 
 participant ":ToCreateLibraryCtrl" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
+participant ":UserAssembler" as userAssembler
 participant "Database" as db
 
 
@@ -28,6 +29,12 @@ deactivate db
 
 userJpa --> userRepo: userDM
 deactivate userJpa
+
+userRepo -> userAssembler: toDomain(userDM)
+activate userAssembler
+userAssembler --> userRepo: user
+deactivate userAssembler
+
 
 userRepo -> userRepo : userId = userDM.userId()
 
