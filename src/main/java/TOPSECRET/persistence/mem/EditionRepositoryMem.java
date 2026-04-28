@@ -3,15 +3,11 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.domain.Edition.IEditionRepository;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.PhysicalAttributes;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
 import java.util.Optional;
 
 /**
@@ -21,56 +17,63 @@ import java.util.Optional;
  * that duplicate editions are not added.
  */
 public class EditionRepositoryMem implements IEditionRepository {
-    private final List<Edition> _editions;
-    private final EditionFactory _editionFactory;
 
-    public EditionRepositoryMem(EditionFactory editionFactory) {
+    private final List<Edition> _allEditionsInSystem;
 
-        if (editionFactory == null) {
-            throw new IllegalArgumentException("Editions Factory cannot be null");
+    public EditionRepositoryMem() {
+
+        this._allEditionsInSystem = new ArrayList<>();
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Edition save(Edition edition) {
+        if (existsById(edition.id())) {
+            throw new IllegalArgumentException("Edition with id " + edition.id() + " already exists");
         }
-
-        this._editions = new ArrayList<>();
-        this._editionFactory = editionFactory;
+        _allEditionsInSystem.add(edition);
+        return edition;
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationTypeId publicationTypeId, PublisherID publisherID, String mediaFormat, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding){
-      Edition newEdition = _editionFactory.create(
-              editionNumber,
-              code,
-              physicalAttributes,
-              publicationTypeId,
-              publisherID,
-              mediaFormat,
-              editionLanguage,
-              editionDate,
-              typeOfBinding
-      );
-      if ( _editions.contains(newEdition)){
-          throw new IllegalArgumentException("Edition already exists");
-      }
-      _editions.add(newEdition);
-       return List.copyOf(_editions);
+    @Override
+    public boolean existsById(EditionID id) {
+        for (Edition edition : _allEditionsInSystem) {
+            if (edition.id().equals(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Optional<Edition> findEditionById(EditionID editionID){
+    public Optional<Edition> findById(EditionID editionID){
 
         if(editionID == null){
             throw new NullPointerException("EditionId must not be null");
         }
 
-        for(Edition edition: _editions){
+        for(Edition edition: _allEditionsInSystem){
             if(edition.id().equals(editionID)){
                 return Optional.of(edition);
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Edition> findAll() {
+        return List.copyOf(_allEditionsInSystem);
     }
 
     /**
@@ -84,13 +87,49 @@ public class EditionRepositoryMem implements IEditionRepository {
 
         List<EditionID> editionIDs = new ArrayList<>();
 
-        for (Edition edition : _editions) {
+        for (Edition edition : _allEditionsInSystem) {
             if (publisherId.equals(edition.getPublisherID())) {
                 editionIDs.add(edition.id());
             }
         }
 
         return editionIDs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Edition> findByPublisherId(PublisherID publisherId) {
+        if (publisherId == null) {
+            throw new IllegalArgumentException("publisherId must not be null");
+        }
+
+        List<Edition> result = new ArrayList<>();
+        for (Edition edition : _allEditionsInSystem) {
+            if (publisherId.equals(edition.getPublisherID())) {
+                result.add(edition);
+            }
+        }
+        return List.copyOf(result);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Edition> findByPublicationTypeId(PublicationTypeId publicationTypeId) {
+        if (publicationTypeId == null) {
+            throw new IllegalArgumentException("publicationTypeId must not be null");
+        }
+
+        List<Edition> result = new ArrayList<>();
+        for (Edition edition : _allEditionsInSystem) {
+            if (publicationTypeId.equals(edition.getPublicationTypeID())) {
+                result.add(edition);
+            }
+        }
+        return List.copyOf(result);
     }
 }
 
