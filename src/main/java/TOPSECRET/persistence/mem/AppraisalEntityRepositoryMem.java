@@ -1,115 +1,101 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
-import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
  * In-memory implementation of {@link IAppraisalEntityRepository}.
  *
  * <p>
- * Stores {@link AppraisalEntity} instances in a local collection.
- * Responsible for converting DTOs into domain objects,
- * delegating creation to the factory, and enforcing business rules.
- * </p>
- *
- * <p>
- * Ensures:
- * <ul>
- *     <li>Referenced genres and publication types exist</li>
- *     <li>No duplicate entities exist with the same name and contact</li>
- * </ul>
+ * Stores {@link AppraisalEntity} instances in memory.
+ * Used mainly for testing or non-persistent scenarios.
  * </p>
  */
 public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository {
 
-    private List<AppraisalEntity> _appraisalEntities;
-    private AppraisalEntityFactory _appraisalEntityFactory;
-
+    private final List<AppraisalEntity> appraisalEntities;
 
     /**
      * Creates a new repository instance.
-     *
-     * @param genreRepository repository for retrieving Genre objects
-     * @param publicationTypeRepository repository for retrieving PublicationType objects
-     * @param appraisalEntityFactory factory used to create AppraisalEntity instances
-     * @throws IllegalArgumentException if any dependency is null
      */
-    public AppraisalEntityRepositoryMem (
-            IGenreRepository genreRepository,
-            IPublicationTypeRepository publicationTypeRepository,
-            AppraisalEntityFactory appraisalEntityFactory) {
-
-        if (genreRepository == null) {
-            throw new IllegalArgumentException("GenreRepository cannot be null.");
-        }
-
-        if (publicationTypeRepository == null) {
-            throw new IllegalArgumentException("PublicationTypeRepository cannot be null.");
-        }
-
-        if (appraisalEntityFactory == null) {
-            throw new IllegalArgumentException("AppraisalEntityFactory cannot be null.");
-        }
-
-        this._appraisalEntities = new ArrayList<>();
-        this._appraisalEntityFactory = appraisalEntityFactory;
+    public AppraisalEntityRepositoryMem () {
+        this.appraisalEntities = new ArrayList<>();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public AppraisalEntity createAndAdd(String name,
-            Contact contact, List<GenreID> genresId, List<PublicationTypeId> publicationTypesId) {
-
-        if (genresId == null || genresId.isEmpty()) {
-            throw new IllegalArgumentException("Genres cannot be null or empty.");
+    public AppraisalEntity save(AppraisalEntity entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("Entity cannot be null");
         }
+        appraisalEntities.removeIf(e -> e.id().equals(entity.id()));
 
-        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
-            throw new IllegalArgumentException("PublicationTypes cannot be null or empty.");
-        }
+        appraisalEntities.add(entity);
 
-        if (existsByNameAndContact(name, contact)) {
-            throw new IllegalArgumentException("AppraisalEntity already exists.");
-        }
-
-        AppraisalEntity apEn =
-                _appraisalEntityFactory.create(name, contact, publicationTypesId, genresId);
-
-        _appraisalEntities.add(apEn);
-
-        return apEn;
+        return entity;
     }
 
     /**
-     * Checks if an AppraisalEntity already exists with the same name and contact.
-     *
-     * @param name entity name
-     * @param contact contact information
-     * @return true if a matching entity exists, false otherwise
+     * {@inheritDoc}
      */
-    private boolean existsByNameAndContact(String name, Contact contact) {
+    @Override
+    public Optional<AppraisalEntity> findById(AppraisalEntityId id) {
 
-        for (AppraisalEntity entity : _appraisalEntities) {
-
-            if (entity.getName().equalsIgnoreCase(name)
-                    && entity.getContact().equals(contact)) {
-                return true;
-            }
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
         }
 
-        return false;
+        return appraisalEntities.stream()
+                .filter(e -> e.id().equals(id))
+                .findFirst();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AppraisalEntity> findAll() {
+        return List.copyOf(appraisalEntities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean existsById(AppraisalEntityId id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+
+        return appraisalEntities.stream()
+                .anyMatch(e -> e.id().equals(id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean deleteById(AppraisalEntityId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+
+        Optional<AppraisalEntity> existing = findById(id);
+
+        if (existing.isEmpty()) {
+            return false;
+        }
+
+        appraisalEntities.remove(existing.get());
+        return true;
+    }
 }
