@@ -1,6 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
@@ -13,9 +14,10 @@ import java.util.Objects;
  *
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
+@Embeddable
 public class PublisherID implements DomainID {
 
-    private final String _publisherID;
+    private String _publisherID;
 
     /**
      * Constructs a new {@code PublisherID} with the given value.
@@ -28,6 +30,10 @@ public class PublisherID implements DomainID {
             throw new IllegalArgumentException("PublisherId must be a non empty String");
         }
         this._publisherID = publisherID;
+    }
+
+    public PublisherID() {
+
     }
 
     public String getId() {

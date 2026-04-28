@@ -1,4 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
+
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
+
 /**
  * Immutable value object representing physical dimensions.
  * Invariants:
@@ -6,10 +10,12 @@ package TOPSECRET.domain.ValueObjects;
  * - width  > 0
  * - depth  > 0
  */
+@Embeddable
+@NoArgsConstructor
 public class Dimensions {
-    private final double _height;
-    private final double _width;
-    private final double _depth;
+    private double _height;
+    private double _width;
+    private double _depth;
 
     public Dimensions(double height, double width, double depth) {
         if (height <= 0 || width <= 0 || depth <= 0) {

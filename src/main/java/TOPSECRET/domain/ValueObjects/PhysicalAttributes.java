@@ -1,5 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
+import jakarta.persistence.Embeddable;
+
 import java.util.Objects;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Objects;
  * This class encapsulates basic physical metadata and validates required values
  * when using the parameterized constructor.
  */
-
+@Embeddable
 public class PhysicalAttributes {
 
     private Dimensions _dimensions;
