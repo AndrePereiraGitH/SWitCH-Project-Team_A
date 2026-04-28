@@ -3,7 +3,6 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +54,12 @@ public class CityRepositoryMem implements ICityRepository {
      * {@inheritDoc}
      */
     @Override
-    public City createAndAdd(CountryID countryID, String cityName) {
-        City newCity = _cityFactory.create(countryID, cityName);
-
-        if (existsByAttributes(newCity)) {
+    public City save(City city) {
+        if (existsByAttributes(city)) {
             throw new IllegalArgumentException("This city already exists in the system.");
         }
-
-        _cities.add(newCity);
-        return newCity;
+        _cities.add(city);
+        return city;
     }
 
     /**

@@ -1,0 +1,70 @@
+package TOPSECRET.persistence.repositoryjpa.assembler;
+
+import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.City.CityFactory;
+import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for {@link CityAssembler}.
+ *
+ * <p>This test suite verifies the correct conversion between the {@link City}
+ * domain object and the {@link CityDM} data model, in both directions.
+ * The {@link CityFactory} is mocked to isolate the assembler logic.</p>
+ */
+class CityAssemblerTest {
+
+    private CityFactory doubleCityFactory;
+    private CityAssembler assembler;
+
+    @BeforeEach
+    void setUp() {
+        doubleCityFactory = mock(CityFactory.class);
+        assembler = new CityAssembler(doubleCityFactory);
+    }
+
+    @Test
+    void shouldConvertDomainToDM() {
+
+        // Arrange
+        CityID cityID = new CityID("test-uuid");
+        CountryID countryID = new CountryID("PORTUGAL_ID");
+        City doubleCity = mock(City.class);
+        when(doubleCity.id()).thenReturn(cityID);
+        when(doubleCity.getCityCountryID()).thenReturn(countryID);
+        when(doubleCity.getCityName()).thenReturn("Porto");
+
+        // Act
+        CityDM result = assembler.DomainToDM(doubleCity);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(cityID, result.getCityID());
+        assertEquals(countryID, result.getCountryID());
+        assertEquals("Porto", result.getCityName());
+    }
+
+    @Test
+    void shouldConvertDMToDomain() {
+
+        // Arrange
+        CityID cityID = new CityID("test-uuid");
+        CountryID countryID = new CountryID("PORTUGAL_ID");
+        CityDM cityDM = new CityDM(cityID, countryID, "Porto");
+        City doubleCity = mock(City.class);
+        when(doubleCityFactory.create(cityID, countryID, "Porto")).thenReturn(doubleCity);
+
+        // Act
+        City result = assembler.DMToDomain(cityDM);
+
+        // Assert
+        assertEquals(doubleCity, result);
+        verify(doubleCityFactory).create(cityID, countryID, "Porto");
+    }
+}

@@ -1,5 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
+import jakarta.persistence.Embeddable;
+
 /**
  * Value Object representing a unique identifier for a {@link TOPSECRET.domain.Country.Country}.
  * <p>
@@ -11,9 +13,12 @@ package TOPSECRET.domain.ValueObjects;
  * ensuring that the same country always produces the same {@code CountryID}.
  * </p>
  */
+@Embeddable
 public class CountryID {
 
-    private final String countryId;
+    private String countryId;
+
+    protected CountryID() {}
 
     /**
      * Constructs a new {@code CountryID} with the given identifier.

@@ -8,52 +8,65 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Domain entity representing a City within a specific country.
+ * Domain aggregate representing a City within a specific country.
  *
- * <p>
- * A City contains a name and a reference to its country.
- * </p>
+ * <p>A City is identified by a {@link CityID} and belongs to a country
+ * referenced by {@link CountryID}. Identity is based solely on {@link CityID}.</p>
  *
- * <p>
- * Validation rules:
+ * <p>Validation rules:</p>
  * <ul>
  *     <li>City name must not be null or blank</li>
- *     <li>Country must not be null</li>
+ *     <li>CountryID must not be null</li>
  * </ul>
- * </p>
- *
- * <p>
- * Identity is defined by {@link CityID}.
- * </p>
  */
 public class City implements AggregateRoot<CityID> {
 
-    private final CityID cityID;
+    private CityID cityID;
     private CountryID _countryID;
     private String _cityName;
 
     /**
-     * Constructs a new City with the specified country and city name.
-     * <p>
-     * The constructor is protected, so it can only be called from
-     * subclasses or classes in the same package.
-     *
-     * @param countryID  the country this city belongs to; must not be null
-     * @param cityName the name of the city; must not be null or blank
-     * @throws IllegalArgumentException if country is null or cityName is null/blank
+     * Required by JPA. Not for direct use.
      */
+    protected City() {}
 
+    /**
+     * Constructs a new City, generating a random {@link CityID}.
+     *
+     * @param countryID the country this city belongs to; must not be {@code null}
+     * @param cityName  the name of the city; must not be {@code null} or blank
+     * @throws IllegalArgumentException if any constraint is violated
+     */
     protected City(CountryID countryID, String cityName) {
-        if (cityName == null || cityName.isBlank()) {
+        if (cityName == null || cityName.isBlank())
             throw new IllegalArgumentException("A city name cannot be left blank");
-        }
-        if (countryID == null) {
+        if (countryID == null)
             throw new IllegalArgumentException("CountryID cannot be null");
-        }
 
         _countryID = countryID;
         _cityName = cityName;
         this.cityID = new CityID(UUID.randomUUID().toString());
+    }
+
+    /**
+     * Reconstitutes an existing City from persistence with a known {@link CityID}.
+     *
+     * @param cityID    the existing domain identifier; must not be {@code null}
+     * @param countryID the country this city belongs to; must not be {@code null}
+     * @param cityName  the name of the city; must not be {@code null} or blank
+     * @throws IllegalArgumentException if any constraint is violated
+     */
+    protected City(CityID cityID, CountryID countryID, String cityName) {
+        if (cityName == null || cityName.isBlank())
+            throw new IllegalArgumentException("A city name cannot be left blank");
+        if (countryID == null)
+            throw new IllegalArgumentException("CountryID cannot be null");
+        if (cityID == null)
+            throw new IllegalArgumentException("CityID cannot be null");
+
+        this.cityID = cityID;
+        this._countryID = countryID;
+        this._cityName = cityName;
     }
 
     public CountryID getCityCountryID() {

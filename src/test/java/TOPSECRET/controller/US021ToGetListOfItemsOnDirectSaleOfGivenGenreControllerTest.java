@@ -13,8 +13,6 @@ import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
 import TOPSECRET.dto.US021GenreDTO;
 
-import TOPSECRET.persistence.mem.GenreRepositoryMem;
-import TOPSECRET.persistence.mem.ListingRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
