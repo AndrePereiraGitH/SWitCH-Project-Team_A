@@ -97,7 +97,7 @@ public class US022ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdId);
 
-        List<ListingId> listingId = listingRepository.findAllListingIdByPublicationSampleId(itemsId);
+        List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
 
         List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(listingId);
 

@@ -331,7 +331,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
                 .thenReturn(pubSampleIds);
-        when(listingRepositoryMock.findDirectSaleListingsContaining(pubSampleIds))
+        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
                 .thenReturn(listings);
         when(mapperMock.toDTOs(listings)).thenReturn(List.of(expectedDTO));
 
@@ -376,7 +376,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
                 .thenReturn(pubSampleIds);
-        when(listingRepositoryMock.findDirectSaleListingsContaining(pubSampleIds))
+        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
                 .thenReturn(listings);
         when(mapperMock.toDTOs(listings)).thenReturn(List.of(dto1, dto2));
 
