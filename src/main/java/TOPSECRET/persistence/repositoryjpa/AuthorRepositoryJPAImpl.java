@@ -25,9 +25,9 @@ import java.util.stream.StreamSupport;
 @Repository
 public class AuthorRepositoryJPAImpl implements IAuthorRepository {
 
-    IAuthorRepositoryJPA authorRepositoryJpa;
+    private IAuthorRepositoryJPA authorRepositoryJpa;
 
-    AuthorAssembler authorAssembler;
+    private AuthorAssembler authorAssembler;
 
 
     public AuthorRepositoryJPAImpl(IAuthorRepositoryJPA authorRepositoryJpa, AuthorAssembler authorAssembler) {

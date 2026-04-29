@@ -7,6 +7,10 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.AuthorDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IAuthorRepositoryJPA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 
@@ -17,19 +21,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class AuthorRepositoryJPAImplTest {
 
+    @Mock
     private IAuthorRepositoryJPA authorRepositoryJpa;
+
+    @Mock
     private AuthorAssembler authorAssembler;
+
+    @InjectMocks
     private AuthorRepositoryJPAImpl repository;
 
-    @BeforeEach
-    void setUp() {
-        authorRepositoryJpa = mock(IAuthorRepositoryJPA.class);
-        authorAssembler = mock(AuthorAssembler.class);
 
-        repository = new AuthorRepositoryJPAImpl(authorRepositoryJpa, authorAssembler);
-    }
 
     // ====================================
     // =============== SAVE ===============

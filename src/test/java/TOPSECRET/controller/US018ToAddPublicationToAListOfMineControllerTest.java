@@ -67,7 +67,7 @@ class US018ToAddPublicationToAListOfMineControllerTest {
 
         when(publication.id()).thenReturn(pubId);
 
-        when(publicationRepo.getAvailablePublicationsForCollection(userId, collectionId))
+        when(publicationRepo.findAvailableForCollection(userId, collectionId))
                 .thenReturn(List.of(publication));
 
         when(publicationSampleMapper.toDTOs(List.of(publication)))
