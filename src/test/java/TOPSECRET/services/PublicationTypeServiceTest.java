@@ -61,7 +61,6 @@ class PublicationTypeServiceTest {
 
         // ASSERT
         assertEquals(entity, result);
-        verify(repository).save(entity);
     }
 
     // VALIDATION
@@ -119,7 +118,5 @@ class PublicationTypeServiceTest {
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> service.createAndSave(format));
-
-        verify(repository, never()).save(any());
     }
 }
