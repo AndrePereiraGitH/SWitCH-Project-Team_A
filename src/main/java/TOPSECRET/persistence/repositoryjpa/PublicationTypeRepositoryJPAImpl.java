@@ -52,10 +52,6 @@ public class PublicationTypeRepositoryJPAImpl implements IPublicationTypeReposit
     @Override
     public PublicationType save(PublicationType pubType) {
 
-        if (pubType == null) {
-            throw new IllegalArgumentException("PublicationType cannot be null");
-        }
-
         PublicationTypeDM dm = assembler.toDataModel(pubType);
 
         PublicationTypeDM saved = jpaRepository.save(dm);
