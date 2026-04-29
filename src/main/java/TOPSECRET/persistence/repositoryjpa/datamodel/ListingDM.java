@@ -36,34 +36,34 @@ public class ListingDM {
 
     @EmbeddedId
     @AttributeOverride(name = "_listingId", column = @Column(name = "listing_id"))
-    private ListingId _listingId;
+    private ListingId listingId;
 
     @ElementCollection
     @CollectionTable(name = "listing_items", joinColumns = @JoinColumn(name = "listing_id"))
     @AttributeOverride(name = "pubSampleID", column = @Column(name = "pubSample_id"))
-    private List<PublicationSampleId> _itemsId;
+    private List<PublicationSampleId> itemsId;
 
     @Embedded
     @AttributeOverride(name = "userId", column = @Column(name = "user_id"))
-    private UserId _sellerId;
+    private UserId sellerId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sale_type", nullable = false)
-    private SaleType _saleType;
+    private SaleType saleType;
 
     @Column(name = "listing_title")
-    private String _listingTitle;
+    private String listingTitle;
 
     @ElementCollection
     @CollectionTable(name = "listing_pictures", joinColumns = @JoinColumn(name = "listing_id"))
     @Column(name = "picture_url")
-    private List<String> _pictures;
+    private List<String> pictures;
 
     @Column(name = "price")
-    private String _price;
+    private String price;
 
     @Column(name = "short_description")
-    private String _shortDescription;
+    private String shortDescription;
 
 
     /**
@@ -84,13 +84,13 @@ public class ListingDM {
                      SaleType saleType, String listingTitle,
                      List<String> pictures, String price) {
 
-        _listingId = Objects.requireNonNull(listingId);
-        _shortDescription = Objects.requireNonNull(shortDescription);
-        _itemsId = Objects.requireNonNull(itemsId);
-        _sellerId = Objects.requireNonNull(sellerId);
-        _saleType = Objects.requireNonNull(saleType);
-        _listingTitle = Objects.requireNonNull(listingTitle);
-        _pictures = Objects.requireNonNull(pictures);
-        _price = Objects.requireNonNull(price);
+        this.listingId = Objects.requireNonNull(listingId);
+        this.shortDescription = Objects.requireNonNull(shortDescription);
+        this.itemsId = Objects.requireNonNull(itemsId);
+        this.sellerId = Objects.requireNonNull(sellerId);
+        this.saleType = Objects.requireNonNull(saleType);
+        this.listingTitle = Objects.requireNonNull(listingTitle);
+        this.pictures = Objects.requireNonNull(pictures);
+        this.price = Objects.requireNonNull(price);
     }
 }
