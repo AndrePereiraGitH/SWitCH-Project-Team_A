@@ -202,7 +202,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
-        when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double))).thenReturn(List.of());
+        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenReturn(List.of());
 
         US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -250,7 +250,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
-        when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
+        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
 
         US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -270,7 +270,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double, editionId2Double)))
             .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
-        when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double, pubSampleId2Double)))
+        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double, pubSampleId2Double)))
                 .thenReturn(List.of(listingDouble1, listingDouble2));
         when(mapperDouble.toDTOs(List.of(listingDouble1, listingDouble2))).thenReturn(List.of(listingDTODouble1, listingDTODouble2));
 

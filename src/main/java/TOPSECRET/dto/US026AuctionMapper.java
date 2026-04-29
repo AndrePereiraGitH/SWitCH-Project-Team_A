@@ -40,7 +40,7 @@ public class US026AuctionMapper {
     public US026AuctionDTO fromDomain(Auction auction) throws InstanceNotFoundException {
 
         ListingId listingId = auction.getListingId();
-        Optional<Listing> listing = listingRepo.findListingById(listingId);
+        Optional<Listing> listing = listingRepo.findById(listingId);
         if (listing.isEmpty()) {
             throw new InstanceNotFoundException("Listing not found");
         }

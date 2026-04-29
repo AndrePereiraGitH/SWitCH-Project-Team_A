@@ -168,7 +168,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 .thenReturn(Optional.of(bdId));
         when(pubSampleRepository.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(List.of(pubId_1, pubId_2, pubId_3));
-        when(listingRepository.getAuctionListingsContaining(List.of(pubId_1, pubId_2, pubId_3)))
+        when(listingRepository.findAllByAuctionAndPublicationSampleIdIn(List.of(pubId_1, pubId_2, pubId_3)))
                 .thenReturn(List.of());
 
         // Act
@@ -195,7 +195,7 @@ class US024GetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 .thenReturn(Optional.of(bdId));
         when(pubSampleRepository.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(List.of(pubId_1, pubId_2, pubId_3));
-        when(listingRepository.getAuctionListingsContaining(List.of(pubId_1, pubId_2, pubId_3)))
+        when(listingRepository.findAllByAuctionAndPublicationSampleIdIn(List.of(pubId_1, pubId_2, pubId_3)))
                 .thenReturn(List.of(listing_1, listing_2, listing_3));
 
         // Act
