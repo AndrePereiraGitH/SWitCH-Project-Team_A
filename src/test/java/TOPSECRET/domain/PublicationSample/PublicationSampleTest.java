@@ -48,10 +48,12 @@ class PublicationSampleTest {
     private final EditionID editionID = mock(EditionID.class);
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final Condition anyCondition = mock(Condition.class);
+    private final PublicationSampleFactory factory = new PublicationSampleFactory();
+    private final PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
 
 
     // =========================================================================
-    // Constructor
+    // Constructor without PubSampleId
     // =========================================================================
 
     @Test
@@ -102,6 +104,68 @@ class PublicationSampleTest {
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
                 new PublicationSample(bdID, ownerID, anyPublicationStatus, editionID, null));
+    }
+
+    // =========================================================================
+    // Constructor with PubSampleId
+    // =========================================================================
+
+    @Test
+    void constructorWithPubSampleId_shouldCreateAValidPubSample(){
+
+        //Act
+        PublicationSample pbSample = factory.create(pbSampleId,bdID,ownerID,anyPublicationStatus,editionID,anyCondition);
+
+        //Assert
+        assertNotNull(pbSample);
+    }
+
+    @Test
+    void constructorWithPubSampleId_shouldThrowExceptionWhen_PublicationSampleID_isNull() {
+
+        //Act + assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSample(null,bdID, ownerID, anyPublicationStatus, editionID, anyCondition));
+    }
+
+    @Test
+    void constructorWithPubSampleId_shouldThrowExceptionWhen_BibliographicalDataID_isNull() {
+
+        //Act + assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSample(pbSampleId,null, ownerID, anyPublicationStatus, editionID, anyCondition));
+    }
+
+    @Test
+    void constructorWithPubSampleId_shouldThrowExceptionWhen_UserID_isNull() {
+
+        //Act + assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSample(pbSampleId, bdID, null, anyPublicationStatus, editionID, anyCondition));
+    }
+
+    @Test
+    void constructorWithPubSampleId_shouldThrowExceptionWhen_publicationStatus_isNull() {
+
+        //Act + assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSample(pbSampleId, bdID, ownerID, null, editionID, anyCondition));
+    }
+
+    @Test
+    void constructorWithPubSampleId_shouldThrowExceptionWhen_editionID_isNull() {
+
+        //Act + assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, null, anyCondition));
+    }
+
+    @Test
+    void constructorWithPubSampleId_shouldThrowExceptionWhen_condition_isNull() {
+
+        //Act + assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, editionID, null));
     }
 
 
