@@ -39,7 +39,7 @@ public class US025ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      * @return list of AuthorDTO_US025 representing all authors
      */
     public List<AuthorDTO_US025> getAllAuthors() {
-        return AuthorDTO_US025.fromAuthors(IAuthorRepository.getAllAuthors());
+        return AuthorDTO_US025.fromAuthors(IAuthorRepository.findAll());
     }
 
     /**
