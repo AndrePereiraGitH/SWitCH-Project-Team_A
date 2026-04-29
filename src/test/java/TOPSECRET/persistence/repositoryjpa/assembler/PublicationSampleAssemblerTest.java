@@ -8,6 +8,10 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +30,7 @@ import static org.mockito.Mockito.*;
  * <p>Dependencies are isolated using Mockito. {@link PublicationSample} is mocked
  * with stubbed getters to avoid coupling the assembler tests to domain construction logic.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class PublicationSampleAssemblerTest {
 
     private PublicationSampleId pubSampleIdDouble;
@@ -36,7 +41,11 @@ class PublicationSampleAssemblerTest {
     private CollectionOfPublicationsID collectionOfPublicationsIdDouble;
     private PublicationStatus status;
     private Condition condition;
+
+    @Mock
     private PublicationSampleFactory factoryDouble;
+
+    @InjectMocks
     private PublicationSampleAssembler assembler;
 
     @BeforeEach
@@ -49,9 +58,6 @@ class PublicationSampleAssemblerTest {
         collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
         status = PublicationStatus.READ;
         condition = Condition.NEW;
-
-        factoryDouble = mock(PublicationSampleFactory.class);
-        assembler = new PublicationSampleAssembler(factoryDouble);
     }
 
     @Test
@@ -84,8 +90,6 @@ class PublicationSampleAssemblerTest {
         assertThrows(NullPointerException.class, () -> assembler.toDM(null));
     }
 
-
-
     @Test
     void toDomain_shouldReturnAValidDomainObject() {
         // Arrange
@@ -94,8 +98,6 @@ class PublicationSampleAssemblerTest {
         when(dm.getBdId()).thenReturn(bdIdDouble);
         when(dm.getOwnerId()).thenReturn(userIdDouble);
         when(dm.getEditionId()).thenReturn(editionIdDouble);
-        when(dm.getLibraryId()).thenReturn(libraryIdDouble);
-        when(dm.getCollectionOfPublicationsId()).thenReturn(collectionOfPublicationsIdDouble);
         when(dm.getPublicationStatus()).thenReturn(status);
         when(dm.getCondition()).thenReturn(condition);
 

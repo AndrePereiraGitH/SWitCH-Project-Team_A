@@ -8,11 +8,11 @@ import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
  * <p>Each test follows the Arrange / Act / Assert structure and exercises
  * a single logical scenario.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class ListingServiceTest {
 
     @Mock
@@ -41,11 +42,6 @@ class ListingServiceTest {
 
     @InjectMocks
     private ListingService service;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
 
     // =========================================================================
@@ -76,16 +72,16 @@ class ListingServiceTest {
     @Test
     void createAndSave_shouldReturnSavedListing() {
         // Arrange
-        String title            = "title";
+        String title = "title";
         List<PublicationSampleId> itemsId = List.of(mock(PublicationSampleId.class));
-        SaleType saleType       = mock(SaleType.class);
-        Price price             = mock(Price.class);
-        String description      = "description";
-        UserId sellerId         = mock(UserId.class);
-        List<Picture> pictures  = List.of(mock(Picture.class));
+        SaleType saleType  = mock(SaleType.class);
+        Price price = mock(Price.class);
+        String description = "description";
+        UserId sellerId = mock(UserId.class);
+        List<Picture> pictures = List.of(mock(Picture.class));
 
-        Listing createdListing  = mock(Listing.class);
-        Listing savedListing    = mock(Listing.class);
+        Listing createdListing = mock(Listing.class);
+        Listing savedListing = mock(Listing.class);
 
         when(listingFactory.create(title, itemsId, saleType, price, description, sellerId, pictures))
                 .thenReturn(createdListing);
@@ -99,66 +95,4 @@ class ListingServiceTest {
         assertSame(savedListing, result);
     }
 
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenTitleIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(null, List.of(), mock(SaleType.class), mock(Price.class),
-                        "description", mock(UserId.class), List.of()));
-    }
-
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenItemsIdIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave("title", null, mock(SaleType.class), mock(Price.class),
-                        "description", mock(UserId.class), List.of()));
-    }
-
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenSaleTypeIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave("title", List.of(), null, mock(Price.class),
-                        "description", mock(UserId.class), List.of()));
-    }
-
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenPriceIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave("title", List.of(), mock(SaleType.class), null,
-                        "description", mock(UserId.class), List.of()));
-    }
-
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenShortDescriptionIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave("title", List.of(), mock(SaleType.class), mock(Price.class),
-                        null, mock(UserId.class), List.of()));
-    }
-
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenSellerIdIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave("title", List.of(), mock(SaleType.class), mock(Price.class),
-                        "description", null, List.of()));
-    }
-
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenPicturesIsNull() {
-
-        //Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave("title", List.of(), mock(SaleType.class), mock(Price.class),
-                        "description", mock(UserId.class), null));
-    }
 }

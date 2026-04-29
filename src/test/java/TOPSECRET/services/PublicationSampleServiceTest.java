@@ -10,30 +10,17 @@ import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link PublicationSampleService}.
- *
- * <p>Covers two areas:</p>
- * <ul>
- *   <li><b>createAndSave — happy path</b>: verifies that a {@link PublicationSample}
- *       is correctly created via {@link PublicationSampleFactory} and persisted via
- *       {@link IPublicationSampleRepository}, returning the saved instance.</li>
- *   <li><b>createAndSave — null rejection</b>: verifies that all mandatory parameters
- *       ({@code bibliographicalDataId}, {@code userId}, {@code publicationStatus},
- *       {@code editionId}, {@code condition}) throw {@link NullPointerException}
- *       when {@code null}.</li>
- * </ul>
- *
- */
-
+@ExtendWith(MockitoExtension.class)
 class PublicationSampleServiceTest {
 
     // =========================================================================
@@ -60,8 +47,7 @@ class PublicationSampleServiceTest {
     private Condition condition;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
         bdIdDouble = mock(BibliographicalDataID.class);
         userIdDouble = mock(UserId.class);
         editionIdDouble = mock(EditionID.class);
@@ -74,25 +60,29 @@ class PublicationSampleServiceTest {
     // =========================================================================
 
     @Test
-    void createAndSave_shouldReturnAPbSample(){
+    void createAndSave_shouldReturnAPbSample() {
 
-        //Arrange
+        // Arrange
         PublicationSample pbSample = mock(PublicationSample.class);
 
-        when(factory.create(bdIdDouble,userIdDouble,status,editionIdDouble,condition)).thenReturn(pbSample);
+        when(factory.create(bdIdDouble, userIdDouble, status, editionIdDouble, condition)).thenReturn(pbSample);
         when(publicationSampleRepository.save(pbSample)).thenReturn(pbSample);
 
-        //Act
-        PublicationSample result = service.createAndSave(bdIdDouble,userIdDouble,status,editionIdDouble,condition);
+        // Act
+        PublicationSample result = service.createAndSave(bdIdDouble, userIdDouble, status, editionIdDouble, condition);
 
-        //Assert
-        assertEquals(pbSample,result);
+        // Assert
+        assertEquals(pbSample, result);
     }
 
     @Test
     void createAndSave_shouldThrowWhenBibliographicalDataIdIsNull() {
 
-        //Act + Assert
+        // Arrange
+        when(factory.create(isNull(), eq(userIdDouble), eq(status), eq(editionIdDouble), eq(condition)))
+                .thenThrow(NullPointerException.class);
+
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(null, userIdDouble, status, editionIdDouble, condition));
     }
@@ -100,7 +90,11 @@ class PublicationSampleServiceTest {
     @Test
     void createAndSave_shouldThrowWhenUserIdIsNull() {
 
-        //Act + Assert
+        // Arrange
+        when(factory.create(eq(bdIdDouble), isNull(), eq(status), eq(editionIdDouble), eq(condition)))
+                .thenThrow(NullPointerException.class);
+
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(bdIdDouble, null, status, editionIdDouble, condition));
     }
@@ -108,7 +102,11 @@ class PublicationSampleServiceTest {
     @Test
     void createAndSave_shouldThrowWhenPublicationStatusIsNull() {
 
-        //Act + Assert
+        // Arrange
+        when(factory.create(eq(bdIdDouble), eq(userIdDouble), isNull(), eq(editionIdDouble), eq(condition)))
+                .thenThrow(NullPointerException.class);
+
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(bdIdDouble, userIdDouble, null, editionIdDouble, condition));
     }
@@ -116,7 +114,11 @@ class PublicationSampleServiceTest {
     @Test
     void createAndSave_shouldThrowWhenEditionIdIsNull() {
 
-        //Act + Assert
+        // Arrange
+        when(factory.create(eq(bdIdDouble), eq(userIdDouble), eq(status), isNull(), eq(condition)))
+                .thenThrow(NullPointerException.class);
+
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(bdIdDouble, userIdDouble, status, null, condition));
     }
@@ -124,9 +126,12 @@ class PublicationSampleServiceTest {
     @Test
     void createAndSave_shouldThrowWhenConditionIsNull() {
 
-        //Act + Assert
+        // Arrange
+        when(factory.create(eq(bdIdDouble), eq(userIdDouble), eq(status), eq(editionIdDouble), isNull()))
+                .thenThrow(NullPointerException.class);
+
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(bdIdDouble, userIdDouble, status, editionIdDouble, null));
     }
-
 }

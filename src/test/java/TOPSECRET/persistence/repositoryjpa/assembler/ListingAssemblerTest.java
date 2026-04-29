@@ -5,9 +5,12 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.datamodel.ListingDM;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
@@ -27,33 +30,19 @@ import static org.mockito.Mockito.*;
  * {@link ListingDM}, {@link Picture}, and all value objects to isolate
  * the assembler from domain and persistence implementations.
  */
+@ExtendWith(MockitoExtension.class)
 class ListingAssemblerTest {
 
+    @Mock
     private ListingFactory factoryDouble;
+
+    @InjectMocks
     private ListingAssembler assembler;
 
-    private ListingId listingIdDouble;
-    private UserId userIdDouble;
-    private PublicationSampleId pubIdDouble;
-    private Price priceDouble;
-    private Picture pictureDouble;
-
-    private final String validTitle = "PS5 Pro";
+    private final String validTitle       = "PS5 Pro";
     private final String validDescription = "Valid Description";
     private final String validPriceString = "50";
-    private final String validPictureUrl = "https://example.com/pic.jpg";
-
-    @BeforeEach
-    void setup() {
-        factoryDouble = mock(ListingFactory.class);
-        assembler = new ListingAssembler(factoryDouble);
-
-        listingIdDouble = mock(ListingId.class);
-        userIdDouble = mock(UserId.class);
-        pubIdDouble = mock(PublicationSampleId.class);
-        priceDouble = mock(Price.class);
-        pictureDouble = mock(Picture.class);
-    }
+    private final String validPictureUrl  = "https://example.com/pic.jpg";
 
     // =========================================================================
     // toDM
@@ -62,7 +51,13 @@ class ListingAssemblerTest {
     @Test
     void toDM_shouldReturnNonNullDataModel() {
         // Arrange
-        Listing listingDouble = mock(Listing.class);
+        ListingId listingIdDouble = mock(ListingId.class);
+        UserId userIdDouble       = mock(UserId.class);
+        PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
+        Price priceDouble         = mock(Price.class);
+        Picture pictureDouble     = mock(Picture.class);
+        Listing listingDouble     = mock(Listing.class);
+
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getShortDescription()).thenReturn(validDescription);
         when(listingDouble.getItemsId()).thenReturn(List.of(pubIdDouble));
@@ -91,7 +86,13 @@ class ListingAssemblerTest {
     @Test
     void toDM_shouldConvertPicturesToStringList() {
         // Arrange
-        Listing listingDouble = mock(Listing.class);
+        ListingId listingIdDouble       = mock(ListingId.class);
+        UserId userIdDouble             = mock(UserId.class);
+        PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
+        Price priceDouble               = mock(Price.class);
+        Picture pictureDouble           = mock(Picture.class);
+        Listing listingDouble           = mock(Listing.class);
+
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getShortDescription()).thenReturn(validDescription);
         when(listingDouble.getItemsId()).thenReturn(List.of(pubIdDouble));
@@ -118,8 +119,12 @@ class ListingAssemblerTest {
     @Test
     void toDomain_shouldReturnNonNullListing() {
         // Arrange
-        ListingDM dmDouble = mock(ListingDM.class);
-        Listing listingDouble = mock(Listing.class);
+        ListingId listingIdDouble       = mock(ListingId.class);
+        UserId userIdDouble             = mock(UserId.class);
+        PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
+        ListingDM dmDouble              = mock(ListingDM.class);
+        Listing listingDouble           = mock(Listing.class);
+
         when(dmDouble.get_listingId()).thenReturn(listingIdDouble);
         when(dmDouble.get_listingTitle()).thenReturn(validTitle);
         when(dmDouble.get_itemsId()).thenReturn(List.of(pubIdDouble));
@@ -156,7 +161,11 @@ class ListingAssemblerTest {
     @Test
     void toDomain_shouldConvertPictureStringsToImageObjects() {
         // Arrange
-        ListingDM dmDouble = mock(ListingDM.class);
+        ListingId listingIdDouble       = mock(ListingId.class);
+        UserId userIdDouble             = mock(UserId.class);
+        PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
+        ListingDM dmDouble              = mock(ListingDM.class);
+
         when(dmDouble.get_listingId()).thenReturn(listingIdDouble);
         when(dmDouble.get_listingTitle()).thenReturn(validTitle);
         when(dmDouble.get_itemsId()).thenReturn(List.of(pubIdDouble));

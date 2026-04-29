@@ -57,13 +57,6 @@ public class ListingService {
                                  String shortDescription,
                                  UserId sellerId,
                                  List<Picture> pictures) {
-        Objects.requireNonNull(listingTitle,"listingTitle must not be null");
-        Objects.requireNonNull(itemsId,"itemsId must not be null");
-        Objects.requireNonNull(saleType,"saleType must not be null");
-        Objects.requireNonNull(price,"price must not be null");
-        Objects.requireNonNull(shortDescription,"shortDescription must not be null");
-        Objects.requireNonNull(sellerId,"sellerId must not be null");
-        Objects.requireNonNull(pictures,"pictures must not be null");
 
         Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
 
