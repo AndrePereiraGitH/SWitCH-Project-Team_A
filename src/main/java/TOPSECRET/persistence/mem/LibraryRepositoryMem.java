@@ -26,14 +26,10 @@ public class LibraryRepositoryMem implements ILibraryRepository {
     /**
      * Constructs a new {@code LibraryRepositoryMem} with the provided factory.
      *
-     * @param libraryFactory the factory used to create new {@link Library} instances;
-     *                       must not be null
      * @throws IllegalArgumentException if {@code libraryFactory} is null
      */
     public LibraryRepositoryMem(LibraryFactory libraryFactory) {
-        if (libraryFactory == null) {
-            throw new IllegalArgumentException("LibraryFactory cannot be null");
-        }
+    
         _libraries = new HashMap<>();
     }
 
