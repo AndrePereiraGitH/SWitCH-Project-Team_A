@@ -53,36 +53,32 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         _factory = factory;
     }
 
-    /**
-     * {@inheritDoc}
-     */
 
-    public CollectionOfPublications createAndAdd(
-            UserId userId,
-            String name,
-            GenreID genreId) {
+    //Don't forget JavaDoc!
 
-        if (userId == null || name == null || genreId == null) {
-            throw new IllegalArgumentException("Invalid arguments.");
+    public CollectionOfPublications save(CollectionOfPublications collectionOfPublications) {
+        if (existsById(collectionOfPublications.id())) {
+            throw new IllegalArgumentException("CollectionOfPublications already exists");
         }
 
-        for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
-            CollectionOfPublications c = _collectionOfPublicationsList.get(i);
-            if (userId.equals(c.getOwnerId())
-                    && c.getCollectionName().equalsIgnoreCase(name) // case-insensitive: "Favorites" == "favorites"
-                    && c.getCollectionGenre().equals(genreId)) {
+        _collectionOfPublicationsList.add(collectionOfPublications);
 
-                throw new IllegalArgumentException(
-                        "Collection with same name and genreId already exists for this userId."
-                );
+        return collectionOfPublications;
+    }
+
+    //don't forget JavaDoc!
+
+    public boolean existsById(CollectionOfPublicationsID collectionOfPublicationsId) {
+        if (collectionOfPublicationsId == null) {
+            throw new IllegalArgumentException("CollectionOfPublicationsID cannot be null.");
+        }
+
+        for (CollectionOfPublications collectionOfPublications : _collectionOfPublicationsList) {
+            if (collectionOfPublications.id().equals(collectionOfPublicationsId)) {
+                return true;
             }
         }
-
-        CollectionOfPublications newCollection =
-                _factory.create(name, genreId, userId);
-
-        _collectionOfPublicationsList.add(newCollection);
-        return newCollection;
+        return false;
     }
 
     /**
@@ -126,7 +122,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
             }
         }
 
-        return false; // isPrivate = false, means its public
+        return false;
     }
 
     /**

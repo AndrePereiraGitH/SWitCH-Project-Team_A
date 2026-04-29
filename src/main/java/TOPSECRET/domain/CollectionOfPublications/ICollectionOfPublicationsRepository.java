@@ -7,35 +7,42 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing {@link CollectionOfPublications} aggregates.
+ *
+ * <p>This interface defines the persistence contract between the domain layer
+ * and the infrastructure layer for operations related to collections of
+ * publications.</p>
+ *
+ * <p>Implementations are responsible for storing, retrieving, and updating
+ * {@link CollectionOfPublications} objects while preserving domain integrity.</p>
+ */
 public interface ICollectionOfPublicationsRepository {
 
     /**
-     * Creates a new private collection for a userId, but only if no duplicate exists — US017.
+     * Saves a new {@link CollectionOfPublications} aggregate.
      *
-     * <p>US017 rule: a userId cannot have two collections with the same name and the same genreId.
-     * This method checks for that duplicate before creating anything.
+     * <p>If a collection with the same identity already exists, the
+     * implementation should reject the operation.</p>
      *
-     * <p>The name comparison uses {@code equalsIgnoreCase} because the name is typed by the userId —
-     * "Favorites" and "favorites" should be treated as the same name.
-     *
-     * <p>Note: we do NOT use {@code CollectionOfPublications.equals()} for the duplicate check
-     * because that method also compares {@code isPrivate} and the publications list.
-     * Here we only care about owner + name + genreId — that is what defines a duplicate for US017.
-     *
-     * <p>If no duplicate is found, the factory creates the collection, and it is added to the list.
-     * The new collection is always private — that is a US017 rule enforced by the domain constructor.
-     *
-     * @param userId  the userId who wants to create the collection
-     * @param name    the name chosen by the userId
-     * @param genreId the genreId chosen by the userId
-     * @return the newly created private collection
-     * @throws IllegalArgumentException if any parameter is null, or if a duplicate already exists
+     * @param collectionOfPublications the collection to persist;
+     *                                 must not be null
+     * @return the persisted {@link CollectionOfPublications} instance
+     * @throws NullPointerException     if {@code collectionOfPublications} is null
+     * @throws IllegalArgumentException if the collection already exists
      */
+    CollectionOfPublications save(CollectionOfPublications collectionOfPublications);
 
-    CollectionOfPublications createAndAdd(
-            UserId userId,
-            String name,
-            GenreID genreId) throws IllegalArgumentException;
+    /**
+     * Verifies whether a collection with the given identifier exists.
+     *
+     * @param collectionOfPublicationsID the identifier of the collection
+     *                                   to search for; must not be null
+     * @return {@code true} if a collection with the given identifier exists;
+     * {@code false} otherwise
+     * @throws NullPointerException if {@code collectionOfPublicationsID} is null
+     */
+    boolean existsById(CollectionOfPublicationsID collectionOfPublicationsID);
 
     /**
      * Returns all collections owned by a given user — US019.
@@ -44,7 +51,7 @@ public interface ICollectionOfPublicationsRepository {
      * @return list of collections owned by the user
      * @throws IllegalArgumentException if ownerId is null
      */
-    List<CollectionOfPublications> getUserCollections(UserId ownerId) throws IllegalArgumentException;
+    List<CollectionOfPublications> getUserCollections(UserId ownerId);
 
     /**
      * Makes a collection of publications public — US019.
@@ -63,5 +70,4 @@ public interface ICollectionOfPublicationsRepository {
      * @throws IllegalArgumentException if genreId is null
      */
     List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
-
 }
