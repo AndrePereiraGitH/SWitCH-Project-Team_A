@@ -64,8 +64,8 @@ class US027ListingMapperTest {
 
         authorRepoDouble = mock(IAuthorRepository.class);
 
-        when(authorRepoDouble.findAuthorById(authorId1Double)).thenReturn(Optional.of(authorDouble1));
-        when(authorRepoDouble.findAuthorById(authorId2Double)).thenReturn(Optional.of(authorDouble2));
+        when(authorRepoDouble.findById(authorId1Double)).thenReturn(Optional.of(authorDouble1));
+        when(authorRepoDouble.findById(authorId2Double)).thenReturn(Optional.of(authorDouble2));
 
         // BibliographicalData
         BibliographicalData bdDouble1 = mock(BibliographicalData.class);
@@ -185,7 +185,7 @@ class US027ListingMapperTest {
 
         AuthorId missingAuthorIdDouble = mock(AuthorId.class);
         when(bdDouble.getAuthors()).thenReturn(List.of(missingAuthorIdDouble));
-        when(authorRepoDouble.findAuthorById(missingAuthorIdDouble))
+        when(authorRepoDouble.findById(missingAuthorIdDouble))
                 .thenReturn(Optional.empty());
 
         US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);

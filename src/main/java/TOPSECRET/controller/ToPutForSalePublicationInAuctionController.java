@@ -26,7 +26,7 @@ import java.util.*;
  * It provides operations to retrieve the publication samples that belong to a
  * user's library and to create a new auction listing for the selected publications.
  */
-public class US016ToPutPublicationInAuctionController {
+public class ToPutForSalePublicationInAuctionController {
 
     private final ILibraryRepository libraryRepo;
     private final IListingRepository listingRepository;
@@ -43,7 +43,7 @@ public class US016ToPutPublicationInAuctionController {
      * @param publicationSampleRepository repository used to retrieve publication samples
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
+    public ToPutForSalePublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.libraryRepo = libraryRepo;
         this.listingRepository = listingRepository;

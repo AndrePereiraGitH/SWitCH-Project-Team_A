@@ -219,7 +219,7 @@ public class US027ListingMapper {
         for (BibliographicalData bdData : bdDatas) {
             List<AuthorId> authorIds = bdData.getAuthors();
             for (AuthorId authorId : authorIds) {
-                Author author = authorRepo.findAuthorById(authorId).orElseThrow(() ->
+                Author author = authorRepo.findById(authorId).orElseThrow(() ->
                         new InstanceNotFoundException("Author with id " + authorId + " not found"));
                 String authorName = author.getName();
                 authorsName.add(authorName);

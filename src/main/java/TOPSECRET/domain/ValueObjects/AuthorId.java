@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -10,21 +12,18 @@ import java.util.Objects;
  * This class implements {@link DomainID} and encapsulates the author ID
  * as a non-null and non-blank {@link String}.
  */
+@Embeddable
+@NoArgsConstructor
 public class AuthorId implements DomainID {
 
     private String _authorId;
 
-    /**
-     * Creates a new {@code AuthorId} instance.
-     *
-     * @param authorId the author identifier as a non-null and non-blank string
-     * @throws IllegalArgumentException if {@code authorId} is null or blank
-     */
     public AuthorId(String authorId) {
 
-        if (authorId == null || authorId.isBlank()) {
-            throw new IllegalArgumentException("AuthorId must be a non empty String");
+        if (authorId == null) {
+            throw new IllegalArgumentException("Id must not be null");
         }
+
         this._authorId = authorId;
     }
 
