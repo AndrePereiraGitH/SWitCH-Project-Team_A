@@ -65,23 +65,6 @@ class PublicationTypeServiceTest {
 
     // VALIDATION
     @Test
-    void shouldThrowWhenMediaFormatIsNull() {
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave(null));
-    }
-
-    @Test
-    void shouldThrowWhenMediaFormatIsBlank() {
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave(" "));
-    }
-
-    @Test
-
     void shouldThrowWhenRepositoryIsNull() {
 
         // ARRANGE

@@ -3,6 +3,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
+import org.springframework.stereotype.Service;
 
 /**
  * Assembler responsible for converting between
@@ -23,6 +24,7 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
  * be used directly by application services.
  * </p>
  */
+@Service
 public class PublicationTypeAssembler {
 
     private final PublicationTypeFactory factory;

@@ -2,6 +2,8 @@ package TOPSECRET.domain.PublicationType;
 
 
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.services.PublicationTypeService;
+import org.springframework.stereotype.Service;
 
 /**
  * Factory responsible for creating {@link PublicationType} instances.
@@ -15,7 +17,7 @@ import TOPSECRET.domain.ValueObjects.PublicationTypeId;
  * </p>
  *
  * <p>
- * This factory should be used by application services to ensure that
+ * This factory should be used by {@link PublicationTypeService} to ensure that
  * all {@link PublicationType} objects are created in a consistent and
  * validated manner.
  * </p>
@@ -25,6 +27,7 @@ import TOPSECRET.domain.ValueObjects.PublicationTypeId;
  * business logic.
  * </p>
  */
+@Service
 public class PublicationTypeFactory {
 
     /**
