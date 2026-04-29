@@ -147,7 +147,7 @@ class US015PublicationSampleMapperTest {
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(publication.getEditionID()).thenReturn(editionId);
         when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
-        when(editionRepo.findEditionById(editionId)).thenReturn(Optional.empty());
+        when(editionRepo.findById(editionId)).thenReturn(Optional.empty());
 
         US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
 
@@ -172,7 +172,7 @@ class US015PublicationSampleMapperTest {
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(publication.getEditionID()).thenReturn(editionId);
         when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
-        when(editionRepo.findEditionById(editionId)).thenReturn(Optional.of(edition));
+        when(editionRepo.findById(editionId)).thenReturn(Optional.of(edition));
         when(authorRepo.findById(authorId)).thenReturn(Optional.empty());
 
         US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
@@ -242,7 +242,7 @@ class US015PublicationSampleMapperTest {
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(publication.getEditionID()).thenReturn(editionId);
         when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
-        when(editionRepo.findEditionById(editionId)).thenReturn(Optional.of(edition));
+        when(editionRepo.findById(editionId)).thenReturn(Optional.of(edition));
 
         return publication;
     }

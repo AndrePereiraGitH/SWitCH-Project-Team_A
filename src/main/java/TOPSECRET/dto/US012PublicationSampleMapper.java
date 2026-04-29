@@ -140,7 +140,7 @@ public class US012PublicationSampleMapper {
      */
     private Edition getEdition(PublicationSample publicationSample) throws InstanceNotFoundException {
         EditionID editionId = publicationSample.getEditionID();
-        Edition edition = _editionRepo.findEditionById(editionId)
+        Edition edition = _editionRepo.findById(editionId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("Edition was not found:" + editionId));
 
