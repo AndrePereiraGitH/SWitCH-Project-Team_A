@@ -79,23 +79,4 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
         return appraisalEntities.stream()
                 .anyMatch(e -> e.id().equals(id));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean deleteById(AppraisalEntityId id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-
-        Optional<AppraisalEntity> existing = findById(id);
-
-        if (existing.isEmpty()) {
-            return false;
-        }
-
-        appraisalEntities.remove(existing.get());
-        return true;
-    }
 }

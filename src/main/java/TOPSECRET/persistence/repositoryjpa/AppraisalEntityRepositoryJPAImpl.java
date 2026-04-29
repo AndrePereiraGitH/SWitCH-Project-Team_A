@@ -90,18 +90,5 @@ public class AppraisalEntityRepositoryJPAImpl implements IAppraisalEntityReposit
         return apEnRepositoryJPA.existsById(id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean deleteById(AppraisalEntityId id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-        if (!apEnRepositoryJPA.existsById(id)) {
-            return false;
-        }
-        apEnRepositoryJPA.deleteById(id);
-        return true;
-    }
+
 }

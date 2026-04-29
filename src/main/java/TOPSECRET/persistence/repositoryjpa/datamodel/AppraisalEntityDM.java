@@ -32,11 +32,9 @@ import java.util.List;
 @Table(name = "appraisal_entities")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AppraisalEntityDM {
 
     @EmbeddedId
-    @EqualsAndHashCode.Include
     private AppraisalEntityId id;
 
     @Column(name = "name", nullable = false)

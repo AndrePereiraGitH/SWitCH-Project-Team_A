@@ -48,13 +48,4 @@ public interface IAppraisalEntityRepository {
      * @throws IllegalArgumentException if id is null
      */
     boolean existsById(AppraisalEntityId id);
-
-    /**
-     * Deletes an entity by its identifier.
-     *
-     * @param id the entity identifier
-     * @return true if the entity was deleted, false if it did not exist
-     * @throws IllegalArgumentException if id is null
-     */
-    boolean deleteById(AppraisalEntityId id);
 }
