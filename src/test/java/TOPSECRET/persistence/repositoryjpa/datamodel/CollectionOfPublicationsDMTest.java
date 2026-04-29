@@ -226,4 +226,23 @@ class CollectionOfPublicationsDMTest {
         // Act + Assert
         assertEquals(isPrivate, result.isPrivate());
     }
+
+    @Test
+    void isPrivateShouldReturnFalseWhenCollectionIsPublic() {
+
+        // Arrange
+        boolean isPrivate = false;
+
+        CollectionOfPublicationsDM result =
+                new CollectionOfPublicationsDM(
+                        collectionId,
+                        collectionName,
+                        genreId,
+                        userId,
+                        isPrivate
+                );
+
+        // Act + Assert
+        assertFalse(result.isPrivate());
+    }
 }

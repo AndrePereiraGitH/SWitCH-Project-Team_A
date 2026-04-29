@@ -342,4 +342,43 @@ class CollectionOfPublicationsTest {
         //Act + assert
         assertNotEquals(collectionRohan.hashCode(), collectionShire.hashCode());
     }
+
+    @Test
+    void getIsPrivateShouldReturnFalseAfterMakingCollectionPublic() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreID genreId = mock(GenreID.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications result =
+                new CollectionOfPublications(name, genreId, userId);
+
+        // Act
+        result.set_isPrivate();
+
+        // Assert
+        assertFalse(result.getIsPrivate());
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenObjectIsNotACollectionOfPublications() {
+
+        // Arrange
+        GenreID genreId = mock(GenreID.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(
+                        "Works by Scott Lynch",
+                        genreId,
+                        userId
+                );
+
+        // Act
+        boolean result = collection.sameAs("not a collection");
+
+        // Assert
+        assertFalse(result);
+    }
 }

@@ -74,24 +74,24 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
     /**
      * {@inheritDoc}
      */
-    @Override
-    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
-        return List.of();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean makeCollectionPublic(CollectionOfPublicationsID id) {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
-        return List.of();
-    }
+//    @Override
+//    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
+//        return List.of();
+//    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public boolean makeCollectionPublic(CollectionOfPublicationsID id) {
+//        return false;
+//    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+//        return List.of();
+//    }
 }

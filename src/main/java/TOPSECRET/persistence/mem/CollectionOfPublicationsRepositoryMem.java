@@ -30,7 +30,6 @@ import java.util.Optional;
 public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPublicationsRepository {
 
     private List<CollectionOfPublications> _collectionOfPublicationsList;
-    private final CollectionOfPublicationsFactory _factory;
 
     /**
      * Creates the repository with the factory it needs to build new collections — US017.
@@ -50,12 +49,11 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         }
 
         _collectionOfPublicationsList = new ArrayList<>();
-        _factory = factory;
     }
 
-
-    //Don't forget JavaDoc!
-
+    /**
+     * {@inheritDoc}
+     */
     public CollectionOfPublications save(CollectionOfPublications collectionOfPublications) {
         if (existsById(collectionOfPublications.id())) {
             throw new IllegalArgumentException("CollectionOfPublications already exists");
@@ -66,8 +64,9 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         return collectionOfPublications;
     }
 
-    //don't forget JavaDoc!
-
+    /**
+     * {@inheritDoc}
+     */
     public boolean existsById(CollectionOfPublicationsID collectionOfPublicationsId) {
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsID cannot be null.");
@@ -81,66 +80,61 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
-
-        if (ownerId == null) {
-            throw new IllegalArgumentException("User cannot be null");
-        }
-
-        List<CollectionOfPublications> userCollections = new ArrayList<>();
-
-        _collectionOfPublicationsList.forEach(collection -> {
-            if (collection.getOwnerId().equals(ownerId)) {
-                userCollections.add(collection);
-            }
-        });
-
-        return userCollections;
-    }
-
-
-    /**
-     * Finds a collection by its unique identifier — US019.
-     *
-     * @param id the ID of the collection to search for; must not be null
-     * @return an {@link Optional} containing the collection if found, or empty if not
-     * @throws NullPointerException if {@code id} is null
-     */
-    public boolean makeCollectionPublic(CollectionOfPublicationsID id) {
-
-        if (id == null) {
-            throw new NullPointerException("Collection ID must not be null");
-        }
-
-        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
-            if (collection.id().equals(id)) {
-                collection.set_isPrivate();
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
-        if (genreId == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
-
-        List<CollectionOfPublications> collections = new ArrayList<>();
-
-        for (CollectionOfPublications c : _collectionOfPublicationsList) {
-            if (c.getCollectionGenre().equals(genreId) && !c.getIsPrivate()) {
-                collections.add(c);
-            }
-        }
-        return collections;
-    }
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
+//
+//        if (ownerId == null) {
+//            throw new IllegalArgumentException("User cannot be null");
+//        }
+//
+//        List<CollectionOfPublications> userCollections = new ArrayList<>();
+//
+//        _collectionOfPublicationsList.forEach(collection -> {
+//            if (collection.getOwnerId().equals(ownerId)) {
+//                userCollections.add(collection);
+//            }
+//        });
+//
+//        return userCollections;
+//    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    public boolean makeCollectionPublic(CollectionOfPublicationsID id) {
+//
+//        if (id == null) {
+//            throw new NullPointerException("Collection ID must not be null");
+//        }
+//
+//        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
+//            if (collection.id().equals(id)) {
+//                collection.set_isPrivate();
+//            }
+//        }
+//
+//        return false;
+//    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+//        if (genreId == null) {
+//            throw new IllegalArgumentException("Genre cannot be null");
+//        }
+//
+//        List<CollectionOfPublications> collections = new ArrayList<>();
+//
+//        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+//            if (c.getCollectionGenre().equals(genreId) && !c.getIsPrivate()) {
+//                collections.add(c);
+//            }
+//        }
+//        return collections;
+//    }
 }

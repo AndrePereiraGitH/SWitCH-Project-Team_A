@@ -51,23 +51,23 @@ public interface ICollectionOfPublicationsRepository {
      * @return list of collections owned by the user
      * @throws IllegalArgumentException if ownerId is null
      */
-    List<CollectionOfPublications> getUserCollections(UserId ownerId);
-
-    /**
-     * Makes a collection of publications public — US019.
-     *
-     * @param id the ID of the collection to search for; must not be null
-     * @return an {boolean} false, to confirm collection is now public
-     * @throws NullPointerException if {@code id} is null
-     */
-    boolean makeCollectionPublic(CollectionOfPublicationsID id);
-
-    /**
-     * Returns all public collections that belong to a given genre — US020.
-     *
-     * @param genreId the genre of the collections
-     * @return list of collections of the given genre that are public
-     * @throws IllegalArgumentException if genreId is null
-     */
-    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
+//    List<CollectionOfPublications> getUserCollections(UserId ownerId);
+//
+//    /**
+//     * Makes a collection of publications public — US019.
+//     *
+//     * @param id the ID of the collection to search for; must not be null
+//     * @return an {boolean} false, to confirm collection is now public
+//     * @throws NullPointerException if {@code id} is null
+//     */
+//    boolean makeCollectionPublic(CollectionOfPublicationsID id);
+//
+//    /**
+//     * Returns all public collections that belong to a given genre — US020.
+//     *
+//     * @param genreId the genre of the collections
+//     * @return list of collections of the given genre that are public
+//     * @throws IllegalArgumentException if genreId is null
+//     */
+//    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
 }

@@ -4,6 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,55 +50,137 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertDoesNotThrow(() -> new CollectionOfPublicationsRepositoryMem(factory));
     }
 
-
     @Test
-    void shouldReturnCollectionsOwnedByUser() throws Exception {
+    void saveShouldReturnSavedCollection() {
 
         // Arrange
-        UserId user = mock(UserId.class);
-        UserId otherUser = mock(UserId.class);
         sut = new CollectionOfPublicationsRepositoryMem(factory);
 
-        CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
-        CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
 
-        when(collection1.getOwnerId()).thenReturn(user);
-        when(collection2.getOwnerId()).thenReturn(otherUser);
+        when(collection.id()).thenReturn(id);
 
         // Act
-        // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
-        Field field = CollectionOfPublicationsRepositoryMem.class
-                .getDeclaredField("_collectionOfPublicationsList");
-        field.setAccessible(true);
+        CollectionOfPublications result = sut.save(collection);
 
-        List<CollectionOfPublications> list =
-                (List<CollectionOfPublications>) field.get(sut);
-
-        list.add(collection1);
-        list.add(collection2);
-
-        // ACT
-        List<CollectionOfPublications> result =
-                sut.getUserCollections(user);
-
-        // ASSERT
-        assertEquals(1, result.size());
-        assertEquals(collection1, result.get(0));
+        // Assert
+        assertEquals(collection, result);
     }
-
-
-    // ==== US020 tests ====
 
     @Test
-    void shouldThrowExceptionWhenGenreIsNull() {
+    void saveShouldThrowWhenCollectionAlreadyExists() {
+
         // Arrange
         sut = new CollectionOfPublicationsRepositoryMem(factory);
-        IUserRepository userRepo = mock(IUserRepository.class);
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+
+        when(collection.id()).thenReturn(id);
+
+        sut.save(collection);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenreId(null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.save(collection)
+        );
     }
-}
+
+    @Test
+    void existsByIdShouldThrowWhenIdIsNull() {
+
+        // Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.existsById(null)
+        );
+    }
+
+    @Test
+    void existsByIdShouldReturnTrueWhenCollectionExists() {
+
+        // Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+
+        when(collection.id()).thenReturn(id);
+
+        sut.save(collection);
+
+        // Act
+        boolean result = sut.existsById(id);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void existsByIdShouldReturnFalseWhenCollectionDoesNotExist() {
+
+        // Arrange
+        sut = new CollectionOfPublicationsRepositoryMem(factory);
+
+        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+
+        // Act
+        boolean result = sut.existsById(id);
+
+        // Assert
+        assertFalse(result);
+    }
+
+//    @Test
+//    void shouldReturnCollectionsOwnedByUser() throws Exception {
+//
+//        // Arrange
+//        UserId user = mock(UserId.class);
+//        UserId otherUser = mock(UserId.class);
+//        sut = new CollectionOfPublicationsRepositoryMem(factory);
+//
+//        CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
+//        CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
+//
+//        when(collection1.getOwnerId()).thenReturn(user);
+//        when(collection2.getOwnerId()).thenReturn(otherUser);
+//
+//        // Act
+//        // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
+//        Field field = CollectionOfPublicationsRepositoryMem.class
+//                .getDeclaredField("_collectionOfPublicationsList");
+//        field.setAccessible(true);
+//
+//        List<CollectionOfPublications> list =
+//                (List<CollectionOfPublications>) field.get(sut);
+//
+//        list.add(collection1);
+//        list.add(collection2);
+//
+//        // ACT
+//        List<CollectionOfPublications> result =
+//                sut.getUserCollections(user);
+//
+//        // ASSERT
+//        assertEquals(1, result.size());
+//        assertEquals(collection1, result.get(0));
+//    }
+
+//    @Test
+//    void shouldThrowExceptionWhenGenreIsNull() {
+//        // Arrange
+//        sut = new CollectionOfPublicationsRepositoryMem(factory);
+//        IUserRepository userRepo = mock(IUserRepository.class);
+//
+//        // Act + Assert
+//        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenreId(null));
+//    }
+//}
 
 //    @Test
 //    void shouldReturnAllPublicCollectionsOfAGivenGenre() {
@@ -266,4 +349,4 @@ class CollectionOfPublicationsRepositoryMemTest {
 //        //Act
 //        assertEquals(johnCollection2, result);
 //    }
-//}
+}

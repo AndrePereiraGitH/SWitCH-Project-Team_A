@@ -74,13 +74,13 @@ public class ToAddPublicationToAListOfMineController {
      *
      * @return list of collection DTOs
      */
-    public List<US018CollectionOfPublicationsDTO> getUserCollections() {
-
-        List<CollectionOfPublications> userCollections =
-                _collectionRepo.getUserCollections(_userId);
-
-        return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
-    }
+//    public List<US018CollectionOfPublicationsDTO> getUserCollections() {
+//
+//        List<CollectionOfPublications> userCollections =
+//                _collectionRepo.getUserCollections(_userId);
+//
+//        return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
+//    }
 
     /**
      * Retrieves the list of publications that can be added to a collection.

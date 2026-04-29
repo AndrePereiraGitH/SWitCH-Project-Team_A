@@ -67,98 +67,98 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
     // getUserCollections() Tests
     // ============================================================
 
-    @Test
-    void ensureGetUserCollectionsThrowsExceptionWhenUserIdIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.getUserCollections(null));
-    }
-
-    @Test
-    void ensureGetUserCollectionsReturnsEmptyListWhenUserHasNoCollections() {
-        // Arrange
-        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(new ArrayList<>());
-
-        // Act
-        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void ensureGetUserCollectionsReturnsCorrectNumberOfDTOs() {
-        // Arrange
-        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
-        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
-
-        when(col1.getCollectionName()).thenReturn("Sci-Fi");
-        when(col1.getCollectionGenre()).thenReturn(genre1);
-        when(col1.getOwnerId()).thenReturn(testUserId);
-        when(genre1.getID()).thenReturn("sci-fi");
-        when(testUserId.getUsername()).thenReturn("alice");
-
-        when(col2.getCollectionName()).thenReturn("Drama");
-        when(col2.getCollectionGenre()).thenReturn(genre2);
-        when(col2.getOwnerId()).thenReturn(testUserId);
-        when(genre2.getID()).thenReturn("drama");
-
-        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(col1, col2));
-
-        // Act
-        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-
-        // Assert
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void ensureGetUserCollectionsReturnsCorrectDTOValues() {
-        // Arrange
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        GenreID genre = mock(GenreID.class);
-
-        when(collection.getCollectionName()).thenReturn("My Favorites");
-        when(collection.getCollectionGenre()).thenReturn(genre);
-        when(collection.getOwnerId()).thenReturn(testUserId);
-        when(genre.getID()).thenReturn("fantasy");
-        when(testUserId.getUsername()).thenReturn("bob");
-
-        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(collection));
-
-        // Act
-        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-
-        // Assert
-        assertEquals(1, result.size());
-        US019CollectionOfPublicationsDTO dto = result.get(0);
-        assertEquals("My Favorites", dto.name());
-        assertEquals("fantasy", dto.genreName());
-        assertEquals("bob", dto.ownerName());
-    }
+//    @Test
+//    void ensureGetUserCollectionsThrowsExceptionWhenUserIdIsNull() {
+//        // Act & Assert
+//        assertThrows(IllegalArgumentException.class, () ->
+//                controller.getUserCollections(null));
+//    }
+//
+//    @Test
+//    void ensureGetUserCollectionsReturnsEmptyListWhenUserHasNoCollections() {
+//        // Arrange
+//        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(new ArrayList<>());
+//
+//        // Act
+//        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertTrue(result.isEmpty());
+//    }
+//
+//    @Test
+//    void ensureGetUserCollectionsReturnsCorrectNumberOfDTOs() {
+//        // Arrange
+//        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
+//        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
+//        GenreID genre1 = mock(GenreID.class);
+//        GenreID genre2 = mock(GenreID.class);
+//
+//        when(col1.getCollectionName()).thenReturn("Sci-Fi");
+//        when(col1.getCollectionGenre()).thenReturn(genre1);
+//        when(col1.getOwnerId()).thenReturn(testUserId);
+//        when(genre1.getID()).thenReturn("sci-fi");
+//        when(testUserId.getUsername()).thenReturn("alice");
+//
+//        when(col2.getCollectionName()).thenReturn("Drama");
+//        when(col2.getCollectionGenre()).thenReturn(genre2);
+//        when(col2.getOwnerId()).thenReturn(testUserId);
+//        when(genre2.getID()).thenReturn("drama");
+//
+//        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(col1, col2));
+//
+//        // Act
+//        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
+//
+//        // Assert
+//        assertEquals(2, result.size());
+//    }
+//
+//    @Test
+//    void ensureGetUserCollectionsReturnsCorrectDTOValues() {
+//        // Arrange
+//        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+//        GenreID genre = mock(GenreID.class);
+//
+//        when(collection.getCollectionName()).thenReturn("My Favorites");
+//        when(collection.getCollectionGenre()).thenReturn(genre);
+//        when(collection.getOwnerId()).thenReturn(testUserId);
+//        when(genre.getID()).thenReturn("fantasy");
+//        when(testUserId.getUsername()).thenReturn("bob");
+//
+//        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(collection));
+//
+//        // Act
+//        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
+//
+//        // Assert
+//        assertEquals(1, result.size());
+//        US019CollectionOfPublicationsDTO dto = result.get(0);
+//        assertEquals("My Favorites", dto.name());
+//        assertEquals("fantasy", dto.genreName());
+//        assertEquals("bob", dto.ownerName());
+//    }
 
     // ============================================================
     // makeCollectionPublic() Tests
     // ============================================================
 
-    @Test
-    void ensureMakeCollectionPublicThrowsExceptionWhenCollectionIdIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.makeCollectionPublic(null));
-    }
-
-    @Test
-    void ensureMakeCollectionPublicSetsCollectionToPublic() {
-        // Arrange
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.getIsPrivate()).thenReturn(false);
-
-        // Act & Assert — observable outcome: if isPrivate = false, collection is now public
-        assertFalse(controller.makeCollectionPublic(testCollectionId));
-    }
+//    @Test
+//    void ensureMakeCollectionPublicThrowsExceptionWhenCollectionIdIsNull() {
+//        // Act & Assert
+//        assertThrows(IllegalArgumentException.class, () ->
+//                controller.makeCollectionPublic(null));
+//    }
+//
+//    @Test
+//    void ensureMakeCollectionPublicSetsCollectionToPublic() {
+//        // Arrange
+//        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+//
+//        when(collection.getIsPrivate()).thenReturn(false);
+//
+//        // Act & Assert — observable outcome: if isPrivate = false, collection is now public
+//        assertFalse(controller.makeCollectionPublic(testCollectionId));
+//    }
 }

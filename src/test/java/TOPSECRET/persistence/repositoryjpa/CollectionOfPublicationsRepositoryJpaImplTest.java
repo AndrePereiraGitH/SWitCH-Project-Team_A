@@ -148,45 +148,45 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     // ========== Default return methods =========================
     // ===========================================================
 
-    @Test
-    void getUserCollections_shouldReturnEmptyList() {
-
-        // Arrange
-        UserId userId = mock(UserId.class);
-
-        // Act
-        List<CollectionOfPublications> result =
-                repo.getUserCollections(userId);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void makeCollectionPublic_shouldReturnFalse() {
-
-        // Arrange
-        CollectionOfPublicationsID id =
-                mock(CollectionOfPublicationsID.class);
-
-        // Act
-        boolean result = repo.makeCollectionPublic(id);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void findPublicCollectionsByGenreId_shouldReturnEmptyList() {
-
-        // Arrange
-        GenreID genreId = mock(GenreID.class);
-
-        // Act
-        List<CollectionOfPublications> result =
-                repo.findPublicCollectionsByGenreId(genreId);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
+//    @Test
+//    void getUserCollections_shouldReturnEmptyList() {
+//
+//        // Arrange
+//        UserId userId = mock(UserId.class);
+//
+//        // Act
+//        List<CollectionOfPublications> result =
+//                repo.getUserCollections(userId);
+//
+//        // Assert
+//        assertTrue(result.isEmpty());
+//    }
+//
+//    @Test
+//    void makeCollectionPublic_shouldReturnFalse() {
+//
+//        // Arrange
+//        CollectionOfPublicationsID id =
+//                mock(CollectionOfPublicationsID.class);
+//
+//        // Act
+//        boolean result = repo.makeCollectionPublic(id);
+//
+//        // Assert
+//        assertFalse(result);
+//    }
+//
+//    @Test
+//    void findPublicCollectionsByGenreId_shouldReturnEmptyList() {
+//
+//        // Arrange
+//        GenreID genreId = mock(GenreID.class);
+//
+//        // Act
+//        List<CollectionOfPublications> result =
+//                repo.findPublicCollectionsByGenreId(genreId);
+//
+//        // Assert
+//        assertTrue(result.isEmpty());
+//    }
 }

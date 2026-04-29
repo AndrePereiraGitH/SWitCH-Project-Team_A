@@ -39,34 +39,34 @@ public class ToPubliclyShareCollectionOfPublicationsController {
      * @return a list of {@link US019CollectionOfPublicationsDTO}; never null, may be empty
      * @throws IllegalArgumentException if {@code userId} is null
      */
-    public List<US019CollectionOfPublicationsDTO> getUserCollections(UserId userId) {
-
-        if (userId == null) {
-            throw new IllegalArgumentException("UserId cannot be null");
-        }
-
-        List<CollectionOfPublications> collections =
-                _collectionRepo.getUserCollections(userId);
-
-        return US019CollectionOfPublicationsMapper.toDTOs(collections);
-    }
-
-    /**
-     * US019 - Makes the collection identified by {@code collectionId} public,
-     * after verifying it belongs to {@code userId}.
-     *
-     * @param collectionId the ID of the collection to make public; must not be null
-     * @throws IllegalArgumentException if either parameter is null,
-     *                                  if the collection is not found,
-     *                                  or if the collection does not belong to the user
-     */
-    public boolean makeCollectionPublic(CollectionOfPublicationsID collectionId) {
-
-        if (collectionId == null) {
-            throw new IllegalArgumentException("CollectionId cannot be null");
-        }
-
-        return _collectionRepo.makeCollectionPublic(collectionId);
-    }
+//    public List<US019CollectionOfPublicationsDTO> getUserCollections(UserId userId) {
+//
+//        if (userId == null) {
+//            throw new IllegalArgumentException("UserId cannot be null");
+//        }
+//
+//        List<CollectionOfPublications> collections =
+//                _collectionRepo.getUserCollections(userId);
+//
+//        return US019CollectionOfPublicationsMapper.toDTOs(collections);
+//    }
+//
+//    /**
+//     * US019 - Makes the collection identified by {@code collectionId} public,
+//     * after verifying it belongs to {@code userId}.
+//     *
+//     * @param collectionId the ID of the collection to make public; must not be null
+//     * @throws IllegalArgumentException if either parameter is null,
+//     *                                  if the collection is not found,
+//     *                                  or if the collection does not belong to the user
+//     */
+//    public boolean makeCollectionPublic(CollectionOfPublicationsID collectionId) {
+//
+//        if (collectionId == null) {
+//            throw new IllegalArgumentException("CollectionId cannot be null");
+//        }
+//
+//        return _collectionRepo.makeCollectionPublic(collectionId);
+//    }
 }
 

@@ -2,6 +2,7 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
  */
 
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CollectionOfPublicationsID implements DomainID {
 
     private String collectionOfPub_id;
