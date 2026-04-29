@@ -56,7 +56,7 @@ public class Library implements AggregateRoot<LibraryId> {
             throw new IllegalArgumentException("Library Name cannot be null or blank");
         }
         if (userId == null) {
-            throw new IllegalArgumentException("User cannot be Null");
+            throw new IllegalArgumentException("UserId cannot be Null");
         }
 
         _libraryName = libraryName;
