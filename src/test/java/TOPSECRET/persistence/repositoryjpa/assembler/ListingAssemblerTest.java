@@ -108,7 +108,7 @@ class ListingAssemblerTest {
         ListingDM result = assembler.toDM(listingDouble);
 
         // Assert
-        assertEquals(List.of(validPictureUrl), result.get_pictures());
+        assertEquals(List.of(validPictureUrl), result.getPictures());
     }
 
 
@@ -125,14 +125,14 @@ class ListingAssemblerTest {
         ListingDM dmDouble              = mock(ListingDM.class);
         Listing listingDouble           = mock(Listing.class);
 
-        when(dmDouble.get_listingId()).thenReturn(listingIdDouble);
-        when(dmDouble.get_listingTitle()).thenReturn(validTitle);
-        when(dmDouble.get_itemsId()).thenReturn(List.of(pubIdDouble));
-        when(dmDouble.get_saleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(dmDouble.get_price()).thenReturn(validPriceString);
-        when(dmDouble.get_shortDescription()).thenReturn(validDescription);
-        when(dmDouble.get_sellerId()).thenReturn(userIdDouble);
-        when(dmDouble.get_pictures()).thenReturn(List.of(validPictureUrl));
+        when(dmDouble.getListingId()).thenReturn(listingIdDouble);
+        when(dmDouble.getListingTitle()).thenReturn(validTitle);
+        when(dmDouble.getItemsId()).thenReturn(List.of(pubIdDouble));
+        when(dmDouble.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(dmDouble.getPrice()).thenReturn(validPriceString);
+        when(dmDouble.getShortDescription()).thenReturn(validDescription);
+        when(dmDouble.getSellerId()).thenReturn(userIdDouble);
+        when(dmDouble.getPictures()).thenReturn(List.of(validPictureUrl));
         when(factoryDouble.create(
                 eq(listingIdDouble),
                 eq(validTitle),
@@ -166,14 +166,14 @@ class ListingAssemblerTest {
         PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
         ListingDM dmDouble              = mock(ListingDM.class);
 
-        when(dmDouble.get_listingId()).thenReturn(listingIdDouble);
-        when(dmDouble.get_listingTitle()).thenReturn(validTitle);
-        when(dmDouble.get_itemsId()).thenReturn(List.of(pubIdDouble));
-        when(dmDouble.get_saleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(dmDouble.get_price()).thenReturn(validPriceString);
-        when(dmDouble.get_shortDescription()).thenReturn(validDescription);
-        when(dmDouble.get_sellerId()).thenReturn(userIdDouble);
-        when(dmDouble.get_pictures()).thenReturn(List.of(validPictureUrl));
+        when(dmDouble.getListingId()).thenReturn(listingIdDouble);
+        when(dmDouble.getListingTitle()).thenReturn(validTitle);
+        when(dmDouble.getItemsId()).thenReturn(List.of(pubIdDouble));
+        when(dmDouble.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(dmDouble.getPrice()).thenReturn(validPriceString);
+        when(dmDouble.getShortDescription()).thenReturn(validDescription);
+        when(dmDouble.getSellerId()).thenReturn(userIdDouble);
+        when(dmDouble.getPictures()).thenReturn(List.of(validPictureUrl));
         when(factoryDouble.create(
                 any(), any(), any(), any(), any(), any(), any(), any()
         )).thenReturn(mock(Listing.class));
