@@ -1,9 +1,7 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,23 +20,12 @@ import static org.mockito.Mockito.*;
  */
 class CityRepositoryMemTest {
 
-    private ICityRepository repository;
-    private final CityFactory cityFactory = mock(CityFactory.class);
     private final City anyCity = mock(City.class);
-
-    @BeforeEach
-    void setUp() {
-        repository = new CityRepositoryMem(cityFactory);
-    }
-
-    @Test
-    void shouldThrowWhenCityFactoryIsNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new CityRepositoryMem(null));
-    }
 
     @Test
     void shouldSaveCity() {
+        // Arrange
+        ICityRepository repository = new CityRepositoryMem();
 
         // Act
         City result = repository.save(anyCity);
@@ -49,8 +36,8 @@ class CityRepositoryMemTest {
 
     @Test
     void shouldThrowWhenSavingDuplicateCity() {
-
         // Arrange
+        ICityRepository repository = new CityRepositoryMem();
         when(anyCity.sameAs(anyCity)).thenReturn(true);
         repository.save(anyCity);
 
@@ -61,8 +48,8 @@ class CityRepositoryMemTest {
 
     @Test
     void shouldStoreOnlyOneInstanceOfCity() {
-
         // Arrange
+        ICityRepository repository = new CityRepositoryMem();
         when(anyCity.sameAs(anyCity)).thenReturn(true);
         repository.save(anyCity);
 

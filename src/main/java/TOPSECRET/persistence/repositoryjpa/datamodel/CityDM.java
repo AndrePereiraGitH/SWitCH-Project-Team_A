@@ -17,11 +17,7 @@ import jakarta.persistence.*;
 @Table(name = "cities")
 public class CityDM {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Embedded
+    @EmbeddedId
     @AttributeOverride(name = "cityID", column = @Column(name = "city_id", unique = true, nullable = false))
     private CityID cityID;
 
@@ -50,7 +46,6 @@ public class CityDM {
         this.cityName = cityName;
     }
 
-    public Long getId() { return id; }
     public CityID getCityID() { return cityID; }
     public CountryID getCountryID() { return countryID; }
     public String getCityName() { return cityName; }

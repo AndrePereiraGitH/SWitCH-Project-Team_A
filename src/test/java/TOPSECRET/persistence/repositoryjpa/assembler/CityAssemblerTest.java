@@ -23,16 +23,12 @@ class CityAssemblerTest {
     private CityFactory doubleCityFactory;
     private CityAssembler assembler;
 
-    @BeforeEach
-    void setUp() {
-        doubleCityFactory = mock(CityFactory.class);
-        assembler = new CityAssembler(doubleCityFactory);
-    }
-
     @Test
     void shouldConvertDomainToDM() {
 
         // Arrange
+        CityFactory doubleCityFactory = mock(CityFactory.class);
+        CityAssembler assembler = new CityAssembler(doubleCityFactory);
         CityID cityID = new CityID("test-uuid");
         CountryID countryID = new CountryID("PORTUGAL_ID");
         City doubleCity = mock(City.class);
@@ -54,6 +50,8 @@ class CityAssemblerTest {
     void shouldConvertDMToDomain() {
 
         // Arrange
+        CityFactory doubleCityFactory = mock(CityFactory.class);
+        CityAssembler assembler = new CityAssembler(doubleCityFactory);
         CityID cityID = new CityID("test-uuid");
         CountryID countryID = new CountryID("PORTUGAL_ID");
         CityDM cityDM = new CityDM(cityID, countryID, "Porto");

@@ -4,6 +4,8 @@ import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Repository;
 
 /**
  * JPA implementation of {@link ICityRepository}.
@@ -12,6 +14,8 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
  * {@link City} objects to {@link CityDM} via {@link CityAssembler} before
  * delegating persistence to {@link ICityRepositoryJPA}.</p>
  */
+@Primary
+@Repository
 public class CityRepositoryJPAImpl implements ICityRepository {
 
     private final ICityRepositoryJPA jpaRepository;

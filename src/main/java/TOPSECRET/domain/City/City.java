@@ -26,11 +26,6 @@ public class City implements AggregateRoot<CityID> {
     private String _cityName;
 
     /**
-     * Required by JPA. Not for direct use.
-     */
-    protected City() {}
-
-    /**
      * Constructs a new City, generating a random {@link CityID}.
      *
      * @param countryID the country this city belongs to; must not be {@code null}

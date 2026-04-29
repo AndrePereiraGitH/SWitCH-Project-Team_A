@@ -1,13 +1,12 @@
 package TOPSECRET.domain.City;
 
-import TOPSECRET.domain.ValueObjects.CountryID;
-
 public interface ICityRepository {
 
     /**
-     * Creates a new City and stores it in the repository.
+     * Persists a {@link City} in the repository.
      *
-     * @return the newly created {@link City}
+     * @param city the city to persist; must not be {@code null}
+     * @return the persisted {@link City}
      * @throws IllegalArgumentException if the city already exists or any constraint is violated
      */
 

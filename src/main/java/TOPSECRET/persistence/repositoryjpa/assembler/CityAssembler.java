@@ -3,6 +3,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
+import org.springframework.stereotype.Service;
 
 /**
  * Assembler responsible for converting between the {@link City} domain object
@@ -10,6 +11,7 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
  *
  * <p>Uses {@link CityFactory} to reconstitute domain objects from persistence data.</p>
  */
+@Service
 public class CityAssembler {
 
     private final CityFactory cityFactory;

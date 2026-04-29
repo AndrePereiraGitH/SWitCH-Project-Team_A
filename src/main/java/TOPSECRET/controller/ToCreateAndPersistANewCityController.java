@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.ValueObjects.CountryID;
 import TOPSECRET.services.CityService;
 
 /**
@@ -27,14 +26,15 @@ public class ToCreateAndPersistANewCityController {
     /**
      * Creates and persists a new city for the given country and name.
      *
-     * @param countryID the string identifier of the country
-     * @param cityName  the name of the city
+     * @param countryName the name of the country; must not be {@code null} or blank
+     * @param cityName  the name of the city; must not be {@code null} or blank
      * @return the newly created and persisted {@link City}
-     * @throws IllegalArgumentException if countryID or cityName violate domain constraints
+     * @throws IllegalArgumentException if countryName or cityName are null or blank,
+     *                                  or if any domain constraint is violated
      */
-    public City createAndPersistCity(String countryID, String cityName) {
-        CountryID countryId = new CountryID(countryID);
-        City newCity = cityService.createAndSave(countryId, cityName);
-        return newCity;
+    public City createAndPersistCity(String countryName, String cityName) {
+        if (countryName == null || countryName.isBlank())
+            throw new IllegalArgumentException("Country name cannot be null or blank");
+        return cityService.createAndSave(countryName, cityName);
     }
 }

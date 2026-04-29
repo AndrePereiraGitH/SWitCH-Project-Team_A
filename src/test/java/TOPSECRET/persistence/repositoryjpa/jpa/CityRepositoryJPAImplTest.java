@@ -27,13 +27,13 @@ class CityRepositoryJPAImplTest {
     void setUp() {
         doubleJpaRepository = mock(ICityRepositoryJPA.class);
         doubleAssembler = mock(CityAssembler.class);
-        repository = new CityRepositoryJPAImpl(doubleJpaRepository, doubleAssembler);
     }
 
     @Test
     void shouldSaveCityAndReturnIt() {
 
         // Arrange
+        repository = new CityRepositoryJPAImpl(doubleJpaRepository, doubleAssembler);
         City doubleCity = mock(City.class);
         CityDM doubleCityDM = mock(CityDM.class);
         when(doubleAssembler.DomainToDM(doubleCity)).thenReturn(doubleCityDM);
@@ -51,6 +51,7 @@ class CityRepositoryJPAImplTest {
     void shouldPropagateExceptionWhenJpaThrows() {
 
         // Arrange
+        repository = new CityRepositoryJPAImpl(doubleJpaRepository, doubleAssembler);
         City doubleCity = mock(City.class);
         CityDM doubleCityDM = mock(CityDM.class);
         when(doubleAssembler.DomainToDM(doubleCity)).thenReturn(doubleCityDM);

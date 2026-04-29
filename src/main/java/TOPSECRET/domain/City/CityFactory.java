@@ -2,6 +2,7 @@ package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.domain.ValueObjects.CountryID;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory responsible for creating {@link City} domain objects.
@@ -15,6 +16,7 @@ import TOPSECRET.domain.ValueObjects.CountryID;
  * of {@code City} instances and prevent duplicated validation logic.
  */
 
+@Component
 public class CityFactory {
 
     /**

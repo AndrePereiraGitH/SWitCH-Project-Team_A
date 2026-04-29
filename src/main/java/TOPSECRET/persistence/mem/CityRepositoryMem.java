@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
 
 import java.util.ArrayList;
@@ -31,23 +30,12 @@ public class CityRepositoryMem implements ICityRepository {
     private List<City> _cities;
 
     /**
-     * Factory used to create valid {@link City} instances.
-     */
-    private final CityFactory _cityFactory;
-
-    /**
      * Creates a new {@code CityRepositoryMem}.
      *
-     * @param cityFactory the factory responsible for creating {@link City} instances;
-     *                    must not be {@code null}
      * @throws IllegalArgumentException if cityFactory is null
      */
-    public CityRepositoryMem(CityFactory cityFactory) {
-        if (cityFactory == null) {
-            throw new IllegalArgumentException("CityFactory cannot be null.");
-        }
+    public CityRepositoryMem() {
         _cities = new ArrayList<>();
-        _cityFactory = cityFactory;
     }
 
     /**
