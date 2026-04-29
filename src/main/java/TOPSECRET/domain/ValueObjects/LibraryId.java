@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class LibraryId implements DomainID {
 
     @Column(name = "library_id")
-    private final String _id;
+    private String _id;
 
 
     /**
