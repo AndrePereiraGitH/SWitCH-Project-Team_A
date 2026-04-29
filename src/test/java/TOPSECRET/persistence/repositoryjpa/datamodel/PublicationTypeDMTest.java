@@ -5,6 +5,30 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link PublicationTypeDM}.
+ *
+ * <p>
+ * Validates the data model behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Creation with valid data</li>
+ *     <li>Validation of constructor arguments</li>
+ *     <li>Correct mapping of fields</li>
+ *     <li>Getters correctness</li>
+ *     <li>Equality and hashCode contract based on identifier</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that the data model enforces persistence constraints
+ * while remaining independent from domain business logic.
+ * </p>
+ *
+ * <p>
+ * Tests focus on structural integrity and correctness of stored values.
+ * </p>
+ */
 class PublicationTypeDMTest {
 
     // HELPER

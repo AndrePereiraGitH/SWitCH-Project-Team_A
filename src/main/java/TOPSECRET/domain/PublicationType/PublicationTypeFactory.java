@@ -4,14 +4,25 @@ package TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 /**
- * Factory responsible for creating PublicationType instances.
+ * Factory responsible for creating {@link PublicationType} instances.
  *
  * <p>
  * Encapsulates the creation logic for both:
  * <ul>
  *     <li>New instances (with generated ID)</li>
- *     <li>Recreate instances (from persistence)</li>
+ *     <li>Recreated instances (from persistence layer)</li>
  * </ul>
+ * </p>
+ *
+ * <p>
+ * This factory should be used by application services to ensure that
+ * all {@link PublicationType} objects are created in a consistent and
+ * validated manner.
+ * </p>
+ *
+ * <p>
+ * It delegates validation to the domain entity and does not contain
+ * business logic.
  * </p>
  */
 public class PublicationTypeFactory {

@@ -9,6 +9,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link PublicationTypeAssembler}.
+ *
+ * <p>
+ * Validates conversion logic between
+ * {@link PublicationType} and
+ * {@link PublicationTypeDM}.
+ * </p>
+ *
+ * <ul>
+ *     <li>Conversion from domain to data model</li>
+ *     <li>Conversion from data model to domain</li>
+ *     <li>Preservation of field values during mapping</li>
+ *     <li>Validation of null inputs</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that persistence concerns remain isolated from the domain layer
+ * and that transformations are consistent and reliable.
+ * </p>
+ *
+ * <p>
+ * Tests focus on correctness of mappings and proper handling of invalid data.
+ * </p>
+ */
 class PublicationTypeAssemblerTest {
 
     // HELPER

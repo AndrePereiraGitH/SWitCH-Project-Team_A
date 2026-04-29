@@ -6,11 +6,21 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
 
 /**
  * Assembler responsible for converting between
- * PublicationType (domain) and PublicationTypeDM (data model).
+ * {@link PublicationType} (domain) and {@link PublicationTypeDM} (data model).
  *
  * <p>
  * This class isolates persistence concerns from the domain layer,
  * ensuring that transformations are handled in a single place.
+ * </p>
+ *
+ * <p>
+ * It is used internally by repository implementations to map
+ * domain entities to persistence models and vice versa.
+ * </p>
+ *
+ * <p>
+ * The assembler does not contain business logic and should not
+ * be used directly by application services.
  * </p>
  */
 public class PublicationTypeAssembler {

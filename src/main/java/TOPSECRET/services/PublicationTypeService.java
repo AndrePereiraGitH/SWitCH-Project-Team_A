@@ -54,11 +54,7 @@ public class PublicationTypeService {
      * @return the created and saved {@link PublicationType}
      * @throws IllegalArgumentException if mediaFormat is invalid or already exists
      */
-    public PublicationType create(String mediaFormat) {
-
-        if (mediaFormat == null || mediaFormat.isBlank()) {
-            throw new IllegalArgumentException("Media format cannot be null or empty");
-        }
+    public PublicationType createAndSave(String mediaFormat) {
 
         repository.findByMediaFormat(mediaFormat)
                 .ifPresent(existing -> {

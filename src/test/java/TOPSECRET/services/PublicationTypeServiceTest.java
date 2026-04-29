@@ -11,6 +11,30 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link PublicationTypeService}.
+ *
+ * <p>
+ * Validates application service behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Creation of PublicationType instances</li>
+ *     <li>Validation of input data</li>
+ *     <li>Prevention of duplicate publication types</li>
+ *     <li>Interaction with repository and factory</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that business rules are enforced before delegating
+ * persistence operations to the repository layer.
+ * </p>
+ *
+ * <p>
+ * Tests rely on mocks for repository and factory to isolate
+ * service logic and verify interactions.
+ * </p>
+ */
 class PublicationTypeServiceTest {
 
     // HELPER
@@ -33,7 +57,7 @@ class PublicationTypeServiceTest {
         when(repository.save(entity)).thenReturn(entity);
 
         // ACT
-        PublicationType result = service.create(format);
+        PublicationType result = service.createAndSave(format);
 
         // ASSERT
         assertEquals(entity, result);
@@ -46,7 +70,7 @@ class PublicationTypeServiceTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> service.create(null));
+                () -> service.createAndSave(null));
     }
 
     @Test
@@ -54,7 +78,7 @@ class PublicationTypeServiceTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> service.create(" "));
+                () -> service.createAndSave(" "));
     }
 
     @Test
@@ -94,7 +118,7 @@ class PublicationTypeServiceTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> service.create(format));
+                () -> service.createAndSave(format));
 
         verify(repository, never()).save(any());
     }

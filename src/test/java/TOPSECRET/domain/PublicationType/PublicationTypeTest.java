@@ -5,6 +5,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link PublicationType}.
+ *
+ * <p>
+ * Validates domain entity behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Creation of valid instances</li>
+ *     <li>Validation of constructor arguments</li>
+ *     <li>Equality and identity based on {@link PublicationTypeId}</li>
+ *     <li>hashCode consistency</li>
+ *     <li>Business comparison using {@code sameAs}</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that domain invariants are enforced and that identity
+ * and comparison logic behave as expected.
+ * </p>
+ *
+ * <p>
+ * Tests focus on entity integrity, validation rules, and correct
+ * implementation of equality and business equivalence.
+ * </p>
+ */
 class PublicationTypeTest {
 
     // CONSTRUCTOR

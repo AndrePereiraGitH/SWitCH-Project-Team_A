@@ -15,6 +15,36 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link PublicationTypeRepositoryJPAImpl}.
+ *
+ * <p>
+ * Validates the behavior of the JPA repository implementation including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Saving entities through assembler and JPA repository</li>
+ *     <li>Retrieving all entities</li>
+ *     <li>Finding entities by ID</li>
+ *     <li>Finding entities by media format</li>
+ *     <li>Validation of invalid inputs</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures correct interaction between layers, including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Delegation to the underlying JPA repository</li>
+ *     <li>Proper use of the assembler for conversions</li>
+ *     <li>Preservation of domain integrity</li>
+ * </ul>
+ *
+ * <p>
+ * Tests rely on mocks for the JPA repository and assembler to isolate
+ * repository logic and verify interactions.
+ * </p>
+ */
 class PublicationTypeRepositoryJPAImplTest {
 
     // HELPER
