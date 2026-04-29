@@ -7,7 +7,6 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -154,7 +153,7 @@ class US012PublicationSampleMapperTest {
         when(publication.getEditionID()).thenReturn(editionId);
         when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
         when(editionRepo.findEditionById(editionId)).thenReturn(Optional.of(edition));
-        when(authorRepo.findAuthorById(authorId)).thenReturn(Optional.empty());
+        when(authorRepo.findById(authorId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(publication));
@@ -227,7 +226,7 @@ class US012PublicationSampleMapperTest {
                     AuthorId authorId = mock(AuthorId.class);
                     Author author = mock(Author.class);
                     when(author.getName()).thenReturn(name);
-                    when(authorRepo.findAuthorById(authorId)).thenReturn(Optional.of(author));
+                    when(authorRepo.findById(authorId)).thenReturn(Optional.of(author));
                     return authorId;
                 })
                 .toList();
