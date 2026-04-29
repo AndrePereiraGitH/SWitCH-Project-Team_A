@@ -479,20 +479,24 @@ class AppraisalEntityTest {
 
     @Test
     void getPublicationTypeIds_shouldBeImmutable() {
+        // ARRANGE
         AppraisalEntity entity = createValidEntity();
 
         List<PublicationTypeId> list = entity.getPublicationTypeIds();
 
+        // ACT + ASSERT
         assertThrows(UnsupportedOperationException.class,
                 list::clear);
     }
 
     @Test
     void getGenreIds_shouldBeImmutable() {
+        // ARRANGE
         AppraisalEntity entity = createValidEntity();
 
         List<GenreID> list = entity.getGenreIds();
 
+        // ACT + ASSERT
         assertThrows(UnsupportedOperationException.class,
                 list::clear);
     }
