@@ -51,4 +51,54 @@ class GenreFactoryTest {
         assertThrows(IllegalArgumentException.class, () -> genreFactory.create("   "));
     }
 
+    // =========================================================================
+// reconstruct()
+// =========================================================================
+
+    @Test
+    void ensureReconstructReturnsGenreSuccessfully() {
+        // Arrange
+        String genreType = "Ergodic literature";
+
+        // Act
+        Genre genre = genreFactory.reconstruct(genreType);
+
+        // Assert
+        assertNotNull(genre);
+    }
+
+    @Test
+    void ensureReconstructReturnsGenreWithCorrectType() {
+        // Arrange
+        String genreType = "Ergodic literature";
+
+        // Act
+        Genre genre = genreFactory.reconstruct(genreType);
+
+        // Assert
+        assertEquals(genreType, genre.getGenreType());
+    }
+
+    @Test
+    void ensureReconstructThrowsExceptionWithNullGenreType() {
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.reconstruct(null));
+    }
+
+    @Test
+    void ensureReconstructThrowsExceptionWithBlankGenreType() {
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.reconstruct("   "));
+    }
+
+    @Test
+    void ensureReconstructAndCreateReturnEqualGenres() {
+        // Arrange
+        String genreType = "Ergodic literature";
+
+        // Act
+        Genre created = genreFactory.create(genreType);
+        Genre reconstructed = genreFactory.reconstruct(genreType);
+
+        // Assert
+        assertEquals(created, reconstructed);
+    }
 }
