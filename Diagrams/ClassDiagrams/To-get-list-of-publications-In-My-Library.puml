@@ -1,0 +1,72 @@
+@startuml
+title As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
+
+class UI {
+}
+
+class GetListOfPublicationsInLibraryController {
+    - userRepository : IUserRepository
+    - pubSampleRepo : IPublicationSampleRepository
+    - mapper : US012PublicationSampleMapper
+    + getListOfPublicationsInLibrary(username : String) : List<PublicationDetailsDTO_US012>
+}
+
+interface IUserRepository {
+    + findIdByUsername(username : String) : UserId
+}
+
+interface IUserRepositoryJPA {
+    + findByUsername(username : String) : UserDM
+}
+
+class UserAssembler {
+    + toDomain(userDM : UserDM) : User
+}
+
+class User {
+    + getId() : UserId
+}
+
+interface IPublicationSampleRepository {
+    + getAllPublicationsInUserLibrary(userId : UserId) : List<PublicationSample>
+}
+
+interface IPublicationSampleRepositoryJpa {
+    + findAllByOwnerId(userId : UserId) : List<PublicationSampleDM>
+}
+
+class PublicationSampleAssembler {
+    + toDomain(publicationSampleDM : PublicationSampleDM) : PublicationSample
+}
+
+class PublicationSample {
+}
+
+class US012PublicationSampleMapper {
+    + toDTOs(publications : List<PublicationSample>) : List<PublicationDetailsDTO_US012>
+    + toDTO(publicationSample : PublicationSample) : PublicationDetailsDTO_US012
+}
+
+record PublicationDetailsDTO_US012 {
+}
+
+' Relationships
+UI ..> GetListOfPublicationsInLibraryController : uses
+
+GetListOfPublicationsInLibraryController ..> IUserRepository : uses
+GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
+GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
+
+IUserRepository ..> IUserRepositoryJPA : uses
+IUserRepository ..> UserAssembler : uses
+UserAssembler ..> User : creates
+IUserRepository ..> User : reads
+
+IPublicationSampleRepository ..> IPublicationSampleRepositoryJpa : uses
+IPublicationSampleRepository ..> PublicationSampleAssembler : uses
+PublicationSampleAssembler ..> PublicationSample : creates
+
+US012PublicationSampleMapper ..> PublicationSample : reads
+US012PublicationSampleMapper ..> PublicationDetailsDTO_US012 : creates
+
+@enduml

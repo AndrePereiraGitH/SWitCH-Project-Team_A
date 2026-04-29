@@ -1,0 +1,41 @@
+@startuml
+hide footbox
+autonumber
+title Get Publications in Library
+
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant "listOfPublications\n:List<PublicationSample>" as ListPubs
+participant ":IPublicationSampleRepositoryJpa" as pbJpa
+participant ":PublicationSampleAssembler" as pbAssembler
+participant "pbSample:PublicationSample" as pbDomain
+participant "Database" as db
+
+note over pubSampleRepo #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+pubSampleRepo -->> ListPubs ** : <<create>>
+
+pubSampleRepo -> pbJpa : findAllByOwnerId(userId)
+activate pbJpa
+
+pbJpa -> db : SELECT WHERE ownerId
+activate db
+db --> pbJpa : data
+deactivate db
+
+pbJpa --> pubSampleRepo : List<PublicationSampleDM>
+deactivate pbJpa
+
+loop for each PublicationSampleDM
+    pubSampleRepo -> pbAssembler : toDomain(publicationSampleDM)
+    activate pbAssembler
+    pbAssembler -->> pbDomain ** : <<create>>
+    pbAssembler --> pubSampleRepo : pbSample
+    deactivate pbAssembler
+    pubSampleRepo -> pubSampleRepo : listOfPublications.add(pbSample)
+end
+
+@enduml
