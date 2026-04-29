@@ -72,27 +72,27 @@ class AuctionRepositoryMemTest {
     }
 
     // =================================================================================================================
-    // ============== GET ALL AUCTIONS =================================================================================
+    // ============== FIND ALL =========================================================================================
     // =================================================================================================================
 
     @Test
-    void getAllAuctions_shouldReturnListOfAllAuctionsInRepo() throws InstanceAlreadyExistsException {
+    void findAll_shouldReturnListOfAllAuctionsInRepo() throws InstanceAlreadyExistsException {
         //Arrange
         IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
         //Act
-        List<Auction> result = auctionRepository.getAllAuctions();
+        List<Auction> result = auctionRepository.findAll();
 
         //Assert
         assertEquals(3, result.size());
     }
 
     // =================================================================================================================
-    // ============== CREATE AND ADD ===================================================================================
+    // ============== SAVE =============================================================================================
     // =================================================================================================================
 
     @Test
-    void createAndAdd_shouldThrowsWhenAuctionAlreadyExists() throws InstanceAlreadyExistsException {
+    void save_shouldThrowsWhenAuctionAlreadyExists() throws InstanceAlreadyExistsException {
         //arrange
         IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
@@ -100,51 +100,51 @@ class AuctionRepositoryMemTest {
 
         // act + assert
         InstanceAlreadyExistsException exception = assertThrows(InstanceAlreadyExistsException.class,
-                () -> auctionRepository.createAndAdd(listingId, initialDate, finalDate, initialPrice ,buyOutPrice));
+                () -> auctionRepository.save(auction1));
 
         assertEquals("This auction already exists", exception.getMessage());
 
     }
 
     @Test
-    void createAndAdd_addsAndReturnsAuction_whenAuctionDoesNotExist() throws Exception {
+    void save_addsAndReturnsAuction_whenAuctionDoesNotExist() throws Exception {
         // arrange
         IAuctionRepository auctionRepository = instantiateAuctionRepository();
 
-        Auction created = mock(Auction.class);
+        Auction newAuction = mock(Auction.class);
 
-        when(auctionFactory.create(listingId, initialDate, finalDate, initialPrice, buyOutPrice)).thenReturn(created);
+        when(auctionFactory.create(listingId, initialDate, finalDate, initialPrice, buyOutPrice)).thenReturn(newAuction);
 
-        int beforeSize = auctionRepository.getAllAuctions().size();
+        int beforeSize = auctionRepository.findAll().size();
 
         // act
-        Auction result = auctionRepository.createAndAdd(listingId, initialDate, finalDate, initialPrice, buyOutPrice);
+        Auction result = auctionRepository.save(newAuction);
 
         // assert
-        assertSame(created, result);
+        assertSame(newAuction, result);
 
-        List<Auction> all = auctionRepository.getAllAuctions();
+        List<Auction> all = auctionRepository.findAll();
         assertEquals(beforeSize + 1, all.size());
-        assertTrue(all.contains(created));
+        assertTrue(all.contains(newAuction));
     }
 
     // =================================================================================================================
-    // =============== FIND AUCTION BY ID ==============================================================================
+    // =============== FIND BY ID ======================================================================================
     // =================================================================================================================
 
     @Test
-    void findAuctionById_shouldThrowExceptionWhenIdIsNull() throws Exception {
+    void findById_shouldThrowExceptionWhenIdIsNull() throws Exception {
         // arrange
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act + assert
         assertThrows(IllegalArgumentException.class, () -> {
-            repo.findAuctionById(null);
+            repo.findById(null);
         });
     }
 
     @Test
-    void findAuctionById_shouldReturnAuctionWhenIdExists() throws Exception {
+    void findById_shouldReturnAuctionWhenIdExists() throws Exception {
         // arrange
         AuctionId auctionId1 = new AuctionId("auction1");
         AuctionId auctionId2 = new AuctionId("auction2");
@@ -157,7 +157,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        Optional<Auction> result = repo.findAuctionById(auctionId1);
+        Optional<Auction> result = repo.findById(auctionId1);
 
         // assert
         assertTrue(result.isPresent());
@@ -165,7 +165,7 @@ class AuctionRepositoryMemTest {
     }
 
     @Test
-    void findAuctionById_shouldReturnEmptyWhenIdDoesNotExist() throws Exception {
+    void findById_shouldReturnEmptyWhenIdDoesNotExist() throws Exception {
         // arrange
         AuctionId newId = new AuctionId("notExisting");
         AuctionId auctionId1 = new AuctionId("auction1");
@@ -179,27 +179,27 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        Optional<Auction> result = repo.findAuctionById(newId);
+        Optional<Auction> result = repo.findById(newId);
 
         // assert
         assertTrue(result.isEmpty());
     }
 
     // =================================================================================================================
-    // =============== FIND AUCTIONS BY LISTING ID =====================================================================
+    // =============== FIND BY LISTING ID ==============================================================================
     // =================================================================================================================
 
     @Test
-    void findAuctionsByListingId_shouldThrowException_whenListingIdsIsNull() throws Exception {
+    void findByListingId_shouldThrowException_whenListingIdsIsNull() throws Exception {
         // arrange
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act + assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findAuctionsByListingId(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findByListingId(null));
     }
 
     @Test
-    void findAuctionsByListingId_shouldReturnAuctions_whenMultipleAuctionsMatchListingIds() throws Exception {
+    void findByListingId_shouldReturnAuctions_whenMultipleAuctionsMatchListingIds() throws Exception {
         // arrange
         ListingId listingId1 = new ListingId("listingId1");
         ListingId listingId2 = new ListingId("listingId2");
@@ -212,7 +212,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        List<Auction> result = repo.findAuctionsByListingId(List.of(listingId1, listingId2));
+        List<Auction> result = repo.findByListingId(List.of(listingId1, listingId2));
 
         // assert
         assertEquals(2, result.size());
@@ -222,7 +222,7 @@ class AuctionRepositoryMemTest {
     }
 
     @Test
-    void findAuctionsByListingId_shouldReturnAuction_whenOneAuctionMatchesListingIds() throws Exception {
+    void findByListingId_shouldReturnAuction_whenOneAuctionMatchesListingIds() throws Exception {
         // arrange
         ListingId listingId1 = new ListingId("listingId1");
         ListingId listingId2 = new ListingId("listingId2");
@@ -235,7 +235,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        List<Auction> result = repo.findAuctionsByListingId(List.of(listingId2));
+        List<Auction> result = repo.findByListingId(List.of(listingId2));
 
         // assert
         assertEquals(1, result.size());
@@ -243,7 +243,7 @@ class AuctionRepositoryMemTest {
     }
 
     @Test
-    void findAuctionsByListingId_shouldReturnEmptyList_whenNoAuctionMatchesListingIds() throws Exception {
+    void findByListingId_shouldReturnEmptyList_whenNoAuctionMatchesListingIds() throws Exception {
         // arrange
         ListingId listingId1 = new ListingId("listingId1");
         ListingId listingId2 = new ListingId("listingId2");
@@ -257,7 +257,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        List<Auction> result = repo.findAuctionsByListingId(List.of(nonExistingListingId));
+        List<Auction> result = repo.findByListingId(List.of(nonExistingListingId));
 
         // assert
         assertNotNull(result);
@@ -265,74 +265,74 @@ class AuctionRepositoryMemTest {
     }
 
     @Test
-    void findAuctionsByListingId_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+    void findByListingId_shouldReturnEmptyList_whenRepositoryIsEmpty() {
         // arrange
-        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
+        IAuctionRepository repo = new AuctionRepositoryMem();
 
         // act
-        List<Auction> result = repo.findAuctionsByListingId(List.of(listingId));
+        List<Auction> result = repo.findByListingId(List.of(listingId));
 
         // assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void getListOfItemsOnAuctionGivenGenre_shouldThrowException_whenListIsNull() {
-        // Arrange
-
-        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
-
-        //Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.getListOfItemsOnAuctionGivenGenre(null));
-    }
-
-    @Test
-    void getListOfItemsOnAuctionGivenGenre_shouldReturnEmptyList() {
-        // Arrange
-        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
-        List<ListingId> listingIds = List.of(mock(ListingId.class));
-
-
-        // Act
-        List<Auction> result = repo.getListOfItemsOnAuctionGivenGenre(listingIds);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getListOfItemsOnAuctionGivenGenre_shouldReturnMatchingAuctions() throws Exception {
-
-        // Arrange
-        AuctionFactory factory = mock(AuctionFactory.class);
-        IAuctionRepository repo = new AuctionRepositoryMem(factory);
-
-        ListingId listingId = mock(ListingId.class);
-
-        Auction auction = mock(Auction.class);
-        when(auction.getListingId()).thenReturn(listingId);
-
-        when(factory.create(any(), any(), any(), any(), any()))
-                .thenReturn(auction);
-
-        repo.createAndAdd(
-                listingId,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(1),
-                mock(Price.class),
-                mock(Price.class)
-        );
-
-        // Act
-        List<Auction> result =
-                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingId));
-
-        // Assert
-        assertEquals(1, result.size());
-        assertTrue(result.contains(auction));
-    }
+//    @Test
+//    void getListOfItemsOnAuctionGivenGenre_shouldThrowException_whenListIsNull() {
+//        // Arrange
+//
+//        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
+//
+//        //Act & Assert
+//        assertThrows(IllegalArgumentException.class, () ->
+//                repo.getListOfItemsOnAuctionGivenGenre(null));
+//    }
+//
+//    @Test
+//    void getListOfItemsOnAuctionGivenGenre_shouldReturnEmptyList() {
+//        // Arrange
+//        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
+//        List<ListingId> listingIds = List.of(mock(ListingId.class));
+//
+//
+//        // Act
+//        List<Auction> result = repo.getListOfItemsOnAuctionGivenGenre(listingIds);
+//
+//        // Assert
+//        assertTrue(result.isEmpty());
+//    }
+//
+//    @Test
+//    void getListOfItemsOnAuctionGivenGenre_shouldReturnMatchingAuctions() throws Exception {
+//
+//        // Arrange
+//        AuctionFactory factory = mock(AuctionFactory.class);
+//        IAuctionRepository repo = new AuctionRepositoryMem(factory);
+//
+//        ListingId listingId = mock(ListingId.class);
+//
+//        Auction auction = mock(Auction.class);
+//        when(auction.getListingId()).thenReturn(listingId);
+//
+//        when(factory.create(any(), any(), any(), any(), any()))
+//                .thenReturn(auction);
+//
+//        repo.createAndAdd(
+//                listingId,
+//                LocalDateTime.now(),
+//                LocalDateTime.now().plusDays(1),
+//                mock(Price.class),
+//                mock(Price.class)
+//        );
+//
+//        // Act
+//        List<Auction> result =
+//                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingId));
+//
+//        // Assert
+//        assertEquals(1, result.size());
+//        assertTrue(result.contains(auction));
+//    }
 
 
     // -------------------------------------------------------------------------
@@ -340,7 +340,7 @@ class AuctionRepositoryMemTest {
     // -------------------------------------------------------------------------
 
     private IAuctionRepository instantiateAuctionRepository() throws InstanceAlreadyExistsException {
-        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
+        IAuctionRepository repo = new AuctionRepositoryMem();
 
         when(auctionFactory.create(any(), any(), any(), any(), any()))
                 .thenReturn(auction1)
@@ -353,9 +353,9 @@ class AuctionRepositoryMemTest {
         Price initialPrice = new Price(new BigDecimal("10.00"));
         Price buyoutPrice = new Price(new BigDecimal("100.00"));
 
-        repo.createAndAdd(listingId1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), initialPrice,  buyoutPrice);
-        repo.createAndAdd(listingId2, LocalDateTime.now(), LocalDateTime.now().plusDays(1), initialPrice,  buyoutPrice);
-        repo.createAndAdd(listingId3, LocalDateTime.now(), LocalDateTime.now().plusDays(1), initialPrice,  buyoutPrice);
+        repo.save(auction1);
+        repo.save(auction2);
+        repo.save(auction3);
 
         return repo;
     }
