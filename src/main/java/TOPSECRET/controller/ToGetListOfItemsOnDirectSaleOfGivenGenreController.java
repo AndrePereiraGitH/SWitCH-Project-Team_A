@@ -80,10 +80,10 @@ public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
                 bibliographicalDataRepository.findAllBibliographicalDataByGenreId(selectedGenre);
 
         List<PublicationSampleId> pubSampleIds =
-                publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdIds);
+                publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
         List<Listing> directSaleListings =
-                listingRepository.findDirectSaleListingsContaining(pubSampleIds);
+                listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds);
 
         return mapper.toDTOs(directSaleListings);
     }

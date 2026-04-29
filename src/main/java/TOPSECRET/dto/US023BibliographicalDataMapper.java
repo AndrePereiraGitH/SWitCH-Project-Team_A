@@ -4,7 +4,6 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -105,7 +104,7 @@ public class US023BibliographicalDataMapper {
         List<String> authorsName = new ArrayList<>();
 
         for (AuthorId id : listOfAuthorsId) {
-            Author author = _authorRepo.findAuthorById(id)
+            Author author = _authorRepo.findById(id)
                     .orElseThrow(() ->
                             new InstanceNotFoundException("Author was not found:" + id));
 

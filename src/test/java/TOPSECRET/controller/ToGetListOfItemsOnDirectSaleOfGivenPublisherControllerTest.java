@@ -183,7 +183,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         EditionID editionId1 = new EditionID("editionId1");
 
         when(editionRepoDouble.findEditionIdsByPublisherId(pubId1)).thenReturn(List.of(editionId1));
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1))).thenReturn(List.of());
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1))).thenReturn(List.of());
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -201,8 +201,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     void findListOfItemsOnDirectSaleByPublisherId_ShouldReturnEmptyListWhenNoListingsAreFound() throws InstanceNotFoundException {
         // Arrange
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
-        when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double))).thenReturn(List.of());
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
+        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenReturn(List.of());
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -234,7 +234,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     void findListOfItemsOnDirectSaleByPublisherId_ShouldPropagateExceptionFromPublicationSampleRepoDouble() throws InstanceNotFoundException {
         // Arrange
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double))).thenThrow(new RuntimeException("DB error"));
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenThrow(new RuntimeException("DB error"));
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -249,8 +249,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     void findListOfItemsOnDirectSaleByPublisherId_ShouldPropagateExceptionFromListingRepoDouble() {
         // Arrange
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
-        when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
+        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -268,9 +268,9 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         US027ListingDTO listingDTODouble2 = mock(US027ListingDTO.class);
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double, editionId2Double)))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double, editionId2Double)))
             .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
-        when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double, pubSampleId2Double)))
+        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double, pubSampleId2Double)))
                 .thenReturn(List.of(listingDouble1, listingDouble2));
         when(mapperDouble.toDTOs(List.of(listingDouble1, listingDouble2))).thenReturn(List.of(listingDTODouble1, listingDTODouble2));
 

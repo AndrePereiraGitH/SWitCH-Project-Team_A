@@ -59,7 +59,7 @@ public class ToAddPublicationToLibraryController {
      * @return a list of {@link PublicationSample} instances not yet in any library
      */
     public List<PublicationSample> getListOfPublicationsNotInLibrary(UserId userId) {
-        return _publicationSampleRepository.getAllPublicationsFromUserWithoutLibrary(userId);
+        return _publicationSampleRepository.findByUserIdAndLibraryIdIsNull(userId);
     }
 
     /**
@@ -97,7 +97,7 @@ public class ToAddPublicationToLibraryController {
         LibraryId libraryId = library.id();
 
         PublicationSample publicationSample = _publicationSampleRepository
-                .findPublicationSampleById(publicationSampleId)
+                .findById(publicationSampleId)
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
 
         _publicationSampleRepository.addPublicationToLibrary(publicationSample, libraryId);
