@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
@@ -15,14 +16,16 @@ import TOPSECRET.domain.ValueObjects.UserId;
 public class US001ToRegisterUserController {
 
     private final IUserRepository userRepository;
+    private final UserFactory userFactory;
 
     /**
      * Constructs a new {@code US001ToRegisterUserController} with the given user repository.
      *
      * @param userRepository the repository responsible for user persistence; must not be null
      */
-    public US001ToRegisterUserController(IUserRepository userRepository) {
+    public US001ToRegisterUserController(IUserRepository userRepository, UserFactory userFactory) {
         this.userRepository = userRepository;
+        this.userFactory = userFactory;
     }
 
     /**
@@ -56,6 +59,8 @@ public class US001ToRegisterUserController {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        return userRepository.createAndAdd(username, contact, profile, userRole);
+        User user = userFactory.create(username, contact, profile, userRole);
+
+        return userRepository.save(user);
     }
 }

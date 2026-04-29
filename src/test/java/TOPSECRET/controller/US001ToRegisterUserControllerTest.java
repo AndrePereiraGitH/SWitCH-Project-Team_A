@@ -1,58 +1,49 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
-import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for US001 - To register a User in the system.
- * SUT: US001ToRegisterUserController
- *
- * Repository dependency is isolated using test doubles.
- */
 class US001ToRegisterUserControllerTest {
 
     @Test
     void shouldRegisterUserSuccessfully() {
-        // ARRANGE
         IUserRepository repositoryDouble = mock(IUserRepository.class);
+        UserFactory userFactoryDouble = mock(UserFactory.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
         User userDouble = mock(User.class);
 
         when(repositoryDouble.exists("TestUser1")).thenReturn(false);
-
-        when(repositoryDouble.createAndAdd("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
+        when(userFactoryDouble.create("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
                 .thenReturn(userDouble);
+        when(repositoryDouble.save(userDouble)).thenReturn(userDouble);
 
         US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(repositoryDouble);
+                new US001ToRegisterUserController(repositoryDouble, userFactoryDouble);
 
-        // ACT
         User result = sut.registerUser("TestUser1", contactDouble, profileDouble, UserRole.ADMIN);
 
-        // ASSERT
-        assertNotNull(result);
+        assertSame(userDouble, result);
     }
 
     @Test
     void shouldThrowExceptionWhenUsernameIsNull() {
-        // ARRANGE
         IUserRepository repositoryDouble = mock(IUserRepository.class);
+        UserFactory userFactoryDouble = mock(UserFactory.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(repositoryDouble);
+                new US001ToRegisterUserController(repositoryDouble, userFactoryDouble);
 
-        // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser(null, contactDouble, profileDouble, UserRole.ADMIN)
@@ -61,14 +52,13 @@ class US001ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenContactIsNull() {
-        // ARRANGE
         IUserRepository repositoryDouble = mock(IUserRepository.class);
+        UserFactory userFactoryDouble = mock(UserFactory.class);
         Profile profileDouble = mock(Profile.class);
 
         US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(repositoryDouble);
+                new US001ToRegisterUserController(repositoryDouble, userFactoryDouble);
 
-        // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("User", null, profileDouble, UserRole.ADMIN)
@@ -77,14 +67,13 @@ class US001ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenProfileIsNull() {
-        // ARRANGE
         IUserRepository repositoryDouble = mock(IUserRepository.class);
+        UserFactory userFactoryDouble = mock(UserFactory.class);
         Contact contactDouble = mock(Contact.class);
 
         US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(repositoryDouble);
+                new US001ToRegisterUserController(repositoryDouble, userFactoryDouble);
 
-        // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("User", contactDouble, null, UserRole.ADMIN)
@@ -93,15 +82,14 @@ class US001ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenRoleIsNull() {
-        // ARRANGE
         IUserRepository repositoryDouble = mock(IUserRepository.class);
+        UserFactory userFactoryDouble = mock(UserFactory.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(repositoryDouble);
+                new US001ToRegisterUserController(repositoryDouble, userFactoryDouble);
 
-        // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("User", contactDouble, profileDouble, null)
@@ -110,17 +98,16 @@ class US001ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenUsernameAlreadyExists() {
-        // ARRANGE
         IUserRepository repositoryDouble = mock(IUserRepository.class);
+        UserFactory userFactoryDouble = mock(UserFactory.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         when(repositoryDouble.exists("TestUser1")).thenReturn(true);
 
         US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(repositoryDouble);
+                new US001ToRegisterUserController(repositoryDouble, userFactoryDouble);
 
-        // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("TestUser1", contactDouble, profileDouble, UserRole.ADMIN)
