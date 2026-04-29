@@ -75,6 +75,49 @@ public class Author implements AggregateRoot<AuthorId> {
         this._biography = biography;
     }
 
+    /**
+     * Recreates an {@code Author} instance with an existing {@link AuthorId}.
+     *
+     * <p>
+     * This constructor is intended to be used when rebuilding an author from
+     * persisted data, where the identifier already exists and must be preserved.
+     * </p>
+     *
+     * @param id the existing author identifier
+     * @param name the author's name
+     * @param countryID the author's country of origin
+     * @param dateOfBirth the author's date of birth
+     * @param biography the author's biography
+     *
+     * @throws IllegalArgumentException if {@code id} is null
+     * @throws IllegalArgumentException if {@code name} is null or blank
+     * @throws IllegalArgumentException if {@code countryID} is null
+     * @throws IllegalArgumentException if {@code dateOfBirth} is null
+     * @throws IllegalArgumentException if {@code biography} is null or blank
+     */
+    protected Author(AuthorId id, String name, CountryID countryID, LocalDate dateOfBirth, String  biography) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        if ( name ==null || name.isBlank()){
+            throw new IllegalArgumentException("Name cannot be null or blank");
+        }
+        if (countryID == null){
+            throw new IllegalArgumentException("Country cannot be null");
+        }
+        if (dateOfBirth == null){
+            throw new IllegalArgumentException("DateOfBirth cannot be null");
+        }
+        if (biography == null || biography.isBlank())
+            throw new IllegalArgumentException("Biography cannot be null or blank");
+        this._id = id;
+        this._name= name;
+        this._countryID = countryID;
+        this._dateOfBirth = dateOfBirth;
+        this._biography = biography;
+    }
+
     // -------------------------------------------------------------------------
     // Getters
     // -------------------------------------------------------------------------

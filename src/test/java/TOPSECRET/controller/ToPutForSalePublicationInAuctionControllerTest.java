@@ -23,10 +23,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class US016ToPutPublicationInAuctionControllerTest {
+class ToPutForSalePublicationInAuctionControllerTest {
 
     private ILibraryRepository libraryRepo;
-    private ListingService listingService;  // FIXED: was IListingRepository
+    private ListingService listingService;
     private IAuctionRepository auctionRepository;
     private IPublicationSampleRepository publicationSampleRepository;
 
@@ -34,7 +34,7 @@ class US016ToPutPublicationInAuctionControllerTest {
     private Listing listing;
     private Auction auction;
 
-    private US016ToPutPublicationInAuctionController controller;
+    private ToPutForSalePublicationInAuctionController controller;
 
     private UserId userId;
     private LibraryId libraryId;
@@ -67,7 +67,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         selectedPublications = List.of(publicationSampleId);
         mapper = mock(US016PublicationSampleMapper.class);
 
-        controller = new US016ToPutPublicationInAuctionController(
+        controller = new ToPutForSalePublicationInAuctionController(
                 listingService,
                 libraryRepo,
                 auctionRepository,
@@ -84,14 +84,15 @@ class US016ToPutPublicationInAuctionControllerTest {
     void testConstructor() {
 
         // act
-        US016ToPutPublicationInAuctionController localController =
-                new US016ToPutPublicationInAuctionController(
+        ToPutForSalePublicationInAuctionController  localController =
+                new ToPutForSalePublicationInAuctionController(
                         listingService,
                         libraryRepo,
                         auctionRepository,
                         publicationSampleRepository,
                         mapper
                 );
+
 
         // assert
         assertNotNull(localController);
@@ -178,7 +179,7 @@ class US016ToPutPublicationInAuctionControllerTest {
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
-        when(listingService.createAndSave(  // FIXED: was listingRepository.createAndAdd
+        when(listingService.createAndSave(
                 "Auction Title",
                 selectedPublications,
                 SaleType.AUCTION,

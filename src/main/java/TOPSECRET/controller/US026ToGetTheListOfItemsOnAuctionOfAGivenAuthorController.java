@@ -67,7 +67,7 @@ public class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
      */
     public List<US026AuthorDTO> getAllAuthors() {
 
-        List<Author> authorsList = authorRepository.getAllAuthors();
+        List<Author> authorsList = authorRepository.findAll();
         List<US026AuthorDTO> authorsListDTO = US026AuthorMapper.fromDomainList(authorsList);
 
         return authorsListDTO;
