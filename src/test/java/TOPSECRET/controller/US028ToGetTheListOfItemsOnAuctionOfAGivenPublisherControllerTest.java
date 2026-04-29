@@ -116,7 +116,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Arrange
         PublisherID publisherIdDouble = mock(PublisherID.class);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble))
                 .thenReturn(List.of());
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of()))
                 .thenReturn(List.of());
@@ -146,7 +146,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         PublicationSampleId sampleIdDouble = mock(PublicationSampleId.class);
         List<PublicationSampleId> sampleIds = List.of(sampleIdDouble);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble))
                 .thenReturn(editionIds);
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
                 .thenReturn(sampleIds);
@@ -178,7 +178,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         Listing listingDouble = mock(Listing.class);
         US028ListingDTO listingDTODouble = mock(US028ListingDTO.class);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble))
                 .thenReturn(editionIds);
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))  // whole list, not single EditionID
                 .thenReturn(sampleIds);
@@ -219,7 +219,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         US028ListingDTO dto1 = mock(US028ListingDTO.class);
         US028ListingDTO dto2 = mock(US028ListingDTO.class);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble))
                 .thenReturn(editionIds);
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
                 .thenReturn(sampleIds);
@@ -248,7 +248,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         // Arrange
         PublisherID publisherId = mock(PublisherID.class);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+        when(editionRepoDouble.findIdsByPublisherId(publisherId))
                 .thenThrow(new RuntimeException("DB error"));
 
         US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
@@ -270,7 +270,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         EditionID editionId = mock(EditionID.class);
         List<EditionID> editionIds = List.of(editionId);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+        when(editionRepoDouble.findIdsByPublisherId(publisherId))
                 .thenReturn(editionIds);
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
                 .thenThrow(new RuntimeException("DB error"));
@@ -296,7 +296,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         PublicationSampleId sampleId = mock(PublicationSampleId.class);
         List<PublicationSampleId> sampleIds = List.of(sampleId);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+        when(editionRepoDouble.findIdsByPublisherId(publisherId))
                 .thenReturn(editionIds);
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
                 .thenReturn(sampleIds);
@@ -325,7 +325,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         List<PublicationSampleId> sampleIds = List.of(sampleId);
         Listing listing = mock(Listing.class);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
+        when(editionRepoDouble.findIdsByPublisherId(publisherId))
                 .thenReturn(editionIds);
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
                 .thenReturn(sampleIds);

@@ -41,8 +41,6 @@ class EditionFactoryTest {
     @BeforeEach
     void setUp() {
 
-        factory = new EditionFactory();
-
         validCodeDouble = mock(Code.class);
         when(validCodeDouble.getIsbn13()).thenReturn("9781234567890");
 
@@ -58,6 +56,10 @@ class EditionFactoryTest {
 
     @Test
     void create_shouldCreateEdition_whenValidData() {
+
+        // Arrange
+
+        factory = new EditionFactory();
 
         // Act
         Edition edition = factory.create(
@@ -82,6 +84,10 @@ class EditionFactoryTest {
 
     @Test
     void create_shouldGenerateDifferentIds() {
+
+        // Arrange
+
+        factory = new EditionFactory();
 
         // Act
         Edition e1 = factory.create(
@@ -119,6 +125,9 @@ class EditionFactoryTest {
     @Test
     void create_shouldThrow_whenEditionNumberIsNull() {
 
+        // Arrange
+        factory = new EditionFactory();
+
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 factory.create(
@@ -136,6 +145,9 @@ class EditionFactoryTest {
 
     @Test
     void create_shouldThrow_whenMediaFormatInvalid() {
+
+        // Arrange
+        factory = new EditionFactory();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -156,6 +168,8 @@ class EditionFactoryTest {
     void create_shouldValidateCodeRules() {
 
         // Arrange
+        factory = new EditionFactory();
+
         Code invalidCodeDouble = mock(Code.class);
         when(invalidCodeDouble.getIsbn13()).thenReturn(null);
 
@@ -182,6 +196,8 @@ class EditionFactoryTest {
     void reCreate_shouldPreserveId() {
 
         // Arrange
+        factory = new EditionFactory();
+
         EditionID editionIDDouble = mock(EditionID.class);
 
         // Act
@@ -206,6 +222,7 @@ class EditionFactoryTest {
     void reCreate_shouldKeepSameAttributes() {
 
         // Arrange
+        factory = new EditionFactory();
         EditionID editionIDDouble = mock(EditionID.class);
 
         // Act
@@ -237,6 +254,9 @@ class EditionFactoryTest {
     @Test
     void reCreate_shouldThrow_whenIdIsNull() {
 
+        // Arrange
+        factory = new EditionFactory();
+
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 factory.create(
@@ -257,6 +277,7 @@ class EditionFactoryTest {
     void reCreate_shouldThrow_whenInvalidMediaFormat() {
 
         // Arrange
+        factory = new EditionFactory();
         EditionID editionIdDouble = mock(EditionID.class);
 
         // Act & Assert
@@ -279,6 +300,7 @@ class EditionFactoryTest {
     void reCreate_shouldValidateCodeRules() {
 
         // Arrange
+        factory = new EditionFactory();
         EditionID editionIdDouble = mock(EditionID.class);
 
         Code invalidCodeDouble = mock(Code.class);

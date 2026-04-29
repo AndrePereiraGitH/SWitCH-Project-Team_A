@@ -40,7 +40,8 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
 
     private final EditionAssembler editionAssembler;
 
-    public EditionRepositoryJPAImpl(IEditionRepositoryJpa editionRepositoryJpa,  EditionAssembler editionAssembler){
+    public EditionRepositoryJPAImpl(IEditionRepositoryJpa editionRepositoryJpa,
+                                    EditionAssembler editionAssembler){
         this.editionRepositoryJpa = Objects.requireNonNull(editionRepositoryJpa);
         this.editionAssembler = Objects.requireNonNull(editionAssembler);
     }
@@ -147,7 +148,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
      * @return a list of EditionIDs belonging to the given Publisher
      */
     @Override
-    public List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId) {
+    public List<EditionID> findIdsByPublisherId(PublisherID publisherId) {
 
         Objects.requireNonNull(publisherId, "PublisherID cannot be null");
 

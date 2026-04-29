@@ -54,11 +54,6 @@ class EditionRepositoryJPAImplTest {
 
     private IEditionRepository repo;
 
-    @BeforeEach
-    void setUp() {
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
-    }
-
     // ─────────────────────────────────────────────
     // save
     // ─────────────────────────────────────────────
@@ -67,6 +62,8 @@ class EditionRepositoryJPAImplTest {
     void save_shouldPersistAndReturnEdition() {
 
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
+
         Edition editionDouble = mock(Edition.class);
         EditionDM editionDM = mock(EditionDM.class);
 
@@ -89,6 +86,7 @@ class EditionRepositoryJPAImplTest {
     @Test
     void existsById_shouldReturnFalse_whenEditionDoesNotExist() {
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID editionIdDouble = mock(EditionID.class);
 
         when(jpa.existsById(editionIdDouble)).thenReturn(false);
@@ -104,6 +102,7 @@ class EditionRepositoryJPAImplTest {
     void existsById_shouldReturnTrue_whenExists() {
 
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID id = mock(EditionID.class);
         when(jpa.existsById(id)).thenReturn(true);
 
@@ -117,6 +116,9 @@ class EditionRepositoryJPAImplTest {
     @Test
     void existsById_shouldThrow_whenNull() {
 
+        // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.existsById(null));
     }
@@ -129,6 +131,7 @@ class EditionRepositoryJPAImplTest {
     void findEditionById_shouldReturn_whenFound() {
 
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID id = mock(EditionID.class);
         EditionDM dm = mock(EditionDM.class);
         Edition edition = mock(Edition.class);
@@ -148,6 +151,7 @@ class EditionRepositoryJPAImplTest {
     void findById_shouldReturnEmpty_whenNotFound() {
 
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID id = mock(EditionID.class);
         when(jpa.findById(id)).thenReturn(Optional.empty());
 
@@ -167,6 +171,7 @@ class EditionRepositoryJPAImplTest {
     void findAll_shouldReturnMappedEditions() {
 
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionDM dm1 = mock(EditionDM.class);
         EditionDM dm2 = mock(EditionDM.class);
 
@@ -192,9 +197,11 @@ class EditionRepositoryJPAImplTest {
     // ─────────────────────────────────────────────
 
     @Test
-    void findEditionIdsByPublisherId_shouldReturnMatchingIds() {
+    void findIdsByPublisherId_shouldReturnMatchingIds() {
 
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
+
         PublisherID publisherID = mock(PublisherID.class);
 
         EditionDM dm1 = mock(EditionDM.class);
@@ -212,7 +219,7 @@ class EditionRepositoryJPAImplTest {
         when(jpa.findAll()).thenReturn(List.of(dm1, dm2));
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherID);
+        List<EditionID> result = repo.findIdsByPublisherId(publisherID);
 
         // Assert
         assertEquals(1, result.size());
@@ -221,16 +228,21 @@ class EditionRepositoryJPAImplTest {
     }
 
     @Test
-    void findEditionIdsByPublisherId_shouldThrow_whenNull() {
+    void findIdsByPublisherId_shouldThrow_whenNull() {
+
+        // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                repo.findEditionIdsByPublisherId(null));
+                repo.findIdsByPublisherId(null));
     }
 
     @Test
     void findByPublicationTypeId_shouldReturnEditions_whenFound() {
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
+
         PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
 
         EditionDM editionDMDouble1 = mock(EditionDM.class);
@@ -257,6 +269,8 @@ class EditionRepositoryJPAImplTest {
     @Test
     void findByPublisherId_shouldReturnEditions_whenFound() {
         // Arrange
+        repo = new EditionRepositoryJPAImpl(jpa, assembler);
+
         PublisherID publisherIdDouble = mock(PublisherID.class);
 
         EditionDM editionDMDouble1 = mock(EditionDM.class);

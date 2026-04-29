@@ -78,7 +78,7 @@ public class EditionRepositoryMem implements IEditionRepository {
     /**
      * {@inheritDoc}
      */
-    public List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId) {
+    public List<EditionID> findIdsByPublisherId(PublisherID publisherId) {
 
         if (publisherId == null) {
             throw new IllegalArgumentException("publisherId must not be null");

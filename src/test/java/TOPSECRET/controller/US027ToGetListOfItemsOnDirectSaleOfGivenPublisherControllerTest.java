@@ -159,7 +159,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @Test
     void findListOfItemsOnDirectSaleByPublisherId_ShouldReturnEmptyListWhenNoEditionIdsAreFound() throws InstanceNotFoundException {
         // Arrange
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of());
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of());
 
         US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -182,7 +182,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         Edition editionDouble = mock(Edition.class);
         EditionID editionId1 = new EditionID("editionId1");
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(pubId1)).thenReturn(List.of(editionId1));
+        when(editionRepoDouble.findIdsByPublisherId(pubId1)).thenReturn(List.of(editionId1));
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1))).thenReturn(List.of());
 
         US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
@@ -200,7 +200,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @Test
     void findListOfItemsOnDirectSaleByPublisherId_ShouldReturnEmptyListWhenNoListingsAreFound() throws InstanceNotFoundException {
         // Arrange
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
         when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double))).thenReturn(List.of());
 
@@ -219,7 +219,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @Test
     void findListOfItemsOnDirectSaleByPublisherId_ShouldPropagateExceptionFromEditionRepoDouble() throws InstanceNotFoundException {
         // Arrange
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenThrow(new RuntimeException("DB error"));
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenThrow(new RuntimeException("DB error"));
 
         US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -233,7 +233,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @Test
     void findListOfItemsOnDirectSaleByPublisherId_ShouldPropagateExceptionFromPublicationSampleRepoDouble() throws InstanceNotFoundException {
         // Arrange
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double))).thenThrow(new RuntimeException("DB error"));
 
         US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
@@ -248,7 +248,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @Test
     void findListOfItemsOnDirectSaleByPublisherId_ShouldPropagateExceptionFromListingRepoDouble() {
         // Arrange
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
         when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
 
@@ -267,7 +267,7 @@ class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         US027ListingDTO listingDTODouble1 = mock(US027ListingDTO.class);
         US027ListingDTO listingDTODouble2 = mock(US027ListingDTO.class);
 
-        when(editionRepoDouble.findEditionIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
         when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of(editionId1Double, editionId2Double)))
             .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
         when(listingRepoDouble.findDirectSaleListingsContaining(List.of(pubSampleId1Double, pubSampleId2Double)))

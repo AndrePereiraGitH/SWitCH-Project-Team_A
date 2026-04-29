@@ -75,7 +75,7 @@ public interface IEditionRepository {
      *
      * @throws IllegalArgumentException if {@code publisherId} is null
      */
-    List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId);
+    List<EditionID> findIdsByPublisherId(PublisherID publisherId);
 
     /**
      * Finds all Edition aggregates associated with the given publisher.

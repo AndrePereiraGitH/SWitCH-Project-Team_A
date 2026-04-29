@@ -55,7 +55,6 @@ class EditionAssemblerTest {
     void setup() {
 
         factory = mock(EditionFactory.class);
-        assembler = new EditionAssembler(factory);
 
         editionDouble = mock(Edition.class);
         editionDMDouble = mock(EditionDM.class);
@@ -79,6 +78,8 @@ class EditionAssemblerTest {
     void toDM_shouldMapFieldsCorrectly() {
 
         // Arrange
+        assembler = new EditionAssembler(factory);
+
         when(editionDouble.id()).thenReturn(editionIDDouble);
         when(editionDouble.getEditionNumber()).thenReturn("1st");
         when(editionDouble.getCode()).thenReturn(codeDouble);
@@ -109,6 +110,8 @@ class EditionAssemblerTest {
     void toDomain_shouldCallFactoryWithCorrectParameters() {
 
         // Arrange
+        assembler = new EditionAssembler(factory);
+
         when(editionDMDouble.getEditionID()).thenReturn(editionIDDouble);
         when(editionDMDouble.getEditionNumber()).thenReturn("1st");
         when(editionDMDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);

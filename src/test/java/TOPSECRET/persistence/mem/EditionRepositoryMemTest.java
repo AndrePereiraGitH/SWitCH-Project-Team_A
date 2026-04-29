@@ -215,7 +215,7 @@ class EditionRepositoryMemTest {
     // ─────────────────────────────────────────────
 
     @Test
-    void findEditionIdsByPublisherId_shouldReturnMatchingIds() {
+    void findIdsByPublisherId_shouldReturnMatchingIds() {
 
         // Arrange
         PublisherID publisherIdDouble = mock(PublisherID.class);
@@ -237,7 +237,7 @@ class EditionRepositoryMemTest {
         repo.save(editionDouble2);
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherIdDouble);
+        List<EditionID> result = repo.findIdsByPublisherId(publisherIdDouble);
 
         // Assert
         assertEquals(2, result.size());
@@ -246,14 +246,14 @@ class EditionRepositoryMemTest {
     }
 
     @Test
-    void findEditionIdsByPublisherId_shouldReturnEmpty_whenNoMatch() {
+    void findIdsByPublisherId_shouldReturnEmpty_whenNoMatch() {
 
         // Arrange
         PublisherID publisherIdDouble = mock(PublisherID.class);
         IEditionRepository repo = new EditionRepositoryMem();
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherIdDouble);
+        List<EditionID> result = repo.findIdsByPublisherId(publisherIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -261,14 +261,14 @@ class EditionRepositoryMemTest {
     }
 
     @Test
-    void findEditionIdsByPublisherId_shouldThrow_whenNull() {
+    void findIdsByPublisherId_shouldThrow_whenNull() {
 
         // Arrange
         IEditionRepository repo = new EditionRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repo.findEditionIdsByPublisherId(null));
+                repo.findIdsByPublisherId(null));
     }
 
     @Test

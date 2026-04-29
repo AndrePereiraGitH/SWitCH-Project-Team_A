@@ -7,6 +7,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -46,6 +47,7 @@ class EditionServiceTest {
     @Mock
     private EditionFactory factory;
 
+    @InjectMocks
     private EditionService service;
 
     // =========================================================================
@@ -66,7 +68,6 @@ class EditionServiceTest {
 
         MockitoAnnotations.openMocks(this);
 
-        service = new EditionService(editionRepository, factory);
 
         codeDouble = mock(Code.class);
         physicalAttributesDouble = mock(PhysicalAttributes.class);
@@ -86,6 +87,8 @@ class EditionServiceTest {
     void createAndSave_shouldReturnEdition() {
 
         // Arrange
+        service = new EditionService(editionRepository, factory);
+
         Edition editionCreatedDouble = mock(Edition.class);
         Edition editionSavedDouble = mock(Edition.class);
 
@@ -124,6 +127,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenEditionNumberIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         null,
@@ -141,6 +148,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenCodeIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -158,6 +169,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenPhysicalAttributesIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -175,6 +190,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenPublicationTypeIdIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -192,6 +211,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenPublisherIdIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -209,6 +232,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenMediaFormatIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -226,6 +253,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenLanguageIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -243,6 +274,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenDateIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
@@ -260,6 +295,10 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldThrowWhenTypeOfBindingIsNull() {
 
+        // Arrange
+        service = new EditionService(editionRepository, factory);
+
+        //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndSave(
                         "1st",
