@@ -5,29 +5,46 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests for PublicationType.
- *
- * Validates constructor rules, equality, hashCode,
- * and business identity behavior.
- */
 class PublicationTypeTest {
 
+    // CONSTRUCTOR
     @Test
-    void TestValidPublicationType()
-    {
+    void shouldCreateValidPublicationType() {
+
         // ARRANGE
-        String mediaFormat = "Book";
+        String format = "Book";
 
         // ACT
-        PublicationType pt1 = new PublicationType(mediaFormat);
+        PublicationType pt = new PublicationType(format);
 
         // ASSERT
-        assertNotNull(pt1);
-        assertEquals(mediaFormat, pt1.getMediaFormat());
-
+        assertNotNull(pt);
+        assertEquals(format, pt.getMediaFormat());
+        assertNotNull(pt.id());
     }
 
+    @Test
+    void shouldThrowWhenMediaFormatIsInvalid() {
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () -> new PublicationType(null));
+        assertThrows(IllegalArgumentException.class, () -> new PublicationType(""));
+        assertThrows(IllegalArgumentException.class, () -> new PublicationType(" "));
+    }
+
+    // EQUALS
+    @Test
+    void shouldReturnTrueWhenSameInstance() {
+
+        // ARRANGE
+        PublicationType pt = new PublicationType("Book");
+
+        // ACT
+        boolean result = pt.equals(pt);
+
+        // ASSERT
+        assertTrue(result);
+    }
 
     @Test
     void shouldReturnFalseWhenComparedWithNull() {
@@ -35,16 +52,30 @@ class PublicationTypeTest {
         // ARRANGE
         PublicationType pt = new PublicationType("Book");
 
-        // ACT + ASSERT
-        assertFalse(pt.equals(null));
+        // ACT
+        boolean result = pt.equals(null);
+
+        // ASSERT
+        assertFalse(result);
     }
 
-
     @Test
-    void shouldReturnFalseWhenDifferentInstancesEvenWithSameMediaFormat() {
+    void shouldReturnFalseWhenDifferentClass() {
 
         // ARRANGE
+        PublicationType pt = new PublicationType("Book");
 
+        // ACT
+        boolean result = pt.equals("Book");
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenDifferentIds() {
+
+        // ARRANGE
         PublicationType a = new PublicationType("Book");
         PublicationType b = new PublicationType("Book");
 
@@ -56,37 +87,37 @@ class PublicationTypeTest {
     }
 
     @Test
-    void shouldReturnTrueWhenSameInstance() {
+    void shouldReturnTrueWhenSameId() {
 
         // ARRANGE
-        PublicationType pt = new PublicationType("Book");
+        PublicationTypeId id = new PublicationTypeId("1");
 
-        // ACT + ASSERT
-        assertTrue(pt.equals(pt));
+        PublicationType a = new PublicationType(id, "Book");
+        PublicationType b = new PublicationType(id, "Magazine");
+
+        // ACT
+        boolean result = a.equals(b);
+
+        // ASSERT
+        assertTrue(result);
     }
 
+    // HASHCODE
     @Test
-    void TestInvalidPublicationTypes()
-    {
+    void shouldHaveSameHashCodeWhenSameId() {
+
         // ARRANGE
+        PublicationTypeId id = new PublicationTypeId("1");
+
+        PublicationType a = new PublicationType(id, "Book");
+        PublicationType b = new PublicationType(id, "Magazine");
 
         // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class, () -> new PublicationType(null));
-        assertThrows(IllegalArgumentException.class, () -> new PublicationType(""));
-        assertThrows(IllegalArgumentException.class, () -> new PublicationType("   "));
-    }
-
-
-    @Test
-    void shouldHaveSameHashCodeWhenSameInstance() {
-
-        PublicationType pt = new PublicationType("Book");
-
-        assertEquals(pt.hashCode(), pt.hashCode());
+        assertEquals(a.hashCode(), b.hashCode());
     }
 
     @Test
-    void shouldHaveDifferentHashCodesForDifferentInstances() {
+    void shouldHaveDifferentHashCodeWhenDifferentId() {
 
         // ARRANGE
         PublicationType a = new PublicationType("Book");
@@ -96,6 +127,7 @@ class PublicationTypeTest {
         assertNotEquals(a.hashCode(), b.hashCode());
     }
 
+    // SAMEAS (BUSINESS EQUALITY)
     @Test
     void shouldReturnTrueWhenSameMediaFormat() {
 
@@ -103,8 +135,11 @@ class PublicationTypeTest {
         PublicationType a = new PublicationType("Book");
         PublicationType b = new PublicationType("Book");
 
-        // ACT + ASSERT
-        assertTrue(a.sameAs(b));
+        // ACT
+        boolean result = a.sameAs(b);
+
+        // ASSERT
+        assertTrue(result);
     }
 
     @Test
@@ -114,25 +149,17 @@ class PublicationTypeTest {
         PublicationType a = new PublicationType("Book");
         PublicationType b = new PublicationType("Magazine");
 
-        // ACT + ASSERT
-        assertFalse(a.sameAs(b));
-    }
-
-    @Test
-    void shouldReturnSameIdUsingIdMethod() {
-
-        // ARRANGE
-        PublicationType pt = new PublicationType("Book");
-
         // ACT
-        PublicationTypeId id = pt.id();
+        boolean result = a.sameAs(b);
 
         // ASSERT
-        assertEquals(pt.id(), id);
+        assertFalse(result);
     }
 
+    // ===============================
+    // ID
     @Test
-    void shouldReturnSameIdUsingIdentityMethod() {
+    void shouldReturnId() {
 
         // ARRANGE
         PublicationType pt = new PublicationType("Book");
@@ -142,21 +169,6 @@ class PublicationTypeTest {
 
         // ASSERT
         assertNotNull(id);
-        assertEquals(pt.id(), id);
+        assertEquals(id, pt.id());
     }
-
-    @Test
-    void shouldReturnFalseWhenDifferentClass() {
-
-        // ARRANGE
-        PublicationType pt = new PublicationType("Book");
-        String other = "Book";
-
-        // ACT
-        boolean result = pt.equals(other);
-
-        // ASSERT
-        assertFalse(result);
-    }
-
 }
