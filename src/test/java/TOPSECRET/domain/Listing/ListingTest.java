@@ -114,6 +114,120 @@ class ListingTest {
         assertNotNull(listing);
     }
 
+    // ========== CONSTRUCTOR WITH LISTINGID TESTS ==========
+
+    @Test
+    void constructor_shouldCreateListingWithValidData() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act
+        Listing listing = new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        // Assert
+        assertNotNull(listing);
+    }
+
+    @Test
+    void constructor_shouldThrowWhenListingIdIsNull() {
+        // Arrange
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () ->
+                new Listing(null, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                        validPrice, validDescription, validSellerIdDouble, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenTitleIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Listing(listingIdDouble, null, oneItemList, SaleType.DIRECT_SALE,
+                        validPrice, validDescription, validSellerIdDouble, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenItemsIdIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Listing(listingIdDouble, validTitle, null, SaleType.DIRECT_SALE,
+                        validPrice, validDescription, validSellerIdDouble, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenSaleTypeIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () ->
+                new Listing(listingIdDouble, validTitle, oneItemList, null,
+                        validPrice, validDescription, validSellerIdDouble, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenPriceIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                        null, validDescription, validSellerIdDouble, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenDescriptionIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                        validPrice, null, validSellerIdDouble, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenSellerIdIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                        validPrice, validDescription, null, validPictures));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenPicturesIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                        validPrice, validDescription, validSellerIdDouble, null));
+    }
+
+    @Test
+    void constructor_shouldPreserveListingId() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act
+        Listing listing = new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
+                validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        // Assert
+        assertSame(listingIdDouble, listing.id());
+    }
 
     // ========== DESCRIPTION VALIDATION TESTS ==========
 

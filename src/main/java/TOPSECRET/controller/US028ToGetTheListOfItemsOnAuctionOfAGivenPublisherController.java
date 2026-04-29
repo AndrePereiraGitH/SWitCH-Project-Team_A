@@ -94,9 +94,9 @@ public class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController {
 
         List<EditionID> listOfEditionIds = _editionRepo.findIdsByPublisherId(publisherId);
 
-        List<PublicationSampleId> listOfPubSampleId =_pubSampleRepo.findPublicationSampleIdsByEditionIds(listOfEditionIds);
+        List<PublicationSampleId> listOfPubSampleId =_pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 
-        List<Listing> listOfListings = _listingRepo.getAuctionListingsContaining(listOfPubSampleId);
+        List<Listing> listOfListings = _listingRepo.findAllByAuctionAndPublicationSampleIdIn(listOfPubSampleId);
 
         return _us028ListingMapper.toDTO(listOfListings);
     }

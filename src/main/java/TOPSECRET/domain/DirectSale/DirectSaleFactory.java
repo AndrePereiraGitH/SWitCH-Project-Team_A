@@ -42,7 +42,7 @@ public class DirectSaleFactory {
         }
 
         List<Listing> listings = listingId.stream()
-                .map(id -> listingRepo.findListingById(id)
+                .map(id -> listingRepo.findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id)))
                 .toList();
 
