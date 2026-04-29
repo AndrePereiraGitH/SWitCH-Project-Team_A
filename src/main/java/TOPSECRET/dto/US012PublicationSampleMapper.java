@@ -179,7 +179,7 @@ public class US012PublicationSampleMapper {
         List<String> authorsName = new ArrayList<>();
 
         for (AuthorId id : listOfAuthorsId) {
-            Author author = _authorRepo.findAuthorById(id)
+            Author author = _authorRepo.findById(id)
                     .orElseThrow(() ->
                             new InstanceNotFoundException("Author was not found:" + id));
 
