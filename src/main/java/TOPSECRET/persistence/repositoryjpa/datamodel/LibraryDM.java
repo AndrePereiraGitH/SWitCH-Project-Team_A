@@ -22,7 +22,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "Library")
+@Table(name = "Libraries")
 public class LibraryDM {
 
     /**
@@ -35,7 +35,7 @@ public class LibraryDM {
     /**
      * Name of the library.
      */
-    @Column(name = "library_name")
+    @Column(name = "library_name", nullable = false)
     private String libraryName;
 
     /**

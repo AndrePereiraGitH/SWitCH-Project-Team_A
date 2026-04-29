@@ -38,6 +38,23 @@ class LibraryRepositoryJPAImplTest {
     @Mock
     private LibraryDM libraryDMDouble;
 
+    //  ----------------- Constructor validation Tests  -----------------
+
+    @Test
+    void constructor_shouldThrowException_whenJpaRepositoryIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                new LibraryRepositoryJPAImpl(null, assembler)
+        );
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenAssemblerIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                new LibraryRepositoryJPAImpl(jpaRepository, null)
+        );
+    }
+
+
     //  ----------------- getLibraryByUserId() Tests  -----------------
 
     @Test

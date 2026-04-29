@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.Objects;
 
 @Repository
 public class LibraryRepositoryJPAImpl implements ILibraryRepository {
@@ -19,8 +20,8 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
     private final LibraryAssembler _assembler;
 
     public LibraryRepositoryJPAImpl(ILibraryJPARepository _jpaRepository, LibraryAssembler _assembler) {
-        this._jpaRepository = _jpaRepository;
-        this._assembler = _assembler;
+        this._jpaRepository = Objects.requireNonNull(_jpaRepository, "jpaRepository must not be null");
+        this._assembler = Objects.requireNonNull(_assembler, "assembler must not be null");
     }
 
     @Override
