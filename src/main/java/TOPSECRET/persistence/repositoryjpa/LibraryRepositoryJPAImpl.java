@@ -40,7 +40,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
     /** {@inheritDoc} */
 
     @Override
-    public Library getLibraryByUserId(UserId userId) throws InstanceNotFoundException {
+    public Library getByUserId(UserId userId) throws InstanceNotFoundException {
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null");
         }
@@ -61,7 +61,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
             throw new IllegalArgumentException("Library cannot be null");
         }
 
-        if (verifyIfUserHasALibrary(library.getUserId())) {
+        if (existsByUserId(library.getUserId())) {
             throw new InstanceAlreadyExistsException("This user already has a library");
         }
 
@@ -74,7 +74,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
 
     /** {@inheritDoc} */
     @Override
-    public boolean verifyIfUserHasALibrary(UserId userId) {
+    public boolean existsByUserId(UserId userId) {
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null");
         }

@@ -74,7 +74,7 @@ public class LibraryAssembler {
      * @return a list of corresponding {@link Library} domain objects;
      * never {@code null}, but may be empty
      */
-    public List<Library> toDomain(Iterable<LibraryDM> listDataModel) {
+    public List<Library> toDomainList(Iterable<LibraryDM> listDataModel) {
         List<Library> listDomain = new ArrayList<>();
 
         listDataModel.forEach(dm -> listDomain.add(toDomain(dm)));

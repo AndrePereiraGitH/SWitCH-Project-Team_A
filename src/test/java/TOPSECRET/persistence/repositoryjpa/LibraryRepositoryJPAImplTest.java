@@ -53,92 +53,101 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenNullUserId_whenGetLibraryByUserId_thenThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class,
-                () -> repository.getLibraryByUserId(null));
+                () -> repository.getByUserId(null));
 
     }
 
     @Test
     void givenUserWithNoLibrary_whenGetLibraryByUserId_thenThrowsInstanceNotFoundException() {
-        UserId userId = new UserId("user-123");
-
+        // Arrange
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
+        // Act & Assert
         assertThrows(InstanceNotFoundException.class,
-                () -> repository.getLibraryByUserId(userId));
-
+                () -> repository.getByUserId(userId));
     }
 
     @Test
     void givenExistingLibrary_whenGetLibraryByUserId_thenReturnsLibrary() throws Exception {
-        UserId userId = new UserId("user-123");
-
+        // Arrange
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
 
-        Library result = repository.getLibraryByUserId(userId);
+        // Act
+        Library result = repository.getByUserId(userId);
 
+        // Assert
         assertSame(libraryDouble, result);
     }
 
     @Test
     void givenNullLibrary_whenSave_thenThrowsIllegalArgumentException() {
+        // Arrange, Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.save(null));
-
     }
 
     @Test
     void givenUserWithExistingLibrary_whenSave_thenThrowsInstanceAlreadyExistsException() {
-        UserId userId = new UserId("user-123");
-
+        // Arrange
+  UserId userId = mock(UserId.class);
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
+        // Act & Assert
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> repository.save(libraryDouble));
-
     }
 
     @Test
     void givenValidLibrary_whenSave_thenReturnsSavedLibrary() throws Exception {
-        UserId userId = new UserId("user-123");
-
+        // Arrange
+  UserId userId = mock(UserId.class);
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
         when(assembler.toDM(libraryDouble)).thenReturn(libraryDMDouble);
         when(jpaRepository.save(libraryDMDouble)).thenReturn(libraryDMDouble);
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
 
+        // Act
         Library result = repository.save(libraryDouble);
 
+        // Assert
         assertSame(libraryDouble, result);
     }
 
     @Test
-    void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
+    void givenNullUserId_whenExistsByUserId_thenThrowsIllegalArgumentException() {
+        // Arrange, Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.verifyIfUserHasALibrary(null));
+                () -> repository.existsByUserId(null));
     }
 
     @Test
-    void givenUserWithNoLibrary_whenVerifyIfUserHasALibrary_thenReturnsFalse() {
-        UserId userId = new UserId("user-123");
-
+    void givenUserWithNoLibrary_whenExistsByUserId_thenReturnsFalse() {
+        // Arrange
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        boolean result = repository.verifyIfUserHasALibrary(userId);
+        // Act
+        boolean result = repository.existsByUserId(userId);
 
+        // Assert
         assertFalse(result);
     }
 
     @Test
-    void givenUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsTrue() {
-        UserId userId = new UserId("user-123");
-
+    void givenUserWithLibrary_whenExistsByUserId_thenReturnsTrue() {
+        // Arrange
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
-        boolean result = repository.verifyIfUserHasALibrary(userId);
+        // Act
+        boolean result = repository.existsByUserId(userId);
 
+        // Assert
         assertTrue(result);
     }
 }

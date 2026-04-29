@@ -22,7 +22,7 @@ public interface ILibraryRepository {
      * @throws IllegalArgumentException  if {@code username} is null or empty
      * @throws InstanceNotFoundException if no library is found for the specified username
      */
-    Library getLibraryByUserId(UserId userId) throws InstanceNotFoundException;
+    Library getByUserId(UserId userId) throws InstanceNotFoundException;
 
     /**
      * Adds a {@link Library}   to the repository.
@@ -38,5 +38,5 @@ public interface ILibraryRepository {
      * @return {@code true} if the user has a library, {@code false} otherwise
      * @throws IllegalArgumentException if {@code user} is null
      */
-    boolean verifyIfUserHasALibrary(UserId userId);
+    boolean existsByUserId(UserId userId);
 }

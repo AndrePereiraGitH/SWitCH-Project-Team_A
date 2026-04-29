@@ -118,7 +118,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
     void getAllPublicationsInUserLibrary_shouldThrow_whenLibraryDoesNotExist() throws InstanceNotFoundException {
 
         // arrange
-        when(libraryRepo.getLibraryByUserId(userId)).thenReturn(null);
+        when(libraryRepo.getByUserId(userId)).thenReturn(null);
 
         // act + assert
         InstanceNotFoundException ex = assertThrows(
@@ -133,7 +133,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
     void getAllPublicationsInUserLibrary_shouldReturnEmptyList_whenLibraryHasNoPublications() throws Exception {
 
         // arrange
-        when(libraryRepo.getLibraryByUserId(userId)).thenReturn(library);
+        when(libraryRepo.getByUserId(userId)).thenReturn(library);
         when(library.id()).thenReturn(libraryId);
         when(publicationSampleRepository.findByLibraryId(libraryId)).thenReturn(List.of());
         when(mapper.fromDomainList(List.of())).thenReturn(List.of());
@@ -152,7 +152,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
         // arrange
         US016PublicationSampleDTO dto = mock(US016PublicationSampleDTO.class);
 
-        when(libraryRepo.getLibraryByUserId(userId)).thenReturn(library);
+        when(libraryRepo.getByUserId(userId)).thenReturn(library);
         when(library.id()).thenReturn(libraryId);
         when(publicationSampleRepository.findByLibraryId(libraryId))
                 .thenReturn(List.of(publicationSample));
