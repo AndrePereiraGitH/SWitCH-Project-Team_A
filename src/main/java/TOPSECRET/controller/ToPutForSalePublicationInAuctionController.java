@@ -4,7 +4,6 @@ import TOPSECRET.domain.Auction.IAuctionRepository;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 
@@ -13,6 +12,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.dto.US016PublicationSampleMapper;
+import TOPSECRET.services.ListingService;
 
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
@@ -26,10 +26,10 @@ import java.util.*;
  * It provides operations to retrieve the publication samples that belong to a
  * user's library and to create a new auction listing for the selected publications.
  */
-public class US016ToPutPublicationInAuctionController {
+public class ToPutForSalePublicationInAuctionController {
 
+    private final ListingService listingService;
     private final ILibraryRepository libraryRepo;
-    private final IListingRepository listingRepository;
     private final IAuctionRepository auctionRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final US016PublicationSampleMapper mapper;
@@ -38,15 +38,14 @@ public class US016ToPutPublicationInAuctionController {
      * Creates a new controller with the repositories and mapper required for this use case.
      *
      * @param libraryRepo repository used to retrieve the user's library
-     * @param listingRepository repository used to create and store listings
      * @param auctionRepository repository used to create and store auctions
      * @param publicationSampleRepository repository used to retrieve publication samples
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public US016ToPutPublicationInAuctionController(ILibraryRepository libraryRepo, IListingRepository listingRepository, IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
+    public ToPutForSalePublicationInAuctionController(ListingService service,ILibraryRepository libraryRepo , IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
+        this.listingService = service;
         this.libraryRepo = libraryRepo;
-        this.listingRepository = listingRepository;
         this.auctionRepository = auctionRepository;
         this.publicationSampleRepository = publicationSampleRepository;
         this.mapper = mapper;
@@ -74,7 +73,7 @@ public class US016ToPutPublicationInAuctionController {
             throw new InstanceNotFoundException("There is no library for the userID: " + userId);
         }
 
-        List<PublicationSample> samplesList = publicationSampleRepository.getPublicationsByLibraryID(library.id());
+        List<PublicationSample> samplesList = publicationSampleRepository.findByLibraryId(library.id());
 
         return mapper.fromDomainList(samplesList);
     }
@@ -110,7 +109,7 @@ public class US016ToPutPublicationInAuctionController {
             throw new IllegalArgumentException("All fields must be non-null.");
         }
 
-        Listing auctionListing = listingRepository.createAndAdd(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
+        Listing auctionListing = listingService.createAndSave(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
 
         auctionRepository.createAndAdd(auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
 

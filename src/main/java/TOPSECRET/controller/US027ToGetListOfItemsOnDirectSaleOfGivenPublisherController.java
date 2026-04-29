@@ -109,9 +109,9 @@ public class US027ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         List<EditionID> listOfEditionIds = _editionRepo.findEditionIdsByPublisherId(publisherId);
 
-        List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findPublicationSampleIdsByEditionIds(listOfEditionIds);
+        List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 
-        List<Listing> listOfListings = _listingRepo.findDirectSaleListingsContaining(listOfPubSampleIds);
+        List<Listing> listOfListings = _listingRepo.findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds);
 
         List<US027ListingDTO> listOfListingDTOs = _mapper.toDTOs(listOfListings);
 
