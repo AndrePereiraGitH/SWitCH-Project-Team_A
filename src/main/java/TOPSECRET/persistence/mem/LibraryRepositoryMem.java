@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Library.ILibraryRepository;
-import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.Library.Library;
 
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -46,7 +45,7 @@ public class LibraryRepositoryMem implements ILibraryRepository {
      * {@inheritDoc}
      */
 
-    public Library getLibraryByUserId(UserId userId) throws InstanceNotFoundException {
+    public Library getByUserId(UserId userId) throws InstanceNotFoundException {
         if (userId == null) {
             throw new NullPointerException("Username cannot be null");
         }
@@ -60,7 +59,7 @@ public class LibraryRepositoryMem implements ILibraryRepository {
     /**
      * {@inheritDoc}
      */
-    public boolean verifyIfUserHasALibrary(UserId userId) {
+    public boolean existsByUserId(UserId userId) {
         if (userId == null) {
             throw new IllegalArgumentException("UserID can not be null");
         }

@@ -1,280 +1,259 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.domain.Edition.IEditionRepository;
-import TOPSECRET.domain.Enum.TypeOfBinding;
-import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link EditionRepositoryMem} using Mockito mocks for all external dependencies.
+ * Unit tests for {@link EditionRepositoryMem}.
+ *
  * <p>
- * Collaborators such as {@link EditionFactory}, {@link Edition},
- * {@link PhysicalAttributes}, {@link Publisher}, and {@link PublicationType}
- * are mocked to isolate and validate the repository's behavior independently
- * from the domain objects they produce.
- * <p>
- * The test suite verifies:
- * <ul>
- *     <li>Constructor argument validation.</li>
- *     <li>Prevention of duplicate editions in the repository.</li>
- *     <li>Propagation of validation errors thrown by {@link EditionFactory}.</li>
- *     <li>Protection of the repository's internal state through unmodifiable collections.</li>
- * </ul>
+ * Uses test doubles (mocks) to isolate repository behavior.
+ * </p>
  */
 class EditionRepositoryMemTest {
 
-    // ─────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────
-
-    private final Code codeDouble = Code.fromIsbn13("9783161484100");
-    private final EditionFactory editionFactoryDouble = mock(EditionFactory.class);
-    private final PhysicalAttributes physicalAttributesDouble = mock(PhysicalAttributes.class);
-    private final PublisherID publisherIdDouble = mock(PublisherID.class);
-    private final PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
-    private final TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-
-    // ─────────────────────────────────────────────────────────────
-    // Constructor
-    // ─────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────
+    // save
+    // ─────────────────────────────────────────────
 
     @Test
-    void shouldThrowWhenEditionFactoryIsNull() {
+    void save_shouldStoreEdition() {
+
+        // Arrange
+        Edition editionDouble = mock(Edition.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        when(editionDouble.id()).thenReturn(editionIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        // Act
+        Edition result = repo.save(editionDouble);
+
+        // Assert
+        assertEquals(editionDouble, result);
+        assertTrue(repo.existsById(editionIdDouble));
+    }
+
+    @Test
+    void save_shouldThrow_whenDuplicateEdition() {
+
+        // Arrange
+        Edition editionDouble = mock(Edition.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        when(editionDouble.id()).thenReturn(editionIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+        repo.save(editionDouble);
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new EditionRepositoryMem(null));
+                repo.save(editionDouble));
     }
 
     @Test
-    void shouldCreateRepositoryWhenEditionFactoryIsValid() {
-        new EditionRepositoryMem(editionFactoryDouble);
-    }
+    void save_shouldThrow_whenEditionIsNull() {
 
-    // ─────────────────────────────────────────────────────────────
-    // createAndAddEdition
-    // ─────────────────────────────────────────────────────────────
-
-    @Test
-    void shouldReturnListWithOneEdition_whenAddingFirstEdition() {
         // Arrange
-        Edition edition = mock(Edition.class);
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble, "Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition);
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () ->
+                repo.save(null));
+    }
+
+    // ─────────────────────────────────────────────
+    // existsById
+    // ─────────────────────────────────────────────
+
+    @Test
+    void existsById_shouldReturnTrue_whenEditionExists() {
+
+        // Arrange
+        Edition editionDouble = mock(Edition.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        when(editionDouble.id()).thenReturn(editionIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+        repo.save(editionDouble);
 
         // Act
-        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+        boolean result = repo.existsById(editionIdDouble);
 
         // Assert
-        assertEquals(1, result.size());
-        assertTrue(result.contains(edition));
+        assertTrue(result);
     }
 
     @Test
-    void shouldReturnListWithTwoEditions_whenAddingTwoDifferentEditions() {
+    void existsById_shouldReturnFalse_whenEditionDoesNotExist() {
+
         // Arrange
-        Edition edition1 = mock(Edition.class);
-        Edition edition2 = mock(Edition.class);
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition1);
-        when(editionFactoryDouble.create("2nd", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2021, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition2);
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
+        EditionID editionIdDouble = mock(EditionID.class);
+        IEditionRepository repo = new EditionRepositoryMem();
 
         // Act
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-        List<Edition> result = repository.createAndAddEdition("2nd", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2021, 1, 1), typeOfBindingDouble);
+        boolean result = repo.existsById(editionIdDouble);
 
         // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(edition1));
-        assertTrue(result.contains(edition2));
+        assertFalse(result);
     }
 
     @Test
-    void shouldThrowWhenAddingDuplicateEdition() {
+    void existsById_shouldThrow_whenIdIsNull() {
+
         // Arrange
-        Edition edition = mock(Edition.class);
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition);
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
+        IEditionRepository repo = new EditionRepositoryMem();
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble));
-    }
-    /**
-     * Verifies that the list returned by {@link EditionRepositoryMem#createAndAddEdition}
-     * is unmodifiable. This ensures that external callers cannot change the internal
-     * state of the repository by adding or removing elements from the returned list.
-     * <p>
-     * Attempting to modify the list should throw an {@link UnsupportedOperationException}.
-     */
-    @Test
-    void shouldReturnUnmodifiableList() {
-        // Arrange
-        Edition edition = mock(Edition.class);
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition);
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-
-        // Act
-        List<Edition> result = repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
-        // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Edition.class)));
+        // Act + Assert
+        assertFalse(repo.existsById(null));
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────
     // findEditionById
-    // ─────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────
 
     @Test
-    void findEditionById_shouldReturnAnEdition_whenIdIsValid(){
+    void findEditionById_shouldReturn_whenFound() {
 
         // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
+        Edition editionDouble = mock(Edition.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        when(editionDouble.id()).thenReturn(editionIdDouble);
 
-        EditionID editionID = mock(EditionID.class);
-        Edition edition = mock(Edition.class);
-        when(edition.id()).thenReturn(editionID);
-
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition);
-
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
+        IEditionRepository repo = new EditionRepositoryMem();
+        repo.save(editionDouble);
 
         // Act
-        Optional<Edition> result = repository.findEditionById(editionID);
+        Optional<Edition> result = repo.findById(editionIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(edition,result.get());
+        assertEquals(editionDouble, result.get());
     }
 
     @Test
-    void findEditionById_shouldReturnAnEdition_whenIdIsValid_multipleEditions(){
+    void findById_shouldReturnEmpty_whenNotFound() {
 
         // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-
-        EditionID editionID_1 = mock(EditionID.class);
-        Edition edition_1 = mock(Edition.class);
-        when(edition_1.id()).thenReturn(editionID_1);
-
-        EditionID editionID_2 = mock(EditionID.class);
-        Edition edition_2 = mock(Edition.class);
-        when(edition_2.id()).thenReturn(editionID_2);
-
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition_1);
-
-        when(editionFactoryDouble.create("2st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition_2);
-
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
+        EditionID editionIdDouble = mock(EditionID.class);
+        IEditionRepository repo = new EditionRepositoryMem();
 
         // Act
-        Optional<Edition> result = repository.findEditionById(editionID_1);
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(edition_1,result.get());
-    }
-
-    @Test
-    void findEditionById_shouldReturnEmpty_whenIdIsNotFound(){
-
-        // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-
-        EditionID editionID = mock(EditionID.class);
-        Edition edition = mock(Edition.class);
-        when(edition.id()).thenReturn(editionID);
-
-        EditionID editionNotFound = mock(EditionID.class);
-
-
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition);
-
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
-
-        // Act
-        Optional<Edition> result = repository.findEditionById(editionNotFound);
+        Optional<Edition> result = repo.findById(editionIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findEditionById_shouldThrowAnException_whenIdIsNull(){
+    void findById_shouldThrow_whenIdIsNull() {
 
         // Arrange
-        TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-
-        EditionID editionID = mock(EditionID.class);
-        Edition edition = mock(Edition.class);
-        when(edition.id()).thenReturn(editionID);
-
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble))
-                .thenReturn(edition);
-        IEditionRepository repository = new EditionRepositoryMem(editionFactoryDouble);
-
-        repository.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1), typeOfBindingDouble);
-
+        IEditionRepository repo = new EditionRepositoryMem();
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> repository.findEditionById(null));
+        assertThrows(NullPointerException.class, () ->
+                repo.findById(null));
     }
 
-
-    // ─────────────────────────────────────────────────────────────
-    // findEditionIdsByPublisherId
-    // ─────────────────────────────────────────────────────────────
-
-    @Test
-    void findEditionIdsByPublisherId_ShouldThrowException_WhenPublisherIdIsNull() {
-        // Arrange
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findEditionIdsByPublisherId(null));
-    }
+    // ─────────────────────────────────────────────
+    // findAll
+    // ─────────────────────────────────────────────
 
     @Test
-    void findEditionIdsByPublisherId_ShouldReturnEmptyListWhenNoEditionsMatch() {
-        // Arrange
-        PublisherID unknownPublisherIdDouble = mock(PublisherID.class);
+    void findAll_shouldReturnAllEditions() {
 
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
+        // Arrange
+        Edition editionDouble1 = mock(Edition.class);
+        Edition editionDouble2 = mock(Edition.class);
+
+        when(editionDouble1.id()).thenReturn(mock(EditionID.class));
+        when(editionDouble2.id()).thenReturn(mock(EditionID.class));
+
+        IEditionRepository repo = new EditionRepositoryMem();
+        repo.save(editionDouble1);
+        repo.save(editionDouble2);
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(unknownPublisherIdDouble);
+        List<Edition> result = repo.findAll();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(editionDouble1));
+        assertTrue(result.contains(editionDouble2));
+    }
+
+    @Test
+    void findAll_shouldReturnUnmodifiableList() {
+
+        // Arrange
+        Edition editionDouble = mock(Edition.class);
+        when(editionDouble.id()).thenReturn(mock(EditionID.class));
+
+        IEditionRepository repo = new EditionRepositoryMem();
+        repo.save(editionDouble);
+
+        // Act
+        List<Edition> result = repo.findAll();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class,
+                () -> result.add(mock(Edition.class)));
+    }
+
+    // ─────────────────────────────────────────────
+    // findEditionIdsByPublisherId
+    // ─────────────────────────────────────────────
+
+    @Test
+    void findIdsByPublisherId_shouldReturnMatchingIds() {
+
+        // Arrange
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+
+        Edition editionDouble1 = mock(Edition.class);
+        Edition editionDouble2 = mock(Edition.class);
+
+        EditionID editionIdDouble1 = mock(EditionID.class);
+        EditionID editionIdDouble2 = mock(EditionID.class);
+
+        when(editionDouble1.id()).thenReturn(editionIdDouble1);
+        when(editionDouble2.id()).thenReturn(editionIdDouble2);
+
+        when(editionDouble1.getPublisherID()).thenReturn(publisherIdDouble);
+        when(editionDouble2.getPublisherID()).thenReturn(publisherIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+        repo.save(editionDouble1);
+        repo.save(editionDouble2);
+
+        // Act
+        List<EditionID> result = repo.findIdsByPublisherId(publisherIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(editionIdDouble1));
+        assertTrue(result.contains(editionIdDouble2));
+    }
+
+    @Test
+    void findIdsByPublisherId_shouldReturnEmpty_whenNoMatch() {
+
+        // Arrange
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        // Act
+        List<EditionID> result = repo.findIdsByPublisherId(publisherIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -282,87 +261,147 @@ class EditionRepositoryMemTest {
     }
 
     @Test
-    void findEditionIdsByPublisherId_ShouldReturnMatchingEditionIds() {
+    void findIdsByPublisherId_shouldThrow_whenNull() {
+
         // Arrange
-        Edition edition1 = mock(Edition.class);
-        Edition edition2 = mock(Edition.class);
+        IEditionRepository repo = new EditionRepositoryMem();
 
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
-
-        when(edition1.id()).thenReturn(editionId1Double);
-        when(edition2.id()).thenReturn(editionId2Double);
-
-        PublisherID publisherId1Double = mock(PublisherID.class);
-
-        when(edition1.getPublisherID()).thenReturn(publisherId1Double);
-        when(edition2.getPublisherID()).thenReturn(publisherId1Double);
-
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble)).thenReturn(edition1, edition2);
-
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble);
-        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble);
-
-            // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1Double);
-
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(edition1.id()));
-        assertTrue(result.contains(edition2.id()));
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.findIdsByPublisherId(null));
     }
 
     @Test
-    void findEditionIdsByPublisherId_ShouldIgnoreEditionsFromOtherPublishers() {
+    void findByPublisherId_shouldReturnMatchingEditions() {
         // Arrange
-        Edition edition1 = mock(Edition.class);
-        Edition edition2 = mock(Edition.class);
-        Edition edition3 = mock(Edition.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+
+        Edition edition1Double = mock(Edition.class);
+        Edition edition2Double = mock(Edition.class);
 
         EditionID editionId1Double = mock(EditionID.class);
         EditionID editionId2Double = mock(EditionID.class);
-        EditionID editionId3Double = mock(EditionID.class);
 
-        when(edition1.id()).thenReturn(editionId1Double);
-        when(edition2.id()).thenReturn(editionId2Double);
-        when(edition3.id()).thenReturn(editionId3Double);
+        when(edition1Double.id()).thenReturn(editionId1Double);
+        when(edition2Double.id()).thenReturn(editionId2Double);
 
-        PublisherID publisherId1Double = mock(PublisherID.class);
-        PublisherID publisherId2Double = mock(PublisherID.class);
+        when(edition1Double.getPublisherID()).thenReturn(publisherIdDouble);
+        when(edition2Double.getPublisherID()).thenReturn(publisherIdDouble);
 
-        when(edition1.getPublisherID()).thenReturn(publisherId1Double);
-        when(edition2.getPublisherID()).thenReturn(publisherId1Double);
-        when(edition3.getPublisherID()).thenReturn(publisherId2Double);
+        IEditionRepository repo = new EditionRepositoryMem();
 
-        when(editionFactoryDouble.create("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble)).thenReturn(edition1, edition2, edition3);
-
-        IEditionRepository repo = new EditionRepositoryMem(editionFactoryDouble);
-        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble);
-        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble);
-        repo.createAndAddEdition("1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble,
-                publisherIdDouble,"Book", Locale.ENGLISH, LocalDate.of(2020, 1, 1),
-                typeOfBindingDouble);
+        repo.save(edition1Double);
+        repo.save(edition2Double);
 
         // Act
-        List<EditionID> result = repo.findEditionIdsByPublisherId(publisherId1Double);
+        List<Edition> result = repo.findByPublisherId(publisherIdDouble);
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(edition1.id()));
-        assertTrue(result.contains(edition2.id()));
-        assertFalse(result.contains(edition3.id()));
+        assertTrue(result.contains(edition1Double));
+        assertTrue(result.contains(edition2Double));
+    }
+
+    @Test
+    void findByPublisherId_shouldReturnEmptyList_whenNoMatches() {
+        // Arrange
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+
+        Edition editionDouble = mock(Edition.class);
+        EditionID editionIdDouble = mock(EditionID.class);
+        when(editionDouble.id()).thenReturn(editionIdDouble);
+
+        PublisherID otherPublisherIdDouble = mock(PublisherID.class);
+
+        when(editionDouble.getPublisherID()).thenReturn(otherPublisherIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        repo.save(editionDouble);
+
+        // Act
+        List<Edition> result = repo.findByPublisherId(publisherIdDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublisherId_shouldThrow_whenNull() {
+        // Arrange
+
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findByPublisherId(null));
+    }
+
+    @Test
+    void findByPublicationTypeId_shouldReturnMatchingEditions() {
+
+        // Arrange
+        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
+
+        Edition edition1Double = mock(Edition.class);
+        Edition edition2Double = mock(Edition.class);
+
+        EditionID editionId1Double = mock(EditionID.class);
+        EditionID editionId2Double = mock(EditionID.class);
+
+        when(edition1Double.id()).thenReturn(editionId1Double);
+        when(edition2Double.id()).thenReturn(editionId2Double);
+
+        when(edition1Double.getPublicationTypeID()).thenReturn(publicationTypeIdDouble);
+        when(edition2Double.getPublicationTypeID()).thenReturn(publicationTypeIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        repo.save(edition1Double);
+        repo.save(edition2Double);
+
+        // Act
+        List<Edition> result = repo.findByPublicationTypeId(publicationTypeIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(edition1Double));
+        assertTrue(result.contains(edition2Double));
+    }
+
+    @Test
+    void findByPublicationTypeId_shouldReturnEmptyList_whenNoMatches() {
+
+        // Arrange
+        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
+
+        Edition editionDouble = mock(Edition.class);
+        PublicationTypeId otherPublicationTypeIdDouble = mock(PublicationTypeId.class);
+
+        when(editionDouble.getPublicationTypeID()).thenReturn(otherPublicationTypeIdDouble);
+
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        repo.save(editionDouble);
+
+        // Act
+        List<Edition> result = repo.findByPublicationTypeId(publicationTypeIdDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationTypeId_shouldThrow_whenNull() {
+
+        // Arrange
+
+        IEditionRepository repo = new EditionRepositoryMem();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findByPublicationTypeId(null));
     }
 }

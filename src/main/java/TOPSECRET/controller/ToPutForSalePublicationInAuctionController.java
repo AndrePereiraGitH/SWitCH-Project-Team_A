@@ -68,7 +68,7 @@ public class ToPutForSalePublicationInAuctionController {
             throw new IllegalArgumentException("UserId cannot be null!");
         }
 
-        Library library = libraryRepo.getLibraryByUserId(userId);
+        Library library = libraryRepo.getByUserId(userId);
         if (library == null) {
             throw new InstanceNotFoundException("There is no library for the userID: " + userId);
         }

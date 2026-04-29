@@ -40,24 +40,10 @@ public class LibraryId implements DomainID {
             throw new IllegalArgumentException("LibraryId must be a valid String.");
     }
 
-    /**
-     * @return the string identifier
-     */
     public String getId() {
         return _id;
     }
 
-    /**
-     * Indicates whether some other object is equal to this {@code LibraryId}.
-     *
-     * <p>Two {@code LibraryId} instances are equal if they share the same
-     * underlying string identifier.</p>
-     *
-     * @param object the reference object with which to compare
-     * @return {@code true} if this object is the same instance as {@code object},
-     * or if {@code object} is a {@code LibraryId} with an equal identifier;
-     * {@code false} otherwise
-     */
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -66,24 +52,11 @@ public class LibraryId implements DomainID {
         return false;
     }
 
-    /**
-     * Returns a hash code for this {@code LibraryId}.
-     *
-     * <p>Returns {@code 0} if the underlying identifier is {@code null},
-     * which may occur transiently during JPA reflection-based instantiation.</p>
-     *
-     * @return the hash code of the underlying string identifier, or {@code 0} if null
-     */
     @Override
     public int hashCode() {
         return _id != null ? _id.hashCode() : 0;
     }
 
-    /**
-     * Returns the string representation of this {@code LibraryId}.
-     *
-     * @return the underlying string identifier
-     */
     @Override
     public String toString() {
         return _id;

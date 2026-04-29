@@ -94,45 +94,18 @@ public class Library implements AggregateRoot<LibraryId> {
         _id = libraryId;
     }
 
-    /**
-     * Returns the unique identifier of this {@code Library}.
-     *
-     * @return the {@link LibraryId} identifying this library; never {@code null}
-     */
     public LibraryId id() {
         return _id;
     }
 
-    /**
-     * Returns the name of this {@code Library}.
-     *
-     * @return the library name; never {@code null} or blank
-     */
     public String getLibraryName() {
         return _libraryName;
     }
 
-
-    /**
-     * Retrieves the unique identifier of the user.
-     *
-     * @return the username associated with this user
-     */
     public UserId getUserId() {
         return _userId;
     }
 
-    /**
-     * Indicates whether some other object is equal to this {@code Library}.
-     *
-     * <p>Two libraries are considered equal if and only if they share the same
-     * {@link LibraryId}, regardless of name or owner. This follows the DDD principle
-     * of entity equality, where identity is determined solely by the entity's ID.</p>
-     *
-     * @param o the reference object with which to compare
-     * @return {@code true} if {@code o} is a {@code Library} with the same identifier;
-     * {@code false} otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -141,21 +114,6 @@ public class Library implements AggregateRoot<LibraryId> {
         return Objects.equals(_id, library._id);
     }
 
-    /**
-     * Returns the hash code value for this {@code Library}.
-     *
-     * <p>The hash code is computed solely based on the {@link LibraryId},
-     * ensuring consistency with the {@link #equals(Object)} implementation.
-     * Since equality is defined exclusively by identity, only the identifier
-     * is considered when generating the hash code.</p>
-     *
-     * <p>This implementation guarantees that two {@code Library} instances
-     * considered equal (i.e., having the same {@code LibraryId}) will
-     * produce the same hash code, fulfilling the general contract of
-     * {@link Object#hashCode()}.</p>
-     *
-     * @return the hash code derived from the library's identifier
-     */
     @Override
     public int hashCode() {
         return Objects.hash(_id);

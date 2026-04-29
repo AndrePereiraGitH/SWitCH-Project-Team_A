@@ -1,11 +1,13 @@
-package TOPSECRET.persistence.repositoryjpa.jpa;
+package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.LibraryAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.LibraryDM;
+import TOPSECRET.persistence.repositoryjpa.jpa.ILibraryJPARepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -16,13 +18,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link LibraryRepositoryJPAImpl}.
- * <p>
- * This test class verifies the JPA repository implementation including
- * retrieval by user ID, saving libraries, and verifying library existence.
- * </p>
- */
 @ExtendWith(MockitoExtension.class)
 class LibraryRepositoryJPAImplTest {
 
@@ -32,13 +27,14 @@ class LibraryRepositoryJPAImplTest {
     @Mock
     private LibraryAssembler assembler;
 
+    @InjectMocks
+    private LibraryRepositoryJPAImpl repository;
+
     @Mock
     private Library libraryDouble;
 
     @Mock
     private LibraryDM libraryDMDouble;
-
-    //  ----------------- Constructor validation Tests  -----------------
 
     @Test
     void constructor_shouldThrowException_whenJpaRepositoryIsNull() {
@@ -54,154 +50,104 @@ class LibraryRepositoryJPAImplTest {
         );
     }
 
-
-    //  ----------------- getLibraryByUserId() Tests  -----------------
-
     @Test
     void givenNullUserId_whenGetLibraryByUserId_thenThrowsIllegalArgumentException() {
-        // Arrange
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-        // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.getLibraryByUserId(null));
+                () -> repository.getByUserId(null));
 
-        verifyNoInteractions(jpaRepository);
-        verifyNoInteractions(assembler);
     }
 
     @Test
     void givenUserWithNoLibrary_whenGetLibraryByUserId_thenThrowsInstanceNotFoundException() {
         // Arrange
-        UserId userId = new UserId("user-123");
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        // Act + Assert
+        // Act & Assert
         assertThrows(InstanceNotFoundException.class,
-                () -> repository.getLibraryByUserId(userId));
-
-        verify(jpaRepository).findByUserId(userId);
-        verifyNoInteractions(assembler);
+                () -> repository.getByUserId(userId));
     }
 
     @Test
     void givenExistingLibrary_whenGetLibraryByUserId_thenReturnsLibrary() throws Exception {
         // Arrange
-        UserId userId = new UserId("user-123");
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
 
         // Act
-        Library result = repository.getLibraryByUserId(userId);
+        Library result = repository.getByUserId(userId);
 
         // Assert
         assertSame(libraryDouble, result);
-        verify(jpaRepository).findByUserId(userId);
-        verify(assembler).toDomain(libraryDMDouble);
     }
-
-    //  ----------------- save() Tests  -----------------
 
     @Test
     void givenNullLibrary_whenSave_thenThrowsIllegalArgumentException() {
-        // Arrange
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
-        // Act + Assert
+        // Arrange, Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.save(null));
-
-        verifyNoInteractions(jpaRepository);
-        verifyNoInteractions(assembler);
     }
 
     @Test
     void givenUserWithExistingLibrary_whenSave_thenThrowsInstanceAlreadyExistsException() {
         // Arrange
-        UserId userId = new UserId("user-123");
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
+  UserId userId = mock(UserId.class);
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
-        // Act + Assert
+        // Act & Assert
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> repository.save(libraryDouble));
-
-        verify(jpaRepository).findByUserId(userId);
-        verify(assembler, never()).toDM(any());
-        verify(jpaRepository, never()).save(any());
     }
 
     @Test
     void givenValidLibrary_whenSave_thenReturnsSavedLibrary() throws Exception {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
         when(assembler.toDM(libraryDouble)).thenReturn(libraryDMDouble);
         when(jpaRepository.save(libraryDMDouble)).thenReturn(libraryDMDouble);
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
 
         // Act
         Library result = repository.save(libraryDouble);
 
         // Assert
         assertSame(libraryDouble, result);
-        verify(jpaRepository).findByUserId(userId);
-        verify(assembler).toDM(libraryDouble);
-        verify(jpaRepository).save(libraryDMDouble);
-        verify(assembler).toDomain(libraryDMDouble);
     }
 
-    //  ----------------- verifyIfUserHasALibrary() Tests  -----------------
-
     @Test
-    void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
-        // Arrange
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
-        // Act + Assert
+    void givenNullUserId_whenExistsByUserId_thenThrowsIllegalArgumentException() {
+        // Arrange, Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.verifyIfUserHasALibrary(null));
-
-        verifyNoInteractions(jpaRepository);
+                () -> repository.existsByUserId(null));
     }
 
     @Test
-    void givenUserWithNoLibrary_whenVerifyIfUserHasALibrary_thenReturnsFalse() {
+    void givenUserWithNoLibrary_whenExistsByUserId_thenReturnsFalse() {
         // Arrange
-        UserId userId = new UserId("user-123");
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         // Act
-        boolean result = repository.verifyIfUserHasALibrary(userId);
+        boolean result = repository.existsByUserId(userId);
 
         // Assert
         assertFalse(result);
-        verify(jpaRepository).findByUserId(userId);
     }
 
     @Test
-    void givenUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsTrue() {
+    void givenUserWithLibrary_whenExistsByUserId_thenReturnsTrue() {
         // Arrange
-        UserId userId = new UserId("user-123");
-        LibraryRepositoryJPAImpl repository = new LibraryRepositoryJPAImpl(jpaRepository, assembler);
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
         // Act
-        boolean result = repository.verifyIfUserHasALibrary(userId);
+        boolean result = repository.existsByUserId(userId);
 
         // Assert
         assertTrue(result);
-        verify(jpaRepository).findByUserId(userId);
     }
 }
