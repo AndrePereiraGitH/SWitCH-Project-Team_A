@@ -29,6 +29,7 @@ public class Genre implements AggregateRoot<GenreID>{
         this._id = new GenreID(genreType.toLowerCase()); //genreType is the ID
     }
 
+
     // --------------------------------- US003 ends ---------------------------------
     @Override
     public GenreID id() {

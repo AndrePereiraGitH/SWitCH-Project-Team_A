@@ -1,7 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
-
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 /**
@@ -13,10 +13,16 @@ import java.util.Objects;
  *
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
+@Embeddable
 public class GenreID implements DomainID {
 
-    private final String genreID;
+    private String genreID;
 
+    /**
+     * No-args constructor required by JPA/Hibernate for embeddable instantiation.
+     * Not intended for use outside the persistence framework.
+     */
+    protected GenreID() {}
     /**
      * Constructs a new {@code GenreID} with the given value.
      *
@@ -33,6 +39,20 @@ public class GenreID implements DomainID {
     /**
      * Compares this {@code GenreID} to another object for equality.
      *
+     *
+     * @return {@code true} if the given object is a {@code GenreID}
+     *         with the same value; {@code false} otherwise
+     */
+    public String getID() {
+        return genreID;
+    }
+
+    /**
+     * Compares this {@code GenreID} to another object for equality.
+     *
+     * <p>Two {@code GenreID} instances are equal if and only if their
+     * underlying string values are equal.</p>
+     *
      * @param o the object to compare with
      * @return {@code true} if the given object is a {@code GenreID}
      *         with the same value; {@code false} otherwise
@@ -44,12 +64,13 @@ public class GenreID implements DomainID {
         return Objects.equals(genreID, that.genreID);
     }
 
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return hash code based on the underlying string value
+     */
     @Override
     public int hashCode() {
         return Objects.hash(genreID);
-    }
-
-    public String getID() {
-        return genreID;
     }
 }
