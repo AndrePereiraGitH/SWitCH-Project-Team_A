@@ -32,6 +32,14 @@ public class AuthorService {
      * @param authorRepo the repository used to persist and retrieve authors
      */
     public AuthorService(AuthorFactory authorFactory, IAuthorRepository authorRepo) {
+        if (authorFactory == null) {
+            throw new IllegalArgumentException("Author factory cannot be null.");
+        }
+
+        if (authorRepo == null)  {
+            throw new IllegalArgumentException("Author Repository cannot be null");
+        }
+
         this.authorFactory = authorFactory;
         this.authorRepo = authorRepo;
     }
