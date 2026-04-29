@@ -1,17 +1,17 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.persistence.repositoryjpa.assembler.EditionAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.EditionDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IEditionRepositoryJpa;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,27 +43,25 @@ import static org.mockito.Mockito.*;
  * </ul>
  * </p>
  */
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class EditionRepositoryJPAImplTest {
 
-    @MockBean
+    @Mock
     private EditionAssembler assembler;
 
-    @MockBean
+    @Mock
     private IEditionRepositoryJpa jpa;
 
-    private IEditionRepository repo;
+    @InjectMocks
+    private EditionRepositoryJPAImpl repo;
 
     // ─────────────────────────────────────────────
     // save
     // ─────────────────────────────────────────────
-
     @Test
     void save_shouldPersistAndReturnEdition() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
-
         Edition editionDouble = mock(Edition.class);
         EditionDM editionDM = mock(EditionDM.class);
 
@@ -86,7 +84,6 @@ class EditionRepositoryJPAImplTest {
     @Test
     void existsById_shouldReturnFalse_whenEditionDoesNotExist() {
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID editionIdDouble = mock(EditionID.class);
 
         when(jpa.existsById(editionIdDouble)).thenReturn(false);
@@ -102,7 +99,6 @@ class EditionRepositoryJPAImplTest {
     void existsById_shouldReturnTrue_whenExists() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID id = mock(EditionID.class);
         when(jpa.existsById(id)).thenReturn(true);
 
@@ -117,7 +113,6 @@ class EditionRepositoryJPAImplTest {
     void existsById_shouldThrow_whenNull() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.existsById(null));
@@ -131,7 +126,6 @@ class EditionRepositoryJPAImplTest {
     void findEditionById_shouldReturn_whenFound() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID id = mock(EditionID.class);
         EditionDM dm = mock(EditionDM.class);
         Edition edition = mock(Edition.class);
@@ -151,7 +145,6 @@ class EditionRepositoryJPAImplTest {
     void findById_shouldReturnEmpty_whenNotFound() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionID id = mock(EditionID.class);
         when(jpa.findById(id)).thenReturn(Optional.empty());
 
@@ -171,7 +164,6 @@ class EditionRepositoryJPAImplTest {
     void findAll_shouldReturnMappedEditions() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
         EditionDM dm1 = mock(EditionDM.class);
         EditionDM dm2 = mock(EditionDM.class);
 
@@ -200,8 +192,6 @@ class EditionRepositoryJPAImplTest {
     void findIdsByPublisherId_shouldReturnMatchingIds() {
 
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
-
         PublisherID publisherID = mock(PublisherID.class);
 
         EditionDM dm1 = mock(EditionDM.class);
@@ -214,7 +204,6 @@ class EditionRepositoryJPAImplTest {
         when(dm1.getEditionID()).thenReturn(id1);
 
         when(dm2.getPublisherId()).thenReturn(mock(PublisherID.class));
-        when(dm2.getEditionID()).thenReturn(id2);
 
         when(jpa.findAll()).thenReturn(List.of(dm1, dm2));
 
@@ -241,7 +230,6 @@ class EditionRepositoryJPAImplTest {
     @Test
     void findByPublicationTypeId_shouldReturnEditions_whenFound() {
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
 
         PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
 
@@ -269,8 +257,6 @@ class EditionRepositoryJPAImplTest {
     @Test
     void findByPublisherId_shouldReturnEditions_whenFound() {
         // Arrange
-        repo = new EditionRepositoryJPAImpl(jpa, assembler);
-
         PublisherID publisherIdDouble = mock(PublisherID.class);
 
         EditionDM editionDMDouble1 = mock(EditionDM.class);
