@@ -95,26 +95,26 @@ public class ToPutPublicationInAuctionController {
      * @return {@code true} if the listing and the auction are successfully created
      * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
-    public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
-
-        if (listingTitle == null
-                || selectedPublicationsID == null
-                || initialPrice == null
-                || shortDescription == null
-                || sellerId == null
-                || pictures == null
-                || initialDate == null
-                || finalDate == null
-                || buyOutPrice == null
-        ) {
-            throw new IllegalArgumentException("All fields must be non-null.");
-        }
-
-        Listing auctionListing = listingRepository.createAndAdd(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
-
-        auctionRepository.createAndAdd(auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
-
-        return true;
-    }
+//    public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
+//
+//        if (listingTitle == null
+//                || selectedPublicationsID == null
+//                || initialPrice == null
+//                || shortDescription == null
+//                || sellerId == null
+//                || pictures == null
+//                || initialDate == null
+//                || finalDate == null
+//                || buyOutPrice == null
+//        ) {
+//            throw new IllegalArgumentException("All fields must be non-null.");
+//        }
+//
+//        Listing auctionListing = listingRepository.createAndAdd(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
+//
+//        auctionRepository.createAndAdd(auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
+//
+//        return true;
+//    }
 
 }

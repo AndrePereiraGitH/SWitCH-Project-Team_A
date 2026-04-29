@@ -97,7 +97,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
        List<ListingId> authorListings = listingRepo.findAllListingIdByPublicationSampleId(samplesOfAuthorID);
 
-       List<Auction> auctionsOfAuthor = auctionRepository.findAuctionsByListingId(authorListings);
+       List<Auction> auctionsOfAuthor = auctionRepository.findByListingId(authorListings);
 
        return mapper.fromDomainList(auctionsOfAuthor);
     }
