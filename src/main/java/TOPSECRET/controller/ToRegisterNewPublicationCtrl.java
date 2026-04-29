@@ -7,6 +7,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.services.PublicationSampleService;
 
 import javax.management.InstanceAlreadyExistsException;
 
@@ -29,23 +30,23 @@ import javax.management.InstanceAlreadyExistsException;
 
 public class ToRegisterNewPublicationCtrl {
 
-    private final IPublicationSampleRepository _publicationRepository;
+    private final PublicationSampleService _publicationSampleService;
 
-    public ToRegisterNewPublicationCtrl(IPublicationSampleRepository publicationRepository) {
+    public ToRegisterNewPublicationCtrl(PublicationSampleService publicationSampleService) {
 
-        if (publicationRepository == null) {
+        if (publicationSampleService == null) {
             throw new IllegalArgumentException("PublicationRepository cannot be left blank");
 
         }
 
-        this._publicationRepository = publicationRepository;
+        _publicationSampleService = publicationSampleService;
     }
 
     /**
      * Registers a new {@link PublicationSample} in the system.
      *
      * <p>This method delegates the creation and persistence process to the
-     * {@link IPublicationSampleRepository#createAndAdd} method.</p>
+     * {@link PublicationSampleService#createAndSave} method.</p>
      *
      * @param bibliographicalData1 the identifier of the bibliographical data
      * @param user1                the identifier of the user registering the publication
@@ -61,7 +62,7 @@ public class ToRegisterNewPublicationCtrl {
             BibliographicalDataID bibliographicalData1,
             UserId user1, PublicationStatus publicationStatus1, EditionID _edition, Condition condition
 
-    ) throws InstanceAlreadyExistsException {
+    ) {
 
         if (bibliographicalData1 == null) {
             throw new IllegalArgumentException("BibliographicalData cannot be left null");
@@ -79,7 +80,7 @@ public class ToRegisterNewPublicationCtrl {
             throw new IllegalArgumentException("Condition cannot be left null");
         }
 
-        PublicationSample newPublication = _publicationRepository.createAndAdd(bibliographicalData1, user1,
+        PublicationSample newPublication = _publicationSampleService.createAndSave(bibliographicalData1, user1,
                 publicationStatus1, _edition, condition);
 
         return true;

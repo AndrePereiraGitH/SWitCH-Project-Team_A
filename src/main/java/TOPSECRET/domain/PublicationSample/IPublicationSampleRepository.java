@@ -1,242 +1,174 @@
 package TOPSECRET.domain.PublicationSample;
 
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Library.Library;
-import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.US018PublicationSampleDTO;
 
-import javax.management.InstanceAlreadyExistsException;
+import TOPSECRET.domain.ValueObjects.*;
+
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository interface responsible for managing {@link PublicationSample} objects.
- * Provides operations to retrieve all publications, create and add new ones,
- * add existing publication samples, and verify if a publication already exists
- * in the repository.
- * <p>
+ * Repository interface responsible for managing {@link PublicationSample} aggregates.
+ *
+ * <p>Provides operations grouped into four categories:</p>
+ * <ul>
+ *   <li><b>Construction</b> — factory-style creation and persistence in a single step.</li>
+ *   <li><b>Persistence</b> — low-level save and existence checks.</li>
+ *   <li><b>Lookup</b> — queries by identity or associated identifiers.</li>
+ *   <li><b>Domain Operations</b> — operations that involve domain logic beyond simple retrieval.</li>
+ * </ul>
  */
-public interface    IPublicationSampleRepository {
+public interface IPublicationSampleRepository {
 
-    // -------------------------------------------------------------------------
-    // Construction
-    // -------------------------------------------------------------------------
 
-    /**
-     * Creates a new {@link PublicationSample} from the provided attributes,
-     * persists it in the repository, and returns the created instance.
-     *
-     * @param bibliographicalDataId the ID of the bibliographical metadata of the publication; must not be null
-     * @param userId                the ID of the user who owns this copy; must not be null
-     * @param status                the initial publication status; must not be null
-     * @param editionId             the ID of the edition of the publication; must not be null
-     * @param condition             the physical condition of this copy; must not be null
-     * @return the newly created and persisted {@link PublicationSample}
-     * @throws InstanceAlreadyExistsException if an equivalent publication sample
-     *                                        already exists in the repository
-     */
-    PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataId, UserId userId, PublicationStatus status,
-                                   EditionID editionId, Condition condition) throws InstanceAlreadyExistsException;
-
-    // -------------------------------------------------------------------------
+    // =========================================================================
     // Persistence
-    // -------------------------------------------------------------------------
+    // =========================================================================
 
     /**
      * Saves the given {@link PublicationSample} to the repository.
      *
-     * @param publicationSample the publication sample to save; must not be {@code null}
+     * @param publicationSample the sample to save; must not be {@code null}
      * @return the saved {@link PublicationSample}
-     * @throws IllegalArgumentException if {@code publicationSample} is {@code null} or already exists in the repository
      */
     PublicationSample save(PublicationSample publicationSample);
 
     /**
-     * Checks whether the given {@link PublicationSample} exists in the repository.
+     * Checks whether a {@link PublicationSample} with the given identity exists.
      *
-     * @param publicationSample the sample to check; must not be {@code null}
-     * @return {@code true} if the sample exists, {@code false} otherwise
-     * @throws IllegalArgumentException if {@code publicationSample} is {@code null}
+     * @param id the identity to check; must not be {@code null}
+     * @return {@code true} if a matching sample exists, {@code false} otherwise
      */
-    boolean isExistent(PublicationSample publicationSample);
+    boolean existsById(PublicationSampleId id);
 
-    // -------------------------------------------------------------------------
-    // Identity Lookup
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // Lookup — by identity
+    // =========================================================================
 
     /**
      * Finds a {@link PublicationSample} by its unique identifier.
      *
      * @param id the ID to search for; must not be {@code null}
      * @return an {@link Optional} containing the matching sample, or empty if none found
-     * @throws IllegalArgumentException if {@code id} is {@code null}
      */
-    Optional<PublicationSample> findPublicationSampleById(PublicationSampleId id);
-
-    /**
-     * Retrieves all publication sample IDs associated with a given bibliographical data ID.
-     *
-     * @param bdId the bibliographical data ID to search for; must not be {@code null}
-     * @return a {@link List} of {@link PublicationSampleId} associated with the given ID;
-     *         returns an empty list if no matches are found
-     * @throws NullPointerException if {@code bdId} is {@code null}
-     */
-    List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId);
-
-    /**
-     * Retrieves all {@link PublicationSampleId} entities associated with a given {@link EditionID}.
-     * <p>
-     * This method performs a repository query and returns every publication sample ID
-     * whose edition matches the provided identifier. If no samples exist for the
-     * given edition, an empty list is returned.
-     * </p>
-     *
-     * @param listOfEditionIds the list of identifiers of the editions whose publication samples should be retrieved;
-     *                  must not be null
-     * @return a list of {@link PublicationSampleId} objects linked to the specified edition;
-     *         never null, but may be empty
-     *
-     * @throws IllegalArgumentException if {@code editionID} is null
-     */
-    List<PublicationSampleId> findPublicationSampleIdsByEditionIds (List<EditionID> listOfEditionIds);
-
-    // -------------------------------------------------------------------------
-    // Specific Queries
-    // -------------------------------------------------------------------------
+    Optional<PublicationSample> findById(PublicationSampleId id);
 
     /**
      * Retrieves all {@link PublicationSample} instances stored in the repository.
      *
-     * @return a {@link List} of all publication samples; never {@code null},
-     *         but may be empty if none exist
+     * @return a list of all publication samples; never {@code null}, but may be empty
      */
-    List<PublicationSample> getAllPublications();
+    List<PublicationSample> findAll();
 
-    List<PublicationSampleId> findAllItemsIdByBibliographicalDataId(List<BibliographicalDataID> bdIds);
+    // =========================================================================
+    // Lookup — by associated identifiers
+    // =========================================================================
 
     /**
-     * Retrieves all publications in the system that are owned by the given user
-     * and have been added to a library.
+     * Retrieves all publication sample IDs associated with the given bibliographical data ID.
      *
-     * @param userId the ID of the user whose library publications are to be retrieved;
-     *               must not be {@code null}
-     * @return a list of {@link PublicationSample} objects owned by the user that are
-     *         currently in a library; never {@code null}, may be empty
-     * @throws NullPointerException if {@code userId} is {@code null}
+     * @param bdId the bibliographical data ID; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      */
-    List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId);
+    List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataID bdId);
 
     /**
-     * Retrieves the identifiers of publication samples whose bibliographical data ID
-     * is contained in the given list.
+     * Retrieves all publication sample IDs whose bibliographical data ID is in the given list.
      *
-     * @param bds the list of bibliographical data identifiers to search for
-     * @return a list of publication sample identifiers associated with the given
-     *         bibliographical data identifiers; returns an empty list if no matches are found
-     * @throws IllegalArgumentException if {@code bds} is {@code null}
+     * @param bdIds the list of bibliographical data IDs; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     */
+    List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataID> bdIds);
+
+    /**
+     * Retrieves all publication sample IDs whose bibliographical data ID is in the given list.
+     *
+     * @param bds the list of bibliographical data IDs; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      */
     List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds);
 
     /**
+     * Retrieves all publication sample IDs associated with any of the given edition IDs.
+     *
+     * @param listOfEditionIds the list of edition IDs; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     */
+    List<PublicationSampleId> findIdsByEditionIdIn(List<EditionID> listOfEditionIds);
+
+    /**
      * Retrieves all publication samples that belong to the specified library.
      *
-     * @param libraryID the identifier of the library whose publication samples are to be retrieved
-     * @return a list containing all publication samples associated with the given library;
-     * returns an empty list if no publication samples are found
+     * @param libraryId the library identifier; must not be {@code null}
+     * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      */
-    List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID);
+    List<PublicationSample> findByLibraryId(LibraryId libraryId);
 
     /**
-     * Retrieves all {@link PublicationSample} instances that are owned by the given user
-     * and have not yet been added to any library.
-     * <p>
-     * This method is used to present the user with a list of publications available
-     * to be added to their library.
-     * </p>
+     * Retrieves all publication samples that belong to the specified collection.
      *
-     * @param userId the ID of the user whose publications are to be retrieved;
-     *               must not be {@code null}
-     * @return a list of {@link PublicationSample} objects owned by the user that are
-     *         not currently assigned to any library; never {@code null}, may be empty
-     * @throws NullPointerException if {@code userId} is {@code null}
+     * @param collectionId the collection identifier; must not be {@code null}
+     * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      */
-    List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId);
+    List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsID collectionId);
 
     /**
-     * Associates a given {@link PublicationSample} with a {@link LibraryId}
-     * and persists the updated publication in the repository.
+     * Retrieves all publications owned by the given user that are assigned to a library.
      *
-     * <p>This method delegates the association logic to the domain entity
-     * ({@link PublicationSample#addPublicationToLibrary(LibraryId)}) and
-     * then saves the updated entity in the repository.</p>
+     * @param userId the user ID; must not be {@code null}
+     * @return a list of {@link PublicationSample} in a library; never {@code null}, may be empty
+     */
+    List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId);
+
+    /**
+     * Retrieves all publications owned by the given user that are not assigned to any library.
      *
-     * @param publicationSample the publication sample to be added to a library
-     * @param libraryId the identifier of the library to associate with the publication
-     * @return {@code true} if the publication was successfully added to the library
+     * @param userId the user ID; must not be {@code null}
+     * @return a list of {@link PublicationSample} without a library; never {@code null}, may be empty
+     */
+    List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId);
+
+    // =========================================================================
+    // Domain Operations
+    // =========================================================================
+
+    /**
+     * Associates the given {@link PublicationSample} with a library and persists the change.
      *
-     * @throws IllegalArgumentException if {@code publicationSample} is null
-     * @throws IllegalArgumentException if {@code libraryId} is null
-     * @throws IllegalArgumentException if the publication is already assigned to a library
-     *                                  or already exists in the repository
-     * @throws NullPointerException if the domain method enforces additional null constraints
+     * @param publicationSample the sample to update; must not be {@code null}
+     * @param libraryId         the library to associate; must not be {@code null}
+     * @return {@code true} if the association was successfully persisted
+     * @throws IllegalArgumentException if the sample is already assigned to a library
      */
     boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId);
 
     /**
-     * Retrieves all {@link PublicationSample} instances belonging to the library identified
-     * by the given {@link LibraryId} and filters them to return only those that are
-     * eligible to be put for sale in a direct sale listing.
+     * Retrieves all publication samples in the given library that are eligible for sale.
      *
-     * @param libraryId the identifier of the library whose publication samples should be inspected
-     * @return a list containing only the publication samples that are available for sale
-     * @throws NullPointerException if {@code libraryId} is null
+     * @param libraryId the library identifier; must not be {@code null}
+     * @return a list of sale-eligible {@link PublicationSample}; never {@code null}, may be empty
      */
-    List<PublicationSample> findPublicationSamplesAvailableForSaleByLibraryId(LibraryId libraryId);
+    List<PublicationSample> findAvailableForSaleByLibraryId(LibraryId libraryId);
 
     /**
-     * Retrieves all publication samples that belong to a collection.
+     * Assigns the given collection to the specified publication samples and persists the change.
      *
-     * @param collectionID the identifier of the collection of publication whose publication samples are to be retrieved
-     * @return a list containing all publication samples associated with the given collection;
-     * returns an empty list if no publication samples are found
+     * @param collectionId         the collection identifier; must not be {@code null}
+     * @param publicationSampleIds the list of sample IDs to assign; must not be {@code null}
+     * @return {@code true} if the operation succeeded
      */
-    List<PublicationSample> getPublicationsByCollectionID (CollectionOfPublicationsID collectionID);
+    boolean assignPublicationsToCollection(CollectionOfPublicationsID collectionId,
+                                           List<PublicationSampleId> publicationSampleIds);
 
     /**
-     * Assigns a collection to a list of publication samples.
+     * Retrieves publications owned by the given user that are not yet assigned to the given collection.
      *
-     * @param collectionId collection identifier
-     * @param publicationSampleIds publication identifiers
-     * @return true if operation succeeds
+     * <p>Computes the difference between all publications in the user's library
+     * and those already assigned to the collection.</p>
+     *
+     * @param userId       the user identifier; must not be {@code null}
+     * @param collectionId the collection identifier; must not be {@code null}
+     * @return a list of available {@link PublicationSample}; never {@code null}, may be empty
      */
-    boolean assignPublicationsToCollection(
-            CollectionOfPublicationsID collectionId,
-            List<PublicationSampleId> publicationSampleIds);
-
-    /**
-     * Retrieves the list of publications owned by the user that are not yet
-     * assigned to the specified collection.
-     *
-     * <p>
-     * This method computes the difference between:
-     * <ul>
-     *     <li>All publications in the user's library</li>
-     *     <li>Publications already assigned to the collection</li>
-     * </ul>
-     * </p>
-     *
-     * @param userId identifier of the user
-     * @param collectionId identifier of the collection
-     * @return list of available publication samples
-     *
-     * @throws IllegalArgumentException if any argument is null
-     */
-    List<PublicationSample> getAvailablePublicationsForCollection(
-            UserId userId,
-            CollectionOfPublicationsID collectionId);
-
+    List<PublicationSample> findAvailableForCollection(UserId userId,
+                                                       CollectionOfPublicationsID collectionId);
 }

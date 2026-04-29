@@ -39,7 +39,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         Author author1 = mock(Author.class);
         Author author2 = mock(Author.class);
         
-        when(IAuthorRepository.getAllAuthors())
+        when(IAuthorRepository.findAll())
                 .thenReturn(List.of(author1, author2));
 
         // ACT

@@ -1,6 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -8,10 +11,11 @@ import java.util.Objects;
  * Value Object representing the unique identity of a Listing.
  * Immutable and equality-based on its underlying UUID string.
  */
-
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Embeddable
 public final class ListingId implements DomainID {
 
-    private final String _listingId;
+    private String _listingId;
 
     // ============================================================
     // ============== CONSTRUCTOR =================================

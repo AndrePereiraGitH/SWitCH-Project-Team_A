@@ -259,7 +259,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(new ArrayList<>()))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
                 .thenReturn(new ArrayList<>());
         when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
 
@@ -289,7 +289,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(new ArrayList<>()))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
                 .thenReturn(new ArrayList<>());
         when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
 
@@ -327,9 +327,9 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(bdIds);
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
-        when(listingRepositoryMock.findDirectSaleListingsContaining(pubSampleIds))
+        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
                 .thenReturn(listings);
         when(mapperMock.toDTOs(listings)).thenReturn(List.of(expectedDTO));
 
@@ -372,9 +372,9 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(bdIds);
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
-        when(listingRepositoryMock.findDirectSaleListingsContaining(pubSampleIds))
+        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
                 .thenReturn(listings);
         when(mapperMock.toDTOs(listings)).thenReturn(List.of(dto1, dto2));
 
@@ -406,7 +406,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(bdIds);
-        when(publicationSampleRepositoryMock.findAllItemsIdByBibliographicalDataId(bdIds))
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(new ArrayList<>());
         when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
 

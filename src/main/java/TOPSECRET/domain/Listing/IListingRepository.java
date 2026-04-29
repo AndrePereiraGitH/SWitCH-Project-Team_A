@@ -1,158 +1,110 @@
 package TOPSECRET.domain.Listing;
 
-import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
-import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.Optional;
 
-
 /**
- * Contract for managing {@link Listing} objects.
- * <p>
- * Defines operations for creating, storing, retrieving, and filtering listings
- * according to their sale type and associated publication metadata.
- * </p>
+ * Repository interface responsible for managing {@link Listing} aggregates.
+ *
+ * <p>Provides operations grouped into three categories:</p>
+ * <ul>
+ *   <li><b>Persistence</b> — low-level save operations.</li>
+ *   <li><b>Lookup</b> — queries by identity, sale type, or associated identifiers.</li>
+ *   <li><b>Domain Operations</b> — filtered queries combining multiple domain criteria.</li>
+ * </ul>
  */
 public interface IListingRepository {
 
+    // =========================================================================
+    // Persistence
+    // =========================================================================
 
     /**
-     * Creates a new listing and adds it to the repository if it does not already exist.
+     * Saves the given {@link Listing} to the repository.
      *
-     * @param listingTitle the title of the listing
-     * @param itemsId the publication samples IDs associated with the listing
-     * @param saleType the type of sale for the listing
-     * @param price the price defined for the listing
-     * @param shortDescription a short description of the listing
-     * @param pictures the pictures associated with the listing
-     * @return the created and stored listing
-     * @throws InstanceAlreadyExistsException if an equivalent listing already exists
+     * @param listing the listing to save; must not be {@code null}
+     * @return the saved {@link Listing}
+     * @throws IllegalArgumentException if the listing already exists in the repository
      */
-    Listing createAndAdd(String listingTitle,
-                         List<PublicationSampleId> itemsId,
-                         SaleType saleType,
-                         Price price,
-                         String shortDescription,
-                         UserId sellerId,
-                         List<Picture> pictures) throws InstanceAlreadyExistsException;
+    Listing save(Listing listing);
 
+
+    // =========================================================================
+    // Lookup — by identity
+    // =========================================================================
 
     /**
-     * Returns all publication samples in direct-sale listings that belong to the given genre.
+     * Finds a {@link Listing} by its unique identifier.
      *
-     * @param genre the genre used to filter publication samples
-     * @return a list of publication samples in direct-sale listings with the given genre
-     * @throws IllegalArgumentException if {@code genre} is {@code null}
+     * @param id the ID to search for; must not be {@code null}
+     * @return an {@link Optional} containing the matching listing, or empty if none found
      */
-//    List<PublicationSample> getListOfItemsOnDirectSaleOfAGivenGenre(Genre genre);
-
+    Optional<Listing> findById(ListingId id);
 
     /**
-     * Returns the complete list of listings stored in the repository.
+     * Retrieves all {@link Listing} instances stored in the repository.
      *
-     * <p>The returned list reflects the repository's current internal state and
-     * contains all listings that have been previously added. Modifications to the
-     * returned list will affect the repository's internal collection, as no
-     * defensive copy is created.</p>
-     *
-     * @return the internal list of all stored listings; never {@code null}
+     * @return a list of all listings; never {@code null}, but may be empty
      */
-    List<Listing> getAllListings();
+    List<Listing> findAll();
+
+
+    // =========================================================================
+    // Lookup — by sale type
+    // =========================================================================
 
     /**
-     * Returns all listings that are marked as direct-sale listings.
+     * Retrieves all listings linked to a direct sale.
      *
-     * <p>This method scans the repository's internal collection of listings and
-     * selects only those whose {@link Listing#getSaleType()} is equal to
-     * {@link SaleType#DIRECT_SALE}. The returned list is a new collection and
-     * does not expose or modify the repository's internal state.</p>
-     *
-     * @return a list containing all listings with sale type {@code DIRECT_SALE};
-     *         never {@code null}, but may be empty if no such listings exist
+     * @return a list of direct-sale {@link Listing}s; never {@code null}, may be empty
      */
-    List<Listing> findAllDirectSaleListings();
+    List<Listing> findAllByDirectSale();
 
     /**
-     * Returns all listings that are marked as auction listings.
+     * Retrieves all listings linked to an auction.
      *
-     * <p>This method scans the repository's internal collection of listings and
-     * selects only those whose {@link Listing#getSaleType()} is equal to
-     * {@link SaleType#AUCTION}. The returned list is a new collection and
-     * does not expose or modify the repository's internal state.</p>
-     *
-     * @return a list containing all listings with sale type {@code AUCTION};
-     *         never {@code null}, but may be empty if no such listings exist
+     * @return a list of auction {@link Listing}s; never {@code null}, may be empty
      */
-    List<Listing> findAllAuctionListings();
+    List<Listing> findAllByAuction();
+
+
+    // =========================================================================
+    // Lookup — by associated identifiers
+    // =========================================================================
 
     /**
-     * Retrieves an {@link Listing} instance by its identifier.
-     * <p>
-     * This method searches the in-memory list of stored listings and returns
-     * the first element whose {@code id} matches the provided {@link ListingId}.
-     * If no matching listing is found, an empty {@link Optional} is returned.
-     * </p>
+     * Retrieves all listing IDs that contain at least one of the given publication sample IDs.
      *
-     * @param id the identifier of the listing to retrieve; must not be {@code null}
-     * @return an {@link Optional} containing the matching listing if found,
-     *         or an empty {@link Optional} otherwise
-     *
-     * @throws IllegalArgumentException if {@code id} is {@code null}
+     * @param publicationSampleIds the list of publication sample identifiers; must not be {@code null}
+     * @return a list of matching {@link ListingId}s; never {@code null}, may be empty
      */
-    Optional<Listing> findListingById(ListingId id);
+    List<ListingId> findIdsByPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds);
 
+
+    // =========================================================================
+    // Domain Operations
+    // =========================================================================
 
     /**
-     * Retrieves all {@link ListingId} that contain at least one of the given
-     * {@link PublicationSampleId}.
+     * Retrieves all auction listings that contain at least one of the given publication sample IDs.
      *
-     * <p>This method searches the repository for all {@link Listing} instances
-     * whose collection of item identifiers includes at least one of the provided
-     * publication sample identifiers.</p>
-     *
-     * @param itemsId the list of publication sample identifiers used to filter listings;
-     *                must not be {@code null}
-     * @return a list of {@link ListingId} corresponding to listings that contain
-     *         at least one of the specified items; may be empty if no matches are found
-     *
-     * @throws IllegalArgumentException if {@code itemsId} is {@code null}
+     * @param publicationSampleIds the list of publication sample identifiers to match against;
+     *                             must not be {@code null}
+     * @return a list of auction {@link Listing}s containing at least one matching ID;
+     *         never {@code null}, may be empty
      */
-    List<ListingId> findAllListingIdByPublicationSampleId(List<PublicationSampleId> itemsId);
-
+    List<Listing> findAllByAuctionAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds);
 
     /**
-     * Returns all auction listings that contain at least one item matching
-     * any of the provided publication sample IDs.
+     * Retrieves all direct-sale listings that contain at least one of the given publication sample IDs.
      *
-     * <p>A listing is included in the result if it is linked to an auction
-     * and contains at least one of the given {@link PublicationSampleId}s.
-     * Each matching listing appears at most once in the returned list.</p>
-     *
-     * @param listOfPubSampleIds the list of {@link PublicationSampleId} to search for;
-     *                           if {@code null} or empty, an empty list is returned
-     * @return a list of {@link Listing} linked to an auction and matching at least one
-     *         of the provided IDs; never {@code null}, may be empty
+     * @param publicationSampleIds the list of publication sample identifiers to match against;
+     *                             must not be {@code null}
+     * @return a list of direct-sale {@link Listing}s containing at least one matching ID;
+     *         never {@code null}, may be empty
      */
-    List<Listing> getAuctionListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
-
-
-    /**
-     * Returns all direct sale listings that contain at least one item matching
-     * any of the provided publication sample IDs.
-     *
-     * <p>A listing is included in the result if it is linked to a direct sale
-     * and contains at least one of the given {@link PublicationSampleId}s.
-     * Each matching listing appears at most once in the returned list.</p>
-     *
-     * @param listOfPubSampleIds the list of {@link PublicationSampleId} to search for;
-     *                           if {@code null} or empty, an empty list is returned
-     * @return a list of {@link Listing} linked to a direct sale and matching at least one
-     *         of the provided IDs; never {@code null}, may be empty
-     */
-    List<Listing> findDirectSaleListingsContaining(List<PublicationSampleId> listOfPubSampleIds);
+    List<Listing> findAllByDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds);
 }
