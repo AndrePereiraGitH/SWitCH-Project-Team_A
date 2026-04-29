@@ -5,6 +5,7 @@ import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AppraisalEntityDM;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * ensuring that transformations are handled in a single place.
  * </p>
  */
+@Service
 public class AppraisalEntityAssembler {
 
     private final AppraisalEntityFactory factory;

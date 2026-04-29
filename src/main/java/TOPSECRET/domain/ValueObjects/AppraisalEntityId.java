@@ -36,22 +36,6 @@ public class AppraisalEntityId implements DomainID, Serializable {
         this.ap_id = apId;
     }
 
-    /**
-     * Generates a new unique AppraisalEntityId.
-     *
-     * <p>
-     * Encapsulates the ID creation logic, hiding the underlying
-     * implementation (e.g., UUID) from the rest of the domain.
-     * This allows the generation strategy to change without
-     * impacting other classes.
-     * </p>
-     *
-     * @return a newly generated AppraisalEntityId
-     */
-    public static AppraisalEntityId generate() {
-        return new AppraisalEntityId(java.util.UUID.randomUUID().toString());
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

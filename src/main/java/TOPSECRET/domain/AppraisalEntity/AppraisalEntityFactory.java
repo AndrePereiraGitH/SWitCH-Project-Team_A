@@ -4,6 +4,7 @@ import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
  * ensuring that all required parameters are provided.
  * </p>
  */
+@Service
 public class AppraisalEntityFactory {
 
     /**
@@ -34,7 +36,6 @@ public class AppraisalEntityFactory {
             {
 
             return new AppraisalEntity(
-                    AppraisalEntityId.generate(),
                     name,
                     contact,
                     publicationTypes,

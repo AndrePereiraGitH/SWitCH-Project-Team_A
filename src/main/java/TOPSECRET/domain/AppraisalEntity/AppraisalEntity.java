@@ -9,6 +9,7 @@ import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Domain entity representing an Appraisal Entity.
@@ -57,7 +58,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
         validate(name, contact, publicationTypeId, genreId);
 
-        this._apEnId = AppraisalEntityId.generate();
+        this._apEnId = new AppraisalEntityId(UUID.randomUUID().toString());
         this._name = name;
         this._contact = contact;
         this._publicationTypeId = publicationTypeId;

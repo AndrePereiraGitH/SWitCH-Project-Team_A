@@ -12,7 +12,6 @@ import java.util.Objects;
  * This class validates required fields in the constructor.
  */
 @Embeddable
-@EqualsAndHashCode
 public class Address implements ValueObject {
 
     private String street;
