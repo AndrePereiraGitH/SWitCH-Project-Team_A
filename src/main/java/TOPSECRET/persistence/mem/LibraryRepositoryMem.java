@@ -15,7 +15,6 @@ import java.util.Map;
  * In-memory implementation of {@link ILibraryRepository}.
  * <p>
  * Stores libraries in a {@link HashMap} keyed by the owner's username.
- * Uses a {@link LibraryFactory} to create new library instances.
  * </p>
  */
 
@@ -28,7 +27,7 @@ public class LibraryRepositoryMem implements ILibraryRepository {
      *
      * @throws IllegalArgumentException if {@code libraryFactory} is null
      */
-    public LibraryRepositoryMem(LibraryFactory libraryFactory) {
+    public LibraryRepositoryMem() {
     
         _libraries = new HashMap<>();
     }
