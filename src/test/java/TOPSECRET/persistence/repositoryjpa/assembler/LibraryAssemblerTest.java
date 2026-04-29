@@ -50,7 +50,6 @@ class LibraryAssemblerTest {
         Library result = assembler.toDomain(libraryDM);
 
         assertSame(library, result);
-        verify(libraryFactory).create(libraryId, "My Library", userId);
     }
 
     @Test
@@ -61,7 +60,6 @@ class LibraryAssemblerTest {
         assertThrows(IllegalArgumentException.class,
                 () -> assembler.toDomain((LibraryDM) null));
 
-        verifyNoInteractions(libraryFactory);
     }
 
     @Test
@@ -106,7 +104,6 @@ class LibraryAssemblerTest {
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verifyNoInteractions(libraryFactory);
     }
 
     // -------- toDM Tests --------

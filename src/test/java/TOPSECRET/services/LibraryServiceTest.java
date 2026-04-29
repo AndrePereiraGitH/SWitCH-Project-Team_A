@@ -59,47 +59,6 @@ class LibraryServiceTest {
     //  ----------------- createAndSave() Tests  -----------------
 
     @Test
-    void givenNullLibraryName_whenCreateAndSave_thenThrowsIllegalArgumentException() {
-        // Arrange
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        UserId userIdDouble = mock(UserId.class);
-
-        LibraryService service = new LibraryService(libraryRepositoryDouble, libraryFactoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave(null, userIdDouble));
-    }
-
-    @Test
-    void givenBlankLibraryName_whenCreateAndSave_thenThrowsIllegalArgumentException() {
-        // Arrange
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-        UserId userIdDouble = mock(UserId.class);
-
-        LibraryService service = new LibraryService(libraryRepositoryDouble, libraryFactoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave("   ", userIdDouble));
-    }
-
-    @Test
-    void givenNullUserId_whenCreateAndSave_thenThrowsIllegalArgumentException() {
-        // Arrange
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-
-        LibraryService service = new LibraryService(libraryRepositoryDouble, libraryFactoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave("My Library", null));
-    }
-
-    @Test
     void givenValidLibraryNameAndUserId_whenCreateAndSave_thenReturnsLibrary()
             throws InstanceAlreadyExistsException {
         // Arrange

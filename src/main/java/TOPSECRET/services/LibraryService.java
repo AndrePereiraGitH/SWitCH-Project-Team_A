@@ -58,11 +58,6 @@ public class LibraryService {
     public Library createAndSave(String libraryName, UserId userId)
             throws InstanceAlreadyExistsException {
 
-        if (libraryName == null || libraryName.isBlank())
-            throw new IllegalArgumentException("Library name cannot be null or blank");
-        if (userId == null)
-            throw new IllegalArgumentException("UserId cannot be null");
-
         Library library = _libraryFactory.create(libraryName, userId);
         return _libraryRepository.save(library);
     }

@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
-import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class LibraryRepositoryMemTest {
 
     @Test
     void shouldSaveLibrarySuccessfully() throws InstanceAlreadyExistsException {
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+         ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -43,7 +43,7 @@ class LibraryRepositoryMemTest {
     void givenValidLibrary_whenSave_thenReturnsSameLibrary()
             throws InstanceAlreadyExistsException {
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -58,7 +58,7 @@ class LibraryRepositoryMemTest {
 
     @Test
     void givenNullLibrary_whenSave_thenThrowsIllegalArgumentException() {
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -81,7 +81,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble);
 
@@ -93,14 +93,14 @@ class LibraryRepositoryMemTest {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-123");
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertFalse(repo.verifyIfUserHasALibrary(userDouble));
     }
 
     @Test
     void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -124,7 +124,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble);
 
@@ -147,7 +147,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble);
 
@@ -158,7 +158,7 @@ class LibraryRepositoryMemTest {
 
     @Test
     void givenNullUserId_whenGetLibraryOfUser_thenThrowsNullPointerException() {
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 NullPointerException.class,
@@ -171,7 +171,7 @@ class LibraryRepositoryMemTest {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-999");
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 InstanceNotFoundException.class,
@@ -201,7 +201,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble2 = mock(Library.class);
         when(libraryDouble2.id()).thenReturn(libraryIdDouble2);
 
-         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble1);
         repo.save(libraryDouble2);

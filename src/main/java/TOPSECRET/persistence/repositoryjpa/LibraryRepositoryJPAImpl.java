@@ -1,17 +1,30 @@
-package TOPSECRET.persistence.repositoryjpa.jpa;
+package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.LibraryAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.LibraryDM;
+import TOPSECRET.persistence.repositoryjpa.jpa.ILibraryJPARepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.Objects;
-
+/**
+ * JPA-based implementation of the {@link ILibraryRepository} interface.
+ *
+ * <p>This repository is responsible for persisting and retrieving {@link Library}
+ * aggregates using Spring Data JPA. It delegates data access operations to
+ * {@link ILibraryJPARepository} and handles the conversion between domain objects
+ * and persistence data models through the {@link LibraryAssembler}.</p>
+ *
+ * <p>This implementation enforces domain constraints such as ensuring that a user
+ * can only have a single library.</p>
+ *
+ * <p>All methods inherit their contracts from {@link ILibraryRepository}.</p>
+ */
 @Repository
 public class LibraryRepositoryJPAImpl implements ILibraryRepository {
 
@@ -23,6 +36,8 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
         this._jpaRepository = Objects.requireNonNull(_jpaRepository, "jpaRepository must not be null");
         this._assembler = Objects.requireNonNull(_assembler, "assembler must not be null");
     }
+
+    /** {@inheritDoc} */
 
     @Override
     public Library getLibraryByUserId(UserId userId) throws InstanceNotFoundException {
@@ -38,6 +53,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
         return _assembler.toDomain(libraryDM);
     }
 
+    /** {@inheritDoc} */
     @Transactional
     @Override
     public Library save(Library library) throws InstanceAlreadyExistsException {
@@ -56,6 +72,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
         return _assembler.toDomain(savedLibraryDM);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean verifyIfUserHasALibrary(UserId userId) {
         if (userId == null) {
