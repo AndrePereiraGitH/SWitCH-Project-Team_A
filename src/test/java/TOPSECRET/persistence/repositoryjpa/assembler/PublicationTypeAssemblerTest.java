@@ -61,4 +61,14 @@ class PublicationTypeAssemblerTest {
         assertThrows(IllegalArgumentException.class,
                 () -> assembler.toDataModel(null));
     }
+
+    @Test
+    void shouldThrowWhenFactoryIsNull() {
+
+        // ARRANGE
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublicationTypeAssembler(null));
+    }
 }

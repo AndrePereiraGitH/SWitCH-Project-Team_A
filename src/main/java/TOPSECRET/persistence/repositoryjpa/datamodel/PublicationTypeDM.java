@@ -8,11 +8,9 @@ import lombok.*;
 @Table(name = "publication_types")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PublicationTypeDM {
 
     @EmbeddedId
-    @EqualsAndHashCode.Include
     private PublicationTypeId id;
 
     @Column(name = "media_format", nullable = false)

@@ -46,4 +46,30 @@ class PublicationTypeFactoryTest {
         assertThrows(IllegalArgumentException.class, () -> factory.create(""));
         assertThrows(IllegalArgumentException.class, () -> factory.create(" "));
     }
+
+    @Test
+    void sameAsShouldReturnTrueWhenSameInstance() {
+
+        // ARRANGE
+        PublicationType pt = new PublicationType("Book");
+
+        // ACT
+        boolean result = pt.sameAs(pt);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentType() {
+
+        // ARRANGE
+        PublicationType pt = new PublicationType("Book");
+
+        // ACT
+        boolean result = pt.sameAs("Book");
+
+        // ASSERT
+        assertFalse(result);
+    }
 }

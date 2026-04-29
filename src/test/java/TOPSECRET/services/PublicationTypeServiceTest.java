@@ -57,6 +57,31 @@ class PublicationTypeServiceTest {
                 () -> service.create(" "));
     }
 
+    @Test
+
+    void shouldThrowWhenRepositoryIsNull() {
+
+        // ARRANGE
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+
+                () -> new PublicationTypeService(null, factory));
+
+    }
+
+    @Test
+    void shouldThrowWhenFactoryIsNull() {
+
+        // ARRANGE
+        IPublicationTypeRepository repo = mock(IPublicationTypeRepository.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublicationTypeService(repo, null));
+    }
+
     // DUPLICATE
     @Test
     void shouldThrowWhenPublicationTypeAlreadyExists() {

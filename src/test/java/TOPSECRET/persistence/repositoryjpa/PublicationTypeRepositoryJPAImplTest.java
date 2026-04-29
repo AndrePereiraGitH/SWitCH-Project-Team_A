@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.persistence.repositoryjpa.assembler.PublicationTypeAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
@@ -157,5 +158,28 @@ class PublicationTypeRepositoryJPAImplTest {
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> repository.findByMediaFormat(" "));
+    }
+
+    @Test
+    void shouldThrowWhenJpaRepositoryIsNull() {
+
+        // ARRANGE
+        PublicationTypeAssembler assembler =
+                new PublicationTypeAssembler(new PublicationTypeFactory());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublicationTypeRepositoryJPAImpl(null, assembler));
+    }
+
+    @Test
+    void shouldThrowWhenAssemblerIsNull() {
+
+        // ARRANGE
+        IPublicationTypeRepositoryJPA jpaRepository = mock(IPublicationTypeRepositoryJPA.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublicationTypeRepositoryJPAImpl(jpaRepository, null));
     }
 }

@@ -192,4 +192,44 @@ class PublicationTypeRepositoryMemTest {
         assertThrows(IllegalArgumentException.class,
                 () -> repo.findByMediaFormat(" "));
     }
+
+    @Test
+    void shouldReturnCorrectElementWhenMultipleIdsExist() {
+
+        // ARRANGE
+        PublicationTypeRepositoryMem repo = new PublicationTypeRepositoryMem();
+
+        PublicationType pt1 = new PublicationTypeFactory().create("Book");
+        PublicationType pt2 = new PublicationTypeFactory().create("Magazine");
+
+        repo.save(pt1);
+        repo.save(pt2);
+
+        // ACT
+        Optional<PublicationType> result = repo.findById(pt2.id());
+
+        // ASSERT
+        assertTrue(result.isPresent());
+        assertEquals(pt2, result.get());
+    }
+
+    @Test
+    void shouldReturnCorrectElementWhenMultipleFormatsExist() {
+
+        // ARRANGE
+        PublicationTypeRepositoryMem repo = new PublicationTypeRepositoryMem();
+
+        PublicationType pt1 = new PublicationTypeFactory().create("Book");
+        PublicationType pt2 = new PublicationTypeFactory().create("Magazine");
+
+        repo.save(pt1);
+        repo.save(pt2);
+
+        // ACT
+        Optional<PublicationType> result = repo.findByMediaFormat("Magazine");
+
+        // ASSERT
+        assertTrue(result.isPresent());
+        assertEquals(pt2, result.get());
+    }
 }

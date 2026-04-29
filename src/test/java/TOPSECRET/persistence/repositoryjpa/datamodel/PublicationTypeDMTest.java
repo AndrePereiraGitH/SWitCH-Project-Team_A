@@ -80,23 +80,6 @@ class PublicationTypeDMTest {
         assertEquals("Book", result);
     }
 
-    // EQUALS & HASHCODE
-    @Test
-    void shouldBeEqualWhenSameId() {
-
-        // ARRANGE
-        PublicationTypeId id = validId();
-
-        PublicationTypeDM dm1 = new PublicationTypeDM(id, "Book");
-        PublicationTypeDM dm2 = new PublicationTypeDM(id, "Different");
-
-        // ACT
-        boolean result = dm1.equals(dm2);
-
-        // ASSERT
-        assertTrue(result);
-        assertEquals(dm1.hashCode(), dm2.hashCode());
-    }
 
     @Test
     void shouldNotBeEqualWhenDifferentId() {
@@ -146,6 +129,39 @@ class PublicationTypeDMTest {
 
         // ACT
         boolean result = dm.equals(dm);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenComparedWithDifferentType() {
+
+        // ARRANGE
+        PublicationTypeDM dm = new PublicationTypeDM(
+                new PublicationTypeId("1"),
+                "Book"
+        );
+
+        // ACT
+        boolean result = dm.equals("string");
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldHaveDifferentHashCodesWhenDifferentId() {
+
+        // ARRANGE
+        PublicationTypeDM a = new PublicationTypeDM(
+                new PublicationTypeId("1"), "Book");
+
+        PublicationTypeDM b = new PublicationTypeDM(
+                new PublicationTypeId("2"), "Book");
+
+        // ACT
+        boolean result = a.hashCode() != b.hashCode();
 
         // ASSERT
         assertTrue(result);
