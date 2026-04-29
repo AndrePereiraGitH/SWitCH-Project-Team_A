@@ -3,75 +3,192 @@ package TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
 
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import org.junit.jupiter.api.BeforeEach;
+
 /**
- * Unit tests for {@link CollectionOfPublicationsFactory} — US017.
+ * Unit tests for {@link CollectionOfPublicationsFactory}.
  *
- * <p>The factory's only job is to call {@code new CollectionOfPublications(name, genre, user)}
- * and return the result. This test checks that the factory does exactly that —
- * it delegates the creation and returns the object.
+ * <p>Verifies that the factory correctly creates
+ * {@link CollectionOfPublications} domain objects using both creation
+ * paths:
+ * <ul>
+ *     <li>Creation of a new collection (new aggregate)</li>
+ *     <li>Recreation of an existing collection (persistence rebuild)</li>
+ * </ul>
  *
- * <p>The challenge with unit-testing a factory is that it calls {@code new} internally.
- * Normally, {@code new} cannot be intercepted with a regular mock.
- * To solve this, we use <b>MockedConstruction</b> from Mockito, which intercepts
- * every call to {@code new CollectionOfPublications(...)} inside the {@code try} block
- * and replaces it with a mock object that we control.
- *
- * <p>This way we test only the factory's behaviour — not the constructor logic.
- * If this test passes, it means the factory called {@code new} and returned the result.
- * The constructor is tested separately in the DependenciesTest file.
+ * <p>The factory delegates validation to the
+ * {@link CollectionOfPublications} constructor, therefore tests focus on
+ * successful creation and constructor validation propagation.</p>
  */
 class CollectionOfPublicationsFactoryTest {
 
+    private CollectionOfPublicationsFactory factory;
 
-    // ============================== US017 ==============================
+    private GenreID genreIdDouble;
+    private UserId userIdDouble;
+    private CollectionOfPublicationsID collectionIdDouble;
 
-    // The factory receives name, genre, and user — it must call new CollectionOfPublications(...)
-    // with those values and return the created object.
-    //
-    // We use MockedConstruction to intercept the constructor call.
-    // Inside the try block, every call to new CollectionOfPublications() returns a mock instead.
-    // We configure that mock to return known values, then check the factory returned it correctly.
-    //
-    // If the factory had NOT called new, the mock would never be created and the test would fail.
-    // So a passing test proves the factory delegated construction as expected.
-    @Test
-    void shouldCreateNonNullCollectionOfPublications() {
-        // Arrange — fake Genre and User; the real objects are not needed here
-        GenreID genre = mock(GenreID.class);
-        UserId user = mock(UserId.class);
+    @BeforeEach
+    void setUp() {
 
-        // MockedConstruction intercepts every call to new CollectionOfPublications() inside the try block
-        // — the factory calls new internally, so this is the only way to isolate it without running the real constructor
-        try (MockedConstruction<CollectionOfPublications> mocked =
-                     mockConstruction(CollectionOfPublications.class,
-                             (mock, context) -> {
-                                 // configure what the intercepted constructor mock returns when asked
-                                 when(mock.getCollectionName()).thenReturn("MyCollection");
-                                 when(mock.getCollectionGenre()).thenReturn(genre);
-                                 when(mock.getOwnerId()).thenReturn(user);
-                                 when(mock.getIsPrivate()).thenReturn(true); // US017 rule: always private
-                             })) {
-
-            // Act — factory is called; internally it calls new CollectionOfPublications(...)
-            // which is intercepted and replaced with the mock configured above
-            CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
-            CollectionOfPublications result = factory.create("MyCollection", genre, user);
-
-            // Assert — the factory must return the mock object with the correct values
-            // this confirms the factory called new and returned the result, not null or something else
-            assertEquals("MyCollection", result.getCollectionName());
-            assertEquals(genre, result.getCollectionGenre());
-            assertEquals(user, result.getOwnerId());
-            assertTrue(result.getIsPrivate()); // US017 rule: the created collection must be private
-        }
+        genreIdDouble = mock(GenreID.class);
+        userIdDouble = mock(UserId.class);
+        collectionIdDouble = mock(CollectionOfPublicationsID.class);
     }
 
-    // ============================== end US017 ==============================
+    // ===========================================================
+    // ========== Tests for create (new object) ==================
+    // ===========================================================
 
+    @Test
+    void createShouldReturnValidCollection() {
+
+        // Arrange
+        String name = "Fantasy Collection";
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act
+        CollectionOfPublications result =
+                factory.create(name, genreIdDouble, userIdDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(name, result.getCollectionName());
+        assertEquals(genreIdDouble, result.getCollectionGenre());
+        assertEquals(userIdDouble, result.getOwnerId());
+        assertTrue(result.getIsPrivate());
+    }
+
+    @Test
+    void createShouldThrowExceptionWhenNameIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(null, genreIdDouble, userIdDouble));
+    }
+
+    @Test
+    void createShouldThrowExceptionWhenNameIsBlank() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create("   ", genreIdDouble, userIdDouble));
+    }
+
+    @Test
+    void createShouldThrowExceptionWhenGenreIdIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create("Fantasy Collection", null, userIdDouble));
+    }
+
+    @Test
+    void createShouldThrowExceptionWhenUserIdIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create("Fantasy Collection", genreIdDouble, null));
+    }
+
+    // ===========================================================
+    // ========== Tests for create (recreate object) =============
+    // ===========================================================
+
+    @Test
+    void recreateShouldReturnValidCollection() {
+
+        // Arrange
+        String name = "Fantasy Collection";
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act
+        CollectionOfPublications result =
+                factory.create(
+                        collectionIdDouble,
+                        name,
+                        genreIdDouble,
+                        userIdDouble
+                );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(name, result.getCollectionName());
+        assertEquals(genreIdDouble, result.getCollectionGenre());
+        assertEquals(userIdDouble, result.getOwnerId());
+    }
+
+    @Test
+    void recreateShouldThrowExceptionWhenIdIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(
+                        null,
+                        "Fantasy Collection",
+                        genreIdDouble,
+                        userIdDouble
+                ));
+    }
+
+    @Test
+    void recreateShouldThrowExceptionWhenNameIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(
+                        collectionIdDouble,
+                        null,
+                        genreIdDouble,
+                        userIdDouble
+                ));
+    }
+
+    @Test
+    void recreateShouldThrowExceptionWhenGenreIdIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(
+                        collectionIdDouble,
+                        "Fantasy Collection",
+                        null,
+                        userIdDouble
+                ));
+    }
+
+    @Test
+    void recreateShouldThrowExceptionWhenUserIdIsNull() {
+        //Arrange
+        factory = new CollectionOfPublicationsFactory();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(
+                        collectionIdDouble,
+                        "Fantasy Collection",
+                        genreIdDouble,
+                        null
+                ));
+    }
 }

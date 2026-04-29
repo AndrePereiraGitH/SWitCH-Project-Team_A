@@ -1,7 +1,9 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import org.springframework.stereotype.Service;
 
 /**
  * Factory for creating {@link CollectionOfPublications} objects — US017.
@@ -15,6 +17,8 @@ import TOPSECRET.domain.ValueObjects.UserId;
  * <p>Validation (null checks, blank name) is not done here — it is handled by the
  * {@code CollectionOfPublications} constructor, which is the right place for those rules.
  */
+
+@Service
 public class CollectionOfPublicationsFactory {
 
     /**
@@ -34,8 +38,45 @@ public class CollectionOfPublicationsFactory {
      * @return a new private {@code CollectionOfPublications} with no publications
      * @throws IllegalArgumentException if any argument is null or if name is blank
      */
-    // instance method on purpose — so it can be injected and doubled in tests (static methods cannot be doubled)
-    public CollectionOfPublications create(String name, GenreID genreId, UserId userId) {
-        return new CollectionOfPublications(name, genreId, userId);
+    public CollectionOfPublications create
+    (String name,
+     GenreID genreId,
+     UserId userId) {
+
+        return new CollectionOfPublications(
+                name, genreId, userId);
+    }
+
+    /**
+     * Recreates an existing {@link CollectionOfPublications} from persisted data.
+     *
+     * <p>This method is used when rebuilding a domain object from the database,
+     * where the identity already exists and must be preserved. Unlike the standard
+     * creation method for new collections, this version receives an existing
+     * {@link CollectionOfPublicationsID} and restores the aggregate with that identity.
+     *
+     * <p>This is typically used by repository implementations and assemblers when
+     * converting persistence data models back into domain objects.
+     *
+     * <p>Validation is still delegated to the
+     * {@link CollectionOfPublications} constructor to ensure all domain
+     * invariants remain enforced.
+     *
+     * @param collectionOfPublicationsId the existing identity of the collection;
+     *                                   must not be null
+     * @param name                       the name of the collection; must not be null or blank
+     * @param genreId                    the genre associated with the collection; must not be null
+     * @param userId                     the owner of the collection; must not be null
+     * @return the reconstructed {@link CollectionOfPublications} domain object
+     * @throws IllegalArgumentException if any argument is invalid
+     */
+    public CollectionOfPublications create
+    (CollectionOfPublicationsID collectionOfPublicationsId,
+     String name,
+     GenreID genreId,
+     UserId userId) {
+
+        return new CollectionOfPublications(
+                collectionOfPublicationsId, name, genreId, userId);
     }
 }
