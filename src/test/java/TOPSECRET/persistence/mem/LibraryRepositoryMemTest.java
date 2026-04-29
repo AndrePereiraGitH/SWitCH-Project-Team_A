@@ -18,26 +18,15 @@ class LibraryRepositoryMemTest {
     // ============ Constructor Tests ============
 
     @Test
-    void givenNullFactory_whenConstructing_thenThrowsIllegalArgumentException() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new LibraryRepositoryMem(null)
-        );
-    }
-
-    @Test
-    void givenValidFactory_whenConstructing_thenCreatesSuccessfully() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-
-        assertDoesNotThrow(() -> new LibraryRepositoryMem(factoryDouble));
+    void whenConstructing_thenCreatesSuccessfully() {
+        assertDoesNotThrow(LibraryRepositoryMem::new);
     }
 
     // ============ save Tests ============
 
     @Test
     void shouldSaveLibrarySuccessfully() throws InstanceAlreadyExistsException {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -54,8 +43,7 @@ class LibraryRepositoryMemTest {
     void givenValidLibrary_whenSave_thenReturnsSameLibrary()
             throws InstanceAlreadyExistsException {
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -70,8 +58,7 @@ class LibraryRepositoryMemTest {
 
     @Test
     void givenNullLibrary_whenSave_thenThrowsIllegalArgumentException() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -94,8 +81,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble);
 
@@ -107,16 +93,14 @@ class LibraryRepositoryMemTest {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-123");
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         assertFalse(repo.verifyIfUserHasALibrary(userDouble));
     }
 
     @Test
     void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -140,8 +124,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble);
 
@@ -164,8 +147,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble);
 
@@ -176,8 +158,7 @@ class LibraryRepositoryMemTest {
 
     @Test
     void givenNullUserId_whenGetLibraryOfUser_thenThrowsNullPointerException() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 NullPointerException.class,
@@ -190,8 +171,7 @@ class LibraryRepositoryMemTest {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-999");
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 InstanceNotFoundException.class,
@@ -221,8 +201,7 @@ class LibraryRepositoryMemTest {
         Library libraryDouble2 = mock(Library.class);
         when(libraryDouble2.id()).thenReturn(libraryIdDouble2);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+         LibraryRepositoryMem repo = new LibraryRepositoryMem(  );
 
         repo.save(libraryDouble1);
         repo.save(libraryDouble2);
