@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents a unique identifier for a Collection of Publications.
@@ -13,9 +15,11 @@ import TOPSECRET.ddd.DomainID;
  * if their underlying ID values are equal.
  */
 
+@Embeddable
+@NoArgsConstructor
 public class CollectionOfPublicationsID implements DomainID {
 
-    private final String collectionOfPub_id;
+    private String collectionOfPub_id;
 
     /**
      * Constructs a {@code CollectionOfPublicationsID} with the specified identifier.
