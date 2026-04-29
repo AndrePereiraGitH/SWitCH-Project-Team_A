@@ -55,6 +55,11 @@ class PublicationSampleAssemblerTest {
     }
 
     @Test
+    void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
+        assertThrows(NullPointerException.class, () -> new PublicationSampleAssembler(null));
+    }
+
+    @Test
     void toDM_shouldReturnAValidDataModel() {
         // Arrange
         PublicationSample pbSampleDouble = mock(PublicationSample.class);
@@ -73,6 +78,12 @@ class PublicationSampleAssemblerTest {
         // Assert
         assertNotNull(result);
     }
+
+    @Test
+    void toDM_shouldThrowNullPointerException_whenPublicationSampleIsNull() {
+        assertThrows(NullPointerException.class, () -> assembler.toDM(null));
+    }
+
 
 
     @Test
@@ -99,5 +110,10 @@ class PublicationSampleAssemblerTest {
 
         // Assert
         assertNotNull(result);
+    }
+
+    @Test
+    void toDomain_shouldThrowNullPointerException_whenPublicationSampleDMIsNull() {
+        assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
     }
 }

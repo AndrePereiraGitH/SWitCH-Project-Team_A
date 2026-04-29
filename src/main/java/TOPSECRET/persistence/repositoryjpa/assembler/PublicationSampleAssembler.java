@@ -5,6 +5,8 @@ import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 /**
  * Assembler responsible for converting between {@link PublicationSample} domain objects
  * and {@link PublicationSampleDM} persistence entities.
@@ -31,7 +33,7 @@ public class PublicationSampleAssembler {
      *                must not be {@code null}
      */
     public PublicationSampleAssembler(PublicationSampleFactory factory) {
-        _factory = factory;
+        _factory = Objects.requireNonNull(factory, "PublicationSampleFactory cannot be null.");
     }
 
     /**
@@ -46,6 +48,8 @@ public class PublicationSampleAssembler {
      * @return a fully populated {@link PublicationSampleDM} ready for persistence
      */
     public PublicationSampleDM toDM(PublicationSample pbSample){
+
+        Objects.requireNonNull(pbSample, "PublicationSample cannot be null.");
 
         PublicationSampleDM pbSampleDM = new PublicationSampleDM(pbSample.id(),pbSample.getBibliographicalDataID(),
                 pbSample.getOwnerID(),pbSample.getEditionID(),pbSample.getLibraryID(),pbSample.getCollecOfPubID(),
@@ -71,6 +75,8 @@ public class PublicationSampleAssembler {
      * @return a fully reconstructed {@link PublicationSample} with its original identity restored
      */
     public PublicationSample toDomain(PublicationSampleDM pbSampleDM){
+
+        Objects.requireNonNull(pbSampleDM, "PublicationSampleDM cannot be null.");
 
         PublicationSample pbSample = _factory.create(pbSampleDM.getPubSampleId(),pbSampleDM.getBdId(),
                 pbSampleDM.getOwnerId(),pbSampleDM.getPublicationStatus(),pbSampleDM.getEditionId(),pbSampleDM.getCondition());
