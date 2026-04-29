@@ -51,7 +51,7 @@ public class LibraryAssembler {
      * @return the corresponding {@link Library} domain object
      * @throws IllegalArgumentException if {@code libraryDM} is {@code null}
      */
-    public Library toDomain(LibraryDM libraryDM) {
+    public Library toDomainList(LibraryDM libraryDM) {
         if (libraryDM == null) {
             throw new IllegalArgumentException("LibraryDM cannot be null");
         }
@@ -67,17 +67,17 @@ public class LibraryAssembler {
      * {@link Library} domain objects.
      *
      * <p>Each element in the provided iterable is individually transformed
-     * using {@link #toDomain(LibraryDM)}.</p>
+     * using {@link #toDomainList(LibraryDM)}.</p>
      *
      * @param listDataModel an iterable collection of persistence entities;
      *                      must not be {@code null}
      * @return a list of corresponding {@link Library} domain objects;
      * never {@code null}, but may be empty
      */
-    public List<Library> toDomain(Iterable<LibraryDM> listDataModel) {
+    public List<Library> toDomainList(Iterable<LibraryDM> listDataModel) {
         List<Library> listDomain = new ArrayList<>();
 
-        listDataModel.forEach(dm -> listDomain.add(toDomain(dm)));
+        listDataModel.forEach(dm -> listDomain.add(toDomainList(dm)));
 
         return listDomain;
     }

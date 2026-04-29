@@ -32,7 +32,7 @@ class LibraryAssemblerTest {
     // -------- toDomain Tests --------
 
     @Test
-    void toDomain_shouldConvertLibraryDMToLibrary() {
+    void toDomain_shouldConvertLibraryDMToLibraryList() {
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
@@ -47,23 +47,23 @@ class LibraryAssemblerTest {
         when(libraryDM.getUserId()).thenReturn(userId);
         when(libraryFactory.create(libraryId, "My Library", userId)).thenReturn(library);
 
-        Library result = assembler.toDomain(libraryDM);
+        Library result = assembler.toDomainList(libraryDM);
 
         assertSame(library, result);
     }
 
     @Test
-    void toDomain_shouldThrowException_whenLibraryDMIsNull() {
+    void toDomain_List_shouldThrowException_whenLibraryDMIsNull() {
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
         assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDomain((LibraryDM) null));
+                () -> assembler.toDomainList((LibraryDM) null));
 
     }
 
     @Test
-    void toDomainIterable_shouldConvertAllLibraryDMsToLibraries() {
+    void toDomainIterable_shouldConvertAllLibraryDMsToLibrariesList() {
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
@@ -88,7 +88,7 @@ class LibraryAssemblerTest {
         when(libraryDM2.getUserId()).thenReturn(userId2);
         when(libraryFactory.create(libraryId2, "Library 2", userId2)).thenReturn(library2);
 
-        List<Library> result = assembler.toDomain(List.of(libraryDM1, libraryDM2));
+        List<Library> result = assembler.toDomainList(List.of(libraryDM1, libraryDM2));
 
         assertEquals(2, result.size());
         assertSame(library1, result.get(0));
@@ -96,11 +96,11 @@ class LibraryAssemblerTest {
     }
 
     @Test
-    void toDomainIterable_shouldReturnEmptyList_whenIterableIsEmpty() {
+    void toDomainListIterable_shouldReturnEmptyList_whenIterableIsEmpty() {
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
-        List<Library> result = assembler.toDomain(List.of());
+        List<Library> result = assembler.toDomainList(List.of());
 
         assertNotNull(result);
         assertTrue(result.isEmpty());

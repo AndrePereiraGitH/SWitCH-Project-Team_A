@@ -69,7 +69,7 @@ class LibraryRepositoryMemTest {
     // ============ verifyIfUserHasALibrary Tests ============
 
     @Test
-    void givenUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsTrue()
+    void givenUserWithLibrary_whenExistsByUserId_thenReturnsTrue()
             throws InstanceAlreadyExistsException {
 
         UserId userDouble = mock(UserId.class);
@@ -85,31 +85,31 @@ class LibraryRepositoryMemTest {
 
         repo.save(libraryDouble);
 
-        assertTrue(repo.verifyIfUserHasALibrary(userDouble));
+        assertTrue(repo.existsByUserId(userDouble));
     }
 
     @Test
-    void givenUserWithoutLibrary_whenVerifyIfUserHasALibrary_thenReturnsFalse() {
+    void givenUserWithoutLibrary_whenExistsByUserId_thenReturnsFalse() {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-123");
 
         ILibraryRepository repo = new LibraryRepositoryMem(  );
 
-        assertFalse(repo.verifyIfUserHasALibrary(userDouble));
+        assertFalse(repo.existsByUserId(userDouble));
     }
 
     @Test
-    void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
+    void givenNullUserId_whenExistsByUserId_thenThrowsIllegalArgumentException() {
         ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.verifyIfUserHasALibrary(null)
+                () -> repo.existsByUserId(null)
         );
     }
 
     @Test
-    void givenOneUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsFalseForOtherUser()
+    void givenOneUserWithLibrary_whenExistsByUserHasALibrary_thenReturnsFalseForOtherUser()
             throws InstanceAlreadyExistsException {
 
         UserId userDouble1 = mock(UserId.class);
@@ -128,8 +128,8 @@ class LibraryRepositoryMemTest {
 
         repo.save(libraryDouble);
 
-        assertTrue(repo.verifyIfUserHasALibrary(userDouble1));
-        assertFalse(repo.verifyIfUserHasALibrary(userDouble2));
+        assertTrue(repo.existsByUserId(userDouble1));
+        assertFalse(repo.existsByUserId(userDouble2));
     }
 
     // ============ getLibraryByUserId Tests ============
@@ -151,7 +151,7 @@ class LibraryRepositoryMemTest {
 
         repo.save(libraryDouble);
 
-        Library result = repo.getLibraryByUserId(userDouble);
+        Library result = repo.getByUserId(userDouble);
 
         assertEquals(libraryDouble, result);
     }
@@ -162,7 +162,7 @@ class LibraryRepositoryMemTest {
 
         assertThrows(
                 NullPointerException.class,
-                () -> repo.getLibraryByUserId(null)
+                () -> repo.getByUserId(null)
         );
     }
 
@@ -175,7 +175,7 @@ class LibraryRepositoryMemTest {
 
         assertThrows(
                 InstanceNotFoundException.class,
-                () -> repo.getLibraryByUserId(userDouble)
+                () -> repo.getByUserId(userDouble)
         );
     }
 
@@ -206,7 +206,7 @@ class LibraryRepositoryMemTest {
         repo.save(libraryDouble1);
         repo.save(libraryDouble2);
 
-        assertEquals(libraryDouble1, repo.getLibraryByUserId(userDouble1));
-        assertEquals(libraryDouble2, repo.getLibraryByUserId(userDouble2));
+        assertEquals(libraryDouble1, repo.getByUserId(userDouble1));
+        assertEquals(libraryDouble2, repo.getByUserId(userDouble2));
     }
 }

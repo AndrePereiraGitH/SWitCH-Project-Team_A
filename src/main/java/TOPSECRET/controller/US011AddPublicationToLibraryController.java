@@ -93,7 +93,7 @@ public class US011AddPublicationToLibraryController {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        Library library = _libraryRepository.getLibraryByUserId(userId);
+        Library library = _libraryRepository.getByUserId(userId);
         LibraryId libraryId = library.id();
 
         PublicationSample publicationSample = _publicationSampleRepository

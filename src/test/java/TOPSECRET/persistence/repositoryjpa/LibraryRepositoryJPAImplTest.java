@@ -53,7 +53,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenNullUserId_whenGetLibraryByUserId_thenThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class,
-                () -> repository.getLibraryByUserId(null));
+                () -> repository.getByUserId(null));
 
     }
 
@@ -64,7 +64,7 @@ class LibraryRepositoryJPAImplTest {
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         assertThrows(InstanceNotFoundException.class,
-                () -> repository.getLibraryByUserId(userId));
+                () -> repository.getByUserId(userId));
 
     }
 
@@ -73,9 +73,9 @@ class LibraryRepositoryJPAImplTest {
         UserId userId = new UserId("user-123");
 
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
-        when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
+        when(assembler.toDomainList(libraryDMDouble)).thenReturn(libraryDouble);
 
-        Library result = repository.getLibraryByUserId(userId);
+        Library result = repository.getByUserId(userId);
 
         assertSame(libraryDouble, result);
     }
@@ -107,7 +107,7 @@ class LibraryRepositoryJPAImplTest {
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
         when(assembler.toDM(libraryDouble)).thenReturn(libraryDMDouble);
         when(jpaRepository.save(libraryDMDouble)).thenReturn(libraryDMDouble);
-        when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
+        when(assembler.toDomainList(libraryDMDouble)).thenReturn(libraryDouble);
 
         Library result = repository.save(libraryDouble);
 
@@ -115,29 +115,29 @@ class LibraryRepositoryJPAImplTest {
     }
 
     @Test
-    void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
+    void givenNullUserId_whenExistsByUserId_thenThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class,
-                () -> repository.verifyIfUserHasALibrary(null));
+                () -> repository.existsByUserId(null));
     }
 
     @Test
-    void givenUserWithNoLibrary_whenVerifyIfUserHasALibrary_thenReturnsFalse() {
+    void givenUserWithNoLibrary_whenExistsByUserId_thenReturnsFalse() {
         UserId userId = new UserId("user-123");
 
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        boolean result = repository.verifyIfUserHasALibrary(userId);
+        boolean result = repository.existsByUserId(userId);
 
         assertFalse(result);
     }
 
     @Test
-    void givenUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsTrue() {
+    void givenUserWithLibrary_whenExistsByUserId_thenReturnsTrue() {
         UserId userId = new UserId("user-123");
 
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
-        boolean result = repository.verifyIfUserHasALibrary(userId);
+        boolean result = repository.existsByUserId(userId);
 
         assertTrue(result);
     }
