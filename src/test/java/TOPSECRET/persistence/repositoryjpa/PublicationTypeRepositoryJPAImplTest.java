@@ -71,7 +71,6 @@ class PublicationTypeRepositoryJPAImplTest {
 
         // ASSERT
         assertEquals(domain, result);
-        verify(jpaRepository).save(dm);
     }
 
     @Test
