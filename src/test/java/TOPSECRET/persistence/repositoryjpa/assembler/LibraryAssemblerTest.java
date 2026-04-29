@@ -14,17 +14,14 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link LibraryAssembler}.
- *
- * <p>Verifies correct conversion between {@link LibraryDM} persistence entities
- * and {@link Library} domain objects, as well as validation of null inputs.</p>
  */
-
 class LibraryAssemblerTest {
 
     // -------- Constructor Tests --------
 
     @Test
     void constructor_shouldThrowException_whenLibraryFactoryIsNull() {
+        // Arrange & Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new LibraryAssembler(null));
     }
@@ -32,7 +29,8 @@ class LibraryAssemblerTest {
     // -------- toDomain Tests --------
 
     @Test
-    void toDomain_shouldConvertLibraryDMToLibraryList() {
+    void toDomain_shouldConvertLibraryDMToLibrary() {
+        // Arrange
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
@@ -47,23 +45,27 @@ class LibraryAssemblerTest {
         when(libraryDM.getUserId()).thenReturn(userId);
         when(libraryFactory.create(libraryId, "My Library", userId)).thenReturn(library);
 
-        Library result = assembler.toDomainList(libraryDM);
+        // Act
+        Library result = assembler.toDomain(libraryDM);
 
+        // Assert
         assertSame(library, result);
     }
 
     @Test
-    void toDomain_List_shouldThrowException_whenLibraryDMIsNull() {
+    void toDomain_shouldThrowException_whenLibraryDMIsNull() {
+        // Arrange
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDomainList((LibraryDM) null));
-
+                () -> assembler.toDomain((LibraryDM) null));
     }
 
     @Test
-    void toDomainIterable_shouldConvertAllLibraryDMsToLibrariesList() {
+    void toDomainList_shouldConvertAllLibraryDMsToLibraries() {
+        // Arrange
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
@@ -88,20 +90,25 @@ class LibraryAssemblerTest {
         when(libraryDM2.getUserId()).thenReturn(userId2);
         when(libraryFactory.create(libraryId2, "Library 2", userId2)).thenReturn(library2);
 
+        // Act
         List<Library> result = assembler.toDomainList(List.of(libraryDM1, libraryDM2));
 
+        // Assert
         assertEquals(2, result.size());
         assertSame(library1, result.get(0));
         assertSame(library2, result.get(1));
     }
 
     @Test
-    void toDomainListIterable_shouldReturnEmptyList_whenIterableIsEmpty() {
+    void toDomainList_shouldReturnEmpty_whenIterableIsEmpty() {
+        // Arrange
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
+        // Act
         List<Library> result = assembler.toDomainList(List.of());
 
+        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -110,6 +117,7 @@ class LibraryAssemblerTest {
 
     @Test
     void toDM_shouldConvertLibraryToLibraryDM() {
+        // Arrange
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
@@ -122,8 +130,10 @@ class LibraryAssemblerTest {
         when(library.getLibraryName()).thenReturn("My Library");
         when(library.getUserId()).thenReturn(userId);
 
+        // Act
         LibraryDM result = assembler.toDM(library);
 
+        // Assert
         assertNotNull(result);
         assertEquals(libraryId, result.getId());
         assertEquals("My Library", result.getLibraryName());
@@ -132,9 +142,11 @@ class LibraryAssemblerTest {
 
     @Test
     void toDM_shouldThrowException_whenLibraryIsNull() {
+        // Arrange
         LibraryFactory libraryFactory = mock(LibraryFactory.class);
         LibraryAssembler assembler = new LibraryAssembler(libraryFactory);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> assembler.toDM(null));
     }

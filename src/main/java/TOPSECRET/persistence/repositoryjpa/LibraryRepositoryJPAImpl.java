@@ -50,7 +50,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
                         new InstanceNotFoundException("This user does not have a library")
                 );
 
-        return _assembler.toDomainList(libraryDM);
+        return _assembler.toDomain(libraryDM);
     }
 
     /** {@inheritDoc} */
@@ -69,7 +69,7 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
 
         LibraryDM savedLibraryDM = _jpaRepository.save(libraryDM);
 
-        return _assembler.toDomainList(savedLibraryDM);
+        return _assembler.toDomain(savedLibraryDM);
     }
 
     /** {@inheritDoc} */
