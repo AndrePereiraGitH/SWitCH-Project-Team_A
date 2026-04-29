@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
-import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -15,125 +15,75 @@ import static org.mockito.Mockito.when;
 
 class LibraryRepositoryMemTest {
 
-    // ============ Constructor============
+    // ============ Constructor Tests ============
 
     @Test
-    void givenNullFactory_whenConstructing_thenThrowsIllegalArgumentException() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new LibraryRepositoryMem(null)
-        );
+    void whenConstructing_thenCreatesSuccessfully() {
+        assertDoesNotThrow(LibraryRepositoryMem::new);
     }
 
-    @Test
-    void givenValidFactory_whenConstructing_thenCreatesSuccessfully() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        assertDoesNotThrow(() -> new LibraryRepositoryMem(factoryDouble));
-    }
-
-    // ============ createAndAdd Tests ============
+    // ============ save Tests ============
 
     @Test
-    void shouldCreateAndAddLibrarySuccessfully() throws InstanceAlreadyExistsException {
+    void shouldSaveLibrarySuccessfully() throws InstanceAlreadyExistsException {
+         ILibraryRepository repo = new LibraryRepositoryMem(  );
 
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-123");
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.toString()).thenReturn("user-123");
 
         Library libraryDouble = mock(Library.class);
-        when(libraryDouble.getLibraryName()).thenReturn("My Library");
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("My Library", userDouble)).thenReturn(libraryDouble);
-
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        Library result = repo.createAndAdd("My Library", userDouble);
+        Library result = repo.save(libraryDouble);
 
         assertNotNull(result);
     }
 
     @Test
-    void givenValidArgumentsWhenCreateAndAddThenReturnsLibraryWithCorrectName() throws InstanceAlreadyExistsException {
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-123");
+    void givenValidLibrary_whenSave_thenReturnsSameLibrary()
+            throws InstanceAlreadyExistsException {
+
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
+
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.toString()).thenReturn("user-123");
 
         Library libraryDouble = mock(Library.class);
-        when(libraryDouble.getLibraryName()).thenReturn("My Library");
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("My Library", userDouble)).thenReturn(libraryDouble);
+        Library result = repo.save(libraryDouble);
 
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        Library result = repo.createAndAdd("My Library", userDouble);
-
-        assertEquals("My Library", result.getLibraryName());
+        assertEquals(libraryDouble, result);
     }
 
     @Test
-    void shouldReturnAnExceptionWhenTheLibraryNameIsNull() {
-        // Arrange
-        UserId userDouble = mock(UserId.class);
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.createAndAdd(null, userDouble));
-    }
-
-    @Test
-    void shouldReturnAnExceptionWhenTheLibraryNameIsEmpty() {
-        // Arrange
-        UserId userDouble = mock(UserId.class);
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-
-        assertThrows(
-                IllegalArgumentException.class, () -> repo.createAndAdd("", userDouble));
-    }
-
-    @Test
-    void shouldReturnAnExceptionWhenTheUserIsNull() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+    void givenNullLibrary_whenSave_thenThrowsIllegalArgumentException() {
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.createAndAdd("My Library", null));
+                () -> repo.save(null)
+        );
     }
-
-    @Test
-    void shouldReturnAnExceptionWhenTheUserAlreadyHasALibrary() throws InstanceAlreadyExistsException {
-        // Arrange
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-123");
-
-        Library libraryDouble = mock(Library.class);
-
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("My Library", userDouble)).thenReturn(libraryDouble);
-
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        repo.createAndAdd("My Library", userDouble);
-
-        assertThrows(
-                InstanceAlreadyExistsException.class, () -> repo.createAndAdd("My Library", userDouble));
-    }
-
 
     // ============ verifyIfUserHasALibrary Tests ============
 
     @Test
     void givenUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsTrue()
             throws InstanceAlreadyExistsException {
+
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-123");
 
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.toString()).thenReturn("user-123");
+
         Library libraryDouble = mock(Library.class);
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("My Library", userDouble)).thenReturn(libraryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        repo.createAndAdd("My Library", userDouble);
+        repo.save(libraryDouble);
 
         assertTrue(repo.verifyIfUserHasALibrary(userDouble));
     }
@@ -143,16 +93,14 @@ class LibraryRepositoryMemTest {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-123");
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertFalse(repo.verifyIfUserHasALibrary(userDouble));
     }
 
     @Test
     void givenNullUserId_whenVerifyIfUserHasALibrary_thenThrowsIllegalArgumentException() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -163,48 +111,54 @@ class LibraryRepositoryMemTest {
     @Test
     void givenOneUserWithLibrary_whenVerifyIfUserHasALibrary_thenReturnsFalseForOtherUser()
             throws InstanceAlreadyExistsException {
+
         UserId userDouble1 = mock(UserId.class);
         when(userDouble1.getUsername()).thenReturn("user-123");
 
         UserId userDouble2 = mock(UserId.class);
         when(userDouble2.getUsername()).thenReturn("user-456");
 
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.toString()).thenReturn("user-123");
+
         Library libraryDouble = mock(Library.class);
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("My Library", userDouble1)).thenReturn(libraryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        repo.createAndAdd("My Library", userDouble1);
+        repo.save(libraryDouble);
 
         assertTrue(repo.verifyIfUserHasALibrary(userDouble1));
         assertFalse(repo.verifyIfUserHasALibrary(userDouble2));
     }
 
+    // ============ getLibraryByUserId Tests ============
 
-    // ============ getAllPublicationsFromUserLibrary Tests ============
     @Test
     void givenExistingUser_whenGetLibraryOfUser_thenReturnsCorrectLibrary()
             throws InstanceAlreadyExistsException, InstanceNotFoundException {
+
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-123");
 
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        when(libraryIdDouble.toString()).thenReturn("user-123");
+
         Library libraryDouble = mock(Library.class);
+        when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("My Library", userDouble)).thenReturn(libraryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        repo.createAndAdd("My Library", userDouble);
+        repo.save(libraryDouble);
 
         Library result = repo.getLibraryByUserId(userDouble);
+
         assertEquals(libraryDouble, result);
     }
 
     @Test
     void givenNullUserId_whenGetLibraryOfUser_thenThrowsNullPointerException() {
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 NullPointerException.class,
@@ -217,8 +171,7 @@ class LibraryRepositoryMemTest {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn("user-999");
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
         assertThrows(
                 InstanceNotFoundException.class,
@@ -229,34 +182,31 @@ class LibraryRepositoryMemTest {
     @Test
     void givenTwoDifferentUsers_whenGetLibraryOfUser_thenReturnsCorrectLibraryPerUser()
             throws InstanceAlreadyExistsException, InstanceNotFoundException {
+
         UserId userDouble1 = mock(UserId.class);
         when(userDouble1.getUsername()).thenReturn("user-123");
 
         UserId userDouble2 = mock(UserId.class);
         when(userDouble2.getUsername()).thenReturn("user-456");
 
+        LibraryId libraryIdDouble1 = mock(LibraryId.class);
+        when(libraryIdDouble1.toString()).thenReturn("user-123");
+
+        LibraryId libraryIdDouble2 = mock(LibraryId.class);
+        when(libraryIdDouble2.toString()).thenReturn("user-456");
+
         Library libraryDouble1 = mock(Library.class);
+        when(libraryDouble1.id()).thenReturn(libraryIdDouble1);
+
         Library libraryDouble2 = mock(Library.class);
+        when(libraryDouble2.id()).thenReturn(libraryIdDouble2);
 
-        LibraryFactory factoryDouble = mock(LibraryFactory.class);
-        when(factoryDouble.create("Library A", userDouble1)).thenReturn(libraryDouble1);
-        when(factoryDouble.create("Library B", userDouble2)).thenReturn(libraryDouble2);
+        ILibraryRepository repo = new LibraryRepositoryMem(  );
 
-        LibraryRepositoryMem repo = new LibraryRepositoryMem(factoryDouble);
-        repo.createAndAdd("Library A", userDouble1);
-        repo.createAndAdd("Library B", userDouble2);
+        repo.save(libraryDouble1);
+        repo.save(libraryDouble2);
 
         assertEquals(libraryDouble1, repo.getLibraryByUserId(userDouble1));
         assertEquals(libraryDouble2, repo.getLibraryByUserId(userDouble2));
-    }
-
-
-    // ============ Helper Methods ============
-
-    private Library createMockLibrary(String libraryName, LibraryId libraryId) {
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.getLibraryName()).thenReturn(libraryName);
-        when(libraryDouble.id()).thenReturn(libraryId);
-        return libraryDouble;
     }
 }
