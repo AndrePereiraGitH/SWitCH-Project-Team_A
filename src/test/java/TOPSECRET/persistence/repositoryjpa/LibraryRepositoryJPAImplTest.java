@@ -60,8 +60,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenUserWithNoLibrary_whenGetLibraryByUserId_thenThrowsInstanceNotFoundException() {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -72,8 +71,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenExistingLibrary_whenGetLibraryByUserId_thenReturnsLibrary() throws Exception {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
 
@@ -94,8 +92,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenUserWithExistingLibrary_whenSave_thenThrowsInstanceAlreadyExistsException() {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
@@ -107,8 +104,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenValidLibrary_whenSave_thenReturnsSavedLibrary() throws Exception {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
         when(assembler.toDM(libraryDouble)).thenReturn(libraryDMDouble);
@@ -132,8 +128,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenUserWithNoLibrary_whenExistsByUserId_thenReturnsFalse() {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         // Act
@@ -146,8 +141,7 @@ class LibraryRepositoryJPAImplTest {
     @Test
     void givenUserWithLibrary_whenExistsByUserId_thenReturnsTrue() {
         // Arrange
-        UserId userId = new UserId("user-123");
-
+  UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
         // Act
