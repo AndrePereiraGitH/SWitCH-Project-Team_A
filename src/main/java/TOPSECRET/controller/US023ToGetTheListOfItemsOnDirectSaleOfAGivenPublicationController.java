@@ -117,7 +117,7 @@ public class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
             throw new IllegalArgumentException("bdId cannot be null");
         }
 
-        List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findPubSampleIdsByBibliographicalDataId(bdId);
+        List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findIdsByBibliographicalDataId(bdId);
 
         List<ListingId> listOfDSListingIds = _listingRepo.findIdsByPublicationSampleIdIn(listOfPubSample);
 

@@ -118,7 +118,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
                 .thenReturn(List.of());
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(List.of()))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of()))
                 .thenReturn(List.of());
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of()))
                 .thenReturn(List.of());
@@ -148,7 +148,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
                 .thenReturn(editionIds);
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(editionIds))
                 .thenReturn(sampleIds);
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenReturn(List.of());
@@ -180,7 +180,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
                 .thenReturn(editionIds);
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))  // whole list, not single EditionID
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(editionIds))  // whole list, not single EditionID
                 .thenReturn(sampleIds);
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenReturn(List.of(listingDouble));
@@ -221,7 +221,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherIdDouble))
                 .thenReturn(editionIds);
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(editionIds))
                 .thenReturn(sampleIds);
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenReturn(List.of(listing1, listing2));
@@ -272,7 +272,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
                 .thenReturn(editionIds);
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(editionIds))
                 .thenThrow(new RuntimeException("DB error"));
 
         US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController controller =
@@ -298,7 +298,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
                 .thenReturn(editionIds);
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(editionIds))
                 .thenReturn(sampleIds);
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenThrow(new RuntimeException("DB error"));
@@ -327,7 +327,7 @@ class US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
         when(editionRepoDouble.findEditionIdsByPublisherId(publisherId))
                 .thenReturn(editionIds);
-        when(pubSampleRepoDouble.findPublicationSampleIdsByEditionIds(editionIds))
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(editionIds))
                 .thenReturn(sampleIds);
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenReturn(List.of(listing));

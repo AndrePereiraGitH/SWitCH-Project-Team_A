@@ -135,7 +135,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
         // arrange
         when(libraryRepo.getLibraryByUserId(userId)).thenReturn(library);
         when(library.id()).thenReturn(libraryId);
-        when(publicationSampleRepository.getPublicationsByLibraryID(libraryId)).thenReturn(List.of());
+        when(publicationSampleRepository.findByLibraryId(libraryId)).thenReturn(List.of());
         when(mapper.fromDomainList(List.of())).thenReturn(List.of());
 
         // act
@@ -154,7 +154,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
 
         when(libraryRepo.getLibraryByUserId(userId)).thenReturn(library);
         when(library.id()).thenReturn(libraryId);
-        when(publicationSampleRepository.getPublicationsByLibraryID(libraryId))
+        when(publicationSampleRepository.findByLibraryId(libraryId))
                 .thenReturn(List.of(publicationSample));
         when(mapper.fromDomainList(List.of(publicationSample))).thenReturn(List.of(dto));
 

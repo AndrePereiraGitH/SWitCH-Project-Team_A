@@ -148,7 +148,7 @@ public class US023ListingMapper {
         List<PublicationSample> pubSamples = new ArrayList<>();
 
         for (PublicationSampleId pubSampleId : pubSampleIds) {
-            Optional<PublicationSample> pubSample = _pubSampleRepo.findPublicationSampleById(pubSampleId);
+            Optional<PublicationSample> pubSample = _pubSampleRepo.findById(pubSampleId);
             if (pubSample.isPresent()) {
                 pubSamples.add(pubSample.get());
             }

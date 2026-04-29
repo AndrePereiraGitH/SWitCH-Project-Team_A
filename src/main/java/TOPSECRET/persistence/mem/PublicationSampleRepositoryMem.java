@@ -1,8 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -13,7 +11,7 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
-import javax.management.InstanceAlreadyExistsException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +33,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // Fields
     // -------------------------------------------------------------------------
 
-    private final PublicationSampleFactory _publicationSampleFactory;
     private List<PublicationSample> allPublicationsInSystem;
 
     // -------------------------------------------------------------------------
@@ -43,49 +40,12 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // -------------------------------------------------------------------------
 
     /**
-     * Constructs a new {@code PublicationSampleRepositoryMem} with the given factory.
+     * Constructs a new {@code PublicationSampleRepositoryMem}
      * Initializes an empty internal list of publication samples.
      *
-     * @param publicationSampleFactory the factory used to create {@link PublicationSample} instances
      */
-    public PublicationSampleRepositoryMem(PublicationSampleFactory publicationSampleFactory) {
-        if (publicationSampleFactory == null) {
-            throw new NullPointerException("PublicationSampleFactory can not be null");
-        }
+    public PublicationSampleRepositoryMem() {
         allPublicationsInSystem = new ArrayList<>();
-        _publicationSampleFactory = publicationSampleFactory;
-    }
-
-    // -------------------------------------------------------------------------
-    // Construction (createAndAdd)
-    // -------------------------------------------------------------------------
-
-    /**
-     * {@inheritDoc}
-     */
-    public PublicationSample createAndAdd(BibliographicalDataID bibliographicalDataID, UserId userID,
-                                          PublicationStatus status, EditionID editionID,
-                                          Condition condition) throws InstanceAlreadyExistsException {
-        if (bibliographicalDataID == null) {
-            throw new IllegalArgumentException("BibliographicalDataID cannot be null");
-        }
-        if (userID == null) {
-            throw new IllegalArgumentException("UserID cannot be null");
-        }
-        if (status == null) {
-            throw new IllegalArgumentException("Publication Status cannot be null");
-        }
-        if (editionID == null) {
-            throw new IllegalArgumentException("EditionID cannot be null");
-        }
-        if (condition == null) {
-            throw new IllegalArgumentException("Condition cannot be null");
-        }
-
-        PublicationSample newPublicationSample = _publicationSampleFactory.create(
-                bibliographicalDataID, userID, status, editionID, condition);
-
-        return save(newPublicationSample);
     }
 
     // -------------------------------------------------------------------------
@@ -96,7 +56,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      * {@inheritDoc}
      */
     public PublicationSample save(PublicationSample publicationSample) {
-        if (isExistent(publicationSample)) {
+        if (existsById(publicationSample.id())) {
             throw new IllegalArgumentException("PublicationSample already exists in the repository");
         }
         allPublicationsInSystem.add(publicationSample);
@@ -106,11 +66,17 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public boolean isExistent(PublicationSample publicationSample) {
-        if (publicationSample == null) {
+    public boolean existsById(PublicationSampleId publicationSampleId) {
+        if (publicationSampleId == null) {
             throw new IllegalArgumentException("PublicationSample cannot be null");
         }
-        return allPublicationsInSystem.contains(publicationSample);
+
+        for(PublicationSample pbSample: allPublicationsInSystem){
+            if(pbSample.id().equals(publicationSampleId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     // -------------------------------------------------------------------------
@@ -120,7 +86,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public Optional<PublicationSample> findPublicationSampleById(PublicationSampleId pbSampleId) {
+    public Optional<PublicationSample> findById(PublicationSampleId pbSampleId) {
         if (pbSampleId == null) {
             throw new NullPointerException("PublicationSampleID cannot be null");
         }
@@ -137,7 +103,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSampleId> findPubSampleIdsByBibliographicalDataId(BibliographicalDataID bdId){
+    public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataID bdId){
         if (bdId == null) {
             throw new NullPointerException("PublicationSampleID cannot be null");
         }
@@ -156,7 +122,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSampleId> findPublicationSampleIdsByEditionIds (List<EditionID> listOfEditionIds) {
+    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionID> listOfEditionIds) {
         if (listOfEditionIds == null) {
             throw new NullPointerException("listOfEditionIds cannot be null");
         }
@@ -178,7 +144,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // -------------------------------------------------------------------------
 
     @Override
-    public List<PublicationSampleId> findAllItemsIdByBibliographicalDataId(List<BibliographicalDataID> bdIds) {
+    public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataID> bdIds) {
         if(bdIds == null) {
             throw new IllegalArgumentException("BibliographicalDataID List cannot be null");
         }
@@ -203,7 +169,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> getAllPublications() {
+    public List<PublicationSample> findAll() {
         return List.copyOf(allPublicationsInSystem);
     }
 
@@ -211,7 +177,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> getAllPublicationsInUserLibrary(UserId userId){
+    public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId){
 
         if(userId == null){
             throw new NullPointerException("UserId must not be null");
@@ -231,7 +197,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> getAllPublicationsFromUserWithoutLibrary(UserId userId){
+    public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId){
 
         if(userId == null){
             throw new NullPointerException("UserId must not be null");
@@ -269,7 +235,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> getPublicationsByLibraryID(LibraryId libraryID) {
+    public List<PublicationSample> findByLibraryId(LibraryId libraryID) {
 
         List<PublicationSample> allPublications = allPublicationsInSystem.stream()
                 .filter(p -> Objects.equals(p.getLibraryID(), libraryID))
@@ -302,9 +268,9 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> findPublicationSamplesAvailableForSaleByLibraryId(LibraryId libraryId) {
+    public List<PublicationSample> findAvailableForSaleByLibraryId(LibraryId libraryId) {
 
-        List<PublicationSample> allPublications = getPublicationsByLibraryID(libraryId);
+        List<PublicationSample> allPublications = findByLibraryId(libraryId);
 
         List<PublicationSample> listOfAvailablePublications = new ArrayList<>();
 
@@ -319,7 +285,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> getPublicationsByCollectionID (CollectionOfPublicationsID collectionID) {
+    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsID collectionID) {
 
         List<PublicationSample> allPublications = allPublicationsInSystem.stream()
                 .filter(p -> Objects.equals(p.getCollecOfPubID(), collectionID))
@@ -347,7 +313,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         for (PublicationSampleId id : publicationSampleIds) {
 
             Optional<PublicationSample> publicationOptional =
-                    findPublicationSampleById(id);
+                    findById(id);
 
             if (publicationOptional.isEmpty()) {
                 throw new IllegalArgumentException("Publication not found.");
@@ -363,7 +329,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSample> getAvailablePublicationsForCollection(
+    public List<PublicationSample> findAvailableForCollection(
             UserId userId,
             CollectionOfPublicationsID collectionId) {
 
@@ -372,10 +338,10 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         }
 
         List<PublicationSample> allUserPublications =
-                getAllPublicationsInUserLibrary(userId);
+                findByUserIdAndLibraryIdIsNotNull(userId);
 
         List<PublicationSample> publicationsInCollection =
-                getPublicationsByCollectionID(collectionId);
+                findByCollectionOfPublicationsId(collectionId);
 
         List<PublicationSample> result = new ArrayList<>();
 
