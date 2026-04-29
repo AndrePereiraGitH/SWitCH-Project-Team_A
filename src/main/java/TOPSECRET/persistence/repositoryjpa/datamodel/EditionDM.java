@@ -51,6 +51,7 @@ public class EditionDM {
     @EmbeddedId
     @AttributeOverride(name = "editionID", column = @Column(name = "edition_id"))
     private EditionID  editionID;
+    @Column(name = "edition_number", nullable = false)
     private String editionNumber;
     @Embedded
     private Code code;
@@ -62,6 +63,7 @@ public class EditionDM {
     @Embedded
     @AttributeOverride(name = "_publisherID", column = @Column(name = "publisher_id"))
     private PublisherID publisherId;
+    @Column(name = "media_format", nullable = false)
     private String mediaFormat;
     private Locale editionLanguage;
     private LocalDate editionDate;

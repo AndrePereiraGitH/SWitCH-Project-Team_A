@@ -689,10 +689,12 @@ class EditionTest {
     @Test
     void reCreate_shouldPreserveId() {
 
+        // Arrange
         EditionID editionIdDouble = mock(EditionID.class);
 
         TypeOfBinding binding = mock(TypeOfBinding.class);
 
+        // Act
         Edition e = new Edition(
                 editionIdDouble,
                 "1st",
@@ -706,6 +708,7 @@ class EditionTest {
                 binding
         );
 
+        // Assert
         assertEquals(editionIdDouble, e.id());
     }
 }

@@ -5,6 +5,8 @@ import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.EditionDM;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 
 /**
  * Converts between Edition domain objects and EditionDM data models.
@@ -26,7 +28,8 @@ public class EditionAssembler {
     private final EditionFactory editionFactory;
 
     public EditionAssembler(EditionFactory editionFactory){
-        this.editionFactory = editionFactory;
+
+        this.editionFactory = Objects.requireNonNull(editionFactory, "EditionFactory cannot be null");
     }
 
     /**
@@ -63,6 +66,10 @@ public class EditionAssembler {
      * @return the domain object
      */
     public Edition toDomain(EditionDM editionDM) {
+
+        if(editionDM == null){
+            throw new IllegalArgumentException("EditionDM cannot be null");
+        }
 
         Edition edition = editionFactory.create(
                 editionDM.getEditionID(),
