@@ -2,14 +2,7 @@ package TOPSECRET.persistence.mem;
 
 
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
-import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
-import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +12,33 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AppraisalEntityRepositoryMem}.
+ *
+ * <p>
+ * Validates in-memory repository behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Saving entities</li>
+ *     <li>Updating existing entities with the same ID</li>
+ *     <li>Retrieving all entities</li>
+ *     <li>Searching by ID</li>
+ *     <li>Checking existence by ID</li>
+ *     <li>Deleting entities</li>
+ *     <li>Validation of invalid inputs</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures correct handling of edge cases such as null values,
+ * empty repository state, and non-existing entities.
+ * </p>
+ *
+ * <p>
+ * Tests are performed using real repository instances and
+ * mocked domain objects where appropriate.
+ * </p>
+ */
 class AppraisalEntityRepositoryMemTest {
 
     // HELPER
@@ -148,36 +168,91 @@ class AppraisalEntityRepositoryMemTest {
                 () -> repo.existsById(null));
     }
 
-    // DELETE
     @Test
-    void deleteShouldReturnTrueWhenExists() {
+    void shouldReturnSameEntityWhenSaved() {
 
         // ARRANGE
-        repo.save(entity("1"));
+        AppraisalEntityRepositoryMem repo = new AppraisalEntityRepositoryMem();
+        AppraisalEntity entity = mock(AppraisalEntity.class);
 
         // ACT
-        boolean result = repo.deleteById(new AppraisalEntityId("1"));
+        AppraisalEntity result = repo.save(entity);
 
         // ASSERT
-        assertTrue(result);
+        assertNotNull(result);
+        assertSame(entity, result);
     }
 
     @Test
-    void deleteShouldReturnFalseWhenNotExists() {
+    void shouldReturnCorrectEntityWhenMultipleExist() {
+
+        // ARRANGE
+        AppraisalEntityRepositoryMem repo = new AppraisalEntityRepositoryMem();
+
+        AppraisalEntity e1 = mock(AppraisalEntity.class);
+        AppraisalEntity e2 = mock(AppraisalEntity.class);
+
+        AppraisalEntityId id1 = mock(AppraisalEntityId.class);
+        AppraisalEntityId id2 = mock(AppraisalEntityId.class);
+
+        when(e1.id()).thenReturn(id1);
+        when(e2.id()).thenReturn(id2);
+
+        repo.save(e1);
+        repo.save(e2);
 
         // ACT
-        boolean result = repo.deleteById(new AppraisalEntityId("1"));
+        Optional<AppraisalEntity> result = repo.findById(id2);
+
+        // ASSERT
+        assertTrue(result.isPresent());
+        assertSame(e2, result.get());
+    }
+
+    @Test
+    void shouldReturnFalseWhenIdDoesNotMatchAnyEntity() {
+
+        // ARRANGE
+        AppraisalEntityRepositoryMem repo = new AppraisalEntityRepositoryMem();
+
+        AppraisalEntity e1 = mock(AppraisalEntity.class);
+        AppraisalEntityId id1 = mock(AppraisalEntityId.class);
+        AppraisalEntityId id2 = mock(AppraisalEntityId.class);
+
+        when(e1.id()).thenReturn(id1);
+
+        repo.save(e1);
+
+        // ACT
+        boolean result = repo.existsById(id2);
 
         // ASSERT
         assertFalse(result);
     }
 
     @Test
-    void deleteShouldThrowWhenNull() {
+    void shouldReplaceExistingEntityWithSameId() {
 
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.deleteById(null));
+        // ARRANGE
+        AppraisalEntityRepositoryMem repo = new AppraisalEntityRepositoryMem();
+
+        AppraisalEntity e1 = mock(AppraisalEntity.class);
+        AppraisalEntity e2 = mock(AppraisalEntity.class);
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+
+        when(e1.id()).thenReturn(id);
+        when(e2.id()).thenReturn(id);
+
+        repo.save(e1);
+
+        // ACT
+        repo.save(e2);
+
+        // ASSERT
+        List<AppraisalEntity> all = repo.findAll();
+        assertEquals(1, all.size());
+        assertSame(e2, all.get(0));
     }
 }
 

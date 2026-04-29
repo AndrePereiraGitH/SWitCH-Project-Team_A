@@ -11,7 +11,31 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-
+/**
+ * Unit tests for {@link AppraisalEntity}.
+ *
+ * <p>
+ * Validates domain behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Entity creation and validation rules</li>
+ *     <li>Getters and identity handling</li>
+ *     <li>Equality and hashCode contract</li>
+ *     <li>Business comparison via {@code sameAs}</li>
+ *     <li>State updates through {@code update}</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that all domain invariants are enforced and that
+ * invalid inputs result in appropriate exceptions.
+ * </p>
+ *
+ * <p>
+ * Tests are performed using real domain objects and mocks only
+ * for dependent value objects.
+ * </p>
+ */
 class AppraisalEntityTest {
 
     // HELPER
@@ -138,7 +162,6 @@ class AppraisalEntityTest {
     }
 
     @Test
-
     void constructor_shouldFailWhenIdNull() {
 
         // ARRANGE
@@ -474,5 +497,58 @@ class AppraisalEntityTest {
                 list::clear);
     }
 
+    @Test
+    void shouldBeEqualWhenSameId() {
 
+        // ARRANGE
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+
+        AppraisalEntity a = new AppraisalEntity(id, "Name", mock(Contact.class),
+                List.of(mock(PublicationTypeId.class)),
+                List.of(mock(GenreID.class)));
+
+        AppraisalEntity b = new AppraisalEntity(id, "Different", mock(Contact.class),
+                List.of(mock(PublicationTypeId.class)),
+                List.of(mock(GenreID.class)));
+
+        // ACT
+        boolean result = a.equals(b);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void updateShouldThrowWhenInvalidData() {
+
+        // ARRANGE
+        AppraisalEntity entity = createValidEntity();
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> entity.update(
+                        null,
+                        mock(Contact.class),
+                        List.of(mock(PublicationTypeId.class)),
+                        List.of(mock(GenreID.class))
+                ));
+    }
+
+    @Test
+    void updateShouldReturnSameInstance() {
+
+        // ARRANGE
+        AppraisalEntity entity = createValidEntity();
+
+        // ACT
+        AppraisalEntity result = entity.update(
+                "NewName",
+                mock(Contact.class),
+                List.of(mock(PublicationTypeId.class)),
+                List.of(mock(GenreID.class))
+        );
+
+        // ASSERT
+        assertSame(entity, result);
+    }
 }

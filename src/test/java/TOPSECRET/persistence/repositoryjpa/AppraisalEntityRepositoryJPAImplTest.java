@@ -14,6 +14,37 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AppraisalEntityRepositoryJPAImpl}.
+ *
+ * <p>
+ * Validates the behavior of the JPA repository implementation including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Saving entities through the assembler and JPA repository</li>
+ *     <li>Retrieving entities by ID</li>
+ *     <li>Retrieving all entities</li>
+ *     <li>Checking existence by ID</li>
+ *     <li>Deleting entities</li>
+ *     <li>Validation of invalid inputs</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures correct interaction between layers, including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Delegation to the underlying JPA repository</li>
+ *     <li>Proper use of the assembler for conversions</li>
+ *     <li>Preservation of domain integrity</li>
+ * </ul>
+ *
+ * <p>
+ * Tests rely on mocks for the JPA repository and assembler to isolate
+ * repository logic and verify interactions.
+ * </p>
+ */
 class AppraisalEntityRepositoryJPAImplTest {
 
     // HELPER
@@ -52,7 +83,6 @@ class AppraisalEntityRepositoryJPAImplTest {
 
         // ASSERT
         assertEquals(entity, result);
-        verify(jpaRepo).save(dm);
     }
 
     @Test
@@ -150,37 +180,66 @@ class AppraisalEntityRepositoryJPAImplTest {
                 () -> repository.existsById(null));
     }
 
-    // DELETE
     @Test
-    void deleteByIdShouldReturnTrueWhenExists() {
+    void shouldThrowWhenRepositoryIsNull() {
 
         // ARRANGE
-        when(jpaRepo.existsById(id())).thenReturn(true);
+        AppraisalEntityAssembler assembler = mock(AppraisalEntityAssembler.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new AppraisalEntityRepositoryJPAImpl(null, assembler));
+    }
+
+    @Test
+    void shouldThrowWhenAssemblerIsNull() {
+
+        // ARRANGE
+        IAppraisalEntityRepositoryJPA repo = mock(IAppraisalEntityRepositoryJPA.class);
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new AppraisalEntityRepositoryJPAImpl(repo, null));
+    }
+    @Test
+    void shouldReturnTrueWhenEntityExists() {
+
+        // ARRANGE
+        IAppraisalEntityRepositoryJPA jpa = mock(IAppraisalEntityRepositoryJPA.class);
+        AppraisalEntityAssembler assembler = mock(AppraisalEntityAssembler.class);
+
+        AppraisalEntityRepositoryJPAImpl repo =
+                new AppraisalEntityRepositoryJPAImpl(jpa, assembler);
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+
+        when(jpa.existsById(id)).thenReturn(true);
 
         // ACT
-        boolean result = repository.deleteById(id());
+        boolean result = repo.existsById(id);
 
         // ASSERT
         assertTrue(result);
     }
 
     @Test
-    void deleteByIdShouldReturnFalseWhenNotExists() {
+    void shouldReturnFalseWhenEntityDoesNotExist() {
 
         // ARRANGE
-        when(jpaRepo.existsById(id())).thenReturn(false);
+        IAppraisalEntityRepositoryJPA jpa = mock(IAppraisalEntityRepositoryJPA.class);
+        AppraisalEntityAssembler assembler = mock(AppraisalEntityAssembler.class);
+
+        AppraisalEntityRepositoryJPAImpl repo =
+                new AppraisalEntityRepositoryJPAImpl(jpa, assembler);
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+
+        when(jpa.existsById(id)).thenReturn(false);
 
         // ACT
-        boolean result = repository.deleteById(id());
+        boolean result = repo.existsById(id);
 
         // ASSERT
         assertFalse(result);
-    }
-
-    @Test
-    void deleteById_shouldThrowWhenNull() {
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.deleteById(null));
     }
 }

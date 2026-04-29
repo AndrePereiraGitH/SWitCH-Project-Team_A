@@ -11,6 +11,33 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AppraisalEntityAssembler}.
+ *
+ * <p>
+ * Validates conversion logic between
+ * {@link AppraisalEntity} and
+ * {@link AppraisalEntityDM}.
+ * </p>
+ *
+ * <ul>
+ *     <li>Conversion from domain to data model</li>
+ *     <li>Conversion from data model to domain</li>
+ *     <li>Preservation of field values during mapping</li>
+ *     <li>Defensive copying of collections (no shared references)</li>
+ *     <li>Handling of null inputs</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that persistence concerns remain isolated and that
+ * domain integrity is preserved during transformations.
+ * </p>
+ *
+ * <p>
+ * Tests use real objects for value validation and verify that
+ * lists are not shared between layers.
+ * </p>
+ */
 class AppraisalEntityAssemblerTest {
 
     // HELPER

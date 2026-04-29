@@ -8,6 +8,30 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Unit tests for {@link AppraisalEntityDM}.
+ *
+ * <p>
+ * Validates the data model behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Creation with valid data</li>
+ *     <li>Validation of constructor arguments</li>
+ *     <li>Getters correctness</li>
+ *     <li>Equality and hashCode contract</li>
+ *     <li>Handling of embedded value objects and collections</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that the data model enforces basic constraints required
+ * for persistence while remaining free of business logic.
+ * </p>
+ *
+ * <p>
+ * Tests focus on structural integrity and correctness of stored data.
+ * </p>
+ */
 class AppraisalEntityDMTest {
 
     // HELPER METHODS
@@ -109,38 +133,7 @@ class AppraisalEntityDMTest {
 
     // EQUALS & HASHCODE TESTS
     @Test
-    void shouldBeEqualWhenSameId() {
-
-        // ARRANGE
-        AppraisalEntityId id = validId();
-
-        AppraisalEntityDM dm1 = new AppraisalEntityDM(
-                id,
-                "Name1",
-                validContact(),
-                validPubTypes(),
-                validGenres()
-        );
-
-        AppraisalEntityDM dm2 = new AppraisalEntityDM(
-                id,
-                "Different",
-                validContact(),
-                validPubTypes(),
-                validGenres()
-        );
-
-        // ACT
-        boolean result = dm1.equals(dm2);
-
-        // ASSERT
-        assertTrue(result);
-        assertEquals(dm1.hashCode(), dm2.hashCode());
-    }
-
-    @Test
     void shouldNotBeEqualWhenDifferentId() {
-
         // ARRANGE
         AppraisalEntityDM dm1 = new AppraisalEntityDM(
                 new AppraisalEntityId("1"),

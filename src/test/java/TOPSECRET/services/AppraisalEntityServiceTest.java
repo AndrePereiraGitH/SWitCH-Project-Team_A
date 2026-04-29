@@ -11,6 +11,30 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AppraisalEntityService}.
+ *
+ * <p>
+ * Validates application service behavior including:
+ * </p>
+ *
+ * <ul>
+ *     <li>Creation of AppraisalEntity instances</li>
+ *     <li>Update operations and state changes</li>
+ *     <li>Validation of input data</li>
+ *     <li>Prevention of invalid or duplicate operations</li>
+ * </ul>
+ *
+ * <p>
+ * Ensures that business rules are enforced before delegating
+ * persistence operations to the repository layer.
+ * </p>
+ *
+ * <p>
+ * Tests rely on mocks for repository and factory to isolate
+ * service logic and verify interactions.
+ * </p>
+ */
 class AppraisalEntityServiceTest {
 
     // HELPER
