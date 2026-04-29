@@ -2,6 +2,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -92,11 +93,27 @@ class CollectionOfPublicationsTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreDouble, result.getCollectionGenre());
         assertEquals(userDouble, result.getOwnerId());
-        assertTrue(result.getIsPrivate());          // US017 rule: always private at creation
+        assertTrue(result.getIsPrivate());
     }
 
     // ============================== end US017 ==============================
 
+
+    @Test
+    void shouldInitializeValidInstanceWithId() {
+        // Arrange
+        CollectionOfPublicationsID collectionIdDouble = mock(CollectionOfPublicationsID.class);
+        String name = "I like these books";
+        GenreID genreDouble = mock(GenreID.class);
+        UserId userDouble = mock(UserId.class);
+
+        // Act
+        CollectionOfPublications result =
+                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble);
+
+        // Assert
+        assertNotNull(result);
+    }
 
     @Test
     void shouldReturnNonNullId() {

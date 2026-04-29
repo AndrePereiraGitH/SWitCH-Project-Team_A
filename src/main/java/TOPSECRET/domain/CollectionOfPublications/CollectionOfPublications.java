@@ -22,14 +22,11 @@ import java.util.UUID;
  */
 public class CollectionOfPublications implements AggregateRoot<CollectionOfPublicationsID> {
 
-    // ============================== US017 ==============================
-
-    // These fields make up the collection — all defined in US017
     private final CollectionOfPublicationsID _id;
-    private String _collectionName;                            // the name the user picks for the collection
-    private GenreID _collectionGenreId;                            // the genre chosen from the available list
-    private final UserId _ownerId;                                       // the user who created and owns this collection
-    private boolean _isPrivate;                                // US017 rule: always starts as true (private)
+    private String _collectionName;
+    private GenreID _collectionGenreId;
+    private final UserId _ownerId;
+    private boolean _isPrivate;
 
     /**
      * Creates a new collection of publications — US017.
@@ -60,6 +57,57 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._collectionName = collectionName;
         this._collectionGenreId = collectionGenreId;
         this._isPrivate = true;            // US017 rule: always private when created; US019 allows making it public
+        this._ownerId = userId;
+    }
+
+    /**
+     * Recreates an existing {@link CollectionOfPublications} with a predefined identity.
+     *
+     * <p>This constructor is intended for persistence reconstruction, allowing an
+     * existing collection to be restored from stored data while preserving its
+     * original {@link CollectionOfPublicationsID}. It is typically used by factories
+     * and repository implementations when rebuilding domain objects from the database.
+     *
+     * <p>All domain invariants are validated here to ensure the reconstructed object
+     * remains valid and consistent.</p>
+     *
+     * <p>The collection is initialized as private by default.</p>
+     *
+     * @param collectionOfPublicationsId the existing unique identifier of the collection;
+     *                                   must not be null
+     * @param collectionName             the name of the collection; must not be null or blank
+     * @param collectionGenreId          the genre associated with the collection;
+     *                                   must not be null
+     * @param userId                     the owner of the collection; must not be null
+     * @throws IllegalArgumentException if the collection ID is null
+     * @throws IllegalArgumentException if the collection name is null or blank
+     * @throws IllegalArgumentException if the genre is null
+     * @throws IllegalArgumentException if the user is null
+     */
+    protected CollectionOfPublications(
+            CollectionOfPublicationsID collectionOfPublicationsId, String collectionName,
+            GenreID collectionGenreId, UserId userId) {
+
+        if (collectionOfPublicationsId == null) {
+            throw new IllegalArgumentException("CollectionOfPublicationsId cannot be null.");
+        }
+
+        if (collectionName == null || collectionName.isBlank()) {
+            throw new IllegalArgumentException("Collection name cannot be null or empty.");
+        }
+
+        if (collectionGenreId == null) {
+            throw new IllegalArgumentException("Collection genre cannot be null.");
+        }
+
+        if (userId == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+
+        this._id = collectionOfPublicationsId;
+        this._collectionName = collectionName;
+        this._collectionGenreId = collectionGenreId;
+        this._isPrivate = true;
         this._ownerId = userId;
     }
 
