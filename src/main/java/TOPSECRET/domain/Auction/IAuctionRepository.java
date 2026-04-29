@@ -2,10 +2,8 @@ package TOPSECRET.domain.Auction;
 
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.domain.ValueObjects.Price;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,38 +16,34 @@ import java.util.Optional;
 public interface IAuctionRepository {
 
     /**
-     * Creates a new {@link Auction} and adds it to the repository if no auction
-     * already exists for the given listing.
+     * Persists the given {@link Auction} in the repository.
+     * <p>
+     * If the auction does not already exist, it will be created.
+     * If it already exists (based on its identifier), the existing record
+     * may be updated with the new state.
+     * </p>
      *
-     * <p>This method delegates all invariant validation to the {@link Auction}
-     * constructor. If an auction for the given listing already exists, the method
-     * does not create a new instance and instead throws an exception.</p>
+     * @param auction the auction to be persisted; must not be {@code null}
+     * @return the persisted {@link Auction} instance, which may include
+     *         generated or updated fields (e.g., identifiers or timestamps)
      *
-     * @param listingId the identifier of the listing associated with the auction (must not be {@code null})
-     * @param initialDate the auction start date and time (must not be {@code null})
-     * @param finalDate the auction end date and time (must not be {@code null})
-     * @param initialPrice the initial price of the auction (must not be {@code null})
-     * @param buyoutPrice the buyout price that immediately closes the auction if matched (can be {@code null})
-     *
-     * @return the newly created {@link Auction}
-     *
-     * @throws IllegalArgumentException if any parameter violates the invariants of {@link Auction}
-     * @throws InstanceAlreadyExistsException if an auction for the given listing already exists
+     * @throws IllegalArgumentException if {@code auction} is {@code null}
+     * @throws InstanceAlreadyExistsException if the repository enforces uniqueness
+     *         and an equivalent auction already exists and cannot be updated
      */
-
-    Auction createAndAdd(ListingId listingId, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyoutPrice) throws InstanceAlreadyExistsException;
+    Auction save(Auction auction) throws InstanceAlreadyExistsException;
 
     /**
      * Returns the complete list of available auctions.
      *
      * @return a copy of the list containing all auctions
      */
-    List<Auction> getAllAuctions();
+    List<Auction> findAll();
 
     /**
      * Retrieves an {@link Auction} instance by its identifier.
      * <p>
-     * This method searches the in-memory list of stored auctions and returns
+     * This method searches the list of stored auctions and returns
      * the first element whose {@code auctionId()} matches the provided {@link AuctionId}.
      * If no matching listing is found, an empty {@link Optional} is returned.
      * </p>
@@ -60,7 +54,7 @@ public interface IAuctionRepository {
      *
      * @throws IllegalArgumentException if {@code auctionId} is {@code null}
      */
-    Optional<Auction> findAuctionById(AuctionId id);
+    Optional<Auction> findById(AuctionId id);
 
     /**
      * Retrieves all {@link Auction} instances associated with the given
@@ -76,18 +70,23 @@ public interface IAuctionRepository {
      *
      * @throws IllegalArgumentException if {@code listingIds} is {@code null}
      */
-    List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId);
+//    List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId);
+    // This method seems similar to the following one, and the name isn't descriptive.
 
     /**
-     * Returns the list of auctions containing at least one item whose publication
-     * is associated with the given author.
-     * Retrieves all auctions whose listing identifier is contained in the given list.
+     * Retrieves all {@link Auction} instances whose {@link ListingId}
+     * matches any of the provided listing identifiers.
+     * <p>
+     * This method filters the stored auctions and returns those whose
+     * {@code getListingId()} value is contained in the given list.
+     * </p>
      *
-     * @param listingIds the list of listing identifiers to search for
-     * @return a list of auctions associated with the given listing identifiers;
-     *         returns an empty list if no matching auctions are found
+     * @param listingIds the list of listing identifiers used for filtering;
+     *                   must not be {@code null}
+     * @return a list of matching {@link Auction} instances; may be empty
+     *         if no auctions match the provided identifiers
+     *
      * @throws IllegalArgumentException if {@code listingIds} is {@code null}
      */
-    List<Auction> findAuctionsByListingId(List<ListingId> listingIds);
-
+    List<Auction> findByListingId(List<ListingId> listingIds);
 }

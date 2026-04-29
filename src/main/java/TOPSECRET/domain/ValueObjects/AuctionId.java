@@ -1,6 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Value Object representing the unique identity of an Auction.
@@ -11,9 +14,11 @@ import TOPSECRET.ddd.DomainID;
  * </p>
  */
 
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class AuctionId implements DomainID {
 
-    private final String auc_id;
+    private String auc_id;
 
     // ============================================================
     // ============== CONSTRUCTOR =================================
