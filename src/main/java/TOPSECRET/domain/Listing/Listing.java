@@ -87,8 +87,8 @@ public class Listing implements AggregateRoot<ListingId> {
      * Unlike the creation constructor, this does not generate a new identifier —
      * it uses the {@link ListingId} provided.
      *
-     * <p>No domain validation is applied here — data is assumed to be already valid
-     * since it originates from a trusted persistence source.
+     * <p>Domain invariants are still enforced here to guarantee the integrity of the
+     * reconstructed object, even when the data originates from a trusted persistence source.
      *
      * @param listingId        the existing unique identifier of the listing; must not be {@code null}
      * @param listingTitle     the display title of the listing; must not be {@code null}
