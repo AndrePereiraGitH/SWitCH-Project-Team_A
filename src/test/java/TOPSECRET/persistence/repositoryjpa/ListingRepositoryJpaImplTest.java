@@ -225,7 +225,7 @@ class ListingRepositoryJpaImplTest {
         ListingDM dm1 = mock(ListingDM.class);
         ListingDM dm2 = mock(ListingDM.class);
 
-        when(jpa.findAllBy_itemsId(List.of(pbId_1))).thenReturn(List.of(dm1, dm2));
+        when(jpa.findAllByItemsId(List.of(pbId_1))).thenReturn(List.of(dm1, dm2));
         when(assembler.toDomain(dm1)).thenReturn(listing_1);
         when(assembler.toDomain(dm2)).thenReturn(listing_2);
 
@@ -254,7 +254,7 @@ class ListingRepositoryJpaImplTest {
         ListingDM dm1 = mock(ListingDM.class);
         ListingDM dm2 = mock(ListingDM.class);
 
-        when(jpa.findAllBy_itemsId(List.of(pbId_1, pbId_2))).thenReturn(List.of(dm1, dm2));
+        when(jpa.findAllByItemsId(List.of(pbId_1, pbId_2))).thenReturn(List.of(dm1, dm2));
         when(assembler.toDomain(dm1)).thenReturn(listing_1);
         when(assembler.toDomain(dm2)).thenReturn(listing_2);
 

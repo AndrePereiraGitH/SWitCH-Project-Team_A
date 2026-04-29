@@ -37,12 +37,12 @@ class US010ToRegisterNewPublicationCtrlTest {
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final EditionID anyEditionId = mock(EditionID.class);
     private final Condition anyCondition = mock(Condition.class);
-    private final PublicationSampleService anyService = mock(PublicationSampleService.class);
-    private final PublicationSample anyPublicationSample = mock(PublicationSample.class);
+    private final PublicationSampleService publicationSampleService = mock(PublicationSampleService.class);
+    private final PublicationSample publicationSample = mock(PublicationSample.class);
 
     // Actual controller class under test
     private final US010ToRegisterNewPublicationCtrl anyController =
-            new US010ToRegisterNewPublicationCtrl(anyService);
+            new US010ToRegisterNewPublicationCtrl(publicationSampleService);
 
     @Test
     void shouldThrowWhenNullRepo() {
@@ -131,13 +131,13 @@ class US010ToRegisterNewPublicationCtrlTest {
     void shouldRegisterPublicationSuccessfully() {
 
         // Arrange
-        when(anyService.createAndSave(
+        when(publicationSampleService.createAndSave(
                 anyBiblioDataId,
                 anyUserId,
                 anyPublicationStatus,
                 anyEditionId,
                 anyCondition
-        )).thenReturn(anyPublicationSample);
+        )).thenReturn(publicationSample);
 
         // Act
         boolean result = anyController.registerNewPublication(
@@ -156,7 +156,7 @@ class US010ToRegisterNewPublicationCtrlTest {
     void shouldThrowWhenPublicationAlreadyExists() {
 
         // Arrange
-        when(anyService.createAndSave(
+        when(publicationSampleService.createAndSave(
                 anyBiblioDataId,
                 anyUserId,
                 anyPublicationStatus,
