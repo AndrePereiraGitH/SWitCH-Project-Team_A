@@ -3,7 +3,6 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
-import TOPSECRET.persistence.mem.GenreRepositoryMem;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
@@ -81,10 +80,10 @@ public class US021ToGetListOfItemsOnDirectSaleOfGivenGenreController {
                 bibliographicalDataRepository.findAllBibliographicalDataByGenreId(selectedGenre);
 
         List<PublicationSampleId> pubSampleIds =
-                publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdIds);
+                publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
         List<Listing> directSaleListings =
-                listingRepository.findDirectSaleListingsContaining(pubSampleIds);
+                listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds);
 
         return mapper.toDTOs(directSaleListings);
     }

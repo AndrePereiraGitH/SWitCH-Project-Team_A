@@ -14,6 +14,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US015PublicationSampleDTO;
 import TOPSECRET.dto.US015PublicationSampleMapper;
 import TOPSECRET.persistence.mem.ListingRepositoryMem;
+import TOPSECRET.services.ListingService;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 public class US015ToPutPublicationInDirectSaleController {
 
+    private final ListingService listingService;
     private final ILibraryRepository _libraryRepo;
     private final IPublicationSampleRepository  _pubSampleRepo;
     private final IListingRepository _listingRepo;
@@ -55,17 +57,20 @@ public class US015ToPutPublicationInDirectSaleController {
     public US015ToPutPublicationInDirectSaleController(ILibraryRepository libraryRepo,
                                                        IPublicationSampleRepository pubSampleRepo,
                                                        IListingRepository listingRepo,
-                                                       US015PublicationSampleMapper pubSampleMapper) {
+                                                       US015PublicationSampleMapper pubSampleMapper,
+                                                       ListingService listingService) {
 
         if (libraryRepo == null) throw new IllegalArgumentException("LibraryRepository cannot be null");
-        if(pubSampleRepo == null) throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+        if (pubSampleRepo == null) throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         if (listingRepo == null) throw new IllegalArgumentException("ListingRepository cannot be null");
         if (pubSampleMapper == null) throw new IllegalArgumentException("US015PublicationSampleMapper cannot be null");
+        if (listingService == null) throw new IllegalArgumentException("ListingService cannot be null");
 
         this._libraryRepo = libraryRepo;
         this._pubSampleRepo = pubSampleRepo;
         this._listingRepo = listingRepo;
         this._pubSampleMapper = pubSampleMapper;
+        this.listingService = listingService;
     }
 
 
@@ -86,7 +91,7 @@ public class US015ToPutPublicationInDirectSaleController {
         Library library = _libraryRepo.getLibraryByUserId(userId);
 
         // finds publication samples in that library available for sale
-        List<PublicationSample> availablePubSamples = _pubSampleRepo.findPublicationSamplesAvailableForSaleByLibraryId(library.id());
+        List<PublicationSample> availablePubSamples = _pubSampleRepo.findAvailableForSaleByLibraryId(library.id());
 
         // converts to DTO
         List<US015PublicationSampleDTO> listOfPublicationSampleDTO = _pubSampleMapper.toDTOs(availablePubSamples);
@@ -135,6 +140,6 @@ public class US015ToPutPublicationInDirectSaleController {
         if (pictures == null)
             throw new IllegalArgumentException("Pictures cannot be null.");
 
-        return _listingRepo.createAndAdd(listingTitle, pubSampleIds, SaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures);
+        return listingService.createAndSave(listingTitle, pubSampleIds, SaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures);
     }
 }

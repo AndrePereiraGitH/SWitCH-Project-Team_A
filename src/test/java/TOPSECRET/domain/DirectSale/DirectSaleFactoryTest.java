@@ -37,8 +37,8 @@ class DirectSaleFactoryTest {
     @Test
     void create_ShouldCreateDirectSaleWhenAllListingsAreDirectSale() {
         // Arrange
-        when(listingRepoDouble.findListingById(listing1IdDouble)).thenReturn(Optional.of(listing1Double));
-        when(listingRepoDouble.findListingById(listing2IdDouble)).thenReturn(Optional.of(listingDouble2));
+        when(listingRepoDouble.findById(listing1IdDouble)).thenReturn(Optional.of(listing1Double));
+        when(listingRepoDouble.findById(listing2IdDouble)).thenReturn(Optional.of(listingDouble2));
 
         when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
         when(listingDouble2.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
@@ -64,8 +64,8 @@ class DirectSaleFactoryTest {
     @Test
     void create_ShouldThrowExceptionWhenAnyListingIsNotDirectSale() {
         // Arrange
-        when(listingRepoDouble.findListingById(listing1IdDouble)).thenReturn(Optional.of(listing1Double));
-        when(listingRepoDouble.findListingById(listing2IdDouble)).thenReturn(Optional.of(listingDouble2));
+        when(listingRepoDouble.findById(listing1IdDouble)).thenReturn(Optional.of(listing1Double));
+        when(listingRepoDouble.findById(listing2IdDouble)).thenReturn(Optional.of(listingDouble2));
 
         when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
         when(listingDouble2.getSaleType()).thenReturn(SaleType.AUCTION);
@@ -93,7 +93,7 @@ class DirectSaleFactoryTest {
     @Test
     void create_ShouldThrowExceptionWhenListingIsNotDirectSale() {
         // Arrange
-        when(listingRepoDouble.findListingById(listing1IdDouble)).thenReturn(Optional.of(listing1Double));
+        when(listingRepoDouble.findById(listing1IdDouble)).thenReturn(Optional.of(listing1Double));
 
         when(listing1Double.getSaleType()).thenReturn(SaleType.AUCTION);
 
@@ -119,7 +119,7 @@ class DirectSaleFactoryTest {
         UserId buyer = new UserId("buyer-1");
 
         IListingRepository listingRepo = mock(IListingRepository.class);
-        when(listingRepo.findListingById(missingId)).thenReturn(Optional.empty());
+        when(listingRepo.findById(missingId)).thenReturn(Optional.empty());
 
         DirectSaleFactory service = new DirectSaleFactory();
 

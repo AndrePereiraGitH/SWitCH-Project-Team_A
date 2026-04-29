@@ -63,8 +63,8 @@ class US023ListingMapperTest {
 
         authorRepoDouble = mock(IAuthorRepository.class);
 
-        when(authorRepoDouble.findAuthorById(authorId1Double)).thenReturn(Optional.of(authorDouble1));
-        when(authorRepoDouble.findAuthorById(authorId2Double)).thenReturn(Optional.of(authorDouble2));
+        when(authorRepoDouble.findById(authorId1Double)).thenReturn(Optional.of(authorDouble1));
+        when(authorRepoDouble.findById(authorId2Double)).thenReturn(Optional.of(authorDouble2));
 
         // BibliographicalData
         BibliographicalData bdDouble1 = mock(BibliographicalData.class);
@@ -101,8 +101,8 @@ class US023ListingMapperTest {
 
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
 
-        when(pubSampleRepoDouble.findPublicationSampleById(pubSampleId1Double)).thenReturn(Optional.of(pubSampleDouble1));
-        when(pubSampleRepoDouble.findPublicationSampleById(pubSampleId2Double)).thenReturn(Optional.of(pubSampleDouble2));
+        when(pubSampleRepoDouble.findById(pubSampleId1Double)).thenReturn(Optional.of(pubSampleDouble1));
+        when(pubSampleRepoDouble.findById(pubSampleId2Double)).thenReturn(Optional.of(pubSampleDouble2));
 
         // Listing
         listingDouble = mock(Listing.class);
@@ -114,7 +114,7 @@ class US023ListingMapperTest {
         when(listingDouble.getPrice()).thenReturn(mock(Price.class));
 
         listingRepoDouble = mock(IListingRepository.class);
-        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.of(listingDouble));
+        when(listingRepoDouble.findById(listingIdDouble)).thenReturn(Optional.of(listingDouble));
 
         // Mapper
         mapper = new US023ListingMapper(listingRepoDouble, pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
@@ -150,7 +150,7 @@ class US023ListingMapperTest {
         // Arrange
         PublicationSampleId wrongIdDouble = mock(PublicationSampleId.class);
         when(listingDouble.getItemsId()).thenReturn(List.of(wrongIdDouble));
-        when(pubSampleRepoDouble.findPublicationSampleById(wrongIdDouble))
+        when(pubSampleRepoDouble.findById(wrongIdDouble))
                 .thenReturn(Optional.empty());
 
         // Act + Assert
@@ -161,7 +161,7 @@ class US023ListingMapperTest {
     void toDTO_ShouldThrowExceptionWhenBibliographicalDataNotFound() {
         // Arrange
         BibliographicalDataID wrongIdDouble =  mock(BibliographicalDataID.class);
-        PublicationSample pubSampleDouble = pubSampleRepoDouble.findPublicationSampleById(
+        PublicationSample pubSampleDouble = pubSampleRepoDouble.findById(
                 listingDouble.getItemsId().get(0)).get();
 
         when(pubSampleDouble.getBibliographicalDataID()).thenReturn(wrongIdDouble);
@@ -176,12 +176,12 @@ class US023ListingMapperTest {
     void toDTO_ShouldThrowExceptionWhenAuthorNotFound() {
         // Arrange
         BibliographicalData bdDouble = bdRepoDouble.findBibliographicalDataById(
-                pubSampleRepoDouble.findPublicationSampleById(
+                pubSampleRepoDouble.findById(
                         listingDouble.getItemsId().get(0)).get().getBibliographicalDataID()).get();
 
         AuthorId missingAuthorIdDouble = mock(AuthorId.class);
         when(bdDouble.getAuthors()).thenReturn(List.of(missingAuthorIdDouble));
-        when(authorRepoDouble.findAuthorById(missingAuthorIdDouble))
+        when(authorRepoDouble.findById(missingAuthorIdDouble))
                 .thenReturn(Optional.empty());
 
         // Act + Assert
@@ -191,7 +191,7 @@ class US023ListingMapperTest {
     @Test
     void toDTO_ShouldThrowInstanceNotFoundExceptionWhenListingDoesNotExist() throws Exception {
         // Arrange
-        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.empty());
+        when(listingRepoDouble.findById(listingIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,
@@ -266,7 +266,7 @@ class US023ListingMapperTest {
         US023ListingMapper mapper =
                 new US023ListingMapper(listingRepoDouble, pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
 
-        when(listingRepoDouble.findListingById(listingIdDouble)).thenReturn(Optional.empty());
+        when(listingRepoDouble.findById(listingIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,

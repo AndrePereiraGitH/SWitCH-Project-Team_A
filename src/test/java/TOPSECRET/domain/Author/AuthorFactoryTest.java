@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
+
+import TOPSECRET.domain.ValueObjects.AuthorId;
 /**
  * Unit tests for the {@link AuthorFactory} class.
  *
@@ -41,6 +43,7 @@ import org.mockito.MockedConstruction;
 
 class AuthorFactoryTest {
 
+    private final AuthorId authorId = mock(AuthorId.class);
     private final CountryID countryID = mock(CountryID.class);
 
     private static final String rawName = "  John  ";
@@ -52,74 +55,250 @@ class AuthorFactoryTest {
     private static final LocalDate dob = LocalDate.of(1984, 12, 3);
 
     // ========================================
-    // create(String, Country, LocalDate, String)
+    // create(String, CountryID, LocalDate, String)
     // ========================================
 
     @Test
     void createShouldCallAuthorConstructorOnce() {
+        // Arrange
         AuthorFactory authorFactory = new AuthorFactory();
+
+        // Act + Assert
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
             authorFactory.create(expectedName, countryID, dob, expectedBio);
+
             assertEquals(1, mocked.constructed().size());
         }
     }
 
     @Test
     void createShouldTrimName() {
+        // Arrange
         AuthorFactory authorFactory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getName()).thenReturn(expectedName);
                      })) {
+
+            // Act
             Author author = authorFactory.create(rawName, countryID, dob, expectedBio);
+
+            // Assert
             assertEquals(expectedName, author.getName());
         }
     }
 
     @Test
     void createShouldForwardNullNameUnchanged() {
+        // Arrange
         AuthorFactory authorFactory = new AuthorFactory();
+
+        // Act + Assert
         try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
             authorFactory.create(null, countryID, dob, expectedBio);
+
             assertEquals(1, mocked.constructed().size());
         }
     }
 
     @Test
     void createShouldTrimBiography() {
+        // Arrange
         AuthorFactory authorFactory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(expectedBio);
                      })) {
+
+            // Act
             Author author = authorFactory.create(expectedName, countryID, dob, rawBio);
+
+            // Assert
             assertEquals(expectedBio, author.getBiography());
         }
     }
 
     @Test
     void createShouldForwardNullBiographyUnchanged() {
+        // Arrange
         AuthorFactory authorFactory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getBiography()).thenReturn(null);
                      })) {
+
+            // Act
             Author author = authorFactory.create(expectedName, countryID, dob, null);
+
+            // Assert
             assertNull(author.getBiography());
         }
     }
 
     @Test
     void createShouldForwardCountryAndDobUnchanged() {
+        // Arrange
         AuthorFactory authorFactory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class, (mock, context) -> {
                          when(mock.getCountryID()).thenReturn(countryID);
                          when(mock.getDateOfBirth()).thenReturn(dob);
                      })) {
+
+            // Act
             Author author = authorFactory.create(expectedName, countryID, dob, expectedBio);
+
+            // Assert
             assertSame(countryID, author.getCountryID());
             assertSame(dob, author.getDateOfBirth());
         }
     }
+
+    // ========================================
+    // create(AuthorId, String, CountryID, LocalDate, String)
+    // ========================================
+
+    @Test
+    void createWithIdShouldCallAuthorConstructorOnce() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        // Act + Assert
+        try (MockedConstruction<Author> mocked = mockConstruction(Author.class)) {
+            authorFactory.create(authorId, expectedName, countryID, dob, expectedBio);
+
+            assertEquals(1, mocked.constructed().size());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardIdUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.id()).thenReturn(authorId);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, expectedName, countryID, dob, expectedBio);
+
+            // Assert
+            assertSame(authorId, author.id());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardNameUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getName()).thenReturn(rawName);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, rawName, countryID, dob, expectedBio);
+
+            // Assert
+            assertEquals(rawName, author.getName());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardCountryUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getCountryID()).thenReturn(countryID);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, expectedName, countryID, dob, expectedBio);
+
+            // Assert
+            assertSame(countryID, author.getCountryID());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardDateOfBirthUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getDateOfBirth()).thenReturn(dob);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, expectedName, countryID, dob, expectedBio);
+
+            // Assert
+            assertSame(dob, author.getDateOfBirth());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardBiographyUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getBiography()).thenReturn(rawBio);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, expectedName, countryID, dob, rawBio);
+
+            // Assert
+            assertEquals(rawBio, author.getBiography());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardNullNameUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getName()).thenReturn(null);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, null, countryID, dob, expectedBio);
+
+            // Assert
+            assertNull(author.getName());
+        }
+    }
+
+    @Test
+    void createWithIdShouldForwardNullBiographyUnchanged() {
+        // Arrange
+        AuthorFactory authorFactory = new AuthorFactory();
+
+        try (MockedConstruction<Author> mocked =
+                     mockConstruction(Author.class, (mock, context) -> {
+                         when(mock.getBiography()).thenReturn(null);
+                     })) {
+
+            // Act
+            Author author = authorFactory.create(authorId, expectedName, countryID, dob, null);
+
+            // Assert
+            assertNull(author.getBiography());
+        }
+    }
+
 }
