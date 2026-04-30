@@ -79,7 +79,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         libraryDouble = mock(Library.class);
         LibraryId libraryId = new LibraryId("libId1");
         when(libraryDouble.id()).thenReturn(libraryId);
-        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         // Publication Samples
         pubSample1Double = mock(PublicationSample.class);
@@ -156,7 +156,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
         when(pubSampleRepoDouble.findAvailableForSaleByLibraryId(libraryIdDouble))
@@ -183,7 +183,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         when(pubSampleRepoDouble.findAvailableForSaleByLibraryId(libraryIdDouble)).thenReturn(List.of());
 
@@ -203,7 +203,7 @@ class US015ToPutPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double);
         when(pubSampleRepoDouble.findAvailableForSaleByLibraryId(libraryIdDouble))

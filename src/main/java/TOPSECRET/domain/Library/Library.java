@@ -40,10 +40,11 @@ public class Library implements AggregateRoot<LibraryId> {
     private final LibraryId _id;
 
     /**
-     * Constructs a new {@code Library} with an auto-generated unique identifier.
+     * Constructs a new {@code Library} with an auto-generated {@link LibraryId}.
      *
-     * <p>Use this constructor to create a brand-new library instance. A random UUID
-     * is automatically generated and assigned as the library's identifier.</p>
+     * <p>This constructor should be used when creating a brand-new library
+     * within the domain. A unique identifier is generated internally using
+     * a random UUID.</p>
      *
      * @param libraryName the name of the library; must not be {@code null} or blank
      * @param userId      the identifier of the user who owns this library; must not be {@code null}
@@ -55,7 +56,7 @@ public class Library implements AggregateRoot<LibraryId> {
             throw new IllegalArgumentException("Library Name cannot be null or blank");
         }
         if (userId == null) {
-            throw new IllegalArgumentException("User cannot be Null");
+            throw new IllegalArgumentException("UserId cannot be Null");
         }
 
         _libraryName = libraryName;
@@ -64,10 +65,35 @@ public class Library implements AggregateRoot<LibraryId> {
     }
 
     /**
-     * Returns the unique identifier of this {@code Library}.
+     * Constructs a {@code Library} with a provided {@link LibraryId}.
      *
-     * @return the {@link LibraryId} identifying this library; never {@code null}
+     * <p>This constructor is typically used when reconstructing a library
+     * from persistence (e.g., database), where the identifier is already known.</p>
+     *
+     * @param libraryId   the unique identifier of the library; must not be {@code null}
+     * @param libraryName the name of the library; must not be {@code null} or blank
+     * @param userId      the identifier of the user who owns this library; must not be {@code null}
+     * @throws IllegalArgumentException if {@code libraryId} is {@code null}
+     * @throws IllegalArgumentException if {@code libraryName} is {@code null} or blank
+     * @throws IllegalArgumentException if {@code userId} is {@code null}
      */
+
+    protected Library(LibraryId libraryId, String libraryName, UserId userId) {
+        if (libraryId == null) {
+            throw new IllegalArgumentException("LibraryId cannot be null");
+        }
+        if (libraryName == null || libraryName.isBlank()) {
+            throw new IllegalArgumentException("Library Name cannot be null or blank");
+        }
+        if (userId == null) {
+            throw new IllegalArgumentException("User cannot be Null");
+        }
+
+        _libraryName = libraryName;
+        _userId = userId;
+        _id = libraryId;
+    }
+
     public LibraryId id() {
         return _id;
     }
@@ -76,23 +102,21 @@ public class Library implements AggregateRoot<LibraryId> {
         return _libraryName;
     }
 
-    /**
-     * Indicates whether some other object is equal to this {@code Library}.
-     *
-     * <p>Two libraries are considered equal if and only if they share the same
-     * {@link LibraryId}, regardless of name or owner. This follows the DDD principle
-     * of entity equality, where identity is determined solely by the entity's ID.</p>
-     *
-     * @param o the reference object with which to compare
-     * @return {@code true} if {@code o} is a {@code Library} with the same identifier;
-     * {@code false} otherwise
-     */
+    public UserId getUserId() {
+        return _userId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Library library = (Library) o;
         return Objects.equals(_id, library._id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_id);
     }
 
     /**

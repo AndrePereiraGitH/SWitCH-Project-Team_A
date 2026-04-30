@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import java.lang.reflect.Field;
 
 /**
  * Unit tests for the {@link Library} class.
@@ -76,10 +75,65 @@ class LibraryTest {
         // Arrange
         UserId userDouble = createMockUser("Nome1");
         // Act
-        Library first  = new Library("Library A", userDouble);
+        Library first = new Library("Library A", userDouble);
         Library second = new Library("Library B", userDouble);
         // Assert
         assertNotEquals(first.id(), second.id());
+    }
+
+    // ============ Constructor with LibraryId ===========
+
+    @Test
+    void shouldCreateLibraryWithGivenId_whenValidArguments() {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+        LibraryId id = new LibraryId("fixed-id");
+
+        // Act
+        Library library = new Library(id, "My Library", userDouble);
+
+        // Assert
+        assertEquals(id, library.id());
+        assertEquals("My Library", library.getLibraryName());
+        assertEquals(userDouble, library.getUserId());
+    }
+
+    @Test
+    void shouldThrowException_whenLibraryIdIsNull() {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Library(null, "My Library", userDouble)
+        );
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldThrowException_whenLibraryNameIsInvalid_inSecondConstructor(String name) {
+        // Arrange
+        UserId userDouble = createMockUser("Nome1");
+        LibraryId id = new LibraryId("fixed-id");
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Library(id, name, userDouble)
+        );
+    }
+
+    @Test
+    void shouldThrowException_whenUserIsNull_inSecondConstructor() {
+        // Arrange
+        LibraryId id = new LibraryId("fixed-id");
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Library(id, "My Library", null)
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -155,6 +209,7 @@ class LibraryTest {
         // Assert
         assertNotEquals(library1.id(), library2.id());
     }
+
     /**
      * Uses reflection to assign the same {@link LibraryId} to two distinct instances,
      * verifying that {@link Library#equals(Object)} returns {@code true} when IDs match.
@@ -198,7 +253,7 @@ class LibraryTest {
     void givenTwoLibrariesWithSameAttributesWhenSameAsThenReturnsTrue() {
         // Arrange
         UserId userDouble = createMockUser("Nome1");
-        Library first  = new Library("Library A", userDouble);
+        Library first = new Library("Library A", userDouble);
         Library second = new Library("Library A", userDouble);
 
         // Act
@@ -213,7 +268,7 @@ class LibraryTest {
     void givenDifferentNamesWhenSameAsThenReturnsFalse() {
         // Arrange
         UserId userDouble = createMockUser("Nome1");
-        Library first  = new Library("Library A", userDouble);
+        Library first = new Library("Library A", userDouble);
         Library second = new Library("Library B", userDouble);
         // Act
         boolean result = first.sameAs(second);
@@ -286,7 +341,6 @@ class LibraryTest {
     }
 
 
-
     @Test
     void constructorShouldAcceptNonBlankNameWithLeadingAndTrailingSpaces() {
         // Arrange
@@ -299,11 +353,12 @@ class LibraryTest {
         assertEquals("  My Library  ", library.getLibraryName());
     }
 
+
     // -------------------------------------------------------------------------
     // Test helpers
     // -------------------------------------------------------------------------
 
-    private UserId createMockUser(String name){
+    private UserId createMockUser(String name) {
         UserId userDouble = mock(UserId.class);
         when(userDouble.getUsername()).thenReturn(name);
         return userDouble;
