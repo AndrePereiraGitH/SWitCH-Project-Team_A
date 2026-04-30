@@ -107,7 +107,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         if (publisherId == null) throw new IllegalArgumentException("publisherId cannot be null");
 
-        List<EditionID> listOfEditionIds = _editionRepo.findEditionIdsByPublisherId(publisherId);
+        List<EditionID> listOfEditionIds = _editionRepo.findIdsByPublisherId(publisherId);
 
         List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 

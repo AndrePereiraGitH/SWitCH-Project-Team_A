@@ -130,6 +130,79 @@ public class Edition implements AggregateRoot<EditionID> {
     }
 
     /**
+     * Reconstructs an Edition with an existing identity.
+     *
+     * <p>
+     * This constructor is used when rebuilding an Edition from persistence.
+     * Unlike the standard constructor, it does not generate a new ID and
+     * instead uses the provided EditionID.
+     * </p>
+     *
+     * @param editionID the existing edition identifier
+     * @param editionNumber the edition number
+     * @param code the identification code
+     * @param physicalAttributes the physical attribute
+     * @param publicationTypeId the publication type identifier
+     * @param publisherID the publisher identifier
+     * @param mediaFormat the media format
+     * @param editionLanguage the language
+     * @param editionDate the publication date
+     * @param typeOfBinding the binding type
+     *
+     * @throws IllegalArgumentException if any argument is invalid
+     */
+    protected Edition(
+            EditionID editionID,
+            String editionNumber,
+            Code code,
+            PhysicalAttributes physicalAttributes,
+            PublicationTypeId publicationTypeId,
+            PublisherID publisherID,
+            String mediaFormat,
+            Locale editionLanguage,
+            LocalDate editionDate,
+            TypeOfBinding typeOfBinding
+    ){
+        if (editionID == null) {
+            throw new IllegalArgumentException("EditionID cannot be null");
+        }
+        if (editionNumber == null || editionNumber.isBlank()) {
+            throw new IllegalArgumentException("Edition Number cannot be blank");
+        }
+        if (physicalAttributes == null || publicationTypeId == null || publisherID == null) {
+            throw new IllegalArgumentException("Physical Attributes, publication type ID and/or publisher ID cannot be null");
+        }
+        if (mediaFormat == null || mediaFormat.isBlank()) {
+            throw new IllegalArgumentException("Media format cannot be null or blank");
+        }
+        if (!mediaFormat.equals(BOOK) && !mediaFormat.equals(MAGAZINE)) {
+            throw new IllegalArgumentException("Invalid media format");
+        }
+        if (editionLanguage == null) {
+            throw new IllegalArgumentException("Edition language cannot be null");
+        }
+        if (editionDate == null) {
+            throw new IllegalArgumentException("Edition date cannot be null");
+        }
+        if (typeOfBinding == null) {
+            throw new IllegalArgumentException("TypeOfBinding cannot be null");
+        }
+
+        validateEditionCode(code, mediaFormat, editionDate);
+
+        this._editionID = editionID;
+        this._editionNumber = editionNumber;
+        this._code = code;
+        this._physicalAttributes = physicalAttributes;
+        this._publicationTypeId = publicationTypeId;
+        this._publisherID = publisherID;
+        this._mediaFormat = mediaFormat;
+        this._editionLanguage = editionLanguage;
+        this._editionDate = editionDate;
+        this._typeOfBinding = typeOfBinding;
+    }
+
+    /**
      * Validates the identification code according to media format and publication year.
      *
      * @param code the code to validate
