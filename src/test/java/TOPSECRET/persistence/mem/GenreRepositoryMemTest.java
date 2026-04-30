@@ -10,73 +10,40 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class GenreRepositoryMemTest {
 
-    private final GenreFactory genreFactory = mock(GenreFactory.class);
-    private final Genre genre = mock(Genre.class);
-
 // TODO: re-enable when createAndAdd is re-introduced or US003 is refactored
 //    @Test
-//    void testCreateAndAddGenre_AddsNewGenre() {
-//        // Arrange
-//        IGenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
-//        String genreType = "Fantasy";
-//        when(genre.getGenreType()).thenReturn(genreType);
-//        when(genreFactory.create(genreType)).thenReturn(genre);
-//        // Act
-//        Genre result = genreRepository.createAndAdd(genreType);
-//        // Assert
-//        assertEquals(1, genreRepository.getAllGenres().size());
-//        assertEquals(genre, result);
-//    }
-
+//    void testCreateAndAddGenre_AddsNewGenre() { ... }
 //    @Test
-//    void testCreateAndAddGenre_ThrowsExceptionWhenGenreExists() {
-//        // Arrange
-//        String genreType = "Fantasy";
-//        when(genre.getGenreType()).thenReturn(genreType);
-//        when(genreFactory.create(genreType)).thenReturn(genre);
-//        when(genre.sameAs(genre)).thenReturn(true);
-//        IGenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
-//        genreRepository.createAndAdd(genreType);
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> genreRepository.createAndAdd(genreType));
-//    }
+//    void testCreateAndAddGenre_ThrowsExceptionWhenGenreExists() { ... }
 
     @Test
     void getAllGenres_ReturnsCorrectList() {
         // Arrange
-        Genre genre2 = mock(Genre.class);
-        when(genre.getGenreType()).thenReturn("Fantasy");
-        when(genre2.getGenreType()).thenReturn("Science Fiction");
-        when(genreFactory.create("Fantasy")).thenReturn(genre);
-        when(genreFactory.create("Science Fiction")).thenReturn(genre2);
-
-
-        IGenreRepository genreRepository = new GenreRepositoryMem(genreFactory);
-        genreRepository.save(genre);       // adiciona ao repo
-        genreRepository.save(genre2);
+        GenreFactory realFactory = new GenreFactory();
+        GenreRepositoryMem genreRepository = new GenreRepositoryMem();
+        Genre g1 = realFactory.create("Fantasy");
+        Genre g2 = realFactory.create("Science Fiction");
+        genreRepository.save(g1);
+        genreRepository.save(g2);
 
         // Act
         List<Genre> result = genreRepository.getAllGenres();
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(genre));
-        assertTrue(result.contains(genre2));
+        assertTrue(result.contains(g1));
+        assertTrue(result.contains(g2));
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
     }
 
     @Test
     void getAllGenresShouldReturnUnmodifiableList() {
-
         // Arrange
-        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+        IGenreRepository repo = new GenreRepositoryMem();
 
         // Act
         List<Genre> result = repo.getAllGenres();
@@ -87,9 +54,8 @@ class GenreRepositoryMemTest {
 
     @Test
     void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
-
         // Arrange
-        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+        IGenreRepository repo = new GenreRepositoryMem();
 
         // Act
         List<Genre> result = repo.getAllGenres();
@@ -101,25 +67,23 @@ class GenreRepositoryMemTest {
     @Test
     void shouldReturnGenreWhenTitleExists() {
         // Arrange
-        String genreType = "Fantasy";
-        when(genre.getGenreType()).thenReturn(genreType);
-        when(genreFactory.create(genreType)).thenReturn(genre);
-
-       IGenreRepository repository = new GenreRepositoryMem(genreFactory);
-        repository.save(genre);
+        GenreFactory realFactory = new GenreFactory();
+        IGenreRepository repository = new GenreRepositoryMem();
+        Genre g = realFactory.create("Fantasy");
+        repository.save(g);
 
         // Act
         Genre result = repository.findByTitle("Fantasy");
 
         // Assert
-        assertEquals(genre, result);
+        assertEquals(g, result);
     }
 
     @Test
     void shouldThrowExceptionWhenGenreNotFound() {
         // Arrange
         GenreFactory realFactory = new GenreFactory();
-        IGenreRepository repository = new GenreRepositoryMem(realFactory);
+        IGenreRepository repository = new GenreRepositoryMem();
         repository.save(realFactory.create("Fantasy"));
 
         // Act & Assert
@@ -130,7 +94,7 @@ class GenreRepositoryMemTest {
     @Test
     void shouldThrowExceptionWhenTitleIsNull() {
         // Arrange
-        IGenreRepository repository = new GenreRepositoryMem(genreFactory);
+        IGenreRepository repository = new GenreRepositoryMem();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -140,66 +104,60 @@ class GenreRepositoryMemTest {
     @Test
     void shouldThrowExceptionWhenTitleIsBlank() {
         // Arrange
-        IGenreRepository repository = new GenreRepositoryMem(genreFactory);
+        IGenreRepository repository = new GenreRepositoryMem();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.findByTitle(" "));
     }
 
-
-
     @Test
     void findGenreById_shouldThrowException_whenGenreIdIsNull() {
         // Arrange
-        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+        IGenreRepository repo = new GenreRepositoryMem();
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            repo.findGenreById(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> repo.findGenreById(null));
     }
 
     @Test
     void findGenreById_shouldReturnGenre_whenGenreExists() {
-        GenreId genreId = mock(GenreId.class);
-        when(genre.id()).thenReturn(genreId);
-        when(genreFactory.create("Fantasy")).thenReturn(genre);
+        // Arrange
+        GenreFactory realFactory = new GenreFactory();
+        GenreRepositoryMem repo = new GenreRepositoryMem();
+        Genre saved = repo.save(realFactory.create("Fantasy"));
 
-        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+        // Act
+        Optional<Genre> result = repo.findGenreById(saved.id());
 
-        Genre createdGenre = repo.save(genre);
-
-        Optional<Genre> result = repo.findGenreById(genreId);
-
+        // Assert
         assertTrue(result.isPresent());
-        assertEquals(genre, result.get());
-        assertEquals(genre, createdGenre);
+        assertEquals(saved, result.get());
     }
 
     @Test
     void findGenreById_shouldReturnEmpty_whenGenreDoesNotExist() {
-        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
-
+        // Arrange
+        IGenreRepository repo = new GenreRepositoryMem();
         GenreId genreId = mock(GenreId.class);
 
+        // Act
         Optional<Genre> result = repo.findGenreById(genreId);
 
+        // Assert
         assertTrue(result.isEmpty());
     }
+
     @Test
     void findGenreById_shouldReturnCorrectGenre_whenMultipleGenresExist() {
         // Arrange
         GenreFactory realFactory = new GenreFactory();
-        GenreRepositoryMem repo = new GenreRepositoryMem(realFactory);
-
+        GenreRepositoryMem repo = new GenreRepositoryMem();
         repo.save(realFactory.create("Fantasy"));
         Genre genre2 = repo.save(realFactory.create("Science Fiction"));
 
-        GenreId id2 = genre2.id();
-
         // Act
-        Optional<Genre> result = repo.findGenreById(id2);
+        Optional<Genre> result = repo.findGenreById(genre2.id());
 
         // Assert
         assertTrue(result.isPresent());
@@ -207,16 +165,10 @@ class GenreRepositoryMemTest {
     }
 
     @Test
-    void shouldThrowWhenGenreFactoryIsNull() {
-        // Arrange & Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new GenreRepositoryMem(null));
-    }
-    @Test
     void save_shouldAddGenreAndReturnIt() {
         // Arrange
         GenreFactory realFactory = new GenreFactory();
-        GenreRepositoryMem repo = new GenreRepositoryMem(realFactory);
+        GenreRepositoryMem repo = new GenreRepositoryMem();
         Genre genre = realFactory.create("Fantasy");
 
         // Act
@@ -231,7 +183,7 @@ class GenreRepositoryMemTest {
     void save_shouldThrowException_whenGenreAlreadyExists() {
         // Arrange
         GenreFactory realFactory = new GenreFactory();
-        GenreRepositoryMem repo = new GenreRepositoryMem(realFactory);
+        GenreRepositoryMem repo = new GenreRepositoryMem();
         Genre genre = realFactory.create("Fantasy");
         repo.save(genre);
 
@@ -242,7 +194,7 @@ class GenreRepositoryMemTest {
     @Test
     void save_shouldThrowException_whenGenreIsNull() {
         // Arrange
-        IGenreRepository repo = new GenreRepositoryMem(genreFactory);
+        IGenreRepository repo = new GenreRepositoryMem();
 
         // Act & Assert
         assertThrows(NullPointerException.class, () -> repo.save(null));

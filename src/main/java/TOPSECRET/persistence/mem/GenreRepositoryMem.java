@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.GenreId;
 
@@ -17,28 +16,6 @@ import java.util.Optional;
 public class GenreRepositoryMem implements IGenreRepository {
 
     private final List<Genre> _genres = new ArrayList<>();
-    private final GenreFactory _genreFactory;
-
-    /**
-     * Constructs a new {@code GenreRepositoryMem} with the provided {@link GenreFactory}.
-     *
-     * @param genreFactory the factory responsible for creating {@link Genre} objects;
-     *                     must not be {@code null}
-     * @throws IllegalArgumentException if {@code genreFactory} is {@code null}
-     */
-    public GenreRepositoryMem(GenreFactory genreFactory) {
-        if (genreFactory == null) {
-            throw new IllegalArgumentException("GenreFactory cannot be null");
-        }
-        this._genreFactory = genreFactory;
-    }
-
-    /**
-     * Default no-args constructor.
-     */
-    public GenreRepositoryMem() {
-        this._genreFactory = new GenreFactory();
-    }
 
     // =========================================================================
     // Persistence
@@ -56,8 +33,6 @@ public class GenreRepositoryMem implements IGenreRepository {
         _genres.add(genre);
         return genre;
     }
-
-
 
     // =========================================================================
     // Lookup

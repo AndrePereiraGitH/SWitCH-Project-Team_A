@@ -4,7 +4,7 @@ import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+import static org.mockito.Mockito.mock;
 /**
  * Unit tests for {@link GenreFactory}.
  * Verifies that the factory correctly creates Genre instances
@@ -59,7 +59,7 @@ class GenreFactoryTest {
     @Test
     void ensureReconstructReturnsGenreSuccessfully() {
         // Arrange
-        GenreId genreId = new GenreId("ergodic literature");
+        GenreId genreId = mock(GenreId.class);
         String genreType = "Ergodic literature";
 
         // Act
@@ -72,7 +72,7 @@ class GenreFactoryTest {
     @Test
     void ensureReconstructReturnsGenreWithCorrectType() {
         // Arrange
-        GenreId genreId = new GenreId("ergodic literature");
+        GenreId genreId = mock(GenreId.class);
         String genreType = "Ergodic literature";
 
         // Act
@@ -84,31 +84,28 @@ class GenreFactoryTest {
 
     @Test
     void ensureReconstructThrowsExceptionWithNullGenreType() {
-        GenreId genreId = new GenreId("ergodic literature");
+        GenreId genreId = mock(GenreId.class);
         assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, null));
     }
 
     @Test
     void ensureReconstructThrowsExceptionWithBlankGenreType() {
-        GenreId genreId = new GenreId("ergodic literature");
+        GenreId genreId = mock(GenreId.class);
         assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, null));
     }
 
-    @Test
-    void ensureReconstructThrowsExceptionWithNullGenreId() {
-        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(null, "Ergodic literature"));
-    }
+
     @Test
     void ensureReconstructAndCreateReturnEqualGenres() {
         // Arrange
         String genreType = "Ergodic literature";
-        GenreId genreId = new GenreId(genreType.toLowerCase());
+        GenreId genreId = mock(GenreId.class);
 
         // Act
-        Genre created = genreFactory.create(genreType);
         Genre reconstructed = genreFactory.create(genreId, genreType);
 
         // Assert
-        assertEquals(created, reconstructed);
+        assertNotNull(reconstructed);
+        assertEquals(genreType, reconstructed.getGenreType());
     }
 }

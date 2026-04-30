@@ -127,7 +127,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
 
         return Optional.empty();
     }
-    public List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreId genreId){
+    public List<BibliographicalDataID> findByGenreId(GenreId genreId){
 
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");

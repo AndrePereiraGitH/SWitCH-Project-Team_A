@@ -66,7 +66,7 @@ public interface IBibliographicalDataRepository {
      *
      * @throws IllegalArgumentException if {@code genreId} is {@code null}
      */
-    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreId genreId);
+    List<BibliographicalDataID> findByGenreId(GenreId genreId);
 
     /**
      * Finds the ID of a bibliographical data entry by its title, using case-insensitive

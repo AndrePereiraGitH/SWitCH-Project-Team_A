@@ -738,7 +738,7 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void findAllBibliographicalDataByGenreId_shouldThrowException_whenGenreIdIsNull() {
+    void findByGenreId_shouldThrowException_whenGenreIdIsNull() {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -746,11 +746,11 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findAllBibliographicalDataByGenreId(null));
+                () -> repo.findByGenreId(null));
     }
 
     @Test
-    void findAllBibliographicalDataByGenreId_shouldReturnIds_whenGenreMatches() {
+    void findByGenreId_shouldReturnIds_whenGenreMatches() {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -768,7 +768,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act
         List<BibliographicalDataID> result =
-                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+                repo.findByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -776,7 +776,7 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void findAllBibliographicalDataByGenreId_shouldReturnEmpty_whenNoMatch() {
+    void findByGenreId_shouldReturnEmpty_whenNoMatch() {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -792,14 +792,14 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act
         List<BibliographicalDataID> result =
-                repo.findAllBibliographicalDataByGenreId(genreDouble2);
+                repo.findByGenreId(genreDouble2);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findAllBibliographicalDataByGenreId_shouldReturnMultipleIds_whenMultipleMatch() {
+    void findByGenreId_shouldReturnMultipleIds_whenMultipleMatch() {
 
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -823,7 +823,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act
         List<BibliographicalDataID> result =
-                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+                repo.findByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(2, result.size());

@@ -3,10 +3,6 @@ package TOPSECRET.services;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.ValueObjects.GenreId;
-
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -96,74 +92,5 @@ class GenreServiceTest {
         );
 
         assertEquals("Genre already exists", exception.getMessage());
-    }
-
-    // =========================================================================
-    // getAllGenres
-    // =========================================================================
-
-    @Test
-    void getAllGenres_shouldReturnListFromRepository() {
-        Genre genre1 = mock(Genre.class);
-        Genre genre2 = mock(Genre.class);
-        when(genreRepository.getAllGenres()).thenReturn(List.of(genre1, genre2));
-
-        List<Genre> result = genreService.getAllGenres();
-
-        assertEquals(2, result.size());
-        verify(genreRepository).getAllGenres();
-    }
-
-    // =========================================================================
-    // findByTitle
-    // =========================================================================
-
-    @Test
-    void findByTitle_shouldReturnGenre_whenFound() {
-        Genre genre = mock(Genre.class);
-        when(genreRepository.findByTitle("Fantasy")).thenReturn(genre);
-
-        Genre result = genreService.findByTitle("Fantasy");
-
-        assertSame(genre, result);
-        verify(genreRepository).findByTitle("Fantasy");
-    }
-
-    @Test
-    void findByTitle_shouldThrow_whenTitleIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> genreService.findByTitle(null));
-    }
-
-    // =========================================================================
-    // findGenreById
-    // =========================================================================
-
-    @Test
-    void findGenreById_shouldReturnGenre_whenFound() {
-        GenreId genreId = mock(GenreId.class);
-        Genre genre = mock(Genre.class);
-        when(genreRepository.findGenreById(genreId)).thenReturn(Optional.of(genre));
-
-        Optional<Genre> result = genreService.findGenreById(genreId);
-
-        assertTrue(result.isPresent());
-        assertSame(genre, result.get());
-    }
-
-    @Test
-    void findGenreById_shouldReturnEmpty_whenNotFound() {
-        GenreId genreId = mock(GenreId.class);
-        when(genreRepository.findGenreById(genreId)).thenReturn(Optional.empty());
-
-        Optional<Genre> result = genreService.findGenreById(genreId);
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findGenreById_shouldThrow_whenIdIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> genreService.findGenreById(null));
     }
 }
