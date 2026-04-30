@@ -2,7 +2,7 @@ package TOPSECRET.domain.Author;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
@@ -13,13 +13,13 @@ import java.util.UUID;
  * An Author is defined by:
  * <ul>
  *     <li>A name identifying the author</li>
- *     <li>A {@link CountryID} of origin</li>
+ *     <li>A {@link CountryId} of origin</li>
  *     <li>A date of birth</li>
  *     <li>A textual biography describing the author</li>
  * </ul>
  *
  * <p><b>Invariant:</b> An Author must always have a non-blank name, a non-null
- * {@link CountryID}, a non-null date of birth, and a non-blank biography.</p>
+ * {@link CountryId}, a non-null date of birth, and a non-blank biography.</p>
  *
  * <p>
  * The constructor performs validates these rules to ensure that no invalid Author
@@ -32,7 +32,7 @@ import java.util.UUID;
 public class Author implements AggregateRoot<AuthorId> {
     private final AuthorId _id;
     private final String _name;
-    private final CountryID _countryID;
+    private final CountryId _countryId;
     private final LocalDate _dateOfBirth;
     private final String _biography;
 
@@ -56,7 +56,7 @@ public class Author implements AggregateRoot<AuthorId> {
      * @throws IllegalArgumentException if {@code dateOfBirth} is null
      * @throws IllegalArgumentException if {@code biography} is null or blank
      */
-    protected Author(String name, CountryID countryID, LocalDate dateOfBirth, String  biography) {
+    protected Author(String name, CountryId countryID, LocalDate dateOfBirth, String  biography) {
         if ( name ==null || name.isBlank()){
             throw new IllegalArgumentException("Name cannot be null or blank");
         }
@@ -70,7 +70,7 @@ public class Author implements AggregateRoot<AuthorId> {
             throw new IllegalArgumentException("Biography cannot be null or blank");
         this._id = new AuthorId(UUID.randomUUID().toString());
         this._name= name;
-        this._countryID = countryID;
+        this._countryId = countryID;
         this._dateOfBirth = dateOfBirth;
         this._biography = biography;
     }
@@ -95,7 +95,7 @@ public class Author implements AggregateRoot<AuthorId> {
      * @throws IllegalArgumentException if {@code dateOfBirth} is null
      * @throws IllegalArgumentException if {@code biography} is null or blank
      */
-    protected Author(AuthorId id, String name, CountryID countryID, LocalDate dateOfBirth, String  biography) {
+    protected Author(AuthorId id, String name, CountryId countryID, LocalDate dateOfBirth, String  biography) {
 
         if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
@@ -113,7 +113,7 @@ public class Author implements AggregateRoot<AuthorId> {
             throw new IllegalArgumentException("Biography cannot be null or blank");
         this._id = id;
         this._name= name;
-        this._countryID = countryID;
+        this._countryId = countryID;
         this._dateOfBirth = dateOfBirth;
         this._biography = biography;
     }
@@ -131,8 +131,8 @@ public class Author implements AggregateRoot<AuthorId> {
         return _name;
     }
 
-    public CountryID getCountryID() {
-        return _countryID;
+    public CountryId getCountryID() {
+        return _countryId;
     }
 
     public LocalDate getDateOfBirth() {
@@ -168,7 +168,7 @@ public class Author implements AggregateRoot<AuthorId> {
 
             if (
                     this._name.equals(oAuthor._name) &&
-                            this._countryID.equals(oAuthor._countryID) &&
+                            this._countryId.equals(oAuthor._countryId) &&
                             this._dateOfBirth.equals(oAuthor._dateOfBirth) &&
                             this._biography.equals(oAuthor._biography)
             )

@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Country;
 
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,16 +15,6 @@ import java.util.Optional;
 public interface ICountryRepository {
 
     /**
-     * Creates a new {@link Country} and adds it to the repository.
-     *
-     * @param countryName the name of the country to be created;
-     *                    must not be {@code null}, blank, or already registered
-     * @return the newly created {@link Country} instance
-     * @throws IllegalArgumentException if the country name is invalid or already registered
-     */
-    Country createAndAdd(String countryName);
-
-    /**
      * Returns an unmodifiable list of all registered countries.
      *
      * @return an unmodifiable {@link List} of all registered {@link Country} instances
@@ -32,14 +22,14 @@ public interface ICountryRepository {
     List<Country> getAllCountries();
 
     /**
-     * Searches for a {@link Country} by its unique {@link CountryID}.
+     * Searches for a {@link Country} by its unique {@link CountryId}.
      *
-     * @param countryID the {@link CountryID} to search for;
+     * @param countryID the {@link CountryId} to search for;
      *                  must not be {@code null}
      * @return an {@link Optional} containing the matching {@link Country},
      *         or an empty {@link Optional} if no match is found
      */
-    Optional<Country> findByID(CountryID countryID);
+    Optional<Country> findByID(CountryId countryID);
 
     /**
      * Finds the {@code CountryID} associated with a given country name.
@@ -52,5 +42,7 @@ public interface ICountryRepository {
      * @throws NullPointerException if {@code countryName} is null
      * @throws IllegalArgumentException if {@code countryName} is blank
      */
-    Optional<CountryID> findCountryIdByCountryName(String countryName);
+    Optional<CountryId> findCountryIdByCountryName(String countryName);
+
+    Country save(Country countryName);
 }

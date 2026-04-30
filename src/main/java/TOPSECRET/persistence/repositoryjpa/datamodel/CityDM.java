@@ -1,14 +1,14 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.CityID;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import jakarta.persistence.*;
 
 /**
  * Data model representing a {@link TOPSECRET.domain.City.City} for JPA persistence.
  *
  * <p>This class belongs to the infrastructure layer and is mapped to the
- * {@code cities} table. It uses {@link CityID} and {@link CountryID} as
+ * {@code cities} table. It uses {@link CityID} and {@link CountryId} as
  * embedded value objects.</p>
  *
  * <p>It is converted to and from the domain object by {@link TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler}.</p>
@@ -23,7 +23,7 @@ public class CityDM {
 
     @Embedded
     @AttributeOverride(name = "countryId", column = @Column(name = "country_id", nullable = false))
-    private CountryID countryID;
+    private CountryId countryID;
 
     @Column(name = "city_name", nullable = false)
     private String cityName;
@@ -40,13 +40,13 @@ public class CityDM {
      * @param countryID the domain identifier of the country
      * @param cityName  the name of the city
      */
-    public CityDM(CityID cityID, CountryID countryID, String cityName) {
+    public CityDM(CityID cityID, CountryId countryID, String cityName) {
         this.cityID = cityID;
         this.countryID = countryID;
         this.cityName = cityName;
     }
 
     public CityID getCityID() { return cityID; }
-    public CountryID getCountryID() { return countryID; }
+    public CountryId getCountryID() { return countryID; }
     public String getCityName() { return cityName; }
 }

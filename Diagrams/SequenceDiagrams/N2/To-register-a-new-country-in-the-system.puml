@@ -12,8 +12,12 @@ autonumber
 
 
 participant ":CountryController" as CountryController
+participant ":CountryService" as CountryService
 participant ":ICountryRepository" as ICountryRepository
 participant ":CountryFactory" as CountryFactory
+participant ":CountryAssembler" as Assembler
+participant ":CountryDM" as DM
+participant ":ICountryJPARepository" as JPA
 
 
 Administrator -> UI : I want to register a new country
@@ -28,12 +32,28 @@ UI -> CountryController : registerNewCountry\n (countryName)
 activate CountryController
 
 
-CountryController -> ICountryRepository : createAndAdd\n (countryName)
-activate ICountryRepository
-
-ICountryRepository -> CountryFactory : createAndAdd\n(countryName)
+CountryController -> CountryService : createAndSave\n (countryName)
+activate CountryService
+CountryService -> CountryFactory : create
 activate CountryFactory
 create participant "newCountry1: Country" as Country
+CountryFactory -->> Country : «create»
+CountryFactory --> CountryService : newCountry1
+deactivate CountryFactory
+CountryService -> ICountryRepository : save
+activate ICountryRepository
+ICountryRepository --> CountryService : "successfully saved"
+deactivate ICountryRepository
+CountryService --> CountryController : "<countryName>\n successfully added"
+deactivate CountryService
+
+CountryController --> UI : "<countryName>\n successfully added"
+deactivate CountryController
+UI --> Administrator : "<countryName> has been\n successfully registered in the system!"
+deactivate UI
+
+/' ICountryRepository -> CountryFactory : createAndAdd\n(countryName)
+activate CountryFactory
 CountryFactory -->> Country : «create»
 
 CountryFactory --> ICountryRepository : newCountry1
@@ -56,6 +76,7 @@ deactivate CountryController
 UI --> Administrator : <newCountry1>\n registered successfully!
 deactivate UI
 end
+'/
 
 
 @enduml

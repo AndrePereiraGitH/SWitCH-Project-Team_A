@@ -4,7 +4,7 @@ import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.Country.ICountryRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +42,7 @@ class CityServiceTest {
 
         // Arrange
         CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, "Braga")).thenReturn(doubleCity);
@@ -74,7 +74,7 @@ class CityServiceTest {
 
         // Arrange
         CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, ""))
                 .thenThrow(new IllegalArgumentException("A city name cannot be left blank"));
@@ -90,7 +90,7 @@ class CityServiceTest {
 
         // Arrange
         CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, "Braga")).thenReturn(doubleCity);

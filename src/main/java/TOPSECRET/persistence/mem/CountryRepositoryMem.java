@@ -3,7 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Country.ICountryRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.Optional;
  *     <li>Prevent duplicate {@link Country} entries (by name)</li>
  *     <li>Store {@link Country} objects in an internal list</li>
  *     <li>Provide read-only access to stored countries</li>
- *     <li>Allow lookup of a {@link Country} by its {@link CountryID}</li>
+ *     <li>Allow lookup of a {@link Country} by its {@link CountryId}</li>
  * </ul>
  * </p>
  */
@@ -31,34 +31,23 @@ import java.util.Optional;
 public class CountryRepositoryMem implements ICountryRepository {
 
     private final List<Country> registeredCountries;
-    private final CountryFactory countryFactory;
 
-    /**
-     * Constructs a {@code CountryRepositoryMem} with the given factory.
-     *
-     * @param countryFactory the factory responsible for creating {@link Country} instances;
-     *                       must not be {@code null}
-     * @throws IllegalArgumentException if {@code countryFactory} is {@code null}
-     */
-    public CountryRepositoryMem(CountryFactory countryFactory) {
-        if (countryFactory == null) {
-            throw new IllegalArgumentException("CountryFactory cannot be null");
-        }
-        this.countryFactory = countryFactory;
+    public CountryRepositoryMem() {
         this.registeredCountries = new ArrayList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Country createAndAdd(String countryName) {
-        Country country = countryFactory.create(countryName);
-        if (!isANewCountry(country)) {
+    public Country save(Country countryName){
+        if (countryName == null) {
+            throw new IllegalArgumentException("Country cannot be null");
+        }
+
+        if (!isANewCountry(countryName)) {
             throw new IllegalArgumentException("Country is already registered");
         }
-        registeredCountries.add(country);
-        return country;
+
+        registeredCountries.add(countryName);
+        return countryName;
     }
 
     /**
@@ -73,7 +62,7 @@ public class CountryRepositoryMem implements ICountryRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Country> findByID(CountryID countryID) {
+    public Optional<Country> findByID(CountryId countryID) {
         return registeredCountries.stream()
                 .filter(c -> c.getCountryID().equals(countryID))
                 .findFirst();
@@ -84,7 +73,7 @@ public class CountryRepositoryMem implements ICountryRepository {
      * <p>
      * Duplicate detection is performed by country name (case-insensitive),
      * since two entries representing the same real-world country should not
-     * coexist, even if they carry different {@link CountryID} values.
+     * coexist, even if they carry different {@link CountryId} values.
      * </p>
      *
      * @param country the {@link Country} to check
@@ -103,7 +92,7 @@ public class CountryRepositoryMem implements ICountryRepository {
     /**
      * {@inheritDoc}
      */
-    public Optional<CountryID> findCountryIdByCountryName(String countryName) {
+    public Optional<CountryId> findCountryIdByCountryName(String countryName) {
 
         if (countryName == null) {
             throw new NullPointerException("A country's name cannot be null");

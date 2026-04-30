@@ -3,25 +3,37 @@
 title Class Diagram - Register a new country in the System
 hide circle
 
-/'class User {
--username: String
-  -contact: Contact
-  -profile: Profile
-  +User(username: String, contact: Contact, profile: Profile)
-}
-'/
 
 class ICountryRepository {
-    +createAndAdd (countryName: String)
+    +save (Country)
     }
 
 class CountryFactory {
     +create
+    +create(countryName)
 }
 
-class US007RegisterNewCountryController{
+class ToRegisterNewCountryController{
   + registerNewCountry(countryName : String)
 }
+
+class CountryService {
++createAndSave
+}
+
+class CountryAssembler{
++toDM(Country)
+}
+
+class ICountryJPARepository{
++save(CountryDM)
+}
+
+class CountryDM{
+-countryName: String
+-_countryID : CountryID
+}
+
 
 class Country {
 -countryName: String
@@ -29,7 +41,13 @@ class Country {
 }
 
 ' Interactions
-US007RegisterNewCountryController "1" .--> "1" ICountryRepository : request registering country
 ICountryRepository "1" .--> "1" CountryFactory : requests creation
+ToRegisterNewCountryController "1" .--> "1" CountryService : request registering country
+CountryService "1" --> "1" CountryFactory : asks for creation
+CountryService "1" --> "1" ICountryRepository
+ICountryRepository "1" .--> "1" ICountryJPARepository
+ICountryRepository "1" .--> "1" CountryAssembler
+CountryAssembler "1" .--> "1" CountryDM
+CountryAssembler "1" .--> "1" CountryFactory
 CountryFactory "1" .--> "*" Country : creates
 @enduml

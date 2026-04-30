@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Author;
 
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
  *
  * <p>This test class verifies the construction and equality behaviour of {@link Author}.
  *
- * <p><b>Test double strategy:</b> {@link CountryID} is replaced with a test double
+ * <p><b>Test double strategy:</b> {@link CountryId} is replaced with a test double
  * via {@code mock(Country.class)} declared as a field. Because JUnit 5 creates a
  * new instance of the test class before each test method, the double is automatically
  * fresh for every test — no {@code @BeforeEach} or {@code @ExtendWith} required.
@@ -27,13 +27,13 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
  *       different country, different date of birth</li>
  * </ul>
  *
- * <p><b>What is NOT tested here:</b> the internal behaviour of {@link CountryID}.
+ * <p><b>What is NOT tested here:</b> the internal behaviour of {@link CountryId}.
  * That class has its own dedicated test class. The test double exists purely to
  * isolate {@link Author} from that dependency.
  */
 class AuthorTest {
 
-    CountryID countryDouble = mock(CountryID.class);
+    CountryId countryDouble = mock(CountryId.class);
 
     // ========================================
     // CONSTRUCTOR TESTS
@@ -375,7 +375,7 @@ class AuthorTest {
     @Test
     void sameAs_shouldHaveSameIdentity_whenAllFieldsAreEqual() {
         // arrange
-        CountryID sameCountryDouble = mock(CountryID.class);
+        CountryId sameCountryDouble = mock(CountryId.class);
         LocalDate dob = LocalDate.of(1990,4, 4);
 
         Author a1 = new Author("Jane", sameCountryDouble, dob, "bio");
@@ -419,7 +419,7 @@ class AuthorTest {
     @Test
     void sameAs_shouldNotHaveSameIdentity_whenCountryIsDifferent() {
         // arrange
-        CountryID otherCountry = mock(CountryID.class);
+        CountryId otherCountry = mock(CountryId.class);
         Author a1 = new Author("Jane", countryDouble, LocalDate.of(1990, 1, 1), "bio");
         Author a2 = new Author("Jane", otherCountry, LocalDate.of(1990, 1, 1), "bio");
 
