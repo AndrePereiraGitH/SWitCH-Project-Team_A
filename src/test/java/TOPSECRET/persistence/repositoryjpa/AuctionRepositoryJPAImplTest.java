@@ -227,7 +227,7 @@ class AuctionRepositoryJPAImplTest {
         when(auctionAssembler.toDomain(auctionDMDouble)).thenReturn(auctionDouble);
 
         // Act
-        List<Auction> result = repository.findByListingId(listingIds);
+        List<Auction> result = repository.findByListingIdIn(listingIds);
 
         // Assert
         assertEquals(1, result.size());
@@ -238,7 +238,7 @@ class AuctionRepositoryJPAImplTest {
     @Test
     void findByListingId_shouldThrowWhenNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repository.findByListingId(null));
+        assertThrows(IllegalArgumentException.class, () -> repository.findByListingIdIn(null));
     }
 
     @Test
@@ -249,7 +249,7 @@ class AuctionRepositoryJPAImplTest {
         when(auctionRepoJPA.findByListingIdIn(listingIds)).thenReturn(List.of());
 
         // Act
-        List<Auction> result = repository.findByListingId(listingIds);
+        List<Auction> result = repository.findByListingIdIn(listingIds);
 
         // Assert
         assertTrue(result.isEmpty());

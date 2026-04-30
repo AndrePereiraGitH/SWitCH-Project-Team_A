@@ -88,5 +88,5 @@ public interface IAuctionRepository {
      *
      * @throws IllegalArgumentException if {@code listingIds} is {@code null}
      */
-    List<Auction> findByListingId(List<ListingId> listingIds);
+    List<Auction> findByListingIdIn(List<ListingId> listingIds);
 }

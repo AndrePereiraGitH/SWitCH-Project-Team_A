@@ -106,7 +106,7 @@ public class AuctionRepositoryMem implements IAuctionRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Auction> findByListingId(List<ListingId> listingIds) {
+    public List<Auction> findByListingIdIn(List<ListingId> listingIds) {
 
         if (listingIds == null) {
             throw new IllegalArgumentException("List of listingIds cannot be null.");

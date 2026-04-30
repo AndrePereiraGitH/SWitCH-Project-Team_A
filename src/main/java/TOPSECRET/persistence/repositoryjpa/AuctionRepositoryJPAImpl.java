@@ -114,7 +114,7 @@ public class AuctionRepositoryJPAImpl implements IAuctionRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Auction> findByListingId(List<ListingId> listingIds) {
+    public List<Auction> findByListingIdIn(List<ListingId> listingIds) {
 
         if (listingIds == null) {
             throw new IllegalArgumentException("ListingIds can't be null.");

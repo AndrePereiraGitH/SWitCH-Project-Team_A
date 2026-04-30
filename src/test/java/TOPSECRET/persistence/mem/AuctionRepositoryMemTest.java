@@ -195,7 +195,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act + assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findByListingId(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findByListingIdIn(null));
     }
 
     @Test
@@ -212,7 +212,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        List<Auction> result = repo.findByListingId(List.of(listingId1, listingId2));
+        List<Auction> result = repo.findByListingIdIn(List.of(listingId1, listingId2));
 
         // assert
         assertEquals(2, result.size());
@@ -235,7 +235,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        List<Auction> result = repo.findByListingId(List.of(listingId2));
+        List<Auction> result = repo.findByListingIdIn(List.of(listingId2));
 
         // assert
         assertEquals(1, result.size());
@@ -257,7 +257,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = instantiateAuctionRepository();
 
         // act
-        List<Auction> result = repo.findByListingId(List.of(nonExistingListingId));
+        List<Auction> result = repo.findByListingIdIn(List.of(nonExistingListingId));
 
         // assert
         assertNotNull(result);
@@ -270,7 +270,7 @@ class AuctionRepositoryMemTest {
         IAuctionRepository repo = new AuctionRepositoryMem();
 
         // act
-        List<Auction> result = repo.findByListingId(List.of(listingId));
+        List<Auction> result = repo.findByListingIdIn(List.of(listingId));
 
         // assert
         assertNotNull(result);
