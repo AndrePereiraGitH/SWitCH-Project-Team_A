@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -10,12 +12,14 @@ import java.util.Objects;
  * This class validates required fields in the constructor.
  */
 
+@Embeddable
+@NoArgsConstructor
 public class Address implements ValueObject {
 
-    private final String street;
-    private final String number;
-    private final String zipCode;
-    private final CityID cityID;
+    private String street;
+    private String number;
+    private String zipCode;
+    private CityID cityID;
 
     /**
      * Constructs a new {@code Address} with the given fields.

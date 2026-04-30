@@ -43,6 +43,25 @@ public class Publisher implements AggregateRoot<PublisherID> {
         _contact = contact;
     }
 
+    protected Publisher(PublisherID id, String name, String vatNumber, Contact contact) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("PublisherID cannot be null");
+        }
+        _publisherID = id;
+
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Not a valid name");
+        }
+        _name=name;
+
+        if (vatNumber == null || vatNumber.isBlank()) {
+            throw new IllegalArgumentException("Not a valid vatNumber");
+        }
+        _vatNumber = vatNumber;
+        _contact = contact;
+    }
+
     public String getName() {
         return _name;
     }

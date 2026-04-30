@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
 
 /**
  * Value Object representing the contact information of a user,
@@ -16,6 +18,7 @@ import TOPSECRET.ddd.ValueObject;
  *     Contact contact = new Contact("987654321", "351", email, address);
  * </pre>
  */
+@Embeddable
 public class Contact implements ValueObject {
 
     private String _phoneNum;

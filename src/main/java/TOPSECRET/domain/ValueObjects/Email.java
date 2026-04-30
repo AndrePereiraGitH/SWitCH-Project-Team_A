@@ -1,6 +1,8 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
 
@@ -8,6 +10,8 @@ import java.util.regex.Pattern;
  * Represents an email address split into a username and a domain.
  * This class validates both parts before creating an Email object.
  */
+@Embeddable
+@NoArgsConstructor
 public class Email implements ValueObject {
 
     // The part before the '@' symbol (e.g. "john.doe")

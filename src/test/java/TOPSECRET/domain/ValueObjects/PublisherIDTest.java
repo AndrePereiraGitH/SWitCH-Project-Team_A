@@ -92,7 +92,7 @@ class PublisherIDTest {
         PublisherID publisherID = new PublisherID("123456789");
 
         // Act + Assert
-        assertNotEquals(null, publisherID);
+        assertFalse(publisherID.equals(null));
     }
 
     @Test
@@ -101,7 +101,7 @@ class PublisherIDTest {
         PublisherID publisherID = new PublisherID("123456789");
 
         // Act + Assert
-        assertNotEquals("123456789", publisherID);
+        assertFalse(publisherID.equals("123456789"));
     }
 
     // -------------------------------------------------------------------------
@@ -137,5 +137,18 @@ class PublisherIDTest {
 
         // Act + Assert
         assertEquals(publisherID.getId(), publisherID.getId());
+    }
+
+    // -------------------------------------------------------------------------
+    // No-args constructor (required by JPA for @Embeddable)
+    // -------------------------------------------------------------------------
+
+    @Test
+    void noArgsConstructor_shouldCreateInstance_forJpaUsage() {
+        // Act
+        PublisherID publisherID = new PublisherID();
+
+        // Assert
+        assertNotNull(publisherID);
     }
 }

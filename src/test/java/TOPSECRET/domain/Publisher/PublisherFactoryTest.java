@@ -1,6 +1,7 @@
 package TOPSECRET.domain.Publisher;
 
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -125,5 +126,21 @@ class PublisherFactoryTest {
         // Assert
         assertNotNull(publisher);
         assertNull(publisher.getContact());
+    }
+
+    @Test
+    void create_withId_shouldReturnPublisher_whenAllFieldsAreValid() {
+        // Arrange
+        PublisherFactory factory = new PublisherFactory();
+        PublisherID id = new PublisherID("123456789");
+        Contact contact = mock(Contact.class);
+
+        // Act
+        Publisher result = factory.create(id, "Penguin Books", "123456789", contact);
+
+        // Assert
+        assertNotNull(result);
+        assertSame(id, result.id());
+        assertEquals("Penguin Books", result.getName());
     }
 }

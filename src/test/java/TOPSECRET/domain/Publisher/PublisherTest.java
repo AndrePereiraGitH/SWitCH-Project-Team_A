@@ -38,7 +38,7 @@ class PublisherTest {
     }
 
     // -------------------------------------------------------------------------
-    // Constructor
+    // Constructor (creation)
     // -------------------------------------------------------------------------
 
     @Test
@@ -82,6 +82,71 @@ class PublisherTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(name, null, contact));
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructor (reconstruction)
+    // -------------------------------------------------------------------------
+
+    @Test
+    void reconstructionConstructor_shouldCreatePublisher_whenAllFieldsAreValid() {
+        // Arrange
+        PublisherID id = new PublisherID(vatNumber);
+
+        // Act
+        Publisher result = new Publisher(id, name, vatNumber, contact);
+
+        // Assert
+        assertNotNull(result);
+        assertSame(id, result.id());
+        assertEquals(name, result.getName());
+    }
+
+    @Test
+    void reconstructionConstructor_shouldThrowException_whenIdIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Publisher(null, name, vatNumber, contact));
+    }
+
+    @Test
+    void reconstructionConstructor_shouldThrowException_whenNameIsNull() {
+        // Arrange
+        PublisherID id = new PublisherID(vatNumber);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Publisher(id, null, vatNumber, contact));
+    }
+
+    @Test
+    void reconstructionConstructor_shouldThrowException_whenNameIsBlank() {
+        // Arrange
+        PublisherID id = new PublisherID(vatNumber);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Publisher(id, "", vatNumber, contact));
+    }
+
+    @Test
+    void reconstructionConstructor_shouldThrowException_whenVatNumberIsNull() {
+        // Arrange
+        PublisherID id = new PublisherID(vatNumber);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Publisher(id, name, null, contact));
+    }
+
+    @Test
+    void reconstructionConstructor_shouldThrowException_whenVatNumberIsBlank() {
+        // Arrange
+        PublisherID id = new PublisherID(vatNumber);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Publisher(id, name, "", contact));
     }
 
     // -------------------------------------------------------------------------
