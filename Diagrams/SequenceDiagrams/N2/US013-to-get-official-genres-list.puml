@@ -1,53 +1,99 @@
 @startuml
-hide footbox
 autonumber
-
-title US013 - Get Official Genres List
+hide footbox
+title Get Official Genres List (with JPA)
 
 actor Administrator as User
-participant ":UI013" as UI
-participant ":US013ToGetListOfGenresController" as Controller
-participant ":GenreRepository" as GenreRepo
-participant "allGenreList: List<Genre>" as allGenreList
-participant ":US013GenreMapper" as GenreMapper
-participant "genreDTO: List<US013GenreDTO>" as GenreDTO
-participant ":Genre" as Genre
-participant "genreDTO: US013GenreDTO" as GDTO
 
-User -> UI : I want to see all official genres in the system.
-    activate UI
+participant ":UI" as UI
+participant ":ToGetListOfGenres\nController" as C
+participant ":IGenre\nRepository" as GR
+participant ":IGenre\nRepositoryJPA" as GRJPA
+participant ":Genre\nAssembler" as Assembler
+participant ":Genre\nFactory" as Factory
+participant ":US013Genre\nMapper" as MAPPER
+participant ":Genre" as ENTITY
+participant "DataBase" as EM
 
-UI -> Controller : getAllGenres()
-activate Controller
+User -> UI : I want to see all official\n genres in the system
+activate UI
 
-Controller -> GenreRepo : getAllGenres()
-activate GenreRepo
-GenreRepo -->> allGenreList ** : <<create>>
-GenreRepo --> Controller : allGenreList
-deactivate GenreRepo
+UI -> C : getAllGenres()
+activate C
 
-Controller -> GenreMapper : toDTO(allGenreList)
-activate GenreMapper
+C -> GR : getAllGenres()
+activate GR
 
-GenreMapper -->> GenreDTO ** : <<create>>
+GR -> GRJPA : getAllGenres()
+activate GRJPA
 
-loop for each genre in the list
-    GenreMapper -> Genre : getGenreType()
-    activate Genre
-    Genre --> GenreMapper : genreType
-    deactivate Genre
+GRJPA -> EM : Query
+activate EM
 
-    GenreMapper -->> GDTO ** : <<create>>
+note over EM
+Query database (SELECT * FROM genre)
+end note
 
-    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+EM --> GRJPA : data
+deactivate EM
+
+GRJPA -->> "genresPersisted : List<libraryDM>"** : <<create>>
+
+
+GRJPA --> GR : genresPersisted
+deactivate GRJPA
+
+GR -> Assembler : toDomainList\n(genresPersisted)
+activate Assembler
+
+create "listOfGenre:\nList<Genre>" as listDomain
+Assembler -->> listDomain : <<create>>
+
+loop for each genresPersisted
+    Assembler -> Factory : create(GenreId, String genreType)
+
+    activate Factory
+
+    create "genreDomain\n:Genre" as genreDomain
+    Factory -->> genreDomain : <<create>>
+
+    Factory --> Assembler : genreDomain
+    deactivate Factory
+
+    Assembler -> listDomain : add(genreDomain)
 end
 
-GenreMapper --> Controller : List<GenreDTO>
-deactivate GenreMapper
+Assembler --> GR : listDomain
+deactivate Assembler
 
-Controller --> UI : List<GenreDTO>
-deactivate Controller
+GR --> C : listDomain
+deactivate GR
 
-UI --> User : Here's the list of available genres!
-    deactivate UI
+C -> MAPPER : toDTOList(listDomain)
+activate MAPPER
+
+create "listOfGenreDTO:\nList<US013GenreDTO>" as listDTO
+MAPPER -->> listDTO : <<create>>
+
+loop for each Genre
+    MAPPER -> ENTITY : getGenreType()
+    activate ENTITY
+    ENTITY --> MAPPER : genreType
+    deactivate ENTITY
+
+    create "genreDTO:\nUS013GenreDTO" as genreDTO
+    MAPPER -> genreDTO : toDTO()
+
+    MAPPER -> listDTO : add(genreDTO)
+end
+
+MAPPER --> C : listOfGenreDTO
+deactivate MAPPER
+
+C --> UI : listOfGenreDTO
+deactivate C
+
+UI --> User : Here's the list of\n available genres!
+deactivate UI
+
 @enduml
