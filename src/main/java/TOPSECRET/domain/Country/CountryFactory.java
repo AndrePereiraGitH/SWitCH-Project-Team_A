@@ -1,6 +1,7 @@
 package TOPSECRET.domain.Country;
 
 import TOPSECRET.domain.ValueObjects.CountryID;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory responsible for creating {@link Country} aggregate instances.
@@ -15,6 +16,7 @@ import TOPSECRET.domain.ValueObjects.CountryID;
  * for example, when multiple users select the same country from a list.
  * </p>
  */
+@Component
 public class CountryFactory {
 
     /**
