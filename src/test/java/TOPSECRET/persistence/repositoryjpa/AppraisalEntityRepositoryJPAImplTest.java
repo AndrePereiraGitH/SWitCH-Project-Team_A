@@ -7,6 +7,10 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.AppraisalEntityDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IAppraisalEntityRepositoryJPA;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,26 +49,23 @@ import static org.mockito.Mockito.*;
  * repository logic and verify interactions.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class AppraisalEntityRepositoryJPAImplTest {
 
-    // HELPER
-    private final IAppraisalEntityRepositoryJPA jpaRepo = mock(IAppraisalEntityRepositoryJPA.class);
-    private final AppraisalEntityAssembler assembler = mock(AppraisalEntityAssembler.class);
+    @Mock
+    private  IAppraisalEntityRepositoryJPA jpaRepo;
 
-    private final AppraisalEntityRepositoryJPAImpl repository =
-            new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
+    @Mock
+    private AppraisalEntityAssembler assembler;
+
+    @InjectMocks
+    private AppraisalEntityRepositoryJPAImpl repository;
 
     private AppraisalEntity entity() {
         return mock(AppraisalEntity.class);
     }
-
-    private AppraisalEntityDM dm() {
-        return mock(AppraisalEntityDM.class);
-    }
-
-    private AppraisalEntityId id() {
-        return new AppraisalEntityId("1");
-    }
+    private AppraisalEntityDM dm() {return mock(AppraisalEntityDM.class);}
+    private AppraisalEntityId id() {return new AppraisalEntityId("1");}
 
     // SAVE
     @Test
@@ -73,6 +74,9 @@ class AppraisalEntityRepositoryJPAImplTest {
         // ARRANGE
         AppraisalEntity entity = entity();
         AppraisalEntityDM dm = dm();
+
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         when(assembler.toDataModel(entity)).thenReturn(dm);
         when(jpaRepo.save(dm)).thenReturn(dm);
@@ -89,6 +93,8 @@ class AppraisalEntityRepositoryJPAImplTest {
     void saveShouldThrowWhenNull() {
 
         // ARRANGE
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -102,6 +108,9 @@ class AppraisalEntityRepositoryJPAImplTest {
         // ARRANGE
         AppraisalEntityDM dm = dm();
         AppraisalEntity entity = entity();
+
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         when(jpaRepo.findById(id())).thenReturn(Optional.of(dm));
         when(assembler.toDomain(dm)).thenReturn(entity);
@@ -118,6 +127,9 @@ class AppraisalEntityRepositoryJPAImplTest {
     void findByIdShouldReturnEmpty() {
 
         // ARRANGE
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
+
         when(jpaRepo.findById(id())).thenReturn(Optional.empty());
 
         // ACT
@@ -131,6 +143,8 @@ class AppraisalEntityRepositoryJPAImplTest {
     void findByIdShouldThrowWhenNull() {
 
         // ARRANGE
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -144,6 +158,9 @@ class AppraisalEntityRepositoryJPAImplTest {
         // ARRANGE
         AppraisalEntityDM dm = dm();
         AppraisalEntity entity = entity();
+
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         when(jpaRepo.findAll()).thenReturn(List.of(dm));
         when(assembler.toDomain(dm)).thenReturn(entity);
@@ -161,6 +178,9 @@ class AppraisalEntityRepositoryJPAImplTest {
     void existsByIdShouldReturnTrue() {
 
         // ARRANGE
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
+
         when(jpaRepo.existsById(id())).thenReturn(true);
 
         // ACT
@@ -174,6 +194,8 @@ class AppraisalEntityRepositoryJPAImplTest {
     void existsByIdShouldThrowWhenNull() {
 
         // ARRANGE
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -205,18 +227,15 @@ class AppraisalEntityRepositoryJPAImplTest {
     void shouldReturnTrueWhenEntityExists() {
 
         // ARRANGE
-        IAppraisalEntityRepositoryJPA jpa = mock(IAppraisalEntityRepositoryJPA.class);
-        AppraisalEntityAssembler assembler = mock(AppraisalEntityAssembler.class);
-
-        AppraisalEntityRepositoryJPAImpl repo =
-                new AppraisalEntityRepositoryJPAImpl(jpa, assembler);
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         AppraisalEntityId id = mock(AppraisalEntityId.class);
 
-        when(jpa.existsById(id)).thenReturn(true);
+        when(jpaRepo.existsById(id)).thenReturn(true);
 
         // ACT
-        boolean result = repo.existsById(id);
+        boolean result = repository.existsById(id);
 
         // ASSERT
         assertTrue(result);
@@ -226,18 +245,15 @@ class AppraisalEntityRepositoryJPAImplTest {
     void shouldReturnFalseWhenEntityDoesNotExist() {
 
         // ARRANGE
-        IAppraisalEntityRepositoryJPA jpa = mock(IAppraisalEntityRepositoryJPA.class);
-        AppraisalEntityAssembler assembler = mock(AppraisalEntityAssembler.class);
-
-        AppraisalEntityRepositoryJPAImpl repo =
-                new AppraisalEntityRepositoryJPAImpl(jpa, assembler);
+        AppraisalEntityRepositoryJPAImpl repository =
+                new AppraisalEntityRepositoryJPAImpl(jpaRepo, assembler);
 
         AppraisalEntityId id = mock(AppraisalEntityId.class);
 
-        when(jpa.existsById(id)).thenReturn(false);
+        when(jpaRepo.existsById(id)).thenReturn(false);
 
         // ACT
-        boolean result = repo.existsById(id);
+        boolean result = repository.existsById(id);
 
         // ASSERT
         assertFalse(result);

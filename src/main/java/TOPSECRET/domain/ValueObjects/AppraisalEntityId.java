@@ -11,7 +11,7 @@ import java.util.Objects;
  * Ensures the ID is not null or blank.
  */
 @Embeddable
-public class AppraisalEntityId implements DomainID, Serializable {
+public class AppraisalEntityId implements DomainID {
 
     private String ap_id;
 

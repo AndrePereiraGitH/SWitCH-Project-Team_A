@@ -4,6 +4,10 @@ import TOPSECRET.domain.AppraisalEntity.*;
 import TOPSECRET.domain.ValueObjects.*;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,42 +39,30 @@ import static org.mockito.Mockito.*;
  * service logic and verify interactions.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class AppraisalEntityServiceTest {
 
-    // HELPER
-    private final IAppraisalEntityRepository repository = mock(IAppraisalEntityRepository.class);
-    private final AppraisalEntityFactory factory = mock(AppraisalEntityFactory.class);
+    @Mock
+    private IAppraisalEntityRepository repository;
 
-    private final AppraisalEntityService service =
-            new AppraisalEntityService(repository, factory);
+    @Mock
+    private AppraisalEntityFactory factory;
 
-    private Contact contact() {
-        return mock(Contact.class);
-    }
+    @InjectMocks
+    private AppraisalEntityService service;
 
-    private List<PublicationTypeId> pubs() {
-        return List.of(mock(PublicationTypeId.class));
-    }
-
-    private List<GenreID> genres() {
-        return List.of(mock(GenreID.class));
-    }
-
-    private AppraisalEntity entity() {
-        return mock(AppraisalEntity.class);
-    }
-
-    private AppraisalEntityId id() {
-        return new AppraisalEntityId("1");
-    }
+    // HELPERS
+    private Contact contact() {return mock(Contact.class);}
+    private List<PublicationTypeId> pubs() {return List.of(mock(PublicationTypeId.class));}
+    private List<GenreID> genres() {return List.of(mock(GenreID.class));}
+    private AppraisalEntity entity() {return mock(AppraisalEntity.class);}
+    private AppraisalEntityId id() {return new AppraisalEntityId("1");}
 
     // CREATE
     @Test
     void create_shouldCreateAndSaveEntity() {
 
         // ARRANGE
-        IAppraisalEntityRepository repository = mock(IAppraisalEntityRepository.class);
-        AppraisalEntityFactory factory = mock(AppraisalEntityFactory.class);
         AppraisalEntityService service =
                 new AppraisalEntityService(repository, factory);
 
@@ -101,6 +93,8 @@ class AppraisalEntityServiceTest {
     void updateShouldUpdateAndSaveEntity() {
         // ARRANGE
         AppraisalEntity entity = entity();
+        AppraisalEntityService service =
+                new AppraisalEntityService(repository, factory);
 
         when(repository.findById(id())).thenReturn(Optional.of(entity));
         when(repository.save(entity)).thenReturn(entity);
@@ -124,6 +118,9 @@ class AppraisalEntityServiceTest {
         // ARRANGE
         when(repository.findById(id())).thenReturn(Optional.empty());
 
+        AppraisalEntityService service =
+                new AppraisalEntityService(repository, factory);
+
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
                 service.update(id(), "Name", contact(), pubs(), genres())
@@ -132,6 +129,9 @@ class AppraisalEntityServiceTest {
 
     @Test
     void updateShouldThrowWhenIdNull() {
+        // ARRANGE
+        AppraisalEntityService service =
+                new AppraisalEntityService(repository, factory);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
