@@ -47,16 +47,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Saves an Edition aggregate to the database.
-     *
-     * <p>
-     * The Edition is first converted into a persistence data model,
-     * then stored using JPA, and finally converted back into a
-     * domain object.
-     * </p>
-     *
-     * @param edition the Edition to be saved
-     * @return the persisted Edition
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -76,12 +67,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Checks whether an Edition exists with the given identifier.
-     *
-     * @param id the unique identifier of the Edition; must not be null
-     * @return {@code true} if an Edition with the given ID exists, {@code false} otherwise
-     *
-     * @throws NullPointerException if {@code id} is null
+     * {@inheritDoc}
      */
     @Override
     public boolean existsById(EditionID id) {
@@ -94,11 +80,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Retrieves an Edition by its identifier.
-     *
-     * @param editionID the identifier of the Edition
-     * @return an Optional containing the Edition if found,
-     *         or empty if no Edition exists with the given ID
+     * {@inheritDoc}
      */
     @Override
     public Optional<Edition> findById(EditionID editionID) {
@@ -114,15 +96,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Retrieves all Edition aggregates stored in the repository.
-     *
-     * <p>
-     * The returned list contains all persisted editions. If no editions exist,
-     * an empty list is returned instead of {@code null}.
-     * </p>
-     *
-     * @return an immutable list of all {@link Edition} instances;
-     *         never {@code null}, but may be empty
+     * {@inheritDoc}
      */
     @Override
     public List<Edition> findAll() {
@@ -137,15 +111,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Retrieves all Edition identifiers associated with a given Publisher.
-     *
-     * <p>
-     * This method searches all persisted editions and returns the IDs
-     * of those that match the provided publisher identifier.
-     * </p>
-     *
-     * @param publisherId the identifier of the Publisher
-     * @return a list of EditionIDs belonging to the given Publisher
+     * {@inheritDoc}
      */
     @Override
     public List<EditionID> findIdsByPublisherId(PublisherID publisherId) {
@@ -166,19 +132,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Retrieves all Edition aggregates associated with the given publication type.
-     *
-     * <p>
-     * This method queries the persistence layer for all {@link EditionDM} entities
-     * matching the provided {@link PublicationTypeId}, and converts them into
-     * domain {@link Edition} objects using the assembler.
-     * </p>
-     *
-     * @param publicationTypeId the identifier of the publication type; must not be null
-     * @return a list of {@link Edition} matching the given publication type;
-     *         never {@code null}, but may be empty
-     *
-     * @throws IllegalArgumentException if {@code publicationTypeId} is null
+     * {@inheritDoc}
      */
     @Override
     public List<Edition> findByPublicationTypeId(PublicationTypeId publicationTypeId) {
@@ -192,19 +146,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
     }
 
     /**
-     * Retrieves all Edition aggregates associated with the given publisher.
-     *
-     * <p>
-     * This method queries the persistence layer for all {@link EditionDM} entities
-     * matching the provided {@link PublisherID}, and converts them into
-     * domain {@link Edition} objects using the assembler.
-     * </p>
-     *
-     * @param publisherId the identifier of the publisher; must not be null
-     * @return a list of {@link Edition} belonging to the given publisher;
-     *         never {@code null}, but may be empty
-     *
-     * @throws IllegalArgumentException if {@code publisherId} is null
+     * {@inheritDoc}
      */
     @Override
     public List<Edition> findByPublisherId(PublisherID publisherId) {

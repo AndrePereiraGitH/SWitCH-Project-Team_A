@@ -53,12 +53,6 @@ public class EditionID implements DomainID {
         return Objects.equals(editionID, that.editionID);
     }
 
-    /**
-     * Returns the identifier value.
-     *
-     * @return the edition ID as a String
-     */
     public String getID(){return editionID;}
-
 
 }
