@@ -88,7 +88,7 @@ public class ToPutPublicationInDirectSaleController {
     public List<US015PublicationSampleDTO> findLibraryPublicationsAvailableForSale(UserId userId) throws InstanceNotFoundException {
 
         // finds user library
-        Library library = _libraryRepo.getLibraryByUserId(userId);
+        Library library = _libraryRepo.getByUserId(userId);
 
         // finds publication samples in that library available for sale
         List<PublicationSample> availablePubSamples = _pubSampleRepo.findAvailableForSaleByLibraryId(library.id());

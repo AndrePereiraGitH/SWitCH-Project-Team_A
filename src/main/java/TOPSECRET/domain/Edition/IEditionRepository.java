@@ -1,11 +1,8 @@
 package TOPSECRET.domain.Edition;
 
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -15,21 +12,30 @@ import java.util.Optional;
  */
 
 public interface IEditionRepository {
+
     /**
-     * Creates a new {@link Edition} with the given data and adds it to the repository.
+     * Saves an Edition aggregate to the database.
      *
-     * @param editionNumber the edition number identifier
-     * @param code the unique code associated with the edition
-     * @param physicalAttributes the physical attributes of the edition
-     * @param publicationTypeId the type of publication
-     * @param publisherID the publisher responsible for the edition
-     * @param editionLanguage the language of the edition
-     * @param editionDate the publication date of the edition
-     * @param typeOfBinding the type of binding used in the edition
-     * @return a list of created and stored {@link Edition} objects
+     * <p>
+     * The Edition is first converted into a persistence data model,
+     * then stored using JPA, and finally converted back into a
+     * domain object.
+     * </p>
+     *
+     * @param edition the Edition to be saved
+     * @return the persisted Edition
      */
-    List<Edition> createAndAddEdition(String editionNumber, Code code, PhysicalAttributes physicalAttributes, PublicationTypeId publicationTypeId,
-                                      PublisherID publisherID, String mediaFormat, Locale editionLanguage, LocalDate editionDate, TypeOfBinding typeOfBinding);
+    Edition save(Edition edition);
+
+    /**
+     * Checks whether an Edition exists with the given identifier.
+     *
+     * @param id the unique identifier of the Edition; must not be null
+     * @return {@code true} if an Edition with the given ID exists, {@code false} otherwise
+     *
+     * @throws NullPointerException if {@code id} is null
+     */
+    boolean existsById(EditionID id);
 
     /**
      * Finds an edition by its unique identifier.
@@ -39,7 +45,20 @@ public interface IEditionRepository {
      *         or an empty {@link Optional} if no edition with the given ID exists
      * @throws NullPointerException if {@code editionID} is {@code null}
      */
-    Optional<Edition> findEditionById(EditionID editionID);
+    Optional<Edition> findById(EditionID editionID);
+
+    /**
+     * Retrieves all Edition aggregates stored in the repository.
+     *
+     * <p>
+     * The returned list contains all persisted editions. If no editions exist,
+     * an empty list is returned instead of {@code null}.
+     * </p>
+     *
+     * @return an immutable list of all {@link Edition} instances;
+     *         never {@code null}, but may be empty
+     */
+    List<Edition> findAll();
 
     /**
      * Retrieves all {@link EditionID} values associated with the given {@link PublisherID}.
@@ -56,5 +75,25 @@ public interface IEditionRepository {
      *
      * @throws IllegalArgumentException if {@code publisherId} is null
      */
-    List<EditionID> findEditionIdsByPublisherId(PublisherID publisherId);
+    List<EditionID> findIdsByPublisherId(PublisherID publisherId);
+
+    /**
+     * Finds all Edition aggregates associated with the given publisher.
+     *
+     * @param publisherId the publisher identifier; must not be null
+     * @return a list of matching {@link Edition}; never {@code null}, may be empty
+     *
+     *
+     */
+    List<Edition> findByPublisherId(PublisherID publisherId);
+
+    /**
+     * Finds all Edition aggregates associated with the given publication type.
+     *
+     * @param publicationTypeId the publication type identifier; must not be null
+     * @return a list of matching {@link Edition}; never {@code null}, may be empty
+     *
+     * @throws NullPointerException if {@code publicationTypeIdDouble} is null
+     */
+    List<Edition> findByPublicationTypeId(PublicationTypeId publicationTypeId);
 }
