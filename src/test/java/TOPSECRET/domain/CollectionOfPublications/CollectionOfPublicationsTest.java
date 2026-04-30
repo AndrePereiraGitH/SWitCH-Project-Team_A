@@ -2,7 +2,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -93,7 +93,7 @@ class CollectionOfPublicationsTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreDouble, result.getCollectionGenre());
         assertEquals(userDouble, result.getOwnerId());
-        assertTrue(result.getIsPrivate());
+        assertTrue(result.isPrivate());
     }
 
     // ============================== end US017 ==============================
@@ -102,14 +102,15 @@ class CollectionOfPublicationsTest {
     @Test
     void shouldInitializeValidInstanceWithId() {
         // Arrange
-        CollectionOfPublicationsID collectionIdDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
         String name = "I like these books";
         GenreID genreDouble = mock(GenreID.class);
         UserId userDouble = mock(UserId.class);
+        boolean isPrivate = true;
 
         // Act
         CollectionOfPublications result =
-                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble);
+                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble, isPrivate);
 
         // Assert
         assertNotNull(result);
@@ -344,7 +345,7 @@ class CollectionOfPublicationsTest {
     }
 
     @Test
-    void getIsPrivateShouldReturnFalseAfterMakingCollectionPublic() {
+    void isPrivateShouldReturnFalseAfterMakingCollectionPublic() {
 
         // Arrange
         String name = "Works by Arthur C. Clarke";
@@ -358,7 +359,7 @@ class CollectionOfPublicationsTest {
         result.set_isPrivate();
 
         // Assert
-        assertFalse(result.getIsPrivate());
+        assertFalse(result.isPrivate());
     }
 
     @Test

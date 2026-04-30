@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
@@ -32,14 +32,14 @@ class CollectionOfPublicationsFactoryTest {
 
     private GenreID genreIdDouble;
     private UserId userIdDouble;
-    private CollectionOfPublicationsID collectionIdDouble;
+    private CollectionOfPublicationsId collectionIdDouble;
 
     @BeforeEach
     void setUp() {
 
         genreIdDouble = mock(GenreID.class);
         userIdDouble = mock(UserId.class);
-        collectionIdDouble = mock(CollectionOfPublicationsID.class);
+        collectionIdDouble = mock(CollectionOfPublicationsId.class);
     }
 
     // ===========================================================
@@ -62,7 +62,7 @@ class CollectionOfPublicationsFactoryTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreIdDouble, result.getCollectionGenre());
         assertEquals(userIdDouble, result.getOwnerId());
-        assertTrue(result.getIsPrivate());
+        assertTrue(result.isPrivate());
     }
 
     @Test
@@ -105,15 +105,16 @@ class CollectionOfPublicationsFactoryTest {
                 () -> factory.create("Fantasy Collection", genreIdDouble, null));
     }
 
-    // ===========================================================
-    // ========== Tests for create (recreate object) =============
-    // ===========================================================
+// ===========================================================
+// ========== Tests for create (recreate object) =============
+// ===========================================================
 
     @Test
     void recreateShouldReturnValidCollection() {
 
         // Arrange
         String name = "Fantasy Collection";
+        boolean isPrivate = true;
         factory = new CollectionOfPublicationsFactory();
 
         // Act
@@ -122,7 +123,8 @@ class CollectionOfPublicationsFactoryTest {
                         collectionIdDouble,
                         name,
                         genreIdDouble,
-                        userIdDouble
+                        userIdDouble,
+                        isPrivate
                 );
 
         // Assert
@@ -130,65 +132,66 @@ class CollectionOfPublicationsFactoryTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreIdDouble, result.getCollectionGenre());
         assertEquals(userIdDouble, result.getOwnerId());
+        assertEquals(isPrivate, result.isPrivate());
     }
 
     @Test
     void recreateShouldThrowExceptionWhenIdIsNull() {
-        //Arrange
+
         factory = new CollectionOfPublicationsFactory();
 
-        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         null,
                         "Fantasy Collection",
                         genreIdDouble,
-                        userIdDouble
+                        userIdDouble,
+                        true
                 ));
     }
 
     @Test
     void recreateShouldThrowExceptionWhenNameIsNull() {
-        //Arrange
+
         factory = new CollectionOfPublicationsFactory();
 
-        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         collectionIdDouble,
                         null,
                         genreIdDouble,
-                        userIdDouble
+                        userIdDouble,
+                        true
                 ));
     }
 
     @Test
     void recreateShouldThrowExceptionWhenGenreIdIsNull() {
-        //Arrange
+
         factory = new CollectionOfPublicationsFactory();
 
-        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         collectionIdDouble,
                         "Fantasy Collection",
                         null,
-                        userIdDouble
+                        userIdDouble,
+                        true
                 ));
     }
 
     @Test
     void recreateShouldThrowExceptionWhenUserIdIsNull() {
-        //Arrange
+
         factory = new CollectionOfPublicationsFactory();
 
-        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         collectionIdDouble,
                         "Fantasy Collection",
                         genreIdDouble,
-                        null
+                        null,
+                        true
                 ));
     }
 }

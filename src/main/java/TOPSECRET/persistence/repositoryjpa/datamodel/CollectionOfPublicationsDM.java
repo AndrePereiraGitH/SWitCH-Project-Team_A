@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import jakarta.persistence.*;
@@ -23,7 +23,7 @@ import java.util.Objects;
  * and the domain entity is handled by the corresponding assembler.</p>
  *
  * <p>The class is annotated as a JPA {@link Entity} and uses
- * {@link CollectionOfPublicationsID} as its embedded primary key.</p>
+ * {@link CollectionOfPublicationsId} as its embedded primary key.</p>
  *
  * <p>A protected no-args constructor is provided for JPA use only.</p>
  */
@@ -37,14 +37,14 @@ public class CollectionOfPublicationsDM {
      * Unique identifier of the collection.
      */
     @EmbeddedId
-    @AttributeOverride(name = "collectionOfPub_id", column = @Column(name = "collection_id"))
-    private CollectionOfPublicationsID collectionOfPub_id;
+    @AttributeOverride(name = "id", column = @Column(name = "collection_id"))
+    private CollectionOfPublicationsId id;
 
     /**
      * Name of the collection.
      */
-    @AttributeOverride(name = "collectionName", column = @Column(name = "collection_name"))
-    @Column(nullable = false)
+    @AttributeOverride(name = "collectionName", column = @Column(name = "collection_name",
+            nullable = false))
     private String collectionName;
 
     /**
@@ -67,7 +67,6 @@ public class CollectionOfPublicationsDM {
      * <p>{@code true} means the collection is private and visible only
      * to the owner; {@code false} means it is public.</p>
      */
-    @Embedded //how do booleans work, is it all the same? Does "nullable" apply here too? Ask asap
     @AttributeOverride(name = "isPrivate", column = @Column(name = "is_private"))
     private boolean isPrivate;
 
@@ -84,11 +83,11 @@ public class CollectionOfPublicationsDM {
      *                           is private or public
      * @throws NullPointerException if any mandatory argument is null
      */
-    public CollectionOfPublicationsDM(CollectionOfPublicationsID collectionOfPub_id,
+    public CollectionOfPublicationsDM(CollectionOfPublicationsId collectionOfPub_id,
                                       String collectionName, GenreID genreID,
                                       UserId userId, boolean isPrivate) {
 
-        this.collectionOfPub_id = Objects.requireNonNull(collectionOfPub_id,
+        this.id = Objects.requireNonNull(collectionOfPub_id,
                 "collectionOfPublicationsId cannot be null");
 
         this.collectionName = Objects.requireNonNull(collectionName,

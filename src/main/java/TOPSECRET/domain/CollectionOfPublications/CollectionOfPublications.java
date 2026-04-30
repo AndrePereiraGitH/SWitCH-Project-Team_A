@@ -2,7 +2,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.ddd.AggregateRoot;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 
@@ -20,9 +20,9 @@ import java.util.UUID;
  * <p>This class also belongs to US018 (adding publications) and US019 (making it public),
  * but the core structure — name, genre, owner, and the private flag — comes from US017.
  */
-public class CollectionOfPublications implements AggregateRoot<CollectionOfPublicationsID> {
+public class CollectionOfPublications implements AggregateRoot<CollectionOfPublicationsId> {
 
-    private final CollectionOfPublicationsID _id;
+    private final CollectionOfPublicationsId _id;
     private String _collectionName;
     private GenreID _collectionGenreId;
     private final UserId _ownerId;
@@ -53,7 +53,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
             throw new IllegalArgumentException("User cannot be null.");
         }
 
-        this._id = new CollectionOfPublicationsID(UUID.randomUUID().toString());
+        this._id = new CollectionOfPublicationsId(UUID.randomUUID().toString());
         this._collectionName = collectionName;
         this._collectionGenreId = collectionGenreId;
         this._isPrivate = true;            // US017 rule: always private when created; US019 allows making it public
@@ -65,7 +65,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      *
      * <p>This constructor is intended for persistence reconstruction, allowing an
      * existing collection to be restored from stored data while preserving its
-     * original {@link CollectionOfPublicationsID}. It is typically used by factories
+     * original {@link CollectionOfPublicationsId}. It is typically used by factories
      * and repository implementations when rebuilding domain objects from the database.
      *
      * <p>All domain invariants are validated here to ensure the reconstructed object
@@ -85,8 +85,8 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      * @throws IllegalArgumentException if the user is null
      */
     protected CollectionOfPublications(
-            CollectionOfPublicationsID collectionOfPublicationsId, String collectionName,
-            GenreID collectionGenreId, UserId userId) {
+            CollectionOfPublicationsId collectionOfPublicationsId, String collectionName,
+            GenreID collectionGenreId, UserId userId, boolean isPrivate) {
 
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsId cannot be null.");
@@ -111,7 +111,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._ownerId = userId;
     }
 
-    public boolean getIsPrivate() {
+    public boolean isPrivate() {
         return _isPrivate;
     }
 
@@ -127,7 +127,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _ownerId;
     }
 
-    public CollectionOfPublicationsID id() {
+    public CollectionOfPublicationsId id() {
         return _id;
     }
 

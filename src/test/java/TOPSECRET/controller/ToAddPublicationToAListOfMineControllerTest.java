@@ -1,13 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
 import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018PublicationSampleMapper;
 
@@ -59,7 +57,7 @@ class ToAddPublicationToAListOfMineControllerTest {
                 new ToAddPublicationToAListOfMineController(
                         userId, collectionRepo, publicationRepo, publicationSampleMapper);
 
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
 
         PublicationSample publication = mock(PublicationSample.class);
         PublicationSampleId pubId = mock(PublicationSampleId.class);
@@ -111,7 +109,7 @@ class ToAddPublicationToAListOfMineControllerTest {
                 new ToAddPublicationToAListOfMineController(
                         userId, collectionRepo, publicationRepo, publicationSampleMapper);
 
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         PublicationSampleId publicationId = mock(PublicationSampleId.class);
 
         when(publicationRepo.assignPublicationsToCollection(
@@ -156,7 +154,7 @@ class ToAddPublicationToAListOfMineControllerTest {
                         mock(IPublicationSampleRepository.class),
                         mock(US018PublicationSampleMapper.class));
 
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -174,7 +172,7 @@ class ToAddPublicationToAListOfMineControllerTest {
                         mock(IPublicationSampleRepository.class),
                         mock(US018PublicationSampleMapper.class));
 
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -225,7 +223,7 @@ class ToAddPublicationToAListOfMineControllerTest {
                         userId, collectionRepo, publicationRepo, publicationSampleMapper
                 );
 
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         PublicationSampleId pubId = mock(PublicationSampleId.class);
 
         when(publicationRepo.assignPublicationsToCollection(collectionId, List.of(pubId)))

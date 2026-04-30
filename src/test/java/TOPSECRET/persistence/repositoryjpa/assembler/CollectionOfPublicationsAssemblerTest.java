@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
@@ -34,7 +34,7 @@ class CollectionOfPublicationsAssemblerTest {
     private CollectionOfPublicationsFactory factoryDouble;
     private CollectionOfPublicationsAssembler assembler;
 
-    private CollectionOfPublicationsID collectionIdDouble;
+    private CollectionOfPublicationsId collectionIdDouble;
     private GenreID genreIdDouble;
     private UserId userIdDouble;
 
@@ -43,7 +43,7 @@ class CollectionOfPublicationsAssemblerTest {
         factoryDouble = mock(CollectionOfPublicationsFactory.class);
         assembler = new CollectionOfPublicationsAssembler(factoryDouble);
 
-        collectionIdDouble = mock(CollectionOfPublicationsID.class);
+        collectionIdDouble = mock(CollectionOfPublicationsId.class);
         genreIdDouble = mock(GenreID.class);
         userIdDouble = mock(UserId.class);
     }
@@ -61,7 +61,7 @@ class CollectionOfPublicationsAssemblerTest {
         when(collectionDouble.getCollectionName()).thenReturn(collectionName);
         when(collectionDouble.getCollectionGenre()).thenReturn(genreIdDouble);
         when(collectionDouble.getOwnerId()).thenReturn(userIdDouble);
-        when(collectionDouble.getIsPrivate()).thenReturn(isPrivate);
+        when(collectionDouble.isPrivate()).thenReturn(isPrivate);
 
         // Act
         CollectionOfPublicationsDM result =
@@ -69,6 +69,12 @@ class CollectionOfPublicationsAssemblerTest {
 
         // Assert
         assertNotNull(result);
+    }
+
+    @Test
+    void toDMShouldThrowIfCollectionNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> assembler.toDM(null));
     }
 
     @Test
@@ -93,7 +99,8 @@ class CollectionOfPublicationsAssemblerTest {
                 collectionIdDouble,
                 collectionName,
                 genreIdDouble,
-                userIdDouble
+                userIdDouble,
+                isPrivate
         )).thenReturn(collectionDouble);
 
         // Act
@@ -102,5 +109,12 @@ class CollectionOfPublicationsAssemblerTest {
 
         // Assert
         assertNotNull(result);
+        assertSame(collectionDouble, result);
+    }
+
+    @Test
+    void toDomainShouldThrowIfCollectionDMIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> assembler.toDomain(null));
     }
 }

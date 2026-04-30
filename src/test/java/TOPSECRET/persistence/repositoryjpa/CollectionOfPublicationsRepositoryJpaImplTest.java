@@ -1,9 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CollectionOfPublicationsAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICollectionOfPublicationsRepositoryJpa;
@@ -12,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,6 +50,42 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+
+    @Test
+    void constructor_shouldThrowException_whenRepositoryIsNull() {
+
+        // Arrange
+        ICollectionOfPublicationsRepositoryJpa repoJpa = null;
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new CollectionOfPublicationsRepositoryJpaImpl(repoJpa, assembler)
+        );
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenAssemblerIsNull() {
+
+        // Arrange
+        CollectionOfPublicationsAssembler assembler = null;
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new CollectionOfPublicationsRepositoryJpaImpl(jpa, assembler)
+        );
+    }
+
+    @Test
+    void constructor_shouldCreateInstance_whenArgumentsAreValid() {
+
+        // Act
+        CollectionOfPublicationsRepositoryJpaImpl result =
+                new CollectionOfPublicationsRepositoryJpaImpl(jpa, assembler);
+
+        // Assert
+        assertNotNull(result);
+    }
+
     // ===========================================================
     // ========== Tests for save =================================
     // ===========================================================
@@ -62,7 +94,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void save_shouldReturnSavedCollection() {
 
         // Arrange
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsDM collectionDM = mock(CollectionOfPublicationsDM.class);
 
@@ -83,7 +115,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void save_shouldThrowWhenCollectionAlreadyExists() {
 
         // Arrange
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
         when(collection.id()).thenReturn(id);
@@ -110,7 +142,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void existsById_shouldReturnTrueWhenCollectionExists() {
 
         // Arrange
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         when(jpa.existsById(id)).thenReturn(true);
 
@@ -125,7 +157,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void existsById_shouldReturnFalseWhenCollectionDoesNotExist() {
 
         // Arrange
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         when(jpa.existsById(id)).thenReturn(false);
 

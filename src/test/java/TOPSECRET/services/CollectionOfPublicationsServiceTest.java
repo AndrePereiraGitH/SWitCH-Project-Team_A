@@ -53,6 +53,49 @@ class CollectionOfPublicationsServiceTest {
     }
 
     @Test
+    void constructorShouldThrowExceptionWhenRepositoryIsNull() {
+
+        // Arrange
+        ICollectionOfPublicationsRepository repo = null;
+        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new CollectionOfPublicationsService(repo, factory));
+
+        assertEquals("collectionOfPublicationsRepository cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void constructorShouldThrowExceptionWhenFactoryIsNull() {
+
+        // Arrange
+        ICollectionOfPublicationsRepository repo = mock(ICollectionOfPublicationsRepository.class);
+        CollectionOfPublicationsFactory factory = null;
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new CollectionOfPublicationsService(repo, factory));
+
+        assertEquals("factory cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void constructorShouldCreateInstanceWhenArgumentsAreValid() {
+
+        // Arrange
+        ICollectionOfPublicationsRepository repo = mock(ICollectionOfPublicationsRepository.class);
+        CollectionOfPublicationsFactory factory = mock(CollectionOfPublicationsFactory.class);
+
+        // Act
+        CollectionOfPublicationsService service =
+                new CollectionOfPublicationsService(repo, factory);
+
+        // Assert
+        assertNotNull(service);
+    }
+
+    @Test
     void createAndSaveShouldReturnACollectionOfPublications() {
 
         // Arrange

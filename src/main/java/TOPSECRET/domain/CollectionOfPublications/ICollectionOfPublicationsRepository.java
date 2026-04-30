@@ -1,11 +1,6 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.UserId;
-
-import java.util.List;
-import java.util.Optional;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 
 /**
  * Repository interface for managing {@link CollectionOfPublications} aggregates.
@@ -42,7 +37,7 @@ public interface ICollectionOfPublicationsRepository {
      * {@code false} otherwise
      * @throws NullPointerException if {@code collectionOfPublicationsID} is null
      */
-    boolean existsById(CollectionOfPublicationsID collectionOfPublicationsID);
+    boolean existsById(CollectionOfPublicationsId collectionOfPublicationsID);
 
     /**
      * Returns all collections owned by a given user — US019.

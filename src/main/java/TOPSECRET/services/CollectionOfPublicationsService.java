@@ -49,6 +49,15 @@ public class CollectionOfPublicationsService {
     public CollectionOfPublicationsService(
             ICollectionOfPublicationsRepository collectionOfPublicationsRepository,
             CollectionOfPublicationsFactory factory) {
+
+        if (collectionOfPublicationsRepository == null) {
+            throw new IllegalArgumentException("collectionOfPublicationsRepository cannot be null");
+        }
+
+        if (factory == null) {
+            throw new IllegalArgumentException("factory cannot be null");
+        }
+
         this.collectionOfPublicationsRepository = collectionOfPublicationsRepository;
         this.factory = factory;
     }

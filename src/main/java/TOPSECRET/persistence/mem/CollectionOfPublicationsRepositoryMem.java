@@ -2,51 +2,48 @@ package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 /**
- * Repository that stores and manages all collections of publications.
+ * In-memory implementation of {@link ICollectionOfPublicationsRepository}.
  *
- * <p>This class is shared across multiple user stories, each adding its own methods:
+ * <p>This repository stores {@link CollectionOfPublications} aggregates in a
+ * simple in-memory {@link java.util.List}, primarily for testing and development
+ * purposes. It does not involve any persistence framework or database.</p>
+ *
+ * <p>This class supports multiple user stories:
  * <ul>
- *   <li><b>US017</b> — create a new private collection for a user</li>
- *   <li><b>US018</b> — add a publication to an existing collection</li>
- *   <li><b>US019</b> — make a collection public</li>
- *   <li><b>US020</b> — find public collections by genre</li>
+ *   <li><b>US017</b> — store newly created collections</li>
+ *   <li><b>US018</b> — manage collections and their publications</li>
+ *   <li><b>US019</b> — update collection visibility (private/public)</li>
+ *   <li><b>US020</b> — query public collections by genre</li>
  * </ul>
  *
- * <p>The repository holds the internal list of all collections and uses a
- * {@link CollectionOfPublicationsFactory} to create new ones. The factory is injected
- * via the constructor so it can be replaced with a double in unit tests.
+ * <p>Object creation is not handled by this repository. Instead, it assumes that
+ * fully constructed {@link CollectionOfPublications} instances are provided by
+ * the application layer (typically via a service using
+ * {@link CollectionOfPublicationsFactory}). This keeps the repository focused
+ * solely on persistence concerns.</p>
+ *
+ * <p>This implementation is not thread-safe and is intended for non-concurrent
+ * scenarios such as unit testing.</p>
  */
 public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPublicationsRepository {
 
     private List<CollectionOfPublications> _collectionOfPublicationsList;
 
     /**
-     * Creates the repository with the factory it needs to build new collections — US017.
+     * Creates an empty in-memory repository.
      *
-     * <p>The factory is injected here instead of being created inside the class.
-     * This is called Dependency Injection — it means tests can pass a fake (double) factory
-     * and control what gets created, without touching the real domain class.
-     *
-     * @param factory the factory used to create {@link CollectionOfPublications} instances
-     * @throws IllegalArgumentException if factory is null
+     * <p>Initialises the internal collection storage. No external dependencies
+     * are required.</p>
      */
-
-    public CollectionOfPublicationsRepositoryMem(CollectionOfPublicationsFactory factory) {
-
-        if (factory == null) {
-            throw new IllegalArgumentException("CollectionOfPublicationsFactory cannot be null");
-        }
+    public CollectionOfPublicationsRepositoryMem() {
 
         _collectionOfPublicationsList = new ArrayList<>();
     }
@@ -67,7 +64,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
     /**
      * {@inheritDoc}
      */
-    public boolean existsById(CollectionOfPublicationsID collectionOfPublicationsId) {
+    public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsID cannot be null.");
         }

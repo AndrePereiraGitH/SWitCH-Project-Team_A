@@ -43,11 +43,15 @@ public class CollectionOfPublicationsAssembler {
      */
     public CollectionOfPublicationsDM toDM(CollectionOfPublications collection) {
 
+        if (collection == null) {
+            throw new IllegalArgumentException("Collection of Publications cannot be null");
+        }
+
         CollectionOfPublicationsDM collectionDM =
                 new CollectionOfPublicationsDM(
                         collection.id(), collection.getCollectionName(),
                         collection.getCollectionGenre(), collection.getOwnerId(),
-                        collection.getIsPrivate()
+                        collection.isPrivate()
                 );
 
         return collectionDM;
@@ -66,9 +70,14 @@ public class CollectionOfPublicationsAssembler {
      */
     public CollectionOfPublications toDomain(CollectionOfPublicationsDM collectionDM) {
 
+        if (collectionDM == null) {
+            throw new NullPointerException("CollectionOfPublicationsDM cannot be null");
+        }
+
         CollectionOfPublications collection = _factory.create(
-                collectionDM.getCollectionOfPub_id(), collectionDM.getCollectionName(),
-                collectionDM.getGenreID(), collectionDM.getUserId());
+                collectionDM.getId(), collectionDM.getCollectionName(),
+                collectionDM.getGenreID(), collectionDM.getUserId(),
+                collectionDM.isPrivate());
 
         return collection;
     }

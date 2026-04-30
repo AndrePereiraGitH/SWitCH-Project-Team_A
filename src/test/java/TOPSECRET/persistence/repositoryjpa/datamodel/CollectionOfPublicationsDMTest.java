@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  */
 class CollectionOfPublicationsDMTest {
 
-    private CollectionOfPublicationsID collectionId;
+    private CollectionOfPublicationsId collectionId;
     private String collectionName;
     private GenreID genreId;
     private UserId userId;
@@ -43,7 +43,7 @@ class CollectionOfPublicationsDMTest {
 
     @BeforeEach
     void setup() {
-        collectionId = mock(CollectionOfPublicationsID.class);
+        collectionId = mock(CollectionOfPublicationsId.class);
         collectionName = "Works by Tolkien";
         genreId = mock(GenreID.class);
         userId = mock(UserId.class);
@@ -156,7 +156,7 @@ class CollectionOfPublicationsDMTest {
                 );
 
         // Act + Assert
-        assertEquals(collectionId, result.getCollectionOfPub_id());
+        assertEquals(collectionId, result.getId());
     }
 
     @Test

@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * <p>This interface provides persistence operations for
  * {@link CollectionOfPublicationsDM} entities using
- * {@link CollectionOfPublicationsID} as the primary key type.</p>
+ * {@link CollectionOfPublicationsId} as the primary key type.</p>
  *
  * <p>By extending {@link JpaRepository}, it inherits standard CRUD
  * operations such as save, findById, existsById, findAll, and delete,
@@ -21,5 +21,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * the anti-corruption layer between persistence and the domain model.</p>
  */
 public interface ICollectionOfPublicationsRepositoryJpa
-        extends JpaRepository<CollectionOfPublicationsDM, CollectionOfPublicationsID> {
+        extends JpaRepository<CollectionOfPublicationsDM, CollectionOfPublicationsId> {
 }

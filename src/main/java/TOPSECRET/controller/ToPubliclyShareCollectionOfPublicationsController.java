@@ -1,12 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US019CollectionOfPublicationsDTO;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
-import TOPSECRET.dto.US019CollectionOfPublicationsMapper;
-import java.util.List;
 
 /**
  * Controller for US019: Publicly share a user's collection of publications.

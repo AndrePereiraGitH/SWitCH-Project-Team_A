@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CollectionOfPublicationsID implements DomainID {
+public class CollectionOfPublicationsId implements DomainID {
 
     private String collectionOfPub_id;
 
@@ -29,7 +29,7 @@ public class CollectionOfPublicationsID implements DomainID {
      * @throws IllegalArgumentException if {@code id} is null or blank
      */
 
-    public CollectionOfPublicationsID(String id) {
+    public CollectionOfPublicationsId(String id) {
 
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("ID cannot be null or blank");
@@ -58,8 +58,8 @@ public class CollectionOfPublicationsID implements DomainID {
         if (this == object)
             return true;
 
-        if (object instanceof CollectionOfPublicationsID) {
-            CollectionOfPublicationsID collectionOfPubId = (CollectionOfPublicationsID) object;
+        if (object instanceof CollectionOfPublicationsId) {
+            CollectionOfPublicationsId collectionOfPubId = (CollectionOfPublicationsId) object;
 
             if (this.collectionOfPub_id.equals(collectionOfPubId.collectionOfPub_id))
                 return true;

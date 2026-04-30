@@ -2,20 +2,14 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.US019CollectionOfPublicationsDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for the {@link ToPubliclyShareCollectionOfPublicationsController} class.
@@ -36,14 +30,14 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
     private ICollectionOfPublicationsRepository repositoryDouble;
     private ToPubliclyShareCollectionOfPublicationsController controller;
     private UserId testUserId;
-    private CollectionOfPublicationsID testCollectionId;
+    private CollectionOfPublicationsId testCollectionId;
 
     @BeforeEach
     void setUp() {
         repositoryDouble = mock(ICollectionOfPublicationsRepository.class);
         controller = new ToPubliclyShareCollectionOfPublicationsController(repositoryDouble);
         testUserId = mock(UserId.class);
-        testCollectionId = mock(CollectionOfPublicationsID.class);
+        testCollectionId = mock(CollectionOfPublicationsId.class);
     }
 
     // ============================================================

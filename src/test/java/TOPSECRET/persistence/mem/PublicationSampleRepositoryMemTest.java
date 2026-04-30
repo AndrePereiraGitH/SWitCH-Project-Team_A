@@ -1,7 +1,5 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Enum.Condition;
-import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -1433,7 +1431,7 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample p1 = mock(PublicationSample.class);
         PublicationSample p2 = mock(PublicationSample.class);
 
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         when(p1.id()).thenReturn(id_1);
         when(p2.id()).thenReturn(id_2);
@@ -1465,7 +1463,7 @@ class PublicationSampleRepositoryMemTest {
 
         // Act
         List<PublicationSample> result =
-                repo.findByCollectionOfPublicationsId(mock(CollectionOfPublicationsID.class));
+                repo.findByCollectionOfPublicationsId(mock(CollectionOfPublicationsId.class));
 
         // Assert
         assertTrue(result.isEmpty());
@@ -1480,7 +1478,7 @@ class PublicationSampleRepositoryMemTest {
         // Arrange
         PublicationSampleId id = mock(PublicationSampleId.class);
         PublicationSample p = mock(PublicationSample.class);
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         when(p.id()).thenReturn(id);
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
@@ -1502,7 +1500,7 @@ class PublicationSampleRepositoryMemTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repo.assignPublicationsToCollection(
-                        mock(CollectionOfPublicationsID.class),
+                        mock(CollectionOfPublicationsId.class),
                         List.of(mock(PublicationSampleId.class))));
     }
 
@@ -1524,7 +1522,7 @@ class PublicationSampleRepositoryMemTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repo.assignPublicationsToCollection(
-                        mock(CollectionOfPublicationsID.class), null));
+                        mock(CollectionOfPublicationsId.class), null));
     }
 
     @Test
@@ -1535,7 +1533,7 @@ class PublicationSampleRepositoryMemTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repo.assignPublicationsToCollection(
-                        mock(CollectionOfPublicationsID.class), new ArrayList<>()));
+                        mock(CollectionOfPublicationsId.class), new ArrayList<>()));
     }
 
     // ===========================================================
@@ -1546,7 +1544,7 @@ class PublicationSampleRepositoryMemTest {
     void shouldReturnOnlyPublicationsNotInCollection() {
         // Arrange
         UserId userId = mock(UserId.class);
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
 
         PublicationSampleId id_1 = mock(PublicationSampleId.class);
         PublicationSampleId id_2 = mock(PublicationSampleId.class);
