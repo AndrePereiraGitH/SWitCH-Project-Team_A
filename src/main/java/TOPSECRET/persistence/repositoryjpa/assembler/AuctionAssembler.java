@@ -133,7 +133,7 @@ public class AuctionAssembler {
         );
 
         // state attributes
-        List<Bid> bidHistory = auction.getBidHistory();
+        List<Bid> bidHistory = new ArrayList<>();
         for (BidDM bidDM : auctionDM.getBidHistory()) {
             Bid bid = auction.rehydrateBid(bidDM.getBidderId(), new Price(bidDM.getValue()), bidDM.getTimeOfBid());
             bidHistory.add(bid);
