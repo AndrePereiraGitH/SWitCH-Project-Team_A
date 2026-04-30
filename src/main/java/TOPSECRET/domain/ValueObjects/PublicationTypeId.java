@@ -2,6 +2,8 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -11,15 +13,10 @@ import java.util.Objects;
  * Ensures the ID is not null or blank.
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PublicationTypeId implements DomainID {
 
     private String pbType_id;
-
-    /**
-     * Required by JPA.
-     */
-    protected PublicationTypeId() {
-    }
 
     /**
      * Creates a PublicationTypeId with the given string.

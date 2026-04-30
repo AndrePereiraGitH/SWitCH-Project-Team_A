@@ -65,10 +65,11 @@ public class PublicationTypeAssembler {
      * Converts a Domain object into a Data Model.
      *
      * @param domain the domain object
+     *
      * @return a data model ready for persistence
      * @throws IllegalArgumentException if domain is null
      */
-    public PublicationTypeDM toDataModel(PublicationType domain) {
+    public PublicationTypeDM toDM(PublicationType domain) {
 
         if (domain == null) {
             throw new IllegalArgumentException("PublicationType cannot be null");

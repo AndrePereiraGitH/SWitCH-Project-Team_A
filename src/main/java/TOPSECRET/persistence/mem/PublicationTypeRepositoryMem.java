@@ -21,11 +21,7 @@ public class PublicationTypeRepositoryMem implements IPublicationTypeRepository 
     private final List<PublicationType> publicationTypes = new ArrayList<>();
 
     /**
-     * Saves a publication type in memory.
-     *
-     * @param pubType the publication type to persist; must not be null
-     * @return the persisted {@link PublicationType}
-     * @throws IllegalArgumentException if {@code pubType} is null
+     * {@inheritDoc}
      */
     @Override
     public PublicationType save(PublicationType pubType) {

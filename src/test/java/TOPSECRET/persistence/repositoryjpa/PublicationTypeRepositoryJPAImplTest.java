@@ -8,6 +8,10 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IPublicationTypeRepositoryJPA;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,14 +49,17 @@ import static org.mockito.Mockito.*;
  * repository logic and verify interactions.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class PublicationTypeRepositoryJPAImplTest {
 
-    // HELPER
-    private final IPublicationTypeRepositoryJPA jpaRepository = mock(IPublicationTypeRepositoryJPA.class);
-    private final PublicationTypeAssembler assembler = mock(PublicationTypeAssembler.class);
+    @Mock
+    private IPublicationTypeRepositoryJPA jpaRepository;
 
-    private final PublicationTypeRepositoryJPAImpl repository =
-            new PublicationTypeRepositoryJPAImpl(jpaRepository, assembler);
+    @Mock
+    private PublicationTypeAssembler assembler;
+
+    @InjectMocks
+    private PublicationTypeRepositoryJPAImpl repository;
 
     // SAVE
     @Test
@@ -62,7 +69,7 @@ class PublicationTypeRepositoryJPAImplTest {
         PublicationType domain = mock(PublicationType.class);
         PublicationTypeDM dm = mock(PublicationTypeDM.class);
 
-        when(assembler.toDataModel(domain)).thenReturn(dm);
+        when(assembler.toDM(domain)).thenReturn(dm);
         when(jpaRepository.save(dm)).thenReturn(dm);
         when(assembler.toDomain(dm)).thenReturn(domain);
 
