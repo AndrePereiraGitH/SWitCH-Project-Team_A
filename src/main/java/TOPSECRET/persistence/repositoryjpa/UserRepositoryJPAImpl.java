@@ -1,10 +1,11 @@
-package TOPSECRET.persistence.repositoryjpa.jpa;
+package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.UserAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.UserDM;
+import TOPSECRET.persistence.repositoryjpa.jpa.IUserRepositoryJPA;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
@@ -61,7 +62,7 @@ public class UserRepositoryJPAImpl implements IUserRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findUserByID(UserId userID) {
+    public Optional<User> findByID(UserId userID) {
         Objects.requireNonNull(userID, "UserId cannot be null");
 
         return userRepositoryJpa.findById(userID)
@@ -78,6 +79,7 @@ public class UserRepositoryJPAImpl implements IUserRepository {
         }
 
         return userRepositoryJpa.findByUserName(username)
-                .map(UserDM::getId);
+                .map(assembler::toDomain)
+                .map(User::id);
     }
 }

@@ -1,9 +1,10 @@
-package TOPSECRET.persistence.repositoryjpa.jpa;
+package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.UserAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.UserDM;
+import TOPSECRET.persistence.repositoryjpa.jpa.IUserRepositoryJPA;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,19 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-/**
- * Unit tests for {@link UserRepositoryJPAImpl}.
- *
- * <p>
- * Verifies persistence, existence checks, and lookup operations,
- * ensuring correct delegation to {@link IUserRepositoryJPA} and
- * mapping via {@link UserAssembler}.
- * </p>
- */
+
 @ExtendWith(MockitoExtension.class)
 class UserRepositoryJPAImplTest {
 
@@ -40,8 +32,6 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void constructor_shouldCreateInstance_whenValidArguments() {
-        // Arrange
-
         // Act
         UserRepositoryJPAImpl result = new UserRepositoryJPAImpl(jpaRepoDouble, assemblerDouble);
 
@@ -51,9 +41,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void constructor_shouldThrowException_whenJpaRepositoryIsNull() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> new UserRepositoryJPAImpl(null, assemblerDouble)
@@ -62,9 +50,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void constructor_shouldThrowException_whenAssemblerIsNull() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> new UserRepositoryJPAImpl(jpaRepoDouble, null)
@@ -95,9 +81,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void save_shouldThrowException_whenUserIsNull() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> repo.save(null)
@@ -110,7 +94,6 @@ class UserRepositoryJPAImplTest {
     void exists_shouldReturnTrue_whenUserExists() {
         // Arrange
         UserDM userDMDouble = mock(UserDM.class);
-
         when(jpaRepoDouble.findByUserName("Rodolph"))
                 .thenReturn(Optional.of(userDMDouble));
 
@@ -136,9 +119,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void exists_shouldThrowException_whenUsernameIsNull() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> repo.exists(null)
@@ -147,9 +128,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void exists_shouldThrowException_whenUsernameIsBlank() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> repo.exists("   ")
@@ -159,9 +138,9 @@ class UserRepositoryJPAImplTest {
     // ----------------- findUserByID() Tests -----------------
 
     @Test
-    void findUserByID_shouldReturnUser_whenFound() {
+    void findUserByID_shouldReturn_whenFound() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = mock(UserId.class);
         UserDM userDMDouble = mock(UserDM.class);
         User expectedUser = mock(User.class);
 
@@ -169,7 +148,7 @@ class UserRepositoryJPAImplTest {
         when(assemblerDouble.toDomain(userDMDouble)).thenReturn(expectedUser);
 
         // Act
-        Optional<User> result = repo.findUserByID(userId);
+        Optional<User> result = repo.findByID(userId);
 
         // Assert
         assertTrue(result.isPresent());
@@ -177,27 +156,24 @@ class UserRepositoryJPAImplTest {
     }
 
     @Test
-    void findUserByID_shouldReturnEmpty_whenNotFound() {
+    void findByID_shouldReturnEmpty_whenNotFound() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
-
+        UserId userId = mock(UserId.class);
         when(jpaRepoDouble.findById(userId)).thenReturn(Optional.empty());
 
         // Act
-        Optional<User> result = repo.findUserByID(userId);
+        Optional<User> result = repo.findByID(userId);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findUserByID_shouldThrowException_whenUserIdIsNull() {
-        // Arrange
-
-        // Act + Assert
+    void findUserByID_shouldThrowException_whenIdIsNull() {
+        // Act & Assert
         assertThrows(
                 NullPointerException.class,
-                () -> repo.findUserByID(null)
+                () -> repo.findByID(null)
         );
     }
 
@@ -207,18 +183,22 @@ class UserRepositoryJPAImplTest {
     void findUserIdByUsername_shouldReturnUserId_whenUserExists() {
         // Arrange
         UserDM userDMDouble = mock(UserDM.class);
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
 
-        when(jpaRepoDouble.findByUserName("Rodolph"))
+        when(jpaRepoDouble.findByUserName("Ines"))
                 .thenReturn(Optional.of(userDMDouble));
-        when(userDMDouble.getId()).thenReturn(userId);
+        when(assemblerDouble.toDomain(userDMDouble))
+                .thenReturn(userDouble);
+        when(userDouble.id())
+                .thenReturn(userIdDouble);
 
         // Act
-        Optional<UserId> result = repo.findUserIdByUsername("Rodolph");
+        Optional<UserId> result = repo.findUserIdByUsername("Ines");
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(userId, result.get());
+        assertSame(userIdDouble, result.get());
     }
 
     @Test
@@ -236,9 +216,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void findUserIdByUsername_shouldThrowException_whenUsernameIsNull() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> repo.findUserIdByUsername(null)
@@ -247,9 +225,7 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void findUserIdByUsername_shouldThrowException_whenUsernameIsBlank() {
-        // Arrange
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> repo.findUserIdByUsername("   ")

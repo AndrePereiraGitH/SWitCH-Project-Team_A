@@ -9,7 +9,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/*
+import java.util.Objects;
+
+/**
  * JPA Data Model representing a User entity persisted in the database.
  *
  * <p>This class is responsible for mapping the domain concept of a User
@@ -18,8 +20,6 @@ import lombok.NoArgsConstructor;
  * <p>It stores user identity, username, contact information, profile data,
  * and assigned role.</p>
  */
-
-import java.util.Objects;
 
 @Entity
 @Getter

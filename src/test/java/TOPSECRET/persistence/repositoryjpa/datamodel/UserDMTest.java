@@ -6,23 +6,18 @@ import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link UserDM}.
- * <p>
- * Verifies construction and access to persisted user data model attributes.
- * </p>
  */
 class UserDMTest {
 
     @Test
     void constructor_shouldCreateUserDM_whenValidArguments() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = mock(UserId.class);
         String username = "Rodolph";
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
@@ -56,7 +51,7 @@ class UserDMTest {
     @Test
     void constructor_shouldThrowException_whenUsernameIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
@@ -70,7 +65,7 @@ class UserDMTest {
     @Test
     void constructor_shouldCreateUserDM_whenContactIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = mock(UserId.class);
         Profile profileDouble = mock(Profile.class);
 
         // Act
@@ -84,7 +79,7 @@ class UserDMTest {
     @Test
     void constructor_shouldThrowException_whenProfileIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
 
         // Act & Assert
@@ -97,7 +92,7 @@ class UserDMTest {
     @Test
     void constructor_shouldThrowException_whenUserRoleIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 

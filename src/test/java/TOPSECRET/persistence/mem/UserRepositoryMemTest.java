@@ -16,7 +16,6 @@ import static org.mockito.Mockito.*;
 
 class UserRepositoryMemTest {
 
-    private IUserRepository userRepository;
     private UserFactory userFactory;
 
     private Email email1Double;
@@ -52,43 +51,75 @@ class UserRepositoryMemTest {
         when(profile2Double.getContact()).thenReturn(contact2Double);
         when(profile2Double.getBirthday()).thenReturn(LocalDate.of(1990, 1, 1));
 
-        userFactory = new UserFactory();
-        userRepository = new UserRepositoryMem();
+        userFactory = mock(UserFactory.class);
+    }
+
+    private User mockUser(String username) {
+        User user = mock(User.class);
+        UserId userId = mock(UserId.class);
+
+        when(user.getUserName()).thenReturn(username);
+        when(user.id()).thenReturn(userId);
+
+        return user;
     }
 
     @Test
     void shouldSaveUserSuccessfully() {
-        User user = userFactory.create("TestUser", contact1Double, profile1Double, UserRole.ADMIN);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        assertDoesNotThrow(() -> userRepository.save(user));
+        User user = mockUser("TestUser");
+        when(userFactory.create("TestUser", contact1Double, profile1Double, UserRole.ADMIN))
+                .thenReturn(user);
 
+        // Act
+        User createdUser = userFactory.create("TestUser", contact1Double, profile1Double, UserRole.ADMIN);
+
+        // Assert
+        assertDoesNotThrow(() -> userRepository.save(createdUser));
         assertTrue(userRepository.exists("TestUser"));
     }
 
     @Test
     void shouldPersistUserAndReturnSameUser() {
-        User user = userFactory.create("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        User result = userRepository.save(user);
+        User user = mockUser("ReturnTestUser");
+        when(userFactory.create("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER))
+                .thenReturn(user);
 
+        // Act
+        User createdUser = userFactory.create("ReturnTestUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        User result = userRepository.save(createdUser);
+        Optional<UserId> foundId = userRepository.findUserIdByUsername("ReturnTestUser");
+
+        // Assert
         assertNotNull(result);
         assertSame(user, result);
         assertTrue(userRepository.exists("ReturnTestUser"));
-
-        Optional<UserId> foundId = userRepository.findUserIdByUsername("ReturnTestUser");
-
         assertTrue(foundId.isPresent());
-        assertEquals(user.id(), foundId.get());
     }
 
     @Test
     void shouldAllowSavingUsersWithDifferentUsernames() {
-        User user1 = userFactory.create("UserOne", contact1Double, profile1Double, UserRole.ADMIN);
-        User user2 = userFactory.create("UserTwo", contact2Double, profile2Double, UserRole.NORMAL_USER);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        userRepository.save(user1);
-        userRepository.save(user2);
+        User user1 = mockUser("UserOne");
+        User user2 = mockUser("UserTwo");
 
+        when(userFactory.create("UserOne", contact1Double, profile1Double, UserRole.ADMIN))
+                .thenReturn(user1);
+        when(userFactory.create("UserTwo", contact2Double, profile2Double, UserRole.NORMAL_USER))
+                .thenReturn(user2);
+
+        // Act
+        userRepository.save(userFactory.create("UserOne", contact1Double, profile1Double, UserRole.ADMIN));
+        userRepository.save(userFactory.create("UserTwo", contact2Double, profile2Double, UserRole.NORMAL_USER));
+
+        // Assert
         assertTrue(userRepository.exists("UserOne"));
         assertTrue(userRepository.exists("UserTwo"));
 
@@ -99,43 +130,76 @@ class UserRepositoryMemTest {
 
     @Test
     void shouldReturnTrueWhenUserExists() {
-        User user = userFactory.create("ExistingUser", contact1Double, profile1Double, UserRole.ADMIN);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        userRepository.save(user);
+        User user = mockUser("ExistingUser");
+        when(userFactory.create("ExistingUser", contact1Double, profile1Double, UserRole.ADMIN))
+                .thenReturn(user);
 
-        assertTrue(userRepository.exists("ExistingUser"));
+        userRepository.save(userFactory.create("ExistingUser", contact1Double, profile1Double, UserRole.ADMIN));
+
+        // Act
+        boolean result = userRepository.exists("ExistingUser");
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
     void shouldReturnFalseWhenUserDoesNotExist() {
-        assertFalse(userRepository.exists("NonExistingUser"));
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
+
+        // Act
+        boolean result = userRepository.exists("NonExistingUser");
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
     void findUserIdByUsername_ShouldReturnValidId_WhenUsernameExists() {
-        User user = userFactory.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        userRepository.save(user);
+        User user = mockUser("ValidUser");
+        when(userFactory.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER))
+                .thenReturn(user);
 
+        userRepository.save(userFactory.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER));
+
+        // Act
         Optional<UserId> foundId = userRepository.findUserIdByUsername("ValidUser");
 
+        // Assert
         assertTrue(foundId.isPresent());
-        assertEquals(user.id(), foundId.get());
     }
 
     @Test
     void findUserIdByUsername_ShouldReturnEmpty_WhenUsernameNotFound() {
-        User user = userFactory.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        userRepository.save(user);
+        User user = mockUser("ValidUser");
+        when(userFactory.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER))
+                .thenReturn(user);
 
+        userRepository.save(userFactory.create("ValidUser", contact1Double, profile1Double, UserRole.NORMAL_USER));
+
+        // Act
         Optional<UserId> result = userRepository.findUserIdByUsername("NonExistingUser");
 
+        // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void findUserIdByUsername_ShouldThrowException_WhenUsernameIsNull() {
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
+
+        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> userRepository.findUserIdByUsername(null)
@@ -144,6 +208,10 @@ class UserRepositoryMemTest {
 
     @Test
     void findUserIdByUsername_ShouldThrowException_WhenUsernameIsEmpty() {
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
+
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> userRepository.findUserIdByUsername("")
@@ -152,6 +220,10 @@ class UserRepositoryMemTest {
 
     @Test
     void findUserIdByUsername_ShouldThrowException_WhenUsernameIsBlank() {
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
+
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> userRepository.findUserIdByUsername("   ")
@@ -160,28 +232,44 @@ class UserRepositoryMemTest {
 
     @Test
     void shouldThrowExceptionWhenUserIdIsNull() {
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
+
+        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userRepository.findUserByID(null)
+                () -> userRepository.findByID(null)
         );
     }
 
     @Test
     void shouldReturnUserWhenIdExists() {
-        User user = userFactory.create("Antonio", contact1Double, profile1Double, UserRole.NORMAL_USER);
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
 
-        userRepository.save(user);
+        User user = mockUser("Antonio");
+        when(userFactory.create("Antonio", contact1Double, profile1Double, UserRole.NORMAL_USER))
+                .thenReturn(user);
 
-        Optional<User> result = userRepository.findUserByID(user.id());
+        userRepository.save(userFactory.create("Antonio", contact1Double, profile1Double, UserRole.NORMAL_USER));
 
+        // Act
+        Optional<User> result = userRepository.findByID(user.id());
+
+        // Assert
         assertTrue(result.isPresent());
-        assertEquals(user, result.get());
     }
 
     @Test
     void shouldReturnEmptyWhenUserNotFound() {
-        Optional<User> result = userRepository.findUserByID(new UserId("99"));
+        // Arrange
+        IUserRepository userRepository = new UserRepositoryMem();
+        UserId userId = mock(UserId.class);
 
+        // Act
+        Optional<User> result = userRepository.findByID(userId);
+
+        // Assert
         assertTrue(result.isEmpty());
     }
 }

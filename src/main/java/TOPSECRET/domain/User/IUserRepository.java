@@ -37,7 +37,7 @@ public interface IUserRepository {
      *         the given ID exists, or {@link Optional#empty()} if not found
      * @throws IllegalArgumentException if {@code userID} is null or blank
      */
-    Optional<User> findUserByID(UserId userID);
+    Optional<User> findByID(UserId userID);
 
     /**
      * Finds the unique identifier of a user by their username.

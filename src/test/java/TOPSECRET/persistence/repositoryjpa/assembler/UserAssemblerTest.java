@@ -89,9 +89,6 @@ class UserAssemblerTest {
         );
     }
 
-    /**
-     * Verifies conversion from {@link UserDM} to {@link User}.
-     */
     @Test
     void shouldConvertDMToDomain() {
         // ARRANGE
@@ -127,10 +124,6 @@ class UserAssemblerTest {
         assertSame(userDouble, result);
     }
 
-    /**
-     * Verifies that an exception is thrown when
-     * converting a null {@link UserDM}.
-     */
     @Test
     void shouldThrowExceptionWhenDMIsNull() {
         // ARRANGE

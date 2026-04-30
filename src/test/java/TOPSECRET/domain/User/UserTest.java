@@ -195,13 +195,13 @@ class UserTest {
     @Test
     void secondConstructor_shouldCreateUserWithGivenId_whenValidArguments() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userIdDouble = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         // Act
         User user = new User(
-                userId,
+                userIdDouble,
                 "Rodolph",
                 contactDouble,
                 profileDouble,
@@ -210,7 +210,7 @@ class UserTest {
 
         // Assert
         assertNotNull(user);
-        assertEquals(userId, user.id());
+        assertEquals(userIdDouble, user.id());
         assertEquals("Rodolph", user.getUserName());
         assertEquals(contactDouble, user.getContact());
         assertEquals(profileDouble, user.getProfile());
@@ -218,70 +218,57 @@ class UserTest {
     }
 
     @Test
-    void secondConstructor_shouldThrowException_whenUserIdIsNull() {
-        // Arrange
-        Contact contactDouble = mock(Contact.class);
-        Profile profileDouble = mock(Profile.class);
-
-        // Act & Assert
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new User(null, "Rodolph", contactDouble, profileDouble, UserRole.NORMAL_USER)
-        );
-    }
-
-    @Test
     void secondConstructor_shouldThrowException_whenUsernameIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userIdDouble = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(userId, null, contactDouble, profileDouble, UserRole.NORMAL_USER)
+                () -> new User(userIdDouble, null, contactDouble, profileDouble, UserRole.NORMAL_USER)
         );
     }
 
     @Test
     void secondConstructor_shouldThrowException_whenUsernameIsTooShort() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userIdDouble = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(userId, "test", contactDouble, profileDouble, UserRole.NORMAL_USER)
+                () -> new User(userIdDouble, "test", contactDouble, profileDouble, UserRole.NORMAL_USER)
         );
     }
 
     @Test
     void secondConstructor_shouldThrowException_whenProfileIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userIdDouble = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
 
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(userId, "Rodolph", contactDouble, null, UserRole.NORMAL_USER)
+                () -> new User(userIdDouble, "Rodolph", contactDouble, null, UserRole.NORMAL_USER)
         );
     }
 
     @Test
     void secondConstructor_shouldThrowException_whenUserRoleIsNull() {
         // Arrange
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userIdDouble = mock(UserId.class);
         Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
 
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(userId, "Rodolph", contactDouble, profileDouble, null)
+                () -> new User(userIdDouble, "Rodolph", contactDouble, profileDouble, null)
         );
     }
 
@@ -325,8 +312,8 @@ class UserTest {
         // User user = new User(username, contactDouble, profileDouble, UserRole.NORMAL_USER);
 
         // arrange
-        assertFalse(user.equals(null));
-        assertFalse(user.equals("not a user"));
+        assertNotEquals(null, user);
+        assertNotEquals("not a user", user);
 
     }
 

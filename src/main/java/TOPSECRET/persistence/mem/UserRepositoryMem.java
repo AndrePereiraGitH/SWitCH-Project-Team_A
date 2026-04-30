@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
 
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -32,10 +31,7 @@ public class UserRepositoryMem implements IUserRepository {
     //================================================================================
 
     /**
-     * Persists the given {@link User} to the in-memory list.
-     *
-     * @param user the user to save; must not be null
-     * @return the saved {@link User} instance
+     * {@inheritDoc}
      */
     @Override
     public User save(User user) {
@@ -60,7 +56,7 @@ public class UserRepositoryMem implements IUserRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findUserByID(UserId userID) {
+    public Optional<User> findByID(UserId userID) {
 
         if (userID == null) {
             throw new IllegalArgumentException("Username must not be null or empty");
