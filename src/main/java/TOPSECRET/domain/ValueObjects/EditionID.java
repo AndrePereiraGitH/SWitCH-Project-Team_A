@@ -39,12 +39,6 @@ public class EditionID implements DomainID {
         this.editionID = editionID;
     }
 
-    /**
-     * Compares this EditionID with another object.
-     *
-     * @param o the object to compare
-     * @return true if both identifiers are equal, false otherwise
-     */
     @Override
     public boolean equals(Object o){
         if(this == o) return true;
