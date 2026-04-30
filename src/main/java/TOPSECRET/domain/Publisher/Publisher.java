@@ -40,7 +40,7 @@ public class Publisher implements AggregateRoot<PublisherID> {
         _publisherID = new PublisherID(vatNumber);
         _vatNumber = vatNumber;
 
-        _contact = contact;
+        _contact = Objects.requireNonNull(contact, "Contact cannot be null");
     }
 
     protected Publisher(PublisherID id, String name, String vatNumber, Contact contact) {
@@ -59,7 +59,7 @@ public class Publisher implements AggregateRoot<PublisherID> {
             throw new IllegalArgumentException("Not a valid vatNumber");
         }
         _vatNumber = vatNumber;
-        _contact = contact;
+        _contact = Objects.requireNonNull(contact, "Contact cannot be null");
     }
 
     public String getName() {
