@@ -1,10 +1,7 @@
 package TOPSECRET.domain.Listing;
 
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -65,6 +62,42 @@ class ListingFactoryTest {
 
             // act
             Listing listing = listingFactory.create(listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures);
+
+            // assert
+            assertNotNull(listing);
+            assertEquals(1, mocked.constructed().size());
+
+            Listing constructedListing = mocked.constructed().get(0);
+            assertSame(listing, constructedListing);
+
+        }
+
+    }
+
+    @Test
+    void createWithListingId_returnsNewConstructedListingInstance() {
+
+        ListingId listingId = mock(ListingId.class);
+        String listingTitle = "listing title";
+        PublicationSampleId pubSample1ID = mock (PublicationSampleId.class);
+        PublicationSampleId pubSample2ID = mock (PublicationSampleId.class);
+        List<PublicationSampleId> itemsIdList = List.of(pubSample1ID, pubSample2ID);
+        SaleType saleType = SaleType.AUCTION;
+        Price listingPrice = mock(Price.class);
+        String shortDescription = "this is a description";
+        UserId sellerId = mock(UserId.class);
+        Picture pic = mock(Picture.class);
+        List<Picture> pictures = List.of(pic);
+
+        try (MockedConstruction<Listing> mocked =
+                     mockConstruction(Listing.class, (mock, context) -> {
+
+                     })) {
+
+            ListingFactory listingFactory = new ListingFactory();
+
+            // act
+            Listing listing = listingFactory.create(listingId,listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures);
 
             // assert
             assertNotNull(listing);

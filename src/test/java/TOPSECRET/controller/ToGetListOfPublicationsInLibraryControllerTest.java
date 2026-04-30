@@ -139,7 +139,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         PublicationSample pbSample_2 = mock(PublicationSample.class);
         List<PublicationSample> listOfPubs = List.of(pbSample_1,pbSample_2);
-        when(pubRepo.getAllPublicationsInUserLibrary(userId)).thenReturn(listOfPubs);
+        when(pubRepo.findByUserIdAndLibraryIdIsNotNull(userId)).thenReturn(listOfPubs);
 
         US012PublicationDetailsDTO dto1 = mock(US012PublicationDetailsDTO.class);
         US012PublicationDetailsDTO dto2 = mock(US012PublicationDetailsDTO.class);

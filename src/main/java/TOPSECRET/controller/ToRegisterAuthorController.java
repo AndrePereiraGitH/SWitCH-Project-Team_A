@@ -31,8 +31,8 @@ public class ToRegisterAuthorController {
         this._authorRepository = authorRepository;
     }
 
-    public Author register(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
-        // Delegates author creation and persistence to the repository
-        return _authorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
-    }
+//    public Author register(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
+//        // Delegates author creation and persistence to the repository
+//        return _authorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
+//    }
 }

@@ -62,7 +62,7 @@ class US026AuctionMapperTest {
         when(auctionId1.getId()).thenReturn("A1");
         when(auction1.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
 
-        when(listingRepo.findListingById(listingId1)).thenReturn(Optional.of(listing1));
+        when(listingRepo.findById(listingId1)).thenReturn(Optional.of(listing1));
         when(listing1.getListingTitle()).thenReturn("Listing Title 1");
 
         // Act
@@ -79,7 +79,7 @@ class US026AuctionMapperTest {
     void fromDomain_shouldThrowInstanceNotFoundException_whenListingDoesNotExist() {
         // Arrange
         when(auction1.getListingId()).thenReturn(listingId1);
-        when(listingRepo.findListingById(listingId1)).thenReturn(Optional.empty());
+        when(listingRepo.findById(listingId1)).thenReturn(Optional.empty());
 
         // Act + Assert
         InstanceNotFoundException exception = assertThrows(
@@ -103,8 +103,8 @@ class US026AuctionMapperTest {
         when(auctionId2.getId()).thenReturn("auctionId2");
         when(auction2.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
 
-        when(listingRepo.findListingById(listingId1)).thenReturn(Optional.of(listing1));
-        when(listingRepo.findListingById(listingId2)).thenReturn(Optional.of(listing2));
+        when(listingRepo.findById(listingId1)).thenReturn(Optional.of(listing1));
+        when(listingRepo.findById(listingId2)).thenReturn(Optional.of(listing2));
 
         when(listing1.getListingTitle()).thenReturn("Listing Title 1");
         when(listing2.getListingTitle()).thenReturn("Listing Title 2");
@@ -144,8 +144,8 @@ class US026AuctionMapperTest {
 
         when(auction2.getListingId()).thenReturn(listingId2);
 
-        when(listingRepo.findListingById(listingId1)).thenReturn(Optional.of(listing1));
-        when(listingRepo.findListingById(listingId2)).thenReturn(Optional.empty());
+        when(listingRepo.findById(listingId1)).thenReturn(Optional.of(listing1));
+        when(listingRepo.findById(listingId2)).thenReturn(Optional.empty());
 
         when(listing1.getListingTitle()).thenReturn("Listing Title 1");
 

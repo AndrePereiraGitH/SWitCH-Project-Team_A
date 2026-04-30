@@ -10,7 +10,7 @@
 
     <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-parent</artifactId>
+        <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.5</version>
         <relativePath/>
     </parent>
@@ -43,6 +43,8 @@
         <maven.compiler.target>17</maven.compiler.target>
 
         <kotlin.version>2.2.0</kotlin.version>
+        <argLine></argLine>
+
     </properties>
 
     <dependencies>
@@ -157,7 +159,7 @@
                 <version>${maven-surefire-plugin}</version>
                 <configuration>
                     <!-- Ensures JaCoCo agent is passed through during test runs -->
-                    <argLine>@{argLine}</argLine>
+                    <argLine>${argLine}</argLine>
                     <includes>
                         <include>**/Test*.java</include>
                         <include>**/*Test.java</include>

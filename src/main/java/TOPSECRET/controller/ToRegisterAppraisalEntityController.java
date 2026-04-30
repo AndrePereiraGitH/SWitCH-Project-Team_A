@@ -76,7 +76,7 @@ public class ToRegisterAppraisalEntityController {
     public List<US004PublicationTypeDTO> getAllPublicationTypes() {
 
         List<PublicationType> publicationTypes =
-                _publicationTypeRepository.getAllPublicationTypes();
+                _publicationTypeRepository.findAll();
 
         return US004PublicationTypeMapper.toDTOs(publicationTypes);
     }

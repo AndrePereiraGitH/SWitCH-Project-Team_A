@@ -75,32 +75,35 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         return US022GenreMapper.toDTOList(genres);
     }
-//    /**
-//     * Retrieves the list of items currently on auction
-//     * filtered by a given genre.
-//     *
-//     * @param selectedGenreDTO the genre used as filter
-//     * @return list of US022AuctionMapper matching the genre
-//     */
-//    public List<US022AuctionDTO> getListOfItemsOnAuctionGivenGenre(US022GenreDTO selectedGenreDTO) {
-//
-//        if (selectedGenreDTO == null) {
-//            throw new IllegalArgumentException("genre cannot be null");
-//        }
-//
-//        Genre genre = genreRepository.findGenreById(selectedGenreDTO.genreId())
-//                .orElseThrow(() ->
-//                    new IllegalArgumentException("Genre is not valid or not found"));;
-//
-//
-//        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genre.id());
-//
-//        List<PublicationSampleId> itemsId = publicationSampleRepository.findAllItemsIdByBibliographicalDataId(bdId);
-//
-//        List<ListingId> listingId = listingRepository.findAllListingIdByPublicationSampleId(itemsId);
-//
-//        List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(listingId);
-//
-//        return US022AuctionMapper.toDTOList(auctions);
-//    }
+    /**
+     * Retrieves the list of items currently on auction
+     * filtered by a given genre.
+     *
+     * @param selectedGenreDTO the genre used as filter
+     * @return list of US022AuctionMapper matching the genre
+     */
+    /*
+    public List<US022AuctionDTO> getListOfItemsOnAuctionGivenGenre(US022GenreDTO selectedGenreDTO) {
+
+        if (selectedGenreDTO == null) {
+            throw new IllegalArgumentException("genre cannot be null");
+        }
+
+        Genre genre = genreRepository.findGenreById(selectedGenreDTO.genreId())
+                .orElseThrow(() ->
+                    new IllegalArgumentException("Genre is not valid or not found"));;
+
+
+        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genre.id());
+
+        List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
+
+        List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
+
+        List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(listingId);
+
+        return US022AuctionMapper.toDTOList(auctions);
+    }
+
+     */
 }

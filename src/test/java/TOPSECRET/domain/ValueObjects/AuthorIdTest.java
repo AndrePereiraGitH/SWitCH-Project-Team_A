@@ -9,6 +9,15 @@ class AuthorIdTest {
 
     // ---- constructor
     @Test
+    void testEmptyConstructor() {
+        // arrange + act
+        AuthorId authorId = new AuthorId();
+
+        // assert
+        assertNotNull(authorId);
+    }
+
+    @Test
     void testConstructor() {
         // arrange + act
         AuthorId authorId = new AuthorId("1");
@@ -16,16 +25,24 @@ class AuthorIdTest {
         assertNotNull(authorId);
     }
 
+    @Test
+    void shouldThrow_whenIdIsNull() {
+        //arrange + act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new AuthorId(null));
+        assertEquals("Id must not be null", ex.getMessage());
+
+    }
+
     // ------ Get
 
     @Test
     void getId_shouldReturnNotNull() {
        // arrange
+        String id = "1";
         AuthorId authorId = new AuthorId("1");
 
         // act + assert
-        assertNotNull(authorId.getId());
-        assertEquals(authorId.getId(), authorId.getId());
+        assertEquals(id, authorId.getId());
     }
 
 
@@ -65,15 +82,5 @@ class AuthorIdTest {
         // assert
         assertNotEquals(id, null);
     }
-
-    @Test
-    void equals_shouldThrow_whenNullObject() {
-        // act + assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new AuthorId(null));
-
-        assertEquals("AuthorId must be a non empty String", ex.getMessage());
-    }
-
-
 
 }
