@@ -67,7 +67,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
      */
     public List<US026AuthorDTO> getAllAuthors() {
 
-        List<Author> authorsList = authorRepository.getAllAuthors();
+        List<Author> authorsList = authorRepository.findAll();
         List<US026AuthorDTO> authorsListDTO = US026AuthorMapper.fromDomainList(authorsList);
 
         return authorsListDTO;
@@ -95,7 +95,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
        List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesIdsByBiblioDataIds(bdsOfAuthorID);
 
-       List<ListingId> authorListings = listingRepo.findAllListingIdByPublicationSampleId(samplesOfAuthorID);
+       List<ListingId> authorListings = listingRepo.findIdsByPublicationSampleIdIn(samplesOfAuthorID);
 
        List<Auction> auctionsOfAuthor = auctionRepository.findAuctionsByListingId(authorListings);
 

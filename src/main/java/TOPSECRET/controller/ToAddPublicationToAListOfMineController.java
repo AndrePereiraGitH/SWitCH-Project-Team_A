@@ -106,7 +106,7 @@ public class ToAddPublicationToAListOfMineController {
         }
 
         List<PublicationSample> available =
-                _publicationSampleRepo.getAvailablePublicationsForCollection(_userId, collectionId);
+                _publicationSampleRepo.findAvailableForCollection(_userId, collectionId);
 
         return _publicationSampleMapper.toDTOs(available);
     }

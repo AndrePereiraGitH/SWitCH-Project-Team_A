@@ -4,6 +4,7 @@ import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Optional;
  * </ul>
  * </p>
  */
+@Repository
 public class CountryRepositoryMem implements ICountryRepository {
 
     private final List<Country> registeredCountries;

@@ -1,12 +1,8 @@
 package TOPSECRET.domain.PublicationType;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.when;
-
 
 /**
  * Unit tests for {@link PublicationTypeFactory}.
@@ -24,27 +20,56 @@ import static org.mockito.Mockito.when;
 class PublicationTypeFactoryTest {
 
     @Test
-    void mockConstructsPublicationType() {
+    void shouldCreatePublicationType() {
 
         // ARRANGE
-        String mediaFormat = "Book";
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        String format = "Book";
 
-        try (MockedConstruction<PublicationType> mocked =
-                     mockConstruction(PublicationType.class,
-                             (mock, context) -> {
-                                 when(mock.getMediaFormat()).thenReturn(mediaFormat);
-                             })) {
+        // ACT
+        PublicationType result = factory.create(format);
 
-            PublicationTypeFactory sut = new PublicationTypeFactory();
-
-            // ACT
-            PublicationType result = sut.create(mediaFormat);
-
-            // ASSERT
-            assertEquals(1, mocked.constructed().size());
-            assertSame(mocked.constructed().get(0), result);
-            assertEquals(mediaFormat, result.getMediaFormat());
-        }
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(format, result.getMediaFormat());
+        assertNotNull(result.id());
     }
 
+    @Test
+    void shouldThrowWhenMediaFormatIsInvalid() {
+
+        // ARRANGE
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class, () -> factory.create(null));
+        assertThrows(IllegalArgumentException.class, () -> factory.create(""));
+        assertThrows(IllegalArgumentException.class, () -> factory.create(" "));
+    }
+
+    @Test
+    void sameAsShouldReturnTrueWhenSameInstance() {
+
+        // ARRANGE
+        PublicationType pt = new PublicationType("Book");
+
+        // ACT
+        boolean result = pt.sameAs(pt);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentType() {
+
+        // ARRANGE
+        PublicationType pt = new PublicationType("Book");
+
+        // ACT
+        boolean result = pt.sameAs("Book");
+
+        // ASSERT
+        assertFalse(result);
+    }
 }

@@ -578,7 +578,7 @@ class BibliographicalDataTest {
         // New author
         AuthorId author4IdDouble = mock(AuthorId.class);
         Author author4Double = mock(Author.class);
-        when(authorRepo.findAuthorById(author4IdDouble)).thenReturn(Optional.of(author4Double));
+        when(authorRepo.findById(author4IdDouble)).thenReturn(Optional.of(author4Double));
         when(author4Double.getName()).thenReturn("John Green");
 
         // Act

@@ -125,7 +125,7 @@
 //        when(type.id()).thenReturn(id);
 //        when(type.getMediaFormat()).thenReturn("Book");
 //
-//        when(publicationTypeRepository.getAllPublicationTypes())
+//        when(publicationTypeRepository.findAll())
 //                .thenReturn(List.of(type));
 //
 //        // ACT

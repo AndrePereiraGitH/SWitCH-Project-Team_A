@@ -2,6 +2,8 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -11,15 +13,10 @@ import java.util.Objects;
  * Ensures the ID is not null or blank.
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PublicationTypeId implements DomainID {
 
     private String pbType_id;
-
-
-    /**
-     * Required by JPA
-     */
-    protected PublicationTypeId() {}
 
     /**
      * Creates a PublicationTypeId with the given string.
@@ -37,12 +34,6 @@ public class PublicationTypeId implements DomainID {
     }
 
 
-    /**
-     * Compares this object with another for equality.
-     *
-     * @param object the object to compare
-     * @return true if both have the same id, false otherwise
-     */
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -56,11 +47,6 @@ public class PublicationTypeId implements DomainID {
         return false;
     }
 
-    /**
-     * Returns the hash code of the id.
-     *
-     * @return hash code value
-     */
     @Override
     public int hashCode() {
         return Objects.hash(pbType_id);
@@ -68,7 +54,6 @@ public class PublicationTypeId implements DomainID {
 
     /**
      * Returns the string representation of the id.
-     *
      * @return id as string
      */
     public String getId() {
