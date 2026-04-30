@@ -104,7 +104,7 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         _auctionStatus = auctionStartDateTime.isAfter(now) ? AuctionStatus.SCHEDULED : AuctionStatus.ACTIVE;
 
-        if (buyOutPrice.getPrice().compareTo(_initialPrice.getPrice()) <= 0) {
+        if (buyOutPrice != null && buyOutPrice.getPrice().compareTo(_initialPrice.getPrice()) <= 0) {
             throw new IllegalArgumentException("Buyout price must be greater than Initial price.");
         }
     }
