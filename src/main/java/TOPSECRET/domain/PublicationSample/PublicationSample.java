@@ -58,6 +58,36 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         _condition = condition;
     }
 
+    /**
+     * Reconstructs an existing {@code PublicationSample} from persisted data.
+     *
+     * <p>This constructor is intended exclusively for use by {@link PublicationSampleFactory}
+     * during reconstitution from the persistence layer. The supplied identity
+     * must be the exact one originally assigned — no new identity is generated.</p>
+     *
+     * <p>Domain invariants are still enforced — reconstruction does not bypass validation.</p>
+     *
+     * @param pubSampleId           the existing identity of this sample; must not be {@code null}
+     * @param bibliographicalDataId the ID of the associated bibliographical data; must not be {@code null}
+     * @param userId                the ID of the owner; must not be {@code null}
+     * @param publicationStatus     the current publication status; must not be {@code null}
+     * @param editionId             the ID of the edition; must not be {@code null}
+     * @param condition             the physical condition of the sample; must not be {@code null}
+     * @throws IllegalArgumentException if any argument is {@code null}
+     */
+    protected PublicationSample(PublicationSampleId pubSampleId,
+                      BibliographicalDataID bibliographicalDataId, UserId userId,
+                      PublicationStatus publicationStatus, EditionID editionId,
+                      Condition condition) {
+
+        _pubSampleID = Objects.requireNonNull(pubSampleId,"PublicationSampleId cannot be null");
+        _bdID = Objects.requireNonNull(bibliographicalDataId,"BibliographicalDataId cannot be null");
+        _ownerID = Objects.requireNonNull(userId,"UserId cannot be null");
+        _publicationStatus = Objects.requireNonNull(publicationStatus, "PublicationStatus cannot be null");
+        _editionID = Objects.requireNonNull(editionId,"EditionId cannot be null");
+        _condition = Objects.requireNonNull(condition,"Condition cannot be null");
+    }
+
     // -------------------------------------------------------------------------
     // Getters
     // -------------------------------------------------------------------------

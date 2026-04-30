@@ -112,7 +112,7 @@ public class US023ListingMapper {
             throw new IllegalArgumentException("ListingId cannot be null");
         }
 
-        Optional<Listing> listingOpt = _listingRepo.findListingById(listingId);
+        Optional<Listing> listingOpt = _listingRepo.findById(listingId);
         if (listingOpt.isEmpty()) {
             throw new InstanceNotFoundException("Listing with id " + listingId + " not found");
         }
@@ -148,7 +148,7 @@ public class US023ListingMapper {
         List<PublicationSample> pubSamples = new ArrayList<>();
 
         for (PublicationSampleId pubSampleId : pubSampleIds) {
-            Optional<PublicationSample> pubSample = _pubSampleRepo.findPublicationSampleById(pubSampleId);
+            Optional<PublicationSample> pubSample = _pubSampleRepo.findById(pubSampleId);
             if (pubSample.isPresent()) {
                 pubSamples.add(pubSample.get());
             }
@@ -226,7 +226,7 @@ public class US023ListingMapper {
         for (BibliographicalData bdData : bdDatas) {
             List<AuthorId> authorIds = bdData.getAuthors();
             for (AuthorId authorId : authorIds) {
-                Author author = _authorRepo.findAuthorById(authorId).orElseThrow(() ->
+                Author author = _authorRepo.findById(authorId).orElseThrow(() ->
                         new InstanceNotFoundException("Author with id " + authorId + " not found"));
                 String authorName = author.getName();
                 authorsName.add(authorName);

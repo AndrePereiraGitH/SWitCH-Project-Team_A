@@ -78,6 +78,7 @@ class CityIDTest {
 
         // Assert
         assertNotEquals(other, id);
+        assertFalse(id.equals(other));
     }
 
     @Test
@@ -97,5 +98,14 @@ class CityIDTest {
 
         // Assert
         assertEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void shouldBeEqualToItself() {
+        // Arrange
+        CityID id = new CityID("C1");
+
+        // Assert
+        assertEquals(id, id);
     }
 }
