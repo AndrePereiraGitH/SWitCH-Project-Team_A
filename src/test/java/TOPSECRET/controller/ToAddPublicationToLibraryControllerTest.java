@@ -57,7 +57,7 @@ class ToAddPublicationToLibraryControllerTest {
         publication2 = mock(PublicationSample.class);
         publication3 = mock(PublicationSample.class);
 
-        when(libraryRepositoryDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepositoryDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
         controller = new ToAddPublicationToLibraryController(
@@ -178,7 +178,7 @@ class ToAddPublicationToLibraryControllerTest {
             throws InstanceNotFoundException {
         // Arrange
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
-        when(libraryRepositoryDouble.getLibraryByUserId(userIdDouble))
+        when(libraryRepositoryDouble.getByUserId(userIdDouble))
                 .thenThrow(new InstanceNotFoundException("This user does not have a library"));
 
         // Act + Assert
