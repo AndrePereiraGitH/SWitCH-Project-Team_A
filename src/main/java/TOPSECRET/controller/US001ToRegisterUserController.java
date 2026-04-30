@@ -1,13 +1,13 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
 
 import TOPSECRET.services.UserService;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.Set;
 
 /**
  * Controller responsible for handling the registration of a new {@link User} (US001).
@@ -32,18 +32,14 @@ public class US001ToRegisterUserController {
      * of the user to the {@link UserService}.</p>
      *
      * @param username the desired username for the new user; must not be {@code null}
-     * @param contact  the contact information of the user; must not be {@code null}
      * @param profile  the profile information of the user; must not be {@code null}
      * @param userRole the role assigned to the user; must not be {@code null}
      * @return the created {@link User} instance
      * @throws IllegalArgumentException if any argument is {@code null}
      */
-    public User registerUser(String username, Contact contact, Profile profile, UserRole userRole) throws InstanceAlreadyExistsException {
+    public User registerUser(String username, Profile profile, Set<UserRole> userRole) throws InstanceAlreadyExistsException {
         if (username == null) {
             throw new IllegalArgumentException("Username cannot be null");
-        }
-        if (contact == null) {
-            throw new IllegalArgumentException("Contact cannot be null");
         }
         if (profile == null) {
             throw new IllegalArgumentException("Profile cannot be null");
@@ -52,6 +48,6 @@ public class US001ToRegisterUserController {
             throw new IllegalArgumentException("UserRole cannot be null");
         }
 
-        return userService.createAndSave(username, contact, profile, userRole);
+        return userService.createAndSave(username, profile, userRole);
     }
 }

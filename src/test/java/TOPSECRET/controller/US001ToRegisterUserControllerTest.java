@@ -2,12 +2,12 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.services.UserService;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,18 +18,19 @@ class US001ToRegisterUserControllerTest {
     void shouldRegisterUserSuccessfully() throws InstanceAlreadyExistsException {
         // Arrange
         UserService userServiceDouble = mock(UserService.class);
-        Contact contactDouble = mock(Contact.class);
-        Profile profileDouble = mock(Profile.class);
+           Profile profileDouble = mock(Profile.class);
         User userDouble = mock(User.class);
 
-        when(userServiceDouble.createAndSave("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
+        Set<UserRole> roles = Set.of(UserRole.ADMIN);
+
+        when(userServiceDouble.createAndSave("TestUser1",   profileDouble, roles))
                 .thenReturn(userDouble);
 
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(userServiceDouble);
 
         // Act
-        User result = sut.registerUser("TestUser1", contactDouble, profileDouble, UserRole.ADMIN);
+        User result = sut.registerUser("TestUser1",   profileDouble, roles);
 
         // Assert
         assertSame(userDouble, result);
@@ -37,87 +38,61 @@ class US001ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenUsernameIsNull() {
-        // Arrange
         UserService userServiceDouble = mock(UserService.class);
-        Contact contactDouble = mock(Contact.class);
-        Profile profileDouble = mock(Profile.class);
+           Profile profileDouble = mock(Profile.class);
 
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(userServiceDouble);
 
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> sut.registerUser(null, contactDouble, profileDouble, UserRole.ADMIN)
-        );
-    }
-
-    @Test
-    void shouldThrowExceptionWhenContactIsNull() {
-        // Arrange
-        UserService userServiceDouble = mock(UserService.class);
-        Profile profileDouble = mock(Profile.class);
-
-        US001ToRegisterUserController sut =
-                new US001ToRegisterUserController(userServiceDouble);
-
-        // Act & Assert
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> sut.registerUser("User", null, profileDouble, UserRole.ADMIN)
+                () -> sut.registerUser(null,   profileDouble, Set.of(UserRole.ADMIN))
         );
     }
 
     @Test
     void shouldThrowExceptionWhenProfileIsNull() {
-        // Arrange
         UserService userServiceDouble = mock(UserService.class);
-        Contact contactDouble = mock(Contact.class);
-
+   
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(userServiceDouble);
 
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> sut.registerUser("User", contactDouble, null, UserRole.ADMIN)
+                () -> sut.registerUser("User",   null, Set.of(UserRole.ADMIN))
         );
     }
 
     @Test
-    void shouldThrowExceptionWhenRoleIsNull() {
-        // Arrange
+    void shouldThrowExceptionWhenRolesIsNull() {
         UserService userServiceDouble = mock(UserService.class);
-        Contact contactDouble = mock(Contact.class);
-        Profile profileDouble = mock(Profile.class);
+           Profile profileDouble = mock(Profile.class);
 
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(userServiceDouble);
 
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> sut.registerUser("User", contactDouble, profileDouble, null)
+                () -> sut.registerUser("User",   profileDouble, null)
         );
     }
 
     @Test
     void shouldThrowExceptionWhenUsernameAlreadyExists() throws InstanceAlreadyExistsException {
-        // Arrange
         UserService userServiceDouble = mock(UserService.class);
-        Contact contactDouble = mock(Contact.class);
-        Profile profileDouble = mock(Profile.class);
+           Profile profileDouble = mock(Profile.class);
 
-        when(userServiceDouble.createAndSave("TestUser1", contactDouble, profileDouble, UserRole.ADMIN))
+        Set<UserRole> roles = Set.of(UserRole.ADMIN);
+
+        when(userServiceDouble.createAndSave("TestUser1",   profileDouble, roles))
                 .thenThrow(new IllegalArgumentException("Username already exists"));
 
         US001ToRegisterUserController sut =
                 new US001ToRegisterUserController(userServiceDouble);
 
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> sut.registerUser("TestUser1", contactDouble, profileDouble, UserRole.ADMIN)
+                () -> sut.registerUser("TestUser1",   profileDouble, roles)
         );
     }
 }
