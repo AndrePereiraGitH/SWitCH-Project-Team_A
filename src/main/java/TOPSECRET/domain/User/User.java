@@ -84,12 +84,39 @@ public class User implements AggregateRoot<UserId> {
     }
 
     /**
-     * Returns the unique identifier of this {@code User}.
+     * Reconstructs an existing {@code User} with a provided {@link UserId}.
+     * <p>
+     * This constructor is intended for rebuilding a {@code User} from persistence,
+     * where the identity already exists and must be preserved.
+     * </p>
      *
-     * @return the {@link UserId} of this user
+     * @param userId   the existing user identifier; must not be {@code null}
+     * @param username the username of the user; must not be {@code null}
+     *                 and must contain at least 5 non-space characters
+     * @param contact  the contact information of the user; may be {@code null}
+     * @param profile  the profile of the user; must not be {@code null}
+     * @param userRole the role assigned to the user; must not be {@code null}
+     * @throws IllegalArgumentException if {@code userId}, {@code username},
+     *                                  {@code profile}, or {@code userRole} is {@code null},
+     *                                  or if {@code username} has fewer than 5 non-space characters
      */
-    public UserId id() {
-        return _id;
+    public User(UserId userId, String username, Contact contact, Profile profile, UserRole userRole) {
+        if (userId == null) {   throw new IllegalArgumentException("UserId can't be null.");
+        }
+        if (username == null) { throw new IllegalArgumentException("Username can't be null.");
+        }
+        if (username.replace(" ", "").length() < 5) {   throw new IllegalArgumentException("Username must contain at least 5 characters.");
+        }
+        if (userRole == null) { throw new IllegalArgumentException("UserRole can't be null.");
+        }
+        if (profile == null) {  throw new IllegalArgumentException("Profile can't be null.");
+        }
+
+        this._id = userId;
+        this._userName = username;
+        this._contact = contact;
+        this._profile = profile;
+        this._userRole = userRole;
     }
 
     // Empty Constructor
@@ -97,10 +124,14 @@ public class User implements AggregateRoot<UserId> {
     }
 
     // Getters
-    public UserId getId(){
+    /**
+     * Returns the unique identifier of this {@code User}.
+     *
+     * @return the {@link UserId} of this user
+     */
+    public UserId id() {
         return _id;
     }
-
     public String getUserName() {
         return _userName;
     }

@@ -11,6 +11,23 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Unit tests for {@link User}.
+ * <p>
+ * This test class verifies the creation and behaviour of the {@code User}
+ * aggregate root, including constructor validation, getters, identity,
+ * equality, hash code generation, and {@code sameAs} comparison.
+ * </p>
+ * <ul>
+ *     <li>Creation with the empty constructor</li>
+ *     <li>Creation with automatically generated {@link UserId}</li>
+ *     <li>Reconstruction with an existing {@link UserId}</li>
+ *     <li>Validation of required business attributes</li>
+ *     <li>Access to user information through getters</li>
+ *     <li>Equality and identity behaviour</li>
+ *     <li>Business comparison using {@code sameAs}</li>
+ * </ul>
+ */
 class UserTest {
 
     private User createValidUser(String username) {
@@ -173,6 +190,90 @@ class UserTest {
         assertEquals(UserRole.NORMAL_USER, result);
     }
 
+    // ------------- Second Constructor ---------------
+
+    @Test
+    void secondConstructor_shouldCreateUserWithGivenId_whenValidArguments() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Contact contactDouble = mock(Contact.class);
+        Profile profileDouble = mock(Profile.class);
+
+        // Act
+        User user = new User(
+                userIdDouble,
+                "Rodolph",
+                contactDouble,
+                profileDouble,
+                UserRole.NORMAL_USER
+        );
+
+        // Assert
+        assertNotNull(user);
+        assertEquals(userIdDouble, user.id());
+        assertEquals("Rodolph", user.getUserName());
+        assertEquals(contactDouble, user.getContact());
+        assertEquals(profileDouble, user.getProfile());
+        assertEquals(UserRole.NORMAL_USER, user.getUserRole());
+    }
+
+    @Test
+    void secondConstructor_shouldThrowException_whenUsernameIsNull() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Contact contactDouble = mock(Contact.class);
+        Profile profileDouble = mock(Profile.class);
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new User(userIdDouble, null, contactDouble, profileDouble, UserRole.NORMAL_USER)
+        );
+    }
+
+    @Test
+    void secondConstructor_shouldThrowException_whenUsernameIsTooShort() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Contact contactDouble = mock(Contact.class);
+        Profile profileDouble = mock(Profile.class);
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new User(userIdDouble, "test", contactDouble, profileDouble, UserRole.NORMAL_USER)
+        );
+    }
+
+    @Test
+    void secondConstructor_shouldThrowException_whenProfileIsNull() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Contact contactDouble = mock(Contact.class);
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new User(userIdDouble, "Rodolph", contactDouble, null, UserRole.NORMAL_USER)
+        );
+    }
+
+    @Test
+    void secondConstructor_shouldThrowException_whenUserRoleIsNull() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Contact contactDouble = mock(Contact.class);
+        Profile profileDouble = mock(Profile.class);
+
+        // Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new User(userIdDouble, "Rodolph", contactDouble, profileDouble, null)
+        );
+    }
+
+    // --------- Equals ----------
+
     @Test
     void testEqualsShouldReturnFalseWhenUsernamesAreDifferent() {
 
@@ -208,13 +309,28 @@ class UserTest {
 
         // act
         User user = createValidUser(username);
-       // User user = new User(username, contactDouble, profileDouble, UserRole.NORMAL_USER);
+        // User user = new User(username, contactDouble, profileDouble, UserRole.NORMAL_USER);
 
         // arrange
-        assertFalse(user.equals(null));
-        assertFalse(user.equals("not a user"));
+        assertNotEquals(null, user);
+        assertNotEquals("not a user", user);
 
     }
+
+    @Test
+    void testEqualsShouldReturnTrueWhenSameReference() {
+
+        // Arrange
+        User user = createValidUser("John Doe");
+
+        // Act
+        boolean result = user.equals(user);
+
+        // Assert
+        assertEquals(true, result);
+    }
+
+    // --------- HAshCode ----------
 
     @Test
     void testHashCodeShouldBeEqualForEqualUsers() {
@@ -235,18 +351,6 @@ class UserTest {
         assertEquals(user.hashCode(), sameUser.hashCode());
     }
 
-    @Test
-    void testEqualsShouldReturnTrueWhenSameReference() {
-
-        // Arrange
-        User user = createValidUser("John Doe");
-
-        // Act
-        boolean result = user.equals(user);
-
-        // Assert
-        assertEquals(true, result);
-    }
 
     @Test
     void testHashCodeShouldNotBeZeroForValidUser() {
@@ -274,6 +378,7 @@ class UserTest {
         assertNotNull(result);
     }
 
+    // --------- Id ----------
 
     @Test
     void testIdShouldBeUniqueForEachUser() {
@@ -286,6 +391,7 @@ class UserTest {
         assertNotEquals(user1.id(), user2.id());
     }
 
+    // --------- SameAs ----------
 
     @Test
     void testSameAsShouldReturnTrueForSameObject() {
