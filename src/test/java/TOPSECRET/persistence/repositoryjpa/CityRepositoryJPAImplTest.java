@@ -3,7 +3,6 @@ package TOPSECRET.persistence.repositoryjpa;
 import TOPSECRET.domain.City.City;
 import TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
-import TOPSECRET.persistence.repositoryjpa.jpa.CityRepositoryJPAImpl;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICityRepositoryJPA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
