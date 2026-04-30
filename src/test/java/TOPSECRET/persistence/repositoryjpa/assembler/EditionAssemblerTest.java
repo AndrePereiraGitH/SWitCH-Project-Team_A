@@ -96,10 +96,17 @@ class EditionAssemblerTest {
 
         // Assert
         assertNotNull(result);
+        assertEquals(editionIDDouble, result.getEditionID());
         assertEquals("1st", result.getEditionNumber());
         assertEquals(codeDouble, result.getCode());
+        assertEquals(physicalAttributesDouble, result.getPhysicalAttributes());
         assertEquals(publicationTypeIdDouble, result.getPublicationTypeId());
         assertEquals(publisherIDdouble, result.getPublisherId());
+        assertEquals("Book", result.getMediaFormat());
+        assertEquals("en", result.getEditionLanguage());
+        assertEquals(LocalDate.of(2020,1,1), result.getEditionDate());
+        assertEquals(typeOfBindingDouble, result.getTypeOfBinding());
+
     }
 
     // ─────────────────────────────────────────────
@@ -107,6 +114,7 @@ class EditionAssemblerTest {
     // ─────────────────────────────────────────────
 
     @Test
+
     void toDomain_shouldCallFactoryWithCorrectParameters() {
 
         // Arrange
@@ -114,11 +122,12 @@ class EditionAssemblerTest {
 
         when(editionDMDouble.getEditionID()).thenReturn(editionIDDouble);
         when(editionDMDouble.getEditionNumber()).thenReturn("1st");
+        when(editionDMDouble.getCode()).thenReturn(codeDouble);
         when(editionDMDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
         when(editionDMDouble.getPublicationTypeId()).thenReturn(publicationTypeIdDouble);
         when(editionDMDouble.getPublisherId()).thenReturn(publisherIDdouble);
         when(editionDMDouble.getMediaFormat()).thenReturn("Book");
-        when(editionDMDouble.getEditionLanguage()).thenReturn(Locale.ENGLISH);
+        when(editionDMDouble.getEditionLanguage()).thenReturn("en");
         when(editionDMDouble.getEditionDate()).thenReturn(LocalDate.of(2020,1,1));
         when(editionDMDouble.getTypeOfBinding()).thenReturn(typeOfBindingDouble);
 
@@ -132,7 +141,7 @@ class EditionAssemblerTest {
                 eq(publicationTypeIdDouble),
                 eq(publisherIDdouble),
                 eq("Book"),
-                eq(Locale.ENGLISH),
+                eq(Locale.forLanguageTag("en")),
                 eq(LocalDate.of(2020,1,1)),
                 eq(typeOfBindingDouble)
         )).thenReturn(expectedEdition);
@@ -142,5 +151,6 @@ class EditionAssemblerTest {
 
         // Assert
         assertEquals(expectedEdition, result);
+
     }
 }

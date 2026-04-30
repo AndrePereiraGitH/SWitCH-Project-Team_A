@@ -39,12 +39,6 @@ public class EditionID implements DomainID {
         this.editionID = editionID;
     }
 
-    /**
-     * Compares this EditionID with another object.
-     *
-     * @param o the object to compare
-     * @return true if both identifiers are equal, false otherwise
-     */
     @Override
     public boolean equals(Object o){
         if(this == o) return true;
@@ -53,12 +47,6 @@ public class EditionID implements DomainID {
         return Objects.equals(editionID, that.editionID);
     }
 
-    /**
-     * Returns the identifier value.
-     *
-     * @return the edition ID as a String
-     */
     public String getID(){return editionID;}
-
 
 }

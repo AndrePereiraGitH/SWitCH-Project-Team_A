@@ -5,6 +5,7 @@ import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.EditionDM;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -52,7 +53,7 @@ public class EditionAssembler {
                 edition.getPublicationTypeID(),
                 edition.getPublisherID(),
                 edition.getMediaFormat(),
-                edition.getEditionLanguage(),
+                edition.getEditionLanguage().toString(),
                 edition.getEditionDate(),
                 edition.getTypeOfBinding()
         );
@@ -79,12 +80,25 @@ public class EditionAssembler {
                 editionDM.getPublicationTypeId(),
                 editionDM.getPublisherId(),
                 editionDM.getMediaFormat(),
-                editionDM.getEditionLanguage(),
+                convertLanguageToDomain(editionDM.getEditionLanguage()),
                 editionDM.getEditionDate(),
                 editionDM.getTypeOfBinding()
                 );
 
         return edition;
+
+    }
+
+    private Locale convertLanguageToDomain(String languageString) {
+
+        if (languageString == null || languageString.isBlank()) {
+            return null;
+        }
+
+        return Locale.forLanguageTag(
+
+                languageString.replace('_', '-')
+        );
 
     }
 
