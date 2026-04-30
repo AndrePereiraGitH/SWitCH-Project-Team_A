@@ -6,12 +6,10 @@ import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.US004GenreDTO;
 import TOPSECRET.dto.US004PublicationTypeDTO;
-import TOPSECRET.dto.US004GenreMapper;
-import TOPSECRET.dto.US004PublicationTypeMapper;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +52,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
         AppraisalEntity expected = mock(AppraisalEntity.class);
 
 
-        GenreID genreID = mock(GenreID.class);
+        GenreId genreID = mock(GenreId.class);
         PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
 
         when(appraisalRepository.createAndAdd(
@@ -92,7 +90,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 );
 
         Genre genre = mock(Genre.class);
-        GenreID id = mock(GenreID.class);
+        GenreId id = mock(GenreId.class);
 
         when(genre.id()).thenReturn(id);
         when(genre.getGenreType()).thenReturn("Fantasy");
@@ -175,7 +173,7 @@ class US004ToRegisterAppraisalEntityControllerTest {
                 () -> controller.registerAppraisalEntity(
                         "Test",
                         mock(Contact.class),
-                        List.of(mock(GenreID.class)),
+                        List.of(mock(GenreId.class)),
                         List.of()
                 ));
     }

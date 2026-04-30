@@ -6,7 +6,7 @@ import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class AppraisalEntityRepositoryTest {
                 );
 
         Contact contact = mock(Contact.class);
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
         PublicationTypeId pubId = mock(PublicationTypeId.class);
 
         AppraisalEntity createdEntity = mock(AppraisalEntity.class);
@@ -68,7 +68,7 @@ class AppraisalEntityRepositoryTest {
                 );
 
         Contact contact = mock(Contact.class);
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
         PublicationTypeId pubId = mock(PublicationTypeId.class);
 
         AppraisalEntity entity = mock(AppraisalEntity.class);
@@ -123,7 +123,7 @@ class AppraisalEntityRepositoryTest {
                 );
 
         Contact contact = mock(Contact.class);
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->

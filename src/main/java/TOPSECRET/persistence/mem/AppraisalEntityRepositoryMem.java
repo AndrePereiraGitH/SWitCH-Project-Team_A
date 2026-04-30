@@ -6,7 +6,7 @@ import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class AppraisalEntityRepositoryMem implements IAppraisalEntityRepository 
      */
     @Override
     public AppraisalEntity createAndAdd(String name,
-            Contact contact, List<GenreID> genresId, List<PublicationTypeId> publicationTypesId) {
+                                        Contact contact, List<GenreId> genresId, List<PublicationTypeId> publicationTypesId) {
 
         if (genresId == null || genresId.isEmpty()) {
             throw new IllegalArgumentException("Genres cannot be null or empty.");

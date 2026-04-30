@@ -1,7 +1,7 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -21,7 +21,7 @@ class BibliographicalDataFactoryTest {
             // Arrange
 
             AuthorId author = mock(AuthorId.class);
-            GenreID genre = mock(GenreID.class);
+            GenreId genre = mock(GenreId.class);
 
             try(MockedConstruction<BibliographicalData> mocked =
                     mockConstruction(BibliographicalData.class,

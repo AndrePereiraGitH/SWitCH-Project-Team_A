@@ -1,7 +1,10 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * Verifies that the data model correctly stores genre data
  * and throws exceptions for invalid inputs.
  */
+@ExtendWith(MockitoExtension.class)
 class GenreDMTest {
+
+    @Mock
+    private GenreId genreId;
 
     // =========================================================================
     // Constructor
@@ -18,12 +25,8 @@ class GenreDMTest {
 
     @Test
     void ensureGenreDMIsCreatedSuccessfully() {
-        // Arrange
-        GenreID id = new GenreID("drama");
-        String genreType = "Drama";
-
         // Act
-        GenreDM genreDM = new GenreDM(id, genreType);
+        GenreDM genreDM = new GenreDM(genreId, "Drama");
 
         // Assert
         assertNotNull(genreDM);
@@ -31,28 +34,20 @@ class GenreDMTest {
 
     @Test
     void ensureGenreDMStoresCorrectId() {
-        // Arrange
-        GenreID id = new GenreID("drama");
-        String genreType = "Drama";
-
         // Act
-        GenreDM genreDM = new GenreDM(id, genreType);
+        GenreDM genreDM = new GenreDM(genreId, "Drama");
 
         // Assert
-        assertEquals(id, genreDM.getId());
+        assertEquals(genreId, genreDM.getId());
     }
 
     @Test
     void ensureGenreDMStoresCorrectGenreType() {
-        // Arrange
-        GenreID id = new GenreID("drama");
-        String genreType = "Drama";
-
         // Act
-        GenreDM genreDM = new GenreDM(id, genreType);
+        GenreDM genreDM = new GenreDM(genreId, "Drama");
 
         // Assert
-        assertEquals(genreType, genreDM.getGenreType());
+        assertEquals("Drama", genreDM.getGenreType());
     }
 
     // =========================================================================
@@ -66,10 +61,6 @@ class GenreDMTest {
 
     @Test
     void ensureGenreDMThrowsExceptionWithNullGenreType() {
-        // Arrange
-        GenreID id = new GenreID("drama");
-
-        // Act & Assert
-        assertThrows(NullPointerException.class, () -> new GenreDM(id, null));
+        assertThrows(NullPointerException.class, () -> new GenreDM(genreId, null));
     }
 }

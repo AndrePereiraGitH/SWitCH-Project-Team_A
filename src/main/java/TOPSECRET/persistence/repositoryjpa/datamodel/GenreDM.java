@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import java.util.Objects;
  * <p>Mapped to the {@code genres} table in the database.</p>
  *
  * <p>The no-arg constructor is protected and reserved for JPA use only.
- * Use {@link #GenreDM(GenreID, String)} to create instances programmatically.</p>
+ * Use {@link #GenreDM(GenreId, String)} to create instances programmatically.</p>
  */
 
 @Entity
@@ -29,16 +29,16 @@ public class GenreDM {
 
     /**
      * The embedded primary key, mapped to the {@code genre_id} column.
-     * Uses the domain {@link GenreID} Value Object directly as the identifier.
+     * Uses the domain {@link GenreId} Value Object directly as the identifier.
      */
     @EmbeddedId
     @AttributeOverride(name = "genreID",column=@Column(name = "genre_id"))
-    private GenreID id;
+    private GenreId id;
 
     @Column(name = "genre_type", nullable = false)
     private String genreType;
 
-    public GenreDM(GenreID id, String genreType) {
+    public GenreDM(GenreId id, String genreType) {
         this.id = Objects.requireNonNull(id, "GenreId cannot be null");
         this.genreType = Objects.requireNonNull(genreType, "GenreType cannot be null");
     }

@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Genre;
 
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,8 +33,8 @@ public class GenreFactory {
      * @return a reconstructed Genre instance
      * @throws IllegalArgumentException if genreType is null or blank
      */
-    public Genre reconstruct(String genreType) {
-        return new Genre(genreType);
+    public Genre create(GenreId genreId, String genreType) {
+        return new Genre(genreId, genreType);
     }
 
 }

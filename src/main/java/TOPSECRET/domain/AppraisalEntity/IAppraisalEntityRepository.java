@@ -1,10 +1,8 @@
 package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
-import TOPSECRET.dto.US004GenreDTO;
-import TOPSECRET.dto.US004PublicationTypeDTO;
 
 import java.util.List;
 
@@ -25,7 +23,7 @@ public interface IAppraisalEntityRepository {
      * This method performs the following steps:
      * <ul>
      *     <li>Validates that selected DTO lists are not null or empty</li>
-     *     <li>Converts Genre DTOs into existing {@link GenreID}</li>
+     *     <li>Converts Genre DTOs into existing {@link GenreId}</li>
      *     <li>Converts PublicationType DTOs into existing {@link PublicationTypeId}</li>
      *     <li>Ensures no duplicate AppraisalEntity exists with the same name and contact</li>
      *     <li>Delegates creation to {@link AppraisalEntityFactory}</li>
@@ -48,7 +46,7 @@ public interface IAppraisalEntityRepository {
      */
     AppraisalEntity createAndAdd(String name,
                                  Contact contact,
-                                 List<GenreID> genresId,
+                                 List<GenreId> genresId,
                                  List<PublicationTypeId> publicationTypesId);
 
 

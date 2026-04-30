@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Genre;
 
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,16 +53,17 @@ class GenreFactoryTest {
     }
 
     // =========================================================================
-// reconstruct()
+// create(GenreId, String) - reconstruction from DB
 // =========================================================================
 
     @Test
     void ensureReconstructReturnsGenreSuccessfully() {
         // Arrange
+        GenreId genreId = new GenreId("ergodic literature");
         String genreType = "Ergodic literature";
 
         // Act
-        Genre genre = genreFactory.reconstruct(genreType);
+        Genre genre = genreFactory.create(genreId, genreType);
 
         // Assert
         assertNotNull(genre);
@@ -70,10 +72,11 @@ class GenreFactoryTest {
     @Test
     void ensureReconstructReturnsGenreWithCorrectType() {
         // Arrange
+        GenreId genreId = new GenreId("ergodic literature");
         String genreType = "Ergodic literature";
 
         // Act
-        Genre genre = genreFactory.reconstruct(genreType);
+        Genre genre = genreFactory.create(genreId, genreType);
 
         // Assert
         assertEquals(genreType, genre.getGenreType());
@@ -81,22 +84,29 @@ class GenreFactoryTest {
 
     @Test
     void ensureReconstructThrowsExceptionWithNullGenreType() {
-        assertThrows(IllegalArgumentException.class, () -> genreFactory.reconstruct(null));
+        GenreId genreId = new GenreId("ergodic literature");
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, null));
     }
 
     @Test
     void ensureReconstructThrowsExceptionWithBlankGenreType() {
-        assertThrows(IllegalArgumentException.class, () -> genreFactory.reconstruct("   "));
+        GenreId genreId = new GenreId("ergodic literature");
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, null));
     }
 
+    @Test
+    void ensureReconstructThrowsExceptionWithNullGenreId() {
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(null, "Ergodic literature"));
+    }
     @Test
     void ensureReconstructAndCreateReturnEqualGenres() {
         // Arrange
         String genreType = "Ergodic literature";
+        GenreId genreId = new GenreId(genreType.toLowerCase());
 
         // Act
         Genre created = genreFactory.create(genreType);
-        Genre reconstructed = genreFactory.reconstruct(genreType);
+        Genre reconstructed = genreFactory.create(genreId, genreType);
 
         // Assert
         assertEquals(created, reconstructed);

@@ -7,14 +7,13 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.US004GenreDTO;
 import TOPSECRET.dto.US004PublicationTypeDTO;
 import TOPSECRET.dto.US004GenreMapper;
 import TOPSECRET.dto.US004PublicationTypeMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -95,7 +94,7 @@ public class US004ToRegisterAppraisalEntityController {
     public AppraisalEntity registerAppraisalEntity(
             String name,
             Contact contact,
-            List<GenreID> genresId,
+            List<GenreId> genresId,
             List<PublicationTypeId> publicationTypesId) {
 
         if (genresId == null || genresId.isEmpty()) {

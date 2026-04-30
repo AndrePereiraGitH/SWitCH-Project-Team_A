@@ -4,14 +4,11 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Mapper responsible for converting {@link PublicationSample} domain objects
@@ -55,7 +52,7 @@ public class US016PublicationSampleMapper {
                 bd.getTitle(),
                 bd.getAuthors().stream().map(AuthorId::getId).toList(),
                 bd.getOriginalLanguage(),
-                bd.getGenres().stream().map(GenreID::getID).toList(),
+                bd.getGenres().stream().map(GenreId::getID).toList(),
                 publicationSample.getOwnerID().getUsername(),
                 publicationSample.getCondition().toString()
         );

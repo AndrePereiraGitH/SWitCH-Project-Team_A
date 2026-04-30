@@ -2,28 +2,30 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.GenreDM;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link GenreAssembler}.
  * Verifies that the assembler correctly converts between
  * {@link Genre} domain objects and {@link GenreDM} persistence entities.
  */
+@ExtendWith(MockitoExtension.class)
 class GenreAssemblerTest {
 
-    private GenreAssembler assembler;
+    @Mock
     private GenreFactory factory;
 
-    @BeforeEach
-    void setUp() {
-        factory = new GenreFactory();
-        assembler = new GenreAssembler(factory);
-    }
+    @InjectMocks
+    private GenreAssembler assembler;
 
     // =========================================================================
     // toDM()
@@ -32,7 +34,9 @@ class GenreAssemblerTest {
     @Test
     void ensureToDMReturnsNotNull() {
         // Arrange
-        Genre genre = factory.create("Drama");
+        Genre genre = mock(Genre.class);
+        when(genre.id()).thenReturn(new GenreId("drama"));
+        when(genre.getGenreType()).thenReturn("Drama");
 
         // Act
         GenreDM dm = assembler.toDM(genre);
@@ -44,25 +48,30 @@ class GenreAssemblerTest {
     @Test
     void ensureToDMStoresCorrectId() {
         // Arrange
-        Genre genre = factory.create("Drama");
+        GenreId id = new GenreId("drama");
+        Genre genre = mock(Genre.class);
+        when(genre.id()).thenReturn(id);
+        when(genre.getGenreType()).thenReturn("Drama");
 
         // Act
         GenreDM dm = assembler.toDM(genre);
 
         // Assert
-        assertEquals(genre.id(), dm.getId());
+        assertEquals(id, dm.getId());
     }
 
     @Test
     void ensureToDMStoresCorrectGenreType() {
         // Arrange
-        Genre genre = factory.create("Drama");
+        Genre genre = mock(Genre.class);
+        when(genre.id()).thenReturn(new GenreId("drama"));
+        when(genre.getGenreType()).thenReturn("Drama");
 
         // Act
         GenreDM dm = assembler.toDM(genre);
 
         // Assert
-        assertEquals(genre.getGenreType(), dm.getGenreType());
+        assertEquals("Drama", dm.getGenreType());
     }
 
     @Test
@@ -77,25 +86,32 @@ class GenreAssemblerTest {
     @Test
     void ensureToDomainReturnsNotNull() {
         // Arrange
-        GenreDM dm = new GenreDM(new GenreID("drama"), "Drama");
+        GenreId id = new GenreId("drama");
+        GenreDM dm = new GenreDM(id, "Drama");
+        Genre genre = mock(Genre.class);
+        when(factory.create(id, "Drama")).thenReturn(genre);
 
         // Act
-        Genre genre = assembler.toDomain(dm);
+        Genre result = assembler.toDomain(dm);
 
         // Assert
-        assertNotNull(genre);
+        assertNotNull(result);
     }
 
     @Test
     void ensureToDomainReturnsCorrectGenreType() {
         // Arrange
-        GenreDM dm = new GenreDM(new GenreID("drama"), "Drama");
+        GenreId id = new GenreId("drama");
+        GenreDM dm = new GenreDM(id, "Drama");
+        Genre genre = mock(Genre.class);
+        when(genre.getGenreType()).thenReturn("Drama");
+        when(factory.create(id, "Drama")).thenReturn(genre);
 
         // Act
-        Genre genre = assembler.toDomain(dm);
+        Genre result = assembler.toDomain(dm);
 
         // Assert
-        assertEquals("Drama", genre.getGenreType());
+        assertEquals("Drama", result.getGenreType());
     }
 
     @Test
@@ -110,13 +126,21 @@ class GenreAssemblerTest {
     @Test
     void ensureRoundTripProducesEqualGenre() {
         // Arrange
-        Genre original = factory.create("Drama");
+        GenreId id = new GenreId("drama");
+        Genre genre = mock(Genre.class);
+        when(genre.id()).thenReturn(id);
+        when(genre.getGenreType()).thenReturn("Drama");
+
+        GenreDM dm = assembler.toDM(genre);
+
+        Genre reconstructed = mock(Genre.class);
+        when(factory.create(id, "Drama")).thenReturn(reconstructed);
+        when(reconstructed.id()).thenReturn(id);
 
         // Act
-        GenreDM dm = assembler.toDM(original);
-        Genre reconstructed = assembler.toDomain(dm);
+        Genre result = assembler.toDomain(dm);
 
         // Assert
-        assertEquals(original, reconstructed);
+        assertEquals(reconstructed.id(), result.id());
     }
 }

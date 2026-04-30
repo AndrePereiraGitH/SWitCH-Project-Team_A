@@ -2,7 +2,7 @@ package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ class AppraisalEntityTest {
 
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         return new AppraisalEntity(
                 "Test",
@@ -36,7 +36,7 @@ class AppraisalEntityTest {
         // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         // ACT
         AppraisalEntity entity = new AppraisalEntity(
@@ -62,7 +62,7 @@ class AppraisalEntityTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity(null, contactDouble, List.of(mock(PublicationTypeId.class)), List.of(mock(GenreID.class)))
+                new AppraisalEntity(null, contactDouble, List.of(mock(PublicationTypeId.class)), List.of(mock(GenreId.class)))
         );
     }
 
@@ -74,7 +74,7 @@ class AppraisalEntityTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity("", contactDouble, List.of(mock(PublicationTypeId.class)), List.of(mock(GenreID.class)))
+                new AppraisalEntity("", contactDouble, List.of(mock(PublicationTypeId.class)), List.of(mock(GenreId.class)))
         );
     }
 
@@ -85,7 +85,7 @@ class AppraisalEntityTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity("Test", null, List.of(mock(PublicationTypeId.class)), List.of(mock(GenreID.class)))
+                new AppraisalEntity("Test", null, List.of(mock(PublicationTypeId.class)), List.of(mock(GenreId.class)))
         );
     }
 
@@ -97,7 +97,7 @@ class AppraisalEntityTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity("Test", contactDouble, null, List.of(mock(GenreID.class)))
+                new AppraisalEntity("Test", contactDouble, null, List.of(mock(GenreId.class)))
         );
     }
 
@@ -109,7 +109,7 @@ class AppraisalEntityTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity("Test", contactDouble, List.of(), List.of(mock(GenreID.class)))
+                new AppraisalEntity("Test", contactDouble, List.of(), List.of(mock(GenreId.class)))
         );
     }
 
@@ -219,7 +219,7 @@ class AppraisalEntityTest {
         PublicationTypeId pub1 = mock(PublicationTypeId.class);
         PublicationTypeId pub2 = mock(PublicationTypeId.class);
 
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity(
                 "Name",
@@ -250,7 +250,7 @@ class AppraisalEntityTest {
         PublicationTypeId pub1 = mock(PublicationTypeId.class);
         PublicationTypeId pub2 = mock(PublicationTypeId.class);
 
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity(
                 "Name",
@@ -317,7 +317,7 @@ class AppraisalEntityTest {
         // Arrange
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
 
@@ -333,7 +333,7 @@ class AppraisalEntityTest {
         // Arrange
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
 
@@ -351,7 +351,7 @@ class AppraisalEntityTest {
         // Arrange
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
         // Act
@@ -366,7 +366,7 @@ class AppraisalEntityTest {
         // Arrange
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
@@ -383,7 +383,7 @@ class AppraisalEntityTest {
         // Arrange
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name1", contactDouble, List.of(pubDouble), List.of(genreDouble));
@@ -401,7 +401,7 @@ class AppraisalEntityTest {
         Contact contactDouble1 = mock(Contact.class);
         Contact contactDouble2 = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble1, List.of(pubDouble), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble2, List.of(pubDouble), List.of(genreDouble));
@@ -417,8 +417,8 @@ class AppraisalEntityTest {
         // Arrange
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble1 = mock(GenreID.class);
-        GenreID genreDouble2 = mock(GenreID.class);
+        GenreId genreDouble1 = mock(GenreId.class);
+        GenreId genreDouble2 = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble1));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble), List.of(genreDouble2));
@@ -435,7 +435,7 @@ class AppraisalEntityTest {
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble1 = mock(PublicationTypeId.class);
         PublicationTypeId pubDouble2 = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity1 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble1), List.of(genreDouble));
         AppraisalEntity entity2 = new AppraisalEntity("Test Name", contactDouble, List.of(pubDouble2), List.of(genreDouble));
@@ -452,7 +452,7 @@ class AppraisalEntityTest {
         // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entityDouble1 = new AppraisalEntity(
                 "Name",
@@ -499,7 +499,7 @@ class AppraisalEntityTest {
         // ARRANGE
         Contact contactDouble = mock(Contact.class);
         PublicationTypeId pubDouble = mock(PublicationTypeId.class);
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         AppraisalEntity entity = new AppraisalEntity(
                 "TestName",

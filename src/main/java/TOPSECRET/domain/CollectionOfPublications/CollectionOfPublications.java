@@ -3,7 +3,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.ddd.AggregateRoot;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     // These fields make up the collection — all defined in US017
     private final CollectionOfPublicationsID _id;
     private String _collectionName;                            // the name the user picks for the collection
-    private GenreID _collectionGenreId;                            // the genre chosen from the available list
+    private GenreId _collectionGenreId;                            // the genre chosen from the available list
     private final UserId _ownerId;                                       // the user who created and owns this collection
     private boolean _isPrivate;                                // US017 rule: always starts as true (private)
 
@@ -42,7 +42,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      * @param userId            the userId who owns the collection
      * @throws IllegalArgumentException if name is null or blank, or if genre or userId is null
      */
-    protected CollectionOfPublications(String collectionName, GenreID collectionGenreId, UserId userId) {
+    protected CollectionOfPublications(String collectionName, GenreId collectionGenreId, UserId userId) {
 
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
@@ -71,7 +71,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _collectionName;
     }
 
-    public GenreID getCollectionGenre() {
+    public GenreId getCollectionGenre() {
         return _collectionGenreId;
     }
 

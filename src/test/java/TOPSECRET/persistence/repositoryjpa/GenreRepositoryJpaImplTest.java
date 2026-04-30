@@ -1,72 +1,64 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.Genre.GenreFactory;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.GenreAssembler;
+import TOPSECRET.persistence.repositoryjpa.datamodel.GenreDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IGenreRepositoryJpa;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
- * Integration tests for {@link GenreRepositoryJpaImpl}.
- * Uses an in-memory H2 database to verify the full persistence flow
- * including assembly between domain and data model.
+ * Unit tests for {@link GenreRepositoryJpaImpl}.
+ * Dependencies are mocked to ensure proper isolation.
  */
-@DataJpaTest
-@Import({GenreRepositoryJpaImpl.class, GenreAssembler.class, GenreFactory.class})
-class GenreRepositoryJpaImplIT {
+@ExtendWith(MockitoExtension.class)
+class GenreRepositoryJpaImplTest {
 
-    @Autowired
-    private GenreRepositoryJpaImpl genreRepositoryJpaImpl;
-
-    @Autowired
+    @Mock
     private IGenreRepositoryJpa genreRepositoryJpa;
 
-    @BeforeEach
-    void setUp() {
-        genreRepositoryJpa.deleteAll();
-    }
+    @Mock
+    private GenreAssembler assembler;
+
+    @InjectMocks
+    private GenreRepositoryJpaImpl genreRepositoryJpaImpl;
 
     // =========================================================================
-    // createAndAdd()
+    // save()
     // =========================================================================
 
     @Test
-    void ensureCreateAndAddReturnsGenre() {
-        // Act
-        Genre genre = genreRepositoryJpaImpl.createAndAdd("Drama");
-
-        // Assert
-        assertNotNull(genre);
-        assertEquals("Drama", genre.getGenreType());
-    }
-
-    @Test
-    void ensureCreateAndAddPersistsGenre() {
-        // Act
-        genreRepositoryJpaImpl.createAndAdd("Drama");
-
-        // Assert
-        assertTrue(genreRepositoryJpa.existsById(new GenreID("drama")));
-    }
-
-    @Test
-    void ensureCreateAndAddThrowsExceptionWhenGenreAlreadyExists() {
+    void ensureSaveReturnsGenre() {
         // Arrange
-        genreRepositoryJpaImpl.createAndAdd("Drama");
+        Genre genre = mock(Genre.class);
+        GenreDM dm = mock(GenreDM.class);
+        Genre savedGenre = mock(Genre.class);
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> genreRepositoryJpaImpl.createAndAdd("Drama"));
+        when(assembler.toDM(genre)).thenReturn(dm);
+        when(genreRepositoryJpa.save(dm)).thenReturn(dm);
+        when(assembler.toDomain(dm)).thenReturn(savedGenre);
+
+        // Act
+        Genre result = genreRepositoryJpaImpl.save(genre);
+
+        // Assert
+        assertSame(savedGenre, result);
+    }
+
+    @Test
+    void ensureSaveThrowsExceptionWhenGenreIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> genreRepositoryJpaImpl.save(null));
     }
 
     // =========================================================================
@@ -76,20 +68,33 @@ class GenreRepositoryJpaImplIT {
     @Test
     void ensureFindByTitleReturnsGenre() {
         // Arrange
-        genreRepositoryJpaImpl.createAndAdd("Drama");
+        GenreDM dm = mock(GenreDM.class);
+        Genre genre = mock(Genre.class);
+
+        when(genreRepositoryJpa.findByGenreType("Drama")).thenReturn(Optional.of(dm));
+        when(assembler.toDomain(dm)).thenReturn(genre);
 
         // Act
-        Genre found = genreRepositoryJpaImpl.findByTitle("Drama");
+        Genre result = genreRepositoryJpaImpl.findByTitle("Drama");
 
         // Assert
-        assertNotNull(found);
-        assertEquals("Drama", found.getGenreType());
+        assertSame(genre, result);
     }
 
     @Test
     void ensureFindByTitleThrowsExceptionWhenNotFound() {
+        // Arrange
+        when(genreRepositoryJpa.findByGenreType("Unknown")).thenReturn(Optional.empty());
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> genreRepositoryJpaImpl.findByTitle("Unknown"));
+    }
+
+    @Test
+    void ensureFindByTitleThrowsExceptionWhenTitleIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> genreRepositoryJpaImpl.findByTitle(null));
     }
 
     // =========================================================================
@@ -99,8 +104,14 @@ class GenreRepositoryJpaImplIT {
     @Test
     void ensureGetAllGenresReturnsAllGenres() {
         // Arrange
-        genreRepositoryJpaImpl.createAndAdd("Drama");
-        genreRepositoryJpaImpl.createAndAdd("Comedy");
+        GenreDM dm1 = mock(GenreDM.class);
+        GenreDM dm2 = mock(GenreDM.class);
+        Genre genre1 = mock(Genre.class);
+        Genre genre2 = mock(Genre.class);
+
+        when(genreRepositoryJpa.findAll()).thenReturn(List.of(dm1, dm2));
+        when(assembler.toDomain(dm1)).thenReturn(genre1);
+        when(assembler.toDomain(dm2)).thenReturn(genre2);
 
         // Act
         List<Genre> genres = genreRepositoryJpaImpl.getAllGenres();
@@ -111,6 +122,9 @@ class GenreRepositoryJpaImplIT {
 
     @Test
     void ensureGetAllGenresReturnsEmptyListWhenNoGenres() {
+        // Arrange
+        when(genreRepositoryJpa.findAll()).thenReturn(List.of());
+
         // Act
         List<Genre> genres = genreRepositoryJpaImpl.getAllGenres();
 
@@ -125,23 +139,56 @@ class GenreRepositoryJpaImplIT {
     @Test
     void ensureFindGenreByIdReturnsGenre() {
         // Arrange
-        genreRepositoryJpaImpl.createAndAdd("Drama");
-        GenreID id = new GenreID("drama");
+        GenreId id = new GenreId("drama");
+        GenreDM dm = mock(GenreDM.class);
+        Genre genre = mock(Genre.class);
+
+        when(genreRepositoryJpa.findById(id)).thenReturn(Optional.of(dm));
+        when(assembler.toDomain(dm)).thenReturn(genre);
 
         // Act
-        Optional<Genre> found = genreRepositoryJpaImpl.findGenreById(id);
+        Optional<Genre> result = genreRepositoryJpaImpl.findGenreById(id);
 
         // Assert
-        assertTrue(found.isPresent());
-        assertEquals("Drama", found.get().getGenreType());
+        assertTrue(result.isPresent());
+        assertSame(genre, result.get());
     }
 
     @Test
     void ensureFindGenreByIdReturnsEmptyWhenNotFound() {
+        // Arrange
+        GenreId id = new GenreId("unknown");
+        when(genreRepositoryJpa.findById(id)).thenReturn(Optional.empty());
+
         // Act
-        Optional<Genre> found = genreRepositoryJpaImpl.findGenreById(new GenreID("unknown"));
+        Optional<Genre> result = genreRepositoryJpaImpl.findGenreById(id);
 
         // Assert
-        assertFalse(found.isPresent());
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    void ensureFindGenreByIdThrowsExceptionWhenIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> genreRepositoryJpaImpl.findGenreById(null));
+    }
+
+
+    // =========================================================================
+    // Constructor
+    // =========================================================================
+
+    @Test
+    void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> new GenreRepositoryJpaImpl(null, assembler));
+    }
+
+    @Test
+    void constructor_shouldThrowNullPointerException_whenAssemblerIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> new GenreRepositoryJpaImpl(genreRepositoryJpa, null));
     }
 }

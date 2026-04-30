@@ -5,7 +5,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -63,7 +63,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      */
     @Override
     public BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                                            List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException
+                                            List<GenreId> genres, String chunksOfText) throws InstanceAlreadyExistsException
     {
         if(title == null){
             throw new IllegalArgumentException("title cannot be null");
@@ -127,7 +127,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
 
         return Optional.empty();
     }
-    public List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId){
+    public List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreId genreId){
 
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");

@@ -1,6 +1,6 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -43,7 +43,7 @@ class CollectionOfPublicationsFactoryTest {
     @Test
     void shouldCreateNonNullCollectionOfPublications() {
         // Arrange — fake Genre and User; the real objects are not needed here
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         // MockedConstruction intercepts every call to new CollectionOfPublications() inside the try block

@@ -5,7 +5,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -93,8 +93,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
         genres.add(genreDouble);
         String chunksOfText = "this describes the book or magazine";
 
@@ -133,8 +133,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
         genres.add(genreDouble);
         String chunksOfText = "this describes the book or magazine";
 
@@ -167,8 +167,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
         genres.add(genreDouble);
         String chunksOfText = "this describes the book or magazine";
 
@@ -201,8 +201,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
         genres.add(genreDouble);
         String chunksOfText = "this describes the book or magazine";
 
@@ -238,8 +238,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
 
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -281,8 +281,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
 
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -324,8 +324,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
 
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -366,8 +366,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
 
 
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
@@ -474,8 +474,8 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorDouble = mock(AuthorId.class);
         List<AuthorId> authors = new ArrayList<>();
         authors.add(authorDouble);
-        List<GenreID> genres = new ArrayList<>();
-        GenreID genreDouble = mock(GenreID.class);
+        List<GenreId> genres = new ArrayList<>();
+        GenreId genreDouble = mock(GenreId.class);
         genres.add(genreDouble);
         String chunksOfText = "this describes the book or magazine";
 
@@ -504,7 +504,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<AuthorId> authors = List.of(mock(AuthorId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -529,7 +529,7 @@ class BibliographicalDataRepositoryMemTest {
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -580,7 +580,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<AuthorId> authors = List.of(mock(AuthorId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -611,7 +611,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
         List<AuthorId> authors = List.of(mock(AuthorId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         when(factory.create("Title 1",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text"))
                 .thenReturn(bd1);
@@ -756,7 +756,7 @@ class BibliographicalDataRepositoryMemTest {
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
 
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
@@ -781,8 +781,8 @@ class BibliographicalDataRepositoryMemTest {
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
-        GenreID genreDouble1 = mock(GenreID.class);
-        GenreID genreDouble2 = mock(GenreID.class);
+        GenreId genreDouble1 = mock(GenreId.class);
+        GenreId genreDouble2 = mock(GenreId.class);
 
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         when(bdDouble.getGenres()).thenReturn(List.of(genreDouble1));
@@ -804,7 +804,7 @@ class BibliographicalDataRepositoryMemTest {
         // Arrange
         BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
 
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         BibliographicalData bdDouble1 = mock(BibliographicalData.class);
         BibliographicalData bdDouble2 = mock(BibliographicalData.class);

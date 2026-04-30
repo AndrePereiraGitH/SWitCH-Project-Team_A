@@ -4,7 +4,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     private String _name;
     private Contact _contact;
     private List<PublicationTypeId> _publicationTypeId;
-    private List<GenreID> _genreId;
+    private List<GenreId> _genreId;
 
 
     /**
@@ -54,7 +54,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     protected AppraisalEntity(String name,
                               Contact contact,
                               List<PublicationTypeId> publicationTypeId,
-                              List<GenreID> genreId) {
+                              List<GenreId> genreId) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("AppraisalEntity name can't be null or empty.");
         }
@@ -93,7 +93,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         return _publicationTypeId;
     }
 
-    public List<GenreID> getGenreId() {
+    public List<GenreId> getGenreId() {
         return _genreId;
     }
 

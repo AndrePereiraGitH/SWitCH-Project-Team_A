@@ -6,7 +6,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +33,8 @@ class BibliographicalDataTest {
     private IAuthorRepository authorRepo;
     private Locale language;
     private LocalDate pubDate;
-    private List<GenreID> genres;
-    private List<GenreID> differentGenres;
+    private List<GenreId> genres;
+    private List<GenreId> differentGenres;
     private IGenreRepository genreRepo;
     private String chunksOfText;
     private BibliographicalDataFactory bdFactory;
@@ -68,12 +68,12 @@ class BibliographicalDataTest {
         // Genre
         genreRepo = mock(IGenreRepository.class);
 
-        GenreID genreId1Double = mock(GenreID.class);
+        GenreId genreId1Double = mock(GenreId.class);
         Genre genre1Double; genre1Double = mock(Genre.class);
         when(genreRepo.findGenreById(genreId1Double)).thenReturn(Optional.ofNullable(genre1Double));
         when(genre1Double.getGenreType()).thenReturn("Fiction");
 
-        GenreID genreId2Double = mock(GenreID.class);
+        GenreId genreId2Double = mock(GenreId.class);
         Genre genre2Double = mock(Genre.class);
         when(genreRepo.findGenreById(genreId2Double)).thenReturn(Optional.ofNullable(genre2Double));
         when(genre2Double.getGenreType()).thenReturn("Biography");
@@ -187,7 +187,7 @@ class BibliographicalDataTest {
     void hasGenre_shouldReturnTrueWhenGenreExists() {
         // Arrange
         BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        GenreID existingGenreId = genres.get(0);
+        GenreId existingGenreId = genres.get(0);
 
         // Act
         boolean result = bdDouble.hasGenre(existingGenreId);
@@ -200,7 +200,7 @@ class BibliographicalDataTest {
     void hasGenre_shouldReturnFalseWhenGenreDoesNotExist() {
         // Arrange
         BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        GenreID nonExistingGenreIdDouble = mock(GenreID.class);
+        GenreId nonExistingGenreIdDouble = mock(GenreId.class);
 
         // Act
         boolean result = bdDouble.hasGenre(nonExistingGenreIdDouble);
@@ -520,13 +520,13 @@ class BibliographicalDataTest {
     @Test
     void getBibliographicalDataDetails_ShouldNotReflectChangesInOriginalGenresList() {
         // Arrange
-        List<GenreID> originalGenres = new ArrayList<>(genres);
+        List<GenreId> originalGenres = new ArrayList<>(genres);
         BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, originalGenres, chunksOfText);
 
         BibliographicalData.BibliographicalDataDetails details = bd.getBibliographicalDataDetails();
 
         // New Genre
-        GenreID genre3IdDouble = mock(GenreID.class);
+        GenreId genre3IdDouble = mock(GenreId.class);
         Genre genre3Double = mock(Genre.class);
         when(genreRepo.findGenreById(genre3IdDouble)).thenReturn(Optional.ofNullable(genre3Double));
         when(genre3Double.getGenreType()).thenReturn("Young Adult");
@@ -594,7 +594,7 @@ class BibliographicalDataTest {
         BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // New genre
-        GenreID genre3IdDouble = mock(GenreID.class);
+        GenreId genre3IdDouble = mock(GenreId.class);
         Genre genre3Double = mock(Genre.class);
         when(genreRepo.findGenreById(genre3IdDouble)).thenReturn(Optional.of(genre3Double));
         when(genre3Double.getGenreType()).thenReturn("Young adult");

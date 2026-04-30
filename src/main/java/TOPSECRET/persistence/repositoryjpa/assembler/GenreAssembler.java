@@ -46,7 +46,7 @@ public class GenreAssembler {
     /**
      * Converts a {@link GenreDM} persistence entity into a {@link Genre} domain object.
      *
-     * <p>Delegates instantiation to {@link GenreFactory#reconstruct(String)} to ensure
+     * <p>Delegates instantiation to {@link GenreFactory #create(GenreId, String)} to ensure
      * domain construction rules are respected during reconstitution.</p>
      *
      * @param dm the persistence entity to convert; must not be {@code null}
@@ -55,6 +55,6 @@ public class GenreAssembler {
      */
     public Genre toDomain(GenreDM dm) {
         Objects.requireNonNull(dm, "GenreDM cannot be null");
-        return factory.create(dm.getGenreType());
+        return factory.create(dm.getId(), dm.getGenreType());
     }
 }

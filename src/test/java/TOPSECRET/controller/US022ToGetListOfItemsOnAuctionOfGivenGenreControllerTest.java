@@ -45,7 +45,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnAuctionsForGivenGenre() {
 
         // Arrange
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
         Genre genre = mock(Genre.class);
         when(genre.id()).thenReturn(genreId);
 
@@ -104,7 +104,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldReturnEmptyListWhenNoAuctionsFound() {
 
         // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         Genre genreDouble = mock(Genre.class);
 
         US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
@@ -149,7 +149,7 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     void shouldThrowExceptionWhenGenreNotFound() {
 
         // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
         when(genreDtoDouble.genreId()).thenReturn(genreIdDouble);
@@ -181,8 +181,8 @@ class US022ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         Genre genreDouble1 = mock(Genre.class);
         Genre genreDouble2 = mock(Genre.class);
 
-        GenreID idDouble1 = mock(GenreID.class);
-        GenreID idDouble2 = mock(GenreID.class);
+        GenreId idDouble1 = mock(GenreId.class);
+        GenreId idDouble2 = mock(GenreId.class);
 
         when(genreDouble1.getGenreType()).thenReturn("Fantasy");
         when(genreDouble2.getGenreType()).thenReturn("Drama");

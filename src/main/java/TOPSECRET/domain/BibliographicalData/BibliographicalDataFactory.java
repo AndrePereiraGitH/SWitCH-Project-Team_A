@@ -1,9 +1,7 @@
 package TOPSECRET.domain.BibliographicalData;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +21,7 @@ public class BibliographicalDataFactory {
 
 
     public BibliographicalData create(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                                      List<GenreID> genres, String chunksOfText){
+                                      List<GenreId> genres, String chunksOfText){
 
         return new BibliographicalData(title, authors, originalLanguage, publicationDate, genres, chunksOfText);
     }

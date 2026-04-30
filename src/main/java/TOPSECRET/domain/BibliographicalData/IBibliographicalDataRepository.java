@@ -2,7 +2,7 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ public interface IBibliographicalDataRepository {
      */
 
     BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                                     List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException;
+                                     List<GenreId> genres, String chunksOfText) throws InstanceAlreadyExistsException;
 
 
     /**
@@ -54,7 +54,7 @@ public interface IBibliographicalDataRepository {
     Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
 
     /**
-     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreID}.
+     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreId}.
      *
      * <p>This method searches the repository for all {@link BibliographicalData}
      * instances whose list of genres contains the provided genre identifier.</p>
@@ -66,7 +66,7 @@ public interface IBibliographicalDataRepository {
      *
      * @throws IllegalArgumentException if {@code genreId} is {@code null}
      */
-    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId);
+    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreId genreId);
 
     /**
      * Finds the ID of a bibliographical data entry by its title, using case-insensitive

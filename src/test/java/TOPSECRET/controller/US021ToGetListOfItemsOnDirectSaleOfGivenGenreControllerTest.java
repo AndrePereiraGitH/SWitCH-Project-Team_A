@@ -7,7 +7,7 @@ import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
@@ -197,8 +197,8 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         Genre genre1 = mock(Genre.class);
         Genre genre2 = mock(Genre.class);
-        GenreID genreId1 = new GenreID("drama");
-        GenreID genreId2 = new GenreID("fiction");
+        GenreId genreId1 = new GenreId("drama");
+        GenreId genreId2 = new GenreId("fiction");
 
         when(genre1.id()).thenReturn(genreId1);
         when(genre1.getGenreType()).thenReturn("Drama");
@@ -255,7 +255,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        GenreID selectedGenre = new GenreID("drama");
+        GenreId selectedGenre = new GenreId("drama");
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
@@ -285,7 +285,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        GenreID selectedGenre = new GenreID("drama");
+        GenreId selectedGenre = new GenreId("drama");
 
         when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
@@ -315,7 +315,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        GenreID selectedGenre = new GenreID("drama");
+        GenreId selectedGenre = new GenreId("drama");
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
         PublicationSampleId psId = new PublicationSampleId("ps-1");
         Listing listingMock = mock(Listing.class);
@@ -356,7 +356,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        GenreID selectedGenre = new GenreID("drama");
+        GenreId selectedGenre = new GenreId("drama");
         BibliographicalDataID bdId1 = mock(BibliographicalDataID.class);
         BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
         PublicationSampleId psId1 = new PublicationSampleId("ps-1");
@@ -400,7 +400,7 @@ class US021ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        GenreID selectedGenre = new GenreID("drama");
+        GenreId selectedGenre = new GenreId("drama");
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
         List<BibliographicalDataID> bdIds = List.of(bdId);
 

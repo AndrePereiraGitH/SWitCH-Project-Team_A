@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.GenreDM;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Uses an in-memory H2 database to verify Spring Data JPA queries.
  */
 @DataJpaTest
-class IGenreRepositoryJpaIT {
+class IGenreRepositoryJpaTest {
 
     @Autowired
     private IGenreRepositoryJpa genreRepositoryJpa;
@@ -28,7 +28,7 @@ class IGenreRepositoryJpaIT {
     @Test
     void ensureSaveAndFindByIdReturnsGenre() {
         // Arrange
-        GenreID id = new GenreID("drama");
+        GenreId id = new GenreId("drama");
         GenreDM dm = new GenreDM(id, "Drama");
 
         // Act
@@ -43,7 +43,7 @@ class IGenreRepositoryJpaIT {
     @Test
     void ensureFindByIdReturnsEmptyWhenNotFound() {
         // Arrange
-        GenreID id = new GenreID("unknown");
+        GenreId id = new GenreId("unknown");
 
         // Act
         Optional<GenreDM> found = genreRepositoryJpa.findById(id);
@@ -59,11 +59,11 @@ class IGenreRepositoryJpaIT {
     @Test
     void ensureFindByGenreTypeReturnsGenre() {
         // Arrange
-        GenreDM dm = new GenreDM(new GenreID("drama"), "Drama");
+        GenreDM dm = new GenreDM(new GenreId("drama"), "Drama");
         genreRepositoryJpa.save(dm);
 
         // Act
-        GenreDM found = genreRepositoryJpa.findByGenreType("Drama");
+        GenreDM found = genreRepositoryJpa.findByGenreType("Drama").orElse(null);
 
         // Assert
         assertNotNull(found);
@@ -73,7 +73,7 @@ class IGenreRepositoryJpaIT {
     @Test
     void ensureFindByGenreTypeReturnsNullWhenNotFound() {
         // Act
-        GenreDM found = genreRepositoryJpa.findByGenreType("Unknown");
+        GenreDM found = genreRepositoryJpa.findByGenreType("Unknown").orElse(null);
 
         // Assert
         assertNull(found);
@@ -86,8 +86,8 @@ class IGenreRepositoryJpaIT {
     @Test
     void ensureFindAllReturnsAllSavedGenres() {
         // Arrange
-        genreRepositoryJpa.save(new GenreDM(new GenreID("drama"), "Drama"));
-        genreRepositoryJpa.save(new GenreDM(new GenreID("comedy"), "Comedy"));
+        genreRepositoryJpa.save(new GenreDM(new GenreId("drama"), "Drama"));
+        genreRepositoryJpa.save(new GenreDM(new GenreId("comedy"), "Comedy"));
 
         // Act
         List<GenreDM> all = genreRepositoryJpa.findAll();
@@ -112,7 +112,7 @@ class IGenreRepositoryJpaIT {
     @Test
     void ensureExistsByIdReturnsTrueWhenGenreExists() {
         // Arrange
-        GenreID id = new GenreID("drama");
+        GenreId id = new GenreId("drama");
         genreRepositoryJpa.save(new GenreDM(id, "Drama"));
 
         // Act & Assert
@@ -121,6 +121,6 @@ class IGenreRepositoryJpaIT {
 
     @Test
     void ensureExistsByIdReturnsFalseWhenGenreDoesNotExist() {
-        assertFalse(genreRepositoryJpa.existsById(new GenreID("unknown")));
+        assertFalse(genreRepositoryJpa.existsById(new GenreId("unknown")));
     }
 }

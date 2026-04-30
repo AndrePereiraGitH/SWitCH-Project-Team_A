@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US019CollectionOfPublicationsDTO;
 
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -93,8 +92,8 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
         // Arrange
         CollectionOfPublications col1 = mock(CollectionOfPublications.class);
         CollectionOfPublications col2 = mock(CollectionOfPublications.class);
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
+        GenreId genre2 = mock(GenreId.class);
 
         when(col1.getCollectionName()).thenReturn("Sci-Fi");
         when(col1.getCollectionGenre()).thenReturn(genre1);
@@ -120,7 +119,7 @@ class US019ToPubliclyShareCollectionOfPublicationsControllerTest {
     void ensureGetUserCollectionsReturnsCorrectDTOValues() {
         // Arrange
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
 
         when(collection.getCollectionName()).thenReturn("My Favorites");
         when(collection.getCollectionGenre()).thenReturn(genre);
