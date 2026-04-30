@@ -2,6 +2,7 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
  * </pre>
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Contact implements ValueObject {
 
     private String _phoneNum;
@@ -47,11 +49,6 @@ public class Contact implements ValueObject {
         this._extension = extension;
         this._email = email;
         this._location = location;
-    }
-
-    // Empty Constructor for framework compatibility
-    public Contact () {
-
     }
 
     // Getters (não sei se necessário)

@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,21 +20,20 @@ import static org.mockito.Mockito.*;
  */
 class PublisherRepositoryMemTest {
 
-    private PublisherRepositoryMem repository;
     private Publisher publisher;
-    private PublisherID publisherID;
+    private PublisherID publisherIdDouble;
 
     @BeforeEach
     void setUp() {
-        repository = new PublisherRepositoryMem();
-        publisherID = mock(PublisherID.class);
+        publisherIdDouble = mock(PublisherID.class);
         publisher = mock(Publisher.class);
-        when(publisher.id()).thenReturn(publisherID);
+        when(publisher.id()).thenReturn(publisherIdDouble);
     }
 
     @Test
     void save_shouldReturnSamePublisher_whenPublisherDoesNotExist() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
 
         // Act
         Publisher result = repository.save(publisher);
@@ -45,6 +45,7 @@ class PublisherRepositoryMemTest {
     @Test
     void save_shouldAddPublisherToRepository_whenPublisherDoesNotExist() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
 
         // Act
         repository.save(publisher);
@@ -56,6 +57,7 @@ class PublisherRepositoryMemTest {
     @Test
     void save_shouldThrowException_whenPublisherAlreadyExists() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
 
         // Act + Assert
@@ -65,10 +67,11 @@ class PublisherRepositoryMemTest {
     @Test
     void existsById_shouldReturnTrue_whenPublisherExists() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
 
         // Act
-        boolean result = repository.existsById(publisherID);
+        boolean result = repository.existsById(publisherIdDouble);
 
         // Assert
         assertTrue(result);
@@ -77,9 +80,10 @@ class PublisherRepositoryMemTest {
     @Test
     void existsById_shouldReturnFalse_whenPublisherDoesNotExist() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
 
         // Act
-        boolean result = repository.existsById(publisherID);
+        boolean result = repository.existsById(publisherIdDouble);
 
         // Assert
         assertFalse(result);
@@ -88,10 +92,11 @@ class PublisherRepositoryMemTest {
     @Test
     void findByVatNumber_shouldReturnPublisher_whenPublisherExists() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
 
         // Act
-        Optional<Publisher> result = repository.findByVatNumber(publisherID);
+        Optional<Publisher> result = repository.findByVatNumber(publisherIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -101,9 +106,10 @@ class PublisherRepositoryMemTest {
     @Test
     void findByVatNumber_shouldReturnEmpty_whenPublisherDoesNotExist() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
 
         // Act
-        Optional<Publisher> result = repository.findByVatNumber(publisherID);
+        Optional<Publisher> result = repository.findByVatNumber(publisherIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -112,6 +118,7 @@ class PublisherRepositoryMemTest {
     @Test
     void existsById_shouldReturnFalse_whenDifferentPublisherInRepository() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
         PublisherID otherId = mock(PublisherID.class);
 
@@ -125,6 +132,7 @@ class PublisherRepositoryMemTest {
     @Test
     void findByVatNumber_shouldReturnEmpty_whenDifferentPublisherInRepository() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
         PublisherID otherId = mock(PublisherID.class);
 
@@ -138,6 +146,7 @@ class PublisherRepositoryMemTest {
     @Test
     void findAll_shouldReturnAllPublishers() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
 
         // Act
@@ -151,6 +160,7 @@ class PublisherRepositoryMemTest {
     @Test
     void findAll_shouldReturnUnmodifiableList() {
         // Arrange
+        IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
 
         // Act

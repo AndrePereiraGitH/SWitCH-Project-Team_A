@@ -49,14 +49,14 @@ class PublisherRepositoryJpaImplTest {
     @Test
     void save_shouldReturnPersistedPublisher_whenPublisherDoesNotExist() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
         Publisher publisher = mock(Publisher.class);
         PublisherDM dm = mock(PublisherDM.class);
         PublisherDM savedDM = mock(PublisherDM.class);
         Publisher savedPublisher = mock(Publisher.class);
 
-        when(publisher.id()).thenReturn(id);
-        when(jpa.existsById(id)).thenReturn(false);
+        when(publisher.id()).thenReturn(publisherIdDouble);
+        when(jpa.existsById(publisherIdDouble)).thenReturn(false);
         when(assembler.toDM(publisher)).thenReturn(dm);
         when(jpa.save(dm)).thenReturn(savedDM);
         when(assembler.toDomain(savedDM)).thenReturn(savedPublisher);
@@ -77,11 +77,11 @@ class PublisherRepositoryJpaImplTest {
     @Test
     void save_shouldThrowException_whenPublisherAlreadyExists() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
         Publisher publisher = mock(Publisher.class);
 
-        when(publisher.id()).thenReturn(id);
-        when(jpa.existsById(id)).thenReturn(true);
+        when(publisher.id()).thenReturn(publisherIdDouble);
+        when(jpa.existsById(publisherIdDouble)).thenReturn(true);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repo.save(publisher));
@@ -92,11 +92,11 @@ class PublisherRepositoryJpaImplTest {
     @Test
     void existsById_shouldReturnTrue_whenPublisherExists() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
-        when(jpa.existsById(id)).thenReturn(true);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        when(jpa.existsById(publisherIdDouble)).thenReturn(true);
 
         // Act
-        boolean result = repo.existsById(id);
+        boolean result = repo.existsById(publisherIdDouble);
 
         // Assert
         assertTrue(result);
@@ -105,11 +105,11 @@ class PublisherRepositoryJpaImplTest {
     @Test
     void existsById_shouldReturnFalse_whenPublisherDoesNotExist() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
-        when(jpa.existsById(id)).thenReturn(false);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        when(jpa.existsById(publisherIdDouble)).thenReturn(false);
 
         // Act
-        boolean result = repo.existsById(id);
+        boolean result = repo.existsById(publisherIdDouble);
 
         // Assert
         assertFalse(result);
@@ -161,15 +161,15 @@ class PublisherRepositoryJpaImplTest {
     @Test
     void findByVatNumber_shouldReturnPublisher_whenPublisherExists() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
         PublisherDM dm = mock(PublisherDM.class);
         Publisher publisher = mock(Publisher.class);
 
-        when(jpa.findById(id)).thenReturn(Optional.of(dm));
+        when(jpa.findById(publisherIdDouble)).thenReturn(Optional.of(dm));
         when(assembler.toDomain(dm)).thenReturn(publisher);
 
         // Act
-        Optional<Publisher> result = repo.findByVatNumber(id);
+        Optional<Publisher> result = repo.findByVatNumber(publisherIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -179,11 +179,11 @@ class PublisherRepositoryJpaImplTest {
     @Test
     void findByVatNumber_shouldReturnEmpty_whenPublisherDoesNotExist() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
-        when(jpa.findById(id)).thenReturn(Optional.empty());
+        PublisherID publisherIdDouble = mock(PublisherID.class);
+        when(jpa.findById(publisherIdDouble)).thenReturn(Optional.empty());
 
         // Act
-        Optional<Publisher> result = repo.findByVatNumber(id);
+        Optional<Publisher> result = repo.findByVatNumber(publisherIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());

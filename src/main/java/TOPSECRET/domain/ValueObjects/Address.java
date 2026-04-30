@@ -2,6 +2,7 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ import java.util.Objects;
  */
 
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address implements ValueObject {
 
     private String street;

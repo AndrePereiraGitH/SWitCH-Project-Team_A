@@ -91,14 +91,14 @@ class PublisherTest {
     @Test
     void reconstructionConstructor_shouldCreatePublisher_whenAllFieldsAreValid() {
         // Arrange
-        PublisherID id = new PublisherID(vatNumber);
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act
-        Publisher result = new Publisher(id, name, vatNumber, contact);
+        Publisher result = new Publisher(idDouble, name, vatNumber, contact);
 
         // Assert
         assertNotNull(result);
-        assertSame(id, result.id());
+        assertSame(idDouble, result.id());
         assertEquals(name, result.getName());
     }
 
@@ -112,41 +112,41 @@ class PublisherTest {
     @Test
     void reconstructionConstructor_shouldThrowException_whenNameIsNull() {
         // Arrange
-        PublisherID id = new PublisherID(vatNumber);
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Publisher(id, null, vatNumber, contact));
+                () -> new Publisher(idDouble, null, vatNumber, contact));
     }
 
     @Test
     void reconstructionConstructor_shouldThrowException_whenNameIsBlank() {
         // Arrange
-        PublisherID id = new PublisherID(vatNumber);
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Publisher(id, "", vatNumber, contact));
+                () -> new Publisher(idDouble, "", vatNumber, contact));
     }
 
     @Test
     void reconstructionConstructor_shouldThrowException_whenVatNumberIsNull() {
         // Arrange
-        PublisherID id = new PublisherID(vatNumber);
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Publisher(id, name, null, contact));
+                () -> new Publisher(idDouble, name, null, contact));
     }
 
     @Test
     void reconstructionConstructor_shouldThrowException_whenVatNumberIsBlank() {
         // Arrange
-        PublisherID id = new PublisherID(vatNumber);
+        PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Publisher(id, name, "", contact));
+                () -> new Publisher(idDouble, name, "", contact));
     }
 
     // -------------------------------------------------------------------------

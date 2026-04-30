@@ -18,14 +18,14 @@ class PublisherDMTest {
     @Test
     void constructor_shouldCreatePublisherDM_whenAllFieldsAreValid() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
         Contact contact = mock(Contact.class);
 
         // Act
-        PublisherDM dm = new PublisherDM(id, "Penguin Books", contact);
+        PublisherDM dm = new PublisherDM(publisherIdDouble, "Penguin Books", contact);
 
         // Assert
-        assertSame(id, dm.getId());
+        assertSame(publisherIdDouble, dm.getId());
         assertEquals("Penguin Books", dm.getName());
         assertSame(contact, dm.getContact());
     }
@@ -43,22 +43,22 @@ class PublisherDMTest {
     @Test
     void constructor_shouldThrowException_whenNameIsNull() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
         Contact contact = mock(Contact.class);
 
         // Act + Assert
         assertThrows(NullPointerException.class,
-                () -> new PublisherDM(id, null, contact));
+                () -> new PublisherDM(publisherIdDouble, null, contact));
     }
 
     @Test
     void constructor_shouldThrowException_whenContactIsNull() {
         // Arrange
-        PublisherID id = mock(PublisherID.class);
+        PublisherID publisherIdDouble = mock(PublisherID.class);
 
         // Act + Assert
         assertThrows(NullPointerException.class,
-                () -> new PublisherDM(id, "Penguin Books", null));
+                () -> new PublisherDM(publisherIdDouble, "Penguin Books", null));
     }
 
     @Test

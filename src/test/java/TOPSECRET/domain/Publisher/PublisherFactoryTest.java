@@ -132,15 +132,15 @@ class PublisherFactoryTest {
     void create_withId_shouldReturnPublisher_whenAllFieldsAreValid() {
         // Arrange
         PublisherFactory factory = new PublisherFactory();
-        PublisherID id = new PublisherID("123456789");
-        Contact contact = mock(Contact.class);
+        PublisherID idDouble = mock(PublisherID.class);
+        Contact contactDouble = mock(Contact.class);
 
         // Act
-        Publisher result = factory.create(id, "Penguin Books", "123456789", contact);
+        Publisher result = factory.create(idDouble, "Penguin Books", "123456789", contactDouble);
 
         // Assert
         assertNotNull(result);
-        assertSame(id, result.id());
+        assertSame(idDouble, result.id());
         assertEquals("Penguin Books", result.getName());
     }
 }
