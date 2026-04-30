@@ -5,77 +5,67 @@ import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for the {@link LibraryService} class.
- * <p>
- * This test class verifies the behavior of the library service,
- * including service instantiation and library creation through the
- * {@link LibraryFactory} and {@link ILibraryRepository}.
- * </p>
- */
+@ExtendWith(MockitoExtension.class)
 class LibraryServiceTest {
 
-    
-    //  ----------------- Constructor Tests  -----------------
+    @Mock
+    private ILibraryRepository libraryRepositoryDouble;
+
+    @Mock
+    private LibraryFactory libraryFactoryDouble;
+
+    @InjectMocks
+    private LibraryService service;
+
+    // ----------------- Constructor Tests -----------------
 
     @Test
     void givenValidDependencies_thenCreatesSuccessfully() {
-        // Arrange
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-
-        // Act + Assert
+        // Act & Assert
         assertDoesNotThrow(() ->
                 new LibraryService(libraryRepositoryDouble, libraryFactoryDouble));
     }
 
     @Test
     void givenNullRepository_thenThrowsIllegalArgumentException() {
-        // Arrange
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new LibraryService(null, libraryFactoryDouble));
     }
 
     @Test
     void givenNullFactory_thenThrowsIllegalArgumentException() {
-        // Arrange
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new LibraryService(libraryRepositoryDouble, null));
     }
 
-    //  ----------------- createAndSave() Tests  -----------------
+    // ----------------- createAndSave() Tests -----------------
 
     @Test
     void givenValidLibraryNameAndUserId_whenCreateAndSave_thenReturnsLibrary()
             throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
-        UserId userIdDouble = mock(UserId.class);
-        Library createdLibraryDouble = mock(Library.class);
-        Library savedLibraryDouble = mock(Library.class);
+        UserId userIdDouble = org.mockito.Mockito.mock(UserId.class);
+        Library createdLibraryDouble = org.mockito.Mockito.mock(Library.class);
+        Library savedLibraryDouble = org.mockito.Mockito.mock(Library.class);
 
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
 
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
         when(libraryRepositoryDouble.save(createdLibraryDouble))
                 .thenReturn(savedLibraryDouble);
-
-        LibraryService service = new LibraryService(libraryRepositoryDouble, libraryFactoryDouble);
 
         // Act
         Library result = service.createAndSave(libraryName, userIdDouble);
@@ -89,19 +79,15 @@ class LibraryServiceTest {
             throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
-        UserId userIdDouble = mock(UserId.class);
-        Library createdLibraryDouble = mock(Library.class);
-        Library savedLibraryDouble = mock(Library.class);
+        UserId userIdDouble = org.mockito.Mockito.mock(UserId.class);
+        Library createdLibraryDouble = org.mockito.Mockito.mock(Library.class);
+        Library savedLibraryDouble = org.mockito.Mockito.mock(Library.class);
 
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
 
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
         when(libraryRepositoryDouble.save(createdLibraryDouble))
                 .thenReturn(savedLibraryDouble);
-
-        LibraryService service = new LibraryService(libraryRepositoryDouble, libraryFactoryDouble);
 
         // Act
         Library result = service.createAndSave(libraryName, userIdDouble);
@@ -115,20 +101,16 @@ class LibraryServiceTest {
             throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
-        UserId userIdDouble = mock(UserId.class);
-        Library createdLibraryDouble = mock(Library.class);
+        UserId userIdDouble = org.mockito.Mockito.mock(UserId.class);
+        Library createdLibraryDouble = org.mockito.Mockito.mock(Library.class);
 
-        LibraryFactory libraryFactoryDouble = mock(LibraryFactory.class);
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
 
-        ILibraryRepository libraryRepositoryDouble = mock(ILibraryRepository.class);
         when(libraryRepositoryDouble.save(createdLibraryDouble))
                 .thenThrow(new InstanceAlreadyExistsException("User already has a library"));
 
-        LibraryService service = new LibraryService(libraryRepositoryDouble, libraryFactoryDouble);
-
-        // Act + Assert
+        // Act & Assert
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> service.createAndSave(libraryName, userIdDouble));
     }
