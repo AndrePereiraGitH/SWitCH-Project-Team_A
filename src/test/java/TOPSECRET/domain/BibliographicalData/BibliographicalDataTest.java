@@ -172,7 +172,7 @@ class BibliographicalDataTest {
     @Test
     void constructor_ShouldReconstructObjectWithProvidedID(){
         // Arrange
-        BibliographicalDataID bdID = new BibliographicalDataID("1234");
+        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
 
         // Act
         BibliographicalData bd = bdFactory.create(bdID, title, authors, language, pubDate, genres, chunksOfText);

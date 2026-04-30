@@ -43,8 +43,6 @@ class BibliographicalDataServiceTest {
         factory = mock(BibliographicalDataFactory.class);
         repo = mock(IBibliographicalDataRepository.class);
 
-        service = new BibliographicalDataService(repo, factory);
-
         createdBd = mock(BibliographicalData.class);
         savedBd = mock(BibliographicalData.class);
     }
@@ -53,6 +51,8 @@ class BibliographicalDataServiceTest {
     @Test
     void createAndAdd_shouldCreateSaveAndReturnSavedBibliographicalData() throws InstanceAlreadyExistsException {
         // Arrange
+        service = new BibliographicalDataService(repo, factory);
+
         when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
         when(repo.save(createdBd)).thenReturn(savedBd);
 
@@ -67,6 +67,9 @@ class BibliographicalDataServiceTest {
 
     @Test
     void createShouldThrowWhenTitleIsNull() {
+        // Arrange
+        service = new BibliographicalDataService(repo, factory);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndAdd(null, authors, language, date, genres, chunks)
@@ -75,6 +78,9 @@ class BibliographicalDataServiceTest {
 
     @Test
     void createShouldThrowWhenAuthorsIsNull() {
+        // Arrange
+        service = new BibliographicalDataService(repo, factory);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndAdd(title, null, language, date, genres, chunks)
@@ -83,6 +89,9 @@ class BibliographicalDataServiceTest {
 
     @Test
     void createShouldThrowWhenGenresIsNull() {
+        // Arrange
+        service = new BibliographicalDataService(repo, factory);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndAdd(title, authors, language, date, null, chunks)
@@ -92,6 +101,8 @@ class BibliographicalDataServiceTest {
     @Test
     void createAndAddShouldAllowOptionalFieldsToBeNull() throws InstanceAlreadyExistsException {
         // Arrange
+        service = new BibliographicalDataService(repo, factory);
+
         when(factory.create(title, authors, null, null, genres, null)).thenReturn(createdBd);
         when(repo.save(createdBd)).thenReturn(savedBd);
 
@@ -107,6 +118,8 @@ class BibliographicalDataServiceTest {
     @Test
     void createAndAddShouldThrowInstanceAlreadyExistsException() throws InstanceAlreadyExistsException {
         // Arrange
+        service = new BibliographicalDataService(repo, factory);
+
         when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
 
         when(repo.save(createdBd)).thenThrow(new InstanceAlreadyExistsException("Bibliographical Data already exists"));

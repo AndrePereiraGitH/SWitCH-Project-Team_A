@@ -45,8 +45,11 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @param bibliographicalDataAssembler assembler for converting between domain and entity models
      */
     public BibliographicalDataRepositoryJpaImpl(IBibliographicalDataRepositoryJpa bibliographicalDataRepositoryJpa, BibliographicalDataAssembler bibliographicalDataAssembler) {
-        this.bibliographicalDataRepositoryJpa = bibliographicalDataRepositoryJpa;
-        this.bibliographicalDataAssembler = bibliographicalDataAssembler;
+        this.bibliographicalDataRepositoryJpa =
+                Objects.requireNonNull(bibliographicalDataRepositoryJpa, "bibliographicalDataRepositoryJpa must not be null");
+
+        this.bibliographicalDataAssembler =
+                Objects.requireNonNull(bibliographicalDataAssembler, "bibliographicalDataAssembler must not be null");
     }
 
     /**

@@ -44,12 +44,13 @@ class BibliographicalDataRepositoryJpaImplTest {
         bdId = mock(BibliographicalDataID.class);
         genreId = mock(GenreID.class);
         authorId = mock(AuthorId.class);
-
-        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
     }
 
     @Test
     void save_shouldThrowWhenBibliographicalDataIsNull() {
+        // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 repository.save(null)
@@ -59,6 +60,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void save_shouldThrowWhenBibliographicalDataAlreadyExists() throws InstanceAlreadyExistsException {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         when(bd.id()).thenReturn(bdId);
         when(jpaRepository.existsById(bdId)).thenReturn(true);
 
@@ -71,6 +74,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void save_shouldConvertSaveAndReturnDomainObject() throws InstanceAlreadyExistsException {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         when(bd.id()).thenReturn(bdId);
         when(jpaRepository.existsById(bdId)).thenReturn(false);
         when(assembler.toDM(bd)).thenReturn(bdDM);
@@ -86,6 +91,9 @@ class BibliographicalDataRepositoryJpaImplTest {
 
     @Test
     void findBibliographicalDataById_shouldThrowWhenIdIsNull() {
+        // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 repository.findBibliographicalDataById(null)
@@ -95,6 +103,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void findBibliographicalDataById_shouldReturnDomainObjectWhenFound() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         when(jpaRepository.findById(bdId)).thenReturn(Optional.of(bdDM));
         when(assembler.toDomain(bdDM)).thenReturn(bd);
 
@@ -110,6 +120,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void findBibliographicalDataById_shouldReturnEmptyWhenNotFound() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         when(jpaRepository.findById(bdId)).thenReturn(Optional.empty());
 
         // Act
@@ -122,6 +134,9 @@ class BibliographicalDataRepositoryJpaImplTest {
 
     @Test
     void findBibliographicalDataIdByTitle_shouldThrowWhenTitleIsNull() {
+        // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 repository.findBibliographicalDataIdByTitle(null)
@@ -130,6 +145,9 @@ class BibliographicalDataRepositoryJpaImplTest {
 
     @Test
     void findBibliographicalDataIdByTitle_shouldThrowWhenTitleIsBlank() {
+        // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 repository.findBibliographicalDataIdByTitle("   ")
@@ -139,6 +157,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void findBibliographicalDataIdByTitle_shouldReturnIdWhenTitleExists() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         when(jpaRepository.findByTitleIgnoreCase("Clean Code")).thenReturn(Optional.of(bdDM));
         when(bdDM.getId()).thenReturn(bdId);
 
@@ -154,6 +174,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void findBibliographicalDataIdByTitle_shouldReturnEmptyWhenTitleDoesNotExist() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         when(jpaRepository.findByTitleIgnoreCase("Unknown")).thenReturn(Optional.empty());
 
         // Act
@@ -166,6 +188,9 @@ class BibliographicalDataRepositoryJpaImplTest {
 
     @Test
     void findAllBibliographicalDataByGenreId_shouldThrowWhenGenreIdIsNull() {
+        // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 repository.findAllBibliographicalDataByGenreId(null)
@@ -175,6 +200,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void findAllBibliographicalDataByGenreId_shouldReturnIds() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         BibliographicalDataDM bdDM2 = mock(BibliographicalDataDM.class);
         BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
 
@@ -193,6 +220,9 @@ class BibliographicalDataRepositoryJpaImplTest {
 
     @Test
     void findBibliographicalDataIdByAuthorId_shouldThrowWhenAuthorIdIsNull() {
+        // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 repository.findBibliographicalDataIdByAuthorId(null)
@@ -202,6 +232,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void findBibliographicalDataIdByAuthorId_shouldReturnIds() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         BibliographicalDataDM bdDM2 = mock(BibliographicalDataDM.class);
         BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
 
@@ -221,6 +253,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void getAllPublicationsBD_shouldReturnDomainObjects() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         BibliographicalDataDM bdDM2 = mock(BibliographicalDataDM.class);
         BibliographicalData bd2 = mock(BibliographicalData.class);
 
@@ -238,6 +272,8 @@ class BibliographicalDataRepositoryJpaImplTest {
     @Test
     void getAllTitles_shouldReturnTitles() {
         // Arrange
+        repository = new BibliographicalDataRepositoryJpaImpl(jpaRepository, assembler);
+
         BibliographicalDataDM bdDM2 = mock(BibliographicalDataDM.class);
 
         when(jpaRepository.findAll()).thenReturn(List.of(bdDM, bdDM2));

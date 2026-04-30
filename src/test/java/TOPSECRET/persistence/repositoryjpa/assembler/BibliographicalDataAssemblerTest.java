@@ -25,85 +25,87 @@ class BibliographicalDataAssemblerTest {
     void setUp() {
         factory = mock(BibliographicalDataFactory.class);
         domain = mock(BibliographicalData.class);
-        assembler = new BibliographicalDataAssembler(factory);
     }
 
     @Test
     void toDM_shouldMapDomainToDataModel() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
-        AuthorId authorId = new AuthorId("5678");
-        GenreID genreId = new GenreID("9012");
+        // Arrange
+        assembler = new BibliographicalDataAssembler(factory);
+
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        GenreID genreIdDouble = mock(GenreID.class);
         LocalDate publicationDate = LocalDate.of(2026, 4, 28);
 
-        when(domain.id()).thenReturn(id);
+        when(domain.id()).thenReturn(bdIdDouble);
         when(domain.getTitle()).thenReturn("Title test");
         when(domain.getOriginalLanguage()).thenReturn(Locale.ENGLISH);
         when(domain.getPublicationDate()).thenReturn(publicationDate);
         when(domain.getChunksOfText()).thenReturn("Some text");
-        when(domain.getAuthors()).thenReturn(List.of(authorId));
-        when(domain.getGenres()).thenReturn(List.of(genreId));
+        when(domain.getAuthors()).thenReturn(List.of(authorIdDouble));
+        when(domain.getGenres()).thenReturn(List.of(genreIdDouble));
 
+        // Act
         BibliographicalDataDM result = assembler.toDM(domain);
 
-        assertEquals(id, result.getId());
+        // Arrange
+        assertEquals(bdIdDouble, result.getId());
         assertEquals("Title test", result.getTitle());
         assertEquals(Locale.ENGLISH.toString(), result.getOriginalLanguage());
         assertEquals(publicationDate, result.getPublicationDate());
         assertEquals("Some text", result.getChunksOfText());
-        assertEquals(List.of(authorId), result.getAuthorIds());
-        assertEquals(List.of(genreId), result.getGenreIds());
+        assertEquals(List.of(authorIdDouble), result.getAuthorIds());
+        assertEquals(List.of(genreIdDouble), result.getGenreIds());
     }
 
     @Test
     void toDomain_shouldMapDataModelToDomainUsingFactory() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
-        AuthorId authorId = new AuthorId();
-        GenreID genreId = new GenreID();
+        // Arrange
+        assembler = new BibliographicalDataAssembler(factory);
+
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        GenreID genreIdDouble = mock(GenreID.class);
         LocalDate publicationDate = LocalDate.of(2024, 1, 15);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                bdIdDouble,
                 "Title test",
                 "en",
                 publicationDate,
                 "Some text",
-                List.of(authorId),
-                List.of(genreId)
+                List.of(authorIdDouble),
+                List.of(genreIdDouble)
         );
 
         BibliographicalData expectedDomain = mock(BibliographicalData.class);
 
         when(factory.create(
-                id,
+                bdIdDouble,
                 "Title test",
-                List.of(authorId),
+                List.of(authorIdDouble),
                 Locale.ENGLISH,
                 publicationDate,
-                List.of(genreId),
+                List.of(genreIdDouble),
                 "Some text"
         )).thenReturn(expectedDomain);
 
+        // Act
         BibliographicalData result = assembler.toDomain(dm);
 
+        // Assert
         assertSame(expectedDomain, result);
-
-        verify(factory).create(
-                id,
-                "Title test",
-                List.of(authorId),
-                Locale.ENGLISH,
-                publicationDate,
-                List.of(genreId),
-                "Some text"
-        );
     }
 
     @Test
     void toDomain_shouldConvertUnderscoreLanguageToLocale() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        // Arrange
+        assembler = new BibliographicalDataAssembler(factory);
+
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                bdIdDouble,
                 "Title",
                 "pt_PT",
                 null,
@@ -115,7 +117,7 @@ class BibliographicalDataAssemblerTest {
         BibliographicalData expectedDomain = mock(BibliographicalData.class);
 
         when(factory.create(
-                eq(id),
+                eq(bdIdDouble),
                 eq("Title"),
                 eq(List.of()),
                 eq(Locale.forLanguageTag("pt-pt")),
@@ -124,27 +126,22 @@ class BibliographicalDataAssemblerTest {
                 isNull()
         )).thenReturn(expectedDomain);
 
+        // Act
         BibliographicalData result = assembler.toDomain(dm);
 
+        // Assert
         assertSame(expectedDomain, result);
-
-        verify(factory).create(
-                eq(id),
-                eq("Title"),
-                eq(List.of()),
-                eq(Locale.forLanguageTag("pt-pt")),
-                isNull(),
-                eq(List.of()),
-                isNull()
-        );
     }
 
     @Test
     void toDomain_shouldTrimLanguageBeforeConvertingToLocale() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        // Arrange
+        assembler = new BibliographicalDataAssembler(factory);
+
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                bdIdDouble,
                 "Title",
                 "  EN_us  ",
                 null,
@@ -156,7 +153,7 @@ class BibliographicalDataAssemblerTest {
         BibliographicalData expectedDomain = mock(BibliographicalData.class);
 
         when(factory.create(
-                eq(id),
+                eq(bdIdDouble),
                 eq("Title"),
                 eq(List.of()),
                 eq(Locale.forLanguageTag("en-us")),
@@ -165,17 +162,22 @@ class BibliographicalDataAssemblerTest {
                 isNull()
         )).thenReturn(expectedDomain);
 
+        // Act
         BibliographicalData result = assembler.toDomain(dm);
 
+        // Assert
         assertSame(expectedDomain, result);
     }
 
     @Test
     void toDomain_shouldPassNullLocaleWhenLanguageIsBlank() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        // Arrange
+        assembler = new BibliographicalDataAssembler(factory);
+
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                bdIdDouble,
                 "Title",
                 "   ",
                 null,
@@ -187,7 +189,7 @@ class BibliographicalDataAssemblerTest {
         BibliographicalData expectedDomain = mock(BibliographicalData.class);
 
         when(factory.create(
-                eq(id),
+                eq(bdIdDouble),
                 eq("Title"),
                 eq(List.of()),
                 isNull(),
@@ -196,17 +198,22 @@ class BibliographicalDataAssemblerTest {
                 isNull()
         )).thenReturn(expectedDomain);
 
+        // Act
         BibliographicalData result = assembler.toDomain(dm);
 
+        // Assert
         assertSame(expectedDomain, result);
     }
 
     @Test
     void toDomain_shouldPassNullLocaleWhenLanguageIsNull() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        // Arrange
+        assembler = new BibliographicalDataAssembler(factory);
+
+        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = mock(BibliographicalDataDM.class);
-        when(dm.getId()).thenReturn(id);
+        when(dm.getId()).thenReturn(bdIdDouble);
         when(dm.getTitle()).thenReturn("Title");
         when(dm.getAuthorIds()).thenReturn(List.of());
         when(dm.getOriginalLanguage()).thenReturn(null);
@@ -217,7 +224,7 @@ class BibliographicalDataAssemblerTest {
         BibliographicalData expectedDomain = mock(BibliographicalData.class);
 
         when(factory.create(
-                eq(id),
+                eq(bdIdDouble),
                 eq("Title"),
                 eq(List.of()),
                 isNull(),
@@ -226,8 +233,10 @@ class BibliographicalDataAssemblerTest {
                 isNull()
         )).thenReturn(expectedDomain);
 
+        // Act
         BibliographicalData result = assembler.toDomain(dm);
 
+        // Assert
         assertSame(expectedDomain, result);
     }
 

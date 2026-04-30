@@ -12,52 +12,51 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class BibliographicalDataDMTest {
 
-    BibliographicalDataID id;
-    GenreID genreId;
-    AuthorId authorId;
+    BibliographicalDataID idDouble;
+    GenreID genreIdDouble;
+    AuthorId authorIdDouble;
 
     @BeforeEach
     void setUp() {
-        id = new BibliographicalDataID("1234");
-        genreId = new GenreID("5678");
-        authorId = new AuthorId("3456");
+        idDouble = mock(BibliographicalDataID.class);
+        genreIdDouble = mock(GenreID.class);
+        authorIdDouble = mock(AuthorId.class);
     }
 
     @Test
     void shouldCreateBibliographicalDataDMWithAllFields() {
-
         // Arrange
         LocalDate publicationDate = LocalDate.of(2026, 4, 28);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                idDouble,
                 "Title",
                 "English",
                 publicationDate,
                 "Some chunks of text",
-                List.of(authorId),
-                List.of(genreId)
+                List.of(authorIdDouble),
+                List.of(genreIdDouble)
         );
 
         // Assert
-        assertEquals(id, dm.getId());
+        assertEquals(idDouble, dm.getId());
         assertEquals("Title", dm.getTitle());
         assertEquals("English", dm.getOriginalLanguage());
         assertEquals(publicationDate, dm.getPublicationDate());
         assertEquals("Some chunks of text", dm.getChunksOfText());
-        assertEquals(List.of(authorId), dm.getAuthorIds());
-        assertEquals(List.of(genreId), dm.getGenreIds());
+        assertEquals(List.of(authorIdDouble), dm.getAuthorIds());
+        assertEquals(List.of(genreIdDouble), dm.getGenreIds());
     }
 
     @Test
     void shouldAllowNullPublicationDateOriginalLanguageAndChunksOfText() {
-
         // Arrange
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                idDouble,
                 "Title",
                 null,
                 null,
@@ -73,7 +72,6 @@ class BibliographicalDataDMTest {
 
     @Test
     void shouldThrowExceptionWhenIdIsNull() {
-
         // Arrange + Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
@@ -94,12 +92,11 @@ class BibliographicalDataDMTest {
 
     @Test
     void shouldThrowExceptionWhenTitleIsNull() {
-
         // Arrange + Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
                 () -> new BibliographicalDataDM(
-                        id,
+                        idDouble,
                         null,
                         "English",
                         null,
@@ -115,15 +112,14 @@ class BibliographicalDataDMTest {
 
     @Test
     void shouldDefensivelyCopyAuthorIdsList() {
-
         // Arrange
-        AuthorId anotherAuthorId = new AuthorId("9012");
+        AuthorId anotherAuthorId = mock(AuthorId.class);
 
         List<AuthorId> authorIds = new java.util.ArrayList<>();
-        authorIds.add(authorId);
+        authorIds.add(authorIdDouble);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                idDouble,
                 "Title",
                 "English",
                 null,
@@ -137,20 +133,19 @@ class BibliographicalDataDMTest {
 
         // Assert
         assertEquals(1, dm.getAuthorIds().size());
-        assertEquals(List.of(authorId), dm.getAuthorIds());
+        assertEquals(List.of(authorIdDouble), dm.getAuthorIds());
     }
 
     @Test
     void shouldDefensivelyCopyGenreIdsList() {
-
         // Arrange
-        GenreID anotherGenreId = new GenreID("9012");
+        GenreID anotherGenreId = mock(GenreID.class);
 
         List<GenreID> genreIds = new java.util.ArrayList<>();
-        genreIds.add(genreId);
+        genreIds.add(genreIdDouble);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
-                id,
+                idDouble,
                 "Title",
                 "English",
                 null,
@@ -164,12 +159,11 @@ class BibliographicalDataDMTest {
 
         // Assert
         assertEquals(1, dm.getGenreIds().size());
-        assertEquals(List.of(genreId), dm.getGenreIds());
+        assertEquals(List.of(genreIdDouble), dm.getGenreIds());
     }
 
     @Test
     void shouldHaveProtectedNoArgsConstructorForJpa() throws Exception {
-
         // Arrange
         Constructor<BibliographicalDataDM> constructor =
                 BibliographicalDataDM.class.getDeclaredConstructor();
@@ -180,12 +174,11 @@ class BibliographicalDataDMTest {
 
     @Test
     void shouldThrowExceptionWhenAuthorIdsIsNull() {
-
         // Act + Assert
         assertThrows(
                 NullPointerException.class,
                 () -> new BibliographicalDataDM(
-                        id,
+                        idDouble,
                         "Title",
                         "English",
                         null,
@@ -198,12 +191,11 @@ class BibliographicalDataDMTest {
 
     @Test
     void shouldThrowExceptionWhenGenreIdsIsNull() {
-
         // Act + Assert
         assertThrows(
                 NullPointerException.class,
                 () -> new BibliographicalDataDM(
-                        id,
+                        idDouble,
                         "Title",
                         "English",
                         null,
