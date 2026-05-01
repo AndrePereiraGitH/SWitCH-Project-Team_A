@@ -57,7 +57,7 @@ class US011AddPublicationToLibraryControllerTest {
         publication2 = mock(PublicationSample.class);
         publication3 = mock(PublicationSample.class);
 
-        when(libraryRepositoryDouble.getLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepositoryDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
 
         controller = new US011AddPublicationToLibraryController(
@@ -90,7 +90,7 @@ class US011AddPublicationToLibraryControllerTest {
     @Test
     void getListOfPublicationsNotInLibrary_returnsPublicationsFromRepository() {
         // Arrange
-        when(pubSampleRepositoryDouble.getAllPublicationsFromUserWithoutLibrary(userIdDouble))
+        when(pubSampleRepositoryDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
                 .thenReturn(List.of(publication1, publication2));
 
         // Act
@@ -106,7 +106,7 @@ class US011AddPublicationToLibraryControllerTest {
     @Test
     void getListOfPublicationsNotInLibrary_noPublicationsAvailable_returnsEmptyList() {
         // Arrange
-        when(pubSampleRepositoryDouble.getAllPublicationsFromUserWithoutLibrary(userIdDouble))
+        when(pubSampleRepositoryDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
                 .thenReturn(List.of());
 
         // Act
@@ -120,7 +120,7 @@ class US011AddPublicationToLibraryControllerTest {
     @Test
     void getListOfPublicationsNotInLibrary_allPublicationsAvailable_returnsAll() {
         // Arrange
-        when(pubSampleRepositoryDouble.getAllPublicationsFromUserWithoutLibrary(userIdDouble))
+        when(pubSampleRepositoryDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
                 .thenReturn(List.of(publication1, publication2, publication3));
 
         // Act
@@ -143,7 +143,7 @@ class US011AddPublicationToLibraryControllerTest {
             throws InstanceNotFoundException {
         // Arrange
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
-        when(pubSampleRepositoryDouble.findPublicationSampleById(idDouble))
+        when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.of(publication1));
 
         // Act
@@ -165,7 +165,7 @@ class US011AddPublicationToLibraryControllerTest {
             throws InstanceNotFoundException {
         // Arrange
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
-        when(pubSampleRepositoryDouble.findPublicationSampleById(idDouble))
+        when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.empty());
 
         // Act + Assert
@@ -178,7 +178,7 @@ class US011AddPublicationToLibraryControllerTest {
             throws InstanceNotFoundException {
         // Arrange
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
-        when(libraryRepositoryDouble.getLibraryByUserId(userIdDouble))
+        when(libraryRepositoryDouble.getByUserId(userIdDouble))
                 .thenThrow(new InstanceNotFoundException("This user does not have a library"));
 
         // Act + Assert
@@ -193,7 +193,7 @@ class US011AddPublicationToLibraryControllerTest {
         // Arrange
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
 
-        when(pubSampleRepositoryDouble.findPublicationSampleById(idDouble))
+        when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.of(publication1));
 
         // Act
@@ -221,7 +221,7 @@ class US011AddPublicationToLibraryControllerTest {
         // Arrange
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
 
-        when(pubSampleRepositoryDouble.findPublicationSampleById(idDouble))
+        when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.of(publication1));
 
         doThrow(new IllegalArgumentException("Already assigned"))

@@ -145,7 +145,7 @@ public class US015PublicationSampleMapper {
      */
     private Edition getEdition(PublicationSample publication) throws InstanceNotFoundException {
         EditionID editionId = publication.getEditionID();
-        Edition edition = _editionRepo.findEditionById(editionId)
+        Edition edition = _editionRepo.findById(editionId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("Edition was not found:" + editionId));
 
@@ -184,7 +184,7 @@ public class US015PublicationSampleMapper {
         List<String> authorsName = new ArrayList<>();
 
         for (AuthorId id : listOfAuthorsId) {
-            Author author = _authorRepo.findAuthorById(id)
+            Author author = _authorRepo.findById(id)
                     .orElseThrow(() ->
                             new InstanceNotFoundException("Author was not found:" + id));
 

@@ -59,7 +59,7 @@ public class US011AddPublicationToLibraryController {
      * @return a list of {@link PublicationSample} instances not yet in any library
      */
     public List<PublicationSample> getListOfPublicationsNotInLibrary(UserId userId) {
-        return _publicationSampleRepository.getAllPublicationsFromUserWithoutLibrary(userId);
+        return _publicationSampleRepository.findByUserIdAndLibraryIdIsNull(userId);
     }
 
     /**
@@ -93,11 +93,11 @@ public class US011AddPublicationToLibraryController {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        Library library = _libraryRepository.getLibraryByUserId(userId);
+        Library library = _libraryRepository.getByUserId(userId);
         LibraryId libraryId = library.id();
 
         PublicationSample publicationSample = _publicationSampleRepository
-                .findPublicationSampleById(publicationSampleId)
+                .findById(publicationSampleId)
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
 
         _publicationSampleRepository.addPublicationToLibrary(publicationSample, libraryId);

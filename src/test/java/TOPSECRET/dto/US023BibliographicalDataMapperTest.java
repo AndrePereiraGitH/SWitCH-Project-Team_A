@@ -75,8 +75,8 @@ class US023BibliographicalDataMapperTest {
         when(bd.getAuthors()).thenReturn(List.of(authorId1, authorId2));
 
         IAuthorRepository authorRepo = mock(IAuthorRepository.class);
-        when(authorRepo.findAuthorById(authorId1)).thenReturn(Optional.of(author1));
-        when(authorRepo.findAuthorById(authorId2)).thenReturn(Optional.of(author2));
+        when(authorRepo.findById(authorId1)).thenReturn(Optional.of(author1));
+        when(authorRepo.findById(authorId2)).thenReturn(Optional.of(author2));
 
         US023BibliographicalDataMapper mapper = new US023BibliographicalDataMapper(authorRepo);
 
@@ -113,7 +113,7 @@ class US023BibliographicalDataMapperTest {
         when(bd.getTitle()).thenReturn("Some Book");
         when(bd.getAuthors()).thenReturn(List.of(missingId));
 
-        when(authorRepo.findAuthorById(missingId)).thenReturn(Optional.empty());
+        when(authorRepo.findById(missingId)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class, () -> mapper.toDTO(bd));
@@ -133,7 +133,7 @@ class US023BibliographicalDataMapperTest {
         AuthorId authorId = mock(AuthorId.class);
         Author author = mock(Author.class);
         when(author.getName()).thenReturn("Author One");
-        when(authorRepo.findAuthorById(authorId)).thenReturn(Optional.of(author));
+        when(authorRepo.findById(authorId)).thenReturn(Optional.of(author));
 
         BibliographicalData bd1 = mock(BibliographicalData.class);
         when(bd1.id()).thenReturn(mock(BibliographicalDataID.class));

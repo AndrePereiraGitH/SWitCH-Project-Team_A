@@ -28,10 +28,10 @@ class DirectSaleTest {
 //     Sale Type setup
     @BeforeEach
     void setUp() {
-        when(listingRepoDouble.findListingById(listingId1Double)).thenReturn(Optional.ofNullable(listing1Double));
+        when(listingRepoDouble.findById(listingId1Double)).thenReturn(Optional.ofNullable(listing1Double));
         when(listing1Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
 
-        when(listingRepoDouble.findListingById(listingId2Double)).thenReturn(Optional.ofNullable(listing2Double));
+        when(listingRepoDouble.findById(listingId2Double)).thenReturn(Optional.ofNullable(listing2Double));
         when(listing2Double.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
     }
 

@@ -1,75 +1,74 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Library.ILibraryRepository;
-import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.services.LibraryService;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.Optional;
 
-
 /**
- * Controller class for US009 - Create Library use case.
+ * Controller for the US009 use case: Create Library.
  * <p>
- * This controller manages the creation of user libraries by coordinating
- * between the LibraryRepository and UserRepository. It ensures that libraries
- * are only created for existing users.
+ * This class is responsible for handling the application logic required to
+ * create a new library for a given user. It validates the existence of the user
+ * and delegates the creation and persistence of the library to the
+ * {@link LibraryService}.
  * </p>
  */
 
 public class US009ToCreateLibraryController {
 
-    private final ILibraryRepository _libraryRepository;
     private final IUserRepository _userRepository;
+    private final LibraryService _libraryService;
 
     /**
-     * Constructs a new US009ToCreateLibraryController with the specified repositories.
+     * Creates a new controller instance.
      * <p>
-     * Both repositories are required and cannot be null.
+     * Both dependencies are mandatory.
      * </p>
      *
-     * @param libraryRepository the repository for managing libraries
-     * @param userRepository the repository for managing users
-     * @throws NullPointerException if either repository is null
+     * @param userRepository the repository used to retrieve user information
+     * @param libraryService the service responsible for creating and saving libraries
+     * @throws NullPointerException if {@code userRepository} or {@code libraryService} is null
      */
 
-    public US009ToCreateLibraryController(ILibraryRepository libraryRepository, IUserRepository userRepository){
-        if (libraryRepository == null) {
-            throw new NullPointerException("libraryRepository can not be null");
-        }
-
-        if(userRepository == null){
+    public US009ToCreateLibraryController(IUserRepository userRepository, LibraryService libraryService) {
+        if (userRepository == null) {
             throw new NullPointerException("User repository can not be null");
         }
+        if (libraryService == null) {
+            throw new NullPointerException("libraryService can not be null");
+        }
 
-        _libraryRepository = libraryRepository;
         _userRepository = userRepository;
+        _libraryService = libraryService;
     }
 
     /**
-     * Creates and adds a new library for the specified user.
+     * Creates a new library associated with a given user.
      * <p>
-     * Looks up the user by username and delegates library creation to the
-     * LibraryRepository. If the user does not exist, an exception is thrown.
+     * The method first retrieves the {@link UserId} associated with the provided username.
+     * If the user does not exist, an exception is thrown. Otherwise, the request is
+     * delegated to the {@link LibraryService}.
      * </p>
      *
      * @param libraryName the name of the library to create; must not be null or blank
-     * @param username the username of the user who will own the library; must not be null or blank
-     * @return {@code true} if the library was successfully created and added
-     * @throws IllegalArgumentException if no user is found with the given username
-     * @throws InstanceAlreadyExistsException if the user already has a library
+     * @param username    the username of the library owner; must not be null or blank
+     * @return {@code true} if the library is successfully created
+     * @throws IllegalArgumentException       if no user exists with the given username
+     * @throws InstanceAlreadyExistsException if a library already exists for the user
      */
 
     public boolean createAndAddLibrary(String libraryName, String username) throws InstanceAlreadyExistsException {
 
         Optional<UserId> userId = _userRepository.findUserIdByUsername(username);
 
-        if(userId.isEmpty()){
+        if (userId.isEmpty()) {
             throw new IllegalArgumentException("This user does not exist");
         }
 
-        Library library = _libraryRepository.createAndAdd(libraryName,userId.get());
+        _libraryService.createAndSave(libraryName, userId.get());
 
         return true;
     }

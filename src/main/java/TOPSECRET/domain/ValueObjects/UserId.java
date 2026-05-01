@@ -1,7 +1,12 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Embeddable
 public class UserId implements DomainID {
     /**
      * Value Object representing a unique identifier for a User.
@@ -11,7 +16,7 @@ public class UserId implements DomainID {
      * </p>
      */
 
-    private final  String userId;
+    private String userId;
     /**
      * Constructs a new {@code UserId} with the given identifier.
      *

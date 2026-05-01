@@ -218,9 +218,9 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenNoListingIds() throws Exception {
         // Arrange
-        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of());
+        when(listingRepoDouble.findIdsByPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of());
 
         when(listingMapperDouble.toDTOs(List.of())).thenReturn(List.of());
 
@@ -239,9 +239,9 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void findListOfItemsOnDirectSale_ShouldReturnDTOs() throws Exception {
         // Arrange
-        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
+        when(listingRepoDouble.findIdsByPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
 
         US023ListingDTO dto = mock(US023ListingDTO.class);
         when(listingMapperDouble.toDTOs(List.of(listingId1Double))).thenReturn(List.of(dto));
@@ -261,9 +261,9 @@ class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void findListOfItemsOnDirectSale_ShouldReturnEmptyListWhenMapperReturnsEmpty() throws Exception {
         // Arrange
-        when(pubSampleRepoDouble.findPubSampleIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        when(listingRepoDouble.findAllListingIdByPublicationSampleId(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
+        when(listingRepoDouble.findIdsByPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of(listingId1Double));
 
         when(listingMapperDouble.toDTOs(List.of(listingId1Double))).thenReturn(List.of());
 

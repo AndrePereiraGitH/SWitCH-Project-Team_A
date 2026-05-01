@@ -90,7 +90,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         US026AuthorDTO dto2 = mock(US026AuthorDTO.class);
         List<US026AuthorDTO> expected = List.of(dto1, dto2);
 
-        when(authorRepository.getAllAuthors()).thenReturn(authors);
+        when(authorRepository.findAll()).thenReturn(authors);
 
         try (MockedStatic<US026AuthorMapper> mockedMapper = mockStatic(US026AuthorMapper.class)) {
             mockedMapper.when(() -> US026AuthorMapper.fromDomainList(authors)).thenReturn(expected);
@@ -113,7 +113,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<Author> authors = List.of();
         List<US026AuthorDTO> expected = List.of();
 
-        when(authorRepository.getAllAuthors()).thenReturn(authors);
+        when(authorRepository.findAll()).thenReturn(authors);
 
         try (MockedStatic<US026AuthorMapper> mockedMapper = mockStatic(US026AuthorMapper.class)) {
             mockedMapper.when(() -> US026AuthorMapper.fromDomainList(authors)).thenReturn(expected);
@@ -171,7 +171,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findAllListingIdByPublicationSampleId(publicationSampleIds)).thenReturn(listingIds);
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
 
@@ -199,7 +199,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findAllListingIdByPublicationSampleId(publicationSampleIds)).thenReturn(listingIds);
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
 
@@ -226,7 +226,7 @@ class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
         when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findAllListingIdByPublicationSampleId(publicationSampleIds)).thenReturn(listingIds);
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findAuctionsByListingId(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenThrow(new InstanceNotFoundException("Listing not found"));
 
