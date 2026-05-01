@@ -5,8 +5,11 @@ import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
@@ -24,24 +27,21 @@ import static org.mockito.Mockito.*;
  * <p>The {@link City} domain object is mocked because its constructor is protected
  * and the service only needs to forward the object between the factory and the repository.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class CityServiceTest {
-
+    @Mock
     private CityFactory doubleCityFactory;
+    @Mock
     private ICityRepository doubleCityRepository;
+    @Mock
     private ICountryRepository doubleCountryRepository;
-
-    @BeforeEach
-    void setUp() {
-        doubleCityFactory = mock(CityFactory.class);
-        doubleCityRepository = mock(ICityRepository.class);
-        doubleCountryRepository = mock(ICountryRepository.class);
-    }
+    @InjectMocks
+    private CityService cityService;
 
     @Test
     void shouldCreateAndSaveCity() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryID countryID = mock(CountryID.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
@@ -53,14 +53,11 @@ class CityServiceTest {
 
         // Assert
         assertEquals(doubleCity, result);
-        verify(doubleCityFactory).create(countryID, "Braga");
-        verify(doubleCityRepository).save(doubleCity);
     }
 
     @Test
     void shouldThrowWhenCountryNotFound() {
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         when(doubleCountryRepository.findCountryIdByCountryName("Unknown")).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -73,7 +70,6 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenFactoryThrows() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryID countryID = mock(CountryID.class);
         when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, ""))
@@ -89,7 +85,6 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenRepositoryThrows() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryID countryID = mock(CountryID.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));

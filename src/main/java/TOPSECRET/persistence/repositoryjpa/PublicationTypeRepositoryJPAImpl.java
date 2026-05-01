@@ -56,7 +56,7 @@ public class PublicationTypeRepositoryJPAImpl implements IPublicationTypeReposit
             throw new IllegalArgumentException("PublicationType cannot be null");
         }
 
-        PublicationTypeDM dm = assembler.toDataModel(pubType);
+        PublicationTypeDM dm = assembler.toDM(pubType);
 
         PublicationTypeDM saved = jpaRepository.save(dm);
 

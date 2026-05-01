@@ -5,6 +5,10 @@ import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
@@ -35,14 +39,17 @@ import static org.mockito.Mockito.*;
  * service logic and verify interactions.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class PublicationTypeServiceTest {
 
-    // HELPER
-    private final IPublicationTypeRepository repository = mock(IPublicationTypeRepository.class);
-    private final PublicationTypeFactory factory = mock(PublicationTypeFactory.class);
+    @Mock
+    private IPublicationTypeRepository repository;
 
-    private final PublicationTypeService service =
-            new PublicationTypeService(repository, factory);
+    @Mock
+    private PublicationTypeFactory factory;
+
+    @InjectMocks
+    private PublicationTypeService service;
 
     // CREATE SUCCESS
     @Test

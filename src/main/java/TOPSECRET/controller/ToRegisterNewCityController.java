@@ -10,7 +10,7 @@ import TOPSECRET.services.CityService;
  * <p>Belongs to the application layer and delegates all business logic
  * to {@link CityService}. Does not enforce domain rules directly.</p>
  */
-public class ToCreateAndPersistANewCityController {
+public class ToRegisterNewCityController {
 
     private final CityService cityService;
 
@@ -19,7 +19,7 @@ public class ToCreateAndPersistANewCityController {
      *
      * @param cityService the service to delegate city creation; must not be {@code null}
      */
-    public ToCreateAndPersistANewCityController(CityService cityService) {
+    public ToRegisterNewCityController(CityService cityService) {
         this.cityService = cityService;
     }
 

@@ -217,7 +217,7 @@ class PublicationTypeRepositoryMemTest {
     void shouldReturnCorrectElementWhenMultipleFormatsExist() {
 
         // ARRANGE
-        PublicationTypeRepositoryMem repo = new PublicationTypeRepositoryMem();
+        IPublicationTypeRepository repo = new PublicationTypeRepositoryMem();
 
         PublicationType pt1 = new PublicationTypeFactory().create("Book");
         PublicationType pt2 = new PublicationTypeFactory().create("Magazine");
