@@ -4,8 +4,11 @@ import TOPSECRET.domain.City.City;
 import TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICityRepositoryJPA;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,44 +21,39 @@ import static org.mockito.Mockito.*;
  * {@link ICityRepositoryJPA} and {@link CityAssembler} are mocked to isolate
  * the repository logic from the database and conversion layers.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class CityRepositoryJPAImplTest {
 
+    @Mock
     private ICityRepositoryJPA doubleJpaRepository;
+    @Mock
     private CityAssembler doubleAssembler;
+    @InjectMocks
     private CityRepositoryJPAImpl repository;
-
-    @BeforeEach
-    void setUp() {
-        doubleJpaRepository = mock(ICityRepositoryJPA.class);
-        doubleAssembler = mock(CityAssembler.class);
-    }
 
     @Test
     void shouldSaveCityAndReturnIt() {
-
         // Arrange
-        repository = new CityRepositoryJPAImpl(doubleJpaRepository, doubleAssembler);
         City doubleCity = mock(City.class);
         CityDM doubleCityDM = mock(CityDM.class);
-        when(doubleAssembler.DomainToDM(doubleCity)).thenReturn(doubleCityDM);
+        when(doubleAssembler.toDM(doubleCity)).thenReturn(doubleCityDM);
+        when(doubleJpaRepository.save(doubleCityDM)).thenReturn(doubleCityDM);
+        when(doubleAssembler.toDomain(doubleCityDM)).thenReturn(doubleCity);
 
         // Act
         City result = repository.save(doubleCity);
 
         // Assert
         assertEquals(doubleCity, result);
-        verify(doubleAssembler).DomainToDM(doubleCity);
-        verify(doubleJpaRepository).save(doubleCityDM);
     }
 
     @Test
     void shouldPropagateExceptionWhenJpaThrows() {
 
         // Arrange
-        repository = new CityRepositoryJPAImpl(doubleJpaRepository, doubleAssembler);
         City doubleCity = mock(City.class);
         CityDM doubleCityDM = mock(CityDM.class);
-        when(doubleAssembler.DomainToDM(doubleCity)).thenReturn(doubleCityDM);
+        when(doubleAssembler.toDM(doubleCity)).thenReturn(doubleCityDM);
         when(doubleJpaRepository.save(doubleCityDM))
                 .thenThrow(new RuntimeException("Database error"));
 

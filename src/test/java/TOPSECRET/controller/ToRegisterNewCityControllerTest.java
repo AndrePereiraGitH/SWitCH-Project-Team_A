@@ -9,17 +9,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ToCreateAndPersistANewCityController}.
+ * Unit tests for {@link ToRegisterNewCityController}.
  *
  * <p>This test suite verifies the behavior of the controller responsible for
  * coordinating the creation and persistence of a new {@link City}.
  * The controller depends on {@link CityService}, which is mocked to isolate
  * the controller logic.</p>
  */
-class ToCreateAndPersistANewCityControllerTest {
+class ToRegisterNewCityControllerTest {
 
     private CityService doubleCityService;
-    private ToCreateAndPersistANewCityController controller;
+    private ToRegisterNewCityController controller;
 
     @BeforeEach
     void setUp() {
@@ -30,7 +30,7 @@ class ToCreateAndPersistANewCityControllerTest {
     void shouldCreateAndPersistCity() {
 
         // Arrange
-        ToCreateAndPersistANewCityController controller = new ToCreateAndPersistANewCityController(doubleCityService);
+        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
         City doubleCity = mock(City.class);
         when(doubleCityService.createAndSave(eq("PORTUGAL_ID"), eq("Porto")))
                 .thenReturn(doubleCity);
@@ -40,13 +40,12 @@ class ToCreateAndPersistANewCityControllerTest {
 
         // Assert
         assertEquals(doubleCity, result);
-        verify(doubleCityService).createAndSave(eq("PORTUGAL_ID"), eq("Porto"));
     }
 
     @Test
     void shouldPropagateExceptionWhenServiceThrows() {
         // Arrange
-        ToCreateAndPersistANewCityController controller = new ToCreateAndPersistANewCityController(doubleCityService);
+        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
         when(doubleCityService.createAndSave(eq("PORTUGAL_ID"), eq("Porto")))
                 .thenThrow(new IllegalArgumentException("City already exists"));
 
@@ -59,7 +58,7 @@ class ToCreateAndPersistANewCityControllerTest {
     @Test
     void shouldThrowWhenCountryIDIsBlank() {
         // Arrange
-        ToCreateAndPersistANewCityController controller = new ToCreateAndPersistANewCityController(doubleCityService);
+        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -69,7 +68,7 @@ class ToCreateAndPersistANewCityControllerTest {
     @Test
     void shouldThrowWhenCountryIDIsNull() {
         // Arrange
-        ToCreateAndPersistANewCityController controller = new ToCreateAndPersistANewCityController(doubleCityService);
+        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,

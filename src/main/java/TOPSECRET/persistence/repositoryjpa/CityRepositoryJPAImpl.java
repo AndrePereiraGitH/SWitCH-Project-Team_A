@@ -35,8 +35,8 @@ public class CityRepositoryJPAImpl implements ICityRepository {
      */
     @Override
     public City save(City newcity) {
-        CityDM cityDM = assembler.DomainToDM(newcity);
-        jpaRepository.save(cityDM);
-        return newcity;
+        CityDM cityDM = assembler.toDM(newcity);
+        CityDM saved = jpaRepository.save(cityDM);
+        return assembler.toDomain(saved);
     }
 }
