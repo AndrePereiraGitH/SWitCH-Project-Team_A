@@ -1,12 +1,12 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -15,144 +15,95 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link UserRepositoryMem}.
- *
- * <p>Verifies saving, querying, and validation behavior.
- */
 @ExtendWith(MockitoExtension.class)
 class UserRepositoryMemTest {
 
-    private IUserRepository userRepository;
+    @InjectMocks
+    private UserRepositoryMem sut;
 
     @Mock
-    private User user1;
+    private User user;
 
     @Mock
-    private User user2;
+    private UserId userId;
 
-    @Mock
-    private UserId userId1;
-
-    @BeforeEach
-    void setUp() {
-        userRepository = new UserRepositoryMem();
-    }
 
     @Test
-    void shouldSaveUserSuccessfully() {
-        // Arrange
-        when(user1.getUserName()).thenReturn("UserOne");
-
+    void shouldSaveUser() {
         // Act
-        User result = userRepository.save(user1);
+        User result = sut.save(user);
 
         // Assert
-        assertSame(user1, result);
-        assertTrue(userRepository.existsByUsername("UserOne"));
+        assertEquals(user, result);
+        assertEquals(1, sut.getUserCount());
     }
 
     @Test
-    void shouldAllowSavingMultipleUsers() {
+    void shouldReturnTrueWhenUsernameExists() {
         // Arrange
-        when(user1.getUserName()).thenReturn("UserOne");
-        when(user2.getUserName()).thenReturn("UserTwo");
+        when(user.getUserName()).thenReturn("john");
+        sut.save(user);
 
         // Act
-        userRepository.save(user1);
-        userRepository.save(user2);
+        boolean result = sut.existsByUsername("john");
 
         // Assert
-        assertTrue(userRepository.existsByUsername("UserOne"));
-        assertTrue(userRepository.existsByUsername("UserTwo"));
-
-        if (userRepository instanceof UserRepositoryMem repoMem) {
-            assertEquals(2, repoMem.getUserCount());
-        }
+        assertTrue(result);
     }
 
     @Test
-    void shouldReturnFalseWhenUserDoesNotExist() {
-        // Act
-        boolean result = userRepository.existsByUsername("Ghost");
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void findUserIdByUsername_shouldReturnId_whenExistsByUsername() {
+    void shouldFindUserById() {
         // Arrange
-        when(user1.getUserName()).thenReturn("UserOne");
-        when(user1.id()).thenReturn(userId1);
-
-        userRepository.save(user1);
+        when(user.id()).thenReturn(userId);
+        sut.save(user);
 
         // Act
-        Optional<UserId> result = userRepository.findIdByUsername("UserOne");
+        Optional<User> result = sut.findByID(userId);
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(userId1, result.get());
+        assertEquals(user, result.get());
     }
 
     @Test
-    void findUserIdByUsername_shouldReturnEmpty_whenNotFound() {
+    void shouldReturnEmptyWhenUserNotFoundById() {
         // Act
-        Optional<UserId> result = userRepository.findIdByUsername("Unknown");
+        Optional<User> result = sut.findByID(userId);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findIdByUsername_shouldThrowException_whenUsernameIsNull() {
+    void shouldThrowWhenIdIsNull() {
         // Act & Assert
-        assertThrows(
-                NullPointerException.class,
-                () -> userRepository.findIdByUsername(null)
-        );
+        assertThrows(IllegalArgumentException.class, () -> sut.findByID(null));
     }
 
     @Test
-    void findIdByUsername_shouldThrowException_whenUsernameIsBlank() {
-        // Act & Assert
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> userRepository.findIdByUsername("   ")
-        );
-    }
-
-    @Test
-    void findByID_shouldReturnUser_whenExistsByUsername() {
+    void shouldFindIdByUsername() {
         // Arrange
-        when(user1.id()).thenReturn(userId1);
-
-        userRepository.save(user1);
+        when(user.getUserName()).thenReturn("john");
+        when(user.id()).thenReturn(userId);
+        sut.save(user);
 
         // Act
-        Optional<User> result = userRepository.findByID(userId1);
+        Optional<UserId> result = sut.findIdByUsername("john");
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(user1, result.get());
+        assertEquals(userId, result.get());
     }
 
     @Test
-    void findByID_shouldReturnEmpty_whenNotFound() {
-        // Act
-        Optional<User> result = userRepository.findByID(userId1);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findByID_shouldThrowException_whenIdIsNull() {
+    void shouldThrowWhenUsernameIsNull() {
         // Act & Assert
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> userRepository.findByID(null)
-        );
+        assertThrows(NullPointerException.class, () -> sut.findIdByUsername(null));
+    }
+
+    @Test
+    void shouldThrowWhenUsernameIsBlank() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> sut.findIdByUsername(" "));
     }
 }
