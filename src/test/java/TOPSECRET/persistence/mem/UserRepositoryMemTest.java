@@ -49,7 +49,7 @@ class UserRepositoryMemTest {
 
         // Assert
         assertSame(user1, result);
-        assertTrue(userRepository.exists("UserOne"));
+        assertTrue(userRepository.existsByUsername("UserOne"));
     }
 
     @Test
@@ -63,8 +63,8 @@ class UserRepositoryMemTest {
         userRepository.save(user2);
 
         // Assert
-        assertTrue(userRepository.exists("UserOne"));
-        assertTrue(userRepository.exists("UserTwo"));
+        assertTrue(userRepository.existsByUsername("UserOne"));
+        assertTrue(userRepository.existsByUsername("UserTwo"));
 
         if (userRepository instanceof UserRepositoryMem repoMem) {
             assertEquals(2, repoMem.getUserCount());
@@ -74,14 +74,14 @@ class UserRepositoryMemTest {
     @Test
     void shouldReturnFalseWhenUserDoesNotExist() {
         // Act
-        boolean result = userRepository.exists("Ghost");
+        boolean result = userRepository.existsByUsername("Ghost");
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void findUserIdByUsername_shouldReturnId_whenUserExists() {
+    void findUserIdByUsername_shouldReturnId_whenUserExistsByUsername() {
         // Arrange
         when(user1.getUserName()).thenReturn("UserOne");
         when(user1.id()).thenReturn(userId1);
@@ -124,7 +124,7 @@ class UserRepositoryMemTest {
     }
 
     @Test
-    void findByID_shouldReturnUser_whenExists() {
+    void findByID_shouldReturnUser_whenExistsByUsername() {
         // Arrange
         when(user1.id()).thenReturn(userId1);
 

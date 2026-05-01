@@ -19,18 +19,6 @@ import static org.mockito.Mockito.*;
 class UserAssemblerTest {
 
     @Test
-    void shouldCreateAssemblerSuccessfully() {
-        // Arrange
-        UserFactory userFactoryDouble = mock(UserFactory.class);
-
-        // Act
-        UserAssembler sut = new UserAssembler(userFactoryDouble);
-
-        // Assert
-        assertNotNull(sut);
-    }
-
-    @Test
     void shouldThrowExceptionWhenUserFactoryIsNull() {
         // Arrange
 

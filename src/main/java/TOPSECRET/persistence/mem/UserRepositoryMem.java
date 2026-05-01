@@ -43,7 +43,7 @@ public class UserRepositoryMem implements IUserRepository {
      * {@inheritDoc}
      */
     @Override
-    public boolean exists(String username) {
+    public boolean existsByUsername(String username) {
         for (User user : _userList) {
             if (user.getUserName().equals(username)) {
                 return true;

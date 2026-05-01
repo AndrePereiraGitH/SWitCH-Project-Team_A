@@ -91,47 +91,47 @@ class UserRepositoryJPAImplTest {
     // ----------------- exists() Tests -----------------
 
     @Test
-    void exists_shouldReturnTrue_whenUserExists() {
+    void exists_shouldReturnTrue_whenUserExistsByUsername() {
         // Arrange
         UserDM userDMDouble = mock(UserDM.class);
         when(jpaRepoDouble.findByUserName("Rodolph"))
                 .thenReturn(Optional.of(userDMDouble));
 
         // Act
-        boolean result = repo.exists("Rodolph");
+        boolean result = repo.existsByUsername("Rodolph");
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void exists_shouldReturnFalse_whenUserDoesNotExist() {
+    void exists_ByUsername_shouldReturnFalse_whenUserDoesNotExist() {
         // Arrange
         when(jpaRepoDouble.findByUserName("Rodolph"))
                 .thenReturn(Optional.empty());
 
         // Act
-        boolean result = repo.exists("Rodolph");
+        boolean result = repo.existsByUsername("Rodolph");
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void exists_shouldThrowException_whenUsernameIsNull() {
+    void exists_ByUsername_shouldThrowException_whenUsernameIsNull() {
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.exists(null)
+                () -> repo.existsByUsername(null)
         );
     }
 
     @Test
-    void exists_shouldThrowException_whenUsernameIsBlank() {
+    void exists_ByUsername_shouldThrowException_whenUsernameIsBlank() {
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.exists("   ")
+                () -> repo.existsByUsername("   ")
         );
     }
 
@@ -180,7 +180,7 @@ class UserRepositoryJPAImplTest {
     // ----------------- findUserIdByUsername() Tests -----------------
 
     @Test
-    void findUserIdByUsername_shouldReturnUserId_whenUserExists() {
+    void findUserIdByUsername_shouldReturnUserId_whenUserExistsByUsername() {
         // Arrange
         UserDM userDMDouble = mock(UserDM.class);
         User userDouble = mock(User.class);
