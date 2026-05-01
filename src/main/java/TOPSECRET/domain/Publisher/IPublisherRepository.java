@@ -28,12 +28,12 @@ public interface IPublisherRepository {
     boolean existsById (PublisherID id);
 
     /**
-     * Finds and returns the {@link Publisher} with the given VAT number.
+     * Finds and returns the {@link Publisher} with the given ID.
      *
      * @param id the {@link PublisherID} to search for
      * @return an {@link Optional} containing the Publisher if found; empty otherwise
      */
-    Optional<Publisher> findByVatNumber(PublisherID id);
+    Optional<Publisher> findById(PublisherID id);
 
     /**
      * Returns all {@link Publisher} instances currently stored in the repository.
