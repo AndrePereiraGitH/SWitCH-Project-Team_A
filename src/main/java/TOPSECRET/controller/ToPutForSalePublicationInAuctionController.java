@@ -42,7 +42,8 @@ public class ToPutForSalePublicationInAuctionController {
      * @param publicationSampleRepository repository used to retrieve publication samples
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public ToPutForSalePublicationInAuctionController(ListingService service,ILibraryRepository libraryRepo , IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
+    public ToPutForSalePublicationInAuctionController(ListingService service,ILibraryRepository libraryRepo ,
+                                                      IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.listingService = service;
         this.libraryRepo = libraryRepo;
