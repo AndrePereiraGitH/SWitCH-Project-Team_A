@@ -47,6 +47,6 @@ public interface IUserRepository {
      *         the given username exists, or {@link Optional#empty()} if not found
      * @throws IllegalArgumentException if {@code username} is null or blank
      */
-    Optional<UserId> findUserIdByUsername(String username);
+    Optional<UserId> findIdByUsername(String username);
 
 }

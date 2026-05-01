@@ -32,11 +32,9 @@ class UserRepositoryJPAImplTest {
 
     @Test
     void constructor_shouldCreateInstance_whenValidArguments() {
-        // Act
-        UserRepositoryJPAImpl result = new UserRepositoryJPAImpl(jpaRepoDouble, assemblerDouble);
 
         // Assert
-        assertNotNull(result);
+        assertNotNull(repo);
     }
 
     @Test
@@ -180,7 +178,7 @@ class UserRepositoryJPAImplTest {
     // ----------------- findUserIdByUsername() Tests -----------------
 
     @Test
-    void findUserIdByUsername_shouldReturnUserId_whenUserExistsByUsername() {
+    void findUserIdByUsername_shouldReturnUserId_whenExistsByUsername() {
         // Arrange
         UserDM userDMDouble = mock(UserDM.class);
         User userDouble = mock(User.class);
@@ -194,7 +192,7 @@ class UserRepositoryJPAImplTest {
                 .thenReturn(userIdDouble);
 
         // Act
-        Optional<UserId> result = repo.findUserIdByUsername("Ines");
+        Optional<UserId> result = repo.findIdByUsername("Ines");
 
         // Assert
         assertTrue(result.isPresent());
@@ -202,33 +200,33 @@ class UserRepositoryJPAImplTest {
     }
 
     @Test
-    void findUserIdByUsername_shouldReturnEmpty_whenUserDoesNotExist() {
+    void findUserIdByUsername_shouldReturnEmpty_whenDoesNotExist() {
         // Arrange
         when(jpaRepoDouble.findByUserName("Rodolph"))
                 .thenReturn(Optional.empty());
 
         // Act
-        Optional<UserId> result = repo.findUserIdByUsername("Rodolph");
+        Optional<UserId> result = repo.findIdByUsername("Rodolph");
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findUserIdByUsername_shouldThrowException_whenUsernameIsNull() {
+    void findIdByUsername_shouldThrowException_whenUsernameIsNull() {
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.findUserIdByUsername(null)
+                () -> repo.findIdByUsername(null)
         );
     }
 
     @Test
-    void findUserIdByUsername_shouldThrowException_whenUsernameIsBlank() {
+    void findIdByUsername_shouldThrowException_whenUsernameIsBlank() {
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.findUserIdByUsername("   ")
+                () -> repo.findIdByUsername("   ")
         );
     }
 }

@@ -81,7 +81,7 @@ class UserRepositoryMemTest {
     }
 
     @Test
-    void findUserIdByUsername_shouldReturnId_whenUserExistsByUsername() {
+    void findUserIdByUsername_shouldReturnId_whenExistsByUsername() {
         // Arrange
         when(user1.getUserName()).thenReturn("UserOne");
         when(user1.id()).thenReturn(userId1);
@@ -89,7 +89,7 @@ class UserRepositoryMemTest {
         userRepository.save(user1);
 
         // Act
-        Optional<UserId> result = userRepository.findUserIdByUsername("UserOne");
+        Optional<UserId> result = userRepository.findIdByUsername("UserOne");
 
         // Assert
         assertTrue(result.isPresent());
@@ -97,29 +97,29 @@ class UserRepositoryMemTest {
     }
 
     @Test
-    void findUserIdByUsername_shouldReturnEmpty_whenUserNotFound() {
+    void findUserIdByUsername_shouldReturnEmpty_whenNotFound() {
         // Act
-        Optional<UserId> result = userRepository.findUserIdByUsername("Unknown");
+        Optional<UserId> result = userRepository.findIdByUsername("Unknown");
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findUserIdByUsername_shouldThrowException_whenUsernameIsNull() {
+    void findIdByUsername_shouldThrowException_whenUsernameIsNull() {
         // Act & Assert
         assertThrows(
                 NullPointerException.class,
-                () -> userRepository.findUserIdByUsername(null)
+                () -> userRepository.findIdByUsername(null)
         );
     }
 
     @Test
-    void findUserIdByUsername_shouldThrowException_whenUsernameIsBlank() {
+    void findIdByUsername_shouldThrowException_whenUsernameIsBlank() {
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userRepository.findUserIdByUsername("   ")
+                () -> userRepository.findIdByUsername("   ")
         );
     }
 

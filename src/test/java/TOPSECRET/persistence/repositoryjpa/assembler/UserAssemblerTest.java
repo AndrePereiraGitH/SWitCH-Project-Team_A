@@ -6,23 +6,39 @@ import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.UserDM;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link UserAssembler}.
- */
+@ExtendWith(MockitoExtension.class)
 class UserAssemblerTest {
+
+    @Mock
+    private UserFactory userFactory;
+
+    @Mock
+    private User user;
+
+    @Mock
+    private UserId userId;
+
+    @Mock
+    private Profile profile;
+
+    @InjectMocks
+    private UserAssembler sut;
 
     @Test
     void shouldThrowExceptionWhenUserFactoryIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> new UserAssembler(null)
@@ -32,37 +48,26 @@ class UserAssemblerTest {
     @Test
     void shouldConvertUserToDM() {
         // Arrange
-        UserFactory userFactoryDouble = mock(UserFactory.class);
-        User userDouble = mock(User.class);
-        UserId userIdDouble = mock(UserId.class);
-        Profile profileDouble = mock(Profile.class);
         Set<UserRole> roles = Set.of(UserRole.ADMIN);
 
-        when(userDouble.id()).thenReturn(userIdDouble);
-        when(userDouble.getUserName()).thenReturn("TestUser");
-              when(userDouble.getProfile()).thenReturn(profileDouble);
-        when(userDouble.getUserRoles()).thenReturn(roles);
-
-        UserAssembler sut = new UserAssembler(userFactoryDouble);
+        when(user.id()).thenReturn(userId);
+        when(user.getUserName()).thenReturn("TestUser");
+        when(user.getProfile()).thenReturn(profile);
+        when(user.getUserRoles()).thenReturn(roles);
 
         // Act
-        UserDM result = sut.toDM(userDouble);
+        UserDM result = sut.toDM(user);
 
         // Assert
         assertNotNull(result);
-        assertEquals(userIdDouble, result.getId());
+        assertEquals(userId, result.getId());
         assertEquals("TestUser", result.getUserName());
-              assertEquals(profileDouble, result.getProfile());
+        assertEquals(profile, result.getProfile());
         assertEquals(roles, result.getUserRoles());
     }
 
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
-        // Arrange
-        UserFactory userFactoryDouble = mock(UserFactory.class);
-        UserAssembler sut = new UserAssembler(userFactoryDouble);
-
-        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> sut.toDM(null)
@@ -72,39 +77,28 @@ class UserAssemblerTest {
     @Test
     void shouldConvertDMToDomain() {
         // Arrange
-        UserFactory userFactoryDouble = mock(UserFactory.class);
-        User userDouble = mock(User.class);
-        UserId userIdDouble = mock(UserId.class);
-        Profile profileDouble = mock(Profile.class);
         Set<UserRole> roles = Set.of(UserRole.ADMIN);
 
         UserDM userDM = new UserDM(
-                userIdDouble,
+                userId,
                 "TestUser",
-                       profileDouble,
+                profile,
                 roles
         );
 
-        when(userFactoryDouble.create(userIdDouble, "TestUser", profileDouble, roles
-        )).thenReturn(userDouble);
-
-        UserAssembler sut = new UserAssembler(userFactoryDouble);
+        when(userFactory.create(userId, "TestUser", profile, roles))
+                .thenReturn(user);
 
         // Act
         User result = sut.toDomain(userDM);
 
         // Assert
         assertNotNull(result);
-        assertSame(userDouble, result);
+        assertSame(user, result);
     }
 
     @Test
     void shouldThrowExceptionWhenDMIsNull() {
-        // Arrange
-        UserFactory userFactoryDouble = mock(UserFactory.class);
-        UserAssembler sut = new UserAssembler(userFactoryDouble);
-
-        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> sut.toDomain(null)
