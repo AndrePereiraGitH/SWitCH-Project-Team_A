@@ -28,40 +28,25 @@ import java.util.UUID;
 
 public class Auction implements AggregateRoot<AuctionId> {
 
-    private AuctionId _auctionId;
-    private ListingId _listingId;
-    private LocalDateTime _auctionStartDateTime;
-    private LocalDateTime _auctionEndDateTime;
-    private Price _initialPrice;
-    private Price _buyoutPrice;                                    // We are allowing it to be optional
-    private List<Bid> _bidHistory;                                 // Bid is an internal entity of the Auction aggregate
+    private final AuctionId _auctionId;
+    private final ListingId _listingId;
+    private final LocalDateTime _auctionStartDateTime;
+    private final LocalDateTime _auctionEndDateTime;
+    private final Price _initialPrice;
+    private final Price _buyoutPrice;                              // We are allowing it to be optional
+
+    // State attributes
     private AuctionStatus _auctionStatus;
-    private Clock _clock;
-
-
+    private List<Bid> _bidHistory;                                 // Bid is an internal entity of the Auction aggregate
     private Bid _winningBid;                                       // Bid is an internal entity of the Auction aggregate
     private Price _finalPrice;
     private LocalDateTime _closedAt;
 
+    private Clock _clock;
 
     // ============================================================
     // ============== CONSTRUCTORS ================================
     // ============================================================
-
-    /**
-     * Creates a new auction using the system default clock.
-     *
-     * @param listingId the identifier of the listing associated with the auction
-     * @param auctionStartDateTime the date and time when the auction starts
-     * @param finalDate the date and time when the auction ends
-     * @param initialPrice the initial price from which bidding starts
-     * @param buyOutPrice the price that immediately closes the auction if matched
-     *
-     * @throws IllegalArgumentException if any validation rule fails
-     */
-    protected Auction(ListingId listingId, LocalDateTime auctionStartDateTime, LocalDateTime finalDate, Price initialPrice, Price buyOutPrice) {
-        this(listingId, auctionStartDateTime, finalDate, initialPrice, buyOutPrice, Clock.systemDefaultZone());
-    }
 
     /**
      * Creates a new auction with an explicit clock.
@@ -119,11 +104,85 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         _auctionStatus = auctionStartDateTime.isAfter(now) ? AuctionStatus.SCHEDULED : AuctionStatus.ACTIVE;
 
-        if (buyOutPrice.getPrice().compareTo(_initialPrice.getPrice()) <= 0) {
+        if (buyOutPrice != null && buyOutPrice.getPrice().compareTo(_initialPrice.getPrice()) <= 0) {
             throw new IllegalArgumentException("Buyout price must be greater than Initial price.");
         }
-
     }
+
+    /**
+     * Creates a new auction using the system default clock.
+     *
+     * @param listingId the identifier of the listing associated with the auction
+     * @param auctionStartDateTime the date and time when the auction starts
+     * @param auctionEndDateTime the date and time when the auction ends
+     * @param initialPrice the initial price from which bidding starts
+     * @param buyOutPrice the price that immediately closes the auction if matched
+     *
+     * @throws IllegalArgumentException if any validation rule fails
+     */
+    protected Auction(ListingId listingId, LocalDateTime auctionStartDateTime, LocalDateTime auctionEndDateTime,
+                      Price initialPrice, Price buyOutPrice) {
+        this(listingId, auctionStartDateTime, auctionEndDateTime, initialPrice, buyOutPrice, Clock.systemDefaultZone());
+    }
+
+    /**
+     * Reconstructs an {@link Auction} aggregate with a predefined identifier and explicit clock.
+     * <p>
+     * This constructor is intended for rehydration scenarios (e.g., loading from persistence),
+     * where the auction identity and core attributes are already known.
+     * </p>
+     *
+     * @param auctionId the unique identifier of the auction (must not be {@code null})
+     * @param listingId the identifier of the associated listing (must not be {@code null})
+     * @param auctionStartDateTime the start date and time of the auction
+     * @param auctionEndDateTime the end date and time of the auction
+     * @param initialPrice the initial price of the auction
+     * @param buyOutPrice the buyout price of the auction
+     * @param clock the clock used for time-based operations (must not be {@code null})
+     *
+     * @throws IllegalArgumentException if {@code clock} is {@code null}
+     */
+    protected Auction(AuctionId auctionId, ListingId listingId, LocalDateTime auctionStartDateTime,
+                      LocalDateTime auctionEndDateTime, Price initialPrice, Price buyOutPrice, Clock clock) {
+        if (clock == null)
+            throw new IllegalArgumentException("Clock cannot be null");
+
+        this._clock = clock;
+        this._auctionId = auctionId;
+        this._listingId = listingId;
+        this._auctionStartDateTime = auctionStartDateTime;
+        this._auctionEndDateTime = auctionEndDateTime;
+        this._initialPrice = initialPrice;
+        this._buyoutPrice = buyOutPrice;
+        this._bidHistory = new ArrayList<>();           // to prevent bidHistory to be null when calling rehydrateStatus
+    }
+
+    /**
+     * Reconstructs an {@link Auction} aggregate with a predefined identifier.
+     * <p>
+     * This constructor is used in persistence scenarios where the
+     * auction is recreated without immediately requiring time-based behavior.
+     * </p>
+     *
+     * @param auctionId the unique identifier of the auction (must not be {@code null})
+     * @param listingId the identifier of the associated listing (must not be {@code null})
+     * @param auctionStartDateTime the start date and time of the auction
+     * @param auctionEndDateTime the end date and time of the auction
+     * @param initialPrice the initial price of the auction
+     * @param buyOutPrice the buyout price of the auction
+     */
+    protected Auction(AuctionId auctionId, ListingId listingId, LocalDateTime auctionStartDateTime,
+                      LocalDateTime auctionEndDateTime, Price initialPrice, Price buyOutPrice) {
+
+        this._auctionId = auctionId;
+        this._listingId = listingId;
+        this._auctionStartDateTime = auctionStartDateTime;
+        this._auctionEndDateTime = auctionEndDateTime;
+        this._initialPrice = initialPrice;
+        this._buyoutPrice = buyOutPrice;
+        this._bidHistory = new ArrayList<>();           // to prevent bidHistory to be null when calling rehydrateStatus
+    }
+
 
     // ============================================================
     // ================= BUSINESS METHODS =========================
@@ -152,7 +211,6 @@ public class Auction implements AggregateRoot<AuctionId> {
      *                                  or if the bid value violates bidding rules
      * @throws IllegalStateException if the auction is not ACTIVE
      */
-
     public Bid placeBid(UserId bidderId, Price value) {
 
         if (bidderId == null)
@@ -180,7 +238,7 @@ public class Auction implements AggregateRoot<AuctionId> {
 //            throw new IllegalArgumentException("Seller cannot bid on their own auction");
 
         // creates Bid
-        Bid bid = new Bid(_auctionId, bidderId, value);
+        Bid bid = new Bid(bidderId, value);
 
         _bidHistory.add(bid);
         _winningBid = bid;
@@ -192,6 +250,47 @@ public class Auction implements AggregateRoot<AuctionId> {
         }
 
         return bid;
+    }
+
+
+    /**
+     * Reconstructs a {@link Bid} instance associated with this auction.
+     *
+     * <p>This method is intended exclusively for persistence scenarios,
+     * where a {@link Bid} is recreated from previously stored data. It bypasses
+     * all business rule validations and should not be used to place new bids.</p>
+     *
+     * @param bidderId the identifier of the user who placed the bid (must not be {@code null})
+     * @param value the monetary value of the bid (must not be {@code null})
+     * @param timeOfBid the timestamp when the bid was originally placed (must not be {@code null})
+     *
+     * @return the reconstructed {@link Bid}
+     *
+     * @throws IllegalArgumentException if any argument is {@code null}
+     */
+    public Bid rehydrateBid(UserId bidderId, Price value,  LocalDateTime timeOfBid) {
+        return new Bid(bidderId, value, timeOfBid);
+    }
+
+    /**
+     * Rehydrates the internal state of the auction.
+     * <p>
+     * This method is used during reconstruction to restore the auction's
+     * status and final outcome without triggering business logic.
+     * </p>
+     *
+     * @param bidHistory the list of bid of the given auction
+     * @param winningBid the auction winningBid
+     * @param status the auction status to set
+     * @param finalPrice the final price of the auction (may be {@code null})
+     * @param closedAt the timestamp when the auction was closed (may be {@code null})
+     */
+    public void rehydrateState(List<Bid> bidHistory, Bid winningBid, AuctionStatus status, Price finalPrice, LocalDateTime closedAt) {
+        this._bidHistory = bidHistory;
+        this._winningBid = winningBid;
+        this._auctionStatus = status;
+        this._finalPrice = finalPrice;
+        this._closedAt = closedAt;
     }
 
     /**
@@ -282,6 +381,31 @@ public class Auction implements AggregateRoot<AuctionId> {
     // ============== GETTERS =====================================
     // ============================================================
 
+    @Override
+    public AuctionId id() {
+        return _auctionId;
+    }
+
+    public ListingId getListingId() {
+        return _listingId;
+    }
+
+    public LocalDateTime getAuctionStartDateTime() {
+        return _auctionStartDateTime;
+    }
+
+    public LocalDateTime getAuctionEndDateTime() {
+        return _auctionEndDateTime;
+    }
+
+    public Price getInitialPrice() {
+        return _initialPrice;
+    }
+
+    public Price getBuyoutPrice() {
+        return _buyoutPrice;
+    }
+
     public List<Bid> getBidHistory() {
         return List.copyOf(_bidHistory);
     }
@@ -290,18 +414,21 @@ public class Auction implements AggregateRoot<AuctionId> {
         return _auctionStatus;
     }
 
-    public ListingId getListingId() {
-        return _listingId;
+    public Bid getWinningBid() {
+        return _winningBid;
     }
 
-    @Override
-    public AuctionId id() {
-        return _auctionId;
+    public Price getFinalPrice() {
+        return _finalPrice;
+    }
+
+    public LocalDateTime getClosedAt() {
+        return _closedAt;
     }
 
 
     // ============================================================
-    // ========== EQUALS, SAMEAS AND HASCODE ======================
+    // ========== EQUALS, SAME AS AND HASHCODE ======================
     // ============================================================
 
     @Override

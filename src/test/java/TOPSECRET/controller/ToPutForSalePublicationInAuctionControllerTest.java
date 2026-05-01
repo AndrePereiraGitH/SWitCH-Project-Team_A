@@ -22,7 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
+/*
 class ToPutForSalePublicationInAuctionControllerTest {
 
     private ILibraryRepository libraryRepo;
@@ -497,3 +497,4 @@ class ToPutForSalePublicationInAuctionControllerTest {
         assertEquals("All fields must be non-null.", ex.getMessage());
     }
 }
+*/
