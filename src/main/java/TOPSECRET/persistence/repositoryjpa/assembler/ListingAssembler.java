@@ -80,14 +80,14 @@ public class ListingAssembler {
         Objects.requireNonNull(dm, "ListingDM cannot be null");
 
         Listing listing = factory.create(
-                dm.get_listingId(),
-                dm.get_listingTitle(),
-                dm.get_itemsId(),
-                dm.get_saleType(),
-                convertPriceToDomain(dm.get_price()),
-                dm.get_shortDescription(),
-                dm.get_sellerId(),
-                convertPicturesToDomain(dm.get_pictures())
+                dm.getListingId(),
+                dm.getListingTitle(),
+                dm.getItemsId(),
+                dm.getSaleType(),
+                convertPriceToDomain(dm.getPrice()),
+                dm.getShortDescription(),
+                dm.getSellerId(),
+                convertPicturesToDomain(dm.getPictures())
         );
 
         return listing;

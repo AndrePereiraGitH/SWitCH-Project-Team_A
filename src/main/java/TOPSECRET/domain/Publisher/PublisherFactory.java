@@ -1,6 +1,8 @@
 package TOPSECRET.domain.Publisher;
 
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory responsible for creating {@link Publisher} instances.
@@ -12,6 +14,7 @@ import TOPSECRET.domain.ValueObjects.Contact;
  * <p>Currently, the factory trims leading and trailing whitespace from
  * the {@code name} and {@code vatNumber} fields if they are not {@code null}.</p>
  */
+@Component
 public class PublisherFactory {
 
     /**
@@ -32,5 +35,8 @@ public class PublisherFactory {
                 vatNumber == null ? null : vatNumber.trim(),
                 contact
         );
+    }
+    public Publisher create(PublisherID id, String name, String vatNumber, Contact contact) {
+        return new Publisher(id, name, vatNumber, contact);
     }
 }

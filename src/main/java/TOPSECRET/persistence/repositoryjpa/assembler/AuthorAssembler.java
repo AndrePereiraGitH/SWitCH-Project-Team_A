@@ -22,9 +22,17 @@ public class AuthorAssembler {
     /**
      * Factory used to recreate {@link Author} domain objects from persisted data.
      */
-    @Autowired
     private AuthorFactory authorFactory;
 
+    /**
+     * Creates an {@code AuthorAssembler} with the required factory for rebuilding
+     * {@link Author} domain objects from persisted data.
+     *
+     * @param authorFactory the factory used to recreate {@link Author} instances
+     */
+    public AuthorAssembler(AuthorFactory authorFactory) {
+        this.authorFactory = authorFactory;
+    }
 
     /**
      * Converts an {@link Author} domain object into an {@link AuthorDM} data model.

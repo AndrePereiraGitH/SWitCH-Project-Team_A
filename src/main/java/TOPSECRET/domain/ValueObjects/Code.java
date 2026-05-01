@@ -1,5 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Objects;
 
 /**
@@ -8,12 +12,14 @@ import java.util.Objects;
  * Each instance holds exactly one type — the other two are always null.
  * Use the static factory methods to create instances: fromIsbn10, fromIsbn13, fromIssn.
  */
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Code {
 
     // only one of these will have a value — the other two will be null
-    private final String isbn10;
-    private final String isbn13;
-    private final String issn;
+    private String isbn10;
+    private String isbn13;
+    private String issn;
 
     /**
      * Private constructor — only the factory methods can call this, after validation.

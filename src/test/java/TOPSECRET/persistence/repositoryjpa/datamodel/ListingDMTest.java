@@ -170,7 +170,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        ListingId result = dm.get_listingId();
+        ListingId result = dm.getListingId();
 
         // Assert
         assertEquals(listingId, result);
@@ -184,7 +184,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        String result = dm.get_shortDescription();
+        String result = dm.getShortDescription();
 
         // Assert
         assertEquals(description, result);
@@ -198,7 +198,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        UserId result = dm.get_sellerId();
+        UserId result = dm.getSellerId();
 
         // Assert
         assertEquals(userId, result);
@@ -212,7 +212,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        SaleType result = dm.get_saleType();
+        SaleType result = dm.getSaleType();
 
         // Assert
         assertEquals(SaleType.DIRECT_SALE, result);
@@ -226,7 +226,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        String result = dm.get_listingTitle();
+        String result = dm.getListingTitle();
 
         // Assert
         assertEquals(title, result);
@@ -240,7 +240,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        List<String> result = dm.get_pictures();
+        List<String> result = dm.getPictures();
 
         // Assert
         assertEquals(pictures, result);
@@ -254,7 +254,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        String result = dm.get_price();
+        String result = dm.getPrice();
 
         // Assert
         assertEquals(price, result);
@@ -268,7 +268,7 @@ class ListingDMTest {
                 pictures, price);
 
         // Act
-        List<PublicationSampleId> result = dm.get_itemsId();
+        List<PublicationSampleId> result = dm.getItemsId();
 
         // Assert
         assertEquals(severalItemList, result);

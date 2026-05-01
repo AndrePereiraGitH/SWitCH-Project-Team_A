@@ -47,7 +47,7 @@ public class US020CollectionOfPublicationsDTOMapper {
 
         for (CollectionOfPublications c : collections) {
             String collectionName = c.getCollectionName();
-            String ownerName = userRepo.findUserByID(c.getOwnerId())
+            String ownerName = userRepo.findByID(c.getOwnerId())
                     .map(User::getUserName)
                     .orElseThrow(() -> new IllegalStateException("User not found"));
             US020CollectionOfPublicationsDTO dto = new US020CollectionOfPublicationsDTO(collectionName.trim(), ownerName.trim());

@@ -51,7 +51,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
         mapper = new US020CollectionOfPublicationsDTOMapper(userRepo);
         List<CollectionOfPublications> collections = List.of(collectionDouble);
         when(collectionDouble.getOwnerId()).thenReturn(userId);
-        when(userRepo.findUserByID(userId)).thenReturn(Optional.ofNullable(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.ofNullable(user));
         when(collectionDouble.getCollectionName()).thenReturn("Collection Name");
         when(user.getUserName()).thenReturn("Antonio");
 
@@ -72,7 +72,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
 
         when(collectionDouble.getCollectionName()).thenReturn("  Collection Name  ");
         when(collectionDouble.getOwnerId()).thenReturn(userId);
-        when(userRepo.findUserByID(userId)).thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(user.getUserName()).thenReturn("  Antonio  ");
 
         // Act
@@ -90,7 +90,7 @@ class US020CollectionOfPublicationsDTOMapperTest {
         when(collectionDouble.getCollectionName()).thenReturn("Collection name");
         when(collectionDouble.getOwnerId()).thenReturn(userId);
 
-        when(userRepo.findUserByID(userId)).thenReturn(Optional.empty());
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
         IllegalStateException exception = assertThrows(

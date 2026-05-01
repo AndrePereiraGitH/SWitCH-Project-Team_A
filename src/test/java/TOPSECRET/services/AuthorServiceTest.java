@@ -6,6 +6,10 @@ import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 
@@ -15,23 +19,53 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class AuthorServiceTest {
 
+    @Mock
     private AuthorFactory authorFactory;
+
+    @Mock
     private IAuthorRepository authorRepo;
+
+    @InjectMocks
     private AuthorService authorService;
 
-    @BeforeEach
-    void setUp() {
-        authorFactory = mock(AuthorFactory.class);
-        authorRepo = mock(IAuthorRepository.class);
 
-        authorService = new AuthorService(authorFactory, authorRepo);
+    // ===================================================
+    // =================== CONSTRUCTOR ===================
+    // ===================================================
+    @Test
+    void constructorShouldThrowExceptionWhenAuthorFactoryIsNull() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new AuthorService(null, authorRepo)
+        );
+
+        assertEquals("Author factory cannot be null.", exception.getMessage());
     }
+
+    @Test
+    void constructorShouldThrowExceptionWhenAuthorRepositoryIsNull() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new AuthorService(authorFactory, null)
+        );
+
+        assertEquals("Author Repository cannot be null", exception.getMessage());
+    }
+
+
+    // ===================================================
+    // =============== CREATE AND SAVE ===================
+    // ===================================================
 
     @Test
     void createAndSaveShouldReturnSavedAuthor() throws InstanceAlreadyExistsException {
         // Arrange
+
         String name = "Fernando Pessoa";
         CountryID countryID = mock(CountryID.class);
         LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);

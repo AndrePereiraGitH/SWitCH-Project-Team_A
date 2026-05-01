@@ -58,7 +58,7 @@ public class AuthorRepositoryMem implements IAuthorRepository {
     public Author save(Author author) throws InstanceAlreadyExistsException {
 
         if (!existsById(author.id())) {
-            this._authors.add(author);  // Add the author that was passed in
+            this._authors.add(author);
             return author;
         }
         throw new InstanceAlreadyExistsException("Author already exists");

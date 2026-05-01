@@ -25,7 +25,7 @@ public interface IListingRepositoryJpa extends JpaRepository<ListingDM, ListingI
      *                must not be {@code null}
      * @return a list of matching {@link ListingDM}s; never {@code null}, may be empty
      */
-    List<ListingDM> findAllBy_itemsId(List<PublicationSampleId> itemsId);
+    List<ListingDM> findAllByItemsId(List<PublicationSampleId> itemsId);
          
 
 }

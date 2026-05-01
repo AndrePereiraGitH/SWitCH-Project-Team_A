@@ -6,31 +6,40 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AuthorDM;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+/**
+ * Unit tests for {@link AuthorAssembler}.
+ *
+ * <p>
+ * Verifies the conversion between {@link Author} domain objects and
+ * {@link AuthorDM} JPA data models, including null validation.
+ * </p>
+ */
+@ExtendWith(MockitoExtension.class)
 class AuthorAssemblerTest {
 
-    @Autowired
+    @InjectMocks
     private AuthorAssembler assembler;
 
-    @MockBean
+    @Mock
     private AuthorFactory authorFactory;
 
-    @MockBean
+    @Mock
     private Author authorDouble;
 
-    @MockBean
+    @Mock
     private AuthorId authorIdDouble;
 
-    @MockBean
+    @Mock
     private CountryID countryIdDouble;
 
     private static final String name = "Ken Follett";

@@ -1,6 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -9,10 +12,11 @@ import java.util.Objects;
  * Value object that represents the identifier of a Publication Type.
  * Ensures the ID is not null or blank.
  */
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PublicationTypeId implements DomainID {
 
-    private final String pbType_id;
-
+    private String pbType_id;
 
     /**
      * Creates a PublicationTypeId with the given string.
