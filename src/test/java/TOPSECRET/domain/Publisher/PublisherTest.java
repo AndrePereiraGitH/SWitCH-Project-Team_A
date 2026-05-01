@@ -63,7 +63,7 @@ class PublisherTest {
     @Test
     void constructorShouldThrowAnExceptionWhenNameIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> factory.create(null, vatNumber, contactDouble));
     }
 
@@ -80,7 +80,7 @@ class PublisherTest {
     @Test
     void constructorShouldThrowAnExceptionWhenVatNumberIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> factory.create(name, null, contactDouble));
     }
 
@@ -105,7 +105,7 @@ class PublisherTest {
     @Test
     void reconstructionConstructor_shouldThrowException_whenIdIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> new Publisher(null, name, vatNumber, contactDouble));
     }
 
@@ -115,7 +115,7 @@ class PublisherTest {
         PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> new Publisher(idDouble, null, vatNumber, contactDouble));
     }
 
@@ -145,7 +145,7 @@ class PublisherTest {
         PublisherID idDouble = mock(PublisherID.class);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> new Publisher(idDouble, name, null, contactDouble));
     }
 
