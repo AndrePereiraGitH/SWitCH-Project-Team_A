@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
  * <p>
  * This test class verifies the behavior of the JPA-based implementation
  * of {@link TOPSECRET.domain.Country.ICountryRepository}, using Mockito
- * to mock dependencies such as {@link TOPSECRET.persistence.repositoryjpa.jpa.ICountryRepositoryJPA}
+ * to double dependencies such as {@link TOPSECRET.persistence.repositoryjpa.jpa.ICountryRepositoryJPA}
  * and {@link TOPSECRET.persistence.repositoryjpa.assembler.CountryAssembler}.
  * </p>
  *
@@ -186,7 +186,7 @@ class CountryRepositoryJPAImplTest {
         when(country.getCountryName())
                 .thenReturn("Portugal");
 
-        when(country.getCountryID())
+        when(country.id())
                 .thenReturn(countryId);
 
         // Act

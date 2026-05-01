@@ -71,7 +71,7 @@ class CountryFactoryTest {
         Country country = factory.create("Portugal");
 
         //Assert
-        assertEquals("PORTUGAL", country.getCountryID().getCountryID());
+        assertEquals("PORTUGAL", country.id().getCountryID());
     }
 
     @Test
@@ -82,7 +82,7 @@ class CountryFactoryTest {
         Country country2 = factory.create("Portugal");
 
         //Assert
-        assertEquals(country1.getCountryID(), country2.getCountryID());
+        assertEquals(country1.id(), country2.id());
     }
 
     @Test
@@ -93,7 +93,7 @@ class CountryFactoryTest {
         Country country2 = factory.create("France");
 
         //Assert
-        assertNotEquals(country1.getCountryID(), country2.getCountryID());
+        assertNotEquals(country1.id(), country2.id());
     }
 
     @Test
@@ -136,7 +136,7 @@ class CountryFactoryTest {
 
         // Assert
         assertNotNull(country);
-        assertEquals(id, country.getCountryID());
+        assertEquals(id, country.id());
         assertEquals("Portugal", country.getCountryName());
     }
 
@@ -185,6 +185,6 @@ class CountryFactoryTest {
         Country country = factory.create(id, "France");
 
         // Assert
-        assertEquals(id, country.getCountryID());
+        assertEquals(id, country.id());
     }
 }

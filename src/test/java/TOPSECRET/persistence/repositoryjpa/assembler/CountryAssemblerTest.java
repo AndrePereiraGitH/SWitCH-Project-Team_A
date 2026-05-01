@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
  *     <li>Interaction with {@link CountryFactory} during reconstruction of domain objects</li>
  * </ul>
  *
- * <p>Mockito is used to mock dependencies such as {@link CountryFactory}
+ * <p>Mockito is used to double dependencies such as {@link CountryFactory}
  * and {@link TOPSECRET.domain.Country.Country} to isolate the assembler logic.</p>
  */
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +58,7 @@ class CountryAssemblerTest {
         // Arrange
         CountryAssembler assembler = new CountryAssembler(countryFactory);
 
-        when(country.getCountryID()).thenReturn(countryId);
+        when(country.id()).thenReturn(countryId);
         when(country.getCountryName()).thenReturn("Portugal");
 
         // Act

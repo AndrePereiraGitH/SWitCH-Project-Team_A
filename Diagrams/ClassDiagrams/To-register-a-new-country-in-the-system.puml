@@ -5,12 +5,11 @@ hide circle
 
 
 class ICountryRepository {
-    +save (Country)
+    +save (Country country): Country
     }
 
 class CountryFactory {
-    +create
-    +create(countryName)
+    +create(countryName): Country
 }
 
 class ToRegisterNewCountryController{
@@ -18,14 +17,15 @@ class ToRegisterNewCountryController{
 }
 
 class CountryService {
-+createAndSave
++createAndSave(countryName: String)
 }
 
 class CountryAssembler{
-+toDM(Country)
++toDM(Country country): CountryDM
++toDomain(CountryDM countryDM): Country
 }
 
-class ICountryJPARepository{
+class ICountryRepositoryJPA{
 +save(CountryDM)
 }
 
@@ -41,13 +41,13 @@ class Country {
 }
 
 ' Interactions
-ICountryRepository "1" .--> "1" CountryFactory : requests creation
-ToRegisterNewCountryController "1" .--> "1" CountryService : request registering country
+ToRegisterNewCountryController "1" --> "1" CountryService : request registering country
 CountryService "1" --> "1" CountryFactory : asks for creation
 CountryService "1" --> "1" ICountryRepository
-ICountryRepository "1" .--> "1" ICountryJPARepository
-ICountryRepository "1" .--> "1" CountryAssembler
-CountryAssembler "1" .--> "1" CountryDM
-CountryAssembler "1" .--> "1" CountryFactory
+ICountryRepositoryJPA "1" .--> "1" ICountryRepository : implements
+ICountryRepository "1" .--> "1" CountryAssembler : provides instance to
+CountryAssembler "1" .--> "1" CountryDM : modifies into
+CountryAssembler "1" --> "1" CountryFactory : makes use of
+CountryAssembler "1" .--> "1" Country : reassembles
 CountryFactory "1" .--> "*" Country : creates
 @enduml

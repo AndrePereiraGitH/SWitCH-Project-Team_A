@@ -15,10 +15,10 @@ participant ":CountryController" as CountryController
 participant ":CountryService" as CountryService
 participant ":ICountryRepository" as ICountryRepository
 participant ":CountryFactory" as CountryFactory
-participant ":CountryAssembler" as Assembler
+/'participant ":CountryAssembler" as Assembler
 participant ":CountryDM" as DM
 participant ":ICountryJPARepository" as JPA
-
+'/
 
 Administrator -> UI : I want to register a new country
 activate UI
@@ -34,22 +34,22 @@ activate CountryController
 
 CountryController -> CountryService : createAndSave\n (countryName)
 activate CountryService
-CountryService -> CountryFactory : create
+CountryService -> CountryFactory : create(countryName)
 activate CountryFactory
 create participant "newCountry1: Country" as Country
 CountryFactory -->> Country : «create»
-CountryFactory --> CountryService : newCountry1
+CountryFactory --> CountryService : <newCountry1>
 deactivate CountryFactory
-CountryService -> ICountryRepository : save
+CountryService -> ICountryRepository : save(newCountry1)
 activate ICountryRepository
-ICountryRepository --> CountryService : "successfully saved"
+ICountryRepository --> CountryService : <newCountry1>
 deactivate ICountryRepository
-CountryService --> CountryController : "<countryName>\n successfully added"
+CountryService --> CountryController : <newCountry1>
 deactivate CountryService
 
-CountryController --> UI : "<countryName>\n successfully added"
+CountryController --> UI : <newCountry1>
 deactivate CountryController
-UI --> Administrator : "<countryName> has been\n successfully registered in the system!"
+UI --> Administrator : "<newCountry1> has been\n successfully registered in the system!"
 deactivate UI
 
 /' ICountryRepository -> CountryFactory : createAndAdd\n(countryName)

@@ -66,7 +66,7 @@ public class CountryRepositoryJPAImpl implements ICountryRepository {
 
         return getAllCountries().stream()
                 .filter(c -> c.getCountryName().equalsIgnoreCase(name))
-                .map(Country::getCountryID)
+                .map(Country::id)
                 .findFirst();
     }
 }

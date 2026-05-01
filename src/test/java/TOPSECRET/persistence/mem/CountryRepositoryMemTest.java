@@ -140,7 +140,7 @@ class CountryRepositoryMemTest {
 
         // Act
         Optional<Country> result =
-                repository.findByID(country.getCountryID());
+                repository.findByID(country.id());
 
         // Assert
         assertTrue(result.isPresent());
@@ -186,7 +186,7 @@ class CountryRepositoryMemTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(country.getCountryID(), result.get());
+        assertEquals(country.id(), result.get());
     }
 
     @Test

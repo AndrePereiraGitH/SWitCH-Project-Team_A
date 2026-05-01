@@ -21,6 +21,9 @@ public class ToRegisterCountryController {
      *                       must not be {@code null}
      */
     public ToRegisterCountryController(CountryService countryService) {
+        if(countryService == null){
+            throw new IllegalArgumentException("CountryService cannot be null!");
+        }
         this.countryService = countryService;
     }
 

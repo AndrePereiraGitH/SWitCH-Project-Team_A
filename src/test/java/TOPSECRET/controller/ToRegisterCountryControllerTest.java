@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
  * registering new {@link Country} instances.
  * </p>
  * <p>
- * The controller is tested in isolation using a mocked {@link CountryService},
+ * The controller is tested in isolation using a double of {@link CountryService},
  * ensuring that:
  * <ul>
  *     <li>Valid inputs result in successful country registration</li>

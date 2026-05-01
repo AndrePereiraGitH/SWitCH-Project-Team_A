@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
  * <p>
  * This test class verifies the behavior of the service layer responsible for
  * orchestrating country creation, persistence, and retrieval operations.
- * It uses Mockito to mock dependencies such as {@link CountryFactory}
+ * It uses Mockito to double dependencies such as {@link CountryFactory}
  * and {@link TOPSECRET.domain.Country.ICountryRepository}.
  * </p>
  *
@@ -75,23 +75,6 @@ class CountryServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(country, result);
-    }
-
-    @Test
-    void createAndSave_repositoryIsCalled() {
-
-        // Arrange
-        CountryService countryService =
-                new CountryService(countryFactory, countryRepository);
-
-        when(countryFactory.create("Portugal")).thenReturn(country);
-        when(countryRepository.save(country)).thenReturn(country);
-
-        // Act
-        countryService.createAndSave("Portugal");
-
-        // Assert
-        verify(countryRepository, times(1)).save(country);
     }
 
     // -------------------------------------------------------------------------

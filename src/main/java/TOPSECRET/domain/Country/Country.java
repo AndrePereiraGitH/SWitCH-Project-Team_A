@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Country;
 
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.CountryId;
 
 /**
@@ -18,7 +19,7 @@ import TOPSECRET.domain.ValueObjects.CountryId;
  * {@link CountryId}, following the principles of Aggregate Root identity.
  * </p>
  */
-public class Country {
+public class Country implements AggregateRoot<CountryId> {
 
     private final CountryId _countryId;
     private final String _countryName;
@@ -84,7 +85,7 @@ public class Country {
      *
      * @return the {@link CountryId} associated with this country
      */
-    public CountryId getCountryID() {
+    public CountryId id() {
         return _countryId;
     }
 
@@ -97,29 +98,42 @@ public class Country {
         return _countryName;
     }
 
-
     /**
-     * Compares this {@code Country} to another object for equality.
+     * Determines whether this object is equal to another object.
      * <p>
-     * Two {@code Country} instances are considered equal if they share
-     * the same {@link CountryId}, regardless of other attributes.
+     * Equality is delegated to the {@link #sameAs(Object)} method,
+     * which defines the domain-specific equality rules for {@code Country}.
      * </p>
      *
      * @param object the object to compare with
-     * @return {@code true} if the given object is a {@code Country}
-     *         with the same {@link CountryId}; {@code false} otherwise
+     * @return {@code true} if the objects are considered equal according to
+     *         domain identity rules; {@code false} otherwise
      */
     @Override
     public boolean equals(Object object) {
+        return sameAs(object);
+    }
+
+    /**
+     * Domain-specific equality check for {@code Country}.
+     * <p>
+     * Two {@code Country} instances are considered the same if they are
+     * the same instance or if they have the same {@link CountryId}.
+     * </p>
+     *
+     * @param object the object to compare with
+     * @return {@code true} if this object is the same as the given object
+     *         according to domain identity rules; {@code false} otherwise
+     */
+    @Override
+    public boolean sameAs(Object object) {
         if (this == object)
             return true;
 
-        if (object instanceof Country) {
-            Country oCountry = (Country) object;
-
-            if (this._countryId.equals(oCountry._countryId))
-                return true;
+        if (object instanceof Country other) {
+            return this._countryId.equals(other._countryId);
         }
+
         return false;
     }
 }

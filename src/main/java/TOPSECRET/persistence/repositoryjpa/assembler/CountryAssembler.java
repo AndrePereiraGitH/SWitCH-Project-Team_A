@@ -54,7 +54,7 @@ public class CountryAssembler {
         }
 
         return new CountryDM(
-                country.getCountryID(),
+                country.id(),
                 country.getCountryName()
         );
     }

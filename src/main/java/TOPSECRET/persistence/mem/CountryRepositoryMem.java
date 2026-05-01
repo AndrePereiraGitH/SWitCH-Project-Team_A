@@ -84,7 +84,7 @@ public class CountryRepositoryMem implements ICountryRepository {
     @Override
     public Optional<Country> findByID(CountryId countryID) {
         return registeredCountries.stream()
-                .filter(c -> c.getCountryID().equals(countryID))
+                .filter(c -> c.id().equals(countryID))
                 .findFirst();
     }
 
@@ -128,7 +128,7 @@ public class CountryRepositoryMem implements ICountryRepository {
             String normalizedStored = normalizeCountryName(country.getCountryName());
 
             if (normalizedStored.equals(normalizedInput)) {
-                return Optional.of(country.getCountryID());
+                return Optional.of(country.id());
             }
         }
 
