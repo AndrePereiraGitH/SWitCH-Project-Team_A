@@ -1,7 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.Country.Country;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -15,11 +17,13 @@ import java.util.Objects;
  * fields have the same values.
  * </p>
  */
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile implements ValueObject{
 
-    private final String _name;
-    private final Contact _contact;
-    private final LocalDate _birthday;
+    private String _name;
+    private Contact _contact;
+    private LocalDate _birthday;
 
     /**
      * Creates a Profile with the given data.

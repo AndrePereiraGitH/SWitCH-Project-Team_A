@@ -43,6 +43,9 @@ public class EditionService {
     private final EditionFactory factory;
 
     public EditionService(IEditionRepository editionRepository, EditionFactory factory) {
+        Objects.requireNonNull(editionRepository);
+        Objects.requireNonNull(factory);
+
         this.editionRepository = editionRepository;
         this.factory = factory;
     }
@@ -83,16 +86,6 @@ public class EditionService {
                                  Locale editionLanguage,
                                  LocalDate editionDate,
                                  TypeOfBinding typeOfBinding){
-
-        Objects.requireNonNull(editionNumber, "Edition Number cannot be null");
-        Objects.requireNonNull(code, "Code cannot be null");
-        Objects.requireNonNull(physicalAttributes, "PhysicalAttributes cannot be null");
-        Objects.requireNonNull(publicationTypeId, "PublicationTypeId cannot be null");
-        Objects.requireNonNull(publisherID, "PublisherID cannot be null");
-        Objects.requireNonNull(mediaFormat, "MediaFormat cannot be null");
-        Objects.requireNonNull(editionLanguage, "EditionLanguage cannot be null");
-        Objects.requireNonNull(editionDate, "EditionDate cannot be null");
-        Objects.requireNonNull(typeOfBinding, "TypeOfBinding cannot be null");
 
         Edition editionCreated = factory.create(editionNumber,
                 code,

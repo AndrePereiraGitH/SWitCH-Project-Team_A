@@ -18,7 +18,6 @@ class EditionDMTest {
     private PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
     private PublisherID publisherIDDouble = mock(PublisherID.class);
     private TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
-    private Locale languageDouble = mock(Locale.class);
     private LocalDate dateDouble = mock(LocalDate.class);
 
 
@@ -32,7 +31,7 @@ class EditionDMTest {
                 publicationTypeIdDouble,
                 publisherIDDouble,
                 "Book",
-                languageDouble,
+                "pt-PT",
                 dateDouble,
                 typeOfBindingDouble
         );
@@ -50,7 +49,7 @@ class EditionDMTest {
                 new EditionDM(
                         null, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
-                        "Book", languageDouble, dateDouble, typeOfBindingDouble
+                        "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -62,7 +61,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, null, codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
-                        "Book", languageDouble, dateDouble, typeOfBindingDouble
+                        "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -74,7 +73,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, "   ", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
-                        "Book", languageDouble, dateDouble, typeOfBindingDouble
+                        "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -86,7 +85,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, "1st", codeDouble,
                         null, publicationTypeIdDouble, publisherIDDouble,
-                        "Book", languageDouble, dateDouble, typeOfBindingDouble
+                        "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -97,7 +96,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, "1st", codeDouble,
                         physicalAttributesDouble, null, publisherIDDouble,
-                        "Book", languageDouble, dateDouble, typeOfBindingDouble
+                        "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -109,7 +108,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, null,
-                        "Book", languageDouble, dateDouble, typeOfBindingDouble
+                        "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -121,7 +120,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
-                        null, languageDouble, dateDouble, typeOfBindingDouble
+                        null, "pt-PT", dateDouble, typeOfBindingDouble
                 ));
     }
 
@@ -144,7 +143,7 @@ class EditionDMTest {
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
                         editionIDDouble, "1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
-                        "Book", languageDouble, null, typeOfBindingDouble
+                        "Book", "pt-PT", null, typeOfBindingDouble
                 ));
     }
 
@@ -157,7 +156,7 @@ class EditionDMTest {
                 new EditionDM(
                         editionIDDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
-                        "Book", languageDouble, dateDouble, null
+                        "Book", "pt-PT", dateDouble, null
                 ));
     }
 
@@ -179,7 +178,7 @@ class EditionDMTest {
         assertEquals(publicationTypeIdDouble, dm.getPublicationTypeId());
         assertEquals(publisherIDDouble, dm.getPublisherId());
         assertEquals("Book", dm.getMediaFormat());
-        assertEquals(languageDouble, dm.getEditionLanguage());
+        assertEquals("pt-PT", dm.getEditionLanguage());
         assertEquals(dateDouble, dm.getEditionDate());
         assertEquals(typeOfBindingDouble, dm.getTypeOfBinding());
     }

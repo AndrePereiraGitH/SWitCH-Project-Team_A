@@ -7,9 +7,11 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.Locale;
@@ -35,6 +37,7 @@ import static org.mockito.Mockito.*;
  * No Spring context is loaded.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class EditionServiceTest {
 
     // =========================================================================
@@ -66,9 +69,6 @@ class EditionServiceTest {
     @BeforeEach
     void setUp() {
 
-        MockitoAnnotations.openMocks(this);
-
-
         codeDouble = mock(Code.class);
         physicalAttributesDouble = mock(PhysicalAttributes.class);
         publicationTypeIdDouble = mock(PublicationTypeId.class);
@@ -80,6 +80,25 @@ class EditionServiceTest {
     }
 
     // =========================================================================
+    // Constructor
+    // =========================================================================
+
+    @Test
+    void constructor_shouldThrowWhenRepositoryIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> new EditionService(null, factory));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenFactoryIsNull() {
+
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> new EditionService(editionRepository, null));
+    }
+
+    // =========================================================================
     // createAndSave
     // =========================================================================
 
@@ -87,8 +106,6 @@ class EditionServiceTest {
     void createAndSave_shouldReturnEdition() {
 
         // Arrange
-        service = new EditionService(editionRepository, factory);
-
         Edition editionCreatedDouble = mock(Edition.class);
         Edition editionSavedDouble = mock(Edition.class);
 
@@ -103,7 +120,6 @@ class EditionServiceTest {
                 date,
                 typeOfBindingDouble
         )).thenReturn(editionCreatedDouble);
-
         when(editionRepository.save(editionCreatedDouble))
                 .thenReturn(editionSavedDouble);
 
@@ -122,194 +138,6 @@ class EditionServiceTest {
 
         // Assert
         assertEquals(editionSavedDouble, result);
-    }
 
-    @Test
-    void createAndSave_shouldThrowWhenEditionNumberIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        null,
-                        codeDouble,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        "Book",
-                        language,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenCodeIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        //Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        null,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        "Book",
-                        language,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenPhysicalAttributesIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        //Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        null,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        "Book",
-                        language,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenPublicationTypeIdIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        //Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        physicalAttributesDouble,
-                        null,
-                        publisherIDDouble,
-                        "Book",
-                        language,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenPublisherIdIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        null,
-                        "Book",
-                        language,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenMediaFormatIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        null,
-                        language,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenLanguageIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        //Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        "Book",
-                        null,
-                        date,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenDateIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        "Book",
-                        language,
-                        null,
-                        typeOfBindingDouble
-                ));
-    }
-
-    @Test
-    void createAndSave_shouldThrowWhenTypeOfBindingIsNull() {
-
-        // Arrange
-        service = new EditionService(editionRepository, factory);
-
-        //Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "1st",
-                        codeDouble,
-                        physicalAttributesDouble,
-                        publicationTypeIdDouble,
-                        publisherIDDouble,
-                        "Book",
-                        language,
-                        date,
-                        null
-                ));
     }
 }

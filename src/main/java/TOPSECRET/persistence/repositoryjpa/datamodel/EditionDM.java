@@ -65,7 +65,7 @@ public class EditionDM {
     private PublisherID publisherId;
     @Column(name = "media_format", nullable = false)
     private String mediaFormat;
-    private Locale editionLanguage;
+    private String editionLanguage;
     private LocalDate editionDate;
     @Enumerated(EnumType.STRING)
     private TypeOfBinding typeOfBinding;
@@ -101,7 +101,7 @@ public class EditionDM {
             PublicationTypeId publicationTypeId,
             PublisherID publisherId,
             String mediaFormat,
-            Locale editionLanguage,
+            String editionLanguage,
             LocalDate editionDate,
             TypeOfBinding typeOfBinding
     ){
