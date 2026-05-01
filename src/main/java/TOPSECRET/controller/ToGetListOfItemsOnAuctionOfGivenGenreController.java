@@ -82,6 +82,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
      * @param selectedGenreDTO the genre used as filter
      * @return list of US022AuctionMapper matching the genre
      */
+    /*
     public List<US022AuctionDTO> getListOfItemsOnAuctionGivenGenre(US022GenreDTO selectedGenreDTO) {
 
         if (selectedGenreDTO == null) {
@@ -103,4 +104,6 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         return US022AuctionMapper.toDTOList(auctions);
     }
+
+     */
 }
