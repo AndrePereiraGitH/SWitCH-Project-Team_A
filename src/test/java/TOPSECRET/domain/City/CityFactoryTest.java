@@ -1,5 +1,6 @@
 package TOPSECRET.domain.City;
 
+import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
@@ -59,5 +60,29 @@ class CityFactoryTest {
         //Act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> anyFactory.create(anyCountryID, ""));
+    }
+
+    @Test
+    void shouldCreateValidCityWithExistingID() {
+
+        // Arrange
+        CityID cityID = new CityID("existing-uuid");
+
+        // Act
+        City city = anyFactory.create(cityID, anyCountryID, anyCityName);
+
+        // Assert
+        assertNotNull(city);
+        assertEquals(anyCityName, city.getCityName());
+        assertEquals(anyCountryID, city.getCityCountryID());
+        assertEquals(cityID, city.id());
+    }
+
+    @Test
+    void shouldThrowWhenCityIDIsNull() {
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> anyFactory.create(null, anyCountryID, anyCityName));
     }
 }

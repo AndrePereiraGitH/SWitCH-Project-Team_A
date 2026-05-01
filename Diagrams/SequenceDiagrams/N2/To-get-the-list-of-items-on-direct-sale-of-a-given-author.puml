@@ -1,0 +1,85 @@
+@startuml
+
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given author
+
+actor Buyer
+
+' Participants
+participant ":UI" as UI025
+participant ":ToGetTheListOfItemsOnDirectSale\nOfAGivenAuthorController" as Ctrl
+participant ":AuthorRepository" as AuthorRepository
+participant ":AuthorMapper_US025" as AuthorMapper
+participant ":authorDTO:AuthorDTO_US025" as AuthorDTO
+participant ":DirectSaleMapper_US025" as Mapper
+participant ":DirectSaleRepository" as DirectSaleRepository
+participant "listOfDirectSale:\nList<DirectSale>" as ListDS
+participant "directSaleDTO:\nDirectSaleDTO_US025" as DTO
+participant "listOfDirectSaleDTO:\nList<DirectSaleDTO_US025>" as ListDTO
+participant ":DirectSale" as DS
+
+
+' Interactions
+Buyer -> UI025 : I want to get the list of items\n on direct sale of a given author
+activate UI025
+UI025 -> Ctrl : getAllAuthors()
+activate Ctrl
+Ctrl -> AuthorRepository: getAllAuthors()
+activate AuthorRepository
+AuthorRepository --> Ctrl: listOfAllAuthors
+deactivate AuthorRepository
+
+Ctrl -> AuthorMapper: toDTO(listOfAllAuthors)
+activate AuthorMapper
+AuthorMapper -> AuthorDTO **
+AuthorMapper --> Ctrl: listOfAllAuthorsDTO
+deactivate AuthorMapper
+
+Ctrl --> UI025 : listOfAllAuthors
+deactivate Ctrl
+Buyer <-- UI025 : Which author? Choose!
+deactivate UI025
+Buyer -> UI025 : author
+activate UI025
+
+UI025 -> Ctrl : getListOfItemsOnDirectSale(author)
+activate Ctrl
+
+Ctrl -> DirectSaleRepository : getListOfItemsOnDirectSale(author)
+activate DirectSaleRepository
+
+loop for each direct sale
+    DirectSaleRepository -> DirectSaleRepository : checkDirectSaleAuthor(author))
+end
+
+DirectSaleRepository -> ListDS ** : create ()
+DirectSaleRepository --> Ctrl : listOfDirectSale
+
+deactivate DirectSaleRepository
+
+Ctrl -> Mapper : toDTO(listOfDirectSale)
+activate Mapper
+Mapper -> ListDTO ** : create ()
+
+    loop for each direct sale
+    Mapper -> DS: getDetails(directSale)
+        activate DS
+        DS --> Mapper: directSaleDetails
+        deactivate DS
+
+        Mapper -> DTO ** : createDTO(directSaleDetails)
+        DTO --> Mapper: directSaleDTO
+            Mapper -> ListDTO : add(directSaleDTO)
+    end
+
+Mapper --> Ctrl : listOfDirectSalesDTO
+deactivate Mapper
+
+Ctrl --> UI025 : listOfDirectSalesDTO
+deactivate Ctrl
+
+UI025 --> Buyer : Shows the list of items on direct sale
+deactivate UI025
+
+@enduml
