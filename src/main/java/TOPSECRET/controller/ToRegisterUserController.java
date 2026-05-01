@@ -1,49 +1,45 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
-import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.UserId;
+
+import TOPSECRET.services.UserService;
+
+import javax.management.InstanceAlreadyExistsException;
+import java.util.Set;
 
 /**
- * Controller responsible for handling the registration of a new user in the system (US001).
+ * Controller responsible for handling the registration of a new {@link User} (US001).
  *
- * <p>Validates the input parameters and delegates the creation of the user to the repository.</p>
+ * <p>This controller validates input data and delegates the user creation
+ * process to the {@link UserService}, ensuring separation of concerns between
+ * the presentation layer and business logic.</p>
  */
 public class ToRegisterUserController {
 
-    private final IUserRepository userRepository;
+    private final UserService userService;
 
-    /**
-     * Constructs a new {@code US001ToRegisterUserController} with the given user repository.
-     *
-     * @param userRepository the repository responsible for user persistence; must not be null
-     */
-    public ToRegisterUserController(IUserRepository userRepository) {
-        this.userRepository = userRepository;
+    public ToRegisterUserController(UserService userService) {
+        this.userService = userService;
     }
+
 
     /**
      * Registers a new user in the system.
      *
-     * <p>Validates all input parameters and ensures the username is not already taken
-     * before delegating the creation to the repository.</p>
+     * <p>Validates all input parameters and delegates the creation and persistence
+     * of the user to the {@link UserService}.</p>
      *
-     * @param username the desired username for the new user; must not be null
-     * @param contact  the contact information of the new user; must not be null
-     * @param profile  the profile information of the new user; must not be null
-     * @param userRole the role assigned to the new user; must not be null
-     * @return the {@link UserId} of the newly registered user
-     * @throws IllegalArgumentException if any parameter is null or if the username already exists
+     * @param username the desired username for the new user; must not be {@code null}
+     * @param profile  the profile information of the user; must not be {@code null}
+     * @param userRole the role assigned to the user; must not be {@code null}
+     * @return the created {@link User} instance
+     * @throws IllegalArgumentException if any argument is {@code null}
      */
-    public User registerUser(String username, Contact contact, Profile profile, UserRole userRole) {
+    public User registerUser(String username, Profile profile, Set<UserRole> userRole) throws InstanceAlreadyExistsException {
         if (username == null) {
             throw new IllegalArgumentException("Username cannot be null");
-        }
-        if (contact == null) {
-            throw new IllegalArgumentException("Contact cannot be null");
         }
         if (profile == null) {
             throw new IllegalArgumentException("Profile cannot be null");
@@ -52,10 +48,6 @@ public class ToRegisterUserController {
             throw new IllegalArgumentException("UserRole cannot be null");
         }
 
-        if (userRepository.exists(username)) {
-            throw new IllegalArgumentException("Username already exists");
-        }
-
-        return userRepository.createAndAdd(username, contact, profile, userRole);
+        return userService.createAndSave(username, profile, userRole);
     }
 }

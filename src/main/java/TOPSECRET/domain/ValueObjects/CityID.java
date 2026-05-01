@@ -16,6 +16,7 @@ import java.util.Objects;
  *
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
+
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CityID implements DomainID {
