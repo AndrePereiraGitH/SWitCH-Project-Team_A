@@ -159,44 +159,6 @@ class CollectionOfPublicationsRepositoryMemTest {
 //        assertThrows(IllegalArgumentException.class, () -> sut.findPublicCollectionsByGenreId(null));
 //    }
 //}
-
-//    @Test
-//    void shouldReturnAllPublicCollectionsOfAGivenGenre() {
-//        // Arrange
-//        GenreID desiredGenre = mock(GenreID.class);
-//        UserId userDouble = mock(UserId.class);
-//
-//        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
-//        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
-//
-//        when(factory.create("Collection 1 name", desiredGenre, userDouble)).thenReturn(c1);
-//        when(factory.create("Collection 2 name", desiredGenre, userDouble)).thenReturn(c2);
-//
-//        when(c1.getOwnerId()).thenReturn(userDouble);
-//        when(c1.getCollectionName()).thenReturn("Collection 1 name");
-//        when(c1.getCollectionGenre()).thenReturn(desiredGenre);
-//        when(c1.getIsPrivate()).thenReturn(false);
-//
-//        when(c2.getOwnerId()).thenReturn(userDouble);
-//        when(c2.getCollectionName()).thenReturn("Collection 2 name");
-//        when(c2.getCollectionGenre()).thenReturn(desiredGenre);
-//        when(c2.getIsPrivate()).thenReturn(false);
-//
-//        sut = new CollectionOfPublicationsRepositoryMem(factory);
-//
-//        // Act
-//        sut.createAndAdd(userDouble, "Collection 1 name", desiredGenre);
-//        sut.createAndAdd(userDouble, "Collection 2 name", desiredGenre);
-//
-//        List<CollectionOfPublications> result = sut.findPublicCollectionsByGenreId(desiredGenre);
-//
-//        // Assert
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//        assertEquals(c1, result.get(0));
-//        assertEquals(c2, result.get(1));
-//    }
-//
 //    @Test
 //    void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
 //        // Arrange
@@ -209,39 +171,6 @@ class CollectionOfPublicationsRepositoryMemTest {
 //        // Assert
 //        assertNotNull(result);
 //        assertEquals(0, result.size());
-//    }
-//
-//    @Test
-//    void shouldThrowWhenUserIdIsNullForCreateAndAdd() {
-//
-//        //Arrange
-//        sut = new CollectionOfPublicationsRepositoryMem(factory);
-//
-//        //Act + assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> sut.createAndAdd(null, "name", mock(GenreID.class)));
-//    }
-//
-//    @Test
-//    void shouldThrowWhenNameIsNullForCreateAndAdd() {
-//
-//        //Arrange
-//        sut = new CollectionOfPublicationsRepositoryMem(factory);
-//
-//        //Act + assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> sut.createAndAdd(mock(UserId.class), null, mock(GenreID.class)));
-//    }
-//
-//    @Test
-//    void shouldThrowWhenGenreIdIsNullForCreateAndAdd() {
-//
-//        //Arrange
-//        sut = new CollectionOfPublicationsRepositoryMem(factory);
-//
-//        //Act + assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> sut.createAndAdd(mock(UserId.class), "name", null));
 //    }
 //
 }
