@@ -3,13 +3,13 @@ package TOPSECRET.services;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.Set;
 
 /**
  * Service responsible for user-related application operations.
@@ -55,18 +55,17 @@ public class UserService {
      * </p>
      *
      * @param username the username of the user
-     * @param contact  the contact information of the user
      * @param profile  the profile of the user
-     * @param userRole the role assigned to the user
+     * @param userRoles the role assigned to the user
      * @return the persisted {@link User}
      * @throws InstanceAlreadyExistsException if a user with the same identifier already exists
      * @throws IllegalArgumentException if any invalid argument is rejected by the domain factory or repository
      */
     @Transactional
-    public User createAndSave(String username, Contact contact, Profile profile, UserRole userRole)
+    public User createAndSave(String username,  Profile profile, Set<UserRole> userRoles)
             throws InstanceAlreadyExistsException {
 
-        User user = userFactory.create(username, contact, profile, userRole);
+        User user = userFactory.create(username, profile, userRoles);
 
         return userRepository.save(user);
     }

@@ -1,0 +1,51 @@
+@startuml
+hide footbox
+title Register Author in MiteLovers
+
+actor Administrator
+participant ":UI" as UI
+participant ":ToRegisterAuthorController" as C
+participant ":IAuthorRepository" as R
+participant ":AuthorFactory" as F
+
+autoNumber
+
+    Administrator -> UI : I want to register an author in MiteLovers
+activate UI
+
+    UI -->> Administrator : Please provide author information
+deactivate UI
+
+    Administrator -> UI : Here's the information
+activate UI
+
+    UI -> C : registerAuthor(name, \n countryId, birthday, biography)
+activate C
+
+    C -> R : createAndAdd(name, \n countryId, birthday, biography)
+activate R
+   R -> F : create(name, countryId,\n birthday, biography)
+activate F
+create "author: Author" as A
+    F --> A :  «create»
+    F --> R : author
+deactivate F
+
+    R -> R : exists(author)
+alt author already exists
+    R -->>C : Author already exists
+    C -->> UI : Author already exists
+
+    UI -->> Administrator :  Author already exists
+else author does NOT exist
+    R -> R : addToList(author)
+    R -->> C :  author
+deactivate R
+    C -->> UI :  success
+deactivate C
+    UI -->> Administrator :  success
+deactivate UI
+
+end
+
+@enduml

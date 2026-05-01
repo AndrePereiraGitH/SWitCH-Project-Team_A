@@ -36,9 +36,8 @@ public class UserAssembler {
         UserDM userDM = new UserDM(
                 user.id(),
                 user.getUserName(),
-                user.getContact(),
                 user.getProfile(),
-                user.getUserRole()
+                user.getUserRoles()
         );
 
         return userDM;
@@ -57,9 +56,8 @@ public class UserAssembler {
         User user = userFactory.create(
                 dm.getId(),
                 dm.getUserName(),
-                dm.getContact(),
                 dm.getProfile(),
-                dm.getUserRole()
+                dm.getUserRoles()
         );
 
         return user;

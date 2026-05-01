@@ -3,44 +3,38 @@ package TOPSECRET.services;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link UserService}.
- * <p>
- * This test class verifies that {@code UserService} correctly creates
- * and persists {@link User} instances by delegating to {@link UserFactory}
- * and {@link IUserRepository}.
- * </p>
- */
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
+    @Mock
+    private UserFactory factoryDouble;
+
+    @Mock
+    private IUserRepository repoDouble;
+
+    @InjectMocks
+    private UserService service;
 
     @Test
     void constructor_shouldCreateService_whenValidDependencies() {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-        IUserRepository repoDouble = mock(IUserRepository.class);
-
-        // Act
-        UserService service = new UserService(factoryDouble, repoDouble);
-
-        // Assert
         assertNotNull(service);
     }
 
     @Test
     void constructor_shouldThrowException_whenFactoryIsNull() {
-        // Arrange
-        IUserRepository repoDouble = mock(IUserRepository.class);
-
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new UserService(null, repoDouble)
@@ -49,10 +43,6 @@ class UserServiceTest {
 
     @Test
     void constructor_shouldThrowException_whenRepositoryIsNull() {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new UserService(factoryDouble, null)
@@ -61,89 +51,51 @@ class UserServiceTest {
 
     @Test
     void createAndSave_shouldReturnPersistedUser_whenValidArguments() throws Exception {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-        IUserRepository repoDouble = mock(IUserRepository.class);
-
-        UserService service = new UserService(factoryDouble, repoDouble);
-
-        Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
+        Set<UserRole> roles = Set.of(UserRole.NORMAL_USER);
 
         User createdUser = mock(User.class);
         User savedUser = mock(User.class);
 
-        when(factoryDouble.create("Rodolph", contactDouble, profileDouble, UserRole.NORMAL_USER))
+        when(factoryDouble.create("Rodolph", profileDouble, roles))
                 .thenReturn(createdUser);
-
         when(repoDouble.save(createdUser)).thenReturn(savedUser);
 
-        // Act
-        User result = service.createAndSave(
-                "Rodolph",
-                contactDouble,
-                profileDouble,
-                UserRole.NORMAL_USER
-        );
+        User result = service.createAndSave("Rodolph", profileDouble, roles);
 
-        // Assert
         assertNotNull(result);
         assertEquals(savedUser, result);
     }
 
     @Test
     void createAndSave_shouldThrowException_whenFactoryThrowsException() {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-        IUserRepository repoDouble = mock(IUserRepository.class);
-
-        UserService service = new UserService(factoryDouble, repoDouble);
-
-        Contact contactDouble = mock(Contact.class);
         Profile profileDouble = mock(Profile.class);
+        Set<UserRole> roles = Set.of(UserRole.NORMAL_USER);
 
-        when(factoryDouble.create(anyString(), any(), any(), any()))
+        when(factoryDouble.create(any(), any(), anySet()))
                 .thenThrow(new IllegalArgumentException());
 
-        // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> service.createAndSave(
-                        "Rodolph",
-                        contactDouble,
-                        profileDouble,
-                        UserRole.NORMAL_USER
-                )
+                () -> service.createAndSave("Rodolph", profileDouble, roles)
         );
     }
 
     @Test
-    void createAndSave_shouldThrowException_whenRepositoryThrowsException()  {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-        IUserRepository repoDouble = mock(IUserRepository.class);
-
-        UserService service = new UserService(factoryDouble, repoDouble);
-
-        Contact contactDouble = mock(Contact.class);
+    void createAndSave_shouldThrowException_whenRepositoryThrowsException() {
         Profile profileDouble = mock(Profile.class);
+        Set<UserRole> roles = Set.of(UserRole.NORMAL_USER);
 
         User createdUser = mock(User.class);
 
-        when(factoryDouble.create(anyString(), any(), any(), any()))
+        when(factoryDouble.create(any(), any(), anySet()))
                 .thenReturn(createdUser);
-
         when(repoDouble.save(createdUser))
                 .thenThrow(new IllegalArgumentException());
-        // Act & Assert
+
         assertThrows(
                 IllegalArgumentException.class,
-                () -> service.createAndSave(
-                        "Rodolph",
-                        contactDouble,
-                        profileDouble,
-                        UserRole.NORMAL_USER
-                )
+                () -> service.createAndSave("Rodolph", profileDouble, roles)
         );
     }
 }

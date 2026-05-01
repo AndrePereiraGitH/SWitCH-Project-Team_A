@@ -1,60 +1,43 @@
 package TOPSECRET.domain.User;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.ValueObjects.UserId;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 /**
- * Aggregate Root representing a registered User in the system.
- * <p>
- * A {@code User} is uniquely identified by a {@link UserId}, generated automatically
- * upon creation. It encapsulates the user's identity, role, contact information,
- * and profile, ensuring that all business rules are enforced at construction time.
- * </p>
+ * Aggregate Root representing a User.
  *
- * <p>Business rules enforced:</p>
+ * <p>A {@code User} has a unique {@link UserId}, username, contact, profile,
+ * and one or more {@link UserRole roles}. All invariants are validated on creation.</p>
+ *
+ * <p><strong>Rules:</strong></p>
  * <ul>
- *     <li>Username must not be {@code null}</li>
- *     <li>Username must contain at least 5 non-space characters</li>
- *     <li>UserRole must not be {@code null}</li>
- *     <li>Profile must not be {@code null}</li>
+ *   <li>Username must have at least 5 non-space characters</li>
+ *   <li>Profile must not be null</li>
+ *   <li>User must have at least one role</li>
  * </ul>
- *
- * <p>Example usage:</p>
- * <pre>
- *     User user = UserFactory.create("david123", contact, profile, UserRole.BUYER);
- * </pre>
  */
 public class User implements AggregateRoot<UserId> {
 
     private UserId _id;
     private String _userName;
-    private Contact _contact;
     private Profile _profile;
-    private UserRole _userRole;
+    private Set<UserRole> _userRoles;
 
     /**
-     * Constructs a new {@code User} with the given attributes.
-     * <p>
-     * A unique {@link UserId} is automatically generated upon creation.
-     * </p>
+     * Creates a new User with a generated {@link UserId}.
      *
-     * @param userName the username of the user; must not be {@code null}
-     *                 and must contain at least 5 non-space characters
-     * @param contact  the contact information of the user; may be {@code null}
-     * @param profile  the profile of the user; must not be {@code null}
-     * @param userRole the role assigned to the user; must not be {@code null}
-     * @throws IllegalArgumentException if {@code userName} is {@code null},
-     *                                  has fewer than 5 non-space characters,
-     *                                  {@code userRole} is {@code null},
-     *                                  or {@code profile} is {@code null}
+     * @param userName username (min 5 non-space chars)
+     * @param profile required profile
+     * @param userRoles non-empty set of roles
+     * @throws IllegalArgumentException if validation fails
      */
-    //Constructor
-    protected User(String userName, Contact contact, Profile profile, UserRole userRole) {
+    protected User(String userName, Profile profile, Set<UserRole> userRoles) {
 
         //Considered that the username can't be null
         //nor can it be composed of fewer than 5 digits
@@ -68,55 +51,54 @@ public class User implements AggregateRoot<UserId> {
             throw new IllegalArgumentException("Username must contain at least 5 characters.");
         }
 
-        if (userRole == null) {
-            throw new IllegalArgumentException("UserRole can't be null.");
-        }
+        if (userRoles == null || userRoles.isEmpty())
+            throw new IllegalArgumentException("UserRoles can't be null or empty.");
 
         if(profile == null) {
             throw new IllegalArgumentException("Profile can't be null.");
         }
 
         this._userName = userName;
-        this._contact = contact;
         this._profile = profile;
-        this._userRole = userRole;
+        this._userRoles = Set.copyOf(userRoles); // immutable defensive copy
         this._id = new UserId(UUID.randomUUID().toString());
     }
 
     /**
-     * Reconstructs an existing {@code User} with a provided {@link UserId}.
-     * <p>
-     * This constructor is intended for rebuilding a {@code User} from persistence,
-     * where the identity already exists and must be preserved.
-     * </p>
+     * Rebuilds an existing User.
      *
-     * @param userId   the existing user identifier; must not be {@code null}
-     * @param username the username of the user; must not be {@code null}
-     *                 and must contain at least 5 non-space characters
-     * @param contact  the contact information of the user; may be {@code null}
-     * @param profile  the profile of the user; must not be {@code null}
-     * @param userRole the role assigned to the user; must not be {@code null}
-     * @throws IllegalArgumentException if {@code userId}, {@code username},
-     *                                  {@code profile}, or {@code userRole} is {@code null},
-     *                                  or if {@code username} has fewer than 5 non-space characters
+     * @param userId existing id
+     * @param username username (min 5 non-space chars)
+     * @param profile required profile
+     * @param userRoles non-empty set of roles
+     * @throws IllegalArgumentException if validation fails
      */
-    public User(UserId userId, String username, Contact contact, Profile profile, UserRole userRole) {
-        if (userId == null) {   throw new IllegalArgumentException("UserId can't be null.");
+    public User(UserId userId, String username, Profile profile, Set<UserRole> userRoles) {
+
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId can't be null.");
         }
-        if (username == null) { throw new IllegalArgumentException("Username can't be null.");
+
+        if (username == null) {
+            throw new IllegalArgumentException("Username can't be null.");
         }
-        if (username.replace(" ", "").length() < 5) {   throw new IllegalArgumentException("Username must contain at least 5 characters.");
+
+        if (username.replace(" ", "").length() < 5) {
+            throw new IllegalArgumentException("Username must contain at least 5 characters.");
         }
-        if (userRole == null) { throw new IllegalArgumentException("UserRole can't be null.");
+
+        if (userRoles == null || userRoles.isEmpty()) {
+            throw new IllegalArgumentException("UserRoles can't be null or empty.");
         }
-        if (profile == null) {  throw new IllegalArgumentException("Profile can't be null.");
+
+        if (profile == null) {
+            throw new IllegalArgumentException("Profile can't be null.");
         }
 
         this._id = userId;
         this._userName = username;
-        this._contact = contact;
         this._profile = profile;
-        this._userRole = userRole;
+        this._userRoles = Set.copyOf(userRoles); // defensive immutable copy
     }
 
     // Empty Constructor
@@ -124,11 +106,7 @@ public class User implements AggregateRoot<UserId> {
     }
 
     // Getters
-    /**
-     * Returns the unique identifier of this {@code User}.
-     *
-     * @return the {@link UserId} of this user
-     */
+
     public UserId id() {
         return _id;
     }
@@ -136,21 +114,15 @@ public class User implements AggregateRoot<UserId> {
         return _userName;
     }
 
-    public Contact getContact() {
-        return _contact;
-    }
-
     public Profile getProfile() {
         return _profile;
     }
 
-    public UserRole getUserRole() {
-        return _userRole;
+    public Set<UserRole> getUserRoles() {
+        return Collections.unmodifiableSet(_userRoles);
     }
-
-    // Method: full user information
     public String getUserInfo() {
-        return "User: " + _userName + ", Role: " + _userRole + ", Contact: " + _contact + ", Profile: " + _profile;
+        return "User: " + _userName + ", Role: " + _userRoles +  ", Profile: " + _profile;
     }
 
 
@@ -170,8 +142,7 @@ public class User implements AggregateRoot<UserId> {
     
                 if (obj instanceof User) {
                     User other = (User) obj;
-                    if (this._id.equals(other._id))
-                        return true;
+                    return this._id.equals(other._id);
         }
         return false;
     }
@@ -184,19 +155,13 @@ public class User implements AggregateRoot<UserId> {
  * @return {@code true} if the given object is a {@code User} with the same
  *         business attributes; {@code false} otherwise
  */
-    @Override
-    public boolean sameAs(Object obj) {
-        if (!(obj instanceof User)) {
-        return false;
-        }
-
-    User other = (User) obj;
-
-    return this._userName.equals(other._userName) &&
-            this._contact.equals(other._contact) &&
-            this._profile.equals(other._profile) &&
-            this._userRole.equals(other._userRole);
-    }
+  @Override
+  public boolean sameAs(Object obj) {
+      if (!(obj instanceof User other)) return false;
+      return this._userName.equals(other._userName) &&
+              this._profile.equals(other._profile) &&
+              this._userRoles.equals(other._userRoles);
+  }
 
     @Override
     public int hashCode() {

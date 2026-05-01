@@ -1,9 +1,7 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,38 +30,24 @@ public class CityRepositoryMem implements ICityRepository {
     private List<City> _cities;
 
     /**
-     * Factory used to create valid {@link City} instances.
-     */
-    private final CityFactory _cityFactory;
-
-    /**
      * Creates a new {@code CityRepositoryMem}.
      *
-     * @param cityFactory the factory responsible for creating {@link City} instances;
-     *                    must not be {@code null}
      * @throws IllegalArgumentException if cityFactory is null
      */
-    public CityRepositoryMem(CityFactory cityFactory) {
-        if (cityFactory == null) {
-            throw new IllegalArgumentException("CityFactory cannot be null.");
-        }
+    public CityRepositoryMem() {
         _cities = new ArrayList<>();
-        _cityFactory = cityFactory;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public City createAndAdd(CountryID countryID, String cityName) {
-        City newCity = _cityFactory.create(countryID, cityName);
-
-        if (existsByAttributes(newCity)) {
+    public City save(City city) {
+        if (existsByAttributes(city)) {
             throw new IllegalArgumentException("This city already exists in the system.");
         }
-
-        _cities.add(newCity);
-        return newCity;
+        _cities.add(city);
+        return city;
     }
 
     /**
