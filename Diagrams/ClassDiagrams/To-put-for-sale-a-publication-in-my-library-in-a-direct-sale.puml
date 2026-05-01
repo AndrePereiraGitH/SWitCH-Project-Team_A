@@ -1,0 +1,162 @@
+@startuml
+title To put for a sale a publication in my library in a direct sale
+
+' -------------------------
+' Controller
+' -------------------------
+
+class ToPutForSaleAPublicationInDirectSaleController {
+    - libraryRepository: ILibraryRepository
+    - publicationSampleRepository: IPublicationSampleRepository
+    - listingService: ListingService
+    - pubSampleMapper: US015PublicationSampleMapper
+    + findLibraryPublicationsAvailableForSale(): List<US015PublicationSampleDTO>
+    + createDirectSaleListing(String title, List<PublicationSampleId> selectedPublicationIds,\n Price price, String shortDescription, UserId userId, List<Picture> pictures): boolean
+}
+
+' -------------------------
+' Library
+' -------------------------
+
+interface ILibraryRepository {
+    + findByUserId(UserId userId): Library
+}
+
+interface ILibraryRepositoryJPA {
+    + findByUserId(UserId userId): LibraryDM
+}
+
+class LibraryAssembler {
+    - libraryFactory: LibraryFactory
+    +toDomain(LibraryDM libraryDM): Library
+}
+
+class LibraryFactory {
+    + create(LibraryId libraryId, String libraryName, UserId userId): Library
+}
+
+' -------------------------
+' Publication Sample
+' -------------------------
+
+interface IPublicationSampleRepository {
+    + findAvailableForSaleByLibraryId(LibraryId libraryId): List<PublicationSample>
+}
+
+interface IPublicationSampleRepositoryJPA {
+    + findAvailableForSaleByLibraryId(LibraryId libraryId): List<PublicationSampleDM>
+}
+
+class PublicationSampleAssembler {
+    - publicationSampleFactory: PublicationSampleFactory
+    + toDomain(List<PublicationSampleDM> listOfAvailablePublicationDMs): List<PublicationSample>
+}
+
+class PublicationSampleFactory {
+    + create(PublicationSampleId pubSampleId, BibliographicalDataId bdId, UserId userId,\nPublicationStatus pubStatus, EditionId editionId, Condition condition): PublicationSample
+}
+
+class PublicationSample {
+    - publicationSampleId: PublicationSampleId
+    - bibliographicalDataId: BibliographicalDataId
+    - ownerId: UserId
+    - publicationStatus: PublicationStatus
+    - editionId: EditionId
+    - condition: Condition
+    - libraryId: LibraryId
+}
+
+record US015PublicationSampleDTO {}
+
+class US015PublicationSampleMapper {
+    - bdRepo: IBibliographicalDataRepository
+    - authorRepo: IAuthorRepository
+    - editionRepo: IEditionRepository
+    + toDTO(PublicationSample puSample): US015PublicationSampleDTO
+    + toDTOs(List<PublicationSample> listOfAvailablePublications): List<US015PublicationSampleDTO>
+}
+
+' -------------------------
+' Listing
+' -------------------------
+
+class ListingService {
+    - listingRepository: IListingRepository
+    - listingFactory: ListingFactory
+    + createAndSave(String title, List<PublicationSampleId> selectedPublicationIds, SaleType saleType,\nPrice price, String shortDescription, UserId userId, List<Picture> pictures): Listing
+}
+
+interface IListingRepository {
+    + save(Listing listing): Listing
+}
+
+interface IListingRepositoryJPA {
+    + save(ListingDM listingDM): ListingDM
+}
+
+class ListingAssembler {
+    - listingFactory: ListingFactory
+    + toDM(Listing listing): ListingDM
+    + toDomain(ListingDM listingDM): Listing
+}
+
+class ListingFactory {
+    + create(String title, List<PublicationSampleId> selectedPublicationIds, SaleType saleType,\nPrice price, String shortDescription, UserId userId, List<Picture> pictures): Listing
+}
+
+class Listing {
+    - listingId: String
+    - listingTitle: String
+    - publicationSampleIds: List<PublicationSampleId>
+    - saleType: SaleType
+    - price: Price
+    - shortDescription: String
+    - sellerId: UserId
+    - pictures: List<Picture>
+}
+
+
+' -------------------------
+' RELATIONSHIPS
+' -------------------------
+
+' --- Controller ---
+ToPutForSaleAPublicationInDirectSaleController "1" --> "1" ILibraryRepository: "uses"
+ToPutForSaleAPublicationInDirectSaleController "1" --> "1" IPublicationSampleRepository : "uses"
+ToPutForSaleAPublicationInDirectSaleController"1" --> "1" US015PublicationSampleMapper : "uses"
+ToPutForSaleAPublicationInDirectSaleController "1" --> "1" ListingService : "uses"
+
+' --- Library ---
+ILibraryRepository "1" <|-- "1" ILibraryRepositoryJPA: "implements"
+ILibraryRepository "1" ..> "1" LibraryAssembler: "uses"
+
+LibraryAssembler "1" --> "1" LibraryFactory: "uses"
+LibraryAssembler "1" ..> "1" LibraryDM: "receives"
+
+LibraryFactory "1" --> "1" Library: "creates"
+
+' --- PublicationSampleRepository ---
+IPublicationSampleRepository "1" <|-- "1" IPublicationSampleRepositoryJPA: "implements"
+IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler: "uses"
+
+PublicationSampleAssembler "1" --> "1" PublicationSampleFactory: "uses"
+PublicationSampleAssembler "1" ..> "1" PublicationSampleDM: "receives"
+
+PublicationSampleFactory "1" --> "1" PublicationSample: "creates"
+
+US015PublicationSampleMapper ..> US015PublicationSampleDTO : "maps"
+
+' --- Listing ---
+ListingService "1" --> "1" ListingFactory: "uses"
+ListingService "1" --> "1" IListingRepository: "uses"
+
+ListingFactory "1" --> "1" Listing: "creates"
+
+IListingRepository "1" ..> "1" ListingAssembler: "uses"
+IListingRepository "1" <|-- "1" IListingRepositoryJPA: "implements"
+
+ListingAssembler "1" ..> "1" ListingDM: "receives"
+ListingAssembler "1" --> "1" ListingFactory: "uses"
+
+@enduml
+
