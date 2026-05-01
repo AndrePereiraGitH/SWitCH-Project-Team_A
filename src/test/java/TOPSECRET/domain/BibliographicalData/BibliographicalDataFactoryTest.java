@@ -1,53 +1,84 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 
 class BibliographicalDataFactoryTest {
 
-        @Test
-        void create_shouldReturnValidBibliographicalData() {
+    String title;
+    List<AuthorId> authors;
+    Locale originalLanguage;
+    LocalDate publicationDate;
+    List<GenreID> genres;
+    String chunksOfText;
 
-            // Arrange
+    @BeforeEach
+    void setUp() {
+        title = "title";
+        authors = List.of(new AuthorId("author1"));
+        originalLanguage = Locale.ENGLISH;
+        publicationDate = LocalDate.of(2017,4,24);
+        genres = List.of(new GenreID("genre1"));
+        chunksOfText = "chunks of text";
+    }
 
-            AuthorId author = mock(AuthorId.class);
-            GenreID genre = mock(GenreID.class);
+    // Constructor
+    @Test
+    void shouldReturnBibliographicalDataWithGivenValues() {
 
-            try(MockedConstruction<BibliographicalData> mocked =
-                    mockConstruction(BibliographicalData.class,
-                            (mock, context) -> {})){
+        //Arrange
+        BibliographicalDataFactory factory = new BibliographicalDataFactory();
 
-                BibliographicalDataFactory factory =
-                        new BibliographicalDataFactory();
+        // Act
+        BibliographicalData bd = factory.create(
+                title,
+                authors,
+                originalLanguage,
+                publicationDate,
+                genres,
+                chunksOfText
+        );
 
-                // Act
-                BibliographicalData result = factory.create(
-                        "Title",
-                        List.of(author),
-                        Locale.ENGLISH,
-                        LocalDate.of(2010, 10, 10),
-                        List.of(genre),
-                        "Some text"
-                );
+        // Assert
+        assertNotNull(bd);
+        assertEquals(title, bd.getTitle());
+        assertEquals(authors, bd.getAuthors());
+        assertEquals(originalLanguage, bd.getOriginalLanguage());
+        assertEquals(publicationDate, bd.getPublicationDate());
+        assertEquals(genres, bd.getGenres());
+        assertEquals(chunksOfText, bd.getChunksOfText());
+    }
 
-                // Assert
-                assertNotNull(result);
-                assertEquals(1, mocked.constructed().size());
+    // Reconstructor
+    @Test
+    void shouldReturnReconstructedBibliographicalDataWithID() {
 
-                BibliographicalData constructedBibliographicalData = mocked.constructed().get(0);
-                assertSame(result, constructedBibliographicalData);
-            }
-        }
+        // Arrange
+        BibliographicalDataFactory factory = new BibliographicalDataFactory();
+        BibliographicalDataID bdID = new BibliographicalDataID("1234");
 
+        // Act
+        BibliographicalData bd = factory.create(
+                bdID,
+                title,
+                authors,
+                originalLanguage,
+                publicationDate,
+                genres,
+                chunksOfText
+        );
+
+        // Assert
+        assertNotNull(bd);
+        assertEquals(bdID, bd.id());
+    }
 
 }
