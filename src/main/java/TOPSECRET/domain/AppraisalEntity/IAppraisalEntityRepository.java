@@ -1,55 +1,51 @@
 package TOPSECRET.domain.AppraisalEntity;
 
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
-import TOPSECRET.domain.ValueObjects.PublicationTypeId;
-import TOPSECRET.dto.US004GenreDTO;
-import TOPSECRET.dto.US004PublicationTypeDTO;
+import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Contract for managing {@link AppraisalEntity} objects.
+ * Repository abstraction for AppraisalEntity aggregate.
  *
  * <p>
- * Defines operations for creating and storing AppraisalEntity instances,
- * including validation of input data and prevention of duplicates.
+ * Defines the contract for persistence operations,
+ * independent of the underlying implementation.
  * </p>
  */
 public interface IAppraisalEntityRepository {
 
     /**
-     * Creates and stores a new {@link AppraisalEntity}.
+     * Saves or updates an AppraisalEntity.
      *
-     * <p>
-     * This method performs the following steps:
-     * <ul>
-     *     <li>Validates that selected DTO lists are not null or empty</li>
-     *     <li>Converts Genre DTOs into existing {@link GenreID}</li>
-     *     <li>Converts PublicationType DTOs into existing {@link PublicationTypeId}</li>
-     *     <li>Ensures no duplicate AppraisalEntity exists with the same name and contact</li>
-     *     <li>Delegates creation to {@link AppraisalEntityFactory}</li>
-     *     <li>Stores the created entity</li>
-     * </ul>
-     * </p>
-     *
-     * @param name name of the AppraisalEntity
-     * @param contact contact information
-     * @param genresId selected GenreId
-     * @param publicationTypesId selected PublicationTypeId
-     * @return the created AppraisalEntity
-     *
-     * @throws IllegalArgumentException if:
-     * <ul>
-     *     <li>DTO lists are null or empty</li>
-     *     <li>Referenced Genre or PublicationType does not exist</li>
-     *     <li>An AppraisalEntity with the same name and contact already exists</li>
-     * </ul>
+     * @param entity the entity to persist
+     * @return the persisted entity
+     * @throws IllegalArgumentException if entity is null
      */
-    AppraisalEntity createAndAdd(String name,
-                                 Contact contact,
-                                 List<GenreID> genresId,
-                                 List<PublicationTypeId> publicationTypesId);
+    AppraisalEntity save(AppraisalEntity entity);
 
+    /**
+     * Finds an AppraisalEntity by its identifier.
+     *
+     * @param id the entity identifier
+     * @return an Optional containing the entity if found
+     * @throws IllegalArgumentException if id is null
+     */
+    Optional<AppraisalEntity> findById(AppraisalEntityId id);
 
+    /**
+     * Retrieves all AppraisalEntities.
+     *
+     * @return list of all entities
+     */
+    List<AppraisalEntity> findAll();
+
+    /**
+     * Checks if an entity exists by its identifier.
+     *
+     * @param id the entity identifier
+     * @return true if exists, false otherwise
+     * @throws IllegalArgumentException if id is null
+     */
+    boolean existsById(AppraisalEntityId id);
 }
