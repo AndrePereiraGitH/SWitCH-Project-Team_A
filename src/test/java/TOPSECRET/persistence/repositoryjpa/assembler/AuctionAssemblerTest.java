@@ -64,16 +64,13 @@ class AuctionAssemblerTest {
     }
 
     @Test
-    void toDM_shouldReturnNullWhenInputIsNull() {
+    void toDM_shouldThrowExceptionWhenInputIsNull() {
         // Arrange
         AuctionFactory auctionFactory = mock(AuctionFactory.class);
         AuctionAssembler auctionAssembler = new AuctionAssembler(auctionFactory);
 
-        // Act
-        AuctionDM result = auctionAssembler.toDM(null);
-
-        // Assert
-        assertNull(result);
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> auctionAssembler.toDM(null));
     }
 
     @Test
@@ -141,17 +138,13 @@ class AuctionAssemblerTest {
     }
 
     @Test
-    void toDomain_shouldReturnNullWhenInputIsNull() {
+    void toDomain_shouldThrowExceptionWhenInputIsNull() {
         // Arrange
         AuctionFactory auctionFactory = mock(AuctionFactory.class);
-
         AuctionAssembler assembler = new AuctionAssembler(auctionFactory);
 
-        // Act
-        Auction result = assembler.toDomain(null);
-
-        // Assert
-        assertNull(result);
+        // Act + Assert
+       assertThrows(IllegalArgumentException.class, () -> assembler.toDomain(null));
     }
 
     @Test

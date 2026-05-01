@@ -62,7 +62,9 @@ public class AuctionAssembler {
      */
     public AuctionDM toDM(Auction auction) {
 
-        if (auction == null) return null;
+        if (auction == null) {
+            throw new IllegalArgumentException("auction cannot be null");
+        };
 
         List<BidDM> bidHistoryDM = new ArrayList<>();
 
@@ -116,7 +118,9 @@ public class AuctionAssembler {
      */
     public Auction toDomain(AuctionDM auctionDM) {
 
-        if (auctionDM == null) return null;
+        if (auctionDM == null) {
+            throw new IllegalArgumentException("auctionDM cannot be null");
+        }
 
         Price initialPrice = new Price(auctionDM.getInitialPrice());
         Price buyoutPrice = auctionDM.getBuyoutPrice() != null
