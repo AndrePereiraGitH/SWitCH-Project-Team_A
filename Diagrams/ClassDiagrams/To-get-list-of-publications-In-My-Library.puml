@@ -1,16 +1,25 @@
 @startuml
 title As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
 
+' ─────────────────────────────────────────
+'  Presentation layer
+' ─────────────────────────────────────────
 class UI {
 }
 
+' ─────────────────────────────────────────
+'  Controller
+' ─────────────────────────────────────────
 class GetListOfPublicationsInLibraryController {
     - userRepository : IUserRepository
-    - pubSampleRepo : IPublicationSampleRepository
+    - pubSampleRepository : IPublicationSampleRepository
     - mapper : US012PublicationSampleMapper
-    + getListOfPublicationsInLibrary(username : String) : List<PublicationDetailsDTO_US012>
+    + getListOfPublicationsInLibrary(username : String) : List<US012PublicationDetailsDTO>
 }
 
+' ─────────────────────────────────────────
+'  User side
+' ─────────────────────────────────────────
 interface IUserRepository {
     + findIdByUsername(username : String) : UserId
 }
@@ -27,6 +36,15 @@ class User {
     + getId() : UserId
 }
 
+class UserId {
+}
+
+class UserDM {
+}
+
+' ─────────────────────────────────────────
+'  Publication side
+' ─────────────────────────────────────────
 interface IPublicationSampleRepository {
     + getAllPublicationsInUserLibrary(userId : UserId) : List<PublicationSample>
 }
@@ -42,31 +60,69 @@ class PublicationSampleAssembler {
 class PublicationSample {
 }
 
+class PublicationSampleDM {
+}
+
+' ─────────────────────────────────────────
+'  Mapper / DTO
+' ─────────────────────────────────────────
 class US012PublicationSampleMapper {
-    + toDTOs(publications : List<PublicationSample>) : List<PublicationDetailsDTO_US012>
-    + toDTO(publicationSample : PublicationSample) : PublicationDetailsDTO_US012
+    + toDTOs(publications : List<PublicationSample>) : List<US012PublicationDetailsDTO>
+    + toDTO(publicationSample : PublicationSample) : US012PublicationDetailsDTO
 }
 
-record PublicationDetailsDTO_US012 {
+record US012PublicationDetailsDTO {
+    + title : String
+    + author : String
+    + type : String
+    + identificationNumber : String
 }
 
-' Relationships
+' ─────────────────────────────────────────
+'  Database (boundary)
+' ─────────────────────────────────────────
+
+rectangle Database {
+}
+
+' ─────────────────────────────────────────
+'  Relationships
+' ─────────────────────────────────────────
+
+' UI → Controller
 UI ..> GetListOfPublicationsInLibraryController : uses
 
+' Controller → repositories & mapper
 GetListOfPublicationsInLibraryController ..> IUserRepository : uses
 GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
 GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
 
+' User repository chain
 IUserRepository ..> IUserRepositoryJPA : uses
 IUserRepository ..> UserAssembler : uses
-UserAssembler ..> User : creates
 IUserRepository ..> User : reads
+IUserRepository ..> UserId : returns
 
+IUserRepositoryJPA ..> UserDM : returns
+IUserRepositoryJPA ..> Database : "SELECT WHERE username"
+
+UserAssembler ..> UserDM : reads
+UserAssembler ..> User : <<create>>
+
+User ..> UserId : returns
+
+' Publication repository chain
 IPublicationSampleRepository ..> IPublicationSampleRepositoryJpa : uses
 IPublicationSampleRepository ..> PublicationSampleAssembler : uses
-PublicationSampleAssembler ..> PublicationSample : creates
 
+IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns
+IPublicationSampleRepositoryJpa ..> Database : "SELECT WHERE ownerId"
+
+PublicationSampleAssembler ..> PublicationSampleDM : reads
+PublicationSampleAssembler ..> PublicationSample : <<create>>
+
+' Mapper chain
 US012PublicationSampleMapper ..> PublicationSample : reads
-US012PublicationSampleMapper ..> PublicationDetailsDTO_US012 : creates
+US012PublicationSampleMapper ..> US012PublicationDetailsDTO : <<create>>
 
 @enduml

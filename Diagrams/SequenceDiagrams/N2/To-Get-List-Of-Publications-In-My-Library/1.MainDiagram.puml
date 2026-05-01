@@ -9,7 +9,7 @@ participant ":GetListOfPublicationsInLibraryController" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":US012PublicationSampleMapper" as Mapper
-participant "listOfPublicationsDTO\n:List<PublicationDetailsDTO_US012>" as ListDTO
+participant "listOfPublicationsDTO\n:List<US012PublicationDetailsDTO>" as ListDTO
 
 User -> UI : I want to see a list of the publications in my library
 activate UI

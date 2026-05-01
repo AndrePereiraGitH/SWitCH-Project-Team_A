@@ -18,8 +18,8 @@ participant ":PublicationSampleAssembler" as pbAssembler
 participant "pbSample:PublicationSample" as pbDomain
 participant "Database" as db
 participant ":US012PublicationSampleMapper" as Mapper
-participant "listOfPublicationsDTO\n:List<PublicationDetailsDTO_US012>" as ListDTO
-participant "pubDTO\n:PublicationDetailsDTO_US012" as pubDTO
+participant "listOfPublicationsDTO\n:List<US012PublicationDetailsDTO>" as ListDTO
+participant "pubDTO\n:US012PublicationDetailsDTO" as pubDTO
 
 User -> UI : I want to see a list of the publications in my library
 activate UI
