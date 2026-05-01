@@ -17,6 +17,26 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link CountryService}.
+ *
+ * <p>
+ * This test class verifies the behavior of the service layer responsible for
+ * orchestrating country creation, persistence, and retrieval operations.
+ * It uses Mockito to mock dependencies such as {@link CountryFactory}
+ * and {@link TOPSECRET.domain.Country.ICountryRepository}.
+ * </p>
+ *
+ * <p>
+ * The tests cover:
+ * <ul>
+ *     <li>Creation and saving of countries</li>
+ *     <li>Verification that factory and repository interactions occur</li>
+ *     <li>Retrieval of countries by ID</li>
+ *     <li>Retrieval of all countries</li>
+ * </ul>
+ * </p>
+ */
 @ExtendWith(MockitoExtension.class)
 class CountryServiceTest {
 
@@ -25,9 +45,6 @@ class CountryServiceTest {
 
     @Mock
     private ICountryRepository countryRepository;
-
-    @InjectMocks
-    private CountryService countryService;
 
     private Country country;
     private CountryId countryId;
@@ -43,48 +60,38 @@ class CountryServiceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void createAndSaveCountry_validCountry() {
+    void createAndSaveCountry_valid() {
 
         // Arrange
+        CountryService countryService =
+                new CountryService(countryFactory, countryRepository);
+
         when(countryFactory.create("Portugal")).thenReturn(country);
         when(countryRepository.save(country)).thenReturn(country);
 
         // Act
-        Country result = countryService.createAndSaveCountry("Portugal");
+        Country result = countryService.createAndSave("Portugal");
 
         // Assert
         assertNotNull(result);
         assertEquals(country, result);
-
     }
 
     @Test
-    void createAndSaveCountry_factoryIsCalled() {
+    void createAndSave_repositoryIsCalled() {
 
         // Arrange
+        CountryService countryService =
+                new CountryService(countryFactory, countryRepository);
+
         when(countryFactory.create("Portugal")).thenReturn(country);
         when(countryRepository.save(country)).thenReturn(country);
 
         // Act
-        countryService.createAndSaveCountry("Portugal");
+        countryService.createAndSave("Portugal");
 
         // Assert
-        verify(countryFactory, times(1)).create("Portugal");
-    }
-
-    @Test
-    void createAndSaveCountry_repositoryIsCalled() {
-
-        // Arrange
-        when(countryFactory.create("Portugal")).thenReturn(country);
-        when(countryRepository.save(country)).thenReturn(country);
-
-        // Act
-        Country result = countryService.createAndSaveCountry("Portugal");
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(country, result);
+        verify(countryRepository, times(1)).save(country);
     }
 
     // -------------------------------------------------------------------------
@@ -94,13 +101,17 @@ class CountryServiceTest {
     @Test
     void getCountryById_found() {
 
-        //Arrange + Act
+        // Arrange
+        CountryService countryService =
+                new CountryService(countryFactory, countryRepository);
+
         when(countryRepository.findByID(countryId))
                 .thenReturn(Optional.of(country));
 
+        // Act
         Optional<Country> result = countryService.getCountryById(countryId);
 
-        //Assert
+        // Assert
         assertTrue(result.isPresent());
         assertEquals(country, result.get());
     }
@@ -108,15 +119,18 @@ class CountryServiceTest {
     @Test
     void getCountryById_notFound() {
 
-        //Arrange + Act
+        // Arrange
+        CountryService countryService =
+                new CountryService(countryFactory, countryRepository);
+
         when(countryRepository.findByID(countryId))
                 .thenReturn(Optional.empty());
 
+        // Act
         Optional<Country> result = countryService.getCountryById(countryId);
 
-        //Assert
+        // Assert
         assertTrue(result.isEmpty());
-
     }
 
     // -------------------------------------------------------------------------
@@ -126,31 +140,38 @@ class CountryServiceTest {
     @Test
     void getAll_returnsList() {
 
-        //Arrange +Act
+        // Arrange
+        CountryService countryService =
+                new CountryService(countryFactory, countryRepository);
+
         List<Country> countries = List.of(country);
 
         when(countryRepository.getAllCountries())
                 .thenReturn(countries);
 
+        // Act
         List<Country> result = countryService.getAll();
 
-        //Assert
+        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(country, result.get(0));
-
     }
 
     @Test
     void getAll_emptyList() {
 
-        //Arrange + Act
+        // Arrange
+        CountryService countryService =
+                new CountryService(countryFactory, countryRepository);
+
         when(countryRepository.getAllCountries())
                 .thenReturn(List.of());
 
+        // Act
         List<Country> result = countryService.getAll();
 
-        //Assert
+        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }

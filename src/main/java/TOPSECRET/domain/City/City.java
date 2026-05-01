@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public class City implements AggregateRoot<CityID> {
 
-    private final CityID cityID;
+    private CityID cityID;
     private CountryId _countryId;
     private String _cityName;
 

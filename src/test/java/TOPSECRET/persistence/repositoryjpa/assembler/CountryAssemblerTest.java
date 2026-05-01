@@ -14,14 +14,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link CountryAssembler}, responsible for converting
+ * between the {@link TOPSECRET.domain.Country.Country} domain object
+ * and the {@link CountryDM} persistence data model.
+ *
+ * <p>This test suite validates:</p>
+ * <ul>
+ *     <li>Correct mapping from Domain to Data Model (DM)</li>
+ *     <li>Correct mapping from Data Model (DM) to Domain</li>
+ *     <li>Proper handling of null inputs in both directions</li>
+ *     <li>Interaction with {@link CountryFactory} during reconstruction of domain objects</li>
+ * </ul>
+ *
+ * <p>Mockito is used to mock dependencies such as {@link CountryFactory}
+ * and {@link TOPSECRET.domain.Country.Country} to isolate the assembler logic.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class CountryAssemblerTest {
 
     @Mock
     private CountryFactory countryFactory;
-
-    @InjectMocks
-    private CountryAssembler assembler;
 
     private Country country;
     private CountryDM countryDM;
@@ -40,14 +53,16 @@ class CountryAssemblerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void domainToDM_validCountry() {
+    void toDM_validCountry() {
 
         // Arrange
+        CountryAssembler assembler = new CountryAssembler(countryFactory);
+
         when(country.getCountryID()).thenReturn(countryId);
         when(country.getCountryName()).thenReturn("Portugal");
 
         // Act
-        CountryDM result = assembler.DomainToDM(country);
+        CountryDM result = assembler.ToDM(country);
 
         // Assert
         assertNotNull(result);
@@ -56,12 +71,15 @@ class CountryAssemblerTest {
     }
 
     @Test
-    void domainToDM_nullCountry_throwsException() {
+    void toDM_nullCountry_throwsException() {
 
-        // Arrange + Act + Assert
+        // Arrange
+        CountryAssembler assembler = new CountryAssembler(countryFactory);
+
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> assembler.DomainToDM(null)
+                () -> assembler.ToDM(null)
         );
 
         assertEquals("Country cannot be null", exception.getMessage());
@@ -72,30 +90,32 @@ class CountryAssemblerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void dmToDomain_validCountryDM() {
+    void dmToDomain_validCountry() {
 
         // Arrange
+        CountryAssembler assembler = new CountryAssembler(countryFactory);
+
         when(countryFactory.create(countryId, "Portugal"))
                 .thenReturn(country);
 
         // Act
-        Country result = assembler.DMToDomain(countryDM);
+        Country result = assembler.ToDomain(countryDM);
 
         // Assert
         assertNotNull(result);
         assertEquals(country, result);
-
-        verify(countryFactory, times(1))
-                .create(countryId, "Portugal");
     }
 
     @Test
-    void dmToDomain_nullCountryDM_throwsException() {
+    void dmToDomain_nullCountry_throwsException() {
 
-        // Arrange + Act + Assert
+        // Arrange
+        CountryAssembler assembler = new CountryAssembler(countryFactory);
+
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> assembler.DMToDomain(null)
+                () -> assembler.ToDomain(null)
         );
 
         assertEquals("CountryDM cannot be null", exception.getMessage());

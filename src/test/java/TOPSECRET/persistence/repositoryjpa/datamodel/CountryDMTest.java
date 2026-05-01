@@ -5,6 +5,21 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link CountryDM}, the JPA data model representing
+ * a {@link TOPSECRET.domain.Country.Country} entity in the persistence layer.
+ *
+ * <p>This test suite validates:</p>
+ * <ul>
+ *     <li>Correct construction of {@link CountryDM} with valid data</li>
+ *     <li>Behavior when null values are provided to the constructor</li>
+ *     <li>Correct retrieval of values through getters</li>
+ * </ul>
+ *
+ * <p>The tests ensure that the data model correctly stores and exposes
+ * {@link CountryId} and country name values without applying domain rules,
+ * since validation is handled at the domain layer.</p>
+ */
 class CountryDMTest {
 
     // -------------------------------------------------------------------------

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 /**
  * JPA implementation of {@link ICountryRepository}.
  */
-@Primary
 @Repository
 public class CountryRepositoryJPAImpl implements ICountryRepository {
 
@@ -34,7 +33,7 @@ public class CountryRepositoryJPAImpl implements ICountryRepository {
      */
     @Override
     public Country save(Country country) {
-        CountryDM dm = assembler.DomainToDM(country);
+        CountryDM dm = assembler.ToDM(country);
         jpaRepository.save(dm);
         return country;
     }
@@ -45,7 +44,7 @@ public class CountryRepositoryJPAImpl implements ICountryRepository {
     @Override
     public Optional<Country> findByID(CountryId id) {
         return jpaRepository.findById(id)
-                .map(assembler::DMToDomain);
+                .map(assembler::ToDomain);
     }
 
     /**
@@ -55,7 +54,7 @@ public class CountryRepositoryJPAImpl implements ICountryRepository {
     public List<Country> getAllCountries() {
         return ((List<CountryDM>) jpaRepository.findAll())
                 .stream()
-                .map(assembler::DMToDomain)
+                .map(assembler::ToDomain)
                 .collect(Collectors.toList());
     }
 
