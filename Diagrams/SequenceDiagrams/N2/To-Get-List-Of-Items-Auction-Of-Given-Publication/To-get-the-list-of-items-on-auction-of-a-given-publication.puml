@@ -27,10 +27,12 @@ participant "Database" as db
 
 
 participant ":ListingAssembler" as listingAssembler
+participant ":ListingFactory" as listingFactory
 participant "listing:Listing" as listing
 participant ":US024AucListingMapper" as mapper
 participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
 participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
+
 
 ' ─────────────────────────────────────────
 ' Section 1 - Get all publication titles
@@ -122,7 +124,11 @@ listingRepo -->> aucListing **: <<create>>
 loop for each dm in listingDMList
     listingRepo -> listingAssembler: toDomain(dm)
     activate listingAssembler
-    listingAssembler -->> listing **: <<create>>
+    listingAssembler -> listingFactory: create(dm.getListingId(), dm.getListingTitle(), dm.getItemsId(), dm.getSaleType(), dm.getPrice(), dm.getShortDescription(), dm.getSellerId(), dm.getPictures())
+    activate listingFactory
+    listingFactory -> listing **: <<create>>
+    listingFactory --> listingAssembler: listing
+    deactivate listingFactory
     listingAssembler --> listingRepo: listing
     deactivate listingAssembler
     opt listing.isListingLinkedToAnAuction()
