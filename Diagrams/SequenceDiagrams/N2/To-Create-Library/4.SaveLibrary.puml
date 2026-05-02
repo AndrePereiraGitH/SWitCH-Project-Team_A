@@ -37,7 +37,7 @@ LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
 LibraryRepo -> assembler: toDM(library)
 activate assembler
 
-assembler -> dm **: <<create>>
+assembler -->> dm **: <<create>>
 assembler --> LibraryRepo: libraryDM
 deactivate assembler
 

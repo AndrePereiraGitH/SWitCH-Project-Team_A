@@ -41,12 +41,12 @@ activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: Optional<UserDM>
+userJpa --> userRepo: userDM: Optional<UserDM>
 deactivate userJpa
 
-userRepo -> userRepo: .map(UserDM::getId)
+userRepo -> userRepo: userId=userDM.map(UserDM::getId)
 
-userRepo --> Ctrl: Optional<UserId>
+userRepo --> Ctrl: userId
 deactivate userRepo
 
 Ctrl -> service: createAndSave(libraryName, userId)
@@ -55,7 +55,7 @@ activate service
 service -> factory: create(libraryName, userId)
 activate factory
 
-factory -> lib **: <<create>>
+factory -->> lib **: <<create>>
 factory --> service: library
 deactivate factory
 
@@ -77,7 +77,7 @@ LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
 LibraryRepo -> assembler: toDM(library)
 activate assembler
 
-assembler -> dm **: <<create>>
+assembler -->> dm **: <<create>>
 assembler --> LibraryRepo: libraryDM
 deactivate assembler
 
