@@ -129,27 +129,31 @@ class AuctionAssemblerTest {
     // ============================================================
 
     @Test
-    void toDomain_shouldReconstructAuctionFromDM() {
-        // Arrange
-        BidDM bidDM = new BidDM(mock(UserId.class), new BigDecimal("20"), endDate);
-
-        AuctionDM auctionDM = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, new BigDecimal("10"),
-                new BigDecimal("100"), List.of(bidDM), bidDM, AuctionStatus.ACTIVE, new BigDecimal("50"), endDate);
-
-        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
-
-        // Act
-        Auction result = auctionAssembler.toDomain(auctionDM);
-
-        // Assert
-        assertNotNull(result);
-    }
-
-    @Test
     void toDomain_shouldThrowExceptionWhenInputIsNull() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> auctionAssembler.toDomain(null));
     }
+
+    @Test
+    void toDomain_shouldCorrectlyRehydrateFullAuctionState() {
+
+        // Arrange
+        BidDM bidDM = new BidDM(mock(UserId.class), new BigDecimal("20"), endDate);
+
+        AuctionDM dm = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, new BigDecimal("10"),
+                new BigDecimal("100"), List.of(bidDM), bidDM, AuctionStatus.ENDED_WITH_WINNER, new BigDecimal("50"), closedAt);
+
+        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenCallRealMethod();
+
+        // Act
+        Auction result = auctionAssembler.toDomain(dm);
+
+        // Assert
+        assertNotNull(result);
+        assertNotNull(result.getAuctionStatus());
+        assertNotNull(result.getClosedAt());
+    }
+
 
     @Test
     void toDomain_shouldSetBuyoutPriceToNullWhenDMHasNoBuyoutPrice() {
@@ -165,50 +169,22 @@ class AuctionAssemblerTest {
 
         // Assert
         assertNotNull(result);
+        assertNull(result.getBuyoutPrice());
     }
 
     @Test
-    void toDomain_shouldCallFactoryWithCorrectArguments() {
+    void toDomain_shouldNotRehydrateStateWhenStatusIsNull() {
         // Arrange
-        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("1"));
+        AuctionDM auctionDM = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, new BigDecimal("10"),
+                new BigDecimal("100"), new ArrayList<>(), null, null, null, null);
 
         when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
 
         // Act
-        Auction result = auctionAssembler.toDomain(auctionDMDouble);
-
-        // Assert
-        assertSame(auction, result);
-    }
-
-    @Test
-    void toDomain_shouldApplyRehydrateStateWhenStatusIsNotNull() {
-        // Arrange
-        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("10"));
-        when(auctionDMDouble.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
-        when(auctionDMDouble.getClosedAt()).thenReturn(endDate);
-
-        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
-
-        // Act
-        Auction result = auctionAssembler.toDomain(auctionDMDouble);
+        Auction result = auctionAssembler.toDomain(auctionDM);
 
         // Assert
         assertNotNull(result);
-    }
-
-    @Test
-    void toDomain_shouldNotApplyStateWhenStatusIsNull() {
-        // Arrange
-        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("10"));
-        when(auctionDMDouble.getAuctionStatus()).thenReturn(null);
-
-        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
-
-        // Act
-        Auction result = auctionAssembler.toDomain(auctionDMDouble);
-
-        // Assert
         assertNull(result.getAuctionStatus());
         assertNull(result.getFinalPrice());
         assertNull(result.getClosedAt());

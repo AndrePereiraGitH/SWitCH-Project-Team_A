@@ -29,7 +29,6 @@ import java.util.List;
 @Entity
 @Table(name = "auctions")
 @Getter
-@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuctionDM {
 
