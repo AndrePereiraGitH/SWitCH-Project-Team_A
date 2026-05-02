@@ -3,6 +3,9 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,68 +18,84 @@ import static org.mockito.Mockito.mock;
  * correctly stores the provided values and that the exposed getters
  * return the expected data.
  */
+@ExtendWith(MockitoExtension.class)
 class BidDMTest {
 
     // ==============================================
     // ============= Set Up =========================
     // ==============================================
 
-    private UserId bidderIdDouble;
+    @Mock
+    private UserId bidderId;
+
     private BigDecimal value;
     private LocalDateTime timeOfBid;
 
     @BeforeEach
     void setUp() {
-        bidderIdDouble = mock(UserId.class);
         value = new BigDecimal("50.00");
         timeOfBid = LocalDateTime.now();
     }
 
-    // ==============================================
-    // ============= Constructor ====================
-    // ==============================================
+    // =========================================
+    // ============ CONSTRUCTOR =================
+    // =========================================
 
     @Test
-    void constructor_shouldStoreAllFieldsCorrectly() {
-        // Act
-        BidDM bidDM = new BidDM(bidderIdDouble, value, timeOfBid);
-
-        // Assert
-        assertEquals(bidderIdDouble, bidDM.getBidderId());
-        assertEquals(value, bidDM.getValue());
-        assertEquals(timeOfBid, bidDM.getTimeOfBid());
-        assertNull(bidDM.getBidId());
-        assertNull(bidDM.getAuction());
-    }
-
-    @Test
-    void constructor_shouldAllowNullValues() {
-        // Act
-        BidDM bidDM = new BidDM(null, null, null);
-
-        // Assert
-        assertNull(bidDM.getBidderId());
-        assertNull(bidDM.getValue());
-        assertNull(bidDM.getTimeOfBid());
-        assertNull(bidDM.getBidId());
-        assertNull(bidDM.getAuction());
-    }
-
-    @Test
-    void getAuction_shouldReturnAssignedAuction() throws Exception {
+    void constructor_shouldStoreBidderId() {
         // Arrange
-        BidDM bidDM = new BidDM(bidderIdDouble, value, timeOfBid);
-        AuctionDM auctionDouble = mock(AuctionDM.class);
+        BidDM bidDM = new BidDM(bidderId, value, timeOfBid);
 
-        // Simulates the JPA behaviour injecting the ManyToOne relationship
-        var field = BidDM.class.getDeclaredField("auction");
-        field.setAccessible(true);
-        field.set(bidDM, auctionDouble);
+        // Act + Assert
+        assertEquals(bidderId, bidDM.getBidderId());
+    }
 
-        // Act
-        AuctionDM result = bidDM.getAuction();
+    @Test
+    void constructor_shouldStoreValue() {
+        // Arrange
+        BidDM bidDM = new BidDM(bidderId, value, timeOfBid);
 
-        // Assert
-        assertEquals(auctionDouble, result);
+        // Act + Assert
+        assertEquals(value, bidDM.getValue());
+    }
+
+    @Test
+    void constructor_shouldStoreTimeOfBid() {
+        // Arrange
+        BidDM bidDM = new BidDM(bidderId, value, timeOfBid);
+
+        // Act + Assert
+        assertEquals(timeOfBid, bidDM.getTimeOfBid());
+    }
+
+    // =========================================
+    // ============ NULL BEHAVIOR ==============
+    // =========================================
+
+    @Test
+    void constructor_shouldAllowNullBidderId() {
+        // Arrange
+        BidDM bidDM = new BidDM(null, value, timeOfBid);
+
+        // Act + Assert
+        assertNull(bidDM.getBidderId());
+    }
+
+    @Test
+    void constructor_shouldAllowNullValue() {
+        // Arrange
+        BidDM bidDM = new BidDM(bidderId, null, timeOfBid);
+
+        // Act + Assert
+        assertNull(bidDM.getValue());
+    }
+
+    @Test
+    void constructor_shouldAllowNullTimeOfBid() {
+        // Arrange
+        BidDM bidDM = new BidDM(bidderId, value, null);
+
+        // Act + Assert
+        assertNull(bidDM.getTimeOfBid());
     }
 }

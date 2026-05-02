@@ -6,6 +6,7 @@ import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,12 +23,13 @@ import java.util.List;
  * </p>
  * <p>
  * It contains both the initial auction configuration and its final state,
- * including bids, winner, and lifecycle status.
+ * including bids, winningBid, and lifecycle status.
  * </p>
  */
 @Entity
 @Table(name = "auctions")
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuctionDM {
 
@@ -44,10 +46,11 @@ public class AuctionDM {
     private BigDecimal buyoutPrice;
 
     // State attributes
-    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "bids", joinColumns = @JoinColumn(name = "auction_id"))
     private List<BidDM> bidHistory;
 
-    @Transient
+    @Embedded
     private BidDM winningBid;
 
     @Enumerated(EnumType.STRING)
