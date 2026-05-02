@@ -1,6 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -13,6 +16,8 @@ import java.util.Objects;
  *
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class GenreID implements DomainID {
 
     private final String genreID;
