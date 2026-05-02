@@ -1,0 +1,28 @@
+@startuml
+hide footbox
+autonumber
+title Find Publication Sample Ids
+
+participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IPublicationSampleRepositoryJpa" as pubSampleJpa
+participant "Database" as db
+
+ref over Ctrl
+  [[1.MainDiagram.puml Main Diagram]]
+end ref
+
+Ctrl -> pubSampleRepo: findIdsByBibliographicalDataId(bdId)
+activate pubSampleRepo
+pubSampleRepo -> pubSampleJpa: findAllIdsByBdId(bdId)
+activate pubSampleJpa
+pubSampleJpa -> db: SELECT id FROM publication_sample\nWHERE bibliographical_data_id = ?
+activate db
+db --> pubSampleJpa: data
+deactivate db
+pubSampleJpa --> pubSampleRepo: listOfPubSampleId: List<PublicationSampleID>
+deactivate pubSampleJpa
+pubSampleRepo --> Ctrl: listOfPubSampleId: List<PublicationSampleID>
+deactivate pubSampleRepo
+
+@enduml
