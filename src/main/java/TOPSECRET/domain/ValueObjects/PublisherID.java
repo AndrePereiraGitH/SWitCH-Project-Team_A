@@ -35,7 +35,6 @@ public class PublisherID implements DomainID {
         this._publisherID = publisherID;
     }
 
-
     public String getId() {
         return _publisherID;
     }

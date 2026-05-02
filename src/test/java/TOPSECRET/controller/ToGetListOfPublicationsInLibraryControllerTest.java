@@ -92,7 +92,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
         when(user.id()).thenReturn(userId);
         when(user.getUserName()).thenReturn(username);
 
-        when(userRepo.findUserIdByUsername(username)).thenReturn(Optional.of(userId));
+        when(userRepo.findIdByUsername(username)).thenReturn(Optional.of(userId));
 
         ToGetListOfPublicationsInLibraryController ctrl =
                 new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
@@ -116,7 +116,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
         when(user.id()).thenReturn(userId);
         when(user.getUserName()).thenReturn(username);
 
-        when(userRepo.findUserIdByUsername(username)).thenReturn(Optional.empty());
+        when(userRepo.findIdByUsername(username)).thenReturn(Optional.empty());
 
         ToGetListOfPublicationsInLibraryController ctrl =
                 new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
@@ -133,7 +133,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
         String username = "User1";
         UserId userId = mock(UserId.class);
 
-        when(userRepo.findUserIdByUsername(username)).thenReturn(Optional.of(userId));
+        when(userRepo.findIdByUsername(username)).thenReturn(Optional.of(userId));
 
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
