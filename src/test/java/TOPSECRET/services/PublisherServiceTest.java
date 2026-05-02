@@ -5,6 +5,10 @@ import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.Publisher.PublisherFactory;
 import TOPSECRET.domain.ValueObjects.Contact;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -15,16 +19,23 @@ import static org.mockito.Mockito.*;
  * <p>Verifies that {@code createAndSave} correctly delegates to the factory
  * and repository, and rejects null arguments with a {@link NullPointerException}.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class PublisherServiceTest {
+
+    @Mock
+    private PublisherFactory factory;
+
+    @Mock
+    private IPublisherRepository repository;
+
+    @InjectMocks
+    private PublisherService service;
 
     // ========== Tests for createAndSave =========================
 
     @Test
     void createAndSave_shouldReturnSavedPublisher_whenInputIsValid() {
         // Arrange
-        PublisherFactory factory = mock(PublisherFactory.class);
-        IPublisherRepository repository = mock(IPublisherRepository.class);
-        PublisherService service = new PublisherService(factory, repository);
         Contact contactDouble = mock(Contact.class);
         Publisher publisher = mock(Publisher.class);
         Publisher savedPublisher = mock(Publisher.class);
@@ -42,9 +53,6 @@ class PublisherServiceTest {
     @Test
     void createAndSave_shouldThrowException_whenNameIsNull() {
         // Arrange
-        PublisherFactory factory = mock(PublisherFactory.class);
-        IPublisherRepository repository = mock(IPublisherRepository.class);
-        PublisherService service = new PublisherService(factory, repository);
         Contact contactDouble = mock(Contact.class);
 
         // Act + Assert
@@ -55,9 +63,6 @@ class PublisherServiceTest {
     @Test
     void createAndSave_shouldThrowException_whenVatNumberIsNull() {
         // Arrange
-        PublisherFactory factory = mock(PublisherFactory.class);
-        IPublisherRepository repository = mock(IPublisherRepository.class);
-        PublisherService service = new PublisherService(factory, repository);
         Contact contactDouble = mock(Contact.class);
 
         // Act + Assert
@@ -67,11 +72,6 @@ class PublisherServiceTest {
 
     @Test
     void createAndSave_shouldThrowException_whenContactIsNull() {
-        // Arrange
-        PublisherFactory factory = mock(PublisherFactory.class);
-        IPublisherRepository repository = mock(IPublisherRepository.class);
-        PublisherService service = new PublisherService(factory, repository);
-
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> service.createAndSave("Penguin Books", "123456789", null));

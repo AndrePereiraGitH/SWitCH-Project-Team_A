@@ -1,7 +1,8 @@
 package TOPSECRET.domain.City;
 
-import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.domain.ValueObjects.CountryID;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory responsible for creating {@link City} domain objects.
@@ -15,6 +16,7 @@ import TOPSECRET.domain.ValueObjects.CountryID;
  * of {@code City} instances and prevent duplicated validation logic.
  */
 
+@Component
 public class CityFactory {
 
     /**
@@ -33,5 +35,20 @@ public class CityFactory {
     public City create(CountryID countryID, String cityName) {
 
         return new City(countryID, cityName);
+    }
+
+    /**
+     * Reconstitutes an existing {@link City} from persistence.
+     * <p>
+     * Use this method only when rebuilding a City from stored data,
+     * never for creating new domain objects.
+     *
+     * @param cityID    the existing ID from persistence
+     * @param countryID the country to which the city belongs
+     * @param cityName  the name of the city
+     * @return a valid {@link City} instance with the given ID
+     */
+    public City create(CityID cityID, CountryID countryID, String cityName) {
+        return new City(cityID, countryID, cityName);
     }
 }

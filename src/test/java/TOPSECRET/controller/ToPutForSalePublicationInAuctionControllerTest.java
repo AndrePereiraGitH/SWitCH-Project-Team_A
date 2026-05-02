@@ -84,7 +84,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
     void testConstructor() {
 
         // act
-        ToPutForSalePublicationInAuctionController  localController =
+        ToPutForSalePublicationInAuctionController localController =
                 new ToPutForSalePublicationInAuctionController(
                         listingService,
                         libraryRepo,

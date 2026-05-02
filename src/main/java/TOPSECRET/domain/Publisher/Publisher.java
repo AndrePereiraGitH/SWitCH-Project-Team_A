@@ -29,12 +29,14 @@ public class Publisher implements AggregateRoot<PublisherID> {
      */
     protected Publisher(String name, String vatNumber, Contact contact) {
 
-        if (name == null || name.isBlank()) {
+        Objects.requireNonNull(name, "Name cannot be null");
+        if (name.isBlank()) {
             throw new IllegalArgumentException("Not a valid name");
         }
         _name = name;
 
-        if (vatNumber == null || vatNumber.isBlank()) {
+        Objects.requireNonNull(vatNumber, "VatNumber cannot be null");
+        if (vatNumber.isBlank()) {
             throw new IllegalArgumentException("Not a valid vatNumber");
         }
         _publisherID = new PublisherID(vatNumber);
@@ -45,20 +47,20 @@ public class Publisher implements AggregateRoot<PublisherID> {
 
     protected Publisher(PublisherID id, String name, String vatNumber, Contact contact) {
 
-        if (id == null) {
-            throw new IllegalArgumentException("PublisherID cannot be null");
-        }
-        _publisherID = id;
+        _publisherID = Objects.requireNonNull(id, "PublisherID cannot be null");
 
-        if (name == null || name.isBlank()) {
+        Objects.requireNonNull(name, "Name cannot be null");
+        if (name.isBlank()) {
             throw new IllegalArgumentException("Not a valid name");
         }
-        _name=name;
+        _name = name;
 
-        if (vatNumber == null || vatNumber.isBlank()) {
+        Objects.requireNonNull(vatNumber, "VatNumber cannot be null");
+        if (vatNumber.isBlank()) {
             throw new IllegalArgumentException("Not a valid vatNumber");
         }
         _vatNumber = vatNumber;
+
         _contact = Objects.requireNonNull(contact, "Contact cannot be null");
     }
 

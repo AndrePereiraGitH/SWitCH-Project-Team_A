@@ -79,29 +79,29 @@ class PublisherFactoryTest {
     }
 
     @Test
-    void create_with_null_name_should_throw_IllegalArgumentException() {
+    void create_with_null_name_should_throw_NullPointerException() {
         // Arrange
         PublisherFactory factory = new PublisherFactory();
         Contact contactDouble = mock(Contact.class);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(NullPointerException.class, () ->
                 factory.create(null, "123456789", contactDouble)
         );
     }
 
     /**
-     * Verifies that an {@link IllegalArgumentException} is thrown
+     * Verifies that a {@link NullPointerException} is thrown
      * when attempting to create a publisher with a null VAT number.
      */
     @Test
-    void create_with_null_vatNumber_should_throw_IllegalArgumentException() {
+    void create_with_null_vatNumber_should_throw_NullPointerException() {
         // Arrange
         PublisherFactory factory = new PublisherFactory();
         Contact contactDouble = mock(Contact.class);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(NullPointerException.class, () ->
                 factory.create("Penguin Books", null, contactDouble)
         );
     }
