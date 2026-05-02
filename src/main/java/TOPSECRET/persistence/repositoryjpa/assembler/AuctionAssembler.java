@@ -57,7 +57,7 @@ public class AuctionAssembler {
      * </ul>
      * </p>
      *
-     * @param auction the domain auction to convert; may be {@code null}
+     * @param auction the domain auction to convert; must not be {@code null}
      * @return the corresponding {@link AuctionDM}, or {@code null} if input is {@code null}
      */
     public AuctionDM toDM(Auction auction) {
@@ -73,10 +73,14 @@ public class AuctionAssembler {
             bidHistoryDM.add(bidDM);
         }
 
-        BidDM winningBidDM = new BidDM(
-                auction.getWinningBid().getBidderId(),
-                auction.getWinningBid().getValue().getPrice(),
-                auction.getWinningBid().getTimeOfBid());
+        BidDM winningBidDM = null;
+        if (auction.getWinningBid() != null) {
+            winningBidDM = new BidDM(
+                    auction.getWinningBid().getBidderId(),
+                    auction.getWinningBid().getValue().getPrice(),
+                    auction.getWinningBid().getTimeOfBid()
+            );
+        }
 
         return new AuctionDM(
                 auction.id(),
@@ -143,24 +147,8 @@ public class AuctionAssembler {
             bidHistory.add(bid);
         }
 
-        Bid winningBid = auction.rehydrateBid(
-                auctionDM.getWinningBid().getBidderId(),
-                new Price(auctionDM.getWinningBid().getValue()),
-                auctionDM.getWinningBid().getTimeOfBid()
-        );
-
-        Price finalPrice = auctionDM.getFinalPrice() != null
-                ? new Price(auctionDM.getFinalPrice())
-                : null;
-
         if (auctionDM.getAuctionStatus() != null) {
-            auction.rehydrateState(
-                    bidHistory,
-                    winningBid,
-                    auctionDM.getAuctionStatus(),
-                    finalPrice,
-                    auctionDM.getClosedAt()
-            );
+            auction.rehydrateState(bidHistory, auctionDM.getAuctionStatus(),auctionDM.getClosedAt()); //rehydrateState recalculates winningBid and finalPrice according to bidHistory
         }
 
         return auction;

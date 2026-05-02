@@ -37,10 +37,12 @@ public class Auction implements AggregateRoot<AuctionId> {
 
     // State attributes
     private AuctionStatus _auctionStatus;
-    private List<Bid> _bidHistory;                                 // Bid is an internal entity of the Auction aggregate
-    private Bid _winningBid;                                       // Bid is an internal entity of the Auction aggregate
-    private Price _finalPrice;
     private LocalDateTime _closedAt;
+    private List<Bid> _bidHistory;
+
+    // Final state attributes
+    private Bid _winningBid;
+    private Price _finalPrice;
 
     private Clock _clock;
 
@@ -241,10 +243,9 @@ public class Auction implements AggregateRoot<AuctionId> {
         Bid bid = new Bid(bidderId, value);
 
         _bidHistory.add(bid);
-        _winningBid = bid;
-        _finalPrice = value;
 
-        if (value.getPrice().equals(_buyoutPrice.getPrice())) {
+        if (_buyoutPrice != null && value.getPrice().equals(_buyoutPrice.getPrice())) {
+            _winningBid = bid;
             _auctionStatus = AuctionStatus.BOUGHT_OUT;
             _finalPrice = _buyoutPrice;
         }
@@ -252,6 +253,20 @@ public class Auction implements AggregateRoot<AuctionId> {
         return bid;
     }
 
+    /**
+     * Returns the current highest bid in the auction.
+     *
+     * <p>The highest bid is defined as the last bid in the bid history,
+     * assuming that all bids are stored in chronological order of submission.</p>
+     *
+     * <p>If no bids have been placed yet, this method returns {@code null}.</p>
+     *
+     * @return the most recent (highest) {@link Bid}, or {@code null} if no bids exist
+     */
+    public Bid getCurrentHighestBid() {
+        if (_bidHistory.isEmpty()) return null;
+        return _bidHistory.get(_bidHistory.size() - 1);
+    }
 
     /**
      * Reconstructs a {@link Bid} instance associated with this auction.
@@ -268,29 +283,52 @@ public class Auction implements AggregateRoot<AuctionId> {
      *
      * @throws IllegalArgumentException if any argument is {@code null}
      */
-    public Bid rehydrateBid(UserId bidderId, Price value,  LocalDateTime timeOfBid) {
+    public Bid rehydrateBid(UserId bidderId, Price value, LocalDateTime timeOfBid) {
         return new Bid(bidderId, value, timeOfBid);
     }
 
     /**
-     * Rehydrates the internal state of the auction.
-     * <p>
-     * This method is used during reconstruction to restore the auction's
-     * status and final outcome without triggering business logic.
-     * </p>
+     * Reconstructs the internal state of the auction aggregate.
      *
-     * @param bidHistory the list of bid of the given auction
-     * @param winningBid the auction winningBid
-     * @param status the auction status to set
-     * @param finalPrice the final price of the auction (may be {@code null})
+     * <p>This method is intended exclusively for persistence rehydration scenarios,
+     * where the auction is rebuilt from stored data without triggering business rules
+     * or lifecycle transitions.</p>
+     *
+     * <p>It restores the bid history, auction status, and closing timestamp. Based on
+     * the restored state, it also derives the {@code winningBid} and {@code finalPrice}
+     * if the auction is in a terminal state.</p>
+     *
+     * <p>Business invariants are not enforced here; it is assumed that the persisted
+     * state is already valid and consistent.</p>
+     *
+     * @param bidHistory the historical list of bids associated with the auction;
+     *                   if {@code null}, an empty list is initialized
+     * @param status the persisted auction status
      * @param closedAt the timestamp when the auction was closed (may be {@code null})
      */
-    public void rehydrateState(List<Bid> bidHistory, Bid winningBid, AuctionStatus status, Price finalPrice, LocalDateTime closedAt) {
-        this._bidHistory = bidHistory;
-        this._winningBid = winningBid;
+    public void rehydrateState(List<Bid> bidHistory, AuctionStatus status, LocalDateTime closedAt) {
+
+        this._bidHistory = bidHistory != null
+                ? new ArrayList<>(bidHistory)       // if not null creates a copy
+                : new ArrayList<>();                // if null creates an empty list
+
         this._auctionStatus = status;
-        this._finalPrice = finalPrice;
         this._closedAt = closedAt;
+
+        if (isTerminalStatus(status)) {
+
+            this._winningBid = getCurrentHighestBid();
+
+            if (this._winningBid != null) {
+                this._finalPrice = this._winningBid.getValue();
+            } else {
+                this._finalPrice = null;
+            }
+
+        } else {
+            this._winningBid = null;
+            this._finalPrice = null;
+        }
     }
 
     /**
@@ -366,7 +404,8 @@ public class Auction implements AggregateRoot<AuctionId> {
             _finalPrice = null;
 
         } else {
-            _winningBid = _bidHistory.get(_bidHistory.size() - 1);
+//            _winningBid = _bidHistory.get(_bidHistory.size() - 1);
+            _winningBid = getCurrentHighestBid();
             _finalPrice = _winningBid.getValue();
             _auctionStatus = AuctionStatus.ENDED_WITH_WINNER;
 
@@ -415,7 +454,10 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
     public Bid getWinningBid() {
-        return _winningBid;
+        if (!isTerminalStatus(_auctionStatus)) {
+            return getCurrentHighestBid();
+        }
+        return _winningBid;     // returns null
     }
 
     public Price getFinalPrice() {

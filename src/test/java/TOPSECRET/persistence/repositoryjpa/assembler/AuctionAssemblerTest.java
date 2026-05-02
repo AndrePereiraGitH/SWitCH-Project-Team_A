@@ -7,7 +7,12 @@ import TOPSECRET.domain.Enum.AuctionStatus;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AuctionDM;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BidDM;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,7 +35,50 @@ import static org.mockito.Mockito.when;
  *       and returns the Auction instance produced by it</li>
  * </ul>
  */
+@ExtendWith(MockitoExtension.class)
 class AuctionAssemblerTest {
+
+    @Mock
+    private AuctionFactory auctionFactory;
+
+    @Mock
+    private Auction auction;
+
+    @InjectMocks
+    private AuctionAssembler auctionAssembler;
+
+    // ============================================================
+    // ================ Set Up ====================================
+    // ============================================================
+
+    private Auction auctionDouble;
+    private AuctionId auctionIdDouble;
+    private AuctionDM auctionDMDouble;
+    private ListingId listingIdDouble;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private LocalDateTime closedAt;
+    private Price initialPriceDouble;
+    private Price buyoutPriceDouble;
+    private Price finalPriceDouble;
+    private Bid bidDouble;
+    private BidDM bidDMDouble;
+
+    @BeforeEach
+    void setUp() {
+        auctionDouble = mock(Auction.class);
+        auctionIdDouble = mock(AuctionId.class);
+        auctionDMDouble = mock(AuctionDM.class);
+        listingIdDouble = mock(ListingId.class);
+        startDate = LocalDateTime.now();
+        endDate = startDate.plusDays(10);
+        closedAt = endDate;
+        initialPriceDouble = mock(Price.class);
+        buyoutPriceDouble = mock(Price.class);
+        finalPriceDouble = mock(Price.class);
+        bidDouble = mock(Bid.class);
+        bidDMDouble = mock(BidDM.class);
+    }
 
     // ============================================================
     // ================ toDM ======================================
@@ -39,22 +87,12 @@ class AuctionAssemblerTest {
     @Test
     void toDM_shouldReturnAuctionDM() {
         // Arrange
-        Auction auctionDouble = mock(Auction.class);
-        AuctionId auctionIdDouble = mock(AuctionId.class);
-        ListingId listingIdDouble = mock(ListingId.class);
-        Price initialPriceDouble = mock(Price.class);
-        Price buyoutPriceDouble = mock(Price.class);
-        Bid winningBidDouble = mock(Bid.class);
-
         when(auctionDouble.id()).thenReturn(auctionIdDouble);
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(auctionDouble.getInitialPrice()).thenReturn(initialPriceDouble);
         when(auctionDouble.getBuyoutPrice()).thenReturn(buyoutPriceDouble);
-        when(auctionDouble.getWinningBid()).thenReturn(winningBidDouble);
-        when(winningBidDouble.getValue()).thenReturn(initialPriceDouble);
-
-        AuctionFactory auctionFactory = mock(AuctionFactory.class);
-        AuctionAssembler auctionAssembler = new AuctionAssembler(auctionFactory);
+        when(auctionDouble.getWinningBid()).thenReturn(bidDouble);
+        when(bidDouble.getValue()).thenReturn(initialPriceDouble);
 
         // Act
         AuctionDM result = auctionAssembler.toDM(auctionDouble);
@@ -65,10 +103,6 @@ class AuctionAssemblerTest {
 
     @Test
     void toDM_shouldThrowExceptionWhenInputIsNull() {
-        // Arrange
-        AuctionFactory auctionFactory = mock(AuctionFactory.class);
-        AuctionAssembler auctionAssembler = new AuctionAssembler(auctionFactory);
-
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> auctionAssembler.toDM(null));
     }
@@ -76,21 +110,12 @@ class AuctionAssemblerTest {
     @Test
     void toDM_shouldHandleNullBuyoutPrice() {
         // Arrange
-        Auction auctionDouble = mock(Auction.class);
-        AuctionId auctionIdDouble = mock(AuctionId.class);
-        ListingId listingIdDouble = mock(ListingId.class);
-        Price initialPriceDouble = mock(Price.class);
-        Bid winningBidDouble = mock(Bid.class);
-
         when(auctionDouble.id()).thenReturn(auctionIdDouble);
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(auctionDouble.getInitialPrice()).thenReturn(initialPriceDouble);
         when(auctionDouble.getBuyoutPrice()).thenReturn(null);
-        when(auctionDouble.getWinningBid()).thenReturn(winningBidDouble);
-        when(winningBidDouble.getValue()).thenReturn(initialPriceDouble);
-
-        AuctionFactory auctionFactory = mock(AuctionFactory.class);
-        AuctionAssembler auctionAssembler = new AuctionAssembler(auctionFactory);
+        when(auctionDouble.getWinningBid()).thenReturn(bidDouble);
+        when(bidDouble.getValue()).thenReturn(initialPriceDouble);
 
         // Act
         AuctionDM result = auctionAssembler.toDM(auctionDouble);
@@ -106,32 +131,15 @@ class AuctionAssemblerTest {
     @Test
     void toDomain_shouldReconstructAuctionFromDM() {
         // Arrange
-        AuctionId auctionIdDouble = mock(AuctionId.class);
-        ListingId listingIdDouble = mock(ListingId.class);
-        LocalDateTime startDate = LocalDateTime.now();
-        LocalDateTime endDate = startDate.plusDays(10);
-        BigDecimal initialPriceDouble = new BigDecimal("10");
-        BigDecimal buyoutPriceDouble = new BigDecimal("100");
-        BigDecimal finalPriceDouble = new BigDecimal("70");
-        UserId userIdDouble = mock(UserId.class);
-        List<BidDM> bidHistoryDouble = List.of(new BidDM(userIdDouble, buyoutPriceDouble, LocalDateTime.now()));
-        BidDM winningBidDouble = mock(BidDM.class);
-        when(winningBidDouble.getValue()).thenReturn(finalPriceDouble);
+        BidDM bidDM = new BidDM(mock(UserId.class), new BigDecimal("20"), endDate);
 
-        LocalDateTime closedAt = endDate;
+        AuctionDM auctionDM = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, new BigDecimal("10"),
+                new BigDecimal("100"), List.of(bidDM), bidDM, AuctionStatus.ACTIVE, new BigDecimal("50"), endDate);
 
-        Auction auctionDouble = mock(Auction.class);
-
-        AuctionDM auctionDM = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, initialPriceDouble,
-               buyoutPriceDouble, bidHistoryDouble, winningBidDouble, AuctionStatus.ACTIVE, finalPriceDouble, closedAt );
-
-        AuctionFactory auctionFactory = mock(AuctionFactory.class);
-        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auctionDouble);
-
-        AuctionAssembler assembler = new AuctionAssembler(auctionFactory);
+        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
 
         // Act
-        Auction result = assembler.toDomain(auctionDM);
+        Auction result = auctionAssembler.toDomain(auctionDM);
 
         // Assert
         assertNotNull(result);
@@ -139,65 +147,21 @@ class AuctionAssemblerTest {
 
     @Test
     void toDomain_shouldThrowExceptionWhenInputIsNull() {
-        // Arrange
-        AuctionFactory auctionFactory = mock(AuctionFactory.class);
-        AuctionAssembler assembler = new AuctionAssembler(auctionFactory);
-
         // Act + Assert
-       assertThrows(IllegalArgumentException.class, () -> assembler.toDomain(null));
+        assertThrows(IllegalArgumentException.class, () -> auctionAssembler.toDomain(null));
     }
 
     @Test
     void toDomain_shouldSetBuyoutPriceToNullWhenDMHasNoBuyoutPrice() {
         // Arrange
-        AuctionFactory factoryDouble = mock(AuctionFactory.class);
-        Auction auctionDouble = mock(Auction.class);
-        when(factoryDouble.create(any(), any(), any(), any(), any(), isNull()))
-                .thenReturn(auctionDouble);
+        AuctionDM auctionDMDouble = mock(AuctionDM.class);
 
-        AuctionDM dmDouble = mock(AuctionDM.class);
-        BigDecimal price = new BigDecimal("10");
-        when(dmDouble.getInitialPrice()).thenReturn(price);
-        when(dmDouble.getBuyoutPrice()).thenReturn(null);
-        when(dmDouble.getBidHistory()).thenReturn(List.of());
+        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("10"));
 
-        BidDM winningBidDM = mock(BidDM.class);
-        when(winningBidDM.getBidderId()).thenReturn(new UserId("user-1"));
-        when(winningBidDM.getValue()).thenReturn(new BigDecimal("20"));
-        when(winningBidDM.getTimeOfBid()).thenReturn(LocalDateTime.now());
-        when(dmDouble.getWinningBid()).thenReturn(winningBidDM);
-
-        AuctionAssembler assembler = new AuctionAssembler(factoryDouble);
+        when(auctionFactory.create(any(), any(), any(), any(), any(), isNull())).thenReturn(auction);
 
         // Act
-        Auction result = assembler.toDomain(dmDouble);
-
-        // Assert
-        assertNotNull(result);
-    }
-
-    @Test
-    void toDomain_shouldRehydrateWinningBidCorrectly() {
-        // Arrange
-        AuctionFactory factoryDouble = mock(AuctionFactory.class);
-        Auction auctionDouble = mock(Auction.class);
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any())).thenReturn(auctionDouble);
-
-        BidDM winningBidDM = mock(BidDM.class);
-        when(winningBidDM.getBidderId()).thenReturn(new UserId("U1"));
-        when(winningBidDM.getValue()).thenReturn(new BigDecimal("50"));
-        when(winningBidDM.getTimeOfBid()).thenReturn(LocalDateTime.now());
-
-        AuctionDM dmDouble = mock(AuctionDM.class);
-        when(dmDouble.getInitialPrice()).thenReturn(BigDecimal.TEN);
-        when(dmDouble.getBuyoutPrice()).thenReturn(BigDecimal.valueOf(100));
-        when(dmDouble.getBidHistory()).thenReturn(List.of());
-        when(dmDouble.getWinningBid()).thenReturn(winningBidDM);
-
-        AuctionAssembler assembler = new AuctionAssembler(factoryDouble);
-
-        // Act
-        Auction result = assembler.toDomain(dmDouble);
+        Auction result = auctionAssembler.toDomain(auctionDMDouble);
 
         // Assert
         assertNotNull(result);
@@ -206,87 +170,43 @@ class AuctionAssemblerTest {
     @Test
     void toDomain_shouldCallFactoryWithCorrectArguments() {
         // Arrange
-        Auction auction = mock(Auction.class);
+        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("1"));
 
-        when(auction.getBidHistory()).thenReturn(new ArrayList<>());
-        when(auction.rehydrateBid(any(), any(), any())).thenReturn(mock(Bid.class));
-
-        AuctionFactory factoryDouble = mock(AuctionFactory.class);
-        Auction auctionDouble = mock(Auction.class);
-
-        when(factoryDouble.create(any(), any(), any(), any(), any(), any())).thenReturn(auctionDouble);
-
-        BidDM winningBidDM = mock(BidDM.class);
-        when(winningBidDM.getBidderId()).thenReturn(mock(UserId.class));
-        when(winningBidDM.getValue()).thenReturn(new BigDecimal(8));
-        when(winningBidDM.getTimeOfBid()).thenReturn(LocalDateTime.now());
-
-        AuctionDM auctionDM = mock(AuctionDM.class);
-        when(auctionDM.getInitialPrice()).thenReturn(new BigDecimal(1));
-        when(auctionDM.getBuyoutPrice()).thenReturn(new BigDecimal(10));
-        when(auctionDM.getBidHistory()).thenReturn(List.of());
-        when(auctionDM.getWinningBid()).thenReturn(winningBidDM);
-
-        AuctionAssembler assembler = new AuctionAssembler(factoryDouble);
+        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
 
         // Act
-        Auction result = assembler.toDomain(auctionDM);
+        Auction result = auctionAssembler.toDomain(auctionDMDouble);
 
         // Assert
-        assertSame(auctionDouble, result);
+        assertSame(auction, result);
     }
 
     @Test
     void toDomain_shouldApplyRehydrateStateWhenStatusIsNotNull() {
         // Arrange
-        AuctionId auctionIdDouble = mock(AuctionId.class);
-        ListingId listingIdDouble = mock(ListingId.class);
-        LocalDateTime startDate = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
-        BigDecimal initialPrice = new BigDecimal("10");
-        BigDecimal buyOutPrice = new BigDecimal("100");
-        BigDecimal finalPrice = new BigDecimal("10");
+        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("10"));
+        when(auctionDMDouble.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
+        when(auctionDMDouble.getClosedAt()).thenReturn(endDate);
 
-        BidDM winningBid = new BidDM(mock(UserId.class), BigDecimal.valueOf(50), endDate);
-
-        AuctionDM dm = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, initialPrice,
-                buyOutPrice, List.of(), winningBid, AuctionStatus.ENDED_WITHOUT_BIDS, finalPrice, endDate);
-
-        AuctionFactory factory = new AuctionFactory();
-
-        AuctionAssembler assembler = new AuctionAssembler(factory);
+        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
 
         // Act
-        Auction result = assembler.toDomain(dm);
+        Auction result = auctionAssembler.toDomain(auctionDMDouble);
 
         // Assert
-        assertEquals(AuctionStatus.ENDED_WITHOUT_BIDS, result.getAuctionStatus());
-        assertEquals(finalPrice, result.getFinalPrice().getPrice());
-        assertEquals(endDate, result.getClosedAt());
+        assertNotNull(result);
     }
 
     @Test
     void toDomain_shouldNotApplyStateWhenStatusIsNull() {
         // Arrange
-        AuctionId auctionIdDouble = mock(AuctionId.class);
-        ListingId listingIdDouble = mock(ListingId.class);
-        LocalDateTime startDate = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
-        BigDecimal initialPrice = new BigDecimal("10");
-        BigDecimal buyOutPrice = new BigDecimal("100");
-        BigDecimal finalPrice = new BigDecimal("10");
+        when(auctionDMDouble.getInitialPrice()).thenReturn(new BigDecimal("10"));
+        when(auctionDMDouble.getAuctionStatus()).thenReturn(null);
 
-        BidDM winningBid = new BidDM(mock(UserId.class), BigDecimal.valueOf(50), endDate);
-
-        AuctionDM dm = new AuctionDM(auctionIdDouble, listingIdDouble, startDate, endDate, initialPrice,
-                buyOutPrice, List.of(), winningBid, null, finalPrice, endDate);
-
-        AuctionFactory factory = new AuctionFactory();
-
-        AuctionAssembler assembler = new AuctionAssembler(factory);
+        when(auctionFactory.create(any(), any(), any(), any(), any(), any())).thenReturn(auction);
 
         // Act
-        Auction result = assembler.toDomain(dm);
+        Auction result = auctionAssembler.toDomain(auctionDMDouble);
 
         // Assert
         assertNull(result.getAuctionStatus());

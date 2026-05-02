@@ -4,6 +4,7 @@ import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
  */
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Email implements ValueObject {
 
     // The part before the '@' symbol (e.g. "john.doe")
