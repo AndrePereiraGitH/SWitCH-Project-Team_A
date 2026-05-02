@@ -5,7 +5,9 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class BibliographicalDataFactoryTest {
 
     String title;
@@ -87,6 +90,12 @@ class BibliographicalDataFactoryTest {
         // Assert
         assertNotNull(bd);
         assertEquals(bdID, bd.id());
+        assertEquals(title, bd.getTitle());
+        assertEquals(authors, bd.getAuthors());
+        assertEquals(originalLanguage, bd.getOriginalLanguage());
+        assertEquals(publicationDate, bd.getPublicationDate());
+        assertEquals(genres, bd.getGenres());
+        assertEquals(chunksOfText, bd.getChunksOfText());
     }
 
 }
