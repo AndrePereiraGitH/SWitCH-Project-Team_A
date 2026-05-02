@@ -90,13 +90,13 @@ class PublisherRepositoryMemTest {
     }
 
     @Test
-    void findByVatNumber_shouldReturnPublisher_whenPublisherExists() {
+    void findById_shouldReturnPublisher_whenPublisherExists() {
         // Arrange
         IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
 
         // Act
-        Optional<Publisher> result = repository.findByVatNumber(publisherIdDouble);
+        Optional<Publisher> result = repository.findById(publisherIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -104,12 +104,12 @@ class PublisherRepositoryMemTest {
     }
 
     @Test
-    void findByVatNumber_shouldReturnEmpty_whenPublisherDoesNotExist() {
+    void findById_shouldReturnEmpty_whenPublisherDoesNotExist() {
         // Arrange
         IPublisherRepository repository = new PublisherRepositoryMem();
 
         // Act
-        Optional<Publisher> result = repository.findByVatNumber(publisherIdDouble);
+        Optional<Publisher> result = repository.findById(publisherIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -130,14 +130,14 @@ class PublisherRepositoryMemTest {
     }
 
     @Test
-    void findByVatNumber_shouldReturnEmpty_whenDifferentPublisherInRepository() {
+    void findById_shouldReturnEmpty_whenDifferentPublisherInRepository() {
         // Arrange
         IPublisherRepository repository = new PublisherRepositoryMem();
         repository.save(publisher);
         PublisherID otherId = mock(PublisherID.class);
 
         // Act
-        Optional<Publisher> result = repository.findByVatNumber(otherId);
+        Optional<Publisher> result = repository.findById(otherId);
 
         // Assert
         assertTrue(result.isEmpty());

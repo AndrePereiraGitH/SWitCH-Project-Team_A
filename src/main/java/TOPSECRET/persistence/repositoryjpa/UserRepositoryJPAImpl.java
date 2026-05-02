@@ -50,7 +50,7 @@ public class UserRepositoryJPAImpl implements IUserRepository {
      * {@inheritDoc}
      */
     @Override
-    public boolean exists(String username) {
+    public boolean existsByUsername(String username) {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username cannot be null or blank");
         }
@@ -73,7 +73,7 @@ public class UserRepositoryJPAImpl implements IUserRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<UserId> findUserIdByUsername(String username) {
+    public Optional<UserId> findIdByUsername(String username) {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username cannot be null or blank");
         }
