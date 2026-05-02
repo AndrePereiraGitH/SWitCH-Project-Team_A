@@ -8,21 +8,24 @@ participant ":IBibliographicalDataRepository" as bdRepo
 participant ":IBibliographicalDataRepositoryJpa" as bdJpa
 participant "Database" as db
 
-ref over Ctrl
-  [[1.MainDiagram.puml Main Diagram]]
-end ref
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
 
 Ctrl -> bdRepo: findBibliographicalDataIdByTitle(title)
 activate bdRepo
-bdRepo -> bdJpa: findIdByTitleIgnoreCase(title)
+bdRepo -> bdJpa: findByTitleIgnoreCase(title.trim())
 activate bdJpa
-bdJpa -> db: SELECT id FROM bibliographical_data\nWHERE LOWER(TRIM(title)) = LOWER(TRIM(?))
+bdJpa -> db: SELECT * FROM bibliographical_data\nWHERE LOWER(title) = LOWER(?)
 activate db
 db --> bdJpa: data
 deactivate db
-bdJpa --> bdRepo: bdId: Optional<BibliographicalDataId>
+bdJpa --> bdRepo: bdDM:Optional<BibliographicalDataDM>
 deactivate bdJpa
-bdRepo --> Ctrl: bdId: Optional<BibliographicalDataId>
+bdRepo -> bdRepo: bdId= bdDM.map(BibliographicalDataDM::getId)
+bdRepo --> Ctrl: bdId
 deactivate bdRepo
 
 @enduml

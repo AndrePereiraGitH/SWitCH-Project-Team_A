@@ -23,15 +23,15 @@ class US024AucListingDTO {
 ' ── Domain Layer ───────────────────────────────────────────
 interface IBibliographicalDataRepository {
   +getAllTitles(): List<String>
-  +findBibliographicalDataIdByTitle(title: String): Optional<BibliographicalDataId>
+  +findBibliographicalDataIdByTitle(title: String): Optional<BibliographicalDataID>
 }
 
 interface IPublicationSampleRepository {
-  +findIdsByBibliographicalDataId(bdId: BibliographicalDataId): List<PublicationSampleId>
+  +findIdsByBibliographicalDataId(bdId: BibliographicalDataID): List<PublicationSampleId>
 }
 
 interface IListingRepository {
-  +getAuctionListingsContaining(listOfPubSampleIds: List<PublicationSampleId>): List<Listing>
+  +findAllByAuctionAndPublicationSampleIdIn(listOfPubSampleIds: List<PublicationSampleId>): List<Listing>
 }
 
 class Listing {
@@ -43,28 +43,37 @@ class Listing {
   -shortDescription: String
   -sellerId: UserId
   -pictures: List<Picture>
+  +isListingLinkedToAnAuction(): boolean
 }
 
 ' ── Infrastructure Layer ───────────────────────────────────
 interface IBibliographicalDataRepositoryJpa {
-  +findAllTitles(): List<String>
-  +findIdByTitleIgnoreCase(title: String): Optional<BibliographicalDataId>
+  +findAll(): List<BibliographicalDataDM>
+  +findByTitleIgnoreCase(title: String): Optional<BibliographicalDataDM>
 }
 
 interface IPublicationSampleRepositoryJpa {
-  +findAllIdsByBdId(bdId: BibliographicalDataId): List<PublicationSampleId>
+  +findAllByBdId(bdId: BibliographicalDataID): List<PublicationSampleDM>
 }
 
 interface IListingRepositoryJpa {
-  +findByPublicationSampleIdsInAndSaleType(listOfPubSampleIds: List<PublicationSampleId>, saleType: SaleType): List<ListingDM>
+  +findAllByItemsId(listOfPubSampleIds: List<PublicationSampleId>): List<ListingDM>
 }
 
 class ListingAssembler {
   +toDomain(listingDM: ListingDM): Listing
 }
 
-class ListingFactory {
-  +create(listingId: ListingId, listingTitle: String, itemsId: List<PublicationSampleId>, saleType: SaleType, price: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>): Listing
+class BibliographicalDataDM {
+  +getTitle(): String
+  +getId(): BibliographicalDataID
+}
+
+class PublicationSampleDM {
+  +getPubSampleId(): PublicationSampleId
+}
+
+class ListingDM {
 }
 
 rectangle Database {
@@ -83,15 +92,18 @@ IBibliographicalDataRepository <|.. IBibliographicalDataRepositoryJpa : implemen
 IPublicationSampleRepository <|.. IPublicationSampleRepositoryJpa : implements
 IListingRepository <|.. IListingRepositoryJpa : implements
 
+IBibliographicalDataRepositoryJpa ..> BibliographicalDataDM : returns
+IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns
+IListingRepositoryJpa ..> ListingDM : returns
+
 IListingRepositoryJpa ..> ListingAssembler : uses
-ListingAssembler ..> ListingFactory : uses
-ListingFactory ..> Listing : creates
+ListingAssembler ..> Listing : creates
 
 IBibliographicalDataRepositoryJpa ..> Database : queries
 IPublicationSampleRepositoryJpa ..> Database : queries
 IListingRepositoryJpa ..> Database : queries
 
-US024AucListingMapper ..> Listing : maps from
+US024AucListingMapper ..> Listing : reads
 US024AucListingMapper ..> US024AucListingDTO : creates
 
 @enduml

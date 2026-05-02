@@ -7,41 +7,40 @@ participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJpa" as listingJpa
 participant "Database" as db
-participant "listOfAuctionListingsOfGivenPublication:List<Listing>" as aucListing
+participant "listOfAuctionListings:List<Listing>" as aucListing
 participant ":ListingAssembler" as listingAssembler
-participant ":ListingFactory" as factory
 participant ":Listing" as listing
 
-ref over Ctrl
-  [[1.MainDiagram.puml Main Diagram]]
-end ref
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
 
-Ctrl -> listingRepo: getAuctionListingsContaining(listOfPubSampleId)
+Ctrl -> listingRepo: findAllByAuctionAndPublicationSampleIdIn(listOfPubSampleIds)
 activate listingRepo
-listingRepo -> listingJpa: findByPublicationSampleIdsInAndSaleType(listOfPubSampleId, SaleType.AUCTION)
+listingRepo -> listingJpa: findAllByItemsId(listOfPubSampleIds)
 activate listingJpa
-listingJpa -> db: SELECT * FROM listing\nWHERE publication_sample_id IN (?)\nAND sale_type = 'AUCTION'
+listingJpa -> db: SELECT * FROM listing\nWHERE publication_sample_id IN (?)
 activate db
 db --> listingJpa: data
 deactivate db
-listingJpa --> listingRepo: allListingDM: List<ListingDM>
+listingJpa --> listingRepo: listingDMList: List<ListingDM>
 deactivate listingJpa
 
 listingRepo -->> aucListing **: <<create>>
-loop for each dm in allListingDM
+loop for each dm in listingDMList
     listingRepo -> listingAssembler: toDomain(dm)
     activate listingAssembler
-    listingAssembler -> factory: create(dm.getListingId(), dm.getListingTitle(), dm.getItemsId(), dm.getSaleType(), dm.getPrice(), dm.getShortDescription(), dm.getSellerId(), dm.getPictures())
-    activate factory
-    factory -->> listing **: <<create>>
-    factory --> listingAssembler: listing
-    deactivate factory
+    listingAssembler -->> listing **: <<create>>
     listingAssembler --> listingRepo: listing
     deactivate listingAssembler
-    listingRepo -> listingRepo: listOfAuctionListingsOfGivenPublication.add(listing)
+    opt listing.isListingLinkedToAnAuction()
+        listingRepo -> listingRepo: listOfAuctionListings.add(listing)
+    end
 end
 
-listingRepo --> Ctrl: listOfAuctionListingsOfGivenPublication
+listingRepo --> Ctrl: listOfAuctionListings
 deactivate listingRepo
 
 @enduml
