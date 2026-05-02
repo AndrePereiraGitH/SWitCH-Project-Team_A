@@ -123,7 +123,7 @@ class ToCreateLibraryControllerTest {
         IUserRepository userRepositoryDouble = mock(IUserRepository.class);
         LibraryService libraryServiceDouble = mock(LibraryService.class);
 
-        when(userRepositoryDouble.findUserIdByUsername("unknown"))
+        when(userRepositoryDouble.findIdByUsername("unknown"))
                 .thenReturn(Optional.empty());
 
         ToCreateLibraryController controller =
@@ -143,7 +143,7 @@ class ToCreateLibraryControllerTest {
         Library libraryDouble = mock(Library.class);
 
         IUserRepository userRepositoryDouble = mock(IUserRepository.class);
-        when(userRepositoryDouble.findUserIdByUsername(username))
+        when(userRepositoryDouble.findIdByUsername(username))
                 .thenReturn(Optional.of(userIdDouble));
 
         LibraryService libraryServiceDouble = mock(LibraryService.class);
@@ -171,7 +171,7 @@ class ToCreateLibraryControllerTest {
         UserId userIdDouble = mock(UserId.class);
 
         IUserRepository userRepositoryDouble = mock(IUserRepository.class);
-        when(userRepositoryDouble.findUserIdByUsername(username))
+        when(userRepositoryDouble.findIdByUsername(username))
                 .thenReturn(Optional.of(userIdDouble));
 
         LibraryService libraryServiceDouble = mock(LibraryService.class);

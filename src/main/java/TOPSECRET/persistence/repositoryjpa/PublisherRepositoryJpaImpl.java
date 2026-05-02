@@ -65,7 +65,7 @@ public class PublisherRepositoryJpaImpl implements IPublisherRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Publisher> findByVatNumber(PublisherID id) {
+    public Optional<Publisher> findById(PublisherID id) {
         Objects.requireNonNull(id, "PublisherID cannot be null");
         return _jpa.findById(id).map(_assembler::toDomain);
     }

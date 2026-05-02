@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
  *   <li><b>save</b> — persisting a new publisher, duplicate detection, and null guards.</li>
  *   <li><b>existsById</b> — presence checks and null guards.</li>
  *   <li><b>findAll</b> — retrieval of zero or many publishers.</li>
- *   <li><b>findByVatNumber</b> — retrieval by VAT number, empty result, and null guards.</li>
+ *   <li><b>findById</b> — retrieval by publisher ID, empty result, and null guards.</li>
  * </ul>
  */
 class PublisherRepositoryJpaImplTest {
@@ -156,10 +156,10 @@ class PublisherRepositoryJpaImplTest {
         assertTrue(result.contains(p2));
     }
 
-    // ========== Tests for findByVatNumber ======================
+    // ========== Tests for findById ======================
 
     @Test
-    void findByVatNumber_shouldReturnPublisher_whenPublisherExists() {
+    void findById_shouldReturnPublisher_whenPublisherExists() {
         // Arrange
         PublisherID publisherIdDouble = mock(PublisherID.class);
         PublisherDM dm = mock(PublisherDM.class);
@@ -169,7 +169,7 @@ class PublisherRepositoryJpaImplTest {
         when(assembler.toDomain(dm)).thenReturn(publisher);
 
         // Act
-        Optional<Publisher> result = repo.findByVatNumber(publisherIdDouble);
+        Optional<Publisher> result = repo.findById(publisherIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -177,21 +177,21 @@ class PublisherRepositoryJpaImplTest {
     }
 
     @Test
-    void findByVatNumber_shouldReturnEmpty_whenPublisherDoesNotExist() {
+    void findById_shouldReturnEmpty_whenPublisherDoesNotExist() {
         // Arrange
         PublisherID publisherIdDouble = mock(PublisherID.class);
         when(jpa.findById(publisherIdDouble)).thenReturn(Optional.empty());
 
         // Act
-        Optional<Publisher> result = repo.findByVatNumber(publisherIdDouble);
+        Optional<Publisher> result = repo.findById(publisherIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByVatNumber_shouldThrowException_whenIdIsNull() {
+    void findById_shouldThrowException_whenIdIsNull() {
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findByVatNumber(null));
+        assertThrows(NullPointerException.class, () -> repo.findById(null));
     }
 }

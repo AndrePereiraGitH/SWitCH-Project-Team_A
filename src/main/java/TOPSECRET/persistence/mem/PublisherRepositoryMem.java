@@ -41,7 +41,7 @@ public class PublisherRepositoryMem implements IPublisherRepository {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Publisher> findByVatNumber(PublisherID id) {
+    public Optional<Publisher> findById(PublisherID id) {
         for (Publisher p : _publishers) {
             if (p.id().equals(id)) {
                 return Optional.of(p);
