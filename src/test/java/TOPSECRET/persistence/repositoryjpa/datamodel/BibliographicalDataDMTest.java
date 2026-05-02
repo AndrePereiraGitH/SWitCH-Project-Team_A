@@ -3,8 +3,10 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
@@ -14,18 +16,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+@ExtendWith(MockitoExtension.class)
 class BibliographicalDataDMTest {
 
-    BibliographicalDataID idDouble;
-    GenreID genreIdDouble;
-    AuthorId authorIdDouble;
+    @Mock
+    private BibliographicalDataID idDouble;
 
-    @BeforeEach
-    void setUp() {
-        idDouble = mock(BibliographicalDataID.class);
-        genreIdDouble = mock(GenreID.class);
-        authorIdDouble = mock(AuthorId.class);
-    }
+    @Mock
+    private GenreID genreIdDouble;
+
+    @Mock
+    private AuthorId authorIdDouble;
 
     @Test
     void shouldCreateBibliographicalDataDMWithAllFields() {

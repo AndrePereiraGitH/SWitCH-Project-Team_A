@@ -6,8 +6,12 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -15,23 +19,21 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class BibliographicalDataAssemblerTest {
 
+    @Mock
     private BibliographicalDataFactory factory;
-    private BibliographicalData domain;
-    private BibliographicalDataAssembler assembler;
 
-    @BeforeEach
-    void setUp() {
-        factory = mock(BibliographicalDataFactory.class);
-        domain = mock(BibliographicalData.class);
-    }
+    @Mock
+    private BibliographicalData domain;
+
+    @InjectMocks
+    private BibliographicalDataAssembler assembler;
 
     @Test
     void toDM_shouldMapDomainToDataModel() {
         // Arrange
-        assembler = new BibliographicalDataAssembler(factory);
-
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         GenreID genreIdDouble = mock(GenreID.class);
@@ -61,8 +63,6 @@ class BibliographicalDataAssemblerTest {
     @Test
     void toDomain_shouldMapDataModelToDomainUsingFactory() {
         // Arrange
-        assembler = new BibliographicalDataAssembler(factory);
-
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         GenreID genreIdDouble = mock(GenreID.class);
@@ -100,8 +100,6 @@ class BibliographicalDataAssemblerTest {
     @Test
     void toDomain_shouldConvertUnderscoreLanguageToLocale() {
         // Arrange
-        assembler = new BibliographicalDataAssembler(factory);
-
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
@@ -136,8 +134,6 @@ class BibliographicalDataAssemblerTest {
     @Test
     void toDomain_shouldTrimLanguageBeforeConvertingToLocale() {
         // Arrange
-        assembler = new BibliographicalDataAssembler(factory);
-
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
@@ -172,8 +168,6 @@ class BibliographicalDataAssemblerTest {
     @Test
     void toDomain_shouldPassNullLocaleWhenLanguageIsBlank() {
         // Arrange
-        assembler = new BibliographicalDataAssembler(factory);
-
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(
@@ -208,8 +202,6 @@ class BibliographicalDataAssemblerTest {
     @Test
     void toDomain_shouldPassNullLocaleWhenLanguageIsNull() {
         // Arrange
-        assembler = new BibliographicalDataAssembler(factory);
-
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
 
         BibliographicalDataDM dm = mock(BibliographicalDataDM.class);

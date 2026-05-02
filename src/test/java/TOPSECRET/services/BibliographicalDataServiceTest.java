@@ -7,6 +7,10 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
@@ -16,6 +20,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class BibliographicalDataServiceTest {
 
     private final String title = "title";
@@ -24,35 +29,40 @@ class BibliographicalDataServiceTest {
     private LocalDate date;
     private List<GenreID> genres;
     private final String chunks = "Chunks of text";
+
+    @Mock
+    private AuthorId authorId;
+
+    @Mock
+    private GenreID genreId;
+
+    @Mock
     private BibliographicalDataFactory factory;
+
+    @Mock
     private IBibliographicalDataRepository repo;
 
-    private BibliographicalDataService service;
-
+    @Mock
     private BibliographicalData createdBd;
+
+    @Mock
     private BibliographicalData savedBd;
+
+    @InjectMocks
+    private BibliographicalDataService service;
 
     @BeforeEach
     void setUp() {
-        AuthorId authorId = mock(AuthorId.class);
-        GenreID genreId = mock(GenreID.class);
         authors = List.of(authorId);
         language = Locale.ENGLISH;
         date = LocalDate.of(2010, 1, 14);
         genres = List.of(genreId);
-        factory = mock(BibliographicalDataFactory.class);
-        repo = mock(IBibliographicalDataRepository.class);
-
-        createdBd = mock(BibliographicalData.class);
-        savedBd = mock(BibliographicalData.class);
     }
 
 
     @Test
     void createAndAdd_shouldCreateSaveAndReturnSavedBibliographicalData() throws InstanceAlreadyExistsException {
         // Arrange
-        service = new BibliographicalDataService(repo, factory);
-
         when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
         when(repo.save(createdBd)).thenReturn(savedBd);
 
@@ -67,9 +77,6 @@ class BibliographicalDataServiceTest {
 
     @Test
     void createShouldThrowWhenTitleIsNull() {
-        // Arrange
-        service = new BibliographicalDataService(repo, factory);
-
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndAdd(null, authors, language, date, genres, chunks)
@@ -78,9 +85,6 @@ class BibliographicalDataServiceTest {
 
     @Test
     void createShouldThrowWhenAuthorsIsNull() {
-        // Arrange
-        service = new BibliographicalDataService(repo, factory);
-
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndAdd(title, null, language, date, genres, chunks)
@@ -89,9 +93,6 @@ class BibliographicalDataServiceTest {
 
     @Test
     void createShouldThrowWhenGenresIsNull() {
-        // Arrange
-        service = new BibliographicalDataService(repo, factory);
-
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.createAndAdd(title, authors, language, date, null, chunks)
@@ -101,8 +102,6 @@ class BibliographicalDataServiceTest {
     @Test
     void createAndAddShouldAllowOptionalFieldsToBeNull() throws InstanceAlreadyExistsException {
         // Arrange
-        service = new BibliographicalDataService(repo, factory);
-
         when(factory.create(title, authors, null, null, genres, null)).thenReturn(createdBd);
         when(repo.save(createdBd)).thenReturn(savedBd);
 
@@ -118,8 +117,6 @@ class BibliographicalDataServiceTest {
     @Test
     void createAndAddShouldThrowInstanceAlreadyExistsException() throws InstanceAlreadyExistsException {
         // Arrange
-        service = new BibliographicalDataService(repo, factory);
-
         when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
 
         when(repo.save(createdBd)).thenThrow(new InstanceAlreadyExistsException("Bibliographical Data already exists"));
