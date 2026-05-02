@@ -7,6 +7,10 @@ import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.math.BigDecimal;
@@ -28,39 +32,32 @@ import static org.mockito.Mockito.when;
  *     <li>returns the factory‑produced {@link Auction} instance;</li>
  * </ul>
  */
+@ExtendWith(MockitoExtension.class)
 class AuctionServiceTest {
 
     // ======================================
     // ========== Set Up ====================
     // ======================================
 
+    @Mock
     private AuctionFactory auctionFactoryDouble;
+
+    @Mock
     private IAuctionRepository auctionRepoDouble;
 
+    @Mock
     private ListingId listingIdDouble;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private Price initialPrice;
-    private Price buyOutPrice;
+
+    @Mock
     private Auction auctionDouble;
 
-    @BeforeEach
-    void setUp() throws InstanceAlreadyExistsException {
+    @InjectMocks
+    private AuctionService auctionService;
 
-        listingIdDouble = mock(ListingId.class);
-        startDate = LocalDateTime.now().plusDays(1);
-        endDate = startDate.plusDays(5);
-        initialPrice = new Price(new BigDecimal("10.00"));
-        buyOutPrice = new Price(new BigDecimal("100.00"));
-
-        auctionDouble = mock(Auction.class);
-
-        auctionFactoryDouble = mock(AuctionFactory.class);
-        when(auctionFactoryDouble.create(listingIdDouble, startDate, endDate, initialPrice, buyOutPrice)).thenReturn(auctionDouble);
-
-        auctionRepoDouble = mock(IAuctionRepository.class);
-        when(auctionRepoDouble.save(auctionDouble)).thenReturn(auctionDouble);
-    }
+    private final LocalDateTime startDate = LocalDateTime.now().plusDays(1);
+    private final LocalDateTime endDate = startDate.plusDays(5);
+    private final Price initialPrice = new Price(new BigDecimal("10.00"));
+    private final Price buyOutPrice = new Price(new BigDecimal("100.00"));
 
     // =============================================
     // ========== constructor ======================
@@ -91,7 +88,9 @@ class AuctionServiceTest {
     @Test
     void creatAndSave_shouldCreateAndSaveAuctionSuccessfully() throws Exception {
         // Arrange
-        AuctionService auctionService = new AuctionService(auctionFactoryDouble, auctionRepoDouble);
+        when(auctionFactoryDouble.create(listingIdDouble, startDate, endDate, initialPrice, buyOutPrice)).thenReturn(auctionDouble);
+
+        when(auctionRepoDouble.save(auctionDouble)).thenReturn(auctionDouble);
 
         // Act
         Auction result = auctionService.createAndSave(listingIdDouble, startDate, endDate, initialPrice, buyOutPrice);
@@ -103,9 +102,9 @@ class AuctionServiceTest {
     @Test
     void createAndSave_shouldThrowExceptionWhenAuctionAlreadyExists() throws Exception {
         // Arrange
-        when(auctionRepoDouble.save(auctionDouble)).thenThrow(new InstanceAlreadyExistsException());
+        when(auctionFactoryDouble.create(listingIdDouble, startDate, endDate, initialPrice, buyOutPrice)).thenReturn(auctionDouble);
 
-        AuctionService auctionService = new AuctionService(auctionFactoryDouble, auctionRepoDouble);
+        when(auctionRepoDouble.save(auctionDouble)).thenThrow(new InstanceAlreadyExistsException());
 
         // Act + Assert
         assertThrows(InstanceAlreadyExistsException.class, () ->
