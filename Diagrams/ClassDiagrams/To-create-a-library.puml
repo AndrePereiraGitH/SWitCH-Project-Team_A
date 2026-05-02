@@ -1,79 +1,85 @@
 @startuml
 title To create a library
 
+' ── UI Layer ───────────────────────────────────────────────
 class UI {
 }
 
+' ── Application Layer ──────────────────────────────────────
 class ToCreateLibraryCtrl {
-    - libraryService: LibraryService
-    - userRepository: IUserRepository
-    + createLibrary(libraryName, username): boolean
+    + createLibrary(libraryName: String, username: String): boolean
 }
 
 class LibraryService {
-    - libraryRepository: ILibraryRepository
-    - libraryFactory: LibraryFactory
-    + createAndSave(libraryName, userId): Library
+    + createAndSave(libraryName: String, userId: UserId): Library
 }
 
+' ── Domain Layer ───────────────────────────────────────────
 interface IUserRepository {
-    + findIdByUsername(username): UserId
-}
-
-interface IUserRepositoryJPA {
-    + findByUsername(username): UserDM
-}
-
-class UserAssembler {
-    + toDomain(userDM): User
+    + findIdByUsername(username: String): Optional<UserId>
 }
 
 interface ILibraryRepository {
-    + save(library): Library
-    - verifyIfUserHasALibrary(result): void
-}
-
-interface ILibraryRepositoryJPA {
-    + findByUserId(userId): Optional<LibraryDM>
-    + save(libraryDM): LibraryDM
-}
-
-class LibraryAssembler {
-    + toDM(library): LibraryDM
-    + toDomain(libraryDM): Library
+    + save(library: Library): Library
+    + verifyIfUserHasALibrary(result: Optional<LibraryDM>): void
 }
 
 class LibraryFactory {
-    + create(libraryName, userId): Library
-    + reconstitute(id, libraryName, userId): Library
+    + create(libraryName: String, userId: UserId): Library
+    + create(id: LibraryId, libraryName: String, userId: UserId): Library)
 }
 
 class Library {
     - id: LibraryId
-    - name: LibraryName
+    - name: String
     - userId: UserId
 }
 
-class LibraryDM {
-    - id: Long
-    - name: String
-    - userId: Long
+' ── Infrastructure Layer ───────────────────────────────────
+interface IUserRepositoryJPA {
+    + findIdByUsername(username: String): Optional<UserId>
 }
 
-' Relationships
+interface ILibraryRepositoryJPA {
+    + findByUserId(userId: UserId): Optional<LibraryDM>
+    + save(libraryDM: LibraryDM): LibraryDM
+}
+
+class LibraryAssembler {
+    + toDM(library: Library): LibraryDM
+    + toDomain(libraryDM: LibraryDM): Library
+}
+
+class LibraryDM {
+    - id: LibraryId
+    - name: String
+    - userId: UserId
+}
+
+Rectangle Database {
+}
+
+' ── Relationships ──────────────────────────────────────────
 UI ..> ToCreateLibraryCtrl: uses
-ToCreateLibraryCtrl ..> LibraryService: uses
 ToCreateLibraryCtrl ..> IUserRepository: uses
-IUserRepository ..> IUserRepositoryJPA: uses
-IUserRepository ..> UserAssembler: uses
-LibraryService ..> ILibraryRepository: uses
+ToCreateLibraryCtrl ..> LibraryService: uses
+
 LibraryService ..> LibraryFactory: uses
-ILibraryRepository ..> ILibraryRepositoryJPA: uses
+LibraryService ..> ILibraryRepository: uses
+
+IUserRepository <|.. IUserRepositoryJPA: implements
+ILibraryRepository <|.. ILibraryRepositoryJPA: implements
+
 ILibraryRepository ..> LibraryAssembler: uses
 ILibraryRepository ..> LibraryFactory: uses
+
+LibraryAssembler ..> LibraryFactory: uses
 LibraryAssembler ..> LibraryDM: creates
 LibraryAssembler ..> Library: creates
-LibraryAssembler ..> LibraryFactory: uses
+
 LibraryFactory ..> Library: creates
+
+IUserRepositoryJPA ..> Database: queries
+ILibraryRepositoryJPA ..> Database: queries
 
 @enduml

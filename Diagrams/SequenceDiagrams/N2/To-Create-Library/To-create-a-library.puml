@@ -9,7 +9,6 @@ participant ":ToCreateLibraryCtrl" as Ctrl
 participant ":LibraryService" as service
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
-participant ":UserAssembler" as userAssembler
 participant ":ILibraryRepository" as LibraryRepo
 participant ":LibraryAssembler" as assembler
 participant "libraryDM:LibraryDM" as dm
@@ -34,24 +33,17 @@ activate Ctrl
 Ctrl -> userRepo: findIdByUsername(username)
 activate userRepo
 
-userRepo -> userJpa: findByUsername(username)
+userRepo -> userJpa: findIdByUsername(username)
 activate userJpa
 
-userJpa -> db: SELECT WHERE username
+userJpa -> db: SELECT id FROM users WHERE username = ?
 activate db
 db --> userJpa: data
 deactivate db
-userJpa --> userRepo: userDM
+userJpa --> userRepo: Optional<UserId>
 deactivate userJpa
 
-userRepo -> userAssembler: toDomain(userDM)
-activate userAssembler
-userAssembler --> userRepo: user
-deactivate userAssembler
-
-userRepo -> userRepo : userId = user.getId()
-
-userRepo --> Ctrl: userId
+userRepo --> Ctrl: Optional<UserId>
 deactivate userRepo
 
 Ctrl -> service: createAndSave(libraryName, userId)
@@ -60,7 +52,7 @@ activate service
 service -> factory: create(libraryName, userId)
 activate factory
 
-factory -->> lib**: <<create>>
+factory -> lib **: <<create>>
 factory --> service: library
 deactivate factory
 
@@ -70,11 +62,11 @@ activate LibraryRepo
 LibraryRepo -> libraryJpa: findByUserId(userId)
 activate libraryJpa
 
-libraryJpa -> db: SELECT WHERE userId
+libraryJpa -> db: SELECT * FROM library WHERE user_id = ?
 activate db
 db --> libraryJpa: data
 deactivate db
-libraryJpa --> LibraryRepo: result
+libraryJpa --> LibraryRepo: Optional<LibraryDM>
 deactivate libraryJpa
 
 LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
@@ -82,13 +74,13 @@ LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
 LibraryRepo -> assembler: toDM(library)
 activate assembler
 
-assembler -->> dm**: <<create>>
+assembler -->> dm **: <<create>>
 assembler --> LibraryRepo: libraryDM
 deactivate assembler
 
 LibraryRepo -> libraryJpa: save(libraryDM)
 activate libraryJpa
-libraryJpa -> db: INSERT libraryDM
+libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
 deactivate db
@@ -101,7 +93,7 @@ activate assembler
 assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())
 activate factory
 
-factory -->> persistedLib**: <<create>>
+factory -->> persistedLib **: <<create>>
 factory --> assembler: savedLib
 deactivate factory
 

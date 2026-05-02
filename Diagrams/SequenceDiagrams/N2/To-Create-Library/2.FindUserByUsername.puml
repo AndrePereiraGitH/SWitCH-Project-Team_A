@@ -6,9 +6,7 @@ title Find User By Username
 participant ":ToCreateLibraryCtrl" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
-participant ":UserAssembler" as userAssembler
 participant "Database" as db
-
 
 note over Ctrl #E3F2FD
 <b>Navigation</b>
@@ -19,26 +17,18 @@ end note
 Ctrl -> userRepo: findIdByUsername(username)
 activate userRepo
 
-userRepo -> userJpa: findByUsername(username)
+userRepo -> userJpa: findIdByUsername(username)
 activate userJpa
 
-userJpa -> db: SELECT WHERE username
+userJpa -> db: SELECT id FROM users WHERE username = ?
 activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: userDM
+userJpa --> userRepo: Optional<UserId>
 deactivate userJpa
 
-userRepo -> userAssembler: toDomain(userDM)
-activate userAssembler
-userAssembler --> userRepo: user
-deactivate userAssembler
-
-
-userRepo -> userRepo : userId = userDM.userId()
-
-userRepo --> Ctrl: userId
+userRepo --> Ctrl: Optional<UserId>
 deactivate userRepo
 
 @enduml

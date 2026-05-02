@@ -9,7 +9,7 @@ participant ":ILibraryRepositoryJPA" as libraryJpa
 participant ":LibraryAssembler" as assembler
 participant "libraryDM:LibraryDM" as dm
 participant ":LibraryFactory" as factory
-participant "persistedLib:Library" as persistedLib
+participant "savedLib:Library" as persistedLib
 participant "Database" as db
 
 note over service #E3F2FD
@@ -24,12 +24,12 @@ activate LibraryRepo
 LibraryRepo -> libraryJpa: findByUserId(userId)
 activate libraryJpa
 
-libraryJpa -> db: SELECT WHERE userId
+libraryJpa -> db: SELECT * FROM library WHERE user_id = ?
 activate db
-db --> libraryJpa: result
+db --> libraryJpa: data
 deactivate db
 
-libraryJpa --> LibraryRepo: result
+libraryJpa --> LibraryRepo: Optional<LibraryDM>
 deactivate libraryJpa
 
 LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
@@ -37,14 +37,14 @@ LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
 LibraryRepo -> assembler: toDM(library)
 activate assembler
 
-assembler -->> dm**: <<create>>
+assembler -> dm **: <<create>>
 assembler --> LibraryRepo: libraryDM
 deactivate assembler
 
 LibraryRepo -> libraryJpa: save(libraryDM)
 activate libraryJpa
 
-libraryJpa -> db: INSERT libraryDM
+libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
 deactivate db
@@ -55,17 +55,17 @@ deactivate libraryJpa
 LibraryRepo -> assembler: toDomain(libraryDM)
 activate assembler
 
-assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())
+assembler -> factory: reconstitute(libraryDM.id(), libraryDM.name(), libraryDM.userId())
 activate factory
 
-factory -->> persistedLib**: <<create>>
-factory --> assembler: persistedLib
+factory -> persistedLib **: <<create>>
+factory --> assembler: savedLib
 deactivate factory
 
-assembler --> LibraryRepo: persistedLib
+assembler --> LibraryRepo: savedLib
 deactivate assembler
 
-LibraryRepo --> service: persistedLib
+LibraryRepo --> service: savedLib
 deactivate LibraryRepo
 
 @enduml
