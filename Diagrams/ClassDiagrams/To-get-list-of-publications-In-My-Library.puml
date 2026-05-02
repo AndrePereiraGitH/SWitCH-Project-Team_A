@@ -11,53 +11,42 @@ class UI {
 '  Controller
 ' ─────────────────────────────────────────
 class GetListOfPublicationsInLibraryController {
-    - userRepository : IUserRepository
-    - pubSampleRepository : IPublicationSampleRepository
-    - mapper : US012PublicationSampleMapper
-    + getListOfPublicationsInLibrary(username : String) : List<US012PublicationDetailsDTO>
+    + getListOfPublicationsInLibrary(username: String): List<US012PublicationDetailsDTO>
 }
 
 ' ─────────────────────────────────────────
 '  User side
 ' ─────────────────────────────────────────
 interface IUserRepository {
-    + findIdByUsername(username : String) : UserId
+    + findUserIdByUsername(username: String): Optional<UserId>
 }
 
 interface IUserRepositoryJPA {
-    + findByUsername(username : String) : UserDM
-}
-
-class UserAssembler {
-    + toDomain(userDM : UserDM) : User
-}
-
-class User {
-    + getId() : UserId
-}
-
-class UserId {
+    + findByUserName(username: String): Optional<UserDM>
 }
 
 class UserDM {
+    + getId(): UserId
 }
 
 ' ─────────────────────────────────────────
 '  Publication side
 ' ─────────────────────────────────────────
 interface IPublicationSampleRepository {
-    + getAllPublicationsInUserLibrary(userId : UserId) : List<PublicationSample>
+    + findByUserIdAndLibraryIdIsNotNull(userId: UserId): List<PublicationSample>
 }
 
 interface IPublicationSampleRepositoryJpa {
-    + findAllByOwnerId(userId : UserId) : List<PublicationSampleDM>
+    + findAllByOwnerId(userId: UserId): List<PublicationSampleDM>
 }
 
 class PublicationSampleAssembler {
-    + toDomain(publicationSampleDM : PublicationSampleDM) : PublicationSample
+    + toDomain(publicationSampleDM: PublicationSampleDM): PublicationSample
 }
 
 class PublicationSample {
+    + isOwnedByUser(userId: UserId): boolean
+    + isInUserLibrary(): boolean
 }
 
 class PublicationSampleDM {
@@ -67,21 +56,16 @@ class PublicationSampleDM {
 '  Mapper / DTO
 ' ─────────────────────────────────────────
 class US012PublicationSampleMapper {
-    + toDTOs(publications : List<PublicationSample>) : List<US012PublicationDetailsDTO>
-    + toDTO(publicationSample : PublicationSample) : US012PublicationDetailsDTO
+    + toDTOs(publications: List<PublicationSample>): List<US012PublicationDetailsDTO>
+    + toDTO(publicationSample: PublicationSample): US012PublicationDetailsDTO
 }
 
-record US012PublicationDetailsDTO {
-    + title : String
-    + author : String
-    + type : String
-    + identificationNumber : String
+class US012PublicationDetailsDTO {
 }
 
 ' ─────────────────────────────────────────
-'  Database (boundary)
+'  Database
 ' ─────────────────────────────────────────
-
 rectangle Database {
 }
 
@@ -89,40 +73,26 @@ rectangle Database {
 '  Relationships
 ' ─────────────────────────────────────────
 
-' UI → Controller
-UI ..> GetListOfPublicationsInLibraryController : uses
+UI ..> GetListOfPublicationsInLibraryController: uses
 
-' Controller → repositories & mapper
-GetListOfPublicationsInLibraryController ..> IUserRepository : uses
-GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
-GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
+GetListOfPublicationsInLibraryController ..> IUserRepository: uses
+GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository: uses
+GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper: uses
 
-' User repository chain
-IUserRepository ..> IUserRepositoryJPA : uses
-IUserRepository ..> UserAssembler : uses
-IUserRepository ..> User : reads
-IUserRepository ..> UserId : returns
+IUserRepository <|.. IUserRepositoryJPA: implements
+IUserRepositoryJPA ..> UserDM: returns
+IUserRepositoryJPA ..> Database: queries
 
-IUserRepositoryJPA ..> UserDM : returns
-IUserRepositoryJPA ..> Database : "SELECT WHERE username"
+IPublicationSampleRepository <|.. IPublicationSampleRepositoryJpa: implements
+IPublicationSampleRepository ..> PublicationSampleAssembler: uses
 
-UserAssembler ..> UserDM : reads
-UserAssembler ..> User : <<create>>
+IPublicationSampleRepositoryJpa ..> PublicationSampleDM: returns
+IPublicationSampleRepositoryJpa ..> Database: queries
 
-User ..> UserId : returns
+PublicationSampleAssembler ..> PublicationSampleDM: reads
+PublicationSampleAssembler ..> PublicationSample: creates
 
-' Publication repository chain
-IPublicationSampleRepository ..> IPublicationSampleRepositoryJpa : uses
-IPublicationSampleRepository ..> PublicationSampleAssembler : uses
-
-IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns
-IPublicationSampleRepositoryJpa ..> Database : "SELECT WHERE ownerId"
-
-PublicationSampleAssembler ..> PublicationSampleDM : reads
-PublicationSampleAssembler ..> PublicationSample : <<create>>
-
-' Mapper chain
-US012PublicationSampleMapper ..> PublicationSample : reads
-US012PublicationSampleMapper ..> US012PublicationDetailsDTO : <<create>>
+US012PublicationSampleMapper ..> PublicationSample: reads
+US012PublicationSampleMapper ..> US012PublicationDetailsDTO: creates
 
 @enduml

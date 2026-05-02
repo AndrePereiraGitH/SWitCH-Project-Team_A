@@ -6,7 +6,6 @@ title Find User ID
 participant ":GetListOfPublicationsInLibraryController" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
-participant ":UserAssembler" as userAssembler
 participant "Database" as db
 
 note over Ctrl #E3F2FD
@@ -15,27 +14,23 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> userRepo : findIdByUsername(username)
+Ctrl -> userRepo: findUserIdByUsername(username)
 activate userRepo
 
-userRepo -> userJpa : findByUsername(username)
+userRepo -> userJpa: findByUserName(username)
 activate userJpa
 
-userJpa -> db : SELECT WHERE username
+userJpa -> db: SELECT * FROM users WHERE username = ?
 activate db
-db --> userJpa : data
+db --> userJpa: data
 deactivate db
-userJpa --> userRepo : userDM
+
+userJpa --> userRepo: Optional<UserDM>
 deactivate userJpa
 
-userRepo -> userAssembler : toDomain(userDM)
-activate userAssembler
-userAssembler --> userRepo : user
-deactivate userAssembler
+userRepo -> userRepo: .map(UserDM::getId)
 
-userRepo -> userRepo : userId = user.getId()
-
-userRepo --> Ctrl : userId
+userRepo --> Ctrl: Optional<UserId>
 deactivate userRepo
 
 @enduml

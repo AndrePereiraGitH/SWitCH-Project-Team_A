@@ -3,39 +3,47 @@ hide footbox
 autonumber
 title Get Publications in Library
 
+participant ":GetListOfPublicationsInLibraryController" as Ctrl
 participant ":IPublicationSampleRepository" as pubSampleRepo
-participant "listOfPublications\n:List<PublicationSample>" as ListPubs
 participant ":IPublicationSampleRepositoryJpa" as pbJpa
 participant ":PublicationSampleAssembler" as pbAssembler
 participant "pbSample:PublicationSample" as pbDomain
+participant "listOfPublications:List<PublicationSample>" as ListPubs
 participant "Database" as db
 
-note over pubSampleRepo #E3F2FD
+note over Ctrl #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-pubSampleRepo -->> ListPubs ** : <<create>>
+Ctrl -> pubSampleRepo: findByUserIdAndLibraryIdIsNotNull(userId)
+activate pubSampleRepo
 
-pubSampleRepo -> pbJpa : findAllByOwnerId(userId)
+pubSampleRepo -> pbJpa: findAllByOwnerId(userId)
 activate pbJpa
 
-pbJpa -> db : SELECT WHERE ownerId
+pbJpa -> db: SELECT * FROM publication_sample WHERE owner_id = ?
 activate db
-db --> pbJpa : data
+db --> pbJpa: data
 deactivate db
 
-pbJpa --> pubSampleRepo : List<PublicationSampleDM>
+pbJpa --> pubSampleRepo: pbSamplesDM:List<PublicationSampleDM>
 deactivate pbJpa
 
-loop for each PublicationSampleDM
-    pubSampleRepo -> pbAssembler : toDomain(publicationSampleDM)
+pubSampleRepo -> ListPubs **: <<create>>
+
+loop for each dm in pbSamplesDM
+    pubSampleRepo -> pbAssembler: toDomain(dm)
     activate pbAssembler
-    pbAssembler -->> pbDomain ** : <<create>>
-    pbAssembler --> pubSampleRepo : pbSample
+    pbAssembler -> pbDomain **: <<create>>
+    pbAssembler --> pubSampleRepo: pbSample
     deactivate pbAssembler
-    pubSampleRepo -> pubSampleRepo : listOfPublications.add(pbSample)
+    pubSampleRepo -> pubSampleRepo: filter(isOwnedByUser(userId) && isInUserLibrary())
+    pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
 end
+
+pubSampleRepo --> Ctrl: listOfPublications
+deactivate pubSampleRepo
 
 @enduml
