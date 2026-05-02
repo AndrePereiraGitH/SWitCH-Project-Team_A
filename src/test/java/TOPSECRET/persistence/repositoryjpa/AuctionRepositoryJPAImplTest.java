@@ -84,7 +84,7 @@ class AuctionRepositoryJPAImplTest {
     @Test
     void constructor_shouldThrowErrorWhenRepositoryIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(NullPointerException.class, () ->
                 new AuctionRepositoryJPAImpl(null, auctionAssembler)
         );
     }
@@ -92,7 +92,7 @@ class AuctionRepositoryJPAImplTest {
     @Test
     void constructor_shouldThrowErrorWhenAssemblerIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(NullPointerException.class, () ->
                 new AuctionRepositoryJPAImpl(auctionRepoJPA, null)
         );
     }
@@ -238,7 +238,7 @@ class AuctionRepositoryJPAImplTest {
     @Test
     void findByListingId_shouldThrowWhenNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repository.findByListingIdIn(null));
+        assertThrows(NullPointerException.class, () -> repository.findByListingIdIn(null));
     }
 
     @Test
