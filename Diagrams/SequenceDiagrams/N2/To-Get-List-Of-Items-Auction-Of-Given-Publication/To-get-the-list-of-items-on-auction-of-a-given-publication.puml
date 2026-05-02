@@ -126,7 +126,7 @@ loop for each dm in listingDMList
     activate listingAssembler
     listingAssembler -> listingFactory: create(dm.getListingId(), dm.getListingTitle(), dm.getItemsId(), dm.getSaleType(), dm.getPrice(), dm.getShortDescription(), dm.getSellerId(), dm.getPictures())
     activate listingFactory
-    listingFactory -> listing **: <<create>>
+    listingFactory -->> listing **: <<create>>
     listingFactory --> listingAssembler: listing
     deactivate listingFactory
     listingAssembler --> listingRepo: listing
