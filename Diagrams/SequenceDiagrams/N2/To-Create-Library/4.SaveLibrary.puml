@@ -18,6 +18,7 @@ note over service #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
+
 service -> LibraryRepo: save(library)
 activate LibraryRepo
 
@@ -28,11 +29,10 @@ libraryJpa -> db: SELECT * FROM library WHERE user_id = ?
 activate db
 db --> libraryJpa: data
 deactivate db
-
-libraryJpa --> LibraryRepo: Optional<LibraryDM>
+libraryJpa --> LibraryRepo: library:Optional<LibraryDM>
 deactivate libraryJpa
 
-LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
+LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
 
 LibraryRepo -> assembler: toDM(library)
 activate assembler
@@ -43,22 +43,20 @@ deactivate assembler
 
 LibraryRepo -> libraryJpa: save(libraryDM)
 activate libraryJpa
-
 libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
 deactivate db
-
-libraryJpa --> LibraryRepo: libraryDM
+libraryJpa --> LibraryRepo: savedLibraryDM
 deactivate libraryJpa
 
-LibraryRepo -> assembler: toDomain(libraryDM)
+LibraryRepo -> assembler: toDomain(savedLibraryDM)
 activate assembler
 
-assembler -> factory: reconstitute(libraryDM.id(), libraryDM.name(), libraryDM.userId())
+assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())
 activate factory
 
-factory -> persistedLib **: <<create>>
+factory -->> persistedLib **: <<create>>
 factory --> assembler: savedLib
 deactivate factory
 

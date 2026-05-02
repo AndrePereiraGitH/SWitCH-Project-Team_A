@@ -30,18 +30,21 @@ activate UI
 UI -> Ctrl : createLibrary(libraryName, username)
 activate Ctrl
 
-Ctrl -> userRepo: findIdByUsername(username)
+Ctrl -> userRepo: findUserIdByUsername(username)
 activate userRepo
 
-userRepo -> userJpa: findIdByUsername(username)
+userRepo -> userJpa: findByUserName(username)
 activate userJpa
 
-userJpa -> db: SELECT id FROM users WHERE username = ?
+userJpa -> db: SELECT * FROM users WHERE username = ?
 activate db
 db --> userJpa: data
 deactivate db
-userJpa --> userRepo: Optional<UserId>
+
+userJpa --> userRepo: Optional<UserDM>
 deactivate userJpa
+
+userRepo -> userRepo: .map(UserDM::getId)
 
 userRepo --> Ctrl: Optional<UserId>
 deactivate userRepo
@@ -66,15 +69,15 @@ libraryJpa -> db: SELECT * FROM library WHERE user_id = ?
 activate db
 db --> libraryJpa: data
 deactivate db
-libraryJpa --> LibraryRepo: Optional<LibraryDM>
+libraryJpa --> LibraryRepo: library:Optional<LibraryDM>
 deactivate libraryJpa
 
-LibraryRepo -> LibraryRepo: verifyIfUserHasALibrary(result)
+LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
 
 LibraryRepo -> assembler: toDM(library)
 activate assembler
 
-assembler -->> dm **: <<create>>
+assembler -> dm **: <<create>>
 assembler --> LibraryRepo: libraryDM
 deactivate assembler
 
@@ -84,10 +87,10 @@ libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
 deactivate db
-libraryJpa --> LibraryRepo: libraryDM
+libraryJpa --> LibraryRepo: savedLibraryDM
 deactivate libraryJpa
 
-LibraryRepo -> assembler: toDomain(libraryDM)
+LibraryRepo -> assembler: toDomain(savedLibraryDM)
 activate assembler
 
 assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())

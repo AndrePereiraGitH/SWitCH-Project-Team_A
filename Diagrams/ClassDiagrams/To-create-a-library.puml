@@ -16,28 +16,28 @@ class LibraryService {
 
 ' ── Domain Layer ───────────────────────────────────────────
 interface IUserRepository {
-    + findIdByUsername(username: String): Optional<UserId>
+    + findUserIdByUsername(username: String): Optional<UserId>
 }
 
 interface ILibraryRepository {
     + save(library: Library): Library
-    + verifyIfUserHasALibrary(result: Optional<LibraryDM>): void
+    + existsByUserId(userId: UserId): boolean
 }
 
 class LibraryFactory {
     + create(libraryName: String, userId: UserId): Library
-    + create(id: LibraryId, libraryName: String, userId: UserId): Library)
 }
 
 class Library {
     - id: LibraryId
     - name: String
     - userId: UserId
+    + getUserId(): UserId
 }
 
 ' ── Infrastructure Layer ───────────────────────────────────
 interface IUserRepositoryJPA {
-    + findIdByUsername(username: String): Optional<UserId>
+    + findByUserName(username: String): Optional<UserDM>
 }
 
 interface ILibraryRepositoryJPA {
@@ -71,9 +71,7 @@ IUserRepository <|.. IUserRepositoryJPA: implements
 ILibraryRepository <|.. ILibraryRepositoryJPA: implements
 
 ILibraryRepository ..> LibraryAssembler: uses
-ILibraryRepository ..> LibraryFactory: uses
 
-LibraryAssembler ..> LibraryFactory: uses
 LibraryAssembler ..> LibraryDM: creates
 LibraryAssembler ..> Library: creates
 

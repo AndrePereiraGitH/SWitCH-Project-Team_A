@@ -14,19 +14,21 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> userRepo: findIdByUsername(username)
+Ctrl -> userRepo: findUserIdByUsername(username)
 activate userRepo
 
-userRepo -> userJpa: findIdByUsername(username)
+userRepo -> userJpa: findByUserName(username)
 activate userJpa
 
-userJpa -> db: SELECT id FROM users WHERE username = ?
+userJpa -> db: SELECT * FROM users WHERE username = ?
 activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: Optional<UserId>
+userJpa --> userRepo: Optional<UserDM>
 deactivate userJpa
+
+userRepo -> userRepo: .map(UserDM::getId)
 
 userRepo --> Ctrl: Optional<UserId>
 deactivate userRepo
