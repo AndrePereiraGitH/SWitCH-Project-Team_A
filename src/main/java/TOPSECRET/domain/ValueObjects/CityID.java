@@ -21,7 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CityID implements DomainID {
 
-    private  String cityID;
+    private String cityID;
 
     /**
      * Constructs a new {@code CityID} with the given value.

@@ -1,0 +1,91 @@
+@startuml
+
+hide footbox
+autonumber
+
+title Get Publications Available
+
+participant ":UI" as UI
+participant ":ToAddPublicationToAListOfMineController" as Controller
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":US018PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant ":PublicationSample" as PublicationSample
+participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
+participant ":BibliographicalData" as BibliographicalData
+
+note over UI, Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+UI -> Controller : getPublicationsForCollection(collectionId)
+activate Controller
+
+' =====================================================
+' GET AVAILABLE PUBLICATIONS
+' =====================================================
+
+Controller -> PublicationSampleRepo : getAvailablePublicationsForCollection(userId, collectionId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : publicationAvailable
+deactivate PublicationSampleRepo
+
+' =====================================================
+' GET TITLES (Controller responsibility)
+' =====================================================
+
+loop for each publicationSample in publicationAvailable
+    Controller -> PublicationSample : getBibliographicalDataID()
+    activate PublicationSample
+    PublicationSample --> Controller : bibliographicalDataId
+    deactivate PublicationSample
+
+    Controller -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> Controller : bibliographicalData
+    deactivate BibliographicalDataRepo
+
+    Controller -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> Controller : title
+    deactivate BibliographicalData
+
+    Controller -> Controller : titles.add(title)
+end
+
+' =====================================================
+' CONVERT RESULT TO DTO
+' =====================================================
+
+Controller -> PublicationSampleMapper : toDTOs(publicationAvailable, titles)
+activate PublicationSampleMapper
+
+PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
+
+loop for each publicationSample
+    PublicationSampleMapper -> PublicationSample : getId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : id
+    deactivate PublicationSample
+
+    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+
+    PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
+end
+
+PublicationSampleMapper --> Controller : listOfAvailablePublicationDTO
+deactivate PublicationSampleMapper
+
+Controller --> UI : listOfAvailablePublicationDTO
+deactivate Controller
+
+@enduml

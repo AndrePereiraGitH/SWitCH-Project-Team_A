@@ -1,0 +1,93 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on auction of a given author
+
+actor Buyer
+
+participant ":UI" as UI026
+participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
+participant ":IBiblioDataRepository" as bdRepo
+participant "listOfBiblioDataID \n:List<BibliographicalDataId>" as bdList
+participant ":IPublicationSampleRepository" as pubRepo
+participant "listOfPubSamplesId \n List<PublicationSamplesId>" as listOfPubSamples
+participant ":IListingRepository" as listingRepo
+participant "listingsId \n :List<ListingId>" as listings
+participant ":IAuctionRepository" as AuctionRepository
+participant ":auctionsOfAuthor \n :List<Auction>" as auctionsList
+participant ":US026AuctionMapper" as AuctionMapper
+participant "auctionDTO: US026AuctionDTO" as aucDTO
+participant "listOfAuctionDTO:\nList<US026AuctionDTO>" as ListDTO
+
+Buyer -> UI026 : I want to get the list of items\non auction of a given author
+activate UI026
+
+UI026 -> Ctrl : getAllAuthors()
+activate Ctrl
+
+    ref over Ctrl
+    [[2.GetAllAuthors.puml Get All Authors]]
+    end ref
+
+Ctrl --> UI026 : authorsDtoList
+deactivate Ctrl
+
+Buyer <-- UI026 : Which author? Choose!
+
+Buyer -> UI026 : selectedAuthor
+UI026 -> Ctrl : getAuctionsByAuthorId(selectedAuthorID)
+activate Ctrl
+
+'---- GET BIBLIOGRAPHICALDATA BY AUTHOR ID ---------'
+Ctrl -> bdRepo : findBibliographicalDataIdByAuthorId ( selectedAuthorID )
+activate bdRepo
+bdRepo -->> bdList** : <<create>>
+bdRepo --> Ctrl : listOfBiblioDataID
+deactivate bdRepo
+
+'----- GET PUBLICATION Ids SAMPLES BY BIBLIODATA ID ---------
+Ctrl -> pubRepo : findPublicationSamplesByBiblioDataIds(listOfBiblioDataID)
+activate pubRepo
+pubRepo -->> listOfPubSamples** : <<create>>
+pubRepo --> Ctrl : listOfPubSamplesId
+deactivate pubRepo
+
+'----- GET AUCTION LISTING CONTAINING PUB SAMPLES ID --------
+Ctrl -> listingRepo : findListingsIdsByPublicationID ( listOfPubSamplesId )
+activate listingRepo
+listingRepo -->> listings** : <<create>>
+listingRepo --> Ctrl : listingsId
+deactivate listingRepo
+
+'----- GET AUCTIONS BY LISTING ID ---------
+Ctrl -> AuctionRepository : findAuctionsByListingId(listingsId)
+activate AuctionRepository
+AuctionRepository -->> auctionsList** : <<create>>
+AuctionRepository --> Ctrl : auctionsOfAuthor
+deactivate AuctionRepository
+
+
+'--------- CONVERT TO DTO-----------------
+Ctrl -> AuctionMapper : fromDomainList(auctionsOfAuthor)
+activate AuctionMapper
+
+AuctionMapper -->> ListDTO ** : <<create>>
+
+loop for each auction in listOfAuctions
+    AuctionMapper -> aucDTO ** : fromDomain(auction)
+
+    AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
+end
+
+AuctionMapper --> Ctrl : listOfAuctionDTO
+    deactivate AuctionMapper
+
+
+
+
+Ctrl --> UI026 : listOfAuctionsDTO
+deactivate Ctrl
+
+UI026 --> Buyer : Shows the list of items on auction
+deactivate UI026
+@enduml
