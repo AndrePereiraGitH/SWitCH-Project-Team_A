@@ -2,7 +2,8 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
-import lombok.EqualsAndHashCode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -11,18 +12,15 @@ import java.util.Objects;
  * <p>
  * This class validates required fields in the constructor.
  */
+
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address implements ValueObject {
 
     private String street;
     private String number;
     private String zipCode;
     private CityID cityID;
-
-    /**
-     * Required by JPA
-     */
-    protected Address() {}
 
     /**
      * Constructs a new {@code Address} with the given fields.

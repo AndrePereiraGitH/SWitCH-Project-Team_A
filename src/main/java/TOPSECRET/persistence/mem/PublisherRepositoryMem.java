@@ -1,9 +1,7 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Publisher.IPublisherRepository;
-import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.Publisher.PublisherFactory;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 
 import java.util.ArrayList;
@@ -14,77 +12,47 @@ import java.util.Optional;
  * In-memory implementation of {@link IPublisherRepository}.
  *
  * <p>Publishers are stored in an {@link ArrayList} and are uniquely identified
- * by their VAT number. Duplicate publishers are rejected on insertion.</p>
+ * by their ID. Duplicate publishers are rejected on insertion.</p>
  */
 public class PublisherRepositoryMem implements IPublisherRepository {
 
-    private final List<Publisher> _publishers;
-    private final PublisherFactory _publisherFactory;
+    private final List<Publisher> _publishers = new ArrayList<>();
 
-    /**
-     * Constructs a new {@code PublisherRepositoryMem} with the given factory.
-     * Initializes an empty internal list of publishers.
-     *
-     * @param publisherFactory the factory used to create {@link Publisher} instances;
-     *                         must not be {@code null}
-     * @throws IllegalArgumentException if {@code publisherFactory} is {@code null}
-     */
-    public PublisherRepositoryMem(PublisherFactory publisherFactory) {
-        if (publisherFactory == null) {
-            throw new IllegalArgumentException("PublisherFactory cannot be null");
+    /** {@inheritDoc} */
+    @Override
+    public Publisher save(Publisher publisher) {
+        if (existsById(publisher.id())) {
+            throw new IllegalArgumentException("Publisher already exists");
         }
-        _publishers = new ArrayList<>();
-        _publisherFactory = publisherFactory;
+        _publishers.add(publisher);
+        return publisher;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Delegates creation to {@link PublisherFactory}, checks for duplicates,
-     * and adds the publisher to the in-memory list.</p>
-     *
-     * @throws IllegalArgumentException if a Publisher with the same VAT number already exists
-     */
+    /** {@inheritDoc} */
     @Override
-    public Publisher createAndAdd(String name, String vatNumber, Contact contact) {
-        Publisher publisher = _publisherFactory.create(name, vatNumber, contact);
-        if (!exists(publisher)) {
-            _publishers.add(publisher);
-            return publisher;
-        }
-
-        throw new IllegalArgumentException("Publisher already exists");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Publisher> getAllPublishers() {
-        return List.copyOf(_publishers);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Publisher> findByVatNumber(PublisherID vatNumber) {
-        return _publishers.stream()
-                .filter(p -> p.id().equals(vatNumber))
-                .findFirst();
-    }
-
-
-    /**
-     * Checks whether a given {@link Publisher} already exists in the repository.
-     *
-     * @param publisher the publisher to check; must not be {@code null}
-     * @return {@code true} if the publisher already exists; {@code false} otherwise
-     */
-    private boolean exists(Publisher publisher) {
+    public boolean existsById(PublisherID id) {
         for (Publisher p : _publishers) {
-            if (p.equals(publisher)) return true;
+            if (p.id().equals(id)) {
+                return true;
             }
+        }
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Publisher> findById(PublisherID id) {
+        for (Publisher p : _publishers) {
+            if (p.id().equals(id)) {
+                return Optional.of(p);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Publisher> findAll() {
+        return List.copyOf(_publishers);
     }
 }
