@@ -177,7 +177,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationBD_ShouldReturnAllPublications () throws InstanceNotFoundException {
         // Arrange
-        when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of(bd1Double, bd2Double));
+        when(bdRepoDouble.findAll()).thenReturn(List.of(bd1Double, bd2Double));
 
         List<US023BibliographicalDataDTO> listDTODouble = List.of(mock(US023BibliographicalDataDTO.class),mock(US023BibliographicalDataDTO.class));
         when(bdMapperDouble.toDTOs(List.of(bd1Double, bd2Double))).thenReturn(listDTODouble);
@@ -197,7 +197,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     @Test
     void getAllPublicationBD_ShouldReturnEmptyListWhenRepoIsEmpty() throws InstanceNotFoundException {
         // Arrange
-        when(bdRepoDouble.getAllPublicationsBD()).thenReturn(List.of());
+        when(bdRepoDouble.findAll()).thenReturn(List.of());
         when(bdMapperDouble.toDTOs(List.of())).thenReturn(List.of());
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =

@@ -77,7 +77,18 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public Optional<BibliographicalData> findBibliographicalDataById(
+    public List<BibliographicalData> findAll() {
+        return bibliographicalDataRepositoryJpa.findAll()
+                .stream()
+                .map(bibliographicalDataAssembler::toDomain)
+                .toList();
+    }
+
+    /**
+     * @InheritDoc
+     */
+    @Override
+    public Optional<BibliographicalData> findById(
             BibliographicalDataID bibliographicalDataId
     ) {
         Objects.requireNonNull(
@@ -95,7 +106,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId) {
+    public List<BibliographicalDataID> findAllByGenreId(GenreID genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");
         }
@@ -111,7 +122,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle) {
+    public Optional<BibliographicalDataID> findIdByTitle(String bdTitle) {
         Objects.requireNonNull(bdTitle, "Title must not be null");
 
         if (bdTitle.isBlank()) {
@@ -128,7 +139,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public List<BibliographicalDataID> findBibliographicalDataIdByAuthorId(AuthorId authorId) {
+    public List<BibliographicalDataID> findIdByAuthorId(AuthorId authorId) {
         if (authorId == null) {
             throw new IllegalArgumentException("authorId cannot be null.");
         }
@@ -137,17 +148,6 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
                 .findByAuthorIdsContaining(authorId)
                 .stream()
                 .map(BibliographicalDataDM::getId)
-                .toList();
-    }
-
-    /**
-     * @InheritDoc
-     */
-    @Override
-    public List<BibliographicalData> getAllPublicationsBD() {
-        return bibliographicalDataRepositoryJpa.findAll()
-                .stream()
-                .map(bibliographicalDataAssembler::toDomain)
                 .toList();
     }
 

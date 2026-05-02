@@ -164,7 +164,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         PublicationSampleId pubId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pubId_3 = mock(PublicationSampleId.class);
 
-        when(bdRepository.findBibliographicalDataIdByTitle("Title1"))
+        when(bdRepository.findIdByTitle("Title1"))
                 .thenReturn(Optional.of(bdId));
         when(pubSampleRepository.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(List.of(pubId_1, pubId_2, pubId_3));
@@ -191,7 +191,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
         Listing listing_2 = createListingDouble("50", "shortDesc", "ListingTitle");
         Listing listing_3 = createListingDouble("50", "shortDesc", "ListingTitle");
 
-        when(bdRepository.findBibliographicalDataIdByTitle("Title1"))
+        when(bdRepository.findIdByTitle("Title1"))
                 .thenReturn(Optional.of(bdId));
         when(pubSampleRepository.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(List.of(pubId_1, pubId_2, pubId_3));

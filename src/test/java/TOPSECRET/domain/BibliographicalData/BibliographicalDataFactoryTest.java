@@ -5,6 +5,8 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -20,20 +22,28 @@ class BibliographicalDataFactoryTest {
     List<GenreID> genres;
     String chunksOfText;
 
+    @Mock
+    AuthorId authorId;
+
+    @Mock
+    GenreID genreId;
+
+    @Mock
+    BibliographicalDataID bdID;
+
     @BeforeEach
     void setUp() {
         title = "title";
-        authors = List.of(new AuthorId("author1"));
+        authors = List.of(authorId);
         originalLanguage = Locale.ENGLISH;
         publicationDate = LocalDate.of(2017,4,24);
-        genres = List.of(new GenreID("genre1"));
+        genres = List.of(genreId);
         chunksOfText = "chunks of text";
     }
 
     // Constructor
     @Test
     void shouldReturnBibliographicalDataWithGivenValues() {
-
         //Arrange
         BibliographicalDataFactory factory = new BibliographicalDataFactory();
 
@@ -60,10 +70,8 @@ class BibliographicalDataFactoryTest {
     // Reconstructor
     @Test
     void shouldReturnReconstructedBibliographicalDataWithID() {
-
         // Arrange
         BibliographicalDataFactory factory = new BibliographicalDataFactory();
-        BibliographicalDataID bdID = new BibliographicalDataID("1234");
 
         // Act
         BibliographicalData bd = factory.create(

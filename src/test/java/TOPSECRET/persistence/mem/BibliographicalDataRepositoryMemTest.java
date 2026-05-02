@@ -61,9 +61,9 @@ class BibliographicalDataRepositoryMemTest {
 
         // Assert
         assertEquals(3, repo.getAllTitles().size());
-        assertTrue(repo.getAllPublicationsBD().contains(bd1Double));
-        assertTrue(repo.getAllPublicationsBD().contains(bd2Double));
-        assertTrue(repo.getAllPublicationsBD().contains(bd3Double));
+        assertTrue(repo.findAll().contains(bd1Double));
+        assertTrue(repo.findAll().contains(bd2Double));
+        assertTrue(repo.findAll().contains(bd3Double));
         assertEquals(bd1ID, bd1Double.id());
         assertEquals(bd2ID, bd2Double.id());
         assertEquals(bd3ID, bd3Double.id());
@@ -104,7 +104,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act
         repo.save(bd1Double);
-        Optional<BibliographicalData> result = repo.findBibliographicalDataById(bd1ID);
+        Optional<BibliographicalData> result = repo.findById(bd1ID);
 
         // Assert
         assertTrue(result.isPresent());
@@ -120,7 +120,7 @@ class BibliographicalDataRepositoryMemTest {
         repo.save(bd1Double);
         repo.save(bd2Double);
         repo.save(bd3Double);
-        Optional<BibliographicalData> result = repo.findBibliographicalDataById(bd2ID);
+        Optional<BibliographicalData> result = repo.findById(bd2ID);
 
         // Assert
         assertTrue(result.isPresent());
@@ -135,7 +135,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd2Double);
         repo.save(bd3Double);
-        Optional<BibliographicalData> result = repo.findBibliographicalDataById(bd1ID);
+        Optional<BibliographicalData> result = repo.findById(bd1ID);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -147,7 +147,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findBibliographicalDataById(null));
+        assertThrows(NullPointerException.class, () -> repo.findById(null));
     }
 
 
@@ -163,7 +163,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("double2");
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("double2");
 
         //Assert
         assertTrue(result.isPresent());
@@ -181,7 +181,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("Title3");
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("Title3");
 
         //Assert
         assertEquals(Optional.empty(), result);
@@ -198,7 +198,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("DOUBLE1");
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("DOUBLE1");
 
         //Assert
         assertTrue(result.isPresent());
@@ -216,7 +216,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("     DOUBLE2    ");
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("     DOUBLE2    ");
 
         //Assert
         assertTrue(result.isPresent());
@@ -229,7 +229,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findBibliographicalDataIdByTitle(null));
+        assertThrows(NullPointerException.class, () -> repo.findIdByTitle(null));
     }
 
     @Test
@@ -238,7 +238,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findBibliographicalDataIdByTitle(" "));
+        assertThrows(IllegalArgumentException.class, () -> repo.findIdByTitle(" "));
     }
 
 
@@ -251,7 +251,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        List<BibliographicalData> result = repo.getAllPublicationsBD();
+        List<BibliographicalData> result = repo.findAll();
 
         // Assert
         assertEquals(2, result.size());
@@ -267,7 +267,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        List<BibliographicalData> result = repo.getAllPublicationsBD();
+        List<BibliographicalData> result = repo.findAll();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(bd3Double));
@@ -281,8 +281,8 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        List<BibliographicalData> first = repo.getAllPublicationsBD();
-        List<BibliographicalData> second = repo.getAllPublicationsBD();
+        List<BibliographicalData> first = repo.findAll();
+        List<BibliographicalData> second = repo.findAll();
 
         // Assert
         assertNotSame(first, second);
@@ -324,7 +324,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
+        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(2, result.size());
@@ -345,7 +345,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
+        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -371,7 +371,7 @@ class BibliographicalDataRepositoryMemTest {
         repo.save(bd1Double);
         repo.save(bd2Double);
         repo.save(bd3Double);
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
+        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(1, result.size());
@@ -384,7 +384,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findBibliographicalDataIdByAuthorId(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findIdByAuthorId(null));
     }
 
 
@@ -396,7 +396,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findAllBibliographicalDataByGenreId(null));
+                () -> repo.findAllByGenreId(null));
     }
 
     @Test
@@ -412,7 +412,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         List<BibliographicalDataID> result =
-                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+                repo.findAllByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -432,7 +432,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         List<BibliographicalDataID> result =
-                repo.findAllBibliographicalDataByGenreId(genreDouble2);
+                repo.findAllByGenreId(genreDouble2);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -455,7 +455,7 @@ class BibliographicalDataRepositoryMemTest {
         repo.save(bd1Double);
         repo.save(bd2Double);
         List<BibliographicalDataID> result =
-                repo.findAllBibliographicalDataByGenreId(genreIdDouble);
+                repo.findAllByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(2, result.size());
