@@ -61,8 +61,8 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         this._apEnId = new AppraisalEntityId(UUID.randomUUID().toString());
         this._name = name;
         this._contact = contact;
-        this._publicationTypeId = publicationTypeId;
-        this._genreId = genreId;
+        this._publicationTypeId = List.copyOf(publicationTypeId);
+        this._genreId = List.copyOf(genreId);
     }
 
     /**
@@ -89,8 +89,8 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         this._apEnId = id;
         this._name = name;
         this._contact = contact;
-        this._publicationTypeId = publicationTypeId;
-        this._genreId = genreId;
+        this._publicationTypeId = List.copyOf(publicationTypeId);
+        this._genreId = List.copyOf(genreId);
     }
 
 

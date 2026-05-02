@@ -47,7 +47,7 @@ public class AppraisalEntityRepositoryJPAImpl implements IAppraisalEntityReposit
             throw new IllegalArgumentException("Entity cannot be null");
         }
 
-        AppraisalEntityDM dm = assembler.toDataModel(entity);
+        AppraisalEntityDM dm = assembler.toDM(entity);
         AppraisalEntityDM saved = apEnRepositoryJPA.save(dm);
 
         return assembler.toDomain(saved);
@@ -72,11 +72,10 @@ public class AppraisalEntityRepositoryJPAImpl implements IAppraisalEntityReposit
      */
     @Override
     public List<AppraisalEntity> findAll() {
-        return List.copyOf(apEnRepositoryJPA.findAll()
+        return apEnRepositoryJPA.findAll()
                                             .stream()
                                             .map(assembler::toDomain)
-                                            .toList()
-        );
+                                            .toList();
     }
 
     /**

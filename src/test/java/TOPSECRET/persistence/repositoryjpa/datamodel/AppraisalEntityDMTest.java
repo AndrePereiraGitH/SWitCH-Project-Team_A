@@ -35,8 +35,18 @@ import static org.mockito.Mockito.mock;
 class AppraisalEntityDMTest {
 
     // HELPER METHODS
+    private AppraisalEntityDM createValidDM() {
+        return new AppraisalEntityDM(
+                validId(),
+                "Name",
+                validContact(),
+                validPubTypes(),
+                validGenres()
+        );
+    }
+
     private AppraisalEntityId validId() {
-        return new AppraisalEntityId("1");
+        return mock(AppraisalEntityId.class);
     }
 
     private Contact validContact() {
@@ -44,38 +54,74 @@ class AppraisalEntityDMTest {
     }
 
     private List<PublicationTypeId> validPubTypes() {
-        return List.of(new PublicationTypeId("1"));
+        return List.of(mock(PublicationTypeId.class));
     }
 
     private List<GenreID> validGenres() {
-        return List.of(new GenreID("1"));
+        return List.of(mock(GenreID.class));
     }
 
     // CONSTRUCTOR TESTS
     @Test
-    void shouldCreateValidDM() {
+    void shouldCreateAppraisalEntityDM() {
+        // ARRANGE
+        AppraisalEntityDM dm = createValidDM();
 
+        // ACT + ASSERT
+        assertNotNull(dm);
+    }
+
+    @Test
+    void shouldReturnCorrectId() {
         // ARRANGE
         AppraisalEntityId id = validId();
+
+        // ACT
+        AppraisalEntityDM dm = new AppraisalEntityDM(
+                id, "Name", validContact(), validPubTypes(), validGenres()
+        );
+
+        // ASSERT
+        assertEquals(id, dm.getId());
+    }
+
+    @Test
+    void shouldReturnCorrectName() {
+        // ARRANGE
+        AppraisalEntityDM dm = createValidDM();
+
+        // ASSERT
+        assertEquals("Name", dm.getName());
+    }
+
+    @Test
+    void shouldReturnCorrectContact() {
+        // ARRANGE
         Contact contact = validContact();
 
         // ACT
         AppraisalEntityDM dm = new AppraisalEntityDM(
-                id,
-                "Name",
-                contact,
-                validPubTypes(),
-                validGenres()
+                validId(), "Name", contact, validPubTypes(), validGenres()
         );
 
         // ASSERT
-        assertNotNull(dm);
-        assertEquals(id, dm.getId());
-        assertEquals("Name", dm.getName());
         assertEquals(contact, dm.getContact());
-        assertEquals(1, dm.getPublicationTypeIds().size());
-        assertEquals(1, dm.getGenreIds().size());
     }
+
+    @Test
+    void shouldReturnCorrectPublicationTypes() {
+        // ARRANGE
+        List<PublicationTypeId> pubs = validPubTypes();
+
+        // ACT
+        AppraisalEntityDM dm = new AppraisalEntityDM(
+                validId(), "Name", validContact(), pubs, validGenres()
+        );
+
+        // ASSERT
+        assertEquals(pubs, dm.getPublicationTypeIds());
+    }
+
 
     @Test
     void shouldFailWhenIdIsNull() {
@@ -135,21 +181,9 @@ class AppraisalEntityDMTest {
     @Test
     void shouldNotBeEqualWhenDifferentId() {
         // ARRANGE
-        AppraisalEntityDM dm1 = new AppraisalEntityDM(
-                new AppraisalEntityId("1"),
-                "Name",
-                validContact(),
-                validPubTypes(),
-                validGenres()
-        );
+        AppraisalEntityDM dm1 = createValidDM();
 
-        AppraisalEntityDM dm2 = new AppraisalEntityDM(
-                new AppraisalEntityId("2"),
-                "Name",
-                validContact(),
-                validPubTypes(),
-                validGenres()
-        );
+        AppraisalEntityDM dm2 = createValidDM();
 
         // ACT
         boolean result = dm1.equals(dm2);

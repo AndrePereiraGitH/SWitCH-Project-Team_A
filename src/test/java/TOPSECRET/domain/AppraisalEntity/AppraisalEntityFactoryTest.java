@@ -59,14 +59,38 @@ class AppraisalEntityFactoryTest {
 
             // ASSERT
             assertEquals(1, mocked.constructed().size());
-            assertEquals("apEn", entity.getName());
-            assertSame(mocked.constructed().get(0), entity);
         }
 
     }
 
     @Test
-    void shouldCreateAppraisalEntityWithGivenId() {
+    void shouldReturnConstructedAppraisalEntity() {
+
+        // ARRANGE
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        Contact contact = mock(Contact.class);
+        GenreID genre = mock(GenreID.class);
+        PublicationTypeId type = mock(PublicationTypeId.class);
+
+        try (MockedConstruction<AppraisalEntity> mocked =
+                     mockConstruction(AppraisalEntity.class)) {
+
+            // ACT
+            AppraisalEntity result = factory.create(
+                    "apEn",
+                    contact,
+                    List.of(type),
+                    List.of(genre)
+            );
+
+            // ASSERT
+            assertSame(mocked.constructed().get(0), result);
+        }
+    }
+
+    @Test
+    void shouldCreateAppraisalEntityWithId() {
 
         // ARRANGE
         AppraisalEntityFactory factory = new AppraisalEntityFactory();
@@ -82,10 +106,88 @@ class AppraisalEntityFactoryTest {
 
         // ASSERT
         assertNotNull(result);
+    }
+
+    @Test
+    void shouldSetGivenId() {
+
+        // ARRANGE
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        Contact contact = mock(Contact.class);
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+        List<GenreID> genres = List.of(mock(GenreID.class));
+
+        // ACT
+        AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
+
+        // ASSERT
         assertEquals(id, result.id());
+    }
+
+    @Test
+    void shouldSetName() {
+
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        Contact contact = mock(Contact.class);
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+        List<GenreID> genres = List.of(mock(GenreID.class));
+
+        AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
+
         assertEquals("Name", result.getName());
+    }
+
+    @Test
+    void shouldSetContact() {
+
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        Contact contact = mock(Contact.class);
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+        List<GenreID> genres = List.of(mock(GenreID.class));
+
+        AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
+
         assertEquals(contact, result.getContact());
+    }
+
+    @Test
+    void shouldSetPublicationTypes() {
+
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        Contact contact = mock(Contact.class);
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+        List<GenreID> genres = List.of(mock(GenreID.class));
+
+        AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
+
         assertEquals(pubs, result.getPublicationTypeIds());
+    }
+
+    @Test
+    void shouldSetGenres() {
+
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+        Contact contact = mock(Contact.class);
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+        List<GenreID> genres = List.of(mock(GenreID.class));
+
+        AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
+
         assertEquals(genres, result.getGenreIds());
     }
 }
