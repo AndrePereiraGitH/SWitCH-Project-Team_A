@@ -183,14 +183,11 @@ class UserRepositoryJPAImplTest {
     void findUserIdByUsername_shouldReturnUserId_whenUserExists() {
         // Arrange
         UserDM userDMDouble = mock(UserDM.class);
-        User userDouble = mock(User.class);
         UserId userIdDouble = mock(UserId.class);
 
         when(jpaRepoDouble.findByUserName("Ines"))
                 .thenReturn(Optional.of(userDMDouble));
-        when(assemblerDouble.toDomain(userDMDouble))
-                .thenReturn(userDouble);
-        when(userDouble.id())
+        when(userDMDouble.getId())
                 .thenReturn(userIdDouble);
 
         // Act

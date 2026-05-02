@@ -79,7 +79,6 @@ public class UserRepositoryJPAImpl implements IUserRepository {
         }
 
         return userRepositoryJpa.findByUserName(username)
-                .map(assembler::toDomain)
-                .map(User::id);
+                .map(UserDM::getId);
     }
 }
