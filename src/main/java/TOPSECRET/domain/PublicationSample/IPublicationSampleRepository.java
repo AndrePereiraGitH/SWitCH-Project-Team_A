@@ -109,7 +109,7 @@ public interface IPublicationSampleRepository {
      * @param collectionId the collection identifier; must not be {@code null}
      * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      */
-    List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsID collectionId);
+    List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId);
 
     /**
      * Retrieves all publications owned by the given user that are assigned to a library.
@@ -156,7 +156,7 @@ public interface IPublicationSampleRepository {
      * @param publicationSampleIds the list of sample IDs to assign; must not be {@code null}
      * @return {@code true} if the operation succeeded
      */
-    boolean assignPublicationsToCollection(CollectionOfPublicationsID collectionId,
+    boolean assignPublicationsToCollection(CollectionOfPublicationsId collectionId,
                                            List<PublicationSampleId> publicationSampleIds);
 
     /**
@@ -170,5 +170,5 @@ public interface IPublicationSampleRepository {
      * @return a list of available {@link PublicationSample}; never {@code null}, may be empty
      */
     List<PublicationSample> findAvailableForCollection(UserId userId,
-                                                       CollectionOfPublicationsID collectionId);
+                                                       CollectionOfPublicationsId collectionId);
 }

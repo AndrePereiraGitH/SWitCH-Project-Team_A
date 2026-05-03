@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -207,7 +207,7 @@ class US019CollectionOfPublicationsMapperTest {
             String username) {
 
         // CollectionOfPublicationsID
-        CollectionOfPublicationsID collectionIdDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
         when(collectionIdDouble.toString()).thenReturn(UUID.randomUUID().toString());
 
         // GenreID
