@@ -5,10 +5,8 @@ import TOPSECRET.domain.Auction.AuctionFactory;
 import TOPSECRET.domain.Auction.IAuctionRepository;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.domain.ValueObjects.Price;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,37 +25,23 @@ import java.util.Optional;
 public class AuctionRepositoryMem implements IAuctionRepository {
 
     private static List<Auction> _auctionsList;
-    private final AuctionFactory _factoryAuction;
 
     // ============================================================
     // ================ CONSTRUCTOR ===============================
     // ============================================================
 
-    /**
-     * Constructs an in-memory auction repository with the given auction factory.
-     * <p>
-     * Initializes the repository with an empty auction list.
-     * </p>
-     *
-     * @param auctionFactory the factory used to create {@link Auction} instances
-     */
-    public AuctionRepositoryMem(AuctionFactory auctionFactory) {
-        _factoryAuction = auctionFactory;
+    public AuctionRepositoryMem() {
         _auctionsList = new ArrayList<>();
     }
 
     // ============================================================
 
 
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public Auction createAndAdd(ListingId listingId, LocalDateTime initialDate, LocalDateTime finalDate, Price initialPrice, Price buyoutPrice)
-            throws InstanceAlreadyExistsException {
-
-        Auction auction = _factoryAuction.create(listingId, initialDate, finalDate, initialPrice, buyoutPrice);
+    public Auction save(Auction auction) throws InstanceAlreadyExistsException {
 
         if (isExistent(auction)) {
             throw new InstanceAlreadyExistsException("This auction already exists");
@@ -76,7 +60,7 @@ public class AuctionRepositoryMem implements IAuctionRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Auction> getAllAuctions() {
+    public List<Auction> findAll() {
         return List.copyOf(_auctionsList);
     }
 
@@ -84,7 +68,7 @@ public class AuctionRepositoryMem implements IAuctionRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Auction> findAuctionById(AuctionId id) {
+    public Optional<Auction> findById(AuctionId id) {
         if (id == null) {
             throw new IllegalArgumentException("AuctionId cannot be null");
         }
@@ -94,35 +78,35 @@ public class AuctionRepositoryMem implements IAuctionRepository {
                 .findFirst();
     }
 
+    // This method seems similar to the following one, and the name isn't descriptive.
+    /**
+     * {@inheritDoc}
+     */
+//    @Override
+//    public List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId) {
+//
+//        if (listingId == null) {
+//            throw new IllegalArgumentException("ListingId cannot be null");
+//        }
+//
+//        List<Auction> result = new ArrayList<>();
+//
+//        for(Auction auction : _auctionsList){
+//            if(listingId.contains(auction.getListingId())){
+//                result.add(auction);
+//            }
+//        }
+//
+//        return result;
+//    }
+
+
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId) {
-
-        if (listingId == null) {
-            throw new IllegalArgumentException("ListingId cannot be null");
-        }
-
-        List<Auction> result = new ArrayList<>();
-
-        for(Auction auction : _auctionsList){
-            if(listingId.contains(auction.getListingId())){
-                result.add(auction);
-            }
-        }
-
-        return result;
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Auction> findAuctionsByListingId(List<ListingId> listingIds) {
+    public List<Auction> findByListingIdIn(List<ListingId> listingIds) {
 
         if (listingIds == null) {
             throw new IllegalArgumentException("List of listingIds cannot be null.");
@@ -132,5 +116,4 @@ public class AuctionRepositoryMem implements IAuctionRepository {
                 .filter(auction -> listingIds.contains(auction.getListingId()))
                 .toList();
     }
-
 }

@@ -53,7 +53,7 @@ class PublicListByGenreControllerTest {
         assertEquals(2, result.size());
     }
 
-
+//
 //    @Test
 //    void shouldThrowWhenGenreIsNull() {
 //        // Arrange
@@ -83,7 +83,7 @@ class PublicListByGenreControllerTest {
 //
 //        when(userDouble.getUserName()).thenReturn("User test");
 //
-//        when(userRepo.findUserByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+//        when(userRepo.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
 //
 //        when(collectionRepo.findPublicCollectionsByGenreId(genreId)).thenReturn(List.of(collection1, collection2));
 //

@@ -26,7 +26,7 @@ public class CityAssembler {
      * @param city the domain object to convert; must not be {@code null}
      * @return a {@link CityDM} populated with the city's data
      */
-    public CityDM DomainToDM(City city) {
+    public CityDM toDM(City city) {
         return new CityDM(city.id(), city.getCityCountryID(), city.getCityName());
     }
 
@@ -36,7 +36,7 @@ public class CityAssembler {
      * @param cityDM the data model to convert; must not be {@code null}
      * @return a reconstituted {@link City} domain object
      */
-    public City DMToDomain(CityDM cityDM) {
+    public City toDomain(CityDM cityDM) {
         return cityFactory.create(cityDM.getCityID(), cityDM.getCountryID(), cityDM.getCityName());
     }
 }

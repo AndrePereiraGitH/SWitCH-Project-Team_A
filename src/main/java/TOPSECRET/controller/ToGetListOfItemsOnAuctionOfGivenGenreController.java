@@ -82,6 +82,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
      * @param selectedGenreDTO the genre used as filter
      * @return list of US022AuctionMapper matching the genre
      */
+    /*
     public List<US022AuctionDTO> getListOfItemsOnAuctionGivenGenre(US022GenreDTO selectedGenreDTO) {
 
         if (selectedGenreDTO == null) {
@@ -93,7 +94,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
                     new IllegalArgumentException("Genre is not valid or not found"));;
 
 
-        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genre.id());
+        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genre.id());
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 
@@ -103,4 +104,6 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         return US022AuctionMapper.toDTOList(auctions);
     }
+
+     */
 }

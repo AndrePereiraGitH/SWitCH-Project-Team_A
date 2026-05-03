@@ -29,18 +29,39 @@ public class Publisher implements AggregateRoot<PublisherID> {
      */
     protected Publisher(String name, String vatNumber, Contact contact) {
 
-        if (name == null || name.isBlank()) {
+        Objects.requireNonNull(name, "Name cannot be null");
+        if (name.isBlank()) {
             throw new IllegalArgumentException("Not a valid name");
         }
         _name = name;
 
-        if (vatNumber == null || vatNumber.isBlank()) {
+        Objects.requireNonNull(vatNumber, "VatNumber cannot be null");
+        if (vatNumber.isBlank()) {
             throw new IllegalArgumentException("Not a valid vatNumber");
         }
         _publisherID = new PublisherID(vatNumber);
         _vatNumber = vatNumber;
 
-        _contact = contact;
+        _contact = Objects.requireNonNull(contact, "Contact cannot be null");
+    }
+
+    protected Publisher(PublisherID id, String name, String vatNumber, Contact contact) {
+
+        _publisherID = Objects.requireNonNull(id, "PublisherID cannot be null");
+
+        Objects.requireNonNull(name, "Name cannot be null");
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Not a valid name");
+        }
+        _name = name;
+
+        Objects.requireNonNull(vatNumber, "VatNumber cannot be null");
+        if (vatNumber.isBlank()) {
+            throw new IllegalArgumentException("Not a valid vatNumber");
+        }
+        _vatNumber = vatNumber;
+
+        _contact = Objects.requireNonNull(contact, "Contact cannot be null");
     }
 
     public String getName() {

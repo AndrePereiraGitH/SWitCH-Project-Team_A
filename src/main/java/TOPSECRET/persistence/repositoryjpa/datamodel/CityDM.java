@@ -3,6 +3,9 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Data model representing a {@link TOPSECRET.domain.City.City} for JPA persistence.
@@ -13,8 +16,10 @@ import jakarta.persistence.*;
  *
  * <p>It is converted to and from the domain object by {@link TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler}.</p>
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "cities")
+@Getter
 public class CityDM {
 
     @EmbeddedId
@@ -29,11 +34,6 @@ public class CityDM {
     private String cityName;
 
     /**
-     * Required by JPA. Not for direct use.
-     */
-    protected CityDM() {}
-
-    /**
      * Constructs a new {@code CityDM} with the given domain identifiers and city name.
      *
      * @param cityID    the domain identifier of the city
@@ -45,8 +45,4 @@ public class CityDM {
         this.countryID = countryID;
         this.cityName = cityName;
     }
-
-    public CityID getCityID() { return cityID; }
-    public CountryID getCountryID() { return countryID; }
-    public String getCityName() { return cityName; }
 }

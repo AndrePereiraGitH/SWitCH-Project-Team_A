@@ -28,15 +28,12 @@ public class CityRepositoryJPAImpl implements ICityRepository {
     }
 
     /**
-     * Converts the given {@link City} to a {@link CityDM} and persists it.
-     *
-     * @param newcity the city to persist; must not be {@code null}
-     * @return the original {@link City} after persistence
+     * {@inheritDoc}
      */
     @Override
     public City save(City newcity) {
-        CityDM cityDM = assembler.DomainToDM(newcity);
-        jpaRepository.save(cityDM);
-        return newcity;
+        CityDM cityDM = assembler.toDM(newcity);
+        CityDM saved = jpaRepository.save(cityDM);
+        return assembler.toDomain(saved);
     }
 }

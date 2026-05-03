@@ -96,7 +96,7 @@ public class US018PublicationSampleMapper {
                 publication.getBibliographicalDataID();
 
         BibliographicalData bibliographicalData = _bibliographicalRepo
-                .findBibliographicalDataById(bibliographicalDataId)
+                .findById(bibliographicalDataId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "BibliographicalData not found for id: " + bibliographicalDataId));
 

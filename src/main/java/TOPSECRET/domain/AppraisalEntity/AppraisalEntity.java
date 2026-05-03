@@ -35,7 +35,7 @@ import java.util.UUID;
  */
 public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
-    AppraisalEntityId _apEnId;
+    private final AppraisalEntityId _apEnId;
     private String _name;
     private Contact _contact;
     private List<PublicationTypeId> _publicationTypeId;
@@ -55,23 +55,42 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
                               Contact contact,
                               List<PublicationTypeId> publicationTypeId,
                               List<GenreID> genreId) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("AppraisalEntity name can't be null or empty.");
-        }
-        if (contact == null) {
-            throw new IllegalArgumentException("Contact can't be null.");
-        }
-        if (publicationTypeId == null || publicationTypeId.isEmpty()) {
-            throw new IllegalArgumentException("At least one PublicationType is required.");
-        }
-        if (genreId == null || genreId.isEmpty()) {
-            throw new IllegalArgumentException("At least one Genre is required.");
-        }
+
+        validate(name, contact, publicationTypeId, genreId);
+
         this._apEnId = new AppraisalEntityId(UUID.randomUUID().toString());
         this._name = name;
         this._contact = contact;
-        this._publicationTypeId = publicationTypeId;
-        this._genreId = genreId;
+        this._publicationTypeId = List.copyOf(publicationTypeId);
+        this._genreId = List.copyOf(genreId);
+    }
+
+    /**
+     * Creates a new AppraisalEntity.
+     *
+     * @param id appraisal entity id
+     * @param name name of the entity
+     * @param contact contact information
+     * @param publicationTypeId list of publication types
+     * @param genreId list of genres
+     * @throws IllegalArgumentException if any argument is invalid
+     */
+    protected AppraisalEntity(AppraisalEntityId id,
+                              String name,
+                              Contact contact,
+                              List<PublicationTypeId> publicationTypeId,
+                              List<GenreID> genreId) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("AppraisalEntity id can't be null.");
+        }
+        validate(name, contact, publicationTypeId, genreId);
+
+        this._apEnId = id;
+        this._name = name;
+        this._contact = contact;
+        this._publicationTypeId = List.copyOf(publicationTypeId);
+        this._genreId = List.copyOf(genreId);
     }
 
 
@@ -89,18 +108,13 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         return _contact;
     }
 
-    public List<PublicationTypeId> getPublicationTypeId() {
-        return _publicationTypeId;
+    public List<PublicationTypeId> getPublicationTypeIds() {
+        return List.copyOf(_publicationTypeId);
     }
 
-    public List<GenreID> getGenreId() {
-        return _genreId;
+    public List<GenreID> getGenreIds() {
+        return List.copyOf(_genreId);
     }
-
-    public AppraisalEntityId identity(){
-        return _apEnId;
-    }
-
 
     /**
      * Returns a string representation of the entity.
@@ -122,16 +136,17 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     @Override
     public boolean equals(Object obj) {
 
-        if (this == obj)
+        if (this == obj) {
             return true;
-
-        if (obj instanceof AppraisalEntity) {
-            AppraisalEntity newObj = (AppraisalEntity) obj;
-
-            if(this._apEnId.equals(newObj._apEnId))
-                return true;
         }
-        return false;
+        if (!(obj instanceof AppraisalEntity)) {
+            return false;
+        }
+
+        AppraisalEntity other = (AppraisalEntity) obj;
+
+        return Objects.equals(this._apEnId, other._apEnId);
+
     }
 
     @Override
@@ -141,16 +156,73 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
     @Override
     public boolean sameAs(Object obj) {
-        if (!(obj instanceof AppraisalEntity)) {
-            return false;
+
+        if (!(obj instanceof AppraisalEntity)) return false;
+
+        AppraisalEntity other = (AppraisalEntity) obj;
+
+        return Objects.equals(this._name, other._name) &&
+                Objects.equals(this._contact, other._contact) &&
+                Objects.equals(this._genreId, other._genreId) &&
+                Objects.equals(this._publicationTypeId, other._publicationTypeId);
+
+    }
+
+    /**
+     * Updates the state of this AppraisalEntity.
+     *
+     * <p>
+     * Applies new values while enforcing all domain invariants.
+     * This method follows a fluent style and returns the updated instance.
+     * </p>
+     *
+     * @param name the new name of the entity
+     * @param contact the new contact information
+     * @param publicationTypes updated list of publication types
+     * @param genres updated list of genres
+     * @return the updated AppraisalEntity instance
+     * @throws IllegalArgumentException if any argument is invalid
+     */
+    public AppraisalEntity update(String name,
+                                  Contact contact,
+                                  List<PublicationTypeId> publicationTypes,
+                                  List<GenreID> genres
+    ) {
+        validate(name, contact, publicationTypes, genres);
+
+        this._name = name;
+        this._contact = contact;
+        this._publicationTypeId = publicationTypes;
+        this._genreId = genres;
+        return this;
+    }
+
+    /**
+     * Validates the invariants of an AppraisalEntity.
+     *
+     * @param name entity name
+     * @param contact contact information
+     * @param publicationTypes publication types list
+     * @param genres genres list
+     * @throws IllegalArgumentException if any argument is invalid
+     */
+    private void validate( String name,
+                           Contact contact,
+                           List<PublicationTypeId> publicationTypes,
+                           List<GenreID> genres
+    ) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
-
-        AppraisalEntity newObj = (AppraisalEntity) obj;
-
-        return  this._name.equals(newObj._name) &&
-                this._contact.equals(newObj._contact) &&
-                this._genreId.equals(newObj._genreId) &&
-                this._publicationTypeId.equals(newObj._publicationTypeId);
+        if (contact == null) {
+            throw new IllegalArgumentException("Contact cannot be null");
+        }
+        if (publicationTypes == null || publicationTypes.isEmpty()) {
+            throw new IllegalArgumentException("Publication types cannot be empty");
+        }
+        if (genres == null || genres.isEmpty()) {
+            throw new IllegalArgumentException("Genres cannot be empty");
+        }
 
     }
 }
