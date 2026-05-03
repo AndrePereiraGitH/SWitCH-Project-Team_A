@@ -1,93 +1,212 @@
 @startuml
 hide footbox
 autonumber
-title To get the list of items on auction of a given author
+title US026 - To get the list of items on auction of a given author
 
 actor Buyer
 
-participant ":UI" as UI026
-participant ":ToGetTheListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
+participant ":UI" as UI
+participant "ToGetListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
+
 participant ":IBiblioDataRepository" as bdRepo
+participant ":IBiblioDataRepositoryJPA" as bdRepoJPA
+
 participant "listOfBiblioDataID \n:List<BibliographicalDataId>" as bdList
+
+participant "bdIdList\n:List<BibliographicalDataId>" as bdIdList
+
+
+participant "biblioDataDM:List<BibliographicalDataDM>" as bdDM
+
 participant ":IPublicationSampleRepository" as pubRepo
-participant "listOfPubSamplesId \n List<PublicationSamplesId>" as listOfPubSamples
+participant ":IPublicationSampleRepositoryJPA" as pubRepoJPA
+
+participant "pubIdList\n:List<PublicationSampleId>" as pubIdList
+
+
+
 participant ":IListingRepository" as listingRepo
-participant "listingsId \n :List<ListingId>" as listings
-participant ":IAuctionRepository" as AuctionRepository
-participant ":auctionsOfAuthor \n :List<Auction>" as auctionsList
-participant ":US026AuctionMapper" as AuctionMapper
+participant ":IListingRepositoryJPA" as listingRepoJPA
+
+participant "listingIdList \n :List<ListingId>" as listings
+participant "listingId:ListingId" as listingId
+
+
+participant ":IAuctionRepository" as auctionRepository
+participant ":IAuctionRepositoryJPA" as auctionRepoJPA
+
+participant "auctionDM\n:AuctionDM" as auctionDM
+
+participant ":authorAuctionsDM \n :List<AuctionDM>" as auctionsDMList
+
+participant ":AuctionAssembler" as auctionAssembler
+
+participant "authorAuctionsList:\nList<Auction>" as authorAuctionsList
+
+participant ":AuctionFactory" as auctionFactory
+
+participant "authorAuction\n:Auction" as authorAuction
+
+participant ":US026AuctionMapper" as auctionMapper
 participant "auctionDTO: US026AuctionDTO" as aucDTO
 participant "listOfAuctionDTO:\nList<US026AuctionDTO>" as ListDTO
 
-Buyer -> UI026 : I want to get the list of items\non auction of a given author
-activate UI026
+Buyer -> UI : I want to get the list of items\non auction of a given author
+activate UI
 
-UI026 -> Ctrl : getAllAuthors()
+UI -> Ctrl : getAllAuthors()
 activate Ctrl
 
     ref over Ctrl
     [[2.GetAllAuthors.puml Get All Authors]]
     end ref
 
-Ctrl --> UI026 : authorsDtoList
+Ctrl --> UI : authorsDtoList
 deactivate Ctrl
 
-Buyer <-- UI026 : Which author? Choose!
+Buyer <-- UI : Which author? Choose!
 
-Buyer -> UI026 : selectedAuthor
-UI026 -> Ctrl : getAuctionsByAuthorId(selectedAuthorID)
+Buyer -> UI : selectedAuthor
+UI -> Ctrl : getAuctionsByAuthorId(selectedAuthorID)
 activate Ctrl
 
-'---- GET BIBLIOGRAPHICALDATA BY AUTHOR ID ---------'
-Ctrl -> bdRepo : findBibliographicalDataIdByAuthorId ( selectedAuthorID )
+'---- GET BIBLIOGRAPHICAL DATA IDS BY AUTHOR ID ---------'
+
+Ctrl -> bdRepo : findIdsByAuthorId(selectedAuthorID)
 activate bdRepo
-bdRepo -->> bdList** : <<create>>
-bdRepo --> Ctrl : listOfBiblioDataID
+
+bdRepo -> bdRepoJPA : findIdsByAuthorId(selectedAuthorID)
+activate bdRepoJPA
+
+bdRepoJPA -> db : query bibliographical_data_id by author_id
+activate db
+db --> bdRepoJPA : bibliographicalDataId values
+deactivate db
+
+bdRepoJPA -->> bdIdList ** : <<create>>
+
+
+bdRepoJPA --> bdRepo : bdIdList
+deactivate bdRepoJPA
+
+bdRepo --> Ctrl : bdIdList
 deactivate bdRepo
 
 '----- GET PUBLICATION Ids SAMPLES BY BIBLIODATA ID ---------
-Ctrl -> pubRepo : findPublicationSamplesByBiblioDataIds(listOfBiblioDataID)
+Ctrl -> pubRepo : findIdsByBiblioDataIds ( bdIdList)
 activate pubRepo
-pubRepo -->> listOfPubSamples** : <<create>>
-pubRepo --> Ctrl : listOfPubSamplesId
+pubRepo -> pubRepoJPA : findIdsByBiblioDataIds ( bdIdList)
+activate pubRepoJPA
+pubRepoJPA -> db : query publicationSampleId by bibliographicalDataId
+activate db
+db --> pubRepoJPA : publicationId values
+deactivate db
+pubRepoJPA -->> pubIdList ** : <<create>>
+
+pubRepoJPA --> pubRepo : pubIdList
+
+deactivate pubRepoJPA
+pubRepo --> Ctrl : pubIdList
 deactivate pubRepo
 
 '----- GET AUCTION LISTING CONTAINING PUB SAMPLES ID --------
-Ctrl -> listingRepo : findListingsIdsByPublicationID ( listOfPubSamplesId )
+Ctrl -> listingRepo : findIdsByPublicationID ( pubIdList )
 activate listingRepo
-listingRepo -->> listings** : <<create>>
-listingRepo --> Ctrl : listingsId
+listingRepo -> listingRepoJPA : findIdsByPublicationID ( pubIdList )
+activate listingRepoJPA
+listingRepoJPA -> db : query listingId by publicationSampleId
+activate db
+db --> listingRepoJPA : listingId values
+deactivate db
+listingRepoJPA -->> listings** : <<create>>
+
+listingRepoJPA --> listingRepo : listingIdList
+deactivate listingRepoJPA
+listingRepo --> Ctrl : listingIdList
 deactivate listingRepo
 
 '----- GET AUCTIONS BY LISTING ID ---------
-Ctrl -> AuctionRepository : findAuctionsByListingId(listingsId)
-activate AuctionRepository
-AuctionRepository -->> auctionsList** : <<create>>
-AuctionRepository --> Ctrl : auctionsOfAuthor
-deactivate AuctionRepository
+Ctrl -> auctionRepository : findByListingIds (  listingIdList)
+activate auctionRepository
+auctionRepository -> auctionRepoJPA : findByListingIds (  listingIdList)
+activate auctionRepoJPA
+auctionRepoJPA -> db : query auction by listingId
+activate db
+db --> auctionRepoJPA : auction data
+deactivate db
+
+auctionRepoJPA -->> auctionsDMList**
+
+auctionRepoJPA --> auctionRepository : authorAuctionsDM
+deactivate auctionRepoJPA
+
+auctionRepository -->> authorAuctionsList** : <<create>>
+
+loop for each authorAuctionDM
+
+
+    auctionRepository -> auctionAssembler : toDomain ( auctionDM)
+    activate auctionAssembler
+
+        auctionAssembler -> auctionDM : id()
+        activate auctionDM
+        auctionDM --> auctionAssembler : id
+        deactivate auctionDM
+
+        auctionAssembler -> auctionDM : getStartDate()
+        activate auctionDM
+        auctionDM --> auctionAssembler : startDate
+        deactivate auctionDM
+
+        auctionAssembler -> auctionDM : getFinalDate()
+        activate auctionDM
+        auctionDM --> auctionAssembler : finalDate
+        deactivate auctionDM
+
+        auctionAssembler -> auctionDM : getInitialPrice()
+        activate auctionDM
+        auctionDM --> auctionAssembler : initialPrice
+        deactivate auctionDM
+
+        auctionAssembler -> auctionDM : getBuyout()
+        activate auctionDM
+        auctionDM --> auctionAssembler : buyoutPrice
+        deactivate auctionDM
+
+    auctionAssembler -> auctionFactory : create(id, startDate, finalDate,\n initialPrice, buyoutPrice)
+    activate auctionFactory
+    auctionFactory -->> authorAuction** : <<create>>
+    auctionFactory --> auctionAssembler : authorAuction
+    deactivate auctionFactory
+    auctionAssembler --> auctionRepository :authorAuction
+    deactivate auctionAssembler
+    auctionRepository -> auctionRepository : authorAuctionsList.add(authorAuction)
+end loop
+auctionRepository --> Ctrl : authorAuctionsList
+deactivate auctionRepository
 
 
 '--------- CONVERT TO DTO-----------------
-Ctrl -> AuctionMapper : fromDomainList(auctionsOfAuthor)
-activate AuctionMapper
+Ctrl -> auctionMapper : fromDomainList(authorAuctionsList)
+activate auctionMapper
 
-AuctionMapper -->> ListDTO ** : <<create>>
+auctionMapper -->> ListDTO ** : <<create>>
 
 loop for each auction in listOfAuctions
-    AuctionMapper -> aucDTO ** : fromDomain(auction)
+    auctionMapper -> aucDTO ** : fromDomain(auction)
 
-    AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
+    auctionMapper -> auctionMapper : listOfAuctionDTO.add(auctionDTO)
 end
 
-AuctionMapper --> Ctrl : listOfAuctionDTO
-    deactivate AuctionMapper
+auctionMapper --> Ctrl : listOfAuctionDTO
+    deactivate auctionMapper
 
 
 
 
-Ctrl --> UI026 : listOfAuctionsDTO
+Ctrl --> UI : listOfAuctionsDTO
 deactivate Ctrl
 
-UI026 --> Buyer : Shows the list of items on auction
-deactivate UI026
+UI --> Buyer : Shows the list of items on auction
+deactivate UI
 @enduml
