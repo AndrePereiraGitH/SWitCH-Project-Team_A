@@ -90,7 +90,7 @@ public class AppraisalEntityAssembler {
 
         List<GenreID> genres =
                 domain.getGenreIds() != null
-                        ? new ArrayList<>(domain.getGenreIds()) // ✅ copy only
+                        ? new ArrayList<>(domain.getGenreIds())
                         : new ArrayList<>();
 
         return new AppraisalEntityDM(
