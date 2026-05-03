@@ -3,6 +3,7 @@ package TOPSECRET.domain.ValueObjects;
 import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.Objects;
  * This class validates required fields in the constructor.
  */
 
+@Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address implements ValueObject {
@@ -45,26 +47,11 @@ public class Address implements ValueObject {
         this.cityID = cityID;
     }
 
-    public String getStreet() {
-        return street;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public CityID getCityID() {
-        return cityID;
-    }
-
     @Override
     public String toString() {
         return street + ", no. " + number + ", " + zipCode + ", " + cityID.getCityID();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

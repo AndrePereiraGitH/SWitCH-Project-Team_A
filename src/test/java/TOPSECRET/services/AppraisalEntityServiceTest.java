@@ -63,9 +63,6 @@ class AppraisalEntityServiceTest {
     void create_shouldCreateAndSaveEntity() {
 
         // ARRANGE
-        AppraisalEntityService service =
-                new AppraisalEntityService(repository, factory);
-
         Contact contact = mock(Contact.class);
         PublicationTypeId pub = mock(PublicationTypeId.class);
         GenreID genre = mock(GenreID.class);
@@ -93,8 +90,6 @@ class AppraisalEntityServiceTest {
     void updateShouldUpdateAndSaveEntity() {
         // ARRANGE
         AppraisalEntity entity = entity();
-        AppraisalEntityService service =
-                new AppraisalEntityService(repository, factory);
 
         when(repository.findById(id())).thenReturn(Optional.of(entity));
         when(repository.save(entity)).thenReturn(entity);
@@ -118,9 +113,6 @@ class AppraisalEntityServiceTest {
         // ARRANGE
         when(repository.findById(id())).thenReturn(Optional.empty());
 
-        AppraisalEntityService service =
-                new AppraisalEntityService(repository, factory);
-
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
                 service.update(id(), "Name", contact(), pubs(), genres())
@@ -130,8 +122,6 @@ class AppraisalEntityServiceTest {
     @Test
     void updateShouldThrowWhenIdNull() {
         // ARRANGE
-        AppraisalEntityService service =
-                new AppraisalEntityService(repository, factory);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
