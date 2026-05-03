@@ -17,10 +17,10 @@ import java.util.Objects;
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GenreID implements DomainID {
 
-    private final String genreID;
+    private String genreID;
 
     /**
      * Constructs a new {@code GenreID} with the given value.

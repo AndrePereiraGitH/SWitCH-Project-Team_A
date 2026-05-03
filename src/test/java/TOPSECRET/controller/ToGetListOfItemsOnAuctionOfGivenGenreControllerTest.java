@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
+/*
 class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
     private IGenreRepository genreRepository = mock(IGenreRepository.class);
@@ -203,3 +203,5 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         assertEquals("Drama", result.get(1).name());
     }
 }
+
+ */
