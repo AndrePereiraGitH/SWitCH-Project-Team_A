@@ -37,7 +37,7 @@ class CityAssemblerTest {
         when(doubleCity.getCityName()).thenReturn("Porto");
 
         // Act
-        CityDM result = assembler.DomainToDM(doubleCity);
+        CityDM result = assembler.toDM(doubleCity);
 
         // Assert
         assertNotNull(result);
@@ -59,7 +59,7 @@ class CityAssemblerTest {
         when(doubleCityFactory.create(cityID, countryID, "Porto")).thenReturn(doubleCity);
 
         // Act
-        City result = assembler.DMToDomain(cityDM);
+        City result = assembler.toDomain(cityDM);
 
         // Assert
         assertEquals(doubleCity, result);

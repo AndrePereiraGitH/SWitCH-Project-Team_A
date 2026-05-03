@@ -72,7 +72,7 @@ class PublicationTypeAssemblerTest {
         PublicationType entity = factory.create("Book");
 
         // ACT
-        PublicationTypeDM dm = assembler.toDataModel(entity);
+        PublicationTypeDM dm = assembler.toDM(entity);
 
         // ASSERT
         assertEquals(entity.id(), dm.getId());
@@ -84,7 +84,7 @@ class PublicationTypeAssemblerTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDataModel(null));
+                () -> assembler.toDM(null));
     }
 
     @Test
