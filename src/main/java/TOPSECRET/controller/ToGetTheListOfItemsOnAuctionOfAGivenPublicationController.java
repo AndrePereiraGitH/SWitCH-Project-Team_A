@@ -85,7 +85,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
             throw new IllegalArgumentException("Title can not be blank");
         }
 
-        BibliographicalDataID bdId = _bdRepo.findBibliographicalDataIdByTitle(titleDTO)
+        BibliographicalDataID bdId = _bdRepo.findIdByTitle(titleDTO)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Title is not valid or not found"));
 

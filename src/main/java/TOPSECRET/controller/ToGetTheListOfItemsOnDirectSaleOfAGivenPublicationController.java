@@ -96,7 +96,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
      */
     public List<US023BibliographicalDataDTO> getAllPublicationBD() throws InstanceNotFoundException {
 
-        List<BibliographicalData> listOfAllPublicationBD = _bdRepo.getAllPublicationsBD();
+        List<BibliographicalData> listOfAllPublicationBD = _bdRepo.findAll();
 
         List<US023BibliographicalDataDTO> listOfAllBibliographicalDataDTO = _bdMapper.toDTOs(listOfAllPublicationBD);
 

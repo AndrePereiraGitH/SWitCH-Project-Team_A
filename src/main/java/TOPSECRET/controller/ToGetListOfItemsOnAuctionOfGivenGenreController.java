@@ -94,7 +94,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
                     new IllegalArgumentException("Genre is not valid or not found"));;
 
 
-        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllBibliographicalDataByGenreId(genre.id());
+        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genre.id());
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 
