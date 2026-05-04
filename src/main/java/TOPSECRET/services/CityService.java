@@ -4,7 +4,7 @@ import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.Country.ICountryRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,7 +38,7 @@ public class CityService {
      * @throws IllegalArgumentException if any domain constraint is violated
      */
     public City createAndSave(String countryName, String cityName) {
-        CountryID countryId = countryRepository.findCountryIdByCountryName(countryName)
+        CountryId countryId = countryRepository.findCountryIdByCountryName(countryName)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Country not found: " + countryName));
 

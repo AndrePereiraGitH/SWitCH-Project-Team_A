@@ -2,8 +2,7 @@ package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
-import TOPSECRET.domain.Country.ICountryRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,273 +10,213 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for the {@link CountryRepositoryMem} class.
+ * Unit tests for {@link CountryRepositoryMem}, an in-memory implementation
+ * of {@link TOPSECRET.domain.Country.ICountryRepository}.
  *
- * <p>Uses Mockito to isolate the SUT ({@link CountryRepositoryMem})
- * from its collaborators ({@link CountryFactory} and {@link Country}).</p>
- *
- * <p>Validates the following responsibilities:</p>
+ * <p>This test suite validates the correct behavior of the repository
+ * including:</p>
  * <ul>
- *     <li>Adding valid countries</li>
- *     <li>Rejecting invalid or null country inputs</li>
- *     <li>Preventing duplicate countries</li>
- *     <li>Returning an immutable list of registered countries</li>
- *     <li>Finding a country by its {@link CountryID}</li>
+ *     <li>Saving valid countries and preventing duplicates</li>
+ *     <li>Handling null inputs appropriately</li>
+ *     <li>Ensuring case-insensitive duplicate detection</li>
+ *     <li>Returning an unmodifiable list of stored countries</li>
+ *     <li>Finding countries by their {@link CountryId}</li>
+ *     <li>Retrieving {@link CountryId} by country name with normalization rules</li>
  * </ul>
+ *
+ * <p>The {@link CountryFactory} is used to create valid domain objects
+ * used throughout the tests.</p>
  */
 class CountryRepositoryMemTest {
 
-    private ICountryRepository repository;
-
-    private CountryFactory factoryDouble;
-
-    private Country countryDouble1;
-
-    private Country countryDouble2;
-
+    private CountryFactory factory;
 
     @BeforeEach
-    void preparation() {
-        factoryDouble = mock(CountryFactory.class);
-        countryDouble1 = mock(Country.class);
-        countryDouble2 = mock(Country.class);
-        repository = new CountryRepositoryMem(factoryDouble);
+    void setup() {
+        factory = new CountryFactory();
     }
 
     // -------------------------------------------------------------------------
-    // Constructor tests
+    // save()
     // -------------------------------------------------------------------------
 
     @Test
-    void constructor_nullFactory() {
+    void save_validCountry() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        Country country = factory.create("Portugal");
 
-        // Arrange + Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new CountryRepositoryMem(null));
-    }
+        // Act
+        Country result = repository.save(country);
 
-    // -------------------------------------------------------------------------
-    // createAndAddNewCountry() tests
-    // -------------------------------------------------------------------------
-
-    @Test
-    void createAndAddNewCountry_validCountry() {
-
-        //Arrange
-        when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
-        when(factoryDouble.create("France")).thenReturn(countryDouble2);
-        when(countryDouble1.getCountryName()).thenReturn("Portugal");
-        when(countryDouble2.getCountryName()).thenReturn("France");
-
-        //Act
-        repository.createAndAdd("Portugal");
-        repository.createAndAdd("France");
-
-        //Assert
-        assertEquals(2, repository.getAllCountries().size());
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, repository.getAllCountries().size());
+        assertEquals(country, result);
     }
 
     @Test
-    void createAndAddNewCountry_invalidCountry() {
-
-        //Arrange
-        when(factoryDouble.create("Mordor"))
-                .thenThrow(new IllegalArgumentException());
+    void save_nullCountry() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd("Mordor"));
-        assertEquals(0, repository.getAllCountries().size());
+                () -> repository.save(null));
     }
 
     @Test
-    void createAndAddNewCountry_nullCountry() {
+    void save_duplicateCountry_sameName() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        Country c1 = factory.create("Portugal");
+        Country c2 = factory.create("Portugal");
 
-        //Arrange
-        when(factoryDouble.create(null))
-                .thenThrow(new IllegalArgumentException());
+        repository.save(c1);
 
-        //Act + Assert
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd(null));
-        assertEquals(0, repository.getAllCountries().size());
-    }
+                () -> repository.save(c2));
 
-    @Test
-    void createAndAddNewCountry_duplicateCountry() {
-
-        //Arrange
-        when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
-        when(countryDouble1.getCountryName()).thenReturn("Portugal");
-
-        repository.createAndAdd("Portugal");
-
-        //Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.createAndAdd("Portugal"));
         assertEquals(1, repository.getAllCountries().size());
     }
 
+    @Test
+    void save_duplicateCountry_caseInsensitive() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        Country c1 = factory.create("Portugal");
+        Country c2 = factory.create("portugal");
+
+        repository.save(c1);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.save(c2));
+    }
+
     // -------------------------------------------------------------------------
-    // getAllCountries() tests
+    // getAllCountries()
     // -------------------------------------------------------------------------
 
     @Test
-    void getAllCountries_returnsReadOnlyList() {
+    void getAllCountries_returnsUnmodifiableList() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        Country country = factory.create("Portugal");
+        repository.save(country);
 
-        //Arrange
-        when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
-        when(countryDouble1.getCountryName()).thenReturn("Portugal");
+        // Act
+        List<Country> list = repository.getAllCountries();
 
-        repository.createAndAdd("Portugal");
+        // Assert
+        assertEquals(1, list.size());
 
-        //Act
-        List<Country> countryList = repository.getAllCountries();
-
-        //Assert
         assertThrows(UnsupportedOperationException.class,
-                () -> countryList.add(countryDouble2));
+                () -> list.add(factory.create("France")));
     }
 
     @Test
-    void getAllCountries_emptyRepository() {
+    void getAllCountries_empty() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
 
-        //Arrange + act
-        List<Country> result = repository.getAllCountries();
-
-        //Assert
-        assertEquals(0, result.size());
+        // Act + Assert
+        assertTrue(repository.getAllCountries().isEmpty());
     }
 
     // -------------------------------------------------------------------------
-    // findByID() tests
+    // findByID()
     // -------------------------------------------------------------------------
 
     @Test
-    void findByID_existingID() {
+    void findByID_existing() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        Country country = factory.create("Portugal");
+        repository.save(country);
 
-        //Arrange
-        CountryID id = new CountryID("PORTUGAL");
+        // Act
+        Optional<Country> result =
+                repository.findByID(country.id());
 
-        when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
-        when(countryDouble1.getCountryName()).thenReturn("Portugal");
-        when(countryDouble1.getCountryID()).thenReturn(id);
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(country, result.get());
+    }
 
-        repository.createAndAdd("Portugal");
+    @Test
+    void findByID_nonExisting() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        CountryId id = new CountryId("FRANCE");
 
-        //Act
+        // Act
         Optional<Country> result = repository.findByID(id);
 
-        //Assert
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByID_null() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+
+        // Act + Assert
+        assertTrue(repository.findByID(null).isEmpty());
+    }
+
+    // -------------------------------------------------------------------------
+    // findCountryIdByCountryName()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void findCountryIdByCountryName_valid() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+        Country country = factory.create("Portugal");
+        repository.save(country);
+
+        // Act
+        Optional<CountryId> result =
+                repository.findCountryIdByCountryName("Portugal");
+
+        // Assert
         assertTrue(result.isPresent());
-        assertEquals(countryDouble1, result.get());
+        assertEquals(country.id(), result.get());
     }
 
     @Test
-    void findByID_nonExistingID() {
+    void findCountryIdByCountryName_null() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
 
-        //Arrange
-        CountryID id = new CountryID("FRANCE");
-
-        //Act
-        Optional<Country> result = repository.findByID(id);
-
-        //Assert
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void findByID_returnsCorrectCountryAmongMultiple() {
-
-        //Arrange
-        CountryID idPortugal = new CountryID("PORTUGAL");
-        CountryID idFrance = new CountryID("FRANCE");
-
-        when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
-        when(factoryDouble.create("France")).thenReturn(countryDouble2);
-        when(countryDouble1.getCountryName()).thenReturn("Portugal");
-        when(countryDouble2.getCountryName()).thenReturn("France");
-        when(countryDouble1.getCountryID()).thenReturn(idPortugal);
-        when(countryDouble2.getCountryID()).thenReturn(idFrance);
-
-        repository.createAndAdd("Portugal");
-        repository.createAndAdd("France");
-
-        //Act
-        Optional<Country> result = repository.findByID(idFrance);
-
-        //Assert
-        assertTrue(result.isPresent());
-        assertEquals(countryDouble2, result.get());
-    }
-
-    @Test
-    void shouldCreateAndReturnCountry() {
-        CountryFactory factory = new CountryFactory();
-        CountryRepositoryMem repo = new CountryRepositoryMem(factory);
-
-        Country result = repo.createAndAdd("Portugal");
-
-        assertNotNull(result);
-        assertEquals("Portugal", result.getCountryName());
-
-        // Optional but strong check:
-        assertTrue(repo.getAllCountries().contains(result));
-        assertEquals("PORTUGAL", result.getCountryID().getCountryID());
-    }
-
-    @Test
-    void findIdByCountryNameShouldReturnAValidCountryIdWhenCountryNameIsValid() {
-
-        //Arrange
-        when(factoryDouble.create("Portugal")).thenReturn(countryDouble1);
-
-        Country createdCountry = repository.createAndAdd(
-                "Portugal");
-
-        CountryID countryId = mock(CountryID.class);
-
-
-        when(createdCountry.getCountryName()).thenReturn("Portugal");
-        when(createdCountry.getCountryID()).thenReturn(countryId);
-
-        //Act
-        Optional<CountryID> result = repository.findCountryIdByCountryName("Portugal");
-
-
-        //Assert
-        assertTrue(result.isPresent());
-        assertEquals(countryId, result.get());
-    }
-
-    @Test
-    void findIdByCountryNameShouldThrowWhenCountryNameIsNull() {
-
-        //Assert
+        // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> repository.findCountryIdByCountryName(null));
     }
 
     @Test
-    void findIdByCountryNameShouldThrowWhenCountryNameIsBlank() {
+    void findCountryIdByCountryName_blank() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
 
-        //Assert
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.findCountryIdByCountryName(""));
+                () -> repository.findCountryIdByCountryName(" "));
     }
 
     @Test
-    void findIdByCountryNameShouldReturnEmptyWhenCountryIsNotFound() {
+    void findCountryIdByCountryName_notFound() {
         // Arrange
-        // Just make sure the repository doesn't contain the country "Gondor"
+        CountryRepositoryMem repository = new CountryRepositoryMem();
 
-        // Act
-        Optional<CountryID> result = repository.findCountryIdByCountryName("Gondor");
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // Act + Assert
+        assertTrue(
+                repository.findCountryIdByCountryName("Gondor").isEmpty()
+        );
     }
 }

@@ -3,7 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Country.ICountryRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -13,52 +13,61 @@ import java.util.Optional;
 /**
  * In-memory implementation of {@link ICountryRepository}.
  * <p>
- * This class is responsible for storing {@link Country} aggregate instances
- * in memory and managing their lifecycle within the application.
+ * This repository stores {@link Country} aggregate instances in memory,
+ * making it suitable for testing, prototyping, or scenarios where persistence
+ * is not required.
  * </p>
  * <p>
  * Responsibilities:
  * <ul>
- *     <li>Create new {@link Country} instances using {@link CountryFactory}</li>
- *     <li>Prevent duplicate {@link Country} entries (by name)</li>
- *     <li>Store {@link Country} objects in an internal list</li>
+ *     <li>Store {@link Country} instances in an internal collection</li>
+ *     <li>Prevent duplicate countries based on their name</li>
  *     <li>Provide read-only access to stored countries</li>
- *     <li>Allow lookup of a {@link Country} by its {@link CountryID}</li>
+ *     <li>Allow lookup by {@link CountryId}</li>
+ *     <li>Support flexible lookup by country name</li>
  * </ul>
  * </p>
+ * <p>
+ * Note: This implementation does not persist data beyond application runtime.
+ * </p>
  */
-@Repository
 public class CountryRepositoryMem implements ICountryRepository {
 
     private final List<Country> registeredCountries;
-    private final CountryFactory countryFactory;
+
 
     /**
-     * Constructs a {@code CountryRepositoryMem} with the given factory.
-     *
-     * @param countryFactory the factory responsible for creating {@link Country} instances;
-     *                       must not be {@code null}
-     * @throws IllegalArgumentException if {@code countryFactory} is {@code null}
+     * Constructs an empty in-memory repository.
      */
-    public CountryRepositoryMem(CountryFactory countryFactory) {
-        if (countryFactory == null) {
-            throw new IllegalArgumentException("CountryFactory cannot be null");
-        }
-        this.countryFactory = countryFactory;
+    public CountryRepositoryMem() {
         this.registeredCountries = new ArrayList<>();
     }
 
     /**
-     * {@inheritDoc}
+     * Saves a {@link Country} into the repository.
+     * <p>
+     * Ensures that the provided country is not {@code null} and that no other
+     * country with the same name (case-insensitive) already exists.
+     * </p>
+     *
+     * @param countryName the {@link Country} to save;
+     *                    must not be {@code null}
+     * @return the saved {@link Country} instance
+     * @throws IllegalArgumentException if {@code countryName} is {@code null}
+     *                                  or if a duplicate country exists
      */
     @Override
-    public Country createAndAdd(String countryName) {
-        Country country = countryFactory.create(countryName);
-        if (!isANewCountry(country)) {
+    public Country save(Country countryName){
+        if (countryName == null) {
+            throw new IllegalArgumentException("Country cannot be null");
+        }
+
+        if (!isANewCountry(countryName)) {
             throw new IllegalArgumentException("Country is already registered");
         }
-        registeredCountries.add(country);
-        return country;
+
+        registeredCountries.add(countryName);
+        return countryName;
     }
 
     /**
@@ -73,22 +82,22 @@ public class CountryRepositoryMem implements ICountryRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Country> findByID(CountryID countryID) {
+    public Optional<Country> findByID(CountryId countryID) {
         return registeredCountries.stream()
-                .filter(c -> c.getCountryID().equals(countryID))
+                .filter(c -> c.id().equals(countryID))
                 .findFirst();
     }
 
     /**
-     * Checks whether the given {@link Country} is not already registered.
+     * Checks whether a {@link Country} is not already registered.
      * <p>
-     * Duplicate detection is performed by country name (case-insensitive),
-     * since two entries representing the same real-world country should not
-     * coexist, even if they carry different {@link CountryID} values.
+     * Duplicate detection is based on the country name using
+     * case-insensitive comparison.
      * </p>
      *
      * @param country the {@link Country} to check
-     * @return {@code true} if no country with the same name exists; {@code false} otherwise
+     * @return {@code true} if the country is not yet registered;
+     *         {@code false} otherwise
      */
     private boolean isANewCountry(Country country) {
         for (Country registered : registeredCountries) {
@@ -103,7 +112,7 @@ public class CountryRepositoryMem implements ICountryRepository {
     /**
      * {@inheritDoc}
      */
-    public Optional<CountryID> findCountryIdByCountryName(String countryName) {
+    public Optional<CountryId> findCountryIdByCountryName(String countryName) {
 
         if (countryName == null) {
             throw new NullPointerException("A country's name cannot be null");
@@ -119,7 +128,7 @@ public class CountryRepositoryMem implements ICountryRepository {
             String normalizedStored = normalizeCountryName(country.getCountryName());
 
             if (normalizedStored.equals(normalizedInput)) {
-                return Optional.of(country.getCountryID());
+                return Optional.of(country.id());
             }
         }
 
@@ -127,14 +136,21 @@ public class CountryRepositoryMem implements ICountryRepository {
     }
 
 
+
     /**
-     * Normalizes a country name into a standard format matching enum constants.
+     * Normalizes a country name into a standardized format.
      * <p>
-     * The transformation includes trimming whitespace, converting to uppercase,
-     * and replacing spaces or hyphens with underscores.
+     * This transformation is used to support flexible comparisons
+     * by applying the following rules:
+     * <ul>
+     *     <li>Trim leading and trailing whitespace</li>
+     *     <li>Replace spaces with underscores</li>
+     *     <li>Replace hyphens with underscores</li>
+     * </ul>
+     * </p>
      *
      * @param countryName the raw country name provided by the user
-     * @return the normalized country name (e.g., "Czech republic" → "CZECH_REPUBLIC")
+     * @return a normalized representation of the country name
      */
     private String normalizeCountryName(String countryName) {
         return countryName
