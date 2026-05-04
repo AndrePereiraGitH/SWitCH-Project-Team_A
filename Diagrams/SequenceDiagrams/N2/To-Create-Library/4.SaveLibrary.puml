@@ -22,14 +22,16 @@ end note
 service -> LibraryRepo: save(library)
 activate LibraryRepo
 
-LibraryRepo -> libraryJpa: findByUserId(userId)
+
+LibraryRepo -> libraryJpa: existsByUserId(library.getUserId())
 activate libraryJpa
 
-libraryJpa -> db: SELECT * FROM library WHERE user_id = ?
+libraryJpa -> db: SELECT COUNT(*) FROM library WHERE user_id = ?
 activate db
 db --> libraryJpa: data
 deactivate db
-libraryJpa --> LibraryRepo: library:Optional<LibraryDM>
+
+libraryJpa --> LibraryRepo: false: boolean
 deactivate libraryJpa
 
 LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
