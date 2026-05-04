@@ -219,4 +219,24 @@ class CountryRepositoryMemTest {
                 repository.findCountryIdByCountryName("Gondor").isEmpty()
         );
     }
+
+    @Test
+    void findByID_multipleCountries_wrongId_shouldNotReturnFirst() {
+        // Arrange
+        CountryRepositoryMem repository = new CountryRepositoryMem();
+
+        Country portugal = factory.create("Portugal");
+        Country france = factory.create("France");
+
+        repository.save(portugal);
+        repository.save(france);
+
+        CountryId germanyId = new CountryId("GERMANY");
+
+        // Act
+        Optional<Country> result = repository.findByID(germanyId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 }

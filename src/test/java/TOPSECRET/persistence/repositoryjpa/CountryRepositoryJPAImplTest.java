@@ -215,4 +215,34 @@ class CountryRepositoryJPAImplTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findCountryIdByCountryName_multipleCountries_notMatching_shouldReturnEmpty() {
+
+        // Arrange
+        CountryRepositoryJPAImpl repository =
+                new CountryRepositoryJPAImpl(jpaRepository, assembler);
+
+        Country portugal = mock(Country.class);
+        Country france = mock(Country.class);
+
+        CountryDM portugalDM = new CountryDM(countryId, "Portugal");
+        CountryDM franceDM = new CountryDM(new CountryId("FRANCE"), "France");
+
+        when(jpaRepository.findAll())
+                .thenReturn(List.of(portugalDM, franceDM));
+
+        when(assembler.ToDomain(portugalDM)).thenReturn(portugal);
+        when(assembler.ToDomain(franceDM)).thenReturn(france);
+
+        when(portugal.getCountryName()).thenReturn("Portugal");
+        when(france.getCountryName()).thenReturn("France");
+
+        // Act
+        Optional<CountryId> result =
+                repository.findCountryIdByCountryName("Germany");
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 }
