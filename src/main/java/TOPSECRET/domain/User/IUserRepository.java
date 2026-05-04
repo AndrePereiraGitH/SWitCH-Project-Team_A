@@ -27,7 +27,7 @@ public interface IUserRepository {
      * @return {@code true} if a user with the given username exists, {@code false} otherwise
      * @throws IllegalArgumentException if {@code username} is null or blank
      */
-    boolean exists(String username);
+    boolean existsByUsername(String username);
 
     /**
      * Finds the unique user by their ID.
@@ -47,6 +47,6 @@ public interface IUserRepository {
      *         the given username exists, or {@link Optional#empty()} if not found
      * @throws IllegalArgumentException if {@code username} is null or blank
      */
-    Optional<UserId> findUserIdByUsername(String username);
+    Optional<UserId> findIdByUsername(String username);
 
 }

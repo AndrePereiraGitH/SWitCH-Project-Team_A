@@ -5,9 +5,7 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.GenreID;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -22,22 +20,14 @@ import java.util.Optional;
 public interface IBibliographicalDataRepository {
 
     /**
-     * Creates a new bibliographical data record and adds it to the repository
+     * Saves a created bibliographical data record to the repository
      * if it does not already exist.
      *
-     * @param title the title of the publication
-     * @param authors the authors associated with the publication
-     * @param originalLanguage the original language of the publication
-     * @param publicationDate the publication date
-     * @param genres the genres associated with the publication
-     * @param chunksOfText textual content or excerpts associated with the publication
+     * @param bibliographicalDataCreated The bibliographical data objects created by the factory
+     * @throws InstanceAlreadyExistsException throws exception when bibliographical data already exists
      * @return the created and stored bibliographical data record
-     * @throws InstanceAlreadyExistsException if an equivalent bibliographical data record already exists
      */
-
-    BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                                     List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException;
-
+    BibliographicalData save(BibliographicalData bibliographicalDataCreated) throws InstanceAlreadyExistsException;
 
     /**
      * Finds bibliographical data in the repository by its unique identifier.

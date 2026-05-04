@@ -75,7 +75,7 @@ public class ToGetListOfPublicationsInLibraryController {
             throw new IllegalArgumentException("Username can not be empty");
         }
 
-        UserId userId = userRepository.findUserIdByUsername(username)
+        UserId userId = userRepository.findIdByUsername(username)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Username is not valid or not found"));
 
