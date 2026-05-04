@@ -14,7 +14,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ToCreateLibraryController}.
- * Unit tests for the {@link ToCreateLibraryController} class.
  * <p>
  * This test class verifies the controller behavior for the Create Library use case,
  * including construction validation, user existence checks, and library creation delegation.
@@ -152,8 +151,6 @@ class ToCreateLibraryControllerTest {
 
         ToCreateLibraryController controller =
                 new ToCreateLibraryController(userRepositoryDouble, libraryServiceDouble);
-        ToCreateLibraryController ctrl = new ToCreateLibraryController(
-                userRepositoryDouble, libraryServiceDouble);
 
         // Act
         boolean result = controller.createAndAddLibrary(libraryName, username);
@@ -178,11 +175,11 @@ class ToCreateLibraryControllerTest {
         when(libraryServiceDouble.createAndSave(libraryName, userIdDouble))
                 .thenThrow(new InstanceAlreadyExistsException("User already has a library"));
 
-        ToCreateLibraryController ctrl =
+        ToCreateLibraryController controller =
                 new ToCreateLibraryController(userRepositoryDouble, libraryServiceDouble);
 
         // Act + Assert
         assertThrows(InstanceAlreadyExistsException.class,
-                () -> ctrl.createAndAddLibrary(libraryName, username));
+                () -> controller.createAndAddLibrary(libraryName, username));
     }
 }
