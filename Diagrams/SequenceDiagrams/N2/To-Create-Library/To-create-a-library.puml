@@ -62,21 +62,19 @@ deactivate factory
 service -> LibraryRepo: save(library)
 activate LibraryRepo
 
-LibraryRepo -> libraryJpa: findByUserId(userId)
+LibraryRepo -> libraryJpa: existsByUserId(library.getUserId())
 activate libraryJpa
 
-libraryJpa -> db: SELECT * FROM library WHERE user_id = ?
+libraryJpa -> db: SELECT COUNT(*) FROM library WHERE user_id = ?
 activate db
 db --> libraryJpa: data
 deactivate db
-libraryJpa --> LibraryRepo: library:Optional<LibraryDM>
-deactivate libraryJpa
 
-LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
+libraryJpa --> LibraryRepo: false: boolean
+deactivate libraryJpa
 
 LibraryRepo -> assembler: toDM(library)
 activate assembler
-
 assembler -->> dm **: <<create>>
 assembler --> LibraryRepo: libraryDM
 deactivate assembler
@@ -92,14 +90,11 @@ deactivate libraryJpa
 
 LibraryRepo -> assembler: toDomain(savedLibraryDM)
 activate assembler
-
-assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())
+assembler -> factory: create(savedLibraryDM.id(), savedLibraryDM.name(), savedLibraryDM.userId())
 activate factory
-
 factory -->> persistedLib **: <<create>>
 factory --> assembler: savedLib
 deactivate factory
-
 assembler --> LibraryRepo: savedLib
 deactivate assembler
 
