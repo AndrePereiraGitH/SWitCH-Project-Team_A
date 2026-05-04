@@ -4,12 +4,15 @@ package TOPSECRET.persistence.repositoryjpa;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CollectionOfPublicationsAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICollectionOfPublicationsRepositoryJpa;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -80,24 +83,24 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
-//        return List.of();
-//    }
-//
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public boolean makeCollectionPublic(CollectionOfPublicationsID id) {
-//        return false;
-//    }
-//
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
-//        return List.of();
-//    }
+    @Override
+    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
+        return List.of();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean makeCollectionPublic(CollectionOfPublicationsId id) {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+        return List.of();
+    }
 }

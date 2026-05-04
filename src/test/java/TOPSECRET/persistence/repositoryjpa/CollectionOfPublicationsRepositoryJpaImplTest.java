@@ -2,6 +2,8 @@ package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
+import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CollectionOfPublicationsAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICollectionOfPublicationsRepositoryJpa;
@@ -10,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -180,45 +184,45 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     // ========== Default return methods =========================
     // ===========================================================
 
-//    @Test
-//    void getUserCollections_shouldReturnEmptyList() {
-//
-//        // Arrange
-//        UserId userId = mock(UserId.class);
-//
-//        // Act
-//        List<CollectionOfPublications> result =
-//                repo.getUserCollections(userId);
-//
-//        // Assert
-//        assertTrue(result.isEmpty());
-//    }
-//
-//    @Test
-//    void makeCollectionPublic_shouldReturnFalse() {
-//
-//        // Arrange
-//        CollectionOfPublicationsID id =
-//                mock(CollectionOfPublicationsID.class);
-//
-//        // Act
-//        boolean result = repo.makeCollectionPublic(id);
-//
-//        // Assert
-//        assertFalse(result);
-//    }
-//
-//    @Test
-//    void findPublicCollectionsByGenreId_shouldReturnEmptyList() {
-//
-//        // Arrange
-//        GenreID genreId = mock(GenreID.class);
-//
-//        // Act
-//        List<CollectionOfPublications> result =
-//                repo.findPublicCollectionsByGenreId(genreId);
-//
-//        // Assert
-//        assertTrue(result.isEmpty());
-//    }
+    @Test
+    void getUserCollectionsShouldReturnEmptyList() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        // Act
+        List<CollectionOfPublications> result =
+                repo.getUserCollections(userId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void makeCollectionPublicShouldReturnFalse() {
+
+        // Arrange
+        CollectionOfPublicationsId id =
+                mock(CollectionOfPublicationsId.class);
+
+        // Act
+        boolean result = repo.makeCollectionPublic(id);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void findPublicCollectionsByGenreIdShouldReturnEmptyList() {
+
+        // Arrange
+        GenreID genreId = mock(GenreID.class);
+
+        // Act
+        List<CollectionOfPublications> result =
+                repo.findPublicCollectionsByGenreId(genreId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 }

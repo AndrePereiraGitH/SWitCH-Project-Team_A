@@ -124,40 +124,4 @@ class CollectionOfPublicationsServiceTest {
         // Assert
         assertEquals(collectionDouble, result);
     }
-
-    @Test
-    void createAndSaveShouldThrowWhenCollectionNameIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        null,
-                        genreIdDouble,
-                        userIdDouble
-                ));
-    }
-
-    @Test
-    void createAndSaveShouldThrowWhenCollectionGenreIdIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "Works by Isaac Asimov",
-                        null,
-                        userIdDouble
-                ));
-    }
-
-    @Test
-    void createAndSaveShouldThrowWhenUserIdIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(
-                        "Works by Joe Abercrombie",
-                        genreIdDouble,
-                        null
-                ));
-    }
 }

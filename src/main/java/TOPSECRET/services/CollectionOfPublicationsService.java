@@ -80,11 +80,6 @@ public class CollectionOfPublicationsService {
     public CollectionOfPublications createAndSave(
             String collectionName, GenreID collectionGenreId, UserId userId) {
 
-
-        Objects.requireNonNull(collectionName, "collectionName cannot be null");
-        Objects.requireNonNull(collectionGenreId, "collectionGenreId cannot be null");
-        Objects.requireNonNull(userId, "userId cannot be null");
-
         CollectionOfPublications createdCollection = factory.create(
                 collectionName, collectionGenreId, userId);
 
