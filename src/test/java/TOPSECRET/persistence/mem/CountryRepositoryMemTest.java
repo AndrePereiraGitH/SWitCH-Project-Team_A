@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link CountryRepositoryMem}, an in-memory implementation
@@ -46,7 +48,10 @@ class CountryRepositoryMemTest {
     void save_validCountry() {
         // Arrange
         CountryRepositoryMem repository = new CountryRepositoryMem();
-        Country country = factory.create("Portugal");
+
+        Country country = mock(Country.class);
+        when(country.getCountryName()).thenReturn("Portugal");
+        when(country.id()).thenReturn(new CountryId("PORTUGAL"));
 
         // Act
         Country result = repository.save(country);
