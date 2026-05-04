@@ -1,0 +1,64 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on auction of a given publication (Main)
+
+actor Buyer
+participant ":UI" as UI
+participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
+participant ":IBibliographicalDataRepository" as bdRepo
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IListingRepository" as listingRepo
+participant ":US024AucListingMapper" as mapper
+
+' --- Start ---
+Buyer -> UI : I want to get the list of items\n on auction of a given publication
+activate UI
+
+UI -> Ctrl : getAllPublicationTitles()
+activate Ctrl
+
+ref over Ctrl, bdRepo
+  Get All Publication Titles
+  [[2.GetAllPublicationTitles.puml]]
+end ref
+
+Ctrl --> UI : List<String>
+deactivate Ctrl
+
+UI --> Buyer : Here is the list of publication titles.\n Pick one.
+deactivate UI
+
+Buyer -> UI : title
+activate UI
+
+UI -> Ctrl : getAuctionListingsByTitle(title)
+activate Ctrl
+
+ref over Ctrl, bdRepo
+  Find BibliographicalDataId By Title
+  [[3a.FindBibliographicalDataIdByTitle.puml]]
+end ref
+
+ref over Ctrl, pubSampleRepo
+  Find PublicationSample Ids
+  [[3b.FindPublicationSampleIds.puml]]
+end ref
+
+ref over Ctrl, listingRepo
+  Find Auction Listings
+  [[3c.FindAuctionListings.puml]]
+end ref
+
+ref over Ctrl, mapper
+  Build and return DTOs
+  [[4.BuildAuctionDTOs.puml]]
+end ref
+
+Ctrl --> UI : listOfAuctionListingsDTO
+deactivate Ctrl
+
+UI --> Buyer : Here is the list of auction listings\n for the selected publication.
+deactivate UI
+
+@enduml

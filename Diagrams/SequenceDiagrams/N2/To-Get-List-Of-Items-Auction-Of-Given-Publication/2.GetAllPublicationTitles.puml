@@ -1,0 +1,37 @@
+@startuml
+hide footbox
+autonumber 2
+title Get All Publication Titles
+
+participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
+participant ":IBibliographicalDataRepository" as bdRepo
+participant ":IBibliographicalDataRepositoryJpa" as bdJpa
+participant "listOfTitles:List<String>" as listOfTitles
+participant "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> bdRepo: getAllTitles()
+activate bdRepo
+bdRepo -> bdJpa: findAll()
+activate bdJpa
+bdJpa -> db: SELECT * FROM bibliographical_data
+activate db
+db --> bdJpa: data
+deactivate db
+bdJpa --> bdRepo: List<BibliographicalDataDM>
+deactivate bdJpa
+
+bdRepo -->> listOfTitles **: <<create>>
+loop for each bdDM in List<BibliographicalDataDM>
+    bdRepo -> bdRepo: listOfTitles.add(bdDM.getTitle())
+end
+
+bdRepo --> Ctrl: listOfTitles
+deactivate bdRepo
+
+@enduml

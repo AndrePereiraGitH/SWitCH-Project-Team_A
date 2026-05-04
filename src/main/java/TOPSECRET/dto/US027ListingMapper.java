@@ -9,7 +9,6 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceNotFoundException;
@@ -138,7 +137,7 @@ public class US027ListingMapper {
         List<PublicationSample> pubSamples = new ArrayList<>();
 
         for (PublicationSampleId pubSampleId : pubSampleIds) {
-            Optional<PublicationSample> pubSample = pubSampleRepo.findPublicationSampleById(pubSampleId);
+            Optional<PublicationSample> pubSample = pubSampleRepo.findById(pubSampleId);
             if (pubSample.isPresent()) {
                 pubSamples.add(pubSample.get());
             }
@@ -161,7 +160,7 @@ public class US027ListingMapper {
 
         BibliographicalDataID bibDataId = pubSample.getBibliographicalDataID();
 
-        BibliographicalData bibData = bibDataRepo.findBibliographicalDataById(bibDataId)
+        BibliographicalData bibData = bibDataRepo.findById(bibDataId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("BibliographicalData with id " + bibDataId + " was not found" ));
 
@@ -220,7 +219,7 @@ public class US027ListingMapper {
         for (BibliographicalData bdData : bdDatas) {
             List<AuthorId> authorIds = bdData.getAuthors();
             for (AuthorId authorId : authorIds) {
-                Author author = authorRepo.findAuthorById(authorId).orElseThrow(() ->
+                Author author = authorRepo.findById(authorId).orElseThrow(() ->
                         new InstanceNotFoundException("Author with id " + authorId + " not found"));
                 String authorName = author.getName();
                 authorsName.add(authorName);

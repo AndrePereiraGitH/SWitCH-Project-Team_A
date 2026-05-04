@@ -1,50 +1,126 @@
 package TOPSECRET.domain.Library;
 
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 
 class LibraryFactoryTest {
 
-    @Test
-    void returnsNewlyConstructedLibraryInstance() {
+    // -------- create(String, UserId) Tests --------
 
-        String libraryName = "lib1";
+    @Test
+    void create_shouldCreateLibraryWithGeneratedId() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
         UserId userIdDouble = mock(UserId.class);
 
-        try (MockedConstruction<Library> mocked =
-                     mockConstruction(Library.class, (mock, context) -> {
-                     })) {
+        // Act
+        Library result = factory.create("lib1", userIdDouble);
 
-            LibraryFactory libraryFactory = new LibraryFactory();
-
-            // Act
-            Library library = libraryFactory.create(libraryName, userIdDouble);
-
-            // Assert
-            assertNotNull(library);
-            assertEquals(1, mocked.constructed().size());
-        }
+        // Assert
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertEquals("lib1", result.getLibraryName());
+        assertSame(userIdDouble, result.getUserId());
     }
 
     @Test
-    void createsLibraryUsingGivenParameters() {
-
-        String libraryName = "lib1";
+    void create_shouldThrowException_whenLibraryNameIsNull() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
         UserId userIdDouble = mock(UserId.class);
 
-        LibraryFactory libraryFactory = new LibraryFactory();
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(null, userIdDouble));
+    }
+
+    @Test
+    void create_shouldThrowException_whenLibraryNameIsBlank() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+        UserId userIdDouble = mock(UserId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create("   ", userIdDouble));
+    }
+
+    @Test
+    void create_shouldThrowException_whenUserIdIsNull() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create("lib1", null));
+    }
+
+    // -------- create(LibraryId, String, UserId) Tests --------
+
+    @Test
+    void createWithId_shouldCreateLibraryWithGivenId() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        UserId userIdDouble = mock(UserId.class);
 
         // Act
-        Library library = libraryFactory.create(libraryName, userIdDouble);
+        Library result = factory.create(libraryIdDouble, "lib1", userIdDouble);
 
         // Assert
-        assertEquals(libraryName, library.getLibraryName());
-        assertNotNull(library.id());
+        assertNotNull(result);
+        assertSame(libraryIdDouble, result.id());
+        assertEquals("lib1", result.getLibraryName());
+        assertSame(userIdDouble, result.getUserId());
+    }
+
+    @Test
+    void createWithId_shouldThrowException_whenLibraryIdIsNull() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+        UserId userIdDouble = mock(UserId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(null, "lib1", userIdDouble));
+    }
+
+    @Test
+    void createWithId_shouldThrowException_whenLibraryNameIsNull() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(libraryIdDouble, null, userIdDouble));
+    }
+
+    @Test
+    void createWithId_shouldThrowException_whenLibraryNameIsBlank() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(libraryIdDouble, "   ", userIdDouble));
+    }
+
+    @Test
+    void createWithId_shouldThrowException_whenUserIdIsNull() {
+        // Arrange
+        LibraryFactory factory = new LibraryFactory();
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(libraryIdDouble, "lib1", null));
     }
 }

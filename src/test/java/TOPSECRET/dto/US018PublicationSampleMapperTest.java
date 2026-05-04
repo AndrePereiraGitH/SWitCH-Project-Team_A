@@ -30,7 +30,7 @@ class US018PublicationSampleMapperTest {
 
         when(publication.id()).thenReturn(id);
         when(publication.getBibliographicalDataID()).thenReturn(bId);
-        when(repo.findBibliographicalDataById(bId)).thenReturn(Optional.of(data));
+        when(repo.findById(bId)).thenReturn(Optional.of(data));
         when(data.getTitle()).thenReturn("Title");
 
         // ACT
@@ -56,7 +56,7 @@ class US018PublicationSampleMapperTest {
 
         when(publication.id()).thenReturn(id);
         when(publication.getBibliographicalDataID()).thenReturn(bId);
-        when(repo.findBibliographicalDataById(bId)).thenReturn(Optional.of(data));
+        when(repo.findById(bId)).thenReturn(Optional.of(data));
         when(data.getTitle()).thenReturn("Title");
 
         // ACT
@@ -139,8 +139,8 @@ class US018PublicationSampleMapperTest {
         when(p1.getBibliographicalDataID()).thenReturn(b1);
         when(p2.getBibliographicalDataID()).thenReturn(b2);
 
-        when(repo.findBibliographicalDataById(b1)).thenReturn(Optional.of(d1));
-        when(repo.findBibliographicalDataById(b2)).thenReturn(Optional.of(d2));
+        when(repo.findById(b1)).thenReturn(Optional.of(d1));
+        when(repo.findById(b2)).thenReturn(Optional.of(d2));
 
         when(d1.getTitle()).thenReturn("T1");
         when(d2.getTitle()).thenReturn("T2");
@@ -166,7 +166,7 @@ class US018PublicationSampleMapperTest {
         BibliographicalDataID bId = mock(BibliographicalDataID.class);
 
         when(publication.getBibliographicalDataID()).thenReturn(bId);
-        when(repo.findBibliographicalDataById(bId)).thenReturn(Optional.empty());
+        when(repo.findById(bId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,

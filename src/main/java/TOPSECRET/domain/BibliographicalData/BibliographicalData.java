@@ -3,7 +3,7 @@ package TOPSECRET.domain.BibliographicalData;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +34,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
     private final List<AuthorId> _authors;
     private final Locale _originalLanguage;
     private final LocalDate _publicationDate;
-    private final List<GenreID> _genres;
+    private final List<GenreId> _genres;
     private final String _chunksOfText;
 
     // Constructor =====================================================================================================
@@ -54,7 +54,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      */
 
     protected BibliographicalData(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                List<GenreID> genres, String chunksOfText) {
+                                  List<GenreId> genres, String chunksOfText) {
 
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be null or blank");
@@ -76,6 +76,43 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
         this._genres = List.copyOf(genres);
         this._chunksOfText = chunksOfText;
     }
+
+    // Reconstructor ==================================================================================================
+
+    protected BibliographicalData(
+            BibliographicalDataID bibliographicalDataID,
+            String title,
+            List<AuthorId> authors,
+            Locale originalLanguage,
+            LocalDate publicationDate,
+            List<GenreId> genres,
+            String chunksOfText
+    ) {
+        if (bibliographicalDataID == null) {
+            throw new IllegalArgumentException("BibliographicalDataID cannot be null");
+        }
+
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title cannot be null or blank");
+        }
+
+        if (authors == null || authors.isEmpty()) {
+            throw new IllegalArgumentException("Authors list cannot be empty");
+        }
+
+        if (genres == null || genres.isEmpty()) {
+            throw new IllegalArgumentException("Genres list cannot be empty");
+        }
+
+        this._bibliographicalDataID = bibliographicalDataID;
+        this._title = title;
+        this._authors = List.copyOf(authors);
+        this._originalLanguage = originalLanguage;
+        this._publicationDate = publicationDate;
+        this._genres = List.copyOf(genres);
+        this._chunksOfText = chunksOfText;
+    }
+
 
     // Getters =========================================================================================================
 
@@ -133,7 +170,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      * @return a non-null, non-empty list of genres
      */
 
-    public List<GenreID> getGenres() {
+    public List<GenreId> getGenres() {
         return _genres;
     }
 
@@ -156,7 +193,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      * @return {@code true} if the genre is present, {@code false} otherwise
      */
 
-    public boolean hasGenre(GenreID genreId) {
+    public boolean hasGenre(GenreId genreId) {
         if (genreId == null) return false;
         return _genres.contains(genreId);
     }
@@ -210,7 +247,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
             List<AuthorId> authors,
             Locale originalLanguage,
             LocalDate publicationDate,
-            List<GenreID> genres,
+            List<GenreId> genres,
             String chunksOfText
     ) {}
 }

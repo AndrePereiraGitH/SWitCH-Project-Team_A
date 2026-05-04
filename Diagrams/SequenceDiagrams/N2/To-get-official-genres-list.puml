@@ -1,0 +1,53 @@
+@startuml
+hide footbox
+autonumber
+
+title Get Official Genres List
+
+actor Administrator as User
+participant ":UI" as UI
+participant ":ToGetListOfGenresController" as Controller
+participant ":GenreRepository" as GenreRepo
+participant "allGenreList: List<Genre>" as allGenreList
+participant ":US013GenreMapper" as GenreMapper
+participant "genreDTO: List<US013GenreDTO>" as GenreDTO
+participant ":Genre" as Genre
+participant "genreDTO: US013GenreDTO" as GDTO
+
+User -> UI : I want to see all official genres in the system.
+    activate UI
+
+UI -> Controller : getAllGenres()
+activate Controller
+
+Controller -> GenreRepo : getAllGenres()
+activate GenreRepo
+GenreRepo -->> allGenreList ** : <<create>>
+GenreRepo --> Controller : allGenreList
+deactivate GenreRepo
+
+Controller -> GenreMapper : toDTO(allGenreList)
+activate GenreMapper
+
+GenreMapper -->> GenreDTO ** : <<create>>
+
+loop for each genre in the list
+    GenreMapper -> Genre : getGenreType()
+    activate Genre
+    Genre --> GenreMapper : genreType
+    deactivate Genre
+
+    GenreMapper -->> GDTO ** : <<create>>
+
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+end
+
+GenreMapper --> Controller : List<GenreDTO>
+deactivate GenreMapper
+
+Controller --> UI : List<GenreDTO>
+deactivate Controller
+
+UI --> User : Here's the list of available genres!
+    deactivate UI
+@enduml
