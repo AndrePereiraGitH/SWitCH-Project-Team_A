@@ -96,15 +96,15 @@ class BibliographicalDataTest {
     @Test
     void constructor_initializedMoreThanOneAuthorAndGenre() {
         // Act
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Assert
-        assertEquals(title, bd1Double.getTitle());
-        assertEquals(3, bd1Double.getAuthors().size());
-        assertEquals(language, bd1Double.getOriginalLanguage());
-        assertEquals(pubDate, bd1Double.getPublicationDate());
-        assertEquals(genres, bd1Double.getGenres());
-        assertEquals(chunksOfText, bd1Double.getChunksOfText());
+        assertEquals(title, bd.getTitle());
+        assertEquals(3, bd.getAuthors().size());
+        assertEquals(language, bd.getOriginalLanguage());
+        assertEquals(pubDate, bd.getPublicationDate());
+        assertEquals(genres, bd.getGenres());
+        assertEquals(chunksOfText, bd.getChunksOfText());
     }
 
     @Test
@@ -167,6 +167,42 @@ class BibliographicalDataTest {
         );
     }
 
+    // Reconstructor tests
+
+    @Test
+    void constructor_ShouldReconstructObjectWithProvidedID(){
+        // Arrange
+        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
+
+        // Act
+        BibliographicalData bd = bdFactory.create(bdID, title, authors, language, pubDate, genres, chunksOfText);
+
+        // Assert
+        assertEquals(bdID, bd.id());
+        assertEquals(title, bd.getTitle());
+        assertEquals(3, bd.getAuthors().size());
+        assertEquals(language, bd.getOriginalLanguage());
+        assertEquals(pubDate, bd.getPublicationDate());
+        assertEquals(genres, bd.getGenres());
+        assertEquals(chunksOfText, bd.getChunksOfText());
+    }
+
+    @Test
+    void constructor_ShouldThrowWhenIDisNull(){
+        // Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                bdFactory.create(
+                        null,
+                        title,
+                        authors,
+                        language,
+                        pubDate,
+                        List.of(),
+                        chunksOfText
+                )
+        );
+    }
+
     // ============================================================
     // ===================== Tests for hasGenre ===================
     // ============================================================
@@ -174,10 +210,10 @@ class BibliographicalDataTest {
     @Test
     void hasGenre_shouldReturnFalseWhenGenreIsNull() {
         // Arrange
-        BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bdDouble.hasGenre(null);
+        boolean result = bd.hasGenre(null);
 
         // Assert
         assertFalse(result);
@@ -186,11 +222,11 @@ class BibliographicalDataTest {
     @Test
     void hasGenre_shouldReturnTrueWhenGenreExists() {
         // Arrange
-        BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
         GenreId existingGenreId = genres.get(0);
 
         // Act
-        boolean result = bdDouble.hasGenre(existingGenreId);
+        boolean result = bd.hasGenre(existingGenreId);
 
         // Assert
         assertTrue(result);
@@ -199,11 +235,11 @@ class BibliographicalDataTest {
     @Test
     void hasGenre_shouldReturnFalseWhenGenreDoesNotExist() {
         // Arrange
-        BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
         GenreId nonExistingGenreIdDouble = mock(GenreId.class);
 
         // Act
-        boolean result = bdDouble.hasGenre(nonExistingGenreIdDouble);
+        boolean result = bd.hasGenre(nonExistingGenreIdDouble);
 
         // Assert
         assertFalse(result);
@@ -216,10 +252,10 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldBeReflexive() {
         // Arrange
-        BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bdDouble.equals(bdDouble);
+        boolean result = bd.equals(bd);
 
         // Assert
         assertTrue(result);
@@ -228,11 +264,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnTrueForObjectsWithSameContent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertTrue(result);
@@ -241,13 +277,13 @@ class BibliographicalDataTest {
     @Test
     void hashCode_shouldBeEqualWhenObjectsAreEqual() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean equalsResult = bd1Double.equals(bd2Double);
-        int hash1 = bd1Double.hashCode();
-        int hash2 = bd2Double.hashCode();
+        boolean equalsResult = bd1.equals(bd2);
+        int hash1 = bd1.hashCode();
+        int hash2 = bd2.hashCode();
 
         // Assert
         assertTrue(equalsResult);
@@ -257,10 +293,10 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenComparedWithNull() {
         // Arrange
-        BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bdDouble.equals(null);
+        boolean result = bd.equals(null);
 
         // Assert
         assertFalse(result);
@@ -269,10 +305,10 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenComparedWithDifferentType() {
         // Arrange
-        BibliographicalData bdDouble = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bdDouble.equals("string");
+        boolean result = bd.equals("string");
 
         // Assert
         assertFalse(result);
@@ -281,11 +317,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenTitleIsDifferent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create("Different title", authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create("Different title", authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertFalse(result);
@@ -294,12 +330,12 @@ class BibliographicalDataTest {
     @Test
     void hashCode_shouldBeDifferentWhenObjectsAreNotEqual() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create("Different title", authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create("Different title", authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        int hash1 = bd1Double.hashCode();
-        int hash2 = bd2Double.hashCode();
+        int hash1 = bd1.hashCode();
+        int hash2 = bd2.hashCode();
 
         // Assert
         assertNotEquals(hash1, hash2);
@@ -308,11 +344,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenAuthorsAreDifferent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, differentAuthors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, differentAuthors, language, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertFalse(result);
@@ -321,11 +357,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenLanguageIsDifferent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, differentAuthors, Locale.FRENCH, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, differentAuthors, Locale.FRENCH, pubDate, genres, chunksOfText);
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertFalse(result);
@@ -334,11 +370,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenPublicationDateIsDifferent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, differentAuthors, language, LocalDate.of(2026, 2, 27), genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, differentAuthors, language, LocalDate.of(2026, 2, 27), genres, chunksOfText);
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertFalse(result);
@@ -347,11 +383,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenGenresAreDifferent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, authors, language, pubDate, differentGenres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, authors, language, pubDate, differentGenres, chunksOfText);
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertFalse(result);
@@ -360,11 +396,11 @@ class BibliographicalDataTest {
     @Test
     void equals_shouldReturnFalseWhenChunksOfTextAreDifferent() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, authors, language, pubDate, differentGenres, "Different text");
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, authors, language, pubDate, differentGenres, "Different text");
 
         // Act
-        boolean result = bd1Double.equals(bd2Double);
+        boolean result = bd1.equals(bd2);
 
         // Assert
         assertFalse(result);
@@ -410,10 +446,10 @@ class BibliographicalDataTest {
     @Test
     void getBibliographicalDataDetails_ShouldNotBeNull() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail = bd.getBibliographicalDataDetails();
 
         // Assert
         assertNotNull(detail);
@@ -432,10 +468,10 @@ class BibliographicalDataTest {
     @Test
     void getBibliographicalDataDetails_ShouldReturnCorrectFields() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail = bd.getBibliographicalDataDetails();
 
         // Assert
         assertEquals(title, detail.title());
@@ -447,29 +483,12 @@ class BibliographicalDataTest {
     }
 
     @Test
-    void getBibliographicalDataDetails_ShouldReturnOriginalLanguageNull() {
-        // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, null, pubDate, genres, chunksOfText);
-
-        // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
-
-        // Assert
-        assertEquals(title, detail.title());
-        assertEquals(authors, detail.authors());
-        assertNull(detail.originalLanguage());
-        assertEquals(pubDate, detail.publicationDate());
-        assertEquals(genres, detail.genres());
-        assertEquals(chunksOfText, detail.chunksOfText());
-    }
-
-    @Test
     void getBibliographicalDataDetails_ShouldReturnPublicationDateNull() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, null, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, null, genres, chunksOfText);
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail = bd.getBibliographicalDataDetails();
 
         // Assert
         assertEquals(title, detail.title());
@@ -483,10 +502,10 @@ class BibliographicalDataTest {
     @Test
     void getBibliographicalDataDetails_ShouldReturnChunksOfTextNull() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, null);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, null);
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail = bd.getBibliographicalDataDetails();
 
         // Assert
         assertEquals(title, detail.title());
@@ -545,12 +564,12 @@ class BibliographicalDataTest {
     @Test
     void bibliographicalDataDetails_ShouldReturnEqualsForTheSameValues() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail1 = bd1Double.getBibliographicalDataDetails();
-        BibliographicalData.BibliographicalDataDetails detail2 = bd2Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail1 = bd1.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail2 = bd2.getBibliographicalDataDetails();
 
         // Assert
         assertEquals(detail1, detail2);
@@ -559,12 +578,12 @@ class BibliographicalDataTest {
     @Test
     void bibliographicalDataDetails_ShouldReturnNotEqualsForDifferentValues() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
-        BibliographicalData bd2Double = bdFactory.create("Different title", authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd1D = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd2 = bdFactory.create("Different title", authors, language, pubDate, genres, chunksOfText);
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail1 = bd1Double.getBibliographicalDataDetails();
-        BibliographicalData.BibliographicalDataDetails detail2 = bd2Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail1 = bd1D.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail2 = bd2.getBibliographicalDataDetails();
 
         // Assert
         assertNotEquals(detail1, detail2);
@@ -573,7 +592,7 @@ class BibliographicalDataTest {
     @Test
     void bibliographicalDataDetails_ShouldReturnImmutableListOfAuthors() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // New author
         AuthorId author4IdDouble = mock(AuthorId.class);
@@ -582,7 +601,7 @@ class BibliographicalDataTest {
         when(author4Double.getName()).thenReturn("John Green");
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail = bd.getBibliographicalDataDetails();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> detail.authors().add(author4IdDouble));
@@ -591,7 +610,7 @@ class BibliographicalDataTest {
     @Test
     void bibliographicalDataDetails_ShouldReturnImmutableListOfGenres() {
         // Arrange
-        BibliographicalData bd1Double = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
+        BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
         // New genre
         GenreId genre3IdDouble = mock(GenreId.class);
@@ -600,7 +619,7 @@ class BibliographicalDataTest {
         when(genre3Double.getGenreType()).thenReturn("Young adult");
 
         // Act
-        BibliographicalData.BibliographicalDataDetails detail = bd1Double.getBibliographicalDataDetails();
+        BibliographicalData.BibliographicalDataDetails detail = bd.getBibliographicalDataDetails();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> detail.genres().add(genre3IdDouble));

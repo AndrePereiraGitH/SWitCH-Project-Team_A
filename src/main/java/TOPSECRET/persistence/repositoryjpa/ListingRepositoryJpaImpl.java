@@ -126,7 +126,7 @@ public class ListingRepositoryJpaImpl implements IListingRepository {
     @Override
     public List<Listing> findAllByAuctionAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
         Objects.requireNonNull(publicationSampleIds);
-        return listingRepositoryJpa.findAllBy_itemsId(publicationSampleIds)
+        return listingRepositoryJpa.findAllByItemsId(publicationSampleIds)
                 .stream()
                 .map(assembler::toDomain)
                 .filter(Listing::isListingLinkedToAnAuction)

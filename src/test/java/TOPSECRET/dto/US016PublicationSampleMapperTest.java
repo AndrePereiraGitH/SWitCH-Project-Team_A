@@ -170,7 +170,7 @@ class US016PublicationSampleMapperTest {
         when(ownerId.getUsername()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
-        when(bdRepository.findBibliographicalDataById(bibliographicalDataId))
+        when(bdRepository.findById(bibliographicalDataId))
                 .thenReturn(Optional.of(bd));
 
         when(bd.getTitle()).thenReturn("The Hobbit");
@@ -205,7 +205,7 @@ class US016PublicationSampleMapperTest {
 
         // arrange
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
-        when(bdRepository.findBibliographicalDataById(bibliographicalDataId))
+        when(bdRepository.findById(bibliographicalDataId))
                 .thenReturn(Optional.empty());
 
         // act

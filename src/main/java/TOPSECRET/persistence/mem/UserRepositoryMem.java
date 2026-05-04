@@ -1,11 +1,8 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.Profile;
+
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.ArrayList;
@@ -20,49 +17,33 @@ import java.util.Optional;
 public class UserRepositoryMem implements IUserRepository {
 
     private final List<User> _userList;
-    private final UserFactory _userFactory;
 
     //================================================================================
     // Constructor
 
     /**
      * Constructs a new {@code UserRepositoryMem} with the given user factory.
-     *
-     * @param userFactory the factory used to create new {@link User} instances; must not be null
      */
-    public UserRepositoryMem(UserFactory userFactory) {
-        this._userFactory = userFactory;
+    public UserRepositoryMem() {
         this._userList = new ArrayList<>();
     }
 
     //================================================================================
 
-    /** {@inheritDoc} */
-    @Override
-    public User createAndAdd(String username, Contact contact, Profile profile, UserRole userRole) {
-
-        if (exists(username)) {
-            throw new IllegalArgumentException("Username already exists");
-        }
-
-        User user = _userFactory.create(username, contact, profile, userRole);
-        return save(user);
-    }
-
     /**
-     * Persists the given {@link User} to the in-memory list.
-     *
-     * @param user the user to save; must not be null
-     * @return the saved {@link User} instance
+     * {@inheritDoc}
      */
-    protected User save(User user) {
+    @Override
+    public User save(User user) {
         _userList.add(user);
         return user;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean exists(String username) {
+    public boolean existsByUsername(String username) {
         for (User user : _userList) {
             if (user.getUserName().equals(username)) {
                 return true;
@@ -75,14 +56,14 @@ public class UserRepositoryMem implements IUserRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findUserByID(UserId userID){
+    public Optional<User> findByID(UserId userID) {
 
-        if(userID == null){
+        if (userID == null) {
             throw new IllegalArgumentException("Username must not be null or empty");
         }
 
-        for(User user: _userList){
-            if(user.getId().equals(userID)){
+        for (User user : _userList) {
+            if (user.id().equals(userID)) {
                 return Optional.of(user);
             }
         }
@@ -90,9 +71,11 @@ public class UserRepositoryMem implements IUserRepository {
         return Optional.empty();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Optional<UserId> findUserIdByUsername(String username) {
+    public Optional<UserId> findIdByUsername(String username) {
         if (username == null) {
             throw new NullPointerException("Username must not be null");
         }
@@ -115,8 +98,6 @@ public class UserRepositoryMem implements IUserRepository {
     public int getUserCount() {
         return _userList.size();
     }
-
-
 
 
 }

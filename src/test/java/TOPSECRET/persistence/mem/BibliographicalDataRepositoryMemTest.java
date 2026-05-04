@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
@@ -10,10 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +24,9 @@ class BibliographicalDataRepositoryMemTest {
     private BibliographicalData bd1Double;
     private BibliographicalData bd2Double;
     private BibliographicalData bd3Double;
+    private BibliographicalDataID bd1ID;
+    private BibliographicalDataID bd2ID;
+    private BibliographicalDataID bd3ID;
 
     @BeforeEach
     void setup() {
@@ -35,398 +34,224 @@ class BibliographicalDataRepositoryMemTest {
         bd1Double = mock(BibliographicalData.class);
         bd2Double = mock(BibliographicalData.class);
         bd3Double = mock(BibliographicalData.class);
+
+        bd1ID = mock(BibliographicalDataID.class);
+        bd2ID = mock(BibliographicalDataID.class);
+        bd3ID = mock(BibliographicalDataID.class);
+
+        when(bd1Double.id()).thenReturn(bd1ID);
+        when(bd2Double.id()).thenReturn(bd2ID);
+        when(bd3Double.id()).thenReturn(bd3ID);
     }
 
     // =====================================================
     // =================== Tests ===========================
     // =====================================================
 
-    // Constructor -----------------------------------------------------------------------------------------------------
+    // Method save -----------------------------------------------------------------------------------------------------
     @Test
-    void constructor_CopiesListDefensively() {
+    void shouldSaveBibliographicalDataToRepositoryWhenItDoesNotExist() throws InstanceAlreadyExistsException {
         // Arrange
-        List<BibliographicalData> original = new ArrayList<>();
-        original.add(bd1Double);
-        original.add(bd2Double);
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
-        original.add(bd3Double);                                                           // Modifies the original list
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        repo.save(bd3Double);
 
         // Assert
-        assertEquals(2, repo.getAllPublicationsBD().size());        // The repository should have the same size
+        assertEquals(3, repo.getAllTitles().size());
+        assertTrue(repo.findAll().contains(bd1Double));
+        assertTrue(repo.findAll().contains(bd2Double));
+        assertTrue(repo.findAll().contains(bd3Double));
+        assertEquals(bd1ID, bd1Double.id());
+        assertEquals(bd2ID, bd2Double.id());
+        assertEquals(bd3ID, bd3Double.id());
     }
 
     @Test
-    void constructor_ThrowsExceptionWhenListIsNull() {
+    void shouldThrowExceptionWhenAddingDuplicateBibliographicalData() throws InstanceAlreadyExistsException {
         // Arrange
-        List<BibliographicalData> nullList = null;
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-
-        // Act + Assert
-        assertThrows(NullPointerException.class, () -> new BibliographicalDataRepositoryMem(factory, nullList));
-
-    }
-
-    @Test
-    void constructor_AllowsEmptyList() {
-        // Arrange
-        List<BibliographicalData> empty = new ArrayList<>();
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
+        BibliographicalData bd4Double = mock(BibliographicalData.class);
+        when(bd4Double.id()).thenReturn(bd1ID);
 
         // Act
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, empty);
+        repo.save(bd1Double);
 
         // Assert
-        assertTrue(repo.getAllPublicationsBD().isEmpty());
+        assertThrows(InstanceAlreadyExistsException.class, () -> repo.save(bd4Double));
+        assertThrows(InstanceAlreadyExistsException.class, () -> repo.save(bd1Double));
     }
 
-    // Method findBibliographicalDataById ------------------------------------------------------------------------------
+    @Test
+    void saveShouldReturnSameInstance() throws InstanceAlreadyExistsException {
+        // Arrange
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
+
+        // Act
+        var result = repo.save(bd1Double);
+
+        // Assert
+        assertSame(bd1Double, result);
+    }
+
+    // Method findBibliographicalDataById ----------------------------------------------------------------------------
     @Test
     void findBibliographicalDataById_shouldReturnAValidBibliographicalData_whenIdIsValid() throws InstanceAlreadyExistsException {
-
         // Arrange
-        BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
-        String title = "Senhor do Anéis";
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-        genres.add(genreDouble);
-        String chunksOfText = "this describes the book or magazine";
-
-        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
-        when(bibliographicalDataDouble.id()).thenReturn(bdID);
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText))
-                .thenReturn(bibliographicalDataDouble);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        Optional<BibliographicalData> result = repo.findBibliographicalDataById(bdID);
+        repo.save(bd1Double);
+        Optional<BibliographicalData> result = repo.findById(bd1ID);
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(bibliographicalDataDouble, result.get());
+        assertEquals(bd1Double, result.get());
     }
 
     @Test
     void findBibliographicalDataById_shouldReturnAValidBibliographicalData_whenIdIsValid_multipleBDs() throws InstanceAlreadyExistsException {
-
         // Arrange
-        BibliographicalDataID bdID_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdID_2 = mock(BibliographicalDataID.class);
-
-        BibliographicalData bibliographicalDataDouble_1 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble_1.id()).thenReturn(bdID_1);
-
-        BibliographicalData bibliographicalDataDouble_2 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble_2.id()).thenReturn(bdID_2);
-
-        String title = "Senhor do Anéis";
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-        genres.add(genreDouble);
-        String chunksOfText = "this describes the book or magazine";
-
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-
-        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText))
-                .thenReturn(bibliographicalDataDouble_1);
-
-        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2012, 10, 10), genres, chunksOfText))
-                .thenReturn(bibliographicalDataDouble_2);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        Optional<BibliographicalData> result = repo.findBibliographicalDataById(bdID_1);
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        repo.save(bd3Double);
+        Optional<BibliographicalData> result = repo.findById(bd2ID);
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(bibliographicalDataDouble_1, result.get());
+        assertEquals(bd2Double, result.get());
     }
 
     @Test
-    void findBibliographicalDataById_shouldReturnAEmpty_whenIdIsNotFound() throws InstanceAlreadyExistsException {
-
+    void findBibliographicalDataById_shouldReturnAnEmpty_whenIdIsNotFound() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
-        String title = "Senhor do Anéis";
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-        genres.add(genreDouble);
-        String chunksOfText = "this describes the book or magazine";
-
-        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
-        when(bibliographicalDataDouble.id()).thenReturn(bdID);
-
-        BibliographicalDataID notFoundID = mock(BibliographicalDataID.class);
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText))
-                .thenReturn(bibliographicalDataDouble);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        Optional<BibliographicalData> result = repo.findBibliographicalDataById(notFoundID);
+        repo.save(bd2Double);
+        repo.save(bd3Double);
+        Optional<BibliographicalData> result = repo.findById(bd1ID);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
-
     @Test
     void findBibliographicalDataById_shouldThrowAnException_whenIdIsNull() throws InstanceAlreadyExistsException {
-
         // Arrange
-        BibliographicalData bibliographicalDataDouble = mock(BibliographicalData.class);
-        String title = "Senhor do Anéis";
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-        genres.add(genreDouble);
-        String chunksOfText = "this describes the book or magazine";
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText))
-                .thenReturn(bibliographicalDataDouble);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findBibliographicalDataById(null));
+        assertThrows(NullPointerException.class, () -> repo.findById(null));
     }
+
 
     // Method findBibliographicalDataIdByTitle -------------------------------------------------------------------------
-
-
     @Test
     void findBibliographicalDataIdByTitle_shouldReturnBDId_whenTitleMatch() throws InstanceAlreadyExistsException {
-
         //Arrange
-        BibliographicalDataID bdID_1 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble1 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble1.id()).thenReturn(bdID_1);
-        when(bibliographicalDataDouble1.getTitle()).thenReturn("Title1");
+        when(bd1Double.getTitle()).thenReturn("double1");
+        when(bd2Double.getTitle()).thenReturn("double2");
 
-        BibliographicalDataID bdID_2 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble2 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble2.id()).thenReturn(bdID_2);
-        when(bibliographicalDataDouble2.getTitle()).thenReturn("Title2");
-
-
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble1);
-        when(factory.create("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble2);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-        repo.createAndAdd("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("Title1");
-
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("double2");
 
         //Assert
-        assertEquals(bdID_1,result.get());
-
+        assertTrue(result.isPresent());
+        assertEquals(bd2ID, result.get());
     }
-
 
     @Test
     void findBibliographicalDataIdByTitle_shouldReturnEmpty_whenTitleDoesNotMatch() throws InstanceAlreadyExistsException {
-
         //Arrange
-        BibliographicalDataID bdID_1 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble1 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble1.id()).thenReturn(bdID_1);
-        when(bibliographicalDataDouble1.getTitle()).thenReturn("Title1");
+        when(bd1Double.getTitle()).thenReturn("double1");
+        when(bd2Double.getTitle()).thenReturn("double2");
 
-        BibliographicalDataID bdID_2 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble2 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble2.id()).thenReturn(bdID_2);
-        when(bibliographicalDataDouble2.getTitle()).thenReturn("Title2");
-
-
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble1);
-        when(factory.create("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble2);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-        repo.createAndAdd("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("Title3");
-
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("Title3");
 
         //Assert
         assertEquals(Optional.empty(), result);
-
     }
-
 
     @Test
     void findBibliographicalDataIdByTitle_shouldReturnId_whenTitleMatchesCaseInsensitively() throws InstanceAlreadyExistsException {
-
         //Arrange
-        BibliographicalDataID bdID_1 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble1 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble1.id()).thenReturn(bdID_1);
-        when(bibliographicalDataDouble1.getTitle()).thenReturn("Title1");
+        when(bd1Double.getTitle()).thenReturn("double1");
+        when(bd2Double.getTitle()).thenReturn("double2");
 
-        BibliographicalDataID bdID_2 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble2 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble2.id()).thenReturn(bdID_2);
-        when(bibliographicalDataDouble2.getTitle()).thenReturn("Title2");
-
-
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble1);
-        when(factory.create("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble2);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-        repo.createAndAdd("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("TITLE1");
-
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("DOUBLE1");
 
         //Assert
-        assertEquals(bdID_1,result.get());
-
+        assertTrue(result.isPresent());
+        assertEquals(bd1ID,result.get());
     }
 
     @Test
     void findBibliographicalDataIdByTitle_shouldReturnId_whenTitleMatchesWithLeadingOrTrailingWhitespace() throws InstanceAlreadyExistsException {
-
         //Arrange
-        BibliographicalDataID bdID_1 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble1 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble1.id()).thenReturn(bdID_1);
-        when(bibliographicalDataDouble1.getTitle()).thenReturn("Title1");
+        when(bd1Double.getTitle()).thenReturn("double1");
+        when(bd2Double.getTitle()).thenReturn("double2");
 
-        BibliographicalDataID bdID_2 = mock(BibliographicalDataID.class);
-        BibliographicalData bibliographicalDataDouble2 = mock(BibliographicalData.class);
-        when(bibliographicalDataDouble2.id()).thenReturn(bdID_2);
-        when(bibliographicalDataDouble2.getTitle()).thenReturn("Title2");
-
-
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        when(factory.create("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble1);
-        when(factory.create("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine"))
-                .thenReturn(bibliographicalDataDouble2);
-
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-        repo.createAndAdd("Title1", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-        repo.createAndAdd("Title2", authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, "this describes the book or magazine");
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act
-        Optional<BibliographicalDataID> result = repo.findBibliographicalDataIdByTitle("     TITLE1    ");
-
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        Optional<BibliographicalDataID> result = repo.findIdByTitle("     DOUBLE2    ");
 
         //Assert
-        assertEquals(bdID_1,result.get());
-
+        assertTrue(result.isPresent());
+        assertEquals(bd2ID,result.get());
     }
 
     @Test
     void findBibliographicalDataIdByTitle_shouldThrowNullPointerException_whenTitleIsNull() {
-
         //Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act + Assert
-        assertThrows(NullPointerException.class, () -> repo.findBibliographicalDataIdByTitle(null));
-
+        assertThrows(NullPointerException.class, () -> repo.findIdByTitle(null));
     }
 
     @Test
     void findBibliographicalDataIdByTitle_shouldThrowIllegalArgumentException_whenTitleIsBlank() {
-
         //Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findBibliographicalDataIdByTitle(" "));
-
+        assertThrows(IllegalArgumentException.class, () -> repo.findIdByTitle(" "));
     }
 
-    // Method getAllPublicationsBD -------------------------------------------------------------------------------------
 
+    // Method getAllPublicationsBD -------------------------------------------------------------------------------------
     @Test
-    void getAllPublicationsBD_ReturnsAllItems() {
+    void getAllPublicationsBD_ReturnsAllItems() throws InstanceAlreadyExistsException {
         // Arrange
-        List<BibliographicalData> original = List.of(bd1Double, bd2Double);
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalData> result = repo.getAllPublicationsBD();
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        List<BibliographicalData> result = repo.findAll();
 
         // Assert
         assertEquals(2, result.size());
@@ -435,237 +260,76 @@ class BibliographicalDataRepositoryMemTest {
     }
 
     @Test
-    void getAllPublicationsBD_ReturnsUnmodifiableList() {
+    void getAllPublicationsBD_ReturnsUnmodifiableList() throws InstanceAlreadyExistsException {
         // Arrange
-        List<BibliographicalData> original = List.of(bd1Double, bd2Double);
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalData> result = repo.getAllPublicationsBD();
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        List<BibliographicalData> result = repo.findAll();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(bd3Double));
     }
 
     @Test
-    void getAllPublicationsBD_ReturnsNewCopyEachTime() {
+    void getAllPublicationsBD_ReturnsNewCopyEachTime() throws InstanceAlreadyExistsException {
         // Arrange
-        List<BibliographicalData> original = List.of(bd1Double, bd2Double);
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory, original);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalData> first = repo.getAllPublicationsBD();
-        List<BibliographicalData> second = repo.getAllPublicationsBD();
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        List<BibliographicalData> first = repo.findAll();
+        List<BibliographicalData> second = repo.findAll();
 
         // Assert
         assertNotSame(first, second);
     }
 
-    //============================================================
-    // TESTING - CREATE AND ADD WITH FACTORY
-    @Test
-    void shouldReturnValidNewBibliographicalDataWithFactory () throws InstanceAlreadyExistsException {
 
-        // Arrange
-        BibliographicalData BibliographicalDataDouble = mock(BibliographicalData.class);
-        String title = "Senhor do Anéis";
-        AuthorId authorDouble = mock(AuthorId.class);
-        List<AuthorId> authors = new ArrayList<>();
-        authors.add(authorDouble);
-        List<GenreId> genres = new ArrayList<>();
-        GenreId genreDouble = mock(GenreId.class);
-        genres.add(genreDouble);
-        String chunksOfText = "this describes the book or magazine";
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository bdRepository = new BibliographicalDataRepositoryMem(factory);
-
-
-        when(factory.create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText)).thenReturn(BibliographicalDataDouble);
-
-        // Act
-        BibliographicalData result = bdRepository.createAndAdd(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
-
-        // Assert
-        verify(factory).create(title, authors, Locale.ENGLISH, LocalDate.of(2010, 10, 10), genres, chunksOfText);
-        assertEquals(BibliographicalDataDouble, result);
-        assertTrue(bdRepository.getAllPublicationsBD().contains(BibliographicalDataDouble));
-        assertEquals(1, bdRepository.getAllPublicationsBD().size());
-    }
-
-    @Test
-    void createAndAdd_shouldThrowException_whenTitleIsNull() {
-
-        // Arrange
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
-        List<AuthorId> authors = List.of(mock(AuthorId.class));
-        List<GenreId> genres = List.of(mock(GenreId.class));
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAdd(
-                        null,
-                        authors,
-                        Locale.ENGLISH,
-                        LocalDate.of(2010, 10, 10),
-                        genres,
-                        "Some text"
-                )
-        );
-
-        verify(factory, never())
-                .create(any(), any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void createAndAdd_shouldThrowException_whenAuthorsIsNull() {
-
-        // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
-        List<GenreId> genres = List.of(mock(GenreId.class));
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAdd(
-                        "Title",
-                        null,
-                        Locale.ENGLISH,
-                        LocalDate.of(2010, 10, 10),
-                        genres,
-                        "Some text"
-                )
-        );
-
-        verify(factory, never())
-                .create(any(), any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void createAndAdd_shouldThrowException_whenGenresIsNull() {
-
-        // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
-        List<AuthorId> authors = List.of(mock(AuthorId.class));
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAdd(
-                        "Title",
-                        authors,
-                        Locale.ENGLISH,
-                        LocalDate.of(2010, 10, 10),
-                        null,
-                        "Some text"
-                )
-        );
-
-        verify(factory, never())
-                .create(any(), any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void createAndAdd_shouldThrowException_whenChunksOfTextIsNull() {
-
-        // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
-        List<AuthorId> authors = List.of(mock(AuthorId.class));
-        List<GenreId> genres = List.of(mock(GenreId.class));
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.createAndAdd(
-                        "Title",
-                        authors,
-                        Locale.ENGLISH,
-                        LocalDate.of(2010, 10, 10),
-                        genres,
-                        null
-                )
-        );
-
-        verify(factory, never())
-                .create(any(), any(), any(), any(), any(), any());
-    }
-
-    // Method getAllTitles -------------------------------------------------------------------------------------
-
+    // Method getAllTitles ---------------------------------------------------------------------------------------------
     @Test
     void getAllTitles_shouldReturnAllTitlesFromBibliographicalDataInTheSystem() throws InstanceAlreadyExistsException {
+        // Arrange
+        when(bd1Double.getTitle()).thenReturn("double1");
+        when(bd2Double.getTitle()).thenReturn("double2");
+        when(bd3Double.getTitle()).thenReturn("double3");
 
-        BibliographicalData bd1 = mock(BibliographicalData.class);
-        BibliographicalData bd2 = mock(BibliographicalData.class);
-        BibliographicalData bd3 = mock(BibliographicalData.class);
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
-        List<AuthorId> authors = List.of(mock(AuthorId.class));
-        List<GenreId> genres = List.of(mock(GenreId.class));
-
-        when(factory.create("Title 1",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text"))
-                .thenReturn(bd1);
-        when(factory.create("Title 2",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text"))
-                .thenReturn(bd2);
-        when(factory.create("Title 3",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text"))
-                .thenReturn(bd3);
-
-        repo.createAndAdd("Title 1",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text");
-        repo.createAndAdd("Title 2",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text");
-        repo.createAndAdd("Title 3",authors,Locale.ENGLISH,LocalDate.of(2010, 10, 10),genres,"Some text");
-
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         //Act
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        repo.save(bd3Double);
         List<String> result = repo.getAllTitles();
 
-
         //Assert
-        assertEquals(result.size(),3);
+        assertEquals(3, result.size());
     }
 
-    // Method findBibliographicalDataIdByAuthorId -------------------------------------------------------------------------
 
+    // Method findBibliographicalDataIdByAuthorId ----------------------------------------------------------------------
     @Test
-    void findBibliographicalDataIdByAuthorId_shouldReturnBibliographicalDataIds_whenAuthorExistsInMultipleBibliographicalData() {
+    void findBibliographicalDataIdByAuthorId_shouldReturnBibliographicalDataIds_whenAuthorExistsInMultipleBibliographicalData() throws InstanceAlreadyExistsException {
         // Arrange
         AuthorId authorId = mock(AuthorId.class);
-        AuthorId otherAuthorId = mock(AuthorId.class);
 
-        BibliographicalDataID bdId1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId3 = mock(BibliographicalDataID.class);
-
-        when(bd1Double.getAuthors()).thenReturn(List.of(authorId, otherAuthorId));
+        when(bd1Double.getAuthors()).thenReturn(List.of(authorId));
         when(bd2Double.getAuthors()).thenReturn(List.of(authorId));
-        when(bd3Double.getAuthors()).thenReturn(List.of(otherAuthorId));
 
-        when(bd1Double.id()).thenReturn(bdId1);
-        when(bd2Double.id()).thenReturn(bdId2);
-        when(bd3Double.id()).thenReturn(bdId3);
-
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
-                factory,
-                List.of(bd1Double, bd2Double, bd3Double)
-        );
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(bdId1));
-        assertTrue(result.contains(bdId2));
+        assertTrue(result.contains(bd1ID));
+        assertTrue(result.contains(bd2ID));
     }
 
     @Test
@@ -678,21 +342,17 @@ class BibliographicalDataRepositoryMemTest {
         when(bd2Double.getAuthors()).thenReturn(List.of(otherAuthorId));
         when(bd3Double.getAuthors()).thenReturn(List.of(otherAuthorId));
 
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
-                factory,
-                List.of(bd1Double, bd2Double, bd3Double)
-        );
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
+        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findBibliographicalDataIdByAuthorId_shouldReturnSingleBibliographicalDataId_whenAuthorExistsInOneBibliographicalData() {
+    void findBibliographicalDataIdByAuthorId_shouldReturnSingleBibliographicalDataId_whenAuthorExistsInOneBibliographicalData() throws InstanceAlreadyExistsException {
         // Arrange
         AuthorId authorId = mock(AuthorId.class);
         AuthorId otherAuthorId = mock(AuthorId.class);
@@ -705,14 +365,13 @@ class BibliographicalDataRepositoryMemTest {
 
         when(bd2Double.id()).thenReturn(bdId2);
 
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
-                factory,
-                List.of(bd1Double, bd2Double, bd3Double)
-        );
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalDataID> result = repo.findBibliographicalDataIdByAuthorId(authorId);
+        repo.save(bd1Double);
+        repo.save(bd2Double);
+        repo.save(bd3Double);
+        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(1, result.size());
@@ -722,115 +381,86 @@ class BibliographicalDataRepositoryMemTest {
     @Test
     void findBibliographicalDataIdByAuthorId_shouldThrowIllegalArgumentException_whenAuthorIdIsNull() {
         // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(
-                factory,
-                List.of(bd1Double, bd2Double, bd3Double)
-        );
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> repo.findBibliographicalDataIdByAuthorId(null)
-        );
-
-        assertEquals("authorId cannot be null.", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> repo.findIdByAuthorId(null));
     }
 
-    @Test
-    void findByGenreId_shouldThrowException_whenGenreIdIsNull() {
 
+    // Method findAllBibliographicalDataByGenreId ----------------------------------------------------------------------
+    @Test
+    void findAllBibliographicalDataByGenreId_shouldThrowException_whenGenreIdIsNull() {
         // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repo.findByGenreId(null));
+                () -> repo.findAllByGenreId(null));
     }
 
     @Test
-    void findByGenreId_shouldReturnIds_whenGenreMatches() {
-
+    void findAllBibliographicalDataByGenreId_shouldReturnIds_whenGenreMatches() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem(factory);
-
         GenreId genreIdDouble = mock(GenreId.class);
 
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
-        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        when(bd1Double.getGenres()).thenReturn(List.of(genreIdDouble));
+        when(bd1Double.id()).thenReturn(bd1ID);
 
-        when(bdDouble.getGenres()).thenReturn(List.of(genreIdDouble));
-        when(bdDouble.id()).thenReturn(bdIdDouble);
-
-        repo = new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
+        repo.save(bd1Double);
         List<BibliographicalDataID> result =
-                repo.findByGenreId(genreIdDouble);
+                repo.findAllByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
-        assertTrue(result.contains(bdIdDouble));
+        assertTrue(result.contains(bd1ID));
     }
 
     @Test
-    void findByGenreId_shouldReturnEmpty_whenNoMatch() {
-
+    void findAllBibliographicalDataByGenreId_shouldReturnEmpty_whenNoMatch() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-
         GenreId genreDouble1 = mock(GenreId.class);
         GenreId genreDouble2 = mock(GenreId.class);
 
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
-        when(bdDouble.getGenres()).thenReturn(List.of(genreDouble1));
+        when(bd1Double.getGenres()).thenReturn(List.of(genreDouble1));
 
-        IBibliographicalDataRepository repo =
-                new BibliographicalDataRepositoryMem(factory, List.of(bdDouble));
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
+        repo.save(bd1Double);
         List<BibliographicalDataID> result =
-                repo.findByGenreId(genreDouble2);
+                repo.findAllByGenreId(genreDouble2);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByGenreId_shouldReturnMultipleIds_whenMultipleMatch() {
-
+    void findAllBibliographicalDataByGenreId_shouldReturnMultipleIds_whenMultipleMatch() throws InstanceAlreadyExistsException {
         // Arrange
-        BibliographicalDataFactory factory = mock(BibliographicalDataFactory.class);
-
         GenreId genreIdDouble = mock(GenreId.class);
 
-        BibliographicalData bdDouble1 = mock(BibliographicalData.class);
-        BibliographicalData bdDouble2 = mock(BibliographicalData.class);
+        when(bd1Double.getGenres()).thenReturn(List.of(genreIdDouble));
+        when(bd2Double.getGenres()).thenReturn(List.of(genreIdDouble));
 
-        BibliographicalDataID idDouble1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID idDouble2 = mock(BibliographicalDataID.class);
+        when(bd1Double.id()).thenReturn(bd1ID);
+        when(bd2Double.id()).thenReturn(bd2ID);
 
-        when(bdDouble1.getGenres()).thenReturn(List.of(genreIdDouble));
-        when(bdDouble2.getGenres()).thenReturn(List.of(genreIdDouble));
-
-        when(bdDouble1.id()).thenReturn(idDouble1);
-        when(bdDouble2.id()).thenReturn(idDouble2);
-
-        IBibliographicalDataRepository repo =
-                new BibliographicalDataRepositoryMem(factory, List.of(bdDouble1, bdDouble2));
+        IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
+        repo.save(bd1Double);
+        repo.save(bd2Double);
         List<BibliographicalDataID> result =
-                repo.findByGenreId(genreIdDouble);
+                repo.findAllByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(idDouble1));
-        assertTrue(result.contains(idDouble2));
+        assertTrue(result.contains(bd1ID));
+        assertTrue(result.contains(bd2ID));
     }
-
-
 
 }
