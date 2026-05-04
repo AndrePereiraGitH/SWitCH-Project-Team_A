@@ -1,20 +1,24 @@
 @startuml
 hide footbox
-autonumber 18
-title US024 - Build Auction DTOs
+autonumber
+title Build Auction DTOs
 
-participant ":GetTheListOfItems\nOnAuctionOfAGivenPublicationController" as Ctrl
+participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":US024AucListingMapper" as mapper
 participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
 participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
 
+ref over Ctrl
+  [[1.MainDiagram.puml Main Diagram]]
+end ref
+
 Ctrl -> mapper: toDTOs(listOfAuctionListingsOfGivenPublication)
 activate mapper
 
-mapper -->> listOfAucListingDTO**: <<create>>
+mapper -->> listOfAucListingDTO **: <<create>>
 
-loop for each aucListing in listOfAuctionListingsOfGivenPublication
-    mapper -> auctionListingDTO **: toDTO(aucListing)
+loop for each listing in listOfAuctionListingsOfGivenPublication
+    mapper -> auctionListingDTO **: toDTO(listing)
     mapper -> mapper: listOfAuctionListingsDTO.add(aucListingDTO)
 end
 
