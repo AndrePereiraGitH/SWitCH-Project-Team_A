@@ -4,7 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US017GenreDTO;
 
@@ -82,7 +82,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
 
     @Test
     void shouldThrowWhenUserIdIsNull() {
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
 
         assertThrows(IllegalArgumentException.class,
                 () -> createController().createCollection("Favorites", genreId, null));
@@ -100,7 +100,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     void shouldCreateCollectionSuccessfully() {
         // Arrange
         UserId userId = mock(UserId.class);
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
 
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
@@ -120,7 +120,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     void shouldPropagateExceptionWhenDuplicateExists() {
         // Arrange
         UserId userId = mock(UserId.class);
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
 
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         when(collectionRepo.createAndAdd(userId, "Favorites", genreId))

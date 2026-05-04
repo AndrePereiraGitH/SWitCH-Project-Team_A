@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class US004GenreMapperTest {
 
         // ARRANGE
         Genre genre = mock(Genre.class);
-        GenreID id = mock(GenreID.class);
+        GenreId id = mock(GenreId.class);
 
         when(genre.id()).thenReturn(id);
         when(genre.getGenreType()).thenReturn("Fantasy");
@@ -35,7 +35,7 @@ class US004GenreMapperTest {
 
         // ARRANGE
         Genre genre = mock(Genre.class);
-        GenreID id = mock(GenreID.class);
+        GenreId id = mock(GenreId.class);
 
         when(genre.id()).thenReturn(id);
         when(genre.getGenreType()).thenReturn("Fantasy");
@@ -69,12 +69,12 @@ class US004GenreMapperTest {
 
         // ARRANGE
         Genre genre1 = mock(Genre.class);
-        GenreID id1 = mock(GenreID.class);
+        GenreId id1 = mock(GenreId.class);
         when(genre1.id()).thenReturn(id1);
         when(genre1.getGenreType()).thenReturn("Fantasy");
 
         Genre genre2 = mock(Genre.class);
-        GenreID id2 = mock(GenreID.class);
+        GenreId id2 = mock(GenreId.class);
         when(genre2.id()).thenReturn(id2);
         when(genre2.getGenreType()).thenReturn("Horror");
 

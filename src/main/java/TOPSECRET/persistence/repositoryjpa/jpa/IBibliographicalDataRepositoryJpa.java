@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -37,7 +37,7 @@ public interface IBibliographicalDataRepositoryJpa extends JpaRepository<Bibliog
      * @param genreId the genre identifier to search for (must not be null)
      * @return a list of {@link BibliographicalDataDM} entities that contain the given genre
      */
-    List<BibliographicalDataDM> findByGenreIdsContaining(GenreID genreId);
+    List<BibliographicalDataDM> findByGenreIdsContaining(GenreId genreId);
 
     /**
      * Retrieves all bibliographical data records associated with a given author.

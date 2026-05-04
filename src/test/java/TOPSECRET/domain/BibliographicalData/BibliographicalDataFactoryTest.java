@@ -1,8 +1,9 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,14 +23,14 @@ class BibliographicalDataFactoryTest {
     List<AuthorId> authors;
     Locale originalLanguage;
     LocalDate publicationDate;
-    List<GenreID> genres;
+    List<GenreId> genres;
     String chunksOfText;
 
     @Mock
     AuthorId authorId;
 
     @Mock
-    GenreID genreId;
+    GenreId genreId;
 
     @Mock
     BibliographicalDataID bdID;

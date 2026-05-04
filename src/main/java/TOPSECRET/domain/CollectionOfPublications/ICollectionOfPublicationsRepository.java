@@ -1,11 +1,10 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ICollectionOfPublicationsRepository {
 
@@ -35,7 +34,7 @@ public interface ICollectionOfPublicationsRepository {
     CollectionOfPublications createAndAdd(
             UserId userId,
             String name,
-            GenreID genreId) throws IllegalArgumentException;
+            GenreId genreId) throws IllegalArgumentException;
 
     /**
      * Returns all collections owned by a given user — US019.
@@ -62,6 +61,6 @@ public interface ICollectionOfPublicationsRepository {
      * @return list of collections of the given genre that are public
      * @throws IllegalArgumentException if genreId is null
      */
-    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
+    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId);
 
 }

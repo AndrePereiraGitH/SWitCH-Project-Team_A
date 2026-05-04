@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AppraisalEntityDM;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class AppraisalEntityAssembler {
         List<PublicationTypeId> publicationTypes =
                 new ArrayList<>(dm.getPublicationTypeIds());
 
-        List<GenreID> genres =
+        List<GenreId> genres =
                 new ArrayList<>(dm.getGenreIds());
 
         return factory.create(
@@ -88,7 +88,7 @@ public class AppraisalEntityAssembler {
                         ? new ArrayList<>(domain.getPublicationTypeIds())
                         : new ArrayList<>();
 
-        List<GenreID> genres =
+        List<GenreId> genres =
                 domain.getGenreIds() != null
                         ? new ArrayList<>(domain.getGenreIds())
                         : new ArrayList<>();

@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.BibliographicalDataAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IBibliographicalDataRepositoryJpa;
@@ -106,7 +106,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public List<BibliographicalDataID> findAllByGenreId(GenreID genreId) {
+    public List<BibliographicalDataID> findAllByGenreId(GenreId genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");
         }

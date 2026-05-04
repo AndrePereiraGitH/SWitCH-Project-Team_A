@@ -6,7 +6,7 @@ import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
@@ -71,7 +71,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * @return list of DTOs matching the given genre
      * @throws IllegalArgumentException if selectedGenre is null
      */
-    public List<US021DirSaleListingDTO> getListOfItemsOnDirectSale(GenreID selectedGenre) {
+    public List<US021DirSaleListingDTO> getListOfItemsOnDirectSale(GenreId selectedGenre) {
         if (selectedGenre == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }

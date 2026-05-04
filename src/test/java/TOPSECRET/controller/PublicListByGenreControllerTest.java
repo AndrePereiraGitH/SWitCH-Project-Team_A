@@ -6,7 +6,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
@@ -69,7 +69,7 @@ class PublicListByGenreControllerTest {
         // Arrange
         controller = new PublicListByGenreController(genreRepo, collectionRepo , userRepo);
 
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
 
@@ -101,7 +101,7 @@ class PublicListByGenreControllerTest {
     {
         // Arrange
         controller = new PublicListByGenreController(genreRepo, collectionRepo , userRepo);
-        GenreID desiredGenre = mock(GenreID.class);
+        GenreId desiredGenre = mock(GenreId.class);
 
         // Act
         when(collectionRepo.findPublicCollectionsByGenreId(desiredGenre)).thenReturn(List.of());

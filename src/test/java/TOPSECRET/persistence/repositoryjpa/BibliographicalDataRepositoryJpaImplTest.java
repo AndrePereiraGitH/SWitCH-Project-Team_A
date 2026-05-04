@@ -3,7 +3,7 @@ package TOPSECRET.persistence.repositoryjpa;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.BibliographicalDataAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IBibliographicalDataRepositoryJpa;
@@ -47,7 +47,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     private BibliographicalDataID bdId;
 
     @Mock
-    private GenreID genreId;
+    private GenreId genreId;
 
     @Mock
     private AuthorId authorId;

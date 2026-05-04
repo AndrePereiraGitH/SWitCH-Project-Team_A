@@ -33,9 +33,9 @@ class US016PublicationSampleMapperTest {
     private AuthorId author1;
     private AuthorId author2;
 
-    private GenreID genre;
-    private GenreID genre1;
-    private GenreID genre2;
+    private GenreId genre;
+    private GenreId genre1;
+    private GenreId genre2;
 
     private Condition condition;
 
@@ -55,9 +55,9 @@ class US016PublicationSampleMapperTest {
         author1 = mock(AuthorId.class);
         author2 = mock(AuthorId.class);
 
-        genre = mock(GenreID.class);
-        genre1 = mock(GenreID.class);
-        genre2 = mock(GenreID.class);
+        genre = mock(GenreId.class);
+        genre1 = mock(GenreId.class);
+        genre2 = mock(GenreId.class);
 
         condition = mock(Condition.class);
     }
