@@ -26,6 +26,7 @@ import java.util.*;
  * It provides operations to retrieve the publication samples that belong to a
  * user's library and to create a new auction listing for the selected publications.
  */
+
 public class ToPutForSalePublicationInAuctionController {
 
     private final ListingService listingService;
@@ -42,7 +43,8 @@ public class ToPutForSalePublicationInAuctionController {
      * @param publicationSampleRepository repository used to retrieve publication samples
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public ToPutForSalePublicationInAuctionController(ListingService service,ILibraryRepository libraryRepo , IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
+    public ToPutForSalePublicationInAuctionController(ListingService service,ILibraryRepository libraryRepo ,
+                                                      IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.listingService = service;
         this.libraryRepo = libraryRepo;
@@ -68,7 +70,7 @@ public class ToPutForSalePublicationInAuctionController {
             throw new IllegalArgumentException("UserId cannot be null!");
         }
 
-        Library library = libraryRepo.getLibraryByUserId(userId);
+        Library library = libraryRepo.getByUserId(userId);
         if (library == null) {
             throw new InstanceNotFoundException("There is no library for the userID: " + userId);
         }
@@ -94,6 +96,7 @@ public class ToPutForSalePublicationInAuctionController {
      * @return {@code true} if the listing and the auction are successfully created
      * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
+    /*
     public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 
         if (listingTitle == null
@@ -116,4 +119,5 @@ public class ToPutForSalePublicationInAuctionController {
         return true;
     }
 
+     */
 }

@@ -1,0 +1,71 @@
+@startuml
+hide footbox
+autonumber 4
+title Save Library
+
+participant ":LibraryService" as service
+participant ":ILibraryRepository" as LibraryRepo
+participant ":ILibraryRepositoryJPA" as libraryJpa
+participant ":LibraryAssembler" as assembler
+participant "libraryDM:LibraryDM" as dm
+participant ":LibraryFactory" as factory
+participant "savedLib:Library" as persistedLib
+participant "Database" as db
+
+note over service #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+
+service -> LibraryRepo: save(library)
+activate LibraryRepo
+
+
+LibraryRepo -> libraryJpa: existsByUserId(library.getUserId())
+activate libraryJpa
+
+libraryJpa -> db: SELECT COUNT(*) FROM library WHERE user_id = ?
+activate db
+db --> libraryJpa: data
+deactivate db
+
+libraryJpa --> LibraryRepo: false: boolean
+deactivate libraryJpa
+
+LibraryRepo -> LibraryRepo: existsByUserId(library.getUserId())
+
+LibraryRepo -> assembler: toDM(library)
+activate assembler
+
+assembler -->> dm **: <<create>>
+assembler --> LibraryRepo: libraryDM
+deactivate assembler
+
+LibraryRepo -> libraryJpa: save(libraryDM)
+activate libraryJpa
+libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
+activate db
+db --> libraryJpa: data
+deactivate db
+libraryJpa --> LibraryRepo: savedLibraryDM
+deactivate libraryJpa
+
+LibraryRepo -> assembler: toDomain(savedLibraryDM)
+activate assembler
+
+assembler -> factory: create(libraryDM.id(), libraryDM.name(), libraryDM.userId())
+activate factory
+
+factory -->> persistedLib **: <<create>>
+factory --> assembler: savedLib
+deactivate factory
+
+assembler --> LibraryRepo: savedLib
+deactivate assembler
+
+LibraryRepo --> service: savedLib
+deactivate LibraryRepo
+
+@enduml

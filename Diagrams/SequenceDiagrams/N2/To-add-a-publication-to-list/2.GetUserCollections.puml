@@ -1,0 +1,93 @@
+@startuml
+
+hide footbox
+autonumber
+
+title Get Publications Available
+
+participant ":UI" as UI
+participant ":ToAddPublicationToAListOfMineController" as Controller
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":US018PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant ":PublicationSample" as PublicationSample
+participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
+participant ":BibliographicalData" as BibliographicalData
+
+note over UI, Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over UI, Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+UI -> Controller : getPublicationsForCollection(collectionId)
+activate Controller
+
+' =====================================================
+' GET ALL USER PUBLICATIONS
+' =====================================================
+Controller -> PublicationSampleRepo : getAllPublicationsInUserLibrary(userId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : allUserPublications
+deactivate PublicationSampleRepo
+
+' =====================================================
+' GET PUBLICATIONS ALREADY IN COLLECTION
+' =====================================================
+Controller -> PublicationSampleRepo : getPublicationsByCollectionID(collectionId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : publicationsInCollection
+deactivate PublicationSampleRepo
+
+' =====================================================
+' CALCULATE DIFFERENCE
+' =====================================================
+Controller -> Controller : diff(allUserPublications, publicationsInCollection)
+
+' =====================================================
+' CONVERT RESULT TO DTO
+' =====================================================
+Controller -> PublicationSampleMapper : toDTO(publicationAvailable)
+activate PublicationSampleMapper
+
+PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
+
+loop for each publicationSample in publicationAvailable
+    PublicationSampleMapper -> PublicationSample : getId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : id
+    deactivate PublicationSample
+
+    PublicationSampleMapper -> PublicationSample : getBibliographicalDataId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : bibliographicalDataId
+    deactivate PublicationSample
+
+    PublicationSampleMapper -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> PublicationSampleMapper : bibliographicalData
+    deactivate BibliographicalDataRepo
+
+    PublicationSampleMapper -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> PublicationSampleMapper : title
+    deactivate BibliographicalData
+
+    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+    PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
+end
+
+PublicationSampleMapper --> Controller : listOfAvailablePublicationDTO
+deactivate PublicationSampleMapper
+
+Controller --> UI : listOfAvailablePublicationDTO
+deactivate Controller
+
+@enduml

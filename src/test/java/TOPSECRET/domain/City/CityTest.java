@@ -1,5 +1,6 @@
 package TOPSECRET.domain.City;
 
+import TOPSECRET.domain.ValueObjects.CityID;
 import TOPSECRET.domain.ValueObjects.CountryID;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,6 @@ import static org.mockito.Mockito.mock;
  * The {@code City} class represents a value defined by a combination of a
  * {@link CountryID} and a city name.
  */
-
 class CityTest {
 
     @Test
@@ -149,12 +149,100 @@ class CityTest {
 
     @Test
     void equalsShouldReturnFalseWhenComparingWithDifferentType() {
-
         //Arrange
         CountryID countryID = mock(CountryID.class);
         City city = new City(countryID, "Lisbon");
 
         //Assert
         assertFalse(city.equals("NotACity"));
+    }
+
+    @Test
+    void shouldReturnValidToString() {
+        //Arrange
+        CountryID countryID = mock(CountryID.class);
+        City city = new City(countryID, "Porto");
+        String result = city.toString();
+
+        //Assert
+        assertNotNull(result);
+        assertTrue(result.contains("Porto"));
+        assertTrue(result.contains("City"));
+    }
+
+    @Test
+    void equals_shouldReturnTrueForDifferentInstancesWithSameID() {
+        // Arrange
+        CityID cityID = new CityID("C1");
+        CountryID countryID = mock(CountryID.class);
+        City city1 = new City(cityID, countryID, "Lisboa");
+        City city2 = new City(cityID, countryID, "Porto");
+
+        // Assert
+        assertEquals(city1, city2);
+    }
+
+    @Test
+    void sameAs_shouldReturnTrueWhenBusinessDataIsSame() {
+        // Arrange
+        CountryID countryID = new CountryID("PT");
+        City city1 = new City(countryID, "Porto");
+        City city2 = new City(countryID, "Porto");
+
+        // Assert
+        assertTrue(city1.sameAs(city2));
+    }
+
+    @Test
+    void sameAs_shouldReturnFalseWhenBusinessDataDiffers() {
+        // Arrange
+        CountryID countryID = new CountryID("PT");
+        City city1 = new City(countryID, "Porto");
+        City city2 = new City(countryID, "Lisboa");
+
+        // Assert
+        assertFalse(city1.sameAs(city2));
+    }
+
+    @Test
+    void sameAs_shouldReturnFalseForDifferentTypeOrNull() {
+        // Arrange
+        CountryID countryID = new CountryID("PT");
+        City city = new City(countryID, "Porto");
+
+        // Assert
+        assertFalse(city.sameAs(null));
+        assertFalse(city.sameAs("NotACity"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCityNameIsBlankInFullConstructor() {
+        // Arrange
+        CityID cityID = mock(CityID.class);
+        CountryID countryID = mock(CountryID.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new City(cityID, countryID, "  "));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCountryIsNullInFullConstructor() {
+        // Arrange
+        CityID cityID = mock(CityID.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new City(cityID, null, "Porto"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCityIDIsNull() {
+        // Arrange
+        CountryID countryID = mock(CountryID.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new City(null, countryID, "Porto"));
     }
 }

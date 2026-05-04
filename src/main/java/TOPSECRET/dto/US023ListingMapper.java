@@ -167,7 +167,7 @@ public class US023ListingMapper {
      */
     private BibliographicalData getBibliographicalData(PublicationSample publicationSample) throws InstanceNotFoundException {
         BibliographicalDataID bibliographicalDataId = publicationSample.getBibliographicalDataID();
-        BibliographicalData bibliographicalData = _bdRepo.findBibliographicalDataById(bibliographicalDataId)
+        BibliographicalData bibliographicalData = _bdRepo.findById(bibliographicalDataId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("BibliographicalData id was not found:" + bibliographicalDataId));
 

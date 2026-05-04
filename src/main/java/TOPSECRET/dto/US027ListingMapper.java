@@ -160,7 +160,7 @@ public class US027ListingMapper {
 
         BibliographicalDataID bibDataId = pubSample.getBibliographicalDataID();
 
-        BibliographicalData bibData = bibDataRepo.findBibliographicalDataById(bibDataId)
+        BibliographicalData bibData = bibDataRepo.findById(bibDataId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("BibliographicalData with id " + bibDataId + " was not found" ));
 

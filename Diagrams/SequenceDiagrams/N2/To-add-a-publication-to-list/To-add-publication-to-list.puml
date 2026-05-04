@@ -1,0 +1,190 @@
+@startuml
+hide footbox
+autonumber
+
+title Add Publication to Collection Of Publication
+
+actor "User" as User
+participant ":UI" as UI
+
+participant ":ToAddPublicationToAListOfMineController" as Controller
+
+participant ":ICollectionOfPublicationsRepository" as CollectionRepo
+participant "userCollections : List<CollectionOfPublications>" as userCollections
+participant ":US018CollectionOfPublicationsMapper" as CollectionMapper
+participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
+participant ":CollectionOfPublications" as CP
+participant "collectionDTO: CollectionOfPublicationsDTO" as collectionDTO
+
+participant ":ILibraryRepository" as LibraryRepo
+participant ":Library" as Library
+
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant ":PublicationSample" as PublicationSample
+participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+
+participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
+participant ":BibliographicalData" as BibliographicalData
+
+
+' --- Start ---
+User -> UI : I want to add one of my publications to one of my collections
+activate UI
+
+
+' =========================
+' Get CollectionOfPublication
+' =========================
+UI -> Controller : getUserCollections(userId)
+activate Controller
+
+Controller -> CollectionRepo : getUserCollections(userId)
+activate CollectionRepo
+
+CollectionRepo -> CollectionRepo : isFromUser(userId)
+CollectionRepo -->> userCollections ** : <<create>>
+CollectionRepo --> Controller : userCollections
+deactivate CollectionRepo
+
+Controller -> CollectionMapper : toDTO(userCollections)
+activate CollectionMapper
+
+CollectionMapper -->> listOfCollectionsDTO ** : <<create>>
+
+loop for each collection in userCollections
+    CollectionMapper -> CP : getId()
+    activate CP
+    CP --> CollectionMapper : id
+    deactivate CP
+
+    CollectionMapper -> CP : getCollectionName()
+    activate CP
+    CP --> CollectionMapper : collectionName
+    deactivate CP
+
+    CollectionMapper -->> collectionDTO ** : <<create>>
+
+    CollectionMapper -> CollectionMapper : listOfCollectionsDTO.add(collectionDTO)
+end
+
+CollectionMapper --> Controller : listOfCollectionsDTO
+deactivate CollectionMapper
+
+Controller --> UI : listOfCollectionsDTO
+deactivate Controller
+
+UI --> User : Which collection? Select one!
+deactivate UI
+
+User -> UI : Selected collection
+activate UI
+
+UI -> Controller : getPublicationsForCollection(collectionId)
+activate Controller
+
+' =====================================================
+' GET AVAILABLE PUBLICATIONS
+' =====================================================
+
+Controller -> PublicationSampleRepo : getAvailablePublicationsForCollection(userId, collectionId)
+activate PublicationSampleRepo
+PublicationSampleRepo --> Controller : publicationAvailable
+deactivate PublicationSampleRepo
+
+' =====================================================
+' GET TITLES (Controller responsibility)
+' =====================================================
+
+loop for each publicationSample in publicationAvailable
+    Controller -> PublicationSample : getBibliographicalDataID()
+    activate PublicationSample
+    PublicationSample --> Controller : bibliographicalDataId
+    deactivate PublicationSample
+
+    Controller -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
+    activate BibliographicalDataRepo
+    BibliographicalDataRepo --> Controller : bibliographicalData
+    deactivate BibliographicalDataRepo
+
+    Controller -> BibliographicalData : getTitle()
+    activate BibliographicalData
+    BibliographicalData --> Controller : title
+    deactivate BibliographicalData
+
+    Controller -> Controller : titles.add(title)
+end
+
+' =====================================================
+' CONVERT RESULT TO DTO
+' =====================================================
+
+Controller -> PublicationSampleMapper : toDTOs(publicationAvailable, titles)
+activate PublicationSampleMapper
+
+PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
+
+loop for each publicationSample
+    PublicationSampleMapper -> PublicationSample : getId()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : id
+    deactivate PublicationSample
+
+    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+
+    PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
+end
+
+PublicationSampleMapper --> Controller : listOfAvailablePublicationDTO
+deactivate PublicationSampleMapper
+
+Controller --> UI : listOfAvailablePublicationDTO
+deactivate Controller
+
+UI --> User : Which publication? Select one or more publications!
+deactivate UI
+
+' =====================================================
+' USER SELECTS PUBLICATION(S)
+' =====================================================
+
+User -> UI : Selected publications
+activate UI
+
+UI -> Controller : addPublicationToCollection(collectionId, publicationSampleIds)
+activate Controller
+
+' =====================================================
+' CALL REPOSITORY WITH IDS
+' =====================================================
+
+Controller -> CollectionRepo : addPublicationToCollection(collectionId, publicationSampleIds)
+activate CollectionRepo
+
+' =====================================================
+' ASSIGN COLLECTION TO PUBLICATIONS (NEW MODEL)
+' =====================================================
+
+loop for each publicationSampleId
+    CollectionRepo -> PublicationSampleRepo : findPublicationSampleById(publicationSampleId)
+    activate PublicationSampleRepo
+    PublicationSampleRepo --> CollectionRepo : publicationSample
+    deactivate PublicationSampleRepo
+
+    CollectionRepo -> PublicationSample : assignToCollection(collectionId)
+    activate PublicationSample
+    PublicationSample --> CollectionRepo : true
+    deactivate PublicationSample
+end
+
+CollectionRepo --> Controller : true
+deactivate CollectionRepo
+
+Controller --> UI : Success
+deactivate Controller
+
+UI --> User : Success
+deactivate UI
+
+@enduml

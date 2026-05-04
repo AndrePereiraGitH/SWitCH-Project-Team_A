@@ -1,0 +1,87 @@
+@startuml
+autonumber
+hide footbox
+title US016 - Get All Publications In User's Library
+
+
+
+participant ":Controller" as ctrl
+
+participant ":ILibraryRepository" as LibRepo
+participant "library : Library" as library
+
+participant ":IPublicationSampleRepository" as PubRepo
+participant "samplesList \n:List<PublicationSample>" as samplesList
+
+participant ":US016_PublicationSampleMapper" as PubMapper
+participant "bibliographicalDataMap : \n Map<BibliographicalDataID, BibliographicalData>" as bdMap
+
+participant "listOfPublicationsDTO \n :List<US016_PublicationSampleDTO>" as dtoList
+
+ref over ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+note over ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+ctrl -> LibRepo : getLibraryByUserId(userId)
+activate ctrl
+activate LibRepo
+LibRepo --> library ** : <<create>>
+LibRepo --> ctrl : library
+deactivate ctrl
+deactivate LibRepo
+
+ctrl -> PubRepo : getPublicationsByLibraryID(library.id())
+activate ctrl
+activate PubRepo
+PubRepo -->> samplesList ** : <<create>>
+PubRepo --> ctrl : samplesList
+deactivate ctrl
+deactivate PubRepo
+
+'ctrl -> BdRepo : getBibliographicalDataMap(samplesList)
+'activate ctrl
+'activate BdRepo
+'BdRepo -> bdMap ** : <<create>>
+
+
+
+'BdRepo --> ctrl : bibliographicalDataMap
+deactivate ctrl
+deactivate BdRepo
+
+
+
+ctrl -> PubMapper : fromDomainList(samplesList, bibliographicalDataMap)
+activate ctrl
+activate PubMapper
+
+PubMapper -->> bdMap** : <<create>>
+
+loop for each pub in samplesList
+    PubMapper -> PubMapper : findBibliographicalDataById(pub.getBibliographicalDataID())
+    PubMapper --> PubMapper : optionalBd
+
+    PubMapper -> PubMapper : bd = optionalBd.get()
+    PubMapper -> PubMapper : bibliographicalDataMap.put(pub.getBibliographicalDataID(), bd)
+end
+
+PubMapper -->> dtoList ** : <<create>>
+
+loop for each pub in samplesList
+    PubMapper -> PubMapper : dto = fromDomain(pub, bibliographicalDataMap.get(pub.getBibliographicalDataID()))
+    PubMapper -> PubMapper : listOfPublicationsDTO.add(dto)
+end
+
+
+
+PubMapper --> ctrl : listOfPublicationsDTO
+deactivate PubMapper
+deactivate ctrl
+
+@enduml

@@ -1,11 +1,12 @@
 package TOPSECRET.domain.AppraisalEntity;
 
+import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Factory responsible for creating AppraisalEntity instances.
@@ -15,6 +16,7 @@ import java.util.UUID;
  * ensuring that all required parameters are provided.
  * </p>
  */
+@Service
 public class AppraisalEntityFactory {
 
     /**
@@ -29,7 +31,7 @@ public class AppraisalEntityFactory {
     public AppraisalEntity create(String name,
                                   Contact contact,
                                   List<PublicationTypeId> publicationTypes,
-                                  List<GenreID> genres)
+                                  List<GenreId> genres)
             {
 
             return new AppraisalEntity(
@@ -38,5 +40,31 @@ public class AppraisalEntityFactory {
                     publicationTypes,
                     genres
             );
+    }
+
+    /**
+     * Recreates a AppraisalEntity from DataBase data.
+     *
+     * @param id appraisal entity id
+     * @param name name of the entity
+     * @param contact contact information
+     * @param genres list of genres
+     * @param publicationTypes list of publication types
+     * @return a AppraisalEntity instance
+     */
+    public AppraisalEntity create(AppraisalEntityId id,
+                                  String name,
+                                  Contact contact,
+                                  List<PublicationTypeId> publicationTypes,
+                                  List<GenreId> genres)
+    {
+
+        return new AppraisalEntity(
+                id,
+                name,
+                contact,
+                publicationTypes,
+                genres
+        );
     }
 }
