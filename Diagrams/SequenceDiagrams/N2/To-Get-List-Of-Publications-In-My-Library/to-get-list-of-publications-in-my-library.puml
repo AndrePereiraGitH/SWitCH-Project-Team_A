@@ -1,120 +1,104 @@
 @startuml
+autonumber
+hide footbox
 title As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
 
-' ─────────────────────────────────────────
-'  Presentation layer
-' ─────────────────────────────────────────
-class UI {
-}
+actor User
+participant ":UI" as UI
+participant ":GetListOfPublicationsInLibraryController" as Ctrl
 
-' ─────────────────────────────────────────
-'  Controller
-' ─────────────────────────────────────────
-class GetListOfPublicationsInLibraryController {
-    + getListOfPublicationsInLibrary(username: String): List<US012PublicationDetailsDTO>
-}
+participant ":IUserRepository" as userRepo
+participant ":IUserRepositoryJPA" as userJpa
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IPublicationSampleRepositoryJpa" as pbJpa
+participant ":PublicationSampleAssembler" as pbAssembler
+participant ":PublicationSampleFactory" as factory
+participant "pbSample:PublicationSample" as pbDomain
+participant "listOfPublications:List<PublicationSample>" as ListPubs
+participant "Database" as db
+participant ":US012PublicationSampleMapper" as Mapper
+participant "listOfPublicationsDTO:List<US012PublicationDetailsDTO>" as ListDTO
+participant "pubDTO:US012PublicationDetailsDTO" as pubDTO
 
-' ─────────────────────────────────────────
-'  User side
-' ─────────────────────────────────────────
-interface IUserRepository {
-    + findUserIdByUsername(username: String): Optional<UserId>
-}
+User -> UI : I want to see a list of the publications in my library
+activate UI
+UI -> User : Enter your username
+deactivate UI
+User -> UI : username
 
-interface IUserRepositoryJPA {
-    + findByUserName(username: String): Optional<UserDM>
-}
+activate UI
+UI -> Ctrl : getListOfPublicationsInLibrary(username)
+activate Ctrl
 
-class UserDM {
-    + getId(): UserId
-}
+Ctrl -> userRepo: findUserIdByUsername(username)
+activate userRepo
 
-class UserId {
-}
+userRepo -> userJpa: findByUserName(username)
+activate userJpa
 
-' ─────────────────────────────────────────
-'  Publication side
-' ─────────────────────────────────────────
-interface IPublicationSampleRepository {
-    + findByUserIdAndLibraryIdIsNotNull(userId: UserId): List<PublicationSample>
-}
+userJpa -> db: SELECT * FROM users WHERE username = ?
+activate db
+db --> userJpa: data
+deactivate db
 
-interface IPublicationSampleRepositoryJpa {
-    + findAllByOwnerId(userId: UserId): List<PublicationSampleDM>
-}
+userJpa --> userRepo: userDM:Optional<UserDM>
+deactivate userJpa
 
-class PublicationSampleDM {
-    + id()
-    + getBibliographicalDataID()
-    + getOwnerID()
-    + getEditionID()
-    + getLibraryID()
-    + getCollecOfPubID()
-    + getPublicationStatus()
-    + getCondition()
-}
+userRepo -> userRepo: userDM.map(UserDM::getId)
 
-class PublicationSampleAssembler {
-    + toDomain(dm: PublicationSampleDM): PublicationSample
-}
+userRepo --> Ctrl: userId:Optional<UserId>
+deactivate userRepo
 
-class PublicationSampleFactory {
-    + create(id, bibliographicalDataID, ownerID, editionID, libraryID, collecOfPubID, publicationStatus, condition): PublicationSample
-}
+Ctrl -> pubSampleRepo: findByUserIdAndLibraryIdIsNotNull(userId)
+activate pubSampleRepo
 
-class PublicationSample {
-    + isOwnedByUser(userId: UserId): boolean
-    + isInUserLibrary(): boolean
-}
+pubSampleRepo -> pbJpa: findAllByOwnerId(userId)
+activate pbJpa
 
-' ─────────────────────────────────────────
-'  Mapper / DTO
-' ─────────────────────────────────────────
-class US012PublicationSampleMapper {
-    + toDTOs(publications: List<PublicationSample>): List<US012PublicationDetailsDTO>
-    + toDTO(publicationSample: PublicationSample): US012PublicationDetailsDTO
-}
+pbJpa -> db: SELECT * FROM publication_sample WHERE owner_id = ?
+activate db
+db --> pbJpa: data
+deactivate db
 
-class US012PublicationDetailsDTO {
-}
+pbJpa --> pubSampleRepo: pbSamplesDM:List<PublicationSampleDM>
+deactivate pbJpa
 
-' ─────────────────────────────────────────
-'  Database
-' ─────────────────────────────────────────
-rectangle Database {
-}
+pubSampleRepo -->> ListPubs **: <<create>>
 
-' ─────────────────────────────────────────
-'  Relationships
-' ─────────────────────────────────────────
+loop for each dm in pbSamplesDM
+    pubSampleRepo -> pbAssembler: toDomain(dm)
+    activate pbAssembler
+    pbAssembler -> factory: create(dm.id(), dm.getBibliographicalDataID(), dm.getOwnerID(), dm.getEditionID(), dm.getLibraryID(), dm.getCollecOfPubID(), dm.getPublicationStatus(), dm.getCondition())
+    activate factory
+    factory -->> pbDomain **: <<create>>
+    factory --> pbAssembler: pbSample
+    deactivate factory
+    pbAssembler --> pubSampleRepo: pbSample
+    deactivate pbAssembler
+    pubSampleRepo -> pubSampleRepo: filter(pbSample.isOwnedByUser(userId) && pbSample.isInUserLibrary())
+    pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
+end
 
-UI ..> GetListOfPublicationsInLibraryController : uses
+pubSampleRepo --> Ctrl: listOfPublications
+deactivate pubSampleRepo
 
-GetListOfPublicationsInLibraryController ..> IUserRepository : uses
-GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
-GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
+Ctrl -> Mapper: toDTOs(listOfPublications)
+activate Mapper
 
-IUserRepositoryJPA ..|> IUserRepository : implements
-IUserRepositoryJPA ..> UserDM : returns
-IUserRepositoryJPA ..> Database : queries
+Mapper -->> ListDTO **: <<create>>
 
-IUserRepository ..> UserDM : reads
-IUserRepository ..> UserId : returns
+loop for each publicationSample in listOfPublications
+    Mapper -> pubDTO **: toDTO(publicationSample)
+    Mapper -> Mapper: listOfPublicationsDTO.add(pubDTO)
+end
 
-IPublicationSampleRepositoryJpa ..|> IPublicationSampleRepository : implements
-IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns
-IPublicationSampleRepositoryJpa ..> Database : queries
+Mapper --> Ctrl: listOfPublicationsDTO
+deactivate Mapper
 
-IPublicationSampleRepository ..> PublicationSampleAssembler : uses
-IPublicationSampleRepository ..> PublicationSample : filters
+Ctrl --> UI: listOfPublicationsDTO
+deactivate Ctrl
 
-PublicationSampleAssembler ..> PublicationSampleDM : reads
-PublicationSampleAssembler ..> PublicationSampleFactory : uses
-PublicationSampleAssembler ..> PublicationSample : returns
-
-PublicationSampleFactory ..> PublicationSample : <<create>>
-
-US012PublicationSampleMapper ..> PublicationSample : reads
-US012PublicationSampleMapper ..> US012PublicationDetailsDTO : <<create>>
+UI --> User: Display list of publications\n(title, author, type, ISBN/SSN)
+deactivate UI
 
 @enduml
