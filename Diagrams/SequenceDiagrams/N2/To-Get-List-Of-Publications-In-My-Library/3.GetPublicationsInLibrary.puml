@@ -31,15 +31,19 @@ deactivate db
 pbJpa --> pubSampleRepo: pbSamplesDM:List<PublicationSampleDM>
 deactivate pbJpa
 
-pubSampleRepo -> ListPubs **: <<create>>
+pubSampleRepo -->> ListPubs **: <<create>>
 
 loop for each dm in pbSamplesDM
     pubSampleRepo -> pbAssembler: toDomain(dm)
     activate pbAssembler
-    pbAssembler -> pbDomain **: <<create>>
+    pbAssembler -> factory: create(dm.id(), dm.getBibliographicalDataID(), dm.getOwnerID(), dm.getEditionID(), dm.getLibraryID(), dm.getCollecOfPubID(), dm.getPublicationStatus(), dm.getCondition())
+    activate factory
+    factory -->> pbDomain **: <<create>>
+    factory --> pbAssembler: pbSample
+    deactivate factory
     pbAssembler --> pubSampleRepo: pbSample
     deactivate pbAssembler
-    pubSampleRepo -> pubSampleRepo: filter(isOwnedByUser(userId) && isInUserLibrary())
+    pubSampleRepo -> pubSampleRepo: filter(pbSample.isOwnedByUser(userId) && pbSample.isInUserLibrary())
     pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
 end
 

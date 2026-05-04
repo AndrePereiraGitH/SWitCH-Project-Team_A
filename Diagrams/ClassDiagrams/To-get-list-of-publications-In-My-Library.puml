@@ -1,5 +1,5 @@
 @startuml
-title As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
+title As a User, I want to get the list of publications in my library
 
 ' ─────────────────────────────────────────
 '  Presentation layer
@@ -29,6 +29,9 @@ class UserDM {
     + getId(): UserId
 }
 
+class UserId <<factory>> {
+}
+
 ' ─────────────────────────────────────────
 '  Publication side
 ' ─────────────────────────────────────────
@@ -40,7 +43,7 @@ interface IPublicationSampleRepositoryJpa {
     + findAllByOwnerId(userId: UserId): List<PublicationSampleDM>
 }
 
-class PublicationSampleAssembler {
+class PublicationSampleAssembler <<factory>> {
     + toDomain(publicationSampleDM: PublicationSampleDM): PublicationSample
 }
 
@@ -73,26 +76,29 @@ rectangle Database {
 '  Relationships
 ' ─────────────────────────────────────────
 
-UI ..> GetListOfPublicationsInLibraryController: uses
+UI ..> GetListOfPublicationsInLibraryController : uses
 
-GetListOfPublicationsInLibraryController ..> IUserRepository: uses
-GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository: uses
-GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper: uses
+GetListOfPublicationsInLibraryController ..> IUserRepository : uses
+GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
+GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
 
-IUserRepository <|.. IUserRepositoryJPA: implements
-IUserRepositoryJPA ..> UserDM: returns
-IUserRepositoryJPA ..> Database: queries
+IUserRepositoryJPA ..|> IUserRepository : implements
+IUserRepositoryJPA ..> UserDM : returns Optional<UserDM>
+IUserRepositoryJPA ..> Database : SELECT * FROM users\nWHERE username = ?
 
-IPublicationSampleRepository <|.. IPublicationSampleRepositoryJpa: implements
-IPublicationSampleRepository ..> PublicationSampleAssembler: uses
+IUserRepository ..> UserDM : reads (map UserDM::getId)
+IUserRepository ..> UserId : returns Optional<UserId>
 
-IPublicationSampleRepositoryJpa ..> PublicationSampleDM: returns
-IPublicationSampleRepositoryJpa ..> Database: queries
+IPublicationSampleRepositoryJpa ..|> IPublicationSampleRepository : implements
+IPublicationSampleRepository ..> PublicationSampleAssembler : uses
 
-PublicationSampleAssembler ..> PublicationSampleDM: reads
-PublicationSampleAssembler ..> PublicationSample: creates
+IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns List<PublicationSampleDM>
+IPublicationSampleRepositoryJpa ..> Database : queries
 
-US012PublicationSampleMapper ..> PublicationSample: reads
-US012PublicationSampleMapper ..> US012PublicationDetailsDTO: creates
+PublicationSampleAssembler ..> PublicationSampleDM : reads
+PublicationSampleAssembler ..> PublicationSample : creates
+
+US012PublicationSampleMapper ..> PublicationSample : reads
+US012PublicationSampleMapper ..> US012PublicationDetailsDTO : creates
 
 @enduml

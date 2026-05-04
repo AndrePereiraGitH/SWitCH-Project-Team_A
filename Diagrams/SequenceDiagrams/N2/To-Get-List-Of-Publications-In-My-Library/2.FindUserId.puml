@@ -25,12 +25,12 @@ activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: Optional<UserDM>
+userJpa --> userRepo: userDM:Optional<UserDM>
 deactivate userJpa
 
-userRepo -> userRepo: .map(UserDM::getId)
+userRepo -> userRepo: userDM.map(UserDM::getId)
 
-userRepo --> Ctrl: Optional<UserId>
+userRepo --> Ctrl: userId:Optional<UserId>
 deactivate userRepo
 
 @enduml

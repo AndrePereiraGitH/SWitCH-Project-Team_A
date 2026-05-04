@@ -14,17 +14,17 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> Mapper : toDTOs(listOfPublications)
+Ctrl -> Mapper: toDTOs(listOfPublications)
 activate Mapper
 
-Mapper -->> ListDTO ** : <<create>>
+Mapper -->> ListDTO **: <<create>>
 
 loop for each publicationSample in listOfPublications
-    Mapper -> pubDTO ** : toDTO()
-    Mapper -> Mapper : listOfPublicationsDTO.add(pubDTO)
+    Mapper -> pubDTO **: toDTO(publicationSample)
+    Mapper -> Mapper: listOfPublicationsDTO.add(pubDTO)
 end
 
-Mapper --> Ctrl : listOfPublicationsDTO
+Mapper --> Ctrl: listOfPublicationsDTO
 deactivate Mapper
 
 @enduml
