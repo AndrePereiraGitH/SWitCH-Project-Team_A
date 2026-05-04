@@ -26,6 +26,7 @@ import java.util.*;
  * It provides operations to retrieve the publication samples that belong to a
  * user's library and to create a new auction listing for the selected publications.
  */
+
 public class ToPutForSalePublicationInAuctionController {
 
     private final ListingService listingService;
@@ -95,6 +96,7 @@ public class ToPutForSalePublicationInAuctionController {
      * @return {@code true} if the listing and the auction are successfully created
      * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
+    /*
     public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 
         if (listingTitle == null
@@ -117,4 +119,5 @@ public class ToPutForSalePublicationInAuctionController {
         return true;
     }
 
+     */
 }

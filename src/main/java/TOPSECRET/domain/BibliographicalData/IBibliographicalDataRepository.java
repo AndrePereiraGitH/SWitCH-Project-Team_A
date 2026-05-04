@@ -2,7 +2,7 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -30,6 +30,19 @@ public interface IBibliographicalDataRepository {
     BibliographicalData save(BibliographicalData bibliographicalDataCreated) throws InstanceAlreadyExistsException;
 
     /**
+     * Returns the complete list of bibliographical data records stored in the repository.
+     *
+     * <p>The returned list reflects the repository's current internal state and
+     * contains all bibliographical data records that have been previously added.
+     * Modifications to the returned list will affect the repository's internal
+     * collection, as no defensive copy is created.</p>
+     *
+     * @return the internal list of all stored bibliographical data records; never {@code null}
+     */
+
+    List<BibliographicalData> findAll();
+
+    /**
      * Finds bibliographical data in the repository by its unique identifier.
      *
      * <p>Iterates through all stored bibliographical data entries and returns
@@ -41,10 +54,10 @@ public interface IBibliographicalDataRepository {
      *         if found, or an empty {@link Optional} if no entry with the given ID exists
      * @throws NullPointerException if {@code bibliographicalDataId} is {@code null}
      */
-    Optional<BibliographicalData> findBibliographicalDataById(BibliographicalDataID bibliographicalDataId);
+    Optional<BibliographicalData> findById(BibliographicalDataID bibliographicalDataId);
 
     /**
-     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreID}.
+     * Retrieves all {@link BibliographicalDataID} associated with a given {@link GenreId}.
      *
      * <p>This method searches the repository for all {@link BibliographicalData}
      * instances whose list of genres contains the provided genre identifier.</p>
@@ -56,7 +69,7 @@ public interface IBibliographicalDataRepository {
      *
      * @throws IllegalArgumentException if {@code genreId} is {@code null}
      */
-    List<BibliographicalDataID> findAllBibliographicalDataByGenreId(GenreID genreId);
+    List<BibliographicalDataID> findAllByGenreId(GenreId genreId);
 
     /**
      * Finds the ID of a bibliographical data entry by its title, using case-insensitive
@@ -68,7 +81,7 @@ public interface IBibliographicalDataRepository {
      * @throws NullPointerException     if {@code bdTitle} is {@code null}
      * @throws IllegalArgumentException if {@code bdTitle} is blank
      */
-    Optional<BibliographicalDataID> findBibliographicalDataIdByTitle(String bdTitle);
+    Optional<BibliographicalDataID> findIdByTitle(String bdTitle);
 
     /**
      * Retrieves the identifiers of all bibliographical data entries associated with a given author.
@@ -77,21 +90,7 @@ public interface IBibliographicalDataRepository {
      * @return a list of {@link BibliographicalDataID} associated with the given author
      * @throws IllegalArgumentException if {@code authorId} is null
      */
-    List<BibliographicalDataID> findBibliographicalDataIdByAuthorId(AuthorId authorId);
-
-
-    /**
-     * Returns the complete list of bibliographical data records stored in the repository.
-     *
-     * <p>The returned list reflects the repository's current internal state and
-     * contains all bibliographical data records that have been previously added.
-     * Modifications to the returned list will affect the repository's internal
-     * collection, as no defensive copy is created.</p>
-     *
-     * @return the internal list of all stored bibliographical data records; never {@code null}
-     */
-
-    List<BibliographicalData> getAllPublicationsBD();
+    List<BibliographicalDataID> findIdByAuthorId(AuthorId authorId);
 
     /**
      * Retrieves the titles of all bibliographical entries in the list.

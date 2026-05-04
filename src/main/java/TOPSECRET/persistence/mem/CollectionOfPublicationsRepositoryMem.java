@@ -3,7 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 
@@ -60,7 +60,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
     public CollectionOfPublications createAndAdd(
             UserId userId,
             String name,
-            GenreID genreId) {
+            GenreId genreId) {
 
         if (userId == null || name == null || genreId == null) {
             throw new IllegalArgumentException("Invalid arguments.");
@@ -133,7 +133,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * {@inheritDoc}
      */
     @Override
-    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }

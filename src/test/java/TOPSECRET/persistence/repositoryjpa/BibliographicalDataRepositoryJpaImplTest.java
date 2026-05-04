@@ -3,7 +3,7 @@ package TOPSECRET.persistence.repositoryjpa;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.BibliographicalDataAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IBibliographicalDataRepositoryJpa;
@@ -47,7 +47,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     private BibliographicalDataID bdId;
 
     @Mock
-    private GenreID genreId;
+    private GenreId genreId;
 
     @Mock
     private AuthorId authorId;
@@ -95,7 +95,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findBibliographicalDataById_shouldThrowWhenIdIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                repository.findBibliographicalDataById(null)
+                repository.findById(null)
         );
     }
 
@@ -107,7 +107,7 @@ class BibliographicalDataRepositoryJpaImplTest {
 
         // Act
         Optional<BibliographicalData> result =
-                repository.findBibliographicalDataById(bdId);
+                repository.findById(bdId);
 
         // Arrange
         assertTrue(result.isPresent());
@@ -121,7 +121,7 @@ class BibliographicalDataRepositoryJpaImplTest {
 
         // Act
         Optional<BibliographicalData> result =
-                repository.findBibliographicalDataById(bdId);
+                repository.findById(bdId);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -131,7 +131,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findBibliographicalDataIdByTitle_shouldThrowWhenTitleIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                repository.findBibliographicalDataIdByTitle(null)
+                repository.findIdByTitle(null)
         );
     }
 
@@ -139,7 +139,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findBibliographicalDataIdByTitle_shouldThrowWhenTitleIsBlank() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findBibliographicalDataIdByTitle("   ")
+                repository.findIdByTitle("   ")
         );
     }
 
@@ -151,7 +151,7 @@ class BibliographicalDataRepositoryJpaImplTest {
 
         // Act
         Optional<BibliographicalDataID> result =
-                repository.findBibliographicalDataIdByTitle("  Clean Code  ");
+                repository.findIdByTitle("  Clean Code  ");
 
         // Assert
         assertTrue(result.isPresent());
@@ -165,7 +165,7 @@ class BibliographicalDataRepositoryJpaImplTest {
 
         // Act
         Optional<BibliographicalDataID> result =
-                repository.findBibliographicalDataIdByTitle("Unknown");
+                repository.findIdByTitle("Unknown");
 
         // Assert
         assertTrue(result.isEmpty());
@@ -175,7 +175,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findAllBibliographicalDataByGenreId_shouldThrowWhenGenreIdIsNull() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findAllBibliographicalDataByGenreId(null)
+                repository.findAllByGenreId(null)
         );
     }
 
@@ -192,7 +192,7 @@ class BibliographicalDataRepositoryJpaImplTest {
 
         // Act
         List<BibliographicalDataID> result =
-                repository.findAllBibliographicalDataByGenreId(genreId);
+                repository.findAllByGenreId(genreId);
 
         // Assert
         assertEquals(List.of(bdId, bdId2), result);
@@ -202,7 +202,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findBibliographicalDataIdByAuthorId_shouldThrowWhenAuthorIdIsNull() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                repository.findBibliographicalDataIdByAuthorId(null)
+                repository.findIdByAuthorId(null)
         );
     }
 
@@ -219,7 +219,7 @@ class BibliographicalDataRepositoryJpaImplTest {
 
         // Act
         List<BibliographicalDataID> result =
-                repository.findBibliographicalDataIdByAuthorId(authorId);
+                repository.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(List.of(bdId, bdId2), result);
@@ -236,7 +236,7 @@ class BibliographicalDataRepositoryJpaImplTest {
         when(assembler.toDomain(bdDM2)).thenReturn(bd2);
 
         // Act
-        List<BibliographicalData> result = repository.getAllPublicationsBD();
+        List<BibliographicalData> result = repository.findAll();
 
         // Assert
         assertEquals(List.of(bd, bd2), result);

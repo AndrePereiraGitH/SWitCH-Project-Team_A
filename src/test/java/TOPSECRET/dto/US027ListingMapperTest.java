@@ -84,8 +84,8 @@ class US027ListingMapperTest {
 
         bdRepoDouble = mock(IBibliographicalDataRepository.class);
 
-        when(bdRepoDouble.findBibliographicalDataById(bdId1Double)).thenReturn(Optional.of(bdDouble1));
-        when(bdRepoDouble.findBibliographicalDataById(bdId2Double)).thenReturn(Optional.of(bdDouble2));
+        when(bdRepoDouble.findById(bdId1Double)).thenReturn(Optional.of(bdDouble1));
+        when(bdRepoDouble.findById(bdId2Double)).thenReturn(Optional.of(bdDouble2));
 
         // Publication Sample
         PublicationSample pubSampleDouble1 = mock(PublicationSample.class);
@@ -167,7 +167,7 @@ class US027ListingMapperTest {
                 listingDouble.getItemsId().get(0)).get();
 
         when(pubSampleDouble.getBibliographicalDataID()).thenReturn(wrongIdDouble);
-        when(bdRepoDouble.findBibliographicalDataById(wrongIdDouble))
+        when(bdRepoDouble.findById(wrongIdDouble))
                 .thenReturn(Optional.empty());
 
         US027ListingMapper mapper = new US027ListingMapper(pubSampleRepoDouble, bdRepoDouble, authorRepoDouble);
@@ -179,7 +179,7 @@ class US027ListingMapperTest {
     @Test
     void toDTO_ShouldThrowExceptionWhenAuthorNotFound() {
         // Arrange
-        BibliographicalData bdDouble = bdRepoDouble.findBibliographicalDataById(
+        BibliographicalData bdDouble = bdRepoDouble.findById(
                 pubSampleRepoDouble.findById(
                         listingDouble.getItemsId().get(0)).get().getBibliographicalDataID()).get();
 

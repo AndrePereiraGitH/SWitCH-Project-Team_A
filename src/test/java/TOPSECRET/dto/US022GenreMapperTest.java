@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import TOPSECRET.domain.Genre.Genre;
 
@@ -33,7 +33,7 @@ class US022GenreMapperTest {
 
         // Arrange
         Genre genreDouble = mock(Genre.class);
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         when(genreDouble.id()).thenReturn(genreIdDouble);
         when(genreDouble.getGenreType()).thenReturn("Comedy");
 
@@ -53,10 +53,10 @@ class US022GenreMapperTest {
 
         // Arrange
         Genre genreDouble1 = mock(Genre.class);
-        GenreID genreIdDouble1 = mock(GenreID.class);
+        GenreId genreIdDouble1 = mock(GenreId.class);
         when(genreDouble1.id()).thenReturn(genreIdDouble1);
         Genre genreDouble2 = mock(Genre.class);
-        GenreID genreIdDouble2 = mock(GenreID.class);
+        GenreId genreIdDouble2 = mock(GenreId.class);
         when(genreDouble2.id()).thenReturn(genreIdDouble2);
 
         when(genreDouble1.getGenreType()).thenReturn("Fantasy");
@@ -79,10 +79,10 @@ class US022GenreMapperTest {
 
         // Arrange
         Genre genreDouble1 = mock(Genre.class);
-        GenreID genreIdDouble1 = mock(GenreID.class);
+        GenreId genreIdDouble1 = mock(GenreId.class);
         when(genreDouble1.id()).thenReturn(genreIdDouble1);
         Genre genreDouble2 = mock(Genre.class);
-        GenreID genreIdDouble2 = mock(GenreID.class);
+        GenreId genreIdDouble2 = mock(GenreId.class);
         when(genreDouble2.id()).thenReturn(genreIdDouble2);
 
         when(genreDouble1.getGenreType()).thenReturn("A");
@@ -104,7 +104,7 @@ class US022GenreMapperTest {
 
         // Arrange
         Genre genreDouble = mock(Genre.class);
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         when(genreDouble.id()).thenReturn(genreIdDouble);
         when(genreDouble.getGenreType()).thenReturn("Sci-Fi");
 

@@ -1,0 +1,41 @@
+@startuml
+hide footbox
+autonumber
+title To create a library (Main)
+
+actor User
+participant ":UI" as UI
+participant ":ToCreateLibraryCtrl" as Ctrl
+
+User -> UI : I want to create a library.
+activate UI
+UI --> User : What name?
+deactivate UI
+User -> UI : libraryName, username
+activate UI
+
+UI -> Ctrl : createLibrary(libraryName, username)
+activate Ctrl
+
+ref over Ctrl
+[[2.FindUserByUsername.puml Find User by Username]]
+end ref
+
+Ctrl -> Ctrl : userId
+
+ref over Ctrl
+[[3.CreateLibrary.puml Create Library]]
+end ref
+
+Ctrl -> Ctrl : library
+
+ref over Ctrl
+[[4.SaveLibrary.puml Save Library]]
+end ref
+
+Ctrl --> UI : true
+deactivate Ctrl
+UI --> User : Your library was created
+deactivate UI
+
+@enduml
