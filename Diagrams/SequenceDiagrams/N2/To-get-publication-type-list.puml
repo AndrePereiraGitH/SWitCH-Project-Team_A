@@ -18,7 +18,7 @@ participant ":PublicationType" as ENTITY
 User -> UI : I want to get a list\n of all publication types
 activate UI
 
-UI -> C : getAllPublicationTypes()
+UI -> C : findAll()
 activate C
 
 C -> PTR : findAll()
@@ -86,7 +86,7 @@ loop for each PublicationType
     deactivate ENTITY
 
     create "pubTypeDTO:\nUS014PublicationTypeDTO" as pubTypeDTO
-    MAPPER -> pubTypeDTO : toDTO()
+    MAPPER -->> pubTypeDTO : <<create>>
 
     MAPPER -> listDTO : add(pubTypeDTO)
 end

@@ -3,25 +3,25 @@ title Class Diagram - Get All Publication Types
 
 ' ====== UI & Controller ======
 class UI {
-  +getAllPublicationTypes()
+  +findAll()
 }
 
 class Controller {
-  +getAllPublicationTypes(): List<PublicationTypeDTO>
+  +findAll(): List<US014PublicationTypeDTO>
 }
 
 UI "1" -.-> "1" Controller : uses
 
 ' ====== Repository Layer ======
 interface IPublicationTypeRepository {
-  +getAllPublicationTypes(): List<PublicationType>
+  +findAll(): List<PublicationType>
 }
 
-interface IPublicationTypeRepositoryJPA {
-  +getAllPublicationTypes(): List<PublicationType>
+class PublicationTypeRepositoryJPAImpl {
+  +findAll(): List<PublicationType>
 }
 
-IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA : implements
+IPublicationTypeRepository <|.. PublicationTypeRepositoryJPAImpl : implements
 
 Controller "1" -.-> "1" IPublicationTypeRepository : uses
 
@@ -59,7 +59,7 @@ class US014PublicationTypeMapper {
 }
 
 Controller "1" -.-> "1" US014PublicationTypeMapper : uses
-US014PublicationTypeMapper "1" --> "*" PublicationType : maps to
-US014PublicationTypeMapper "1" -.-> "1" US014PublicationTypeDTO : converts
+US014PublicationTypeMapper "1" --> "*" PublicationType : reads
+US014PublicationTypeMapper "1" -.-> "1" US014PublicationTypeDTO : creates
 
 @enduml
