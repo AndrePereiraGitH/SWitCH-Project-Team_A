@@ -2,8 +2,9 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import jakarta.persistence.Embedded;
-import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
  * </p>
  */
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Contact implements ValueObject {
 
     private String _phoneNum;
@@ -28,10 +30,6 @@ public class Contact implements ValueObject {
     @Embedded
     private Address _location;
 
-    /**
-     * Required by JPA
-     */
-    protected Contact() {}
 
     /**
      * Constructs a new {@code Contact} with the given attributes.
@@ -55,8 +53,7 @@ public class Contact implements ValueObject {
         this._location = location;
     }
 
-
-    // Getters (não sei se necessário)
+    // Getters
     public String getPhoneNum() {
         return _phoneNum;
     }
@@ -87,7 +84,6 @@ public class Contact implements ValueObject {
                 ", e-mail: " + _email +
                 ", address: " + _location;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

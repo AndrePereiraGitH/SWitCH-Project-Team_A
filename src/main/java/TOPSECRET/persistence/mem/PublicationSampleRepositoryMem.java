@@ -285,7 +285,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsID collectionID) {
+    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
 
         List<PublicationSample> allPublications = allPublicationsInSystem.stream()
                 .filter(p -> Objects.equals(p.getCollecOfPubID(), collectionID))
@@ -299,7 +299,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
      */
     @Override
     public boolean assignPublicationsToCollection(
-            CollectionOfPublicationsID collectionId,
+            CollectionOfPublicationsId collectionId,
             List<PublicationSampleId> publicationSampleIds) {
 
         if (collectionId == null) {
@@ -331,7 +331,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     @Override
     public List<PublicationSample> findAvailableForCollection(
             UserId userId,
-            CollectionOfPublicationsID collectionId) {
+            CollectionOfPublicationsId collectionId) {
 
         if (userId == null || collectionId == null) {
             throw new IllegalArgumentException("Arguments cannot be null");

@@ -10,30 +10,38 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * JPA Data Model representing a Bid persistence entity.
+ * Embeddable JPA Data Model representing a Bid in the persistence layer.
  * <p>
- * This class maps the {@code bids} table and is used exclusively by the
- * persistence layer. It represents the database model of a bid associated
- * with an {@link AuctionDM}.
+ * This class is used exclusively by the persistence layer as part of the
+ * {@link AuctionDM} aggregate. It maps bid information into the database
+ * as an embeddable value object rather than a standalone entity.
  * </p>
+ *
  * <p>
- * It contains bid metadata such as bidder identity, value, timestamp,
- * and its relationship to an auction.
+ * A {@code BidDM} captures immutable bid data including:
+ * <ul>
+ *     <li>the bidder identity ({@link UserId})</li>
+ *     <li>the bid monetary value</li>
+ *     <li>the timestamp when the bid was placed</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * This class does not contain business logic and is not responsible for
+ * enforcing domain rules. It is strictly a persistence representation
+ * of a domain {@code Bid}.
+ * </p>
+ *
+ * <p>
+ * Instances of this class are typically created by the assembler when
+ * converting a domain {@code Bid} into a persistence model, or when
+ * reconstructing an {@code AuctionDM} from the database.
  * </p>
  */
-@Entity
-@Table(name = "bids")
+@Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BidDM {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long bidId;
-
-    @ManyToOne
-    @JoinColumn(name = "auction_id")
-    private AuctionDM auction;
 
     @Embedded
     @AttributeOverride(name = "id", column = @Column(name = "bidder_id"))

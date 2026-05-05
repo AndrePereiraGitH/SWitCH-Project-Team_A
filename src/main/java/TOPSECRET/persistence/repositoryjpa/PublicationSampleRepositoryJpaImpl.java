@@ -153,7 +153,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsID collectionID) {
+    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
         return List.of();
     }
 
@@ -206,7 +206,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      * {@inheritDoc}
      */
     @Override
-    public boolean assignPublicationsToCollection(CollectionOfPublicationsID collectionId, List<PublicationSampleId> publicationSampleIds) {
+    public boolean assignPublicationsToCollection(CollectionOfPublicationsId collectionId, List<PublicationSampleId> publicationSampleIds) {
         return false;
     }
 
@@ -214,7 +214,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsID collectionId) {
+    public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId) {
         return List.of();
     }
 }

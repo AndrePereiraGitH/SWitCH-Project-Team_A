@@ -2,6 +2,8 @@ package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.ValueObject;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 import java.util.regex.Pattern;
@@ -10,8 +12,8 @@ import java.util.regex.Pattern;
  * Represents an email address split into a username and a domain.
  * This class validates both parts before creating an Email object.
  */
-
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 public class Email implements ValueObject {
 
@@ -37,11 +39,6 @@ public class Email implements ValueObject {
     // Precompiled regex patterns for better performance
     private static final Pattern USERNAME_PATTERN = Pattern.compile(USERNAME_REGEX);
     private static final Pattern DOMAIN_PATTERN = Pattern.compile(DOMAIN_REGEX);
-
-    /**
-     * Required by JPA
-     */
-    protected Email() {}
 
     /**
      * Creates a validated Email object.

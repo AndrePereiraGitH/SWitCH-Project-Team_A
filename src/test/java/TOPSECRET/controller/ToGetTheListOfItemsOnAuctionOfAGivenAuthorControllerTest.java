@@ -169,7 +169,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         US026AuctionDTO dto2 = mock(US026AuctionDTO.class);
         List<US026AuctionDTO> expected = List.of(dto1, dto2);
 
-        when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
+        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
         when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
@@ -197,7 +197,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<Auction> auctions = List.of();
         List<US026AuctionDTO> expected = List.of();
 
-        when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
+        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
         when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
@@ -224,7 +224,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<ListingId> listingIds = List.of(mock(ListingId.class));
         List<Auction> auctions = List.of(mock(Auction.class));
 
-        when(biblioRepository.findBibliographicalDataIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
+        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
         when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
         when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);

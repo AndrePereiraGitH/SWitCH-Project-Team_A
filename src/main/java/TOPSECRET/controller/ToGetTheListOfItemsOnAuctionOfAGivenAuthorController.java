@@ -91,7 +91,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
             throw new IllegalArgumentException("authorId cannot be null.");
         }
 
-       List<BibliographicalDataID> bdsOfAuthorID = biblioRepository.findBibliographicalDataIdByAuthorId(authorId);
+       List<BibliographicalDataID> bdsOfAuthorID = biblioRepository.findIdByAuthorId(authorId);
 
        List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesIdsByBiblioDataIds(bdsOfAuthorID);
 

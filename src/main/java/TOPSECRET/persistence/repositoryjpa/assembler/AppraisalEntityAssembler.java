@@ -7,6 +7,7 @@ import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AppraisalEntityDM;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,15 +51,15 @@ public class AppraisalEntityAssembler {
             throw new IllegalArgumentException("Appraisal Entity cannot be null");
         }
 
+        if (dm.getPublicationTypeIds() == null || dm.getGenreIds() == null) {
+            throw new IllegalArgumentException("Lists cannot be null");
+        }
+
         List<PublicationTypeId> publicationTypes =
-                dm.getPublicationTypeIds() == null
-                        ? List.of()
-                        : List.copyOf(dm.getPublicationTypeIds());
+                new ArrayList<>(dm.getPublicationTypeIds());
 
         List<GenreID> genres =
-                dm.getGenreIds() == null
-                        ? List.of()
-                        : List.copyOf(dm.getGenreIds());
+                new ArrayList<>(dm.getGenreIds());
 
         return factory.create(
                 dm.getId(),
@@ -66,7 +67,6 @@ public class AppraisalEntityAssembler {
                 dm.getContact(),
                 publicationTypes,
                 genres
-
         );
     }
 
@@ -77,21 +77,21 @@ public class AppraisalEntityAssembler {
      * @return a data model ready for persistence
      * @throws IllegalArgumentException if domain is null
      */
-    public AppraisalEntityDM toDataModel(AppraisalEntity domain) {
+    public AppraisalEntityDM toDM(AppraisalEntity domain) {
 
         if (domain == null) {
             throw new IllegalArgumentException("AppraisalEntity cannot be null");
         }
 
         List<PublicationTypeId> publicationTypes =
-                domain.getPublicationTypeIds() == null
-                        ? List.of()
-                        : List.copyOf(domain.getPublicationTypeIds());
+                domain.getPublicationTypeIds() != null
+                        ? new ArrayList<>(domain.getPublicationTypeIds())
+                        : new ArrayList<>();
 
         List<GenreID> genres =
-                domain.getGenreIds() == null
-                        ? List.of()
-                        : List.copyOf(domain.getGenreIds());
+                domain.getGenreIds() != null
+                        ? new ArrayList<>(domain.getGenreIds())
+                        : new ArrayList<>();
 
         return new AppraisalEntityDM(
                 domain.id(),
@@ -101,4 +101,5 @@ public class AppraisalEntityAssembler {
                 genres
         );
     }
+
 }

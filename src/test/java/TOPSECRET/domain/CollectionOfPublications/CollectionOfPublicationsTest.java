@@ -2,6 +2,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
@@ -92,11 +93,28 @@ class CollectionOfPublicationsTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreDouble, result.getCollectionGenre());
         assertEquals(userDouble, result.getOwnerId());
-        assertTrue(result.getIsPrivate());          // US017 rule: always private at creation
+        assertTrue(result.isPrivate());
     }
 
     // ============================== end US017 ==============================
 
+
+    @Test
+    void shouldInitializeValidInstanceWithId() {
+        // Arrange
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        String name = "I like these books";
+        GenreID genreDouble = mock(GenreID.class);
+        UserId userDouble = mock(UserId.class);
+        boolean isPrivate = true;
+
+        // Act
+        CollectionOfPublications result =
+                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble, isPrivate);
+
+        // Assert
+        assertNotNull(result);
+    }
 
     @Test
     void shouldReturnNonNullId() {
@@ -324,5 +342,44 @@ class CollectionOfPublicationsTest {
 
         //Act + assert
         assertNotEquals(collectionRohan.hashCode(), collectionShire.hashCode());
+    }
+
+    @Test
+    void isPrivateShouldReturnFalseAfterMakingCollectionPublic() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreID genreId = mock(GenreID.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications result =
+                new CollectionOfPublications(name, genreId, userId);
+
+        // Act
+        result.set_isPrivate();
+
+        // Assert
+        assertFalse(result.isPrivate());
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenObjectIsNotACollectionOfPublications() {
+
+        // Arrange
+        GenreID genreId = mock(GenreID.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(
+                        "Works by Scott Lynch",
+                        genreId,
+                        userId
+                );
+
+        // Act
+        boolean result = collection.sameAs("not a collection");
+
+        // Assert
+        assertFalse(result);
     }
 }

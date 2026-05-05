@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mockConstruction;
 
 import java.time.LocalDate;
 
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -22,7 +22,7 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
  * <p><b>Test double strategy:</b> {@link Author} construction is intercepted using
  * Mockito {@code mockConstruction(Author.class)}. This allows the tests to verify
  * that the factory invokes the {@link Author} constructor while avoiding execution
- * of the real constructor logic. The {@link CountryID} collaborator is replaced with
+ * of the real constructor logic. The {@link CountryId} collaborator is replaced with
  * a test double created via {@code mock(Class)} to isolate the factory from its
  * dependencies.
  *
@@ -31,7 +31,7 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
  *   <li>Invocation of the {@link Author} constructor exactly once per factory call</li>
  *   <li>Normalisation of input values (trimming of name and biography)</li>
  *   <li>Forwarding of {@code null} name and biography values without modification</li>
- *   <li>Forwarding of {@link CountryID} and {@link java.time.LocalDate} arguments
+ *   <li>Forwarding of {@link CountryId} and {@link java.time.LocalDate} arguments
  *       to the {@link Author} constructor unchanged</li>
  * </ul>
  *
@@ -44,7 +44,7 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 class AuthorFactoryTest {
 
     private final AuthorId authorId = mock(AuthorId.class);
-    private final CountryID countryID = mock(CountryID.class);
+    private final CountryId countryID = mock(CountryId.class);
 
     private static final String rawName = "  John  ";
     private static final String expectedName = "John";

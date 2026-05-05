@@ -71,16 +71,16 @@ public class PublicListByGenreController {
      * @return a list of {@link US020CollectionOfPublicationsDTO} matching the specified genre
      * @throws IllegalArgumentException if the provided genre is {@code null}
      */
-    public List<US020CollectionOfPublicationsDTO> getPublicListsByGenre(GenreID genreId) throws IllegalArgumentException {
-
-        if (genreId == null) {
-            throw new IllegalArgumentException("Genre can't be null.");
-        }
-
-        List<CollectionOfPublications> collections = _collectionRepo.findPublicCollectionsByGenreId(genreId);
-
-        US020CollectionOfPublicationsDTOMapper mapper = new US020CollectionOfPublicationsDTOMapper(_userRepo);
-
-        return mapper.toDTO(collections);
-    }
+//    public List<US020CollectionOfPublicationsDTO> getPublicListsByGenre(GenreID genreId) throws IllegalArgumentException {
+//
+//        if (genreId == null) {
+//            throw new IllegalArgumentException("Genre can't be null.");
+//        }
+//
+//        List<CollectionOfPublications> collections = _collectionRepo.findPublicCollectionsByGenreId(genreId);
+//
+//        US020CollectionOfPublicationsDTOMapper mapper = new US020CollectionOfPublicationsDTOMapper(_userRepo);
+//
+//        return mapper.toDTO(collections);
+//    }
 }
