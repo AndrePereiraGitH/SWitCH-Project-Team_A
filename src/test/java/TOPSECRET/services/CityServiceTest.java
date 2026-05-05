@@ -42,7 +42,6 @@ class CityServiceTest {
     void shouldCreateAndSaveCity() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
@@ -71,7 +70,6 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenFactoryThrows() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, ""))
@@ -87,7 +85,6 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenRepositoryThrows() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
