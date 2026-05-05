@@ -39,14 +39,9 @@ public class GenreService {
      * @throws IllegalArgumentException if a genre with the same type already exists
      */
     public Genre createAndSave(String genreType) {
-        try {
-            genreRepository.findByTitle(genreType);
+        if (genreRepository.findByTitle(genreType).isPresent()) {
             throw new IllegalArgumentException(
                     "Genre with type '" + genreType + "' already exists");
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("already exists")) {
-                throw e;
-            }
         }
         Genre genre = genreFactory.create(genreType);
         return genreRepository.save(genre);

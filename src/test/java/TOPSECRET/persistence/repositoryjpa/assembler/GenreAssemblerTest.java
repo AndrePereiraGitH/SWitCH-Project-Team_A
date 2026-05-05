@@ -13,11 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link GenreAssembler}.
- * Verifies that the assembler correctly converts between
- * {@link Genre} domain objects and {@link GenreDM} persistence entities.
- */
 @ExtendWith(MockitoExtension.class)
 class GenreAssemblerTest {
 
@@ -35,7 +30,8 @@ class GenreAssemblerTest {
     void ensureToDMReturnsNotNull() {
         // Arrange
         Genre genre = mock(Genre.class);
-        when(genre.id()).thenReturn(new GenreId("drama"));
+        GenreId genreId = mock(GenreId.class);
+        when(genre.id()).thenReturn(genreId);
         when(genre.getGenreType()).thenReturn("Drama");
 
         // Act
@@ -48,23 +44,24 @@ class GenreAssemblerTest {
     @Test
     void ensureToDMStoresCorrectId() {
         // Arrange
-        GenreId id = new GenreId("drama");
+        GenreId genreId = mock(GenreId.class);
         Genre genre = mock(Genre.class);
-        when(genre.id()).thenReturn(id);
+        when(genre.id()).thenReturn(genreId);
         when(genre.getGenreType()).thenReturn("Drama");
 
         // Act
         GenreDM dm = assembler.toDM(genre);
 
         // Assert
-        assertEquals(id, dm.getId());
+        assertEquals(genreId, dm.getId());
     }
 
     @Test
     void ensureToDMStoresCorrectGenreType() {
         // Arrange
+        GenreId genreId = mock(GenreId.class);
         Genre genre = mock(Genre.class);
-        when(genre.id()).thenReturn(new GenreId("drama"));
+        when(genre.id()).thenReturn(genreId);
         when(genre.getGenreType()).thenReturn("Drama");
 
         // Act
@@ -76,6 +73,7 @@ class GenreAssemblerTest {
 
     @Test
     void ensureToDMThrowsExceptionWithNullGenre() {
+        // Act & Assert
         assertThrows(NullPointerException.class, () -> assembler.toDM(null));
     }
 
@@ -86,10 +84,12 @@ class GenreAssemblerTest {
     @Test
     void ensureToDomainReturnsNotNull() {
         // Arrange
-        GenreId id = new GenreId("drama");
-        GenreDM dm = new GenreDM(id, "Drama");
+        GenreId genreId = mock(GenreId.class);
+        GenreDM dm = mock(GenreDM.class);
         Genre genre = mock(Genre.class);
-        when(factory.create(id, "Drama")).thenReturn(genre);
+        when(dm.getId()).thenReturn(genreId);
+        when(dm.getGenreType()).thenReturn("Drama");
+        when(factory.create(genreId, "Drama")).thenReturn(genre);
 
         // Act
         Genre result = assembler.toDomain(dm);
@@ -101,11 +101,13 @@ class GenreAssemblerTest {
     @Test
     void ensureToDomainReturnsCorrectGenreType() {
         // Arrange
-        GenreId id = new GenreId("drama");
-        GenreDM dm = new GenreDM(id, "Drama");
+        GenreId genreId = mock(GenreId.class);
+        GenreDM dm = mock(GenreDM.class);
         Genre genre = mock(Genre.class);
+        when(dm.getId()).thenReturn(genreId);
+        when(dm.getGenreType()).thenReturn("Drama");
         when(genre.getGenreType()).thenReturn("Drama");
-        when(factory.create(id, "Drama")).thenReturn(genre);
+        when(factory.create(genreId, "Drama")).thenReturn(genre);
 
         // Act
         Genre result = assembler.toDomain(dm);
@@ -116,6 +118,7 @@ class GenreAssemblerTest {
 
     @Test
     void ensureToDomainThrowsExceptionWithNullDM() {
+        // Act & Assert
         assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
     }
 
@@ -126,16 +129,16 @@ class GenreAssemblerTest {
     @Test
     void ensureRoundTripProducesEqualGenre() {
         // Arrange
-        GenreId id = new GenreId("drama");
+        GenreId genreId = mock(GenreId.class);
         Genre genre = mock(Genre.class);
-        when(genre.id()).thenReturn(id);
+        when(genre.id()).thenReturn(genreId);
         when(genre.getGenreType()).thenReturn("Drama");
 
         GenreDM dm = assembler.toDM(genre);
 
         Genre reconstructed = mock(Genre.class);
-        when(factory.create(id, "Drama")).thenReturn(reconstructed);
-        when(reconstructed.id()).thenReturn(id);
+        when(factory.create(genreId, "Drama")).thenReturn(reconstructed);
+        when(reconstructed.id()).thenReturn(genreId);
 
         // Act
         Genre result = assembler.toDomain(dm);

@@ -56,11 +56,26 @@ class GenreDMTest {
 
     @Test
     void ensureGenreDMThrowsExceptionWithNullId() {
+        // Act & Assert
         assertThrows(NullPointerException.class, () -> new GenreDM(null, "Drama"));
     }
 
     @Test
     void ensureGenreDMThrowsExceptionWithNullGenreType() {
+        // Act & Assert
         assertThrows(NullPointerException.class, () -> new GenreDM(genreId, null));
+    }
+
+    @Test
+    void ensureProtectedNoArgsConstructorExistsForJpa() throws Exception {
+        // Arrange
+        var constructor = GenreDM.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        // Act
+        GenreDM genreDM = (GenreDM) constructor.newInstance();
+
+        // Assert
+        assertNotNull(genreDM);
     }
 }
