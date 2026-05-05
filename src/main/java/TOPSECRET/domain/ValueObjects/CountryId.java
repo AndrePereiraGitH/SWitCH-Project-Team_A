@@ -2,7 +2,6 @@ package TOPSECRET.domain.ValueObjects;
 
 import jakarta.persistence.Embeddable;
 import TOPSECRET.ddd.DomainID;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
