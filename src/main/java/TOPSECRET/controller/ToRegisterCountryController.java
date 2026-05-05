@@ -1,48 +1,50 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.Country.ICountryRepository;
+import TOPSECRET.services.CountryService;
 
 /**
- * Controller responsible for handling the registration of a new country in the system.
+ * Controller responsible for handling the registration of new {@link Country} entities.
  * <p>
- * Corresponds to User Story US007: As an Administrator, I want to register
- * a new country in the System.
+ * This class acts as an entry point between the application layer and the domain/service layer,
+ * delegating the creation and persistence of a country to the {@link CountryService}.
  * </p>
  */
 public class ToRegisterCountryController {
 
-    /** Repository used to persist and manage {@link Country} instances. */
-    private final ICountryRepository _countryRepository;
+    private final CountryService countryService;
 
     /**
-     * Constructs a new {@code US007ToRegisterCountryController} with the given repository.
+     * Constructs a new {@code ToRegisterCountryController}.
      *
-     * @param countryRepository the repository used to store countries;
-     *                          must not be {@code null}
+     * @param countryService the {@link CountryService} used to create and persist countries;
+     *                       must not be {@code null}
      */
-    public ToRegisterCountryController(ICountryRepository countryRepository) {
-        this._countryRepository = countryRepository;
+    public ToRegisterCountryController(CountryService countryService) {
+        if(countryService == null){
+            throw new IllegalArgumentException("CountryService cannot be null!");
+        }
+        this.countryService = countryService;
     }
 
     /**
-     * Registers a new country in the system.
+     * Registers a new {@link Country} with the given name.
      * <p>
-     * Called by the UI with the name of the country to be registered.
-     * Validates that the name is not {@code null} or blank before
-     * delegating to the repository.
+     * This method validates that the provided country name is not {@code null} or blank,
+     * and then delegates the creation and persistence process to the {@link CountryService}.
      * </p>
      *
-     * @param _countryName the name of the country to register;
-     *                     must not be {@code null} or blank
-     * @return the newly registered {@link Country}
-     * @throws IllegalArgumentException if {@code _countryName} is {@code null},
-     *                                  blank, invalid, or already registered
+     * @param countryName the name of the country to register;
+     *                    must not be {@code null} or blank
+     * @return the newly created and persisted {@link Country}
+     * @throws IllegalArgumentException if {@code countryName} is {@code null} or blank
      */
-    public Country registerNewCountry(String _countryName) {
-        if (_countryName == null || _countryName.isBlank()) {
+    public Country registerNewCountry(String countryName) {
+
+        if (countryName == null || countryName.isBlank()) {
             throw new IllegalArgumentException("Country name cannot be null or blank");
         }
-        return _countryRepository.createAndAdd(_countryName);
+
+        return countryService.createAndSave(countryName);
     }
 }

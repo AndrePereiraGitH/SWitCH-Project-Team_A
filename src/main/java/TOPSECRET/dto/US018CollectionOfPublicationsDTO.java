@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 
 /**
  * Data Transfer Object representing a Collection of Publications.
@@ -14,7 +14,7 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
  * @param collectionName name of the collection
  */
 public record US018CollectionOfPublicationsDTO(
-        CollectionOfPublicationsID id,
+        CollectionOfPublicationsId id,
         String collectionName
 ) {
 

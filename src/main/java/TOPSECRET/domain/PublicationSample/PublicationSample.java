@@ -26,7 +26,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
     private final EditionID _editionID;
     private final Condition _condition;
     private LibraryId _libraryId;
-    private CollectionOfPublicationsID _collecOfPubID;
+    private CollectionOfPublicationsId _collecOfPubID;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -121,7 +121,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         return _libraryId;
     }
 
-    public CollectionOfPublicationsID getCollecOfPubID(){
+    public CollectionOfPublicationsId getCollecOfPubID(){
         return _collecOfPubID;
     }
 
@@ -169,12 +169,12 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
     /**
      * Associates this publication copy with the given collection of publications.
      *
-     * @param collectionOfPublicationsID the {@link CollectionOfPublicationsID} to associate with; must not be null
-     * @return the provided {@link CollectionOfPublicationsID} after assignment
+     * @param collectionOfPublicationsID the {@link CollectionOfPublicationsId} to associate with; must not be null
+     * @return the provided {@link CollectionOfPublicationsId} after assignment
      * @throws IllegalArgumentException if this copy is already assigned to a collection
      * @throws NullPointerException if {@code collectionOfPublicationsID} is null
      */
-    public CollectionOfPublicationsID addPublicationToCollection(CollectionOfPublicationsID collectionOfPublicationsID){
+    public CollectionOfPublicationsId addPublicationToCollection(CollectionOfPublicationsId collectionOfPublicationsID){
         if(collectionOfPublicationsID == null){
             throw new NullPointerException("CollectionOfPublicationsID can not be null");
         }

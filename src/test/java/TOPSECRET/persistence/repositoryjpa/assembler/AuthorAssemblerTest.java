@@ -3,7 +3,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AuthorDM;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ class AuthorAssemblerTest {
     private AuthorId authorIdDouble;
 
     @Mock
-    private CountryID countryIdDouble;
+    private CountryId countryIdDouble;
 
     private static final String name = "Ken Follett";
     private static final LocalDate dateOfBirth = LocalDate.of(1952, 10, 3);

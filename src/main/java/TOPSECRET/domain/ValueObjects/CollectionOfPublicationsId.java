@@ -1,6 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents a unique identifier for a Collection of Publications.
@@ -13,9 +16,11 @@ import TOPSECRET.ddd.DomainID;
  * if their underlying ID values are equal.
  */
 
-public class CollectionOfPublicationsID implements DomainID {
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class CollectionOfPublicationsId implements DomainID {
 
-    private final String collectionOfPub_id;
+    private String collectionOfPub_id;
 
     /**
      * Constructs a {@code CollectionOfPublicationsID} with the specified identifier.
@@ -24,7 +29,7 @@ public class CollectionOfPublicationsID implements DomainID {
      * @throws IllegalArgumentException if {@code id} is null or blank
      */
 
-    public CollectionOfPublicationsID(String id) {
+    public CollectionOfPublicationsId(String id) {
 
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("ID cannot be null or blank");
@@ -53,8 +58,8 @@ public class CollectionOfPublicationsID implements DomainID {
         if (this == object)
             return true;
 
-        if (object instanceof CollectionOfPublicationsID) {
-            CollectionOfPublicationsID collectionOfPubId = (CollectionOfPublicationsID) object;
+        if (object instanceof CollectionOfPublicationsId) {
+            CollectionOfPublicationsId collectionOfPubId = (CollectionOfPublicationsId) object;
 
             if (this.collectionOfPub_id.equals(collectionOfPubId.collectionOfPub_id))
                 return true;

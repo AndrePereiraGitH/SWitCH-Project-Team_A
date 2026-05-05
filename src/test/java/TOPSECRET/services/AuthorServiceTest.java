@@ -3,7 +3,7 @@ package TOPSECRET.services;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +67,7 @@ class AuthorServiceTest {
         // Arrange
 
         String name = "Fernando Pessoa";
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);
         String biography = "Portuguese poet and writer.";
 
@@ -93,7 +93,7 @@ class AuthorServiceTest {
 
         // Arrange
         String name = "Fernando Pessoa";
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);
         String biography = "Portuguese poet and writer.";
 
@@ -120,7 +120,7 @@ class AuthorServiceTest {
 
         // Arrange
         String name = null;
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);
         String biography = "Portuguese poet and writer.";
 

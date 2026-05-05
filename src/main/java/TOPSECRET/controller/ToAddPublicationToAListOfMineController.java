@@ -1,15 +1,12 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
 import TOPSECRET.dto.US018PublicationSampleDTO;
-import TOPSECRET.dto.US018CollectionOfPublicationsMapper;
 import TOPSECRET.dto.US018PublicationSampleMapper;
 
 import java.util.List;
@@ -74,13 +71,13 @@ public class ToAddPublicationToAListOfMineController {
      *
      * @return list of collection DTOs
      */
-    public List<US018CollectionOfPublicationsDTO> getUserCollections() {
-
-        List<CollectionOfPublications> userCollections =
-                _collectionRepo.getUserCollections(_userId);
-
-        return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
-    }
+//    public List<US018CollectionOfPublicationsDTO> getUserCollections() {
+//
+//        List<CollectionOfPublications> userCollections =
+//                _collectionRepo.getUserCollections(_userId);
+//
+//        return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
+//    }
 
     /**
      * Retrieves the list of publications that can be added to a collection.
@@ -99,7 +96,7 @@ public class ToAddPublicationToAListOfMineController {
      * @throws IllegalArgumentException if collectionId is null
      */
     public List<US018PublicationSampleDTO> getPublicationsForCollection(
-            CollectionOfPublicationsID collectionId) {
+            CollectionOfPublicationsId collectionId) {
 
         if (collectionId == null) {
             throw new IllegalArgumentException("collectionId cannot be null");
@@ -135,7 +132,7 @@ public class ToAddPublicationToAListOfMineController {
      * @throws IllegalArgumentException if input is invalid
      */
     public boolean addPublicationToCollection(
-            CollectionOfPublicationsID collectionId,
+            CollectionOfPublicationsId collectionId,
             List<PublicationSampleId> selectedPublicationId) {
 
         if (collectionId == null ||
