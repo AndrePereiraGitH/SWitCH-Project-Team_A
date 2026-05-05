@@ -43,7 +43,7 @@ db --> userJpa: data
 deactivate db
 
 userJpa --> userDM**: <<create>>
-userJpa -> userDM: map(UserDM::getId)
+userJpa -> userDM: userDM.getId()
 activate userDM
 userDM --> userJpa: userId
 deactivate userDM
