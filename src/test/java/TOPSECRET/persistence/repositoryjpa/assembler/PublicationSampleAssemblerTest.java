@@ -38,7 +38,7 @@ class PublicationSampleAssemblerTest {
     private UserId userIdDouble;
     private EditionID editionIdDouble;
     private LibraryId libraryIdDouble;
-    private CollectionOfPublicationsID collectionOfPublicationsIdDouble;
+    private CollectionOfPublicationsId collectionOfPublicationsIdDouble;
     private PublicationStatus status;
     private Condition condition;
 
@@ -55,7 +55,7 @@ class PublicationSampleAssemblerTest {
         userIdDouble = mock(UserId.class);
         editionIdDouble = mock(EditionID.class);
         libraryIdDouble = mock(LibraryId.class);
-        collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
         status = PublicationStatus.READ;
         condition = Condition.NEW;
     }
