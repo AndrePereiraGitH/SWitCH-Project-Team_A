@@ -26,7 +26,8 @@ listingJpa -> db: SELECT * FROM listing\nWHERE publication_sample_id IN (?)
 activate db
 db --> listingJpa: data
 deactivate db
-listingJpa --> listingRepo: listingDMList: List<ListingDM>
+listingJpa -->> listingDMList**: <<create>>
+listingJpa --> listingRepo: listingDMList
 deactivate listingJpa
 
 listingRepo -->> aucListing **: <<create>>

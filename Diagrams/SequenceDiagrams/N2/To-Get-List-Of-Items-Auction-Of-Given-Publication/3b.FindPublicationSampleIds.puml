@@ -23,13 +23,17 @@ pubSampleJpa -> db: SELECT * FROM publication_sample\nWHERE bibliographical_data
 activate db
 db --> pubSampleJpa: data
 deactivate db
-pubSampleJpa --> pubSampleRepo: pbSampleDMList:List<PublicationSampleDM>
-deactivate pubSampleJpa
+pubSampleJpa --> pbSampleDMList**: <<create>>
+pubSampleJpa -->> listOfPubSampleIds **: <<create>>
 
-pubSampleRepo -->> listOfPubSampleIds **: <<create>>
 loop for each dm in pbSampleDMList
-    pubSampleRepo -> pubSampleRepo: listOfPubSampleIds.add(dm.getPubSampleId())
+    pubSampleJpa -> pubSampleJpa : id = dm.getId()
+    pubSampleJpa -> pubSampleJpa: listOfPubSampleIds.add(id)
 end
+
+pubSampleJpa --> pubSampleRepo: listOfPubSampleIds
+
+deactivate pubSampleJpa
 
 pubSampleRepo --> Ctrl: listOfPubSampleIds
 deactivate pubSampleRepo

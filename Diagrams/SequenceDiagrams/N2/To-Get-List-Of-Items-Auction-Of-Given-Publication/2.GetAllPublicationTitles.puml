@@ -15,23 +15,23 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> bdRepo: getAllTitles()
+Ctrl -> bdRepo: findIdByTitle(title)
 activate bdRepo
-bdRepo -> bdJpa: findAll()
+bdRepo -> bdJpa: findByTitleIgnoreCase(title.trim())
 activate bdJpa
-bdJpa -> db: SELECT * FROM bibliographical_data
+bdJpa -> db: SELECT * FROM bibliographical_data\nWHERE LOWER(title) = LOWER(?)
 activate db
 db --> bdJpa: data
 deactivate db
-bdJpa --> bdRepo: List<BibliographicalDataDM>
+bdJpa -->> bdDM** :<<create>>
+bdJpa -> bdDM: getId()
+activate bdDM
+bdDM --> bdJpa: bdId
+deactivate bdDM
+
+bdJpa --> bdRepo: bdId
 deactivate bdJpa
-
-bdRepo -->> listOfTitles **: <<create>>
-loop for each bdDM in List<BibliographicalDataDM>
-    bdRepo -> bdRepo: listOfTitles.add(bdDM.getTitle())
-end
-
-bdRepo --> Ctrl: listOfTitles
+bdRepo --> Ctrl: bdID
 deactivate bdRepo
 
 @enduml
