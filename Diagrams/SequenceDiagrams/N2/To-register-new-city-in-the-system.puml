@@ -1,67 +1,57 @@
 @startuml
 
-footbox off
-title Sequence Diagram - US008 Register a new city in the System
+autonumber
+hide footbox
+title Register a New City
 
 actor Administrator
 participant ":UI" as UI
-participant ":ToRegisterACityCtrl" as CityController
+participant ":ToRegisterNewCityController" as Controller
+participant ":CityService" as Service
 participant ":ICountryRepository" as CountryRepository
 participant ":ICityRepository" as CityRepository
-participant ":CityFactory" as CityFactory
+participant ":CityFactory" as Factory
+participant ":CityAssembler" as Assembler
+participant ":ICityRepositoryJPA" as JPA
+database "Database" as DB
 
-Administrator -> UI : 1. Request to register a new city
-activate UI
+Administrator -> UI : request
+UI -> Controller : register(countryName, cityName)
 
-UI -> CityController : 2. registerNewCity(countryName, cityName)
-activate CityController
+Controller -> Service : createAndSave(countryName, cityName)
 
-CityController -> CountryRepository : 3. findCountryIdByCountryName(countryName)
-activate CountryRepository
+Service -> CountryRepository : findCountryIdByCountryName(countryName)
+CountryRepository --> Service : countryId
 
-CountryRepository -> CountryRepository : 4. validate(countryName)
-CountryRepository -> CountryRepository : 5. normalize(countryName)
+Service -> CityRepository : existsByCountryIDAndCityName(countryId, cityName)
+CityRepository --> Service : false
 
-alt Country found
-    CountryRepository --> CityController : 6. Optional<CountryID>
+Service -> Factory : create(countryId, cityName)
+Factory -->> city** : <<create>>
+Factory --> Service : city
 
-    deactivate CountryRepository
+Service -> CityRepository : save(city)
 
-    CityController -> CityRepository : 7. createAndAdd(countryID, cityName)
-    activate CityRepository
+CityRepository -> Assembler : toDM(city)
+Assembler -->> cityDM** : <<create>>
+Assembler --> CityRepository : cityDM
 
-    CityRepository -> CityFactory : 8. create(countryID, cityName)
-    activate CityFactory
+CityRepository -> JPA : save(cityDM)
+JPA -> DB : INSERT
+DB --> JPA : persisted
+JPA --> CityRepository : cityDM
 
-    create "newCity : City" as City
-    CityFactory --> City : 9. «create»
+CityRepository -> Assembler : toDomain(cityDM)
 
-    CityFactory --> CityRepository : 10. newCity
-    deactivate CityFactory
+Assembler -> Factory : create(cityID, countryID, cityName)
+Factory -->> city** : <<create>>
+Factory --> Assembler : city
 
-    CityRepository -> CityRepository : 11. existsByAttributes(newCity)
+Assembler --> CityRepository : city
 
-    alt City already exists
-        CityRepository --> CityController : throws IllegalArgumentException
-        deactivate CityRepository
-    else City is new
-        CityRepository -> CityRepository : 12. add(newCity)
-        CityRepository --> CityController : 13. newCity
-        deactivate CityRepository
-
-        CityController --> UI : 14. true
-    end
-
-else Country not found
-    CountryRepository --> CityController : Optional.empty()
-    deactivate CountryRepository
-
-    CityController --> UI : throws IllegalArgumentException
-end
-
-deactivate CityController
-
-UI --> Administrator : 15. Operation result (success / error)
-deactivate UI
+CityRepository --> Service : city
+Service --> Controller : city
+Controller --> UI : city
+UI --> Administrator : success
 
 @enduml

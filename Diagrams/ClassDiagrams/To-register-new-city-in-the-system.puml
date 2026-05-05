@@ -1,51 +1,88 @@
 @startuml
 hide circle
-title Register New City (Class Diagram)
+title To Register a New City
 
-class UI008{
+class UI
+
+class ToRegisterNewCityController {
+  -cityService: CityService
+  +register(countryName: String, cityName: String) : City
+}
+
+class CityService {
+  -cityFactory: CityFactory
+  -cityRepository: ICityRepository
+  -countryRepository: ICountryRepository
+  +createAndSave(countryName: String, cityName: String) : City
 }
 
 class City {
+  -cityID: CityID
+  -countryID: CountryID
   -cityName: String
-  -countryID: CountryID
-}
-
-class Country {
-  -countryName: String
-  -countryID: CountryID
 }
 
 class CountryID
+class CityID
 
 class CityFactory {
   +create(countryID: CountryID, cityName: String) : City
+  +create(cityID: CityID, countryID: CountryID, cityName: String) : City
 }
 
 interface ICityRepository {
-  +createAndAdd(countryID: CountryID, cityName: String) : City
+  +save(city: City) : City
+  +existsByCountryIDAndCityName(countryID: CountryID, cityName: String) : boolean
 }
 
 interface ICountryRepository {
   +findCountryIdByCountryName(countryName: String) : Optional<CountryID>
 }
 
-class US008ToRegisterACityCtrl {
-  -_cityRepository: ICityRepository
-  -_countryRepository: ICountryRepository
-  +registerNewCity(countryName: String, cityName: String) : boolean
+class CityRepositoryJPAImpl {
+  +save(city: City) : City
+  +existsByCountryIDAndCityName(countryID: CountryID, cityName: String) : boolean
 }
 
+interface ICityRepositoryJPA {
+  +save(cityDM: CityDM) : CityDM
+  +existsByCountryIDAndCityName(countryID: CountryID, cityName: String) : boolean
+}
+
+class CityAssembler {
+  +toDM(city: City) : CityDM
+  +toDomain(cityDM: CityDM) : City
+}
+
+class CityDM {
+  -cityID: CityID
+  -countryID: CountryID
+  -cityName: String
+}
+
+' =====================
 ' Relationships
-UI008 ..> US008ToRegisterACityCtrl: uses
-US008ToRegisterACityCtrl "1"..>"1" ICityRepository: uses
-US008ToRegisterACityCtrl "1"..>"1" ICountryRepository: uses
+' =====================
 
-ICityRepository "1"-->"*" City: manages
-ICountryRepository "1"-->"*" CountryID: finds
+UI "1" --> "1" ToRegisterNewCityController
 
-City "1"-->"1..*" CountryID: belongs to
-Country "1"-->"1" CountryID: identified by
+ToRegisterNewCityController "1" --> "1" CityService
 
-ICityRepository "1"..>"1" CityFactory : uses
+CityService "1" --> "1" ICityRepository
+CityService "1" --> "1" ICountryRepository
+CityService "1" --> "1" CityFactory
+
+CityRepositoryJPAImpl "1" ..|> "1" ICityRepository
+CityRepositoryJPAImpl "1" --> "1" ICityRepositoryJPA
+CityRepositoryJPAImpl "1" --> "1" CityAssembler
+
+ICityRepositoryJPA "1" --> "0..*" CityDM
+
+CityAssembler "1" --> "1" CityFactory
+CityAssembler "1" --> "1" City
+CityAssembler "1" --> "1" CityDM
+
+City "1" --> "1" CountryID
+City "1" --> "1" CityID
 
 @enduml
