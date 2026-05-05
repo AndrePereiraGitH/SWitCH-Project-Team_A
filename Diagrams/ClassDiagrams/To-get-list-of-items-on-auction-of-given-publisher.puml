@@ -6,53 +6,60 @@ skinparam linetype ortho
 ' ========================
 ' CONTROLLER
 ' ========================
-class ToGetListOfPublishersController {
+class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
+    - publisherRepo : IPublisherRepository
+    - editionRepo : IEditionRepository
+    - pubSampleRepo : IPublicationSampleRepository
+    - listingRepo : IListingRepository
+    - listingMapper : US028ListingMapper
     + getAllPublishers() : List<US028PublisherDTO>
-    + findById(publisher) : List<US028AuctionDTO>
+    + findListOfItemsOnAuctionByPublisherId(publisherId : PublisherID) : List<US028ListingDTO>
 }
 
 ' ========================
 ' PUBLISHER
 ' ========================
 interface IPublisherRepository {
-    + getAllPublishers() : List<Publisher>
-    + findById(id : PublisherId) : PublisherId
+    + findAll() : List<Publisher>
+    + findById(id : PublisherID) : Optional<Publisher>
 }
 
 class PublisherRepositoryJpaImpl {
-    + getAllPublishers() : List<Publisher>
-    + findById(id : PublisherId) : PublisherId
+    + findAll() : List<Publisher>
+    + findById(id : PublisherID) : Optional<Publisher>
 }
 
-interface IPublisherRepositoryJPA {
-    + getAllPublishers() : List<PublisherDM>
-    + findById(id : PublisherId) : Optional<PublisherDM>
+interface IPublisherRepositoryJpa {
+    + findAll() : List<PublisherDM>
+    + findById(id : PublisherID) : Optional<PublisherDM>
 }
 
 class PublisherAssembler {
+    + toDomain(dm : PublisherDM) : Publisher
     + toDomainList(dms : List<PublisherDM>) : List<Publisher>
 }
 
 class PublisherFactory {
-    + create(id : PublisherId, name : String) : Publisher
+    + create(id : PublisherID, name : String) : Publisher
 }
 
 class Publisher {
-    - id : PublisherId
+    - id : PublisherID
     - name : String
-    + id() : PublisherId
+    + id() : PublisherID
     + getName() : String
 }
 
-class PublisherId {
+class PublisherID {
     - value : String
     + getId() : String
 }
 
 class PublisherDM {
-    - id : PublisherId
+    - id : PublisherID
     - name : String
-    + getId() : PublisherId
+    + getId() : PublisherID
+    + getName() : String
 }
 
 class US028PublisherMapper {
@@ -66,27 +73,28 @@ class US028PublisherDTO {
 }
 
 ' ========================
-' BIBLIOGRAPHICAL DATA
+' EDITION
 ' ========================
-interface IBibliographicalDataRepository {
-    + findAllBibliographicalDataID(publisherId : PublisherId) : List<BibliographicalDataId>
+interface IEditionRepository {
+    + findIdsByPublisherId(publisherId : PublisherID) : List<EditionID>
 }
 
-class BibliographicalDataRepositoryJpaImpl {
-    + findAllBibliographicalDataID(publisherId : PublisherId) : List<BibliographicalDataId>
+class EditionRepositoryJpaImpl {
+    + findIdsByPublisherId(publisherId : PublisherID) : List<EditionID>
 }
 
-interface IBibliographicalDataRepositoryJPA {
-    + findAllByPublisherId(publisherId : PublisherId) : List<BibliographicalDataDM>
+interface IEditionRepositoryJpa {
+    + findAllByPublisherId(publisherId : PublisherID) : List<EditionDM>
 }
 
-class BibliographicalDataDM {
-    - bdId : BibliographicalDataId
-    - publisherId : PublisherId
-    + bdId() : BibliographicalDataId
+class EditionDM {
+    - editionId : EditionID
+    - publisherId : PublisherID
+    + getEditionId() : EditionID
+    + getPublisherId() : PublisherID
 }
 
-class BibliographicalDataId {
+class EditionID {
     - value : String
 }
 
@@ -94,21 +102,22 @@ class BibliographicalDataId {
 ' PUBLICATION SAMPLE
 ' ========================
 interface IPublicationSampleRepository {
-    + findItemsIdByBibliographicalDataId(ids : List<BibliographicalDataId>) : List<PublicationSampleId>
+    + findIdsByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleId>
 }
 
 class PublicationSampleRepositoryJpaImpl {
-    + findItemsIdByBibliographicalDataId(ids : List<BibliographicalDataId>) : List<PublicationSampleId>
+    + findIdsByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleId>
 }
 
-interface IPublicationSampleRepositoryJPA {
-    + findAllByBibliographicalDataId(ids : List<BibliographicalDataId>) : List<PublicationSampleDM>
+interface IPublicationSampleRepositoryJpa {
+    + findAllByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleDM>
 }
 
 class PublicationSampleDM {
-    - pubSampleId : PublicationSampleId
-    - bibliographicalDataId : BibliographicalDataId
-    + getPubSampleId() : PublicationSampleId
+    - publicationSampleId : PublicationSampleId
+    - editionId : EditionID
+    + getPublicationSampleId() : PublicationSampleId
+    + getEditionId() : EditionID
 }
 
 class PublicationSampleId {
@@ -119,137 +128,111 @@ class PublicationSampleId {
 ' LISTING
 ' ========================
 interface IListingRepository {
-    + findAllListingId(itemsId : List<PublicationSampleId>) : List<ListingId>
+    + findAllByAuctionAndPublicationSampleIdIn(ids : List<PublicationSampleId>) : List<Listing>
 }
 
 class ListingRepositoryJpaImpl {
-    + findAllListingId(itemsId : List<PublicationSampleId>) : List<ListingId>
+    + findAllByAuctionAndPublicationSampleIdIn(ids : List<PublicationSampleId>) : List<Listing>
 }
 
-interface IListingRepositoryJPA {
-    + findAllByItemsId(itemsId : List<PublicationSampleId>) : List<ListingDM>
+interface IListingRepositoryJpa {
+    + findAllByItemsId(ids : List<PublicationSampleId>) : List<ListingDM>
+}
+
+class ListingAssembler {
+    + toDomain(dm : ListingDM) : Listing
+}
+
+class ListingFactory {
+    + create(listingId : ListingId, title : String, itemsId : PublicationSampleId, saleType : String, price : double, shortDescription : String, sellerId : String, pictures : List<String>) : Listing
+}
+
+class Listing {
+    - listingId : ListingId
+    - itemsId : PublicationSampleId
+    - saleType : String
+    + getListingId() : ListingId
+    + getItemsId() : PublicationSampleId
+    + isListingLinkedToAnAuction() : boolean
 }
 
 class ListingDM {
     - listingId : ListingId
     - publicationSampleId : PublicationSampleId
+    - saleType : String
     + getListingId() : ListingId
+    + getItemsId() : PublicationSampleId
+    + getSaleType() : String
 }
 
 class ListingId {
     - value : String
 }
 
-' ========================
-' AUCTION
-' ========================
-interface IAuctionRepository {
-    + getAllAuctionsIdOnListing(listingIds : List<ListingId>) : List<Auction>
+class US028ListingMapper {
+    + toDTO(listings : List<Listing>) : List<US028ListingDTO>
+    + toDTO(listing : Listing) : US028ListingDTO
 }
 
-class AuctionRepositoryJpaImpl {
-    + getAllAuctionsIdOnListing(listingIds : List<ListingId>) : List<Auction>
-}
-
-interface IAuctionRepositoryJPA {
-    + findAllByListingId(listingIds : List<ListingId>) : List<AuctionDM>
-}
-
-class AuctionAssembler {
-    + toDomain(dm : AuctionDM) : Auction
-}
-
-class AuctionFactory {
-    + create(auctionId : AuctionId, ...) : Auction
-}
-
-class Auction {
-    - auctionId : AuctionId
-    - listingId : ListingId
-    + getAuctionId() : AuctionId
-}
-
-class AuctionId {
-    - value : String
-}
-
-class AuctionDM {
-    - auctionId : AuctionId
-    - listingId : ListingId
-    + getAuctionId() : AuctionId
-    + getListingId() : ListingId
-}
-
-class US028AuctionMapper {
-    + toDTOList(auctions : List<Auction>) : List<US028AuctionDTO>
-    + toDTO(auction : Auction) : US028AuctionDTO
-}
-
-class US028AuctionDTO {
-    - auctionId : String
+class US028ListingDTO {
+    - listingId : String
+    - title : String
+    - price : double
+    - shortDescription : String
 }
 
 ' ========================
 ' CONTROLLER RELATIONS
 ' ========================
-ToGetListOfPublishersController "1" --> "1" IPublisherRepository : uses
-ToGetListOfPublishersController "1" --> "1" IBibliographicalDataRepository : uses
-ToGetListOfPublishersController "1" --> "1" IPublicationSampleRepository : uses
-ToGetListOfPublishersController "1" --> "1" IListingRepository : uses
-ToGetListOfPublishersController "1" --> "1" IAuctionRepository : uses
-ToGetListOfPublishersController "1" --> "1" US028PublisherMapper : uses
-ToGetListOfPublishersController "1" --> "1" US028AuctionMapper : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IPublisherRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IEditionRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IPublicationSampleRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IListingRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" US028ListingMapper : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController ..> US028PublisherMapper : uses static
 
 ' ========================
 ' PUBLISHER FLOW
 ' ========================
-IPublisherRepository <|.. PublisherRepositoryJpaImpl : implements
-PublisherRepositoryJpaImpl "1" --> "1" IPublisherRepositoryJPA : delegates to
+IPublisherRepository <|.. PublisherRepositoryJpaImpl
+PublisherRepositoryJpaImpl "1" --> "1" IPublisherRepositoryJpa : delegates to
 PublisherRepositoryJpaImpl "1" --> "1" PublisherAssembler : uses
 PublisherAssembler "1" --> "1" PublisherFactory : uses
-PublisherFactory "1" ..> "1..*" Publisher : creates
-PublisherDM "1" --> "1" PublisherId : has
-Publisher "1" --> "1" PublisherId : has
-US028PublisherMapper "1" ..> "1..*" US028PublisherDTO : creates
-US028PublisherMapper "1" --> "1..*" Publisher : reads
+PublisherFactory "1" ..> "0..*"Publisher : creates
+PublisherDM "1" --> "1" PublisherID : has
+Publisher "1" --> "1" PublisherID : has
+US028PublisherMapper "1" ..> "0..*" US028PublisherDTO : creates
+US028PublisherMapper ..> Publisher : reads
 
 ' ========================
-' BIBLIOGRAPHICAL DATA FLOW
+' EDITION FLOW
 ' ========================
-IBibliographicalDataRepository <|.. BibliographicalDataRepositoryJpaImpl : implements
-BibliographicalDataRepositoryJpaImpl "1" --> "1" IBibliographicalDataRepositoryJPA : delegates to
-BibliographicalDataDM "1" --> "1" BibliographicalDataId : has
-BibliographicalDataDM "1" --> "1" PublisherId : belongs to
+IEditionRepository <|.. EditionRepositoryJpaImpl
+EditionRepositoryJpaImpl "1" --> "1" IEditionRepositoryJpa : delegates to
+EditionDM "1" --> "1" EditionID : has
+EditionDM "1" --> "1" PublisherID : belongs to
 
 ' ========================
 ' PUBLICATION SAMPLE FLOW
 ' ========================
-IPublicationSampleRepository <|.. PublicationSampleRepositoryJpaImpl : implements
-PublicationSampleRepositoryJpaImpl "1" --> "1" IPublicationSampleRepositoryJPA : delegates to
+IPublicationSampleRepository <|.. PublicationSampleRepositoryJpaImpl
+PublicationSampleRepositoryJpaImpl "1" --> "1" IPublicationSampleRepositoryJpa : delegates to
 PublicationSampleDM "1" --> "1" PublicationSampleId : has
-PublicationSampleDM "1" --> "1" BibliographicalDataId : refers to
+PublicationSampleDM "1" --> "1" EditionID : refers to
 
 ' ========================
 ' LISTING FLOW
 ' ========================
-IListingRepository <|.. ListingRepositoryJpaImpl : implements
-ListingRepositoryJpaImpl "1" --> "1" IListingRepositoryJPA : delegates to
+IListingRepository <|.. ListingRepositoryJpaImpl
+ListingRepositoryJpaImpl "1" --> "1" IListingRepositoryJpa : delegates to
+ListingRepositoryJpaImpl "1" --> "1" ListingAssembler : uses
+ListingAssembler "1" --> "1" ListingFactory : uses
+ListingFactory "1" ..> "0..*" Listing : creates
 ListingDM "1" --> "1" ListingId : has
 ListingDM "1" --> "1" PublicationSampleId : refers to
-
-' ========================
-' AUCTION FLOW
-' ========================
-IAuctionRepository <|.. AuctionRepositoryJpaImpl : implements
-AuctionRepositoryJpaImpl "1" --> "1" IAuctionRepositoryJPA : delegates to
-AuctionRepositoryJpaImpl "1" --> "1" AuctionAssembler : uses
-AuctionAssembler "1" --> "1" AuctionFactory : uses
-AuctionFactory "1" ..> "1..*" Auction : creates
-AuctionDM "1" --> "1" AuctionId : has
-AuctionDM "1" --> "1" ListingId : belongs to
-Auction "1" --> "1" AuctionId : has
-Auction "1" --> "1" ListingId : linked to
-US028AuctionMapper "1" --> "0..*" Auction : reads
-US028AuctionMapper "1" ..> "0..*" US028AuctionDTO : creates
+Listing "1" --> "1" ListingId : has
+Listing "1" --> "1" PublicationSampleId : refers to
+US028ListingMapper ..> Listing : reads
+US028ListingMapper ..> US028ListingDTO : creates
 
 @enduml

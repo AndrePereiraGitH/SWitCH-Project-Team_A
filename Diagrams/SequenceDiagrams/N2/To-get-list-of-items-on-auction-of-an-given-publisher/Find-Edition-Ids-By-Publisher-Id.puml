@@ -1,0 +1,43 @@
+@startuml
+hide footbox
+autonumber
+title Find Edition Ids By Publisher Id
+
+participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":IEditionRepository" as editionRepo
+participant ":IEditionRepositoryJpa" as editionJpa
+participant "editionDMList:List<EditionDM>" as editionDMList
+participant "listOfEditionIds:List<EditionID>" as listOfEditionIds
+participant "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[./main.puml Return to Main Diagram]]
+end note
+
+Ctrl -> editionRepo : findIdsByPublisherId(publisherId)
+activate editionRepo
+
+editionRepo -> editionJpa : findAllByPublisherId(publisherId)
+activate editionJpa
+
+editionJpa -> db : SELECT * FROM edition\nWHERE publisher_id = ?
+activate db
+db --> editionJpa : data
+deactivate db
+
+editionJpa -->> editionDMList ** : <<create>>
+editionJpa --> editionRepo : editionDMList
+deactivate editionJpa
+
+editionRepo -->> listOfEditionIds ** : <<create>>
+
+loop for each editionDM in editionDMList
+    editionRepo -> editionRepo : listOfEditionIds.add(editionDM.getEditionId())
+end
+
+editionRepo --> Ctrl : listOfEditionIds
+deactivate editionRepo
+
+@enduml

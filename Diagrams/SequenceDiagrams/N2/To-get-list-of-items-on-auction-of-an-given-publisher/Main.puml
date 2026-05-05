@@ -1,112 +1,55 @@
 @startuml
-
 hide footbox
 autonumber
-title To Get a List Of Items On Auction By A Given Publisher
+title To Get The List Of Items On Auction Of A Given Publisher
 
-actor Buyer as User
+actor Buyer
 
 participant ":UI" as UI
-participant ":ToGetListOfPublishers\nController" as Controller
+participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
 
-
-
-participant ":IAuction\nRepository" as AuctionRepo
-participant ":IAuction\nRepositoryJPA" as AJPA
-participant ":Auction\nAssembler" as AuctionAssembler
-participant ":Auction\nFactory" as Factory
-participant "auctionDMList:\nList<AuctionDM>"
-participant "listOfAuctionOnGivenPublisher:\nList<Auction>"
-participant ":US028Auction\nMapper" as AuctionMapper
-participant "DataBase" as DB
-
-
-User -> UI : I want to see all official\n publishers in the system
+Buyer -> UI : I want to get the list of items\non auction of a given publisher
 activate UI
 
-UI -> Controller : getAllPublishers()
-activate Controller
+UI -> Ctrl : getAllPublishers()
+activate Ctrl
 
-    ref over Controller
-[[to-get-publisher.puml Get All Publishers]]
-    end ref
+ref over Ctrl
+[[get-all-publishers.puml Get All Publishers]]
+end ref
 
-Controller --> UI : listOfPublisherDTO
-deactivate Controller
+Ctrl --> UI : listOfPublisherDTO
+deactivate Ctrl
 
-UI --> User : Show publishers! Choose
+UI --> Buyer : Here is the list of publishers.\nPick one.
 deactivate UI
-User -> UI : Select publisher
+
+Buyer -> UI : publisher
 activate UI
 
-UI -> Controller : findById(publisher)
-activate Controller
-ref over Controller
-[[find-publisher-by-id.puml Find Publisher By Id]]
+UI -> Ctrl : findListOfItemsOnAuctionByPublisherId(publisherId)
+activate Ctrl
+
+ref over Ctrl
+[[find-edition-ids-by-publisher-id.puml Find Edition Ids By Publisher Id]]
 end ref
 
-
-ref over Controller
-[[find-bibliographical-data-id-by-publisher.puml Find Bibliographical Data Ids By Publisher]]
+ref over Ctrl
+[[find-publication-sample-ids-by-edition-ids.puml Find Publication Sample Ids By Edition Ids]]
 end ref
 
-ref over Controller
-[[find-items-id-by-bibliographical-data-id.puml Find Items Ids By Bibliographical Data Id]]
+ref over Ctrl
+[[find-auction-listings-by-publication-sample-ids.puml Find Auction Listings By Publication Sample Ids]]
 end ref
 
-ref over Controller
-[[find-listing-id-by-items-id.puml Find Listing Ids By Items Id]]
+ref over Ctrl
+[[build-listing-dtos.puml Build Listing DTOs]]
 end ref
 
-Controller -> AuctionRepo : getAllAuctionsIdOnListing(listOfListingId)
-activate AuctionRepo
-AuctionRepo -> AJPA : findAllByListingId(listOfListingId)
-activate AJPA
-AJPA -> DB : SELECT * FROM auction\nWHERE listing_id IN
-activate DB
-DB --> AJPA : data
-deactivate DB
-AJPA -->> "auctionDMList:\nList<AuctionDM>" ** : <<create>>
-AJPA --> AuctionRepo : auctionDMList
-deactivate AJPA
+Ctrl --> UI : listOfAuctionListingsDTO
+deactivate Ctrl
 
-AuctionRepo -->> "listOfAuctionOnGivenPublisher:\nList<Auction>" ** : <<create>>
-
-loop for each dm in auctionDMList
-    AuctionRepo -> AuctionAssembler : toDomain(dm)
-    activate AuctionAssembler
-    AuctionAssembler -> Factory : create(dm.getAuctionId(), .... )
-    activate Factory
-    Factory -->> "auction:Auction" ** : <<create>>
-    Factory --> AuctionAssembler : auction
-    deactivate Factory
-    AuctionAssembler --> AuctionRepo : auction
-    deactivate AuctionAssembler
-
-    opt
-    AuctionRepo -> AuctionRepo : listOfAuctionOnGivenPublisher.add(auction)
-    end
-end
-
-AuctionRepo --> Controller : listOfAuctionOnGivenPublisher
-deactivate AuctionRepo
-
-Controller -> AuctionMapper : toDTOList(listOfAuctionOnGivenPublisher)
-activate AuctionMapper
-AuctionMapper -->> "listOfAuctionDTO:\nList<US028AuctionDTO>" ** : <<create>>
-
-loop for each Auction in listOfAuctionOnGivenPublisher
-
-    AuctionMapper -> "AuctionDTO:\nUS028AuctionDTO" ** : toDTO
-    AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
-end
-AuctionMapper --> Controller : listOfAuctionDTO
-deactivate AuctionMapper
-
-Controller --> UI : listOfAuctionDTO
-deactivate Controller
-
-UI --> User : Display items
+UI --> Buyer : Here is the list of items on auction\nfor the selected publisher.
 deactivate UI
 
 @enduml
