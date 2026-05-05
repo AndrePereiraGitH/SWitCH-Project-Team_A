@@ -35,7 +35,7 @@ UI -> Controller : getAllGenres()
 activate Controller
 
 ref over Controller
-  [[GetGenres.puml Get Genres]]
+  [[2.GetGenres.puml Get Genres]]
 end ref
 
 Controller --> UI : listOfGenreDTO
@@ -54,7 +54,7 @@ UI -> Controller : getAllPublicationTypes()
 activate Controller
 
 ref over Controller
-  [[GetPublicationTypes.puml Get Publication Types]]
+ [[3.GetPublicationTypes.puml Get Publication Types]]
 end ref
 
 Controller --> UI : listOfPublicationTypeDTO
