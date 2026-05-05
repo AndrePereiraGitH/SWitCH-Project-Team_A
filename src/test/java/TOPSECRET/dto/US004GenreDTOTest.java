@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ class US004GenreDTOTest {
     void shouldCreateGenreDTO() {
 
         // ARRANGE
-        GenreID id = mock(GenreID.class);
+        GenreId id = mock(GenreId.class);
 
         // ACT
         US004GenreDTO dto =
@@ -35,7 +35,7 @@ class US004GenreDTOTest {
     void shouldThrowExceptionWhenTitleIsNull() {
 
         // ARRANGE
-        GenreID id = mock(GenreID.class);
+        GenreId id = mock(GenreId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -46,7 +46,7 @@ class US004GenreDTOTest {
     void shouldThrowExceptionWhenTitleIsBlank() {
 
         // ARRANGE
-        GenreID id = mock(GenreID.class);
+        GenreId id = mock(GenreId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,

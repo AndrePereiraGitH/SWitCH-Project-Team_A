@@ -2,7 +2,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class CollectionOfPublicationsTest {
     @Test
     void shouldThrowExceptionWhenCollectionNameIsNull() {
         // Arrange
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
         UserId userDouble = mock(UserId.class);
 
         // Act & Assert
@@ -50,7 +50,7 @@ class CollectionOfPublicationsTest {
     @Test
     void shouldThrowExceptionWhenCollectionNameIsBlank() {
         // Arrange
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
         UserId userDouble = mock(UserId.class);
 
         // Act & Assert
@@ -71,7 +71,7 @@ class CollectionOfPublicationsTest {
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
         // Arrange
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -82,7 +82,7 @@ class CollectionOfPublicationsTest {
     void shouldInitializeInstanceWhenValidParameters() {
         // Arrange
         String name = "Favorites";
-        GenreID genreDouble = mock(GenreID.class);
+        GenreId genreDouble = mock(GenreId.class);
         UserId userDouble = mock(UserId.class);
 
         // Act
@@ -102,7 +102,7 @@ class CollectionOfPublicationsTest {
     void shouldReturnNonNullId() {
 
         //Arrange
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications result
@@ -117,7 +117,7 @@ class CollectionOfPublicationsTest {
 
         //Arrange
         UserId user1 = mock(UserId.class);
-        GenreID genre1 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
 
         CollectionOfPublications sameCollection =
                 new CollectionOfPublications("Nice books", genre1, user1);
@@ -131,7 +131,7 @@ class CollectionOfPublicationsTest {
 
         //Arrange
         UserId user1 = mock(UserId.class);
-        GenreID genre1 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
 
         CollectionOfPublications anyCollection =
                 new CollectionOfPublications("Not null", genre1, user1);
@@ -145,7 +145,7 @@ class CollectionOfPublicationsTest {
 
         //Arrange
         UserId user1 = mock(UserId.class);
-        GenreID genre1 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
 
         CollectionOfPublications realCollection =
                 new CollectionOfPublications("I have books", genre1, user1);
@@ -158,7 +158,7 @@ class CollectionOfPublicationsTest {
     void equalsShouldReturnFalseWhenDifferentIds() {
 
         //Arrange
-        GenreID genre1 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
         UserId user1 = mock(UserId.class);
 
         CollectionOfPublications anyCollection =
@@ -175,7 +175,7 @@ class CollectionOfPublicationsTest {
     void equalsShouldReturnTrueWhenIdsAreEqual() throws Exception {
 
         //Arrange
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications collection007 = new CollectionOfPublications("A", genre, user);
@@ -194,7 +194,7 @@ class CollectionOfPublicationsTest {
     void hashCodeShouldMatchWhenIdsAreEqual() throws Exception {
 
         //Arrange
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications collectionMerry =
@@ -215,7 +215,7 @@ class CollectionOfPublicationsTest {
     void sameAsShouldReturnTrueWhenAllAttributesAreEqual() {
 
         //Arrange
-        GenreID genre1 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
         UserId user1 = mock(UserId.class);
 
         CollectionOfPublications collectionGrace =
@@ -232,7 +232,7 @@ class CollectionOfPublicationsTest {
     void equalsShouldReturnFalseWhenIdsDiffer() {
 
         //Assert
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications collectionLegolas =
@@ -249,7 +249,7 @@ class CollectionOfPublicationsTest {
     void sameAsShouldReturnFalseWhenDifferentName() {
 
         //Arrange
-        GenreID genre1 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
         UserId user1 = mock(UserId.class);
 
         CollectionOfPublications collectionDante =
@@ -266,8 +266,8 @@ class CollectionOfPublicationsTest {
     void sameAsShouldReturnFalseWhenDifferentGenre() {
 
         //Arrange
-        GenreID genre1 = mock(GenreID.class);
-        GenreID genre2 = mock(GenreID.class);
+        GenreId genre1 = mock(GenreId.class);
+        GenreId genre2 = mock(GenreId.class);
         UserId user1 = mock(UserId.class);
 
         CollectionOfPublications collectionFrodo =
@@ -284,7 +284,7 @@ class CollectionOfPublicationsTest {
     void hashCodeShouldBeEqualForSameDataIgnoringCase() {
 
         //Arrange
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications collectionEdgar =
@@ -302,7 +302,7 @@ class CollectionOfPublicationsTest {
 
         //Arrange
         CollectionOfPublications collectionGondor =
-                new CollectionOfPublications("Gondor", mock(GenreID.class), mock(UserId.class));
+                new CollectionOfPublications("Gondor", mock(GenreId.class), mock(UserId.class));
 
         int hash1 = collectionGondor.hashCode();
         int hash2 = collectionGondor.hashCode();
@@ -316,11 +316,11 @@ class CollectionOfPublicationsTest {
 
         //Arrange
         CollectionOfPublications collectionRohan =
-                new CollectionOfPublications("Rohan", mock(GenreID.class), mock(UserId.class));
+                new CollectionOfPublications("Rohan", mock(GenreId.class), mock(UserId.class));
 
 
         CollectionOfPublications collectionShire =
-                new CollectionOfPublications("Gohan", mock(GenreID.class), mock(UserId.class));
+                new CollectionOfPublications("Gohan", mock(GenreId.class), mock(UserId.class));
 
         //Act + assert
         assertNotEquals(collectionRohan.hashCode(), collectionShire.hashCode());

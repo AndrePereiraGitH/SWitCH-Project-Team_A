@@ -4,7 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US013GenreMapper;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
@@ -71,7 +71,7 @@ public class PublicListByGenreController {
      * @return a list of {@link US020CollectionOfPublicationsDTO} matching the specified genre
      * @throws IllegalArgumentException if the provided genre is {@code null}
      */
-    public List<US020CollectionOfPublicationsDTO> getPublicListsByGenre(GenreID genreId) throws IllegalArgumentException {
+    public List<US020CollectionOfPublicationsDTO> getPublicListsByGenre(GenreId genreId) throws IllegalArgumentException {
 
         if (genreId == null) {
             throw new IllegalArgumentException("Genre can't be null.");

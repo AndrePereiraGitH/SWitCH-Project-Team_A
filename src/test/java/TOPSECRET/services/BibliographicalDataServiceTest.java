@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,14 +27,14 @@ class BibliographicalDataServiceTest {
     private List<AuthorId> authors;
     private Locale language;
     private LocalDate date;
-    private List<GenreID> genres;
+    private List<GenreId> genres;
     private final String chunks = "Chunks of text";
 
     @Mock
     private AuthorId authorId;
 
     @Mock
-    private GenreID genreId;
+    private GenreId genreId;
 
     @Mock
     private BibliographicalDataFactory factory;

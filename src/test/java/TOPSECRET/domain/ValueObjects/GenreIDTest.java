@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link GenreID}.
+ * Unit tests for {@link GenreId}.
  * Verifies that GenreID is created correctly and that equality is based on value.
  */
 class GenreIDTest {
@@ -17,7 +17,7 @@ class GenreIDTest {
         String id = "1";
 
         //Act
-        GenreID genreID = new GenreID(id);
+        GenreId genreID = new GenreId(id);
 
         //Assert
         assertNotNull(genreID);
@@ -30,7 +30,7 @@ class GenreIDTest {
         String id = "genre-123";
 
         //Act
-        GenreID genreID = new GenreID(id);
+        GenreId genreID = new GenreId(id);
 
         //Assert
         assertEquals(id, genreID.getID());
@@ -44,7 +44,7 @@ class GenreIDTest {
         String id = null;
 
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new GenreID(id));
+        assertThrows(IllegalArgumentException.class, () -> new GenreId(id));
     }
 
     // Blank string must be rejected
@@ -55,7 +55,7 @@ class GenreIDTest {
         String id = "     ";
 
         //Act & Asser
-        assertThrows(IllegalArgumentException.class, () -> new GenreID(id));
+        assertThrows(IllegalArgumentException.class, () -> new GenreId(id));
     }
 
     // Empty string must be rejected
@@ -65,7 +65,7 @@ class GenreIDTest {
         String id = "";
 
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new GenreID(id));
+        assertThrows(IllegalArgumentException.class, () -> new GenreId(id));
     }
 
     // Two GenreIDs with the same value must be equal
@@ -75,8 +75,8 @@ class GenreIDTest {
         String id = "1";
 
         //Act
-        GenreID id1 = new GenreID("1");
-        GenreID id2 = new GenreID("1");
+        GenreId id1 = new GenreId("1");
+        GenreId id2 = new GenreId("1");
 
         assertEquals(id1, id2);
     }
@@ -89,8 +89,8 @@ class GenreIDTest {
         String secondId = "2";
 
         //Act
-        GenreID id1 = new GenreID(firstId);
-        GenreID id2 = new GenreID(secondId);
+        GenreId id1 = new GenreId(firstId);
+        GenreId id2 = new GenreId(secondId);
 
         //Assert
         assertNotEquals(id1, id2);

@@ -4,7 +4,7 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US017GenreDTO;
 import TOPSECRET.dto.US017GenreMapper;
@@ -61,7 +61,7 @@ public class ToCreateCollectionOfPublicationsController {
      */
     public CollectionOfPublications createCollection(
             String name,
-            GenreID genreId,
+            GenreId genreId,
             UserId userId
     ) {
         if (userId == null || genreId == null) {

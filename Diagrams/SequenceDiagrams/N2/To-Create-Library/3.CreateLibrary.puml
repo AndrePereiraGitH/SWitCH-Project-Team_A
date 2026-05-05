@@ -1,0 +1,32 @@
+@startuml
+hide footbox
+autonumber
+title Create Library
+
+
+participant ":LibraryService" as service
+participant ":LibraryFactory" as factory
+participant "library:Library" as lib
+
+
+note over service #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+
+
+
+
+service -> factory: create(libraryName, userId)
+activate factory
+
+factory -->> lib**: <<create>>
+factory --> service: library
+deactivate factory
+
+
+
+
+@enduml

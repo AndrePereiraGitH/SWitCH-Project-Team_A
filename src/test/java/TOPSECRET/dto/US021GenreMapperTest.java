@@ -1,7 +1,7 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ class US021GenreMapperTest {
     @Test
     void shouldConvertGenreToDTO() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         Genre genre = mock(Genre.class);
         when(genre.id()).thenReturn(genreId);
         when(genre.getGenreType()).thenReturn("Drama");
@@ -72,7 +72,7 @@ class US021GenreMapperTest {
     @Test
     void shouldConvertSingleGenreToListOfOneDTO() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         Genre genre = mock(Genre.class);
         when(genre.id()).thenReturn(genreId);
         when(genre.getGenreType()).thenReturn("Drama");
@@ -89,12 +89,12 @@ class US021GenreMapperTest {
     @Test
     void shouldConvertMultipleGenresToListOfDTOs() {
         // Arrange
-        GenreID genreId1 = new GenreID("drama");
+        GenreId genreId1 = new GenreId("drama");
         Genre genre1 = mock(Genre.class);
         when(genre1.id()).thenReturn(genreId1);
         when(genre1.getGenreType()).thenReturn("Drama");
 
-        GenreID genreId2 = new GenreID("fiction");
+        GenreId genreId2 = new GenreId("fiction");
         Genre genre2 = mock(Genre.class);
         when(genre2.id()).thenReturn(genreId2);
         when(genre2.getGenreType()).thenReturn("Fiction");
@@ -111,17 +111,17 @@ class US021GenreMapperTest {
     @Test
     void shouldMaintainOrderWhenConvertingList() {
         // Arrange
-        GenreID genreId1 = new GenreID("drama");
+        GenreId genreId1 = new GenreId("drama");
         Genre genre1 = mock(Genre.class);
         when(genre1.id()).thenReturn(genreId1);
         when(genre1.getGenreType()).thenReturn("Drama");
 
-        GenreID genreId2 = new GenreID("fiction");
+        GenreId genreId2 = new GenreId("fiction");
         Genre genre2 = mock(Genre.class);
         when(genre2.id()).thenReturn(genreId2);
         when(genre2.getGenreType()).thenReturn("Fiction");
 
-        GenreID genreId3 = new GenreID("horror");
+        GenreId genreId3 = new GenreId("horror");
         Genre genre3 = mock(Genre.class);
         when(genre3.id()).thenReturn(genreId3);
         when(genre3.getGenreType()).thenReturn("Horror");

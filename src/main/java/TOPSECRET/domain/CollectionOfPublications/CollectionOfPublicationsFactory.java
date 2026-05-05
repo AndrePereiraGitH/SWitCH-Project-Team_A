@@ -1,6 +1,6 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 /**
@@ -35,7 +35,7 @@ public class CollectionOfPublicationsFactory {
      * @throws IllegalArgumentException if any argument is null or if name is blank
      */
     // instance method on purpose — so it can be injected and doubled in tests (static methods cannot be doubled)
-    public CollectionOfPublications create(String name, GenreID genreId, UserId userId) {
+    public CollectionOfPublications create(String name, GenreId genreId, UserId userId) {
         return new CollectionOfPublications(name, genreId, userId);
     }
 }
