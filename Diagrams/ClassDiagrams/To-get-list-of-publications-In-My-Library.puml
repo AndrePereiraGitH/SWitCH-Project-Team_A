@@ -29,7 +29,7 @@ class UserDM {
     + getId(): UserId
 }
 
-class UserId <<factory>> {
+class UserId {
 }
 
 ' ─────────────────────────────────────────
@@ -43,16 +43,27 @@ interface IPublicationSampleRepositoryJpa {
     + findAllByOwnerId(userId: UserId): List<PublicationSampleDM>
 }
 
-class PublicationSampleAssembler <<factory>> {
+class PublicationSampleAssembler {
     + toDomain(publicationSampleDM: PublicationSampleDM): PublicationSample
 }
 
+class PublicationSampleFactory <<factory>> {
+    + create(id: PublicationSampleId, bibliographicalDataId: BibliographicalDataId, ownerId: UserId, editionId: EditionId, libraryId: LibraryId, collecOfPubId: CollecOfPubId, publicationStatus: PublicationStatus, condition: Condition): PublicationSample
+}
+
 class PublicationSample {
-    + isOwnedByUser(userId: UserId): boolean
     + isInUserLibrary(): boolean
 }
 
 class PublicationSampleDM {
+    + id(): PublicationSampleId
+    + getBibliographicalDataID(): BibliographicalDataId
+    + getOwnerID(): UserId
+    + getEditionID(): EditionId
+    + getLibraryID(): LibraryId
+    + getCollecOfPubID(): CollecOfPubId
+    + getPublicationStatus(): PublicationStatus
+    + getCondition(): Condition
 }
 
 ' ─────────────────────────────────────────
@@ -76,29 +87,31 @@ rectangle Database {
 '  Relationships
 ' ─────────────────────────────────────────
 
-UI ..> GetListOfPublicationsInLibraryController : uses
+UI "1" ..> "1" GetListOfPublicationsInLibraryController : uses
 
-GetListOfPublicationsInLibraryController ..> IUserRepository : uses
-GetListOfPublicationsInLibraryController ..> IPublicationSampleRepository : uses
-GetListOfPublicationsInLibraryController ..> US012PublicationSampleMapper : uses
+GetListOfPublicationsInLibraryController "1" ..> "1" IUserRepository : uses
+GetListOfPublicationsInLibraryController "1" ..> "1" IPublicationSampleRepository : uses
+GetListOfPublicationsInLibraryController "1" ..> "1" US012PublicationSampleMapper : uses
 
 IUserRepositoryJPA ..|> IUserRepository : implements
-IUserRepositoryJPA ..> UserDM : returns Optional<UserDM>
-IUserRepositoryJPA ..> Database : SELECT * FROM users\nWHERE username = ?
+IUserRepositoryJPA "1" ..> "0..1" UserDM : returns
+IUserRepositoryJPA "1" ..> "1" Database : queries
 
-IUserRepository ..> UserDM : reads (map UserDM::getId)
-IUserRepository ..> UserId : returns Optional<UserId>
+IUserRepository "1" ..> "0..1" UserDM : reads
+IUserRepository "1" ..> "0..1" UserId : returns
 
 IPublicationSampleRepositoryJpa ..|> IPublicationSampleRepository : implements
-IPublicationSampleRepository ..> PublicationSampleAssembler : uses
+IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler : uses
+IPublicationSampleRepository "1" ..> "0..*" PublicationSample : filters
 
-IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns List<PublicationSampleDM>
-IPublicationSampleRepositoryJpa ..> Database : queries
+IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
+IPublicationSampleRepositoryJpa "1" ..> "1" Database : queries
 
-PublicationSampleAssembler ..> PublicationSampleDM : reads
-PublicationSampleAssembler ..> PublicationSample : creates
+PublicationSampleAssembler "1" ..> "1" PublicationSampleDM : reads
+PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
+PublicationSampleFactory "1" ..> "1" PublicationSample : creates
 
-US012PublicationSampleMapper ..> PublicationSample : reads
-US012PublicationSampleMapper ..> US012PublicationDetailsDTO : creates
+US012PublicationSampleMapper "1" ..> "0..*" PublicationSample : reads
+US012PublicationSampleMapper "1" ..> "0..*" US012PublicationDetailsDTO : creates
 
 @enduml

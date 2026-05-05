@@ -9,12 +9,18 @@ participant ":GetListOfPublicationsInLibraryController" as Ctrl
 
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
+participant "userDM: Optional<UserDM>" as userDM
 participant ":IPublicationSampleRepository" as pubSampleRepo
+
+participant "listOfPublications\n:List<PublicationSample>" as ListPubs
 participant ":IPublicationSampleRepositoryJpa" as pbJpa
+participant "pbSamplesDM\n:List<PublicationSampleDM>" as pbSamplesDM
+
+
 participant ":PublicationSampleAssembler" as pbAssembler
 participant ":PublicationSampleFactory" as factory
 participant "pbSample:PublicationSample" as pbDomain
-participant "listOfPublications:List<PublicationSample>" as ListPubs
+
 participant "Database" as db
 participant ":US012PublicationSampleMapper" as Mapper
 participant "listOfPublicationsDTO:List<US012PublicationDetailsDTO>" as ListDTO
@@ -41,12 +47,16 @@ activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: userDM:Optional<UserDM>
+userJpa --> userDM**: <<create>>
+userJpa -> userDM: getId()
+activate userDM
+userDM --> userJpa: userId
+deactivate userDM
+
+userJpa --> userRepo: userId
 deactivate userJpa
 
-userRepo -> userRepo: userDM.map(UserDM::getId)
-
-userRepo --> Ctrl: userId:Optional<UserId>
+userRepo --> Ctrl: userId
 deactivate userRepo
 
 Ctrl -> pubSampleRepo: findByUserIdAndLibraryIdIsNotNull(userId)
@@ -60,10 +70,14 @@ activate db
 db --> pbJpa: data
 deactivate db
 
-pbJpa --> pubSampleRepo: pbSamplesDM:List<PublicationSampleDM>
+pbJpa -->> pbSamplesDM **: <<create>>
+
+pbJpa --> pubSampleRepo: pbSamplesDM
+
 deactivate pbJpa
 
 pubSampleRepo -->> ListPubs **: <<create>>
+
 
 loop for each dm in pbSamplesDM
     pubSampleRepo -> pbAssembler: toDomain(dm)
@@ -75,7 +89,7 @@ loop for each dm in pbSamplesDM
     deactivate factory
     pbAssembler --> pubSampleRepo: pbSample
     deactivate pbAssembler
-    pubSampleRepo -> pubSampleRepo: filter(pbSample.isOwnedByUser(userId) && pbSample.isInUserLibrary())
+    pubSampleRepo -> pubSampleRepo: pbSample.isInUserLibrary()
     pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
 end
 
