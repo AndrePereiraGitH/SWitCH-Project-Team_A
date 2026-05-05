@@ -28,7 +28,7 @@ class ToRegisterAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new ToRegisterAuthorController(null)
         );
-        assertEquals("AuthorRepository cannot be null", ex.getMessage());
+        assertEquals("AuthorService cannot be null", ex.getMessage());
     }
 
 //    @Test

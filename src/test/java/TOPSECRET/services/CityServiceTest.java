@@ -5,7 +5,6 @@ import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,10 +42,9 @@ class CityServiceTest {
     void shouldCreateAndSaveCity() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
-        when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
+        when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, "Braga")).thenReturn(doubleCity);
         when(doubleCityRepository.save(doubleCity)).thenReturn(doubleCity);
 
@@ -60,7 +58,7 @@ class CityServiceTest {
     @Test
     void shouldThrowWhenCountryNotFound() {
         // Arrange
-        when(doubleCountryRepository.findCountryIdByCountryName("Unknown")).thenReturn(Optional.empty());
+        when(doubleCountryRepository.findIdByName("Unknown")).thenReturn(Optional.empty());
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
@@ -72,9 +70,8 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenFactoryThrows() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
-        when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
+        when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, ""))
                 .thenThrow(new IllegalArgumentException("A city name cannot be left blank"));
 
@@ -88,10 +85,9 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenRepositoryThrows() {
 
         // Arrange
-        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
-        when(doubleCountryRepository.findCountryIdByCountryName("Portugal")).thenReturn(Optional.of(countryID));
+        when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, "Braga")).thenReturn(doubleCity);
         when(doubleCityRepository.save(doubleCity))
                 .thenThrow(new IllegalArgumentException("This city already exists in the system."));

@@ -73,6 +73,6 @@ public class CountryFactory {
             throw new IllegalArgumentException("Country name cannot be null");
         }
 
-        return new Country(countryName, countryId);
+        return new Country(countryId, countryName);
     }
 }

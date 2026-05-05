@@ -1,12 +1,12 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 /**
  * DTO representing Genre for US004.
  */
 public record US004GenreDTO(
-        GenreID id,
+        GenreId id,
         String title
 ) {
 

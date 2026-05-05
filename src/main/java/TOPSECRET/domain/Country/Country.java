@@ -70,7 +70,7 @@ public class Country implements AggregateRoot<CountryId> {
      *                    must not be {@code null}
      * @throws IllegalArgumentException if {@code countryName} is {@code null} or blank
      */
-    protected Country(String countryName, CountryId countryId) {
+    protected Country(CountryId countryId, String countryName) {
 
         if (countryName == null || countryName.isBlank()) {
             throw new IllegalArgumentException("Country name cannot be null or blank");
@@ -80,51 +80,19 @@ public class Country implements AggregateRoot<CountryId> {
         this._countryName = countryName;
     }
 
-    /**
-     * Returns the unique identifier of this {@code Country}.
-     *
-     * @return the {@link CountryId} associated with this country
-     */
     public CountryId id() {
         return _countryId;
     }
 
-    /**
-     * Returns the name of this {@code Country}.
-     *
-     * @return the country name
-     */
     public String getCountryName() {
         return _countryName;
     }
 
-    /**
-     * Determines whether this object is equal to another object.
-     * <p>
-     * Equality is delegated to the {@link #sameAs(Object)} method,
-     * which defines the domain-specific equality rules for {@code Country}.
-     * </p>
-     *
-     * @param object the object to compare with
-     * @return {@code true} if the objects are considered equal according to
-     *         domain identity rules; {@code false} otherwise
-     */
     @Override
     public boolean equals(Object object) {
         return sameAs(object);
     }
 
-    /**
-     * Domain-specific equality check for {@code Country}.
-     * <p>
-     * Two {@code Country} instances are considered the same if they are
-     * the same instance or if they have the same {@link CountryId}.
-     * </p>
-     *
-     * @param object the object to compare with
-     * @return {@code true} if this object is the same as the given object
-     *         according to domain identity rules; {@code false} otherwise
-     */
     @Override
     public boolean sameAs(Object object) {
         if (this == object)

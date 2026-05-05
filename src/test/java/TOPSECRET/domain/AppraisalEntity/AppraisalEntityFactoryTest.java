@@ -2,7 +2,7 @@ package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -40,7 +40,7 @@ class AppraisalEntityFactoryTest {
         AppraisalEntityFactory factory = new AppraisalEntityFactory();
 
         Contact contact = mock(Contact.class);
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         PublicationTypeId type = mock(PublicationTypeId.class);
 
         try (MockedConstruction<AppraisalEntity> mocked =
@@ -70,7 +70,7 @@ class AppraisalEntityFactoryTest {
         AppraisalEntityFactory factory = new AppraisalEntityFactory();
 
         Contact contact = mock(Contact.class);
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         PublicationTypeId type = mock(PublicationTypeId.class);
 
         try (MockedConstruction<AppraisalEntity> mocked =
@@ -99,7 +99,7 @@ class AppraisalEntityFactoryTest {
         Contact contact = mock(Contact.class);
 
         List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         // ACT
         AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
@@ -118,7 +118,7 @@ class AppraisalEntityFactoryTest {
         Contact contact = mock(Contact.class);
 
         List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         // ACT
         AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
@@ -136,7 +136,7 @@ class AppraisalEntityFactoryTest {
         Contact contact = mock(Contact.class);
 
         List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
 
@@ -152,7 +152,7 @@ class AppraisalEntityFactoryTest {
         Contact contact = mock(Contact.class);
 
         List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
 
@@ -168,7 +168,7 @@ class AppraisalEntityFactoryTest {
         Contact contact = mock(Contact.class);
 
         List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
 
@@ -184,7 +184,7 @@ class AppraisalEntityFactoryTest {
         Contact contact = mock(Contact.class);
 
         List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
-        List<GenreID> genres = List.of(mock(GenreID.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
         AppraisalEntity result = factory.create(id, "Name", contact, pubs, genres);
 

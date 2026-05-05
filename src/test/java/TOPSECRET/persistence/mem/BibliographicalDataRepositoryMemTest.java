@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -402,7 +402,7 @@ class BibliographicalDataRepositoryMemTest {
     @Test
     void findAllBibliographicalDataByGenreId_shouldReturnIds_whenGenreMatches() throws InstanceAlreadyExistsException {
         // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         when(bd1Double.getGenres()).thenReturn(List.of(genreIdDouble));
         when(bd1Double.id()).thenReturn(bd1ID);
@@ -422,8 +422,8 @@ class BibliographicalDataRepositoryMemTest {
     @Test
     void findAllBibliographicalDataByGenreId_shouldReturnEmpty_whenNoMatch() throws InstanceAlreadyExistsException {
         // Arrange
-        GenreID genreDouble1 = mock(GenreID.class);
-        GenreID genreDouble2 = mock(GenreID.class);
+        GenreId genreDouble1 = mock(GenreId.class);
+        GenreId genreDouble2 = mock(GenreId.class);
 
         when(bd1Double.getGenres()).thenReturn(List.of(genreDouble1));
 
@@ -441,7 +441,7 @@ class BibliographicalDataRepositoryMemTest {
     @Test
     void findAllBibliographicalDataByGenreId_shouldReturnMultipleIds_whenMultipleMatch() throws InstanceAlreadyExistsException {
         // Arrange
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         when(bd1Double.getGenres()).thenReturn(List.of(genreIdDouble));
         when(bd2Double.getGenres()).thenReturn(List.of(genreIdDouble));

@@ -4,7 +4,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     private String _name;
     private Contact _contact;
     private List<PublicationTypeId> _publicationTypeId;
-    private List<GenreID> _genreId;
+    private List<GenreId> _genreId;
 
 
     /**
@@ -54,7 +54,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     protected AppraisalEntity(String name,
                               Contact contact,
                               List<PublicationTypeId> publicationTypeId,
-                              List<GenreID> genreId) {
+                              List<GenreId> genreId) {
 
         validate(name, contact, publicationTypeId, genreId);
 
@@ -79,7 +79,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
                               String name,
                               Contact contact,
                               List<PublicationTypeId> publicationTypeId,
-                              List<GenreID> genreId) {
+                              List<GenreId> genreId) {
 
         if (id == null) {
             throw new IllegalArgumentException("AppraisalEntity id can't be null.");
@@ -112,7 +112,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         return List.copyOf(_publicationTypeId);
     }
 
-    public List<GenreID> getGenreIds() {
+    public List<GenreId> getGenreIds() {
         return List.copyOf(_genreId);
     }
 
@@ -186,7 +186,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     public AppraisalEntity update(String name,
                                   Contact contact,
                                   List<PublicationTypeId> publicationTypes,
-                                  List<GenreID> genres
+                                  List<GenreId> genres
     ) {
         validate(name, contact, publicationTypes, genres);
 
@@ -209,7 +209,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     private void validate( String name,
                            Contact contact,
                            List<PublicationTypeId> publicationTypes,
-                           List<GenreID> genres
+                           List<GenreId> genres
     ) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be null or empty");

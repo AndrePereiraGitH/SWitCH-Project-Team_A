@@ -35,17 +35,6 @@ public class CountryId implements DomainID {
         this.countryId = id;
     }
 
-    /**
-     * Indicates whether some other object is equal to this {@code CountryID}.
-     * <p>
-     * Two {@code CountryID} instances are considered equal if and only if
-     * their underlying identifier strings are equal.
-     * </p>
-     *
-     * @param object the object to compare with
-     * @return {@code true} if the given object is a {@code CountryID}
-     *         with the same identifier; {@code false} otherwise
-     */
     @Override
     public boolean equals(Object object) {
         if (this == object)
@@ -60,11 +49,6 @@ public class CountryId implements DomainID {
         return false;
     }
 
-    /**
-     * Returns the string identifier of this {@code CountryID}.
-     *
-     * @return the country identifier string
-     */
     public String getCountryID() {
         return countryId;
     }
