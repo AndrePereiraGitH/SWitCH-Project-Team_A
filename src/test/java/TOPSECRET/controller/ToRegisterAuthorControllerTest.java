@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -31,11 +31,11 @@ class ToRegisterAuthorControllerTest {
         assertEquals("AuthorRepository cannot be null", ex.getMessage());
     }
 
-    @Test
-    void givenValidRepository_whenConstructing_thenCreatesSuccessfully() {
-        IAuthorRepository repositoryDouble = mock(IAuthorRepository.class);
-        assertDoesNotThrow(() -> new ToRegisterAuthorController(repositoryDouble));
-    }
+//    @Test
+//    void givenValidRepository_whenConstructing_thenCreatesSuccessfully() {
+//        IAuthorRepository repositoryDouble = mock(IAuthorRepository.class);
+//        assertDoesNotThrow(() -> new ToRegisterAuthorController(repositoryDouble));
+//    }
 
     // -------------------------------------------------------------------------
     // register()

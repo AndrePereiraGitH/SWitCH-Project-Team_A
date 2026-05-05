@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CollectionOfPublicationsIDTest {
+class CollectionOfPublicationsIdTest {
 
     @Test
     void equalsShouldReturnTrueWhenSameInstance() {
 
         //Arrange
-        CollectionOfPublicationsID id = new CollectionOfPublicationsID("coolColPub");
+        CollectionOfPublicationsId id = new CollectionOfPublicationsId("coolColPub");
 
         //Act
         assertTrue(id.equals(id));
@@ -20,8 +20,8 @@ class CollectionOfPublicationsIDTest {
     void equalsShouldReturnTrueWhenSameValue() {
 
         //Arrange
-        CollectionOfPublicationsID id1 = new CollectionOfPublicationsID("veryCoolColPub");
-        CollectionOfPublicationsID id2 = new CollectionOfPublicationsID("veryCoolColPub");
+        CollectionOfPublicationsId id1 = new CollectionOfPublicationsId("veryCoolColPub");
+        CollectionOfPublicationsId id2 = new CollectionOfPublicationsId("veryCoolColPub");
 
         //Act
         assertTrue(id1.equals(id2));
@@ -31,8 +31,8 @@ class CollectionOfPublicationsIDTest {
     void equalsShouldReturnFalseWhenDifferentValue() {
 
         //Arrange
-        CollectionOfPublicationsID id1 = new CollectionOfPublicationsID("myColPub");
-        CollectionOfPublicationsID id2 = new CollectionOfPublicationsID("yourColPub");
+        CollectionOfPublicationsId id1 = new CollectionOfPublicationsId("myColPub");
+        CollectionOfPublicationsId id2 = new CollectionOfPublicationsId("yourColPub");
 
         //Act
         assertFalse(id1.equals(id2));
@@ -42,7 +42,7 @@ class CollectionOfPublicationsIDTest {
     void equalsShouldReturnFalseWhenNull() {
 
         //Arrange
-        CollectionOfPublicationsID id = new CollectionOfPublicationsID("nullColPubId");
+        CollectionOfPublicationsId id = new CollectionOfPublicationsId("nullColPubId");
 
         //Act
         assertFalse(id.equals(null));
@@ -52,7 +52,7 @@ class CollectionOfPublicationsIDTest {
     void equalsShouldReturnFalseWhenDifferentType() {
 
         //Arrange
-        CollectionOfPublicationsID id = new CollectionOfPublicationsID("colPub123");
+        CollectionOfPublicationsId id = new CollectionOfPublicationsId("colPub123");
 
         //Act
         assertFalse(id.equals("colPub123"));
@@ -62,8 +62,8 @@ class CollectionOfPublicationsIDTest {
     void equalShouldBeSymmetric() {
 
         //Arrange
-        CollectionOfPublicationsID id1 = new CollectionOfPublicationsID("symmetricColPubId");
-        CollectionOfPublicationsID id2 = new CollectionOfPublicationsID("symmetricColPubId");
+        CollectionOfPublicationsId id1 = new CollectionOfPublicationsId("symmetricColPubId");
+        CollectionOfPublicationsId id2 = new CollectionOfPublicationsId("symmetricColPubId");
 
         //Act
         assertTrue(id1.equals(id2));
@@ -74,7 +74,7 @@ class CollectionOfPublicationsIDTest {
     void toStringShouldReturnIdValue() {
 
         //Arrange
-        CollectionOfPublicationsID id = new CollectionOfPublicationsID("goToString");
+        CollectionOfPublicationsId id = new CollectionOfPublicationsId("goToString");
 
         //Act
         assertEquals("goToString", id.getId());
@@ -85,6 +85,6 @@ class CollectionOfPublicationsIDTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> new CollectionOfPublicationsID(null));
+                () -> new CollectionOfPublicationsId(null));
     }
 }
