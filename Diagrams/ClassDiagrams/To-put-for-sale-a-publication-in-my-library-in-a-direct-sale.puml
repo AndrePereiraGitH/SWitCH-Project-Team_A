@@ -10,8 +10,8 @@ class ToPutForSaleAPublicationInDirectSaleController {
     - publicationSampleRepository: IPublicationSampleRepository
     - listingService: ListingService
     - pubSampleMapper: US015PublicationSampleMapper
-    + findLibraryPublicationsAvailableForSale(): List<US015PublicationSampleDTO>
-    + createDirectSaleListing(String title, List<PublicationSampleId> selectedPublicationIds,\n Price price, String shortDescription, UserId userId, List<Picture> pictures): boolean
+    + findLibraryPublicationsAvailableForSale(UserId userId): List<US015PublicationSampleDTO>
+    + createDirectSaleListing(String title, List<PublicationSampleId> selectedPublicationIds,\n Price price, String shortDescription, UserId userId, List<Picture> pictures): Listing
 }
 
 ' -------------------------
@@ -19,11 +19,11 @@ class ToPutForSaleAPublicationInDirectSaleController {
 ' -------------------------
 
 interface ILibraryRepository {
-    + findByUserId(UserId userId): Library
+    + getByUserId(UserId userId): Library
 }
 
 interface ILibraryRepositoryJPA {
-    + findByUserId(UserId userId): LibraryDM
+    + getByUserId(UserId userId): LibraryDM
 }
 
 class LibraryAssembler {

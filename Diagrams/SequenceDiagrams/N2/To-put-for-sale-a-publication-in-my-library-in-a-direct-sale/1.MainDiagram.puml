@@ -94,7 +94,7 @@ LServ --> Ctrl : persistedListing
 deactivate LServ
 
 
-Ctrl --> UI : success
+Ctrl --> UI : persistedListing
 deactivate Ctrl
 
 UI --> User : Publication(s) put for direct\n sale with success

@@ -49,13 +49,13 @@ database "Database" as DB
 ' --- Step 1: User initiates the process ---
 User -> UI : I want to put for sale a publication\nin a direct sale
 activate UI
-UI -> Ctrl : findLibraryPublicationsAvailableForSale()
+UI -> Ctrl : findLibraryPublicationsAvailableForSale(UserId userId)
 activate Ctrl
 
 ' --- Step 2: find User's Library ---
-Ctrl -> LibRepo : findByUserId(userId)
+Ctrl -> LibRepo : getByUserId(userId)
 activate LibRepo
-LibRepo -> LibRepoJPA : findByUserId(userId)
+LibRepo -> LibRepoJPA : getByUserId(userId)
 activate LibRepoJPA
 LibRepoJPA -> DB : query library by userId
 activate DB
@@ -214,7 +214,7 @@ LServ --> Ctrl : persistedListing
 deactivate LServ
 
 
-Ctrl --> UI : success
+Ctrl --> UI : persistedListing
 deactivate Ctrl
 
 UI --> User : Publication(s) put for direct\n sale with success

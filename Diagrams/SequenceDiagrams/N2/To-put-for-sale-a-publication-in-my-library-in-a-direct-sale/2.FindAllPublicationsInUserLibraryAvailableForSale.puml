@@ -45,9 +45,9 @@ end note
 activate Ctrl
 
 ' --- Step 2: find User's Library ---
-Ctrl -> LibRepo : findByUserId(userId)
+Ctrl -> LibRepo : getByUserId(userId)
 activate LibRepo
-LibRepo -> LibRepoJPA : findByUserId(userId)
+LibRepo -> LibRepoJPA : getByUserId(userId)
 activate LibRepoJPA
 LibRepoJPA -> DB : query library by userId
 activate DB
