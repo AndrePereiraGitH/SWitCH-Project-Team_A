@@ -1,7 +1,6 @@
 package TOPSECRET.domain.ValueObjects;
 
 import jakarta.persistence.Embeddable;
-import TOPSECRET.ddd.DomainID;
 import lombok.NoArgsConstructor;
 
 /**
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
  */
 @Embeddable
 @NoArgsConstructor
-public class CountryId implements DomainID {
+public class CountryID {
 
     private String countryId;
 
@@ -28,7 +27,7 @@ public class CountryId implements DomainID {
      *           must not be {@code null} or blank
      * @throws IllegalArgumentException if {@code id} is {@code null} or blank
      */
-    public CountryId(String id) {
+    public CountryID(String id) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("CountryID can't be null or empty.");
         }
@@ -51,10 +50,10 @@ public class CountryId implements DomainID {
         if (this == object)
             return true;
 
-        if (object instanceof CountryId) {
-            CountryId oCountryId = (CountryId) object;
+        if (object instanceof CountryID) {
+            CountryID oCountryID = (CountryID) object;
 
-            if (this.countryId.equals(oCountryId.countryId))
+            if (this.countryId.equals(oCountryID.countryId))
                 return true;
         }
         return false;
