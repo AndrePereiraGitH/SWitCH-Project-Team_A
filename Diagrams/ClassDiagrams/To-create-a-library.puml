@@ -16,7 +16,7 @@ class LibraryService {
 
 ' ── Domain Layer ───────────────────────────────────────────
 interface IUserRepository {
-    + findUserIdByUsername(username: String): Optional<UserId>
+    + findUserIdByUsername(username: String): UserId
 }
 
 interface ILibraryRepository {
@@ -26,6 +26,7 @@ interface ILibraryRepository {
 
 class LibraryFactory {
     + create(libraryName: String, userId: UserId): Library
+    + create(id: LibraryId, name: String, userId: UserId): Library
 }
 
 class Library {
@@ -41,7 +42,7 @@ interface IUserRepositoryJPA {
 }
 
 interface ILibraryRepositoryJPA {
-    + findByUserId(userId: UserId): Optional<LibraryDM>
+    + existsByUserId(userId: UserId): boolean
     + save(libraryDM: LibraryDM): LibraryDM
 }
 
@@ -50,34 +51,46 @@ class LibraryAssembler {
     + toDomain(libraryDM: LibraryDM): Library
 }
 
+class UserDM {
+    - id: UserId
+    - username: String
+    + getId(): UserId
+}
+
 class LibraryDM {
     - id: LibraryId
     - name: String
     - userId: UserId
+    + id(): LibraryId
+    + name(): String
+    + userId(): UserId
 }
 
 Rectangle Database {
 }
 
 ' ── Relationships ──────────────────────────────────────────
-UI ..> ToCreateLibraryCtrl: uses
-ToCreateLibraryCtrl ..> IUserRepository: uses
-ToCreateLibraryCtrl ..> LibraryService: uses
+UI "1" ..> "1" ToCreateLibraryCtrl : uses
+ToCreateLibraryCtrl "1" ..> "1" IUserRepository : uses
+ToCreateLibraryCtrl "1" ..> "1" LibraryService : uses
 
-LibraryService ..> LibraryFactory: uses
-LibraryService ..> ILibraryRepository: uses
+LibraryService "1" ..> "1" LibraryFactory : uses
+LibraryService "1" ..> "1" ILibraryRepository : uses
 
-IUserRepository <|.. IUserRepositoryJPA: implements
-ILibraryRepository <|.. ILibraryRepositoryJPA: implements
+IUserRepository <|.. IUserRepositoryJPA : implements
+ILibraryRepository <|.. ILibraryRepositoryJPA : implements
 
-ILibraryRepository ..> LibraryAssembler: uses
+ILibraryRepositoryJPA "1" ..> "1" LibraryAssembler : uses
+ILibraryRepositoryJPA "1" ..> "1" LibraryFactory : uses
 
-LibraryAssembler ..> LibraryDM: creates
-LibraryAssembler ..> Library: creates
+LibraryAssembler "1" ..> "1" LibraryDM : creates
+LibraryAssembler "1" ..> "1" Library : creates
+LibraryAssembler "1" ..> "1" LibraryFactory : uses
 
-LibraryFactory ..> Library: creates
+LibraryFactory "1" ..> "1" Library : creates
 
-IUserRepositoryJPA ..> Database: queries
-ILibraryRepositoryJPA ..> Database: queries
+IUserRepositoryJPA "1" ..> "0..1" UserDM : creates
+IUserRepositoryJPA "1" ..> "1" Database : queries
+ILibraryRepositoryJPA "1" ..> "1" Database : queries
 
 @enduml

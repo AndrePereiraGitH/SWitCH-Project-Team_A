@@ -1,7 +1,7 @@
 package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.ValueObjects.CityID;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,19 +23,19 @@ class CityFactoryTest {
 
 
     private final CityFactory anyFactory = new CityFactory();
-    private final CountryID anyCountryID = mock(CountryID.class);
+    private final CountryId anyCountryId = mock(CountryId.class);
     private final String anyCityName = "Braga";
 
     @Test
     void shouldCreateValidCity() {
 
         //Arrange
-        City city = anyFactory.create(anyCountryID, anyCityName);
+        City city = anyFactory.create(anyCountryId, anyCityName);
 
         //Assert
         assertNotNull(city);
         assertEquals(anyCityName, city.getCityName());
-        assertEquals(anyCountryID, city.getCityCountryID());
+        assertEquals(anyCountryId, city.getCityCountryID());
     }
 
     @Test
@@ -51,7 +51,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountryID, null));
+                () -> anyFactory.create(anyCountryId, null));
     }
 
     @Test
@@ -59,7 +59,7 @@ class CityFactoryTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(anyCountryID, ""));
+                () -> anyFactory.create(anyCountryId, ""));
     }
 
     @Test
@@ -69,12 +69,12 @@ class CityFactoryTest {
         CityID cityID = new CityID("existing-uuid");
 
         // Act
-        City city = anyFactory.create(cityID, anyCountryID, anyCityName);
+        City city = anyFactory.create(cityID, anyCountryId, anyCityName);
 
         // Assert
         assertNotNull(city);
         assertEquals(anyCityName, city.getCityName());
-        assertEquals(anyCountryID, city.getCityCountryID());
+        assertEquals(anyCountryId, city.getCityCountryID());
         assertEquals(cityID, city.id());
     }
 
@@ -83,6 +83,6 @@ class CityFactoryTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> anyFactory.create(null, anyCountryID, anyCityName));
+                () -> anyFactory.create(null, anyCountryId, anyCityName));
     }
 }

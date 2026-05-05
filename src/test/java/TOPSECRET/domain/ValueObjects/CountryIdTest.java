@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for the {@link CountryID} Value Object.
+ * Unit tests for the {@link CountryId} Value Object.
  *
  * <p>Validates construction rules and equality behavior.</p>
  */
@@ -17,12 +17,12 @@ class CountryIDTest {
 
     /**
      * Tests that a valid identifier string produces a
-     * non-null {@link CountryID} instance (happy path).
+     * non-null {@link CountryId} instance (happy path).
      */
     @Test
     void constructor_validID() {
         //Assert + Act
-        CountryID id = new CountryID("PORTUGAL");
+        CountryId id = new CountryId("PORTUGAL");
 
         //Assert
         assertNotNull(id);
@@ -37,7 +37,7 @@ class CountryIDTest {
         //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
-                        () -> new CountryID(null));
+                        () -> new CountryId(null));
 
         assertEquals("CountryID can't be null or empty.", exception.getMessage());
     }
@@ -51,7 +51,7 @@ class CountryIDTest {
         //Arrange + Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
-                        () -> new CountryID("   "));
+                        () -> new CountryId("   "));
 
         assertEquals("CountryID can't be null or empty.", exception.getMessage());
     }
@@ -61,12 +61,12 @@ class CountryIDTest {
     // -------------------------------------------------------------------------
 
     /**
-     * Tests that {@link CountryID#getCountryID()} returns the correct identifier string.
+     * Tests that {@link CountryId#getCountryID()} returns the correct identifier string.
      */
     @Test
     void getCountryID_returnsCorrectID() {
         //Arrange
-        CountryID id = new CountryID("PORTUGAL");
+        CountryId id = new CountryId("PORTUGAL");
         //Act
         String result = id.getCountryID();
         //Assert
@@ -78,60 +78,60 @@ class CountryIDTest {
     // -------------------------------------------------------------------------
 
     /**
-     * Tests that a {@link CountryID} is equal to itself (reflexivity).
+     * Tests that a {@link CountryId} is equal to itself (reflexivity).
      */
     @Test
     void equals_sameObject() {
         //Arrange
-        CountryID id = new CountryID("PORTUGAL");
+        CountryId id = new CountryId("PORTUGAL");
         //Act + Assert
         assertTrue(id.equals(id));
     }
 
     /**
-     * Tests that two {@link CountryID} instances with the same
+     * Tests that two {@link CountryId} instances with the same
      * identifier string are considered equal.
      */
     @Test
     void equals_sameID() {
         //Arrange
-        CountryID id1 = new CountryID("PORTUGAL");
-        CountryID id2 = new CountryID("PORTUGAL");
+        CountryId id1 = new CountryId("PORTUGAL");
+        CountryId id2 = new CountryId("PORTUGAL");
         //Act + Assert
         assertTrue(id1.equals(id2));
     }
 
     /**
-     * Tests that two {@link CountryID} instances with different
+     * Tests that two {@link CountryId} instances with different
      * identifier strings are not considered equal.
      */
     @Test
     void equals_differentID() {
         //Arrange
-        CountryID id1 = new CountryID("PORTUGAL");
-        CountryID id2 = new CountryID("FRANCE");
+        CountryId id1 = new CountryId("PORTUGAL");
+        CountryId id2 = new CountryId("FRANCE");
         //Act + Assert
         assertFalse(id1.equals(id2));
     }
 
     /**
-     * Tests that a {@link CountryID} is not equal to {@code null}.
+     * Tests that a {@link CountryId} is not equal to {@code null}.
      */
     @Test
     void equals_nullObject() {
         //Arrange
-        CountryID id = new CountryID("PORTUGAL");
+        CountryId id = new CountryId("PORTUGAL");
         //Act + Assert
         assertFalse(id.equals(null));
     }
 
     /**
-     * Tests that a {@link CountryID} is not equal to an object of a different class.
+     * Tests that a {@link CountryId} is not equal to an object of a different class.
      */
     @Test
     void equals_differentClass() {
         //Arrange
-        CountryID id = new CountryID("PORTUGAL");
+        CountryId id = new CountryId("PORTUGAL");
         //Act + Assert
         assertFalse(id.equals("PORTUGAL"));
     }

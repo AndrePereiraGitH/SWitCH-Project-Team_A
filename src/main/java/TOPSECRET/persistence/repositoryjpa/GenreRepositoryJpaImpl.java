@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.GenreAssembler;
@@ -47,11 +46,6 @@ public class GenreRepositoryJpaImpl implements IGenreRepository {
         return assembler.toDomain(saved);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-
-
     // =========================================================================
     // Lookup
     // =========================================================================
@@ -60,19 +54,17 @@ public class GenreRepositoryJpaImpl implements IGenreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Genre findByTitle(String title) {
+    public Optional<Genre> findByTitle(String title) {
         Objects.requireNonNull(title, "Title must not be null");
         return genreRepositoryJpa.findByGenreType(title)
-                .map(assembler::toDomain)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Genre with title '" + title + "' not found"));
+                .map(assembler::toDomain);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Genre> getAllGenres() {
+    public List<Genre> findAll() {
         return genreRepositoryJpa.findAll()
                 .stream()
                 .map(assembler::toDomain)
@@ -83,7 +75,7 @@ public class GenreRepositoryJpaImpl implements IGenreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Genre> findGenreById(GenreId genreId) {
+    public Optional<Genre> findById(GenreId genreId) {
         Objects.requireNonNull(genreId, "GenreId must not be null");
         return genreRepositoryJpa.findById(genreId)
                 .map(assembler::toDomain);

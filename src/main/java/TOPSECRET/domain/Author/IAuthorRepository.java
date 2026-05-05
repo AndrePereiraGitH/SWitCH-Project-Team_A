@@ -1,6 +1,7 @@
 package TOPSECRET.domain.Author;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.CountryId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;

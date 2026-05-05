@@ -9,13 +9,17 @@ participant ":ToCreateLibraryCtrl" as Ctrl
 participant ":LibraryService" as service
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
+participant "userDM: Optional<UserDM>" as userDM
 participant ":ILibraryRepository" as LibraryRepo
 participant ":LibraryAssembler" as assembler
-participant "libraryDM:LibraryDM" as dm
 participant ":LibraryFactory" as factory
+participant "libraryDM:LibraryDM" as dm
+
 participant "savedLib:Library" as persistedLib
 participant "library:Library" as lib
+
 participant ":ILibraryRepositoryJPA" as libraryJpa
+participant "savedLibraryDM:LibraryDM" as savedLibraryDM
 participant "Database" as db
 
 
@@ -41,10 +45,17 @@ activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: userDM: Optional<UserDM>
+userJpa --> userDM**: <<create>>
+userJpa -> userDM: getId()
+activate userDM
+userDM --> userJpa: userId
+deactivate userDM
+
+userJpa --> userRepo: userId
 deactivate userJpa
 
-userRepo -> userRepo: userId=userDM.map(UserDM::getId)
+
+
 
 userRepo --> Ctrl: userId
 deactivate userRepo
@@ -69,8 +80,11 @@ libraryJpa -> db: SELECT COUNT(*) FROM library WHERE user_id = ?
 activate db
 db --> libraryJpa: data
 deactivate db
+opt userId has no library [isPresent() == false]
+libraryJpa -> libraryJpa: isPresent()
+end
 
-libraryJpa --> LibraryRepo: false: boolean
+libraryJpa --> LibraryRepo: false
 deactivate libraryJpa
 
 LibraryRepo -> assembler: toDM(library)
@@ -85,6 +99,7 @@ libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
 deactivate db
+libraryJpa -->> savedLibraryDM**: <<create>>
 libraryJpa --> LibraryRepo: savedLibraryDM
 deactivate libraryJpa
 

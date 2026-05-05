@@ -6,6 +6,7 @@ title Find User By Username
 participant ":ToCreateLibraryCtrl" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
+participant "userDM: Optional<UserDM>" as userDM
 participant "Database" as db
 
 note over Ctrl #E3F2FD
@@ -25,10 +26,14 @@ activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: userDM: Optional<UserDM>
-deactivate userJpa
+userJpa --> userDM**: <<create>>
+userJpa -> userDM: getId()
+activate userDM
+userDM --> userJpa: userId
+deactivate userDM
 
-userRepo -> userRepo: userId=userDM.map(UserDM::getId)
+userJpa --> userRepo: userId
+deactivate userJpa
 
 userRepo --> Ctrl: userId
 deactivate userRepo

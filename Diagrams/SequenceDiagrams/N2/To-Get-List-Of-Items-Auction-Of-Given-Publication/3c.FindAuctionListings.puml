@@ -6,11 +6,13 @@ title Find Auction Listings
 participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJpa" as listingJpa
+participant "listingDMList\n:List<ListingDM>" as listingDMList
 participant "Database" as db
 participant "listOfAuctionListings:List<Listing>" as aucListing
 participant ":ListingAssembler" as listingAssembler
 participant ":ListingFactory" as listingFactory
 participant "listing:Listing" as listing
+
 
 note over Ctrl #E3F2FD
 <b>Navigation</b>
@@ -26,7 +28,8 @@ listingJpa -> db: SELECT * FROM listing\nWHERE publication_sample_id IN (?)
 activate db
 db --> listingJpa: data
 deactivate db
-listingJpa --> listingRepo: listingDMList: List<ListingDM>
+listingJpa -->> listingDMList**: <<create>>
+listingJpa --> listingRepo: listingDMList
 deactivate listingJpa
 
 listingRepo -->> aucListing **: <<create>>

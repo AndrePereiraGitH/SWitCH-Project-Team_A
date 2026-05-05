@@ -42,23 +42,20 @@ public class GenreRepositoryMem implements IGenreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Genre findByTitle(String title) {
+    public Optional<Genre> findByTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("Genre title can't be null or blank.");
+            return Optional.empty();
         }
-        for (Genre genre : _genres) {
-            if (genre.getGenreType().equalsIgnoreCase(title)) {
-                return genre;
-            }
-        }
-        throw new IllegalArgumentException("Genre not found.");
+        return _genres.stream()
+                .filter(genre -> genre.getGenreType().equalsIgnoreCase(title))
+                .findFirst();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Genre> getAllGenres() {
+    public List<Genre> findAll() {
         return List.copyOf(_genres);
     }
 
@@ -66,7 +63,7 @@ public class GenreRepositoryMem implements IGenreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Genre> findGenreById(GenreId genreId) {
+    public Optional<Genre> findById(GenreId genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("GenreId cannot be null");
         }
