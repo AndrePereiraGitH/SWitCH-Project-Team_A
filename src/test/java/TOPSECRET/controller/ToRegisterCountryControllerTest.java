@@ -1,88 +1,119 @@
 package TOPSECRET.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.Country.ICountryRepository;
-
+import TOPSECRET.services.CountryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link ToRegisterCountryController}.
+ * <p>
+ * This test class verifies the behavior of the controller responsible for
+ * registering new {@link Country} instances.
+ * </p>
+ * <p>
+ * The controller is tested in isolation using a double of {@link CountryService},
+ * ensuring that:
+ * <ul>
+ *     <li>Valid inputs result in successful country registration</li>
+ *     <li>Invalid inputs (null, blank, or invalid country names) throw appropriate exceptions</li>
+ *     <li>Duplicate country scenarios are properly handled</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Mockito is used to simulate the behavior of the service layer and to
+ * verify interactions where applicable.
+ * </p>
+ */
 class ToRegisterCountryControllerTest {
 
-    private ToRegisterCountryController controller;
-
-    private ICountryRepository countryRepoDouble;
-
+    private CountryService countryServiceDouble;
     private Country countryDouble;
 
     @BeforeEach
-    void preparation(){
-
-        countryRepoDouble = mock(ICountryRepository.class);
+    void preparation() {
+        countryServiceDouble = mock(CountryService.class);
         countryDouble = mock(Country.class);
-        controller = new ToRegisterCountryController(countryRepoDouble);
     }
 
     @Test
-    void registerNewCountry_validCountry_double(){
-        //Arrange
-        when(countryRepoDouble.createAndAdd("Portugal")).thenReturn(countryDouble);
+    void registerNewCountry_validCountry() {
+        // Arrange
+        ToRegisterCountryController controller =
+                new ToRegisterCountryController(countryServiceDouble);
+
+        when(countryServiceDouble.createAndSave("Portugal"))
+                .thenReturn(countryDouble);
 
         when(countryDouble.getCountryName()).thenReturn("Portugal");
 
-        //Act
+        // Act
         Country result = controller.registerNewCountry("Portugal");
 
-        //assert
-        assertEquals("Portugal", result.getCountryName());
+        // Assert
         assertNotNull(result);
+        assertEquals("Portugal", result.getCountryName());
 
     }
 
     @Test
-    void registerNewCountry_InvalidCountry_double(){
+    void registerNewCountry_invalidCountry() {
+        // Arrange
+        ToRegisterCountryController controller =
+                new ToRegisterCountryController(countryServiceDouble);
 
-        when(countryRepoDouble.createAndAdd("Mordor")).thenThrow(new IllegalArgumentException("Country name is not valid"));
+        when(countryServiceDouble.createAndSave("Mordor"))
+                .thenThrow(new IllegalArgumentException("Country name is not valid"));
 
-        //assert
-        assertThrows(IllegalArgumentException.class, () -> controller.registerNewCountry("Mordor"));
-
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerNewCountry("Mordor"));
     }
 
     @Test
-    void registerNewCountry_nullCountry_double(){
+    void registerNewCountry_nullCountry() {
+        // Arrange
+        ToRegisterCountryController controller =
+                new ToRegisterCountryController(countryServiceDouble);
 
-        //Arrange + Act + Assert
+        // Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> controller.registerNewCountry(null));
 
         assertEquals("Country name cannot be null or blank", exception.getMessage());
+
     }
 
     @Test
-    void registerNewCountry_blankCountry_double(){
+    void registerNewCountry_blankCountry() {
+        // Arrange
+        ToRegisterCountryController controller =
+                new ToRegisterCountryController(countryServiceDouble);
 
-        // Arrange + Act + Assert
+        // Act + Assert
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class,
                         () -> controller.registerNewCountry("   "));
 
         assertEquals("Country name cannot be null or blank", exception.getMessage());
+
     }
 
     @Test
     void registerNewCountry_duplicateCountry() {
         // Arrange
-        when(countryRepoDouble.createAndAdd("Portugal"))
+        ToRegisterCountryController controller =
+                new ToRegisterCountryController(countryServiceDouble);
+
+        when(countryServiceDouble.createAndSave("Portugal"))
                 .thenThrow(new IllegalArgumentException("Country is already registered"));
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.registerNewCountry("Portugal"));
     }
-
 }
