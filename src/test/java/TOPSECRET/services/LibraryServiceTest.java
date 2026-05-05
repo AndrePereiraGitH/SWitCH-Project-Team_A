@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.management.InstanceAlreadyExistsException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,9 +58,9 @@ class LibraryServiceTest {
             throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
-        UserId userIdDouble = org.mockito.Mockito.mock(UserId.class);
-        Library createdLibraryDouble = org.mockito.Mockito.mock(Library.class);
-        Library savedLibraryDouble = org.mockito.Mockito.mock(Library.class);
+        UserId userIdDouble = mock(UserId.class);
+        Library createdLibraryDouble = mock(Library.class);
+        Library savedLibraryDouble = mock(Library.class);
 
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
@@ -79,9 +80,9 @@ class LibraryServiceTest {
             throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
-        UserId userIdDouble = org.mockito.Mockito.mock(UserId.class);
-        Library createdLibraryDouble = org.mockito.Mockito.mock(Library.class);
-        Library savedLibraryDouble = org.mockito.Mockito.mock(Library.class);
+        UserId userIdDouble = mock(UserId.class);
+        Library createdLibraryDouble = mock(Library.class);
+        Library savedLibraryDouble = mock(Library.class);
 
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
@@ -101,8 +102,8 @@ class LibraryServiceTest {
             throws InstanceAlreadyExistsException {
         // Arrange
         String libraryName = "My Library";
-        UserId userIdDouble = org.mockito.Mockito.mock(UserId.class);
-        Library createdLibraryDouble = org.mockito.Mockito.mock(Library.class);
+        UserId userIdDouble = mock(UserId.class);
+        Library createdLibraryDouble = mock(Library.class);
 
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);

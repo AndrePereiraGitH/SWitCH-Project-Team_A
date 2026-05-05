@@ -76,7 +76,7 @@ public class CollectionOfPublicationsAssembler {
 
         CollectionOfPublications collection = _factory.create(
                 collectionDM.getId(), collectionDM.getCollectionName(),
-                collectionDM.getGenreID(), collectionDM.getUserId(),
+                collectionDM.getGenreId(), collectionDM.getUserId(),
                 collectionDM.isPrivate());
 
         return collection;

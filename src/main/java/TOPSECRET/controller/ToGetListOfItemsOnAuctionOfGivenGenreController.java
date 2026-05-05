@@ -1,17 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.dto.US022AuctionDTO;
 import TOPSECRET.dto.US022GenreDTO;
 import TOPSECRET.dto.US022GenreMapper;
 import TOPSECRET.domain.Auction.IAuctionRepository;
@@ -71,7 +65,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
     public List<US022GenreDTO> getAllGenres() {
 
-        List<Genre> genres = genreRepository.getAllGenres();
+        List<Genre> genres = genreRepository.findAll();
 
         return US022GenreMapper.toDTOList(genres);
     }

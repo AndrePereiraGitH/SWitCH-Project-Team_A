@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +25,7 @@ class US021GenreDTOTest {
     @Test
     void shouldThrowExceptionWhenNameIsNull() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -39,7 +39,7 @@ class US021GenreDTOTest {
     @Test
     void shouldCreateDTOSuccessfullyWithValidArguments() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
 
         // Act
         US021GenreDTO dto = new US021GenreDTO(genreId, "Drama");
@@ -56,7 +56,7 @@ class US021GenreDTOTest {
     @Test
     void shouldReturnTrueWhenSameObject() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto = new US021GenreDTO(genreId, "Drama");
 
         // Act + Assert
@@ -66,7 +66,7 @@ class US021GenreDTOTest {
     @Test
     void shouldReturnTrueWhenAllFieldsAreEqual() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto1 = new US021GenreDTO(genreId, "Drama");
         US021GenreDTO dto2 = new US021GenreDTO(genreId, "Drama");
 
@@ -77,7 +77,7 @@ class US021GenreDTOTest {
     @Test
     void shouldReturnFalseWhenNameIsDifferent() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto1 = new US021GenreDTO(genreId, "Drama");
         US021GenreDTO dto2 = new US021GenreDTO(genreId, "Fiction");
 
@@ -88,7 +88,7 @@ class US021GenreDTOTest {
     @Test
     void shouldReturnFalseWhenObjectIsNull() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto = new US021GenreDTO(genreId, "Drama");
 
         // Act + Assert
@@ -102,7 +102,7 @@ class US021GenreDTOTest {
     @Test
     void shouldHaveSameHashCodeWhenObjectsAreEqual() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto1 = new US021GenreDTO(genreId, "Drama");
         US021GenreDTO dto2 = new US021GenreDTO(genreId, "Drama");
 
@@ -117,7 +117,7 @@ class US021GenreDTOTest {
     @Test
     void toStringShouldNotBeNull() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto = new US021GenreDTO(genreId, "Drama");
 
         // Act
@@ -130,7 +130,7 @@ class US021GenreDTOTest {
     @Test
     void toStringShouldContainAllFields() {
         // Arrange
-        GenreID genreId = new GenreID("drama");
+        GenreId genreId = new GenreId("drama");
         US021GenreDTO dto = new US021GenreDTO(genreId, "Drama");
 
         // Act

@@ -5,7 +5,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
     }
 
     @Override
-    public List<BibliographicalDataID> findAllByGenreId(GenreID genreId){
+    public List<BibliographicalDataID> findAllByGenreId(GenreId genreId){
 
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");

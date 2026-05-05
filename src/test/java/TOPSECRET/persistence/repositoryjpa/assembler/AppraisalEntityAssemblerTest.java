@@ -60,8 +60,8 @@ class AppraisalEntityAssemblerTest {
         return List.of(new PublicationTypeId("1"));
     }
 
-    private List<GenreID> genres() {
-        return List.of(new GenreID("1"));
+    private List<GenreId> genres() {
+        return List.of(new GenreId("1"));
     }
 
     private AppraisalEntityDM validDM() {
@@ -221,7 +221,7 @@ class AppraisalEntityAssemblerTest {
     @Test
     void toDomainShouldCopyGenreIdsContent() {
         // ARRANGE
-        List<GenreID> genres = genres();
+        List<GenreId> genres = genres();
 
         AppraisalEntityDM dm = new AppraisalEntityDM(
                 new AppraisalEntityId("1"),
@@ -247,7 +247,7 @@ class AppraisalEntityAssemblerTest {
     @Test
     void toDomainShouldNotShareGenreIdsReference() {
         // ARRANGE
-        List<GenreID> genres = genres();
+        List<GenreId> genres = genres();
 
         AppraisalEntityDM dm = new AppraisalEntityDM(
                 new AppraisalEntityId("1"),

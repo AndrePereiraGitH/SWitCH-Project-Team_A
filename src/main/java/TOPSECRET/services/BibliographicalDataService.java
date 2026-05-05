@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -59,7 +59,7 @@ public class BibliographicalDataService {
      *                                        with the same identifying attributes
      */
     public BibliographicalData createAndAdd(String title, List<AuthorId> authors, Locale originalLanguage, LocalDate publicationDate,
-                                            List<GenreID> genres, String chunksOfText) throws InstanceAlreadyExistsException
+                                            List<GenreId> genres, String chunksOfText) throws InstanceAlreadyExistsException
     {
         Objects.requireNonNull(title, "Title cannot be null");
         Objects.requireNonNull(authors, "Authors cannot be null");

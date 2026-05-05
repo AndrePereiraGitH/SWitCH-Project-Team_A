@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,7 +23,7 @@ class BibliographicalDataDMTest {
     private BibliographicalDataID idDouble;
 
     @Mock
-    private GenreID genreIdDouble;
+    private GenreId genreIdDouble;
 
     @Mock
     private AuthorId authorIdDouble;
@@ -140,9 +140,9 @@ class BibliographicalDataDMTest {
     @Test
     void shouldDefensivelyCopyGenreIdsList() {
         // Arrange
-        GenreID anotherGenreId = mock(GenreID.class);
+        GenreId anotherGenreId = mock(GenreId.class);
 
-        List<GenreID> genreIds = new java.util.ArrayList<>();
+        List<GenreId> genreIds = new java.util.ArrayList<>();
         genreIds.add(genreIdDouble);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(

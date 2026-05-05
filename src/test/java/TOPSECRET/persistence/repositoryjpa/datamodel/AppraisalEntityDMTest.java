@@ -57,8 +57,8 @@ class AppraisalEntityDMTest {
         return List.of(mock(PublicationTypeId.class));
     }
 
-    private List<GenreID> validGenres() {
-        return List.of(mock(GenreID.class));
+    private List<GenreId> validGenres() {
+        return List.of(mock(GenreId.class));
     }
 
     // CONSTRUCTOR TESTS
@@ -254,7 +254,7 @@ class AppraisalEntityDMTest {
     void shouldStoreGenresCorrectly() {
 
         // ARRANGE
-        List<GenreID> genres = validGenres();
+        List<GenreId> genres = validGenres();
 
         // ACT
         AppraisalEntityDM dm = new AppraisalEntityDM(

@@ -3,7 +3,7 @@ package TOPSECRET.services;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,14 +41,14 @@ class CollectionOfPublicationsServiceTest {
     @InjectMocks
     CollectionOfPublicationsService service;
 
-    private GenreID genreIdDouble;
+    private GenreId genreIdDouble;
     private UserId userIdDouble;
 
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
 
-        genreIdDouble = mock(GenreID.class);
+        genreIdDouble = mock(GenreId.class);
         userIdDouble = mock(UserId.class);
     }
 
