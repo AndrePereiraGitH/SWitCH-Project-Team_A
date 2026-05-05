@@ -23,7 +23,7 @@ class US024AucListingDTO {
 ' ── Domain Layer ───────────────────────────────────────────
 interface IBibliographicalDataRepository {
   +getAllTitles(): List<String>
-  +findBibliographicalDataIdByTitle(title: String): Optional<BibliographicalDataID>
+  +findIdByTitle(title: String): BibliographicalDataID
 }
 
 interface IPublicationSampleRepository {
@@ -64,16 +64,28 @@ class ListingAssembler {
   +toDomain(listingDM: ListingDM): Listing
 }
 
+class ListingFactory {
+  +create(listingId: ListingId, listingTitle: String, itemsId: List<PublicationSampleId>, saleType: SaleType, price: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>): Listing
+}
+
 class BibliographicalDataDM {
   +getTitle(): String
   +getId(): BibliographicalDataID
 }
 
 class PublicationSampleDM {
-  +getPubSampleId(): PublicationSampleId
+  +getId(): PublicationSampleId
 }
 
 class ListingDM {
+  +getListingId(): ListingId
+  +getListingTitle(): String
+  +getItemsId(): List<PublicationSampleId>
+  +getSaleType(): SaleType
+  +getPrice(): Price
+  +getShortDescription(): String
+  +getSellerId(): UserId
+  +getPictures(): List<Picture>
 }
 
 rectangle Database {
@@ -81,29 +93,30 @@ rectangle Database {
 
 ' ── Relationships ──────────────────────────────────────────
 
-UI ..> GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
+UI "1" ..> "1" GetTheListOfItemsOnAuctionOfAGivenPublicationController : uses
 
-GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IBibliographicalDataRepository : uses
-GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IPublicationSampleRepository : uses
-GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> IListingRepository : uses
-GetTheListOfItemsOnAuctionOfAGivenPublicationController ..> US024AucListingMapper : uses
+GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" IBibliographicalDataRepository : uses
+GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" IPublicationSampleRepository : uses
+GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" IListingRepository : uses
+GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" US024AucListingMapper : uses
 
 IBibliographicalDataRepository <|.. IBibliographicalDataRepositoryJpa : implements
 IPublicationSampleRepository <|.. IPublicationSampleRepositoryJpa : implements
 IListingRepository <|.. IListingRepositoryJpa : implements
 
-IBibliographicalDataRepositoryJpa ..> BibliographicalDataDM : returns
-IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns
-IListingRepositoryJpa ..> ListingDM : returns
+IBibliographicalDataRepositoryJpa "1" ..> "0..*" BibliographicalDataDM : returns
+IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
+IListingRepositoryJpa "1" ..> "0..*" ListingDM : returns
 
-IListingRepositoryJpa ..> ListingAssembler : uses
-ListingAssembler ..> Listing : creates
+IListingRepository "1" ..> "1" ListingAssembler : uses
+ListingAssembler "1" ..> "1" ListingFactory : uses
+ListingFactory "1" ..> "1" Listing : creates
 
-IBibliographicalDataRepositoryJpa ..> Database : queries
-IPublicationSampleRepositoryJpa ..> Database : queries
-IListingRepositoryJpa ..> Database : queries
+IBibliographicalDataRepositoryJpa "1" ..> "1" Database : queries
+IPublicationSampleRepositoryJpa "1" ..> "1" Database : queries
+IListingRepositoryJpa "1" ..> "1" Database : queries
 
-US024AucListingMapper ..> Listing : reads
-US024AucListingMapper ..> US024AucListingDTO : creates
+US024AucListingMapper "1" ..> "0..*" Listing : reads
+US024AucListingMapper "1" ..> "0..*" US024AucListingDTO : creates
 
 @enduml

@@ -70,27 +70,27 @@ Rectangle Database {
 }
 
 ' ── Relationships ──────────────────────────────────────────
-UI ..> ToCreateLibraryCtrl: uses
-ToCreateLibraryCtrl ..> IUserRepository: uses
-ToCreateLibraryCtrl ..> LibraryService: uses
+UI "1" ..> "1" ToCreateLibraryCtrl : uses
+ToCreateLibraryCtrl "1" ..> "1" IUserRepository : uses
+ToCreateLibraryCtrl "1" ..> "1" LibraryService : uses
 
-LibraryService ..> LibraryFactory: uses
-LibraryService ..> ILibraryRepository: uses
+LibraryService "1" ..> "1" LibraryFactory : uses
+LibraryService "1" ..> "1" ILibraryRepository : uses
 
-IUserRepository <|.. IUserRepositoryJPA: implements
-ILibraryRepository <|.. ILibraryRepositoryJPA: implements
+IUserRepository <|.. IUserRepositoryJPA : implements
+ILibraryRepository <|.. ILibraryRepositoryJPA : implements
 
-ILibraryRepositoryJPA ..> LibraryAssembler: uses
-ILibraryRepositoryJPA ..> LibraryFactory: uses
+ILibraryRepositoryJPA "1" ..> "1" LibraryAssembler : uses
+ILibraryRepositoryJPA "1" ..> "1" LibraryFactory : uses
 
-LibraryAssembler ..> LibraryDM: creates
-LibraryAssembler ..> Library: creates
-LibraryAssembler ..> LibraryFactory: uses
+LibraryAssembler "1" ..> "1" LibraryDM : creates
+LibraryAssembler "1" ..> "1" Library : creates
+LibraryAssembler "1" ..> "1" LibraryFactory : uses
 
-LibraryFactory ..> Library: creates
+LibraryFactory "1" ..> "1" Library : creates
 
-IUserRepositoryJPA ..> UserDM: creates
-IUserRepositoryJPA ..> Database: queries
-ILibraryRepositoryJPA ..> Database: queries
+IUserRepositoryJPA "1" ..> "0..1" UserDM : creates
+IUserRepositoryJPA "1" ..> "1" Database : queries
+ILibraryRepositoryJPA "1" ..> "1" Database : queries
 
 @enduml

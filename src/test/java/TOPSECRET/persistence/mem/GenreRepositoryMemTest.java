@@ -4,37 +4,28 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GenreRepositoryMemTest {
 
-// TODO: re-enable when createAndAdd is re-introduced or US003 is refactored
-//    @Test
-//    void testCreateAndAddGenre_AddsNewGenre() { ... }
-//    @Test
-//    void testCreateAndAddGenre_ThrowsExceptionWhenGenreExists() { ... }
-
     @Test
-    void getAllGenres_ReturnsCorrectList() {
+    void findAll_ReturnsCorrectList() {
         // Arrange
         Genre genre1Double = mock(Genre.class);
-        GenreId genreId1Double = mock(GenreId.class);
-
         Genre genre2Double = mock(Genre.class);
-        GenreId genreId2Double = mock(GenreId.class);
 
         IGenreRepository genreRepository = new GenreRepositoryMem();
         genreRepository.save(genre2Double);
         genreRepository.save(genre1Double);
 
         // Act
-        List<Genre> result = genreRepository.getAllGenres();
+        List<Genre> result = genreRepository.findAll();
 
         // Assert
         assertEquals(2, result.size());
@@ -44,24 +35,24 @@ class GenreRepositoryMemTest {
     }
 
     @Test
-    void getAllGenresShouldReturnUnmodifiableList() {
+    void findAllShouldReturnUnmodifiableList() {
         // Arrange
         IGenreRepository repo = new GenreRepositoryMem();
 
         // Act
-        List<Genre> result = repo.getAllGenres();
+        List<Genre> result = repo.findAll();
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Genre.class)));
     }
 
     @Test
-    void getAllGenresShouldReturnEmptyListWhenRepositoryIsEmpty() {
+    void findAllShouldReturnEmptyListWhenRepositoryIsEmpty() {
         // Arrange
         IGenreRepository repo = new GenreRepositoryMem();
 
         // Act
-        List<Genre> result = repo.getAllGenres();
+        List<Genre> result = repo.findAll();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -77,14 +68,15 @@ class GenreRepositoryMemTest {
         repository.save(genreDouble);
 
         // Act
-        Genre result = repository.findByTitle("Fantasy");
+        Optional<Genre> result = repository.findByTitle("Fantasy");
 
         // Assert
-        assertEquals(genreDouble, result);
+        assertTrue(result.isPresent());
+        assertEquals(genreDouble, result.get());
     }
 
     @Test
-    void shouldThrowExceptionWhenGenreNotFound() {
+    void shouldReturnEmptyWhenGenreNotFound() {
         // Arrange
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenreType()).thenReturn("Fantasy");
@@ -92,42 +84,48 @@ class GenreRepositoryMemTest {
         IGenreRepository repository = new GenreRepositoryMem();
         repository.save(genreDouble);
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.findByTitle("Unknown"));
+        // Act
+        Optional<Genre> result = repository.findByTitle("Unknown");
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void shouldThrowExceptionWhenTitleIsNull() {
+    void shouldReturnEmptyWhenTitleIsNull() {
         // Arrange
         IGenreRepository repository = new GenreRepositoryMem();
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.findByTitle(null));
+        // Act
+        Optional<Genre> result = repository.findByTitle(null);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void shouldThrowExceptionWhenTitleIsBlank() {
+    void shouldReturnEmptyWhenTitleIsBlank() {
         // Arrange
         IGenreRepository repository = new GenreRepositoryMem();
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.findByTitle(" "));
+        // Act
+        Optional<Genre> result = repository.findByTitle(" ");
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void findGenreById_shouldThrowException_whenGenreIdIsNull() {
+    void findGenreById_shouldThrowException_whenIdIsNull() {
         // Arrange
         IGenreRepository repo = new GenreRepositoryMem();
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.findGenreById(null));
+        assertThrows(IllegalArgumentException.class, () -> repo.findById(null));
     }
 
     @Test
-    void findGenreById_shouldReturnGenre_whenGenreExists() {
+    void findGenreById_shouldReturnGenre_whenExists() {
         // Arrange
         Genre genreDouble = mock(Genre.class);
         GenreId genreIdDouble = mock(GenreId.class);
@@ -137,7 +135,7 @@ class GenreRepositoryMemTest {
         Genre saved = repo.save(genreDouble);
 
         // Act
-        Optional<Genre> result = repo.findGenreById(genreIdDouble);
+        Optional<Genre> result = repo.findById(genreIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -145,20 +143,20 @@ class GenreRepositoryMemTest {
     }
 
     @Test
-    void findGenreById_shouldReturnEmpty_whenGenreDoesNotExist() {
+    void findGenreById_shouldReturnEmpty_whenDoesNotExist() {
         // Arrange
         IGenreRepository repo = new GenreRepositoryMem();
         GenreId genreIdDouble = mock(GenreId.class);
 
         // Act
-        Optional<Genre> result = repo.findGenreById(genreIdDouble);
+        Optional<Genre> result = repo.findById(genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findGenreById_shouldReturnCorrectGenre_whenMultipleGenresExist() {
+    void findGenreById_shouldReturnCorrect_whenMultipleGenresExist() {
         // Arrange
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
@@ -173,7 +171,7 @@ class GenreRepositoryMemTest {
         repo.save(genre2Double);
 
         // Act
-        Optional<Genre> result = repo.findGenreById(genreId2Double);
+        Optional<Genre> result = repo.findById(genreId2Double);
 
         // Assert
         assertTrue(result.isPresent());
@@ -191,7 +189,7 @@ class GenreRepositoryMemTest {
 
         // Assert
         assertEquals(genreDouble, result);
-        assertEquals(1, repo.getAllGenres().size());
+        assertEquals(1, repo.findAll().size());
     }
 
     @Test
@@ -221,6 +219,6 @@ class GenreRepositoryMemTest {
 
         // Assert
         assertNotNull(repo);
-        assertTrue(repo.getAllGenres().isEmpty());
+        assertTrue(repo.findAll().isEmpty());
     }
 }

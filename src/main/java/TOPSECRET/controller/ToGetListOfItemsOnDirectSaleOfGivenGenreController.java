@@ -60,7 +60,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * @return list of all genres
      */
     public List<US021GenreDTO> getAllGenres() {
-        return US021GenreMapper.toDTOList(genreRepository.getAllGenres());
+        return US021GenreMapper.toDTOList(genreRepository.findAll());
     }
 
 

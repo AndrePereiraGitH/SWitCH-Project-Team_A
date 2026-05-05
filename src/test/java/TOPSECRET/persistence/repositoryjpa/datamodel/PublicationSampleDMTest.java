@@ -38,7 +38,7 @@ class PublicationSampleDMTest {
     private UserId ownerId;
     private EditionID editionId;
     private LibraryId libraryId;
-    private CollectionOfPublicationsID collectionOfPublicationsId;
+    private CollectionOfPublicationsId collectionOfPublicationsId;
     private PublicationStatus publicationStatus;
     private Condition condition;
 
@@ -49,7 +49,7 @@ class PublicationSampleDMTest {
         ownerId = mock(UserId.class);
         editionId = mock(EditionID.class);
         libraryId = mock(LibraryId.class);
-        collectionOfPublicationsId = mock(CollectionOfPublicationsID.class);
+        collectionOfPublicationsId = mock(CollectionOfPublicationsId.class);
         publicationStatus = PublicationStatus.READ;
         condition = Condition.LIKE_NEW;
     }

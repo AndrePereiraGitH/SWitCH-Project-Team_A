@@ -77,7 +77,7 @@ class CountryTest {
         //Arrange
         Country country = new Country("Portugal");
         //Act
-        String result = country.getCountryID().getCountryID();
+        String result = country.id().getCountryID();
         //Assert
         assertEquals("PORTUGAL", result);
     }

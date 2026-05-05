@@ -23,7 +23,7 @@ ref over Ctrl, bdRepo
   [[2.GetAllPublicationTitles.puml]]
 end ref
 
-Ctrl --> UI : List<String>
+Ctrl --> UI : listOfTitles
 deactivate Ctrl
 
 UI --> Buyer : Here is the list of publication titles.\n Pick one.
