@@ -257,7 +257,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         GenreID selectedGenre = new GenreID("drama");
 
-        when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
                 .thenReturn(new ArrayList<>());
@@ -287,7 +287,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         GenreID selectedGenre = new GenreID("drama");
 
-        when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
                 .thenReturn(new ArrayList<>());
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
                 .thenReturn(new ArrayList<>());
@@ -325,7 +325,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         List<PublicationSampleId> pubSampleIds = List.of(psId);
         List<Listing> listings = List.of(listingMock);
 
-        when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
@@ -370,7 +370,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         List<PublicationSampleId> pubSampleIds = List.of(psId1, psId2);
         List<Listing> listings = List.of(listing1, listing2);
 
-        when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
@@ -404,7 +404,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
         List<BibliographicalDataID> bdIds = List.of(bdId);
 
-        when(bibliographicalDataRepositoryMock.findAllBibliographicalDataByGenreId(selectedGenre))
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(new ArrayList<>());

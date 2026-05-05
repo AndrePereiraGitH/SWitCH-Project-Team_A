@@ -129,7 +129,7 @@ public class US015PublicationSampleMapper {
      */
     private BibliographicalData getBibliographicalData(PublicationSample publication) throws InstanceNotFoundException {
         BibliographicalDataID bibliographicalDataId = publication.getBibliographicalDataID();
-        BibliographicalData bd = _bdRepo.findBibliographicalDataById(bibliographicalDataId)
+        BibliographicalData bd = _bdRepo.findById(bibliographicalDataId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("BibliographicalData id was not found:" + bibliographicalDataId));
 

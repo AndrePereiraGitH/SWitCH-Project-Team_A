@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -486,20 +487,6 @@ class AuctionTest {
     }
 
 
-
-    // --------- HashCode Method Tests ---------
-
-    @Test
-    void hashCode_shouldDifferWhenDifferentAuctions() {
-        // Act
-        Auction a1 = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
-        Auction a2 = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
-
-        // Assert
-        assertNotEquals(a1, a2);
-        assertNotEquals(a1.hashCode(), a2.hashCode());
-    }
-
     // --------- placeBid Method Tests ---------
 
     @Test
@@ -688,19 +675,6 @@ class AuctionTest {
     }
 
     @Test
-    void placeBid_shouldUpdateFinalPrice() {
-        // Arrange
-        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
-        Price bidValue = new Price(new BigDecimal("25.00"));
-
-        // Act
-        auction.placeBid(buyerId, bidValue);
-
-        // Assert
-        assertEquals(bidValue, auction.getFinalPrice());
-    }
-
-    @Test
     void placeBid_shouldSetFinalPriceToBuyoutWhenMatched() {
         // Arrange
         Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
@@ -710,6 +684,40 @@ class AuctionTest {
 
         // Assert
         assertEquals(buyOutPrice, auction.getFinalPrice());
+    }
+
+    @Test
+    void placeBid_shouldTriggerBuyoutEvenAfterExistingBids() {
+        // Arrange
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        UserId bidder1 = mock(UserId.class);
+        UserId bidder2 = mock(UserId.class);
+
+        auction.placeBid(bidder1, new Price(new BigDecimal("50.00")));
+
+        // Act
+        Bid finalBid = auction.placeBid(bidder2, buyOutPrice);
+
+        // Assert
+        assertEquals(AuctionStatus.BOUGHT_OUT, auction.getAuctionStatus());
+        assertEquals(finalBid, auction.getWinningBid());
+        assertEquals(buyOutPrice, auction.getFinalPrice());
+    }
+
+    @Test
+    void placeBid_shouldThrowExceptionWhenAuctionAlreadyBoughtOut() {
+        // Arrange
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        auction.placeBid(mock(UserId.class), buyOutPrice);
+
+        // Act
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> auction.placeBid(mock(UserId.class), new Price(new BigDecimal("200.00"))));
+
+        // Assert
+        assertEquals("Auction is not active", ex.getMessage());
     }
 
     // --------- refreshStatus Method Tests ---------
@@ -722,6 +730,23 @@ class AuctionTest {
         Auction auction = new Auction(listingId, futureStart, futureEnd, initialPrice, buyOutPrice, FIXED_CLOCK);
 
         setClock(auction, Clock.offset(FIXED_CLOCK, Duration.ofMinutes(15)));
+
+        // Act
+        auction.refreshStatus();
+
+        // Assert
+        assertEquals(AuctionStatus.ACTIVE, auction.getAuctionStatus());
+    }
+
+    @Test
+    void refreshStatus_shouldTransitionFromScheduledToActive() {
+        // Arrange
+        LocalDateTime futureStart = now().plusHours(2);
+        LocalDateTime futureEnd = futureStart.plusDays(1);
+
+        Auction auction = new Auction(listingId, futureStart, futureEnd, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        setClock(auction, Clock.offset(FIXED_CLOCK, Duration.ofHours(3))); // after start
 
         // Act
         auction.refreshStatus();
@@ -799,34 +824,78 @@ class AuctionTest {
         // Arrange
         Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
 
-        Bid winningBidDouble = mock(Bid.class);
-        List<Bid> bidHistory = List.of(winningBidDouble);
-        Price finalPrice = new Price(new BigDecimal("50.00"));
+        Bid bidDouble = mock(Bid.class);
+        List<Bid> bidHistory = List.of(bidDouble);
         LocalDateTime closedAt = now();
 
         // Act
-        auction.rehydrateState(bidHistory, winningBidDouble, AuctionStatus.ENDED_WITH_WINNER, finalPrice, closedAt);
+        auction.rehydrateState(bidHistory, AuctionStatus.ENDED_WITH_WINNER, closedAt);
 
         // Assert
         assertEquals(AuctionStatus.ENDED_WITH_WINNER, auction.getAuctionStatus());
-        assertEquals(finalPrice, auction.getFinalPrice());
+        assertEquals(bidDouble.getValue(), auction.getFinalPrice());
         assertEquals(closedAt, auction.getClosedAt());
     }
 
     @Test
-    void rehydrateState_shouldAllowNullFinalPriceAndClosedAt() {
+    void rehydrateState_shouldAllowNullClosedAt() {
         // Arrange
         Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
-        Bid winningBidDouble = mock(Bid.class);
-        List<Bid> bidHistory = List.of(winningBidDouble);
+        Bid bidDouble = mock(Bid.class);
+        List<Bid> bidHistory = List.of(bidDouble);
 
         // Act
-        auction.rehydrateState(bidHistory, winningBidDouble, AuctionStatus.CANCELLED, null, null);
+        auction.rehydrateState(bidHistory, AuctionStatus.CANCELLED, null);
 
         // Assert
         assertEquals(AuctionStatus.CANCELLED, auction.getAuctionStatus());
         assertNull(auction.getFinalPrice());
         assertNull(auction.getClosedAt());
+    }
+
+    @Test
+    void rehydrateState_shouldHandleNullBidHistoryWithTerminalStatus() {
+        // Arrange
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        // Act
+        auction.rehydrateState(null, AuctionStatus.ENDED_WITH_WINNER, now());
+
+        // Assert
+        assertEquals(AuctionStatus.ENDED_WITH_WINNER, auction.getAuctionStatus());
+        assertNull(auction.getFinalPrice());
+        assertNull(auction.getWinningBid());
+    }
+
+    @Test
+    void rehydrateState_shouldHandleEmptyBidHistoryInTerminalState() {
+        // Arrange
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        // Act
+        auction.rehydrateState(List.of(), AuctionStatus.ENDED_WITHOUT_BIDS, now());
+
+        // Assert
+        assertEquals(AuctionStatus.ENDED_WITHOUT_BIDS, auction.getAuctionStatus());
+        assertNull(auction.getWinningBid());
+        assertNull(auction.getFinalPrice());
+    }
+
+    @Test
+    void rehydrateState_shouldNotBeAffectedByExternalListMutation() {
+        // Arrange
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        Bid bid = mock(Bid.class);
+        List<Bid> externalList = new ArrayList<>(List.of(bid));
+
+        // Act
+        auction.rehydrateState(externalList, AuctionStatus.ENDED_WITH_WINNER, now());
+
+        externalList.clear(); // mutate after rehydrate
+
+        // Assert
+        assertEquals(1, auction.getBidHistory().size());
     }
 
     // --------- Rehydrate Bid Tests ---------
@@ -945,7 +1014,6 @@ class AuctionTest {
         // Arrange
         Auction auction = new AuctionFactory().create(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
 
-        Bid bid1 = auction.placeBid(mock(UserId.class), new Price(new BigDecimal("20")));
         Bid bid2 = auction.placeBid(mock(UserId.class), new Price(new BigDecimal("30"))); // winning bid
 
         // Act
@@ -954,6 +1022,25 @@ class AuctionTest {
         // Assert
         assertNotNull(winning);
         assertEquals(bid2, winning);
+    }
+
+    @Test
+    void getWinningBid_shouldReturnStoredWinningBidWhenTerminal() {
+        // Arrange
+        Auction auction = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+
+        Bid bid = mock(Bid.class);
+        Price price = new Price(new BigDecimal("50.00"));
+
+        when(bid.getValue()).thenReturn(price);
+
+        auction.rehydrateState(List.of(bid), AuctionStatus.ENDED_WITH_WINNER, now());
+
+        // Act
+        Bid result = auction.getWinningBid();
+
+        // Assert
+        assertEquals(bid, result);
     }
 
     @Test
@@ -974,12 +1061,18 @@ class AuctionTest {
         assertNull(auction.getClosedAt());
     }
 
+    // --------- HashCode Method Tests ---------
 
+    @Test
+    void hashCode_shouldDifferWhenDifferentAuctions() {
+        // Act
+        Auction a1 = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
+        Auction a2 = new Auction(listingId, start, end, initialPrice, buyOutPrice, FIXED_CLOCK);
 
-
-
-
-
+        // Assert
+        assertNotEquals(a1, a2);
+        assertNotEquals(a1.hashCode(), a2.hashCode());
+    }
 
 
 

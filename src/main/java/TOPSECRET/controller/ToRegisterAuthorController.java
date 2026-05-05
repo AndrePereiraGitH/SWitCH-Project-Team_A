@@ -3,8 +3,10 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.services.AuthorService;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 
 /**
@@ -20,19 +22,18 @@ import java.time.LocalDate;
  */
 
 public class ToRegisterAuthorController {
-    private final IAuthorRepository _authorRepository;
+    private final AuthorService _authorService;
 
 
-    public ToRegisterAuthorController(IAuthorRepository authorRepository) {
-        if (authorRepository == null) {
+    public ToRegisterAuthorController(AuthorService authorService) {
+        if (authorService == null) {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
         }
 
-        this._authorRepository = authorRepository;
+        this._authorService = authorService;
     }
 
-//    public Author register(String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
-//        // Delegates author creation and persistence to the repository
-//        return _authorRepository.createAndAddAuthor(name, countryId, dateOfBirth, biography);
-//    }
+    public Author register(String name, CountryId countryId, LocalDate dateOfBirth, String biography) throws InstanceAlreadyExistsException {
+        return _authorService.createAndSave(name, countryId, dateOfBirth, biography);
+    }
 }

@@ -77,7 +77,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
         }
 
         List<BibliographicalDataID> bdIds =
-                bibliographicalDataRepository.findAllBibliographicalDataByGenreId(selectedGenre);
+                bibliographicalDataRepository.findAllByGenreId(selectedGenre);
 
         List<PublicationSampleId> pubSampleIds =
                 publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);

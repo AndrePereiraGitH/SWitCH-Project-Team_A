@@ -124,7 +124,7 @@ class US015PublicationSampleMapperTest {
         BibliographicalDataID bdId = mock(BibliographicalDataID.class);
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
-        when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.empty());
+        when(bdRepo.findById(bdId)).thenReturn(Optional.empty());
 
         US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
 
@@ -146,7 +146,7 @@ class US015PublicationSampleMapperTest {
 
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(publication.getEditionID()).thenReturn(editionId);
-        when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
+        when(bdRepo.findById(bdId)).thenReturn(Optional.of(bd));
         when(editionRepo.findById(editionId)).thenReturn(Optional.empty());
 
         US015PublicationSampleMapper mapper = new US015PublicationSampleMapper(bdRepo, authorRepo, editionRepo);
@@ -171,7 +171,7 @@ class US015PublicationSampleMapperTest {
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(publication.getEditionID()).thenReturn(editionId);
-        when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
+        when(bdRepo.findById(bdId)).thenReturn(Optional.of(bd));
         when(editionRepo.findById(editionId)).thenReturn(Optional.of(edition));
         when(authorRepo.findById(authorId)).thenReturn(Optional.empty());
 
@@ -241,7 +241,7 @@ class US015PublicationSampleMapperTest {
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(publication.getEditionID()).thenReturn(editionId);
-        when(bdRepo.findBibliographicalDataById(bdId)).thenReturn(Optional.of(bd));
+        when(bdRepo.findById(bdId)).thenReturn(Optional.of(bd));
         when(editionRepo.findById(editionId)).thenReturn(Optional.of(edition));
 
         return publication;

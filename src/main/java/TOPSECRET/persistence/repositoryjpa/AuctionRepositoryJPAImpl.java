@@ -47,12 +47,8 @@ public class AuctionRepositoryJPAImpl implements IAuctionRepository {
     public AuctionRepositoryJPAImpl(IAuctionRepositoryJPA auctionRepoJPA,
                                     AuctionAssembler auctionAssembler) {
 
-        if (auctionRepoJPA == null) {
-            throw new IllegalArgumentException("iAuctionRepoJPA cannot be null");
-        }
-        if (auctionAssembler == null) {
-            throw new IllegalArgumentException("auctionAssembler cannot be null");
-        }
+        Objects.requireNonNull(auctionRepoJPA,"iAuctionRepoJPA cannot be null");
+        Objects.requireNonNull(auctionAssembler,"auctionAssembler cannot be null");
 
         this.auctionRepoJPA = auctionRepoJPA;
         this.auctionAssembler = auctionAssembler;
@@ -103,11 +99,9 @@ public class AuctionRepositoryJPAImpl implements IAuctionRepository {
     public List<Auction> findAll() {
         List<AuctionDM> auctionsDM = auctionRepoJPA.findAll();
 
-        List<Auction> auctionsDomain = auctionsDM.stream()
+        return auctionsDM.stream()
                 .map(auctionAssembler::toDomain)
                 .collect(Collectors.toList());
-
-        return auctionsDomain;
     }
 
     /**
@@ -116,16 +110,12 @@ public class AuctionRepositoryJPAImpl implements IAuctionRepository {
     @Override
     public List<Auction> findByListingIdIn(List<ListingId> listingIds) {
 
-        if (listingIds == null) {
-            throw new IllegalArgumentException("ListingIds can't be null.");
-        }
+        Objects.requireNonNull(listingIds, "listingIds cannot be null");
 
         List<AuctionDM> auctionsDM = auctionRepoJPA.findByListingIdIn(listingIds);
 
-        List<Auction> auctionsDomain = auctionsDM.stream()
+        return auctionsDM.stream()
                 .map(auctionAssembler::toDomain)
                 .collect(Collectors.toList());
-
-        return auctionsDomain;
     }
 }

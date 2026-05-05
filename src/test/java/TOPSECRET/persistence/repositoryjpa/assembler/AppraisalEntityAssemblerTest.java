@@ -5,7 +5,12 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AppraisalEntityDM;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,11 +43,14 @@ import static org.mockito.Mockito.*;
  * lists are not shared between layers.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class AppraisalEntityAssemblerTest {
 
-    // HELPER
-    private AppraisalEntityFactory factory = new AppraisalEntityFactory();
-    private AppraisalEntityAssembler assembler = new AppraisalEntityAssembler(factory);
+    @Mock
+    private AppraisalEntityFactory factory;
+
+    @InjectMocks
+    private AppraisalEntityAssembler assembler;
 
     private Contact contact() {
         return mock(Contact.class);
@@ -56,31 +64,84 @@ class AppraisalEntityAssemblerTest {
         return List.of(new GenreID("1"));
     }
 
-    // toDomain TESTS
-    @Test
-    void toDomainShouldConvertCorrectly() {
+    private AppraisalEntityDM validDM() {
 
-        // ARRANGE
-        AppraisalEntityDM dm = new AppraisalEntityDM(
+        return new AppraisalEntityDM(
                 new AppraisalEntityId("1"),
                 "Name",
                 contact(),
                 pubs(),
                 genres()
         );
+    }
+
+    private AppraisalEntity validEntity() {
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        when(entity.id()).thenReturn(new AppraisalEntityId("1"));
+        when(entity.getName()).thenReturn("Name");
+        when(entity.getContact()).thenReturn(contact());
+        when(entity.getPublicationTypeIds()).thenReturn(pubs());
+        when(entity.getGenreIds()).thenReturn(genres());
+
+        return entity;
+    }
+
+    // toDomain TESTS
+    @Test
+    void toDomainShouldMapId() {
+        // ARRANGE
+        AppraisalEntityDM dm = validDM();
+
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        when(entity.id()).thenReturn(dm.getId());
+
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(entity);
 
         // ACT
         AppraisalEntity result = assembler.toDomain(dm);
 
         // ASSERT
         assertEquals(dm.getId(), result.id());
+    }
+
+    @Test
+    void toDomainShouldMapName() {
+        // ARRANGE
+        AppraisalEntityDM dm = validDM();
+
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        when(entity.getName()).thenReturn(dm.getName());
+
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(entity);
+
+        // ACT
+        AppraisalEntity result = assembler.toDomain(dm);
+
+        // ASSERT
         assertEquals(dm.getName(), result.getName());
+    }
+
+    @Test
+    void toDomainShouldMapContact() {
+        // ARRANGE
+        AppraisalEntityDM dm = validDM();
+        AppraisalEntity expected = mock(AppraisalEntity.class);
+        when(expected.getContact()).thenReturn(dm.getContact());
+        when(factory.create(any(), any(), any(), any(), any()))
+
+                .thenReturn(expected);
+
+        // ACT
+        AppraisalEntity result = assembler.toDomain(dm);
+
+        // ASSERT
         assertEquals(dm.getContact(), result.getContact());
     }
 
     @Test
     void toDomainShouldThrowWhenNull() {
-
         // ARRANGE
 
         // ACT + ASSERT
@@ -88,30 +149,8 @@ class AppraisalEntityAssemblerTest {
                 () -> assembler.toDomain(null));
     }
 
-    // toDataModel TESTS
-    @Test
-    void toDataModelShouldConvertCorrectly() {
-
-        // ARRANGE
-        AppraisalEntity entity = factory.create(
-                "Name",
-                contact(),
-                pubs(),
-                genres()
-        );
-
-        // ACT
-        AppraisalEntityDM dm = assembler.toDataModel(entity);
-
-        // ASSERT
-        assertEquals(entity.id(), dm.getId());
-        assertEquals(entity.getName(), dm.getName());
-        assertEquals(entity.getContact(), dm.getContact());
-    }
-
     @Test
     void toDomainShouldThrowWhenListsAreNull() {
-
         // ARRANGE
         AppraisalEntityDM dm = new AppraisalEntityDM(
                 new AppraisalEntityId("1"),
@@ -126,10 +165,8 @@ class AppraisalEntityAssemblerTest {
                 () -> assembler.toDomain(dm));
     }
 
-    // DEFENSIVE COPY TEST
     @Test
-    void toDomainShouldNotShareListReferences() {
-
+    void toDomainShouldCopyPublicationTypeIdsContent() {
         // ARRANGE
         List<PublicationTypeId> pubs = pubs();
 
@@ -141,90 +178,187 @@ class AppraisalEntityAssemblerTest {
                 genres()
         );
 
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        when(entity.getPublicationTypeIds())
+                .thenReturn(new ArrayList<>(pubs));
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(entity);
+
         // ACT
-        AppraisalEntity entity = assembler.toDomain(dm);
+        AppraisalEntity result = assembler.toDomain(dm);
 
         // ASSERT
-        assertEquals(pubs, entity.getPublicationTypeIds());
+        assertEquals(pubs, result.getPublicationTypeIds());
     }
 
     @Test
-    void toDataModelShouldNotShareListReferences() {
-
+    void toDomainShouldNotSharePublicationTypeIdsReference() {
         // ARRANGE
-        AppraisalEntity entity = factory.create(
+        List<PublicationTypeId> pubs = pubs();
+
+        AppraisalEntityDM dm = new AppraisalEntityDM(
+                new AppraisalEntityId("1"),
                 "Name",
                 contact(),
-                pubs(),
+                pubs,
                 genres()
         );
 
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+
+        when(entity.getPublicationTypeIds())
+                .thenReturn(new ArrayList<>(pubs));
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(entity);
+
         // ACT
-        AppraisalEntityDM dm = assembler.toDataModel(entity);
+        AppraisalEntity result = assembler.toDomain(dm);
 
         // ASSERT
-        assertEquals(entity.getPublicationTypeIds(), dm.getPublicationTypeIds());
+        assertNotSame(pubs, result.getPublicationTypeIds());
     }
 
     @Test
-    void toDomainShouldCopyListContent() {
-
+    void toDomainShouldCopyGenreIdsContent() {
         // ARRANGE
-        List<PublicationTypeId> pubs = pubs();
         List<GenreID> genres = genres();
 
         AppraisalEntityDM dm = new AppraisalEntityDM(
                 new AppraisalEntityId("1"),
                 "Name",
                 contact(),
-                pubs,
+                pubs(),
                 genres
         );
+
+        AppraisalEntity expected = mock(AppraisalEntity.class);
+        when(expected.getGenreIds())
+                .thenReturn(new ArrayList<>(genres));
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(expected);
 
         // ACT
         AppraisalEntity entity = assembler.toDomain(dm);
 
         // ASSERT
-        assertEquals(pubs, entity.getPublicationTypeIds());
         assertEquals(genres, entity.getGenreIds());
     }
 
     @Test
-    void toDataModelShouldCopyListContent() {
-
+    void toDomainShouldNotShareGenreIdsReference() {
         // ARRANGE
-        AppraisalEntity entity = factory.create(
+        List<GenreID> genres = genres();
+
+        AppraisalEntityDM dm = new AppraisalEntityDM(
+                new AppraisalEntityId("1"),
                 "Name",
                 contact(),
                 pubs(),
-                genres()
+                genres
         );
 
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        when(entity.getGenreIds())
+                .thenReturn(new ArrayList<>(genres));
+
+        when(factory.create(any(), any(), any(), any(), any()))
+                .thenReturn(entity);
+
         // ACT
-        AppraisalEntityDM dm = assembler.toDataModel(entity);
+        AppraisalEntity result = assembler.toDomain(dm);
+
+        // ASSERT
+        assertNotSame(genres, result.getGenreIds());
+    }
+
+    // toDataModel TESTS
+    @Test
+    void toDataModelShouldMapId() {
+        // ARRANGE
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        when(entity.id()).thenReturn(new AppraisalEntityId("1"));
+        when(entity.getName()).thenReturn("Name");
+        when(entity.getContact()).thenReturn(contact());
+        when(entity.getPublicationTypeIds()).thenReturn(pubs());
+        when(entity.getGenreIds()).thenReturn(genres());
+
+        // ACT
+        AppraisalEntityDM dm = assembler.toDM(entity);
+
+        // ASSERT
+        assertEquals(entity.id(), dm.getId());
+    }
+
+    @Test
+    void toDataModelShouldMapName() {
+        // ARRANGE
+        AppraisalEntity entity = validEntity();
+
+        // ACT
+        AppraisalEntityDM dm = assembler.toDM(entity);
+
+        // ASSERT
+        assertEquals(entity.getName(), dm.getName());
+    }
+
+    @Test
+    void toDataModelShouldMapContact() {
+        // ARRANGE
+        AppraisalEntity entity = validEntity();
+
+        // ACT
+        AppraisalEntityDM dm = assembler.toDM(entity);
+
+        // ASSERT
+        assertEquals(entity.getContact(), dm.getContact());
+    }
+
+    @Test
+    void toDataModelShouldCopyPublicationTypeIdsContent() {
+        // ARRANGE
+        AppraisalEntity entity = validEntity();
+
+        // ACT
+        AppraisalEntityDM dm = assembler.toDM(entity);
 
         // ASSERT
         assertEquals(entity.getPublicationTypeIds(), dm.getPublicationTypeIds());
+    }
+
+    @Test
+    void toDataModelShouldNotSharePublicationTypeIdsReference() {
+        // ARRANGE
+        AppraisalEntity entity = validEntity();
+
+        // ACT
+        AppraisalEntityDM dm = assembler.toDM(entity);
+
+        // ASSERT
+        assertNotSame(entity.getPublicationTypeIds(), dm.getPublicationTypeIds());
+    }
+
+    @Test
+    void toDataModelShouldCopyGenreIdsContent() {
+
+        // ARRANGE
+        AppraisalEntity entity = validEntity();
+
+        // ACT
+        AppraisalEntityDM dm = assembler.toDM(entity);
+
+        // ASSERT
         assertEquals(entity.getGenreIds(), dm.getGenreIds());
     }
 
     @Test
-    void toDataModelShouldHandleNullLists() {
-
+    void toDataModelShouldNotShareGenreIdsReference() {
         // ARRANGE
-        AppraisalEntity entity = mock(AppraisalEntity.class);
-
-        when(entity.id()).thenReturn(new AppraisalEntityId("1"));
-        when(entity.getName()).thenReturn("Name");
-        when(entity.getContact()).thenReturn(contact());
-        when(entity.getPublicationTypeIds()).thenReturn(null);
-        when(entity.getGenreIds()).thenReturn(null);
+        AppraisalEntity entity = validEntity();
 
         // ACT
-        AppraisalEntityDM dm = assembler.toDataModel(entity);
+        AppraisalEntityDM dm = assembler.toDM(entity);
 
         // ASSERT
-        assertNotNull(dm.getPublicationTypeIds());
-        assertNotNull(dm.getGenreIds());
+        assertNotSame(entity.getGenreIds(), dm.getGenreIds());
     }
 }

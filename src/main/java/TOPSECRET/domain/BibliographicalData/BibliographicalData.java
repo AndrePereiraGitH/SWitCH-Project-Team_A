@@ -77,6 +77,43 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
         this._chunksOfText = chunksOfText;
     }
 
+    // Reconstructor ==================================================================================================
+
+    protected BibliographicalData(
+            BibliographicalDataID bibliographicalDataID,
+            String title,
+            List<AuthorId> authors,
+            Locale originalLanguage,
+            LocalDate publicationDate,
+            List<GenreID> genres,
+            String chunksOfText
+    ) {
+        if (bibliographicalDataID == null) {
+            throw new IllegalArgumentException("BibliographicalDataID cannot be null");
+        }
+
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title cannot be null or blank");
+        }
+
+        if (authors == null || authors.isEmpty()) {
+            throw new IllegalArgumentException("Authors list cannot be empty");
+        }
+
+        if (genres == null || genres.isEmpty()) {
+            throw new IllegalArgumentException("Genres list cannot be empty");
+        }
+
+        this._bibliographicalDataID = bibliographicalDataID;
+        this._title = title;
+        this._authors = List.copyOf(authors);
+        this._originalLanguage = originalLanguage;
+        this._publicationDate = publicationDate;
+        this._genres = List.copyOf(genres);
+        this._chunksOfText = chunksOfText;
+    }
+
+
     // Getters =========================================================================================================
 
     /**
