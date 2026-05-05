@@ -1,0 +1,85 @@
+@startuml
+
+hide footbox
+autonumber
+title SD-US028-01 Select Publisher
+
+
+participant ":ToGetListOfPublishers\nController" as Controller
+participant ":IPublisher\nRepository" as PR
+participant ":IPublisher\nRepositoryJPA" as PRJPA
+participant ":Publisher\nAssembler" as Assembler
+participant "publisherDMs : List<PublisherDM>"
+participant "listOfPublisher:\nList<Publisher>"
+participant ":Publisher\nFactory" as PFactory
+participant "publisherDomain\n:Publisher"
+participant ":US028Publisher\nMapper" as MAPPER
+participant "listOfPublisherDTO:\nList<US028PublisherDTO>"
+participant "publisherDTO:\nUS028PublisherDTO"
+participant "DataBase" as DB
+
+activate Controller
+
+Controller -> PR : getAllPublishers()
+activate PR
+
+PR -> PRJPA : getAllPublishers()
+activate PRJPA
+
+PRJPA -> DB : Query
+activate DB
+
+note over DB
+Query database (SELECT * FROM publisher)
+end note
+
+DB --> PRJPA : data
+deactivate DB
+
+PRJPA -->> "publisherDMs : List<PublisherDM>" ** : <<create>>
+
+PRJPA --> PR : publisherDMs
+deactivate PRJPA
+
+PR -> Assembler : toDomainList(publishersPersisted)
+activate Assembler
+
+Assembler -->> "listOfPublisher:\nList<Publisher>" ** : <<create>>
+
+loop for each publisherDM
+    Assembler -> PFactory : create(PublisherId, String publisherName)
+    activate PFactory
+
+    PFactory -->> "publisherDomain\n:Publisher" ** : <<create>>
+
+    PFactory --> Assembler : publisherDomain
+    deactivate PFactory
+
+    Assembler -> Assembler : add(publisherDomain)
+end
+
+Assembler --> PR : listOfPublisher
+deactivate Assembler
+
+PR --> Controller : listOfPublisher
+deactivate PR
+
+Controller -> MAPPER : toDTOs(listOfPublisher)
+activate MAPPER
+
+MAPPER -->> "listOfPublisherDTO:\nList<US028PublisherDTO>" ** : <<create>>
+
+loop for each Publisher
+    MAPPER -> MAPPER : toDTO(publisher)
+    MAPPER -->> "publisherDTO:\nUS028PublisherDTO" ** : <<create>>
+    MAPPER -> MAPPER : listOfPublisherDTO.add(publisherDTO)
+end
+
+MAPPER --> Controller : listOfPublisherDTO
+deactivate MAPPER
+
+deactivate Controller
+
+
+
+@enduml

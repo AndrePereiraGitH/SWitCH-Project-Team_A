@@ -1,0 +1,39 @@
+@startuml
+
+hide footbox
+autonumber
+title SD-US028-03 Find Bibliographical Data Ids By Publisher
+
+participant ":ToGetListOfPublishers\nController" as Controller
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IBibliographicalData\nRepositoryJPA" as BDJPA
+participant "bdDMList:\nList<BibliographicalDataDM>"
+participant "listOfBioDataId:\nList<BibliographicalDataId>"
+participant "DataBase" as DB
+
+Controller -> BDRepo : findAllBibliographicalDataID(publisherId)
+activate BDRepo
+
+BDRepo -> BDJPA : findAllByPublisherId(publisherId)
+activate BDJPA
+
+BDJPA -> DB : SELECT * FROM bibliographical_data\nWHERE publisher_id = ?
+activate DB
+
+DB --> BDJPA : data
+deactivate DB
+
+BDJPA -->> "bdDMList:\nList<BibliographicalDataDM>" ** : <<create>>
+BDJPA -->> "listOfBioDataId:\nList<BibliographicalDataId>" ** : <<create>>
+
+loop for each dm in bdDMList
+    BDJPA -> "listOfBioDataId:\nList<BibliographicalDataId>" : add(dm.bdId())
+end
+
+BDJPA --> BDRepo : listOfBioDataId
+deactivate BDJPA
+
+BDRepo --> Controller : listOfBioDataId
+deactivate BDRepo
+
+@enduml

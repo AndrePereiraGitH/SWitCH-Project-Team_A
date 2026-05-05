@@ -1,0 +1,31 @@
+@startuml
+
+hide footbox
+autonumber
+title SD-US028-02 Find Publisher By Id
+
+participant ":ToGetListOfPublishers\nController" as Controller
+participant ":IPublisher\nRepository" as PR
+participant ":IPublisher\nRepositoryJPA" as PRJPA
+participant "DataBase" as DB
+
+Controller -> PR : findById(publisher.id)
+activate PR
+
+PR -> PRJPA : findById(publisherId)
+activate PRJPA
+
+PRJPA -> DB : SELECT * FROM publisher WHERE id = ?
+activate DB
+DB --> PRJPA : data
+deactivate DB
+
+PRJPA -> PRJPA : publisherId = publisherDM.map(publisherDM::getId)
+
+PRJPA --> PR : publisherId
+deactivate PRJPA
+
+PR --> Controller : publisherId
+deactivate PR
+
+@enduml
