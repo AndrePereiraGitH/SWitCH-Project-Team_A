@@ -36,8 +36,7 @@ class CityServiceTest {
     private ICityRepository doubleCityRepository;
     @Mock
     private ICountryRepository doubleCountryRepository;
-    @InjectMocks
-    private CityService cityService;
+
 
     @Test
     void shouldCreateAndSaveCity() {
@@ -60,6 +59,7 @@ class CityServiceTest {
     @Test
     void shouldThrowWhenCountryNotFound() {
         // Arrange
+        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         when(doubleCountryRepository.findCountryIdByCountryName("Unknown")).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -100,5 +100,26 @@ class CityServiceTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> cityService.createAndSave("Portugal", "Braga"));
         assertEquals("This city already exists in the system.", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenCityAlreadyExists() {
+        // Arrange
+        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
+        CountryId countryID = mock(CountryId.class);
+
+        when(doubleCountryRepository.findCountryIdByCountryName("Portugal"))
+                .thenReturn(Optional.of(countryID));
+
+        when(doubleCityRepository.existsByCountryIDAndCityName(countryID, "Braga"))
+                .thenReturn(true);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> cityService.createAndSave("Portugal", "Braga")
+        );
+
+        assertEquals("City already exists in the system.", ex.getMessage());
     }
 }
