@@ -23,7 +23,7 @@ class US024AucListingDTO {
 ' ── Domain Layer ───────────────────────────────────────────
 interface IBibliographicalDataRepository {
   +getAllTitles(): List<String>
-  +findBibliographicalDataIdByTitle(title: String): Optional<BibliographicalDataID>
+  +findIdByTitle(title: String): BibliographicalDataID
 }
 
 interface IPublicationSampleRepository {
@@ -64,16 +64,28 @@ class ListingAssembler {
   +toDomain(listingDM: ListingDM): Listing
 }
 
+class ListingFactory {
+  +create(listingId: ListingId, listingTitle: String, itemsId: List<PublicationSampleId>, saleType: SaleType, price: Price, shortDescription: String, sellerId: UserId, pictures: List<Picture>): Listing
+}
+
 class BibliographicalDataDM {
   +getTitle(): String
   +getId(): BibliographicalDataID
 }
 
 class PublicationSampleDM {
-  +getPubSampleId(): PublicationSampleId
+  +getId(): PublicationSampleId
 }
 
 class ListingDM {
+  +getListingId(): ListingId
+  +getListingTitle(): String
+  +getItemsId(): List<PublicationSampleId>
+  +getSaleType(): SaleType
+  +getPrice(): Price
+  +getShortDescription(): String
+  +getSellerId(): UserId
+  +getPictures(): List<Picture>
 }
 
 rectangle Database {
@@ -96,8 +108,9 @@ IBibliographicalDataRepositoryJpa ..> BibliographicalDataDM : returns
 IPublicationSampleRepositoryJpa ..> PublicationSampleDM : returns
 IListingRepositoryJpa ..> ListingDM : returns
 
-IListingRepositoryJpa ..> ListingAssembler : uses
-ListingAssembler ..> Listing : creates
+IListingRepository ..> ListingAssembler : uses
+ListingAssembler ..> ListingFactory : uses
+ListingFactory ..> Listing : creates
 
 IBibliographicalDataRepositoryJpa ..> Database : queries
 IPublicationSampleRepositoryJpa ..> Database : queries
