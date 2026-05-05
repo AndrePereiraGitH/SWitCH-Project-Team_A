@@ -7,14 +7,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 /**
- * Data model representing a {@link TOPSECRET.domain.City.City} for JPA persistence.
+ * JPA data model representing a {@link TOPSECRET.domain.City.City}.
  *
- * <p>This class belongs to the infrastructure layer and is mapped to the
- * {@code cities} table. It uses {@link CityID} and {@link CountryId} as
- * embedded value objects.</p>
+ * <p>This class is mapped to the {@code cities} table and is used exclusively
+ * for persistence operations. It stores the city's identity, associated country,
+ * and name using embedded value objects.</p>
  *
- * <p>It is converted to and from the domain object by {@link TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler}.</p>
+ * <p>Conversion between this data model and the domain object is handled by
+ * {@link TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler}.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -41,12 +44,20 @@ public class CityDM {
      * @param cityName  the name of the city
      */
     public CityDM(CityID cityID, CountryId countryID, String cityName) {
-        this.cityID = cityID;
-        this.countryID = countryID;
-        this.cityName = cityName;
+        this.cityID = Objects.requireNonNull(cityID, "City ID cannot be null");
+        this.countryID = Objects.requireNonNull(countryID, "Country ID cannot be null");
+        this.cityName = Objects.requireNonNull(cityName, "City name cannot be null");
     }
 
-    public CityID getCityID() { return cityID; }
-    public CountryId getCountryID() { return countryID; }
-    public String getCityName() { return cityName; }
+    public CityID getCityID() {
+        return cityID;
+    }
+
+    public CountryId getCountryID() {
+        return countryID;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
 }
