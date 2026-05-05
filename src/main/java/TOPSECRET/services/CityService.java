@@ -38,7 +38,7 @@ public class CityService {
      * @throws IllegalArgumentException if any domain constraint is violated
      */
     public City createAndSave(String countryName, String cityName) {
-        CountryId countryId = countryRepository.findCountryIdByCountryName(countryName)
+        CountryId countryId = countryRepository.findIdByName(countryName)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Country not found: " + countryName));
 

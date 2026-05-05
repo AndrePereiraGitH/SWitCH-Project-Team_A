@@ -36,7 +36,7 @@ public class CountryService {
     /**
      * Constructs a new {@code CountryService} with the required dependencies.
      *
-     * @param countryFactory the factory responsible for creating {@link Country} instances
+     * @param countryFactory    the factory responsible for creating {@link Country} instances
      * @param countryRepository the repository responsible for persisting and retrieving countries
      */
     public CountryService(CountryFactory countryFactory, ICountryRepository countryRepository) {
@@ -50,34 +50,8 @@ public class CountryService {
      * @param countryName the name of the country to create; must be valid according to domain rules
      * @return the created and saved {@link Country}
      */
-        public Country createAndSave(String countryName ) {
-            Country country = countryFactory.create(countryName);
-            return countryRepository.save(country);
-        }
-
-    /**
-     * Retrieves a {@link Country} by its unique {@link CountryId}.
-     *
-     * @param countryID the identifier of the country to search for
-     * @return an {@link Optional} containing the found {@link Country}, or empty if not found
-     */
-        public Optional<Country> getCountryById(CountryId countryID ) {
-
-            Optional<Country> opCountry = countryRepository.findByID(countryID);
-
-            return opCountry;
-        }
-
-    /**
-     * Retrieves all registered countries from the repository.
-     *
-     * @return a {@link List} containing all {@link Country} instances
-     */
-        public List<Country> getAll() {
-
-            List<Country> lstCountries = countryRepository.getAllCountries();
-
-            return lstCountries;
-        }
-
+    public Country createAndSave(String countryName) {
+        Country country = countryFactory.create(countryName);
+        return countryRepository.save(country);
     }
+}

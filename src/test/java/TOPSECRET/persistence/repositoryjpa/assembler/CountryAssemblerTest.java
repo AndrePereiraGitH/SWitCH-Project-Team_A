@@ -36,6 +36,9 @@ class CountryAssemblerTest {
     @Mock
     private CountryFactory countryFactory;
 
+    @InjectMocks
+    private CountryAssembler assembler;
+
     private Country country;
     private CountryDM countryDM;
     private CountryId countryId;
@@ -56,8 +59,6 @@ class CountryAssemblerTest {
     void toDM_validCountry() {
 
         // Arrange
-        CountryAssembler assembler = new CountryAssembler(countryFactory);
-
         when(country.id()).thenReturn(countryId);
         when(country.getCountryName()).thenReturn("Portugal");
 
@@ -72,9 +73,6 @@ class CountryAssemblerTest {
 
     @Test
     void toDM_nullCountry_throwsException() {
-
-        // Arrange
-        CountryAssembler assembler = new CountryAssembler(countryFactory);
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
@@ -93,8 +91,6 @@ class CountryAssemblerTest {
     void dmToDomain_validCountry() {
 
         // Arrange
-        CountryAssembler assembler = new CountryAssembler(countryFactory);
-
         when(countryFactory.create(countryId, "Portugal"))
                 .thenReturn(country);
 
@@ -108,9 +104,6 @@ class CountryAssemblerTest {
 
     @Test
     void dmToDomain_nullCountry_throwsException() {
-
-        // Arrange
-        CountryAssembler assembler = new CountryAssembler(countryFactory);
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(

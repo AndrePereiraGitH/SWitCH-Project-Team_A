@@ -7,17 +7,53 @@ import java.util.Optional;
 
 /**
  * Repository interface for managing {@link Country} aggregate instances.
- * <p>
- * This interface defines the contract for accessing and persisting
- * {@link Country} aggregates, abstracting the underlying data storage mechanism.
- * </p>
- * <p>
- * Implementations of this repository are responsible for ensuring
- * consistency, uniqueness, and proper lifecycle management of {@code Country}
- * entities.
- * </p>
+ *
+ * <p>Provides operations grouped into three categories:</p>
+ * <ul>
+ *   <li><b>Persistence</b> — save operations</li>
+ *   <li><b>Lookup — by identity</b> — queries using {@link CountryId}</li>
+ *   <li><b>Lookup — by attributes</b> — queries using domain attributes such as name</li>
+ * </ul>
  */
 public interface ICountryRepository {
+
+    // =========================================================================
+    // Persistence
+    // =========================================================================
+
+    /**
+     * Persists a {@link Country} in the repository.
+     * <p>
+     * Implementations may enforce constraints such as preventing duplicates
+     * or ensuring consistency based on business rules.
+     * </p>
+     *
+     * @param countryName the {@link Country} to be saved;
+     *                    must not be {@code null}
+     * @return the saved {@link Country} instance
+     * @throws IllegalArgumentException if {@code countryName} is {@code null}
+     */
+    Country save(Country countryName);
+
+
+    // =========================================================================
+    // Lookup — by identity
+    // =========================================================================
+
+    /**
+     * Searches for a {@link Country} by its unique {@link CountryId}.
+     *
+     * @param countryID the identifier of the country to search for;
+     *                  must not be {@code null}
+     * @return an {@link Optional} containing the matching {@link Country},
+     *         or an empty {@link Optional} if no country is found
+     */
+    Optional<Country> findByID(CountryId countryID);
+
+
+    // =========================================================================
+    // Lookup — bulk
+    // =========================================================================
 
     /**
      * Retrieves all registered {@link Country} instances.
@@ -29,17 +65,12 @@ public interface ICountryRepository {
      * @return an unmodifiable {@link List} containing all registered countries;
      *         never {@code null}, but may be empty
      */
-    List<Country> getAllCountries();
+    List<Country> findAll();
 
-    /**
-     * Searches for a {@link Country} by its unique {@link CountryId}.
-     *
-     * @param countryID the identifier of the country to search for;
-     *                  must not be {@code null}
-     * @return an {@link Optional} containing the matching {@link Country},
-     *         or an empty {@link Optional} if no country is found
-     */
-    Optional<Country> findByID(CountryId countryID);
+
+    // =========================================================================
+    // Lookup — by attributes
+    // =========================================================================
 
     /**
      * Finds the {@link CountryId} associated with a given country name.
@@ -56,19 +87,5 @@ public interface ICountryRepository {
      * @throws NullPointerException if {@code countryName} is {@code null}
      * @throws IllegalArgumentException if {@code countryName} is blank
      */
-    Optional<CountryId> findCountryIdByCountryName(String countryName);
-
-    /**
-     * Persists a {@link Country} in the repository.
-     * <p>
-     * Implementations may enforce constraints such as preventing duplicates
-     * or ensuring consistency based on business rules.
-     * </p>
-     *
-     * @param countryName the {@link Country} to be saved;
-     *                    must not be {@code null}
-     * @return the saved {@link Country} instance
-     * @throws IllegalArgumentException if {@code countryName} is {@code null}
-     */
-    Country save(Country countryName);
+    Optional<CountryId> findIdByName(String countryName);
 }

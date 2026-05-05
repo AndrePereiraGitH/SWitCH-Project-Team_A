@@ -8,6 +8,7 @@ import TOPSECRET.persistence.repositoryjpa.jpa.ICountryRepositoryJPA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,18 +23,30 @@ import static org.mockito.Mockito.*;
  *
  * <p>
  * This test class verifies the behavior of the JPA-based implementation
- * of {@link TOPSECRET.domain.Country.ICountryRepository}, using Mockito
- * to double dependencies such as {@link TOPSECRET.persistence.repositoryjpa.jpa.ICountryRepositoryJPA}
- * and {@link TOPSECRET.persistence.repositoryjpa.assembler.CountryAssembler}.
+ * of {@link TOPSECRET.domain.Country.ICountryRepository}, ensuring correct
+ * interaction between the repository, the JPA layer, and the assembler.
  * </p>
  *
  * <p>
- * The tests cover:
+ * The tests use Mockito to isolate the unit under test by mocking its dependencies:
  * <ul>
- *     <li>Saving a country</li>
- *     <li>Finding a country by ID</li>
- *     <li>Retrieving all countries</li>
- *     <li>Finding a country ID by country name</li>
+ *     <li>{@link TOPSECRET.persistence.repositoryjpa.jpa.ICountryRepositoryJPA} (JPA persistence layer)</li>
+ *     <li>{@link TOPSECRET.persistence.repositoryjpa.assembler.CountryAssembler} (domain ↔ data model conversion)</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * The {@code CountryRepositoryJPAImpl} is injected using {@link org.mockito.InjectMocks},
+ * ensuring a clean and automatically wired System Under Test (SUT) per test execution.
+ * </p>
+ *
+ * <p>
+ * The test suite covers:
+ * <ul>
+ *     <li>Saving a country and delegating persistence correctly</li>
+ *     <li>Finding a country by ID and mapping it back to the domain</li>
+ *     <li>Retrieving all countries with proper conversion</li>
+ *     <li>Finding a country ID by country name using domain-level filtering</li>
  * </ul>
  * </p>
  */
@@ -45,6 +58,9 @@ class CountryRepositoryJPAImplTest {
 
     @Mock
     private CountryAssembler assembler;
+
+    @InjectMocks
+    private CountryRepositoryJPAImpl repository;
 
     private Country country;
     private CountryDM countryDM;
@@ -66,9 +82,6 @@ class CountryRepositoryJPAImplTest {
     void save_validCountry() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         when(assembler.ToDM(country)).thenReturn(countryDM);
         when(jpaRepository.save(countryDM)).thenReturn(countryDM);
 
@@ -88,10 +101,7 @@ class CountryRepositoryJPAImplTest {
     void findByID_existingCountry() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
-        when(jpaRepository.findById(countryId))
+       when(jpaRepository.findById(countryId))
                 .thenReturn(Optional.of(countryDM));
 
         when(assembler.ToDomain(countryDM))
@@ -109,9 +119,6 @@ class CountryRepositoryJPAImplTest {
     void findByID_notFound() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         when(jpaRepository.findById(countryId))
                 .thenReturn(Optional.empty());
 
@@ -127,12 +134,9 @@ class CountryRepositoryJPAImplTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void getAllCountries_returnsList() {
+    void findAll_returnsList() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         when(jpaRepository.findAll())
                 .thenReturn(List.of(countryDM));
 
@@ -140,7 +144,7 @@ class CountryRepositoryJPAImplTest {
                 .thenReturn(country);
 
         // Act
-        List<Country> result = repository.getAllCountries();
+        List<Country> result = repository.findAll();
 
         // Assert
         assertNotNull(result);
@@ -149,17 +153,14 @@ class CountryRepositoryJPAImplTest {
     }
 
     @Test
-    void getAllCountries_emptyList() {
+    void findAll_emptyList() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         when(jpaRepository.findAll())
                 .thenReturn(List.of());
 
         // Act
-        List<Country> result = repository.getAllCountries();
+        List<Country> result = repository.findAll();
 
         // Assert
         assertNotNull(result);
@@ -171,12 +172,9 @@ class CountryRepositoryJPAImplTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void findCountryIdByCountryName_found() {
+    void findIdByName_found() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         when(jpaRepository.findAll())
                 .thenReturn(List.of(countryDM));
 
@@ -191,7 +189,7 @@ class CountryRepositoryJPAImplTest {
 
         // Act
         Optional<CountryId> result =
-                repository.findCountryIdByCountryName("Portugal");
+                repository.findIdByName("Portugal");
 
         // Assert
         assertTrue(result.isPresent());
@@ -199,30 +197,24 @@ class CountryRepositoryJPAImplTest {
     }
 
     @Test
-    void findCountryIdByCountryName_notFound() {
+    void findIdByName_notFound() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         when(jpaRepository.findAll())
                 .thenReturn(List.of());
 
         // Act
         Optional<CountryId> result =
-                repository.findCountryIdByCountryName("Portugal");
+                repository.findIdByName("Portugal");
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findCountryIdByCountryName_multipleCountries_notMatching_shouldReturnEmpty() {
+    void findIdByName_multipleCountries_notMatching_shouldReturnEmpty() {
 
         // Arrange
-        CountryRepositoryJPAImpl repository =
-                new CountryRepositoryJPAImpl(jpaRepository, assembler);
-
         Country portugal = mock(Country.class);
         Country france = mock(Country.class);
 
@@ -240,7 +232,7 @@ class CountryRepositoryJPAImplTest {
 
         // Act
         Optional<CountryId> result =
-                repository.findCountryIdByCountryName("Germany");
+                repository.findIdByName("Germany");
 
         // Assert
         assertTrue(result.isEmpty());
