@@ -32,7 +32,7 @@ deactivate UI
 
 User -> UI : Selected publications: pub1_dto
 activate UI
-UI --> User : Please insert listingTitle, initialPrice,\nshortDescription, sellerId, pictures,\ninitialDate, finalDate, buyOutPrice
+UI --> User : Please insert listingTitle, initialPrice,\nshortDescription, pictures,\ninitialDate, finalDate, buyOutPrice
 deactivate UI
 
 ' ========== CREATE AN AUCTION LISTING =============

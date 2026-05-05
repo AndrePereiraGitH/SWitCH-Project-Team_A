@@ -28,7 +28,7 @@ database "DataBase" as db
 participant ":PublicationSamples\nAssembler" as pubAssembler
 
 participant ":PublicationSample\nFactory" as pubFactory
-participant "pubDomainList\n:List<PublicationSample" as pubDomainList
+participant "pubDomainList\n:List<PublicationSample>" as pubDomainList
 
 participant "pubSampleDomain\n:PublicationSample" as pubSampleDomain
 
@@ -106,9 +106,9 @@ activate library
 library --> ctrl : libraryId
 deactivate library
 
-ctrl -> pubRepo : getAllByLibraryID ( libraryId)
+ctrl -> pubRepo : findByLibraryId ( libraryId)
 activate pubRepo
-pubRepo -> pubRepoJPA : getAllByLibraryId ( libraryId)
+pubRepo -> pubRepoJPA : findByLibraryId ( libraryId)
 
 
 activate pubRepoJPA

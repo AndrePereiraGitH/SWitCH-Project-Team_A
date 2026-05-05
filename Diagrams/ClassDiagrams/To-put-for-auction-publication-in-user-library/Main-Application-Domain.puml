@@ -93,6 +93,7 @@ class PublicationSample <<Aggregate Root>> {
   -publicationStatus: PublicationStatus
   -editionId: Long
   -condition: String
+  +changeStatusToForSale()
 }
 
 class Listing <<Aggregate Root>> {
