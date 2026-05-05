@@ -10,7 +10,7 @@ class Controller {
   +getAllPublicationTypes(): List<PublicationTypeDTO>
 }
 
-UI -.-> Controller : uses
+UI "1" -.-> "1" Controller : uses
 
 ' ====== Repository Layer ======
 interface IPublicationTypeRepository {
@@ -23,7 +23,7 @@ interface IPublicationTypeRepositoryJPA {
 
 IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA : implements
 
-Controller -.-> IPublicationTypeRepository : uses
+Controller "1" -.-> "1" IPublicationTypeRepository : uses
 
 
 ' ====== Domain ======
@@ -43,10 +43,10 @@ class PublicationTypeFactory {
   +create(publicationType.id, mediaFormat): PublicationType
 }
 
-PublicationTypeAssembler -.-> PublicationTypeFactory : uses
-PublicationTypeAssembler --> PublicationType
+PublicationTypeAssembler "1" -.-> "1" PublicationTypeFactory : uses
+PublicationTypeAssembler "1" --> "*" PublicationType : recreate
 
-IPublicationTypeRepository -.-> PublicationTypeAssembler : uses
+IPublicationTypeRepository "1" -.-> "1" PublicationTypeAssembler : uses
 
 ' ====== DTO & Mapper ======
 class US014PublicationTypeDTO {
@@ -58,8 +58,8 @@ class US014PublicationTypeMapper {
   +toDTOList(pubTypeList): List<US014PublicationTypeDTO>
 }
 
-Controller -.-> US014PublicationTypeMapper : uses
-US014PublicationTypeMapper --> PublicationType
-US014PublicationTypeMapper --> US014PublicationTypeDTO
+Controller "1" -.-> "1" US014PublicationTypeMapper : uses
+US014PublicationTypeMapper "1" --> "*" PublicationType : maps to
+US014PublicationTypeMapper "1" -.-> "1" US014PublicationTypeDTO : converts
 
 @enduml

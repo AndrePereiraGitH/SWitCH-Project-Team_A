@@ -21,10 +21,10 @@ activate UI
 UI -> C : getAllPublicationTypes()
 activate C
 
-C -> PTR : getAllPublicationTypes()
+C -> PTR : findAll()
 activate PTR
 
-PTR -> PTRJPA : getAllPublicationTypes()
+PTR -> PTRJPA : findAll()
 activate PTRJPA
 
 PTRJPA -> EM : createQuery / execute
@@ -37,13 +37,16 @@ end note
 EM --> PTRJPA : data
 deactivate EM
 
-PTRJPA --> PTR : pubTypesPersisted
+PTRJPA --> "publicationTypeDMs:\n List<PublicationTypeDM>" ** : <<create>>
+
+PTRJPA --> PTR : publicationTypeDms
 deactivate PTRJPA
 
-PTR -> Assembler : toDomainList(pubTypesPersisted)
+PTR -> Assembler : toDomainList(publicationTypeDms)
 activate Assembler
 
-Assembler -->> "pubTypeList\nList<PublicationType>" ** : <<create>>
+Assembler --> "pubTypeList\nList<PublicationType>" ** : <<create>>
+
 
 loop for each Publication Type
 Assembler -> Factory : create\n(pubType.id, mediaFormat)
