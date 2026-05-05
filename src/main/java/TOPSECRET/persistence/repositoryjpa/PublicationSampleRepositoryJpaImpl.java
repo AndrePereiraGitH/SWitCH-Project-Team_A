@@ -167,8 +167,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSample> listOfPublications = publicationSampleRepositoryJpa.findAllByOwnerId(userId)
                 .stream().map(publicationSampleAssembler::toDomain)
-                .filter(publicationSample -> publicationSample.isOwnedByUser(userId) &&
-                        publicationSample.isInUserLibrary()).toList();
+                .filter(PublicationSample::isInUserLibrary).toList();
 
         return listOfPublications;
     }
