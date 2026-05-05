@@ -53,7 +53,7 @@ class ToGetListOfGenreControllerTest {
                 () -> new ToGetListOfGenreController(genreRepository, null)
         );
 
-        assertEquals("GenreMapper can't be null", exception.getMessage());
+        assertEquals("Genre Mapper can't be null", exception.getMessage());
     }
 
 
@@ -68,7 +68,7 @@ class ToGetListOfGenreControllerTest {
 
         when(genreRepository.getAllGenres()).thenReturn(allGenreList);
 
-        when(mapper.toDTO(allGenreList)).thenReturn(expected);
+        when(mapper.toDTOList(allGenreList)).thenReturn(expected);
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
@@ -94,7 +94,7 @@ class ToGetListOfGenreControllerTest {
         List<US013GenreDTO> expected = List.of(dto1, dto2);
 
         when(genreRepository.getAllGenres()).thenReturn(allGenreList);
-        when(mapper.toDTO(allGenreList)).thenReturn(expected);
+        when(mapper.toDTOList(allGenreList)).thenReturn(expected);
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
@@ -113,7 +113,7 @@ class ToGetListOfGenreControllerTest {
         List<Genre> allGenreList = List.of();
 
         when(genreRepository.getAllGenres()).thenReturn(allGenreList);
-        when(mapper.toDTO(allGenreList)).thenReturn(List.of());
+        when(mapper.toDTOList(allGenreList)).thenReturn(List.of());
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
@@ -131,7 +131,7 @@ class ToGetListOfGenreControllerTest {
         List<Genre> allGenreList = List.of();
 
         when(genreRepository.getAllGenres()).thenReturn(allGenreList);
-        when(mapper.toDTO(allGenreList)).thenReturn(List.of());
+        when(mapper.toDTOList(allGenreList)).thenReturn(List.of());
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
@@ -140,6 +140,6 @@ class ToGetListOfGenreControllerTest {
         controller.getGenresList();
 
         // Assert
-        verify(mapper, times(1)).toDTO(allGenreList);
+        verify(mapper, times(1)).toDTOList(allGenreList);
     }
 }

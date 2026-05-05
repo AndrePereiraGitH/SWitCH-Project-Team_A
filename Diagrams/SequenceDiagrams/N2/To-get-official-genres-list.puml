@@ -23,7 +23,7 @@ activate C
 C -> GR : getAllGenres()
 activate GR
 
-GR -> GRJPA : getAllGenres()
+GR -> GRJPA : findAll()
 activate GRJPA
 
 GRJPA -> EM : Query
@@ -36,20 +36,20 @@ end note
 EM --> GRJPA : data
 deactivate EM
 
-create "genresPersisted:\nList<GenreDM>" as genresPersisted
+create "genresPersistedDM:\nList<GenreDM>" as genresPersisted
 GRJPA -->> genresPersisted : <<create>>
 
-GRJPA --> GR : genresPersisted
+GRJPA --> GR : genresPersistedDM
 deactivate GRJPA
 
-GR -> Assembler : toDomainList(genresPersisted)
-activate Assembler
-
 create "listOfGenre:\nList<Genre>" as listDomain
-Assembler -->> listDomain : <<create>>
+GR -->> listDomain : <<create>>
 
-loop for each GenreDM
-    Assembler -> Factory : create(GenreId, String genreType)
+loop for each GenreDM in GenresPersistedDM
+    GR -> Assembler : toDomain(genreDM)
+    activate Assembler
+
+    Assembler -> Factory : create(dm.getId(), dm.getGenreType())
     activate Factory
 
     create "genreDomain:\nGenre" as genreDomain
@@ -58,11 +58,11 @@ loop for each GenreDM
     Factory --> Assembler : genreDomain
     deactivate Factory
 
-    Assembler -> listDomain : add(genreDomain)
-end
+    Assembler --> GR : genreDomain
+    deactivate Assembler
 
-Assembler --> GR : listOfGenre
-deactivate Assembler
+    GR -> listDomain : add(genreDomain)
+end
 
 GR --> C : listOfGenre
 deactivate GR

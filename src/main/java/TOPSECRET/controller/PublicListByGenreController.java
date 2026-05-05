@@ -60,7 +60,7 @@ public class PublicListByGenreController {
         List<Genre> genreList = _genreRepository.getAllGenres();
         US013GenreMapper genreMapper = new US013GenreMapper();
 
-        return genreMapper.toDTO(genreList);
+        return genreMapper.toDTOList(genreList);
     }
 
 

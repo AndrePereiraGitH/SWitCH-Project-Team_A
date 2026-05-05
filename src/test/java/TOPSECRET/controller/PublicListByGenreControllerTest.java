@@ -1,20 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreId;
-import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US013GenreDTO;
-import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,14 +37,19 @@ class PublicListByGenreControllerTest {
 
     @Test
     void getAllGenresDelegatesToGenreRepoAndReturnsListOfGenres() {
-        //Arrange
-        controller =new PublicListByGenreController(genreRepo, collectionRepo , userRepo);
+        // Arrange
+        controller = new PublicListByGenreController(genreRepo, collectionRepo, userRepo);
+        GenreId id1 = mock(GenreId.class);
+        GenreId id2 = mock(GenreId.class);
 
-        //Act
+        when(genreDouble1.id()).thenReturn(id1);
+        when(genreDouble2.id()).thenReturn(id2);
         when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble1, genreDouble2));
+
+        // Act
         List<US013GenreDTO> result = controller.getGenres();
 
-        //Assert
+        // Assert
         assertEquals(2, result.size());
     }
 
