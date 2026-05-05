@@ -16,7 +16,7 @@ class LibraryService {
 
 ' ── Domain Layer ───────────────────────────────────────────
 interface IUserRepository {
-    + findUserIdByUsername(username: String): Optional<UserId>
+    + findUserIdByUsername(username: String): UserId
 }
 
 interface ILibraryRepository {
@@ -26,6 +26,7 @@ interface ILibraryRepository {
 
 class LibraryFactory {
     + create(libraryName: String, userId: UserId): Library
+    + create(id: LibraryId, name: String, userId: UserId): Library
 }
 
 class Library {
@@ -41,7 +42,7 @@ interface IUserRepositoryJPA {
 }
 
 interface ILibraryRepositoryJPA {
-    + findByUserId(userId: UserId): Optional<LibraryDM>
+    + existsByUserId(userId: UserId): boolean
     + save(libraryDM: LibraryDM): LibraryDM
 }
 
@@ -50,10 +51,19 @@ class LibraryAssembler {
     + toDomain(libraryDM: LibraryDM): Library
 }
 
+class UserDM {
+    - id: UserId
+    - username: String
+    + getId(): UserId
+}
+
 class LibraryDM {
     - id: LibraryId
     - name: String
     - userId: UserId
+    + id(): LibraryId
+    + name(): String
+    + userId(): UserId
 }
 
 Rectangle Database {
@@ -70,13 +80,16 @@ LibraryService ..> ILibraryRepository: uses
 IUserRepository <|.. IUserRepositoryJPA: implements
 ILibraryRepository <|.. ILibraryRepositoryJPA: implements
 
-ILibraryRepository ..> LibraryAssembler: uses
+ILibraryRepositoryJPA ..> LibraryAssembler: uses
+ILibraryRepositoryJPA ..> LibraryFactory: uses
 
 LibraryAssembler ..> LibraryDM: creates
 LibraryAssembler ..> Library: creates
+LibraryAssembler ..> LibraryFactory: uses
 
 LibraryFactory ..> Library: creates
 
+IUserRepositoryJPA ..> UserDM: creates
 IUserRepositoryJPA ..> Database: queries
 ILibraryRepositoryJPA ..> Database: queries
 
