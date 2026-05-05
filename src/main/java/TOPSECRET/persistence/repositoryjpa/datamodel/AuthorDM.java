@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class AuthorDM {
     private AuthorId id;
     private String name;
     @Embedded
-    private CountryID countryId;
+    private CountryId countryId;
     private LocalDate dateOfBirth;
     private String biography;
 
@@ -39,7 +39,7 @@ public class AuthorDM {
      * @param biography   the author's biography
      * @throws IllegalArgumentException if any argument is {@code null}
      */
-    public AuthorDM(AuthorId id, String name, CountryID countryId, LocalDate dateOfBirth, String biography) {
+    public AuthorDM(AuthorId id, String name, CountryId countryId, LocalDate dateOfBirth, String biography) {
 
         if (id == null || name == null || countryId == null || dateOfBirth == null || biography == null) {
             throw new IllegalArgumentException("All fields must not be null.");
