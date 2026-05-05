@@ -1,7 +1,7 @@
 package TOPSECRET.domain.City;
 
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.CityID;
-import TOPSECRET.domain.ValueObjects.CountryID;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,7 +32,7 @@ public class CityFactory {
      * @throws IllegalArgumentException if any domain constraint is violated
      */
 
-    public City create(CountryID countryID, String cityName) {
+    public City create(CountryId countryID, String cityName) {
 
         return new City(countryID, cityName);
     }
@@ -48,7 +48,7 @@ public class CityFactory {
      * @param cityName  the name of the city
      * @return a valid {@link City} instance with the given ID
      */
-    public City create(CityID cityID, CountryID countryID, String cityName) {
+    public City create(CityID cityID, CountryId countryID, String cityName) {
         return new City(cityID, countryID, cityName);
     }
 }

@@ -3,7 +3,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.ValueObjects.CityID;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class CityAssemblerTest {
         CityFactory doubleCityFactory = mock(CityFactory.class);
         CityAssembler assembler = new CityAssembler(doubleCityFactory);
         CityID cityID = new CityID("test-uuid");
-        CountryID countryID = new CountryID("PORTUGAL_ID");
+        CountryId countryID = new CountryId("PORTUGAL_ID");
         City doubleCity = mock(City.class);
         when(doubleCity.id()).thenReturn(cityID);
         when(doubleCity.getCityCountryID()).thenReturn(countryID);
@@ -53,7 +53,7 @@ class CityAssemblerTest {
         CityFactory doubleCityFactory = mock(CityFactory.class);
         CityAssembler assembler = new CityAssembler(doubleCityFactory);
         CityID cityID = new CityID("test-uuid");
-        CountryID countryID = new CountryID("PORTUGAL_ID");
+        CountryId countryID = new CountryId("PORTUGAL_ID");
         CityDM cityDM = new CityDM(cityID, countryID, "Porto");
         City doubleCity = mock(City.class);
         when(doubleCityFactory.create(cityID, countryID, "Porto")).thenReturn(doubleCity);

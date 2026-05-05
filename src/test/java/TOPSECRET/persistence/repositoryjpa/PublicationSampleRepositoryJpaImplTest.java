@@ -591,7 +591,7 @@ class PublicationSampleRepositoryJpaImplTest {
 
     @Test
     void findByCollectionOfPublicationsId_shouldReturnEmptyList() {
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         List<PublicationSample> result = repo.findByCollectionOfPublicationsId(collectionId);
         assertTrue(result.isEmpty());
     }
@@ -599,7 +599,7 @@ class PublicationSampleRepositoryJpaImplTest {
     @Test
     void findAvailableForCollection_shouldReturnEmptyList() {
         UserId userId = mock(UserId.class);
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         List<PublicationSample> result = repo.findAvailableForCollection(userId, collectionId);
         assertTrue(result.isEmpty());
     }
@@ -630,7 +630,7 @@ class PublicationSampleRepositoryJpaImplTest {
     void assignPublicationsToCollection_shouldReturnFalse() {
 
         // Arrange
-        CollectionOfPublicationsID collectionId = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         List<PublicationSampleId> ids = List.of(mock(PublicationSampleId.class));
 
         // Act

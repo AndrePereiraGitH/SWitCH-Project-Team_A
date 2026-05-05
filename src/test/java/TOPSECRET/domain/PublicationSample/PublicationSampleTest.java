@@ -264,11 +264,11 @@ class PublicationSampleTest {
 
         sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
 
-        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
         when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
 
         // Act
-        CollectionOfPublicationsID result = sample.addPublicationToCollection(collectionOfPublicationsIdDouble);
+        CollectionOfPublicationsId result = sample.addPublicationToCollection(collectionOfPublicationsIdDouble);
 
         // Assert
         assertEquals(collectionOfPublicationsIdDouble, result);
@@ -297,11 +297,11 @@ class PublicationSampleTest {
                 bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
 
         sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
-        sample.addPublicationToCollection(new CollectionOfPublicationsID(UUID.randomUUID().toString()));
+        sample.addPublicationToCollection(new CollectionOfPublicationsId(UUID.randomUUID().toString()));
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                sample.addPublicationToCollection(new CollectionOfPublicationsID(UUID.randomUUID().toString()))
+                sample.addPublicationToCollection(new CollectionOfPublicationsId(UUID.randomUUID().toString()))
         );
     }
 
@@ -312,7 +312,7 @@ class PublicationSampleTest {
         PublicationSample sample = new PublicationSample(
                 bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
 
-        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
         when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
 
         // Act + Assert
@@ -499,15 +499,15 @@ class PublicationSampleTest {
         when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
         anySample.addPublicationToLibrary(libraryIdDouble);
 
-        CollectionOfPublicationsID collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
         when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
         anySample.addPublicationToCollection(collectionOfPublicationsIdDouble);
 
         // Act
-        CollectionOfPublicationsID collectionOfPublicationsID_real = anySample.getCollecOfPubID();
+        CollectionOfPublicationsId collectionOfPublicationsId_real = anySample.getCollecOfPubID();
 
         //Assert
-        assertEquals(collectionOfPublicationsID_real, collectionOfPublicationsIdDouble);
+        assertEquals(collectionOfPublicationsId_real, collectionOfPublicationsIdDouble);
     }
 
     @Test

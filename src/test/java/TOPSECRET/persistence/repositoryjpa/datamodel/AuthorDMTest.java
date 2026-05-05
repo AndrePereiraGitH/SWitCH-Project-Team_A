@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -28,7 +28,7 @@ class AuthorDMTest {
     void shouldCreateAuthorDM_whenAllFieldsAreValid() {
         // arrange
         AuthorId authorIdDOuble = mock(AuthorId.class);
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
         String name = "Ken Follett";
         LocalDate birthday = LocalDate.of(1952, 10,3);
         String biography = "English novelist";
@@ -43,7 +43,7 @@ class AuthorDMTest {
     @Test
     void getId_shouldReturnAuthorId() {
         AuthorId authorIdDouble = mock(AuthorId.class);
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
 
         AuthorDM result = new AuthorDM(
                 authorIdDouble,
@@ -59,7 +59,7 @@ class AuthorDMTest {
     @Test
     void getName_shouldReturnName() {
         AuthorId authorIdDouble = mock(AuthorId.class);
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
         String name = "Ken Follett";
 
         AuthorDM result = new AuthorDM(
@@ -76,7 +76,7 @@ class AuthorDMTest {
     @Test
     void getCountryId_shouldReturnCountryId() {
         AuthorId authorIdDouble = mock(AuthorId.class);
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
 
         AuthorDM result = new AuthorDM(
                 authorIdDouble,
@@ -92,7 +92,7 @@ class AuthorDMTest {
     @Test
     void getDateOfBirth_shouldReturnDateOfBirth() {
         AuthorId authorIdDouble = mock(AuthorId.class);
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
         LocalDate birthday = LocalDate.of(1952, 10, 3);
 
         AuthorDM result = new AuthorDM(
@@ -109,7 +109,7 @@ class AuthorDMTest {
     @Test
     void getBiography_shouldReturnBiography() {
         AuthorId authorIdDouble = mock(AuthorId.class);
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
         String biography = "English novelist";
 
         AuthorDM result = new AuthorDM(
@@ -132,7 +132,7 @@ class AuthorDMTest {
     void constructor_shouldThrowException_whenAnyFieldIsNull(
             AuthorId id,
             String name,
-            CountryID countryId,
+            CountryId countryId,
             LocalDate dateOfBirth,
             String biography
     ) {
@@ -147,7 +147,7 @@ class AuthorDMTest {
 
     private static Stream<Arguments> provideInvalidAuthorDMArguments() {
         AuthorId validId = mock(AuthorId.class);
-        CountryID validCountryId = mock(CountryID.class);
+        CountryId validCountryId = mock(CountryId.class);
         LocalDate validDateOfBirth = LocalDate.of(1903, 6, 25);
 
         String validName = "Ken Follett";
@@ -165,7 +165,7 @@ class AuthorDMTest {
     @Test
     void shouldThrow_whenIdIsNull() {
         //arrange
-        CountryID countryIdDouble = mock(CountryID.class);
+        CountryId countryIdDouble = mock(CountryId.class);
         String name = "Ken Follett";
         LocalDate birthday = LocalDate.of(1952, 10,3);
         String biography = "English novelist";
