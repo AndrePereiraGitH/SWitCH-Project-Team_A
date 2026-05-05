@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.Auction.IAuctionRepository;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
@@ -11,6 +10,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.dto.US016PublicationSampleMapper;
+import TOPSECRET.services.AuctionService;
 import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,12 +22,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-/*
+
 class ToPutForSalePublicationInAuctionControllerTest {
 
     private ILibraryRepository libraryRepo;
     private ListingService listingService;
-    private IAuctionRepository auctionRepository;
+    private AuctionService auctionService;
     private IPublicationSampleRepository publicationSampleRepository;
 
     private Library library;
@@ -51,9 +51,9 @@ class ToPutForSalePublicationInAuctionControllerTest {
         // arrange
         libraryRepo = mock(ILibraryRepository.class);
         listingService = mock(ListingService.class);  // FIXED: was IListingRepository
-        auctionRepository = mock(IAuctionRepository.class);
         publicationSampleRepository = mock(IPublicationSampleRepository.class);
 
+        auctionService = mock(AuctionService.class);
         userId = mock(UserId.class);
         library = mock(Library.class);
         libraryId = mock(LibraryId.class);
@@ -69,8 +69,8 @@ class ToPutForSalePublicationInAuctionControllerTest {
 
         controller = new ToPutForSalePublicationInAuctionController(
                 listingService,
+                auctionService,
                 libraryRepo,
-                auctionRepository,
                 publicationSampleRepository,
                 mapper
         );
@@ -87,8 +87,8 @@ class ToPutForSalePublicationInAuctionControllerTest {
         ToPutForSalePublicationInAuctionController localController =
                 new ToPutForSalePublicationInAuctionController(
                         listingService,
+                        auctionService,
                         libraryRepo,
-                        auctionRepository,
                         publicationSampleRepository,
                         mapper
                 );
@@ -191,7 +191,7 @@ class ToPutForSalePublicationInAuctionControllerTest {
 
         when(listing.id()).thenReturn(listingId);
 
-        when(auctionRepository.createAndAdd(
+        when(auctionService.createAndSave(
                 listingId,
                 initialDate,
                 finalDate,
@@ -224,13 +224,13 @@ class ToPutForSalePublicationInAuctionControllerTest {
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
         when(listingService.createAndSave(
-                anyString(),
-                anyList(),
-                eq(SaleType.AUCTION),
-                eq(initialPrice),
-                anyString(),
-                eq(userId),
-                eq(pictures)
+                "Auction Title",
+                selectedPublications,
+                SaleType.AUCTION,
+                initialPrice,
+                "Short description",
+                userId,
+                pictures
         )).thenThrow(new IllegalArgumentException("Listing already exists"));
 
         // act + assert
@@ -261,23 +261,22 @@ class ToPutForSalePublicationInAuctionControllerTest {
         LocalDateTime finalDate = LocalDateTime.of(2026, 4, 10, 10, 0);
 
         when(listingService.createAndSave(
-                anyString(),
-                anyList(),
-                eq(SaleType.AUCTION),
-                eq(initialPrice),
-                anyString(),
-                eq(userId),
-                eq(pictures)
+                "Auction Title",
+                selectedPublications,
+                SaleType.AUCTION,
+                initialPrice,
+                "Short description",
+                userId,
+                pictures
         )).thenReturn(listing);
-
         when(listing.id()).thenReturn(listingId);
 
-        when(auctionRepository.createAndAdd(
-                eq(listingId),
-                eq(initialDate),
-                eq(finalDate),
-                eq(initialPrice),
-                eq(buyOutPrice)
+        when(auctionService.createAndSave(
+                listingId,
+                initialDate,
+                finalDate,
+                initialPrice,
+                buyOutPrice
         )).thenThrow(new InstanceAlreadyExistsException("Auction already exists"));
 
         // act + assert
@@ -497,4 +496,3 @@ class ToPutForSalePublicationInAuctionControllerTest {
         assertEquals("All fields must be non-null.", ex.getMessage());
     }
 }
-*/

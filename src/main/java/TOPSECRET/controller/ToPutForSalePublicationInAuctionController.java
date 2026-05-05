@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
@@ -12,6 +12,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.dto.US016PublicationSampleMapper;
+import TOPSECRET.services.AuctionService;
 import TOPSECRET.services.ListingService;
 
 import javax.management.InstanceNotFoundException;
@@ -30,8 +31,8 @@ import java.util.*;
 public class ToPutForSalePublicationInAuctionController {
 
     private final ListingService listingService;
+    private final AuctionService auctionService;
     private final ILibraryRepository libraryRepo;
-    private final IAuctionRepository auctionRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final US016PublicationSampleMapper mapper;
 
@@ -39,16 +40,14 @@ public class ToPutForSalePublicationInAuctionController {
      * Creates a new controller with the repositories and mapper required for this use case.
      *
      * @param libraryRepo repository used to retrieve the user's library
-     * @param auctionRepository repository used to create and store auctions
      * @param publicationSampleRepository repository used to retrieve publication samples
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public ToPutForSalePublicationInAuctionController(ListingService service,ILibraryRepository libraryRepo ,
-                                                      IAuctionRepository auctionRepository, IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
+    public ToPutForSalePublicationInAuctionController(ListingService service, AuctionService auctionService, ILibraryRepository libraryRepo , IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.listingService = service;
+        this.auctionService = auctionService;
         this.libraryRepo = libraryRepo;
-        this.auctionRepository = auctionRepository;
         this.publicationSampleRepository = publicationSampleRepository;
         this.mapper = mapper;
     }
@@ -96,7 +95,7 @@ public class ToPutForSalePublicationInAuctionController {
      * @return {@code true} if the listing and the auction are successfully created
      * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
-    /*
+
     public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
 
         if (listingTitle == null
@@ -112,12 +111,12 @@ public class ToPutForSalePublicationInAuctionController {
             throw new IllegalArgumentException("All fields must be non-null.");
         }
 
-        Listing auctionListing = listingService.createAndSave(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
+        Listing persistedListing = listingService.createAndSave(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
 
-        auctionRepository.createAndAdd(auctionListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
+        Auction persistedAuction = auctionService.createAndSave(persistedListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
+
 
         return true;
     }
 
-     */
 }
