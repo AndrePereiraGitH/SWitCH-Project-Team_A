@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsID;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ class US018CollectionOfPublicationsDTOTest {
     void shouldCreateDTOSuccessfully() {
 
         // ARRANGE
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         // ACT
         US018CollectionOfPublicationsDTO dto =
@@ -37,7 +37,7 @@ class US018CollectionOfPublicationsDTOTest {
     void shouldThrowExceptionWhenNameIsNull() {
 
         // ARRANGE
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
@@ -48,7 +48,7 @@ class US018CollectionOfPublicationsDTOTest {
     void shouldThrowExceptionWhenNameIsBlank() {
 
         // ARRANGE
-        CollectionOfPublicationsID id = mock(CollectionOfPublicationsID.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
