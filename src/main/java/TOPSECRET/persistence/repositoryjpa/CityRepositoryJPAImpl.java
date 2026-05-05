@@ -2,6 +2,7 @@ package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICityRepositoryJPA;
@@ -35,5 +36,13 @@ public class CityRepositoryJPAImpl implements ICityRepository {
         CityDM cityDM = assembler.toDM(newcity);
         CityDM saved = jpaRepository.save(cityDM);
         return assembler.toDomain(saved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean existsByCountryIDAndCityName(CountryId countryId, String cityName) {
+        return jpaRepository.existsByCountryIDAndCityName(countryId, cityName);
     }
 }

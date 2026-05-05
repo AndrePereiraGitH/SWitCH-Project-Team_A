@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.City.ICityRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.*;
 class CityRepositoryMemTest {
 
     private final City anyCity = mock(City.class);
+    private final CityFactory factory = new CityFactory();
 
     @Test
     void shouldSaveCity() {
@@ -36,27 +38,76 @@ class CityRepositoryMemTest {
     }
 
     @Test
-    void shouldThrowWhenSavingDuplicateCity() {
-        // Arrange
-        ICityRepository repository = new CityRepositoryMem();
-        when(anyCity.sameAs(anyCity)).thenReturn(true);
-        repository.save(anyCity);
+    void shouldReturnFalseWhenRepositoryIsEmpty() {
+        //Arrange
+        CityRepositoryMem repo = new CityRepositoryMem();
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.save(anyCity));
+        //Act
+        boolean result = repo.existsByCountryIDAndCityName(
+                new CountryId("PT"), "Lisbon");
+
+        //Assert
+        assertFalse(result);
     }
 
     @Test
-    void shouldStoreOnlyOneInstanceOfCity() {
-        // Arrange
-        ICityRepository repository = new CityRepositoryMem();
-        when(anyCity.sameAs(anyCity)).thenReturn(true);
-        repository.save(anyCity);
+    void shouldReturnTrueWhenCityExists() {
+        //Arrange
+        CityRepositoryMem repo = new CityRepositoryMem();
 
-        // Act + Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> repository.save(anyCity));
-        assertEquals("This city already exists in the system.", ex.getMessage());
+        CountryId country = new CountryId("PT");
+        City city = factory.create(country, "Lisbon");
+
+        repo.save(city);
+
+        //Act
+        boolean result = repo.existsByCountryIDAndCityName(country, "Lisbon");
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCityNameDiffers() {
+        //Arrange
+        CityRepositoryMem repo = new CityRepositoryMem();
+
+        CountryId country = new CountryId("PT");
+        repo.save(factory.create(country, "Porto"));
+
+        //Act
+        boolean result = repo.existsByCountryIDAndCityName(country, "Lisbon");
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCountryDiffers() {
+        //Arrange
+        CityRepositoryMem repo = new CityRepositoryMem();
+
+        repo.save(factory.create(new CountryId("PT"), "Lisbon"));
+
+        //Act
+        boolean result = repo.existsByCountryIDAndCityName(
+                new CountryId("ES"), "Lisbon");
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldThrowWhenSavingDuplicateCity() {
+        //Arrange
+        CityRepositoryMem repo = new CityRepositoryMem();
+
+        CountryId country = new CountryId("PT");
+        repo.save(factory.create(country, "Lisbon"));
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.save(factory.create(country, "Lisbon"))
+        );
     }
 }

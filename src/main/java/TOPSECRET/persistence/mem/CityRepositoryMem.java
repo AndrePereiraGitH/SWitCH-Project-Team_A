@@ -2,6 +2,7 @@ package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
+import TOPSECRET.domain.ValueObjects.CountryId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,26 +44,25 @@ public class CityRepositoryMem implements ICityRepository {
      */
     @Override
     public City save(City city) {
-        if (existsByAttributes(city)) {
+        if (existsByCountryIDAndCityName(
+                city.getCityCountryID(),
+                city.getCityName())) {
+
             throw new IllegalArgumentException("This city already exists in the system.");
         }
+
         _cities.add(city);
         return city;
     }
 
     /**
-     * Checks if a city already exists in the repository based on its attributes.
-     * <p>
-     * Uses {@link City#sameAs(Object)} to compare by country and name,
-     * not by identity, since the city was just created and has a new ID.
-     * </p>
-     *
-     * @param city the city to check for existence; must not be {@code null}
-     * @return {@code true} if a matching city exists, {@code false} otherwise
+     * {@inheritDoc}
      */
-    private boolean existsByAttributes(City city) {
+    @Override
+    public boolean existsByCountryIDAndCityName(CountryId countryId, String cityName) {
         for (City existing : _cities) {
-            if (existing.sameAs(city)) {
+            if (existing.getCityCountryID().equals(countryId) &&
+                    existing.getCityName().equals(cityName)) {
                 return true;
             }
         }
