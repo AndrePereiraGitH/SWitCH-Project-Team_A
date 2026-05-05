@@ -51,7 +51,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
         when(genreDouble.getGenreType()).thenReturn("Fiction");
 
         IGenreRepository genreRepo = mock(IGenreRepository.class);
-        when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble));
+        when(genreRepo.findAll()).thenReturn(List.of(genreDouble));
 
         ToCreateCollectionOfPublicationsController controller =
                 createController(genreRepo, mock(ICollectionOfPublicationsRepository.class));
@@ -68,7 +68,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     void getAllGenres_shouldReturnEmptyListWhenNoGenresExist() {
         // Arrange
         IGenreRepository genreRepo = mock(IGenreRepository.class);
-        when(genreRepo.getAllGenres()).thenReturn(List.of());
+        when(genreRepo.findAll()).thenReturn(List.of());
 
         ToCreateCollectionOfPublicationsController controller =
                 createController(genreRepo, mock(ICollectionOfPublicationsRepository.class));

@@ -17,10 +17,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link GenreRepositoryJpaImpl}.
- * Dependencies are mocked to ensure proper isolation.
- */
 @ExtendWith(MockitoExtension.class)
 class GenreRepositoryJpaImplTest {
 
@@ -57,6 +53,7 @@ class GenreRepositoryJpaImplTest {
 
     @Test
     void ensureSaveThrowsExceptionWhenGenreIsNull() {
+        // Act & Assert
         assertThrows(NullPointerException.class,
                 () -> genreRepositoryJpaImpl.save(null));
     }
@@ -75,24 +72,28 @@ class GenreRepositoryJpaImplTest {
         when(assembler.toDomain(dm)).thenReturn(genre);
 
         // Act
-        Genre result = genreRepositoryJpaImpl.findByTitle("Drama");
+        Optional<Genre> result = genreRepositoryJpaImpl.findByTitle("Drama");
 
         // Assert
-        assertSame(genre, result);
+        assertTrue(result.isPresent());
+        assertSame(genre, result.get());
     }
 
     @Test
-    void ensureFindByTitleThrowsExceptionWhenNotFound() {
+    void ensureFindByTitleReturnsEmptyWhenNotFound() {
         // Arrange
         when(genreRepositoryJpa.findByGenreType("Unknown")).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> genreRepositoryJpaImpl.findByTitle("Unknown"));
+        // Act
+        Optional<Genre> result = genreRepositoryJpaImpl.findByTitle("Unknown");
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void ensureFindByTitleThrowsExceptionWhenTitleIsNull() {
+        // Act & Assert
         assertThrows(NullPointerException.class,
                 () -> genreRepositoryJpaImpl.findByTitle(null));
     }
@@ -102,7 +103,7 @@ class GenreRepositoryJpaImplTest {
     // =========================================================================
 
     @Test
-    void ensureGetAllGenresReturnsAllGenres() {
+    void ensureFindAllGenresReturnsAll() {
         // Arrange
         GenreDM dm1 = mock(GenreDM.class);
         GenreDM dm2 = mock(GenreDM.class);
@@ -114,19 +115,19 @@ class GenreRepositoryJpaImplTest {
         when(assembler.toDomain(dm2)).thenReturn(genre2);
 
         // Act
-        List<Genre> genres = genreRepositoryJpaImpl.getAllGenres();
+        List<Genre> genres = genreRepositoryJpaImpl.findAll();
 
         // Assert
         assertEquals(2, genres.size());
     }
 
     @Test
-    void ensureGetAllGenresReturnsEmptyListWhenNoGenres() {
+    void ensureFindAllGenresReturnsEmptyListWhenNo() {
         // Arrange
         when(genreRepositoryJpa.findAll()).thenReturn(List.of());
 
         // Act
-        List<Genre> genres = genreRepositoryJpaImpl.getAllGenres();
+        List<Genre> genres = genreRepositoryJpaImpl.findAll();
 
         // Assert
         assertTrue(genres.isEmpty());
@@ -137,9 +138,9 @@ class GenreRepositoryJpaImplTest {
     // =========================================================================
 
     @Test
-    void ensureFindGenreByIdReturnsGenre() {
+    void ensureFindGenreByIdReturns() {
         // Arrange
-        GenreId id = new GenreId("drama");
+        GenreId id = mock(GenreId.class);
         GenreDM dm = mock(GenreDM.class);
         Genre genre = mock(Genre.class);
 
@@ -147,7 +148,7 @@ class GenreRepositoryJpaImplTest {
         when(assembler.toDomain(dm)).thenReturn(genre);
 
         // Act
-        Optional<Genre> result = genreRepositoryJpaImpl.findGenreById(id);
+        Optional<Genre> result = genreRepositoryJpaImpl.findById(id);
 
         // Assert
         assertTrue(result.isPresent());
@@ -155,24 +156,24 @@ class GenreRepositoryJpaImplTest {
     }
 
     @Test
-    void ensureFindGenreByIdReturnsEmptyWhenNotFound() {
+    void ensureFindByIdReturnsEmptyWhenNotFound() {
         // Arrange
-        GenreId id = new GenreId("unknown");
+        GenreId id = mock(GenreId.class);
         when(genreRepositoryJpa.findById(id)).thenReturn(Optional.empty());
 
         // Act
-        Optional<Genre> result = genreRepositoryJpaImpl.findGenreById(id);
+        Optional<Genre> result = genreRepositoryJpaImpl.findById(id);
 
         // Assert
         assertFalse(result.isPresent());
     }
 
     @Test
-    void ensureFindGenreByIdThrowsExceptionWhenIdIsNull() {
+    void ensureFindByIdThrowsExceptionWhenIdIsNull() {
+        // Act & Assert
         assertThrows(NullPointerException.class,
-                () -> genreRepositoryJpaImpl.findGenreById(null));
+                () -> genreRepositoryJpaImpl.findById(null));
     }
-
 
     // =========================================================================
     // Constructor

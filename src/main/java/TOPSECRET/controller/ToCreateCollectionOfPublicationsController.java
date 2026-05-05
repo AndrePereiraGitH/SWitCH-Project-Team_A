@@ -46,7 +46,7 @@ public class ToCreateCollectionOfPublicationsController {
      * @return list of genres ready to display in the UI
      */
     public List<US017GenreDTO> getAllGenres() {
-        List<Genre> genres = genreRepository.getAllGenres();
+        List<Genre> genres = genreRepository.findAll();
         return US017GenreMapper.toDTOList(genres);
     }
 

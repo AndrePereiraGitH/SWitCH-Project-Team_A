@@ -70,12 +70,12 @@ class BibliographicalDataTest {
 
         GenreId genreId1Double = mock(GenreId.class);
         Genre genre1Double; genre1Double = mock(Genre.class);
-        when(genreRepo.findGenreById(genreId1Double)).thenReturn(Optional.ofNullable(genre1Double));
+        when(genreRepo.findById(genreId1Double)).thenReturn(Optional.ofNullable(genre1Double));
         when(genre1Double.getGenreType()).thenReturn("Fiction");
 
         GenreId genreId2Double = mock(GenreId.class);
         Genre genre2Double = mock(Genre.class);
-        when(genreRepo.findGenreById(genreId2Double)).thenReturn(Optional.ofNullable(genre2Double));
+        when(genreRepo.findById(genreId2Double)).thenReturn(Optional.ofNullable(genre2Double));
         when(genre2Double.getGenreType()).thenReturn("Biography");
 
         genres = List.of(genreId1Double, genreId2Double);
@@ -547,7 +547,7 @@ class BibliographicalDataTest {
         // New Genre
         GenreId genre3IdDouble = mock(GenreId.class);
         Genre genre3Double = mock(Genre.class);
-        when(genreRepo.findGenreById(genre3IdDouble)).thenReturn(Optional.ofNullable(genre3Double));
+        when(genreRepo.findById(genre3IdDouble)).thenReturn(Optional.ofNullable(genre3Double));
         when(genre3Double.getGenreType()).thenReturn("Young Adult");
 
         // Act
@@ -615,7 +615,7 @@ class BibliographicalDataTest {
         // New genre
         GenreId genre3IdDouble = mock(GenreId.class);
         Genre genre3Double = mock(Genre.class);
-        when(genreRepo.findGenreById(genre3IdDouble)).thenReturn(Optional.of(genre3Double));
+        when(genreRepo.findById(genre3IdDouble)).thenReturn(Optional.of(genre3Double));
         when(genre3Double.getGenreType()).thenReturn("Young adult");
 
         // Act
