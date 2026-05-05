@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
+class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
     private IAuthorRepository authorRepository;
     private IBibliographicalDataRepository biblioRepository;
@@ -63,7 +63,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     ) {
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(
+                new ToGetTheListOfItemsInAuctionOfAGivenAuthorController(
                         authorRepository,
                         biblioRepository,
                         pubRepo,
@@ -80,7 +80,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAllAuthors_shouldReturnAuthorDTOList_whenRepositoryReturnsAuthors() {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         Author author1 = mock(Author.class);
         Author author2 = mock(Author.class);
@@ -108,7 +108,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAllAuthors_shouldReturnEmptyList_whenRepositoryReturnsEmptyList() {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         List<Author> authors = List.of();
         List<US026AuthorDTO> expected = List.of();
@@ -131,7 +131,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionsByAuthorId_shouldThrowIllegalArgumentException_whenAuthorIdIsNull() {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
@@ -145,7 +145,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionsByAuthorId_shouldReturnAuctionDTOList_whenAuthorHasAuctions() throws InstanceNotFoundException {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
@@ -187,7 +187,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionsByAuthorId_shouldReturnEmptyList_whenAuthorHasNoBibliographicalData() throws InstanceNotFoundException {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
@@ -215,7 +215,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionsByAuthorId_shouldPropagateInstanceNotFoundException_whenMapperThrowsException() throws InstanceNotFoundException {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
@@ -238,8 +238,8 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         assertEquals("Listing not found", exception.getMessage());
     }
 
-    private ToGetTheListOfItemsOnAuctionOfAGivenAuthorController createController() {
-        return new ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(
+    private ToGetTheListOfItemsInAuctionOfAGivenAuthorController createController() {
+        return new ToGetTheListOfItemsInAuctionOfAGivenAuthorController(
                 authorRepository,
                 biblioRepository,
                 pubRepo,

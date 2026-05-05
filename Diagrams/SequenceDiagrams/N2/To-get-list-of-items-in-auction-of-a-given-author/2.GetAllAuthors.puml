@@ -1,19 +1,9 @@
 @startuml
 hide footbox
 autonumber
-title Ref - getAllAuthors()
+title Ref - Get All Authors in System
 
-note over ctrl #E3F2FD
-<b>Fragment</b>
----
-This diagram is a fragment of the main sequence diagram.
-end note
 
-note over ctrl #E3F2FD
-<b>Navigation</b>
----
-[[1.MainDiagram.puml Return to Main Diagram]]
-end note
 
 participant ":Controller" as ctrl
 participant ":IAuthorRepository" as authorRepo
@@ -35,6 +25,18 @@ participant "authorDTO\n:US026AuthorDTO" as AuthorDTO
 participant "authorsDto\n:List<AuthorDTO>" as AuthorsListDto
 
 database "DataBase" as db
+
+note over ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
 
 ' -------- Get All Authors in System --------
 ctrl -> authorRepo : getAll()

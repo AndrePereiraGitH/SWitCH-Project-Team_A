@@ -1,12 +1,12 @@
 @startuml
 hide footbox
 autonumber
-title US026 - To get the list of items on auction of a given author
+title US026 - To get the list of items in auction of a given author
 
 actor Buyer
 
 participant ":UI" as UI
-participant "ToGetListOfItemsOnAuction\nOfAGivenAuthorController" as Ctrl
+participant "ToGetListOfItemsInAuction\nOfAGivenAuthorController" as Ctrl
 
 participant ":IBiblioDataRepository" as bdRepo
 participant ":IBiblioDataRepositoryJPA" as bdRepoJPA

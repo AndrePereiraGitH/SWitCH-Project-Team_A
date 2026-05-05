@@ -26,7 +26,7 @@ import java.util.List;
  * This controller coordinates the retrieval of bibliographical data, publication samples,
  * listings, and auctions in order to return the corresponding DTO representations.
  */
-public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
+public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
 
     private final IAuthorRepository authorRepository;
     private final IBibliographicalDataRepository biblioRepository;
@@ -46,7 +46,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
      * @param mapper the mapper used to convert auction domain objects into DTOs
      * @throws IllegalArgumentException if any dependency is null
      */
-    public ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
+    public ToGetTheListOfItemsInAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
 
         if (authorRepository == null || biblioRepository == null || pubRepo == null || listingRepo == null || auctionRepository == null || mapper == null) {
             throw new IllegalArgumentException("Controller dependencies cannot be null");
