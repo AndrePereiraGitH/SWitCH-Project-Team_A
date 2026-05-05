@@ -6,7 +6,6 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -52,7 +51,7 @@ public class PublicationSampleDM {
 
     @Embedded
     @AttributeOverride(name = "collectionOfPub_id", column = @Column(name = "collection_of_publications_id"))
-    private CollectionOfPublicationsID collectionOfPublicationsId;
+    private CollectionOfPublicationsId collectionOfPublicationsId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -83,7 +82,7 @@ public class PublicationSampleDM {
      */
     public PublicationSampleDM(PublicationSampleId pubSampleId, BibliographicalDataID bdId,
                                UserId ownerId, EditionID editionId, LibraryId libraryId,
-                               CollectionOfPublicationsID collectionOfPublicationsId,
+                               CollectionOfPublicationsId collectionOfPublicationsId,
                                PublicationStatus publicationStatus, Condition condition) {
 
         this.pubSampleId = Objects.requireNonNull(pubSampleId,"PublicationSampleId cannot be null");
