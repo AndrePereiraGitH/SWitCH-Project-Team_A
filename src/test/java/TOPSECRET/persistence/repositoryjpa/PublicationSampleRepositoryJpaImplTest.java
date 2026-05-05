@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa;
 
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
@@ -583,13 +584,6 @@ class PublicationSampleRepositoryJpaImplTest {
     }
 
     @Test
-    void findAvailableForSaleByLibraryId_shouldReturnEmptyList() {
-        LibraryId libraryId = mock(LibraryId.class);
-        List<PublicationSample> result = repo.findAvailableForSaleByLibraryId(libraryId);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     void findByCollectionOfPublicationsId_shouldReturnEmptyList() {
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         List<PublicationSample> result = repo.findByCollectionOfPublicationsId(collectionId);
@@ -640,5 +634,51 @@ class PublicationSampleRepositoryJpaImplTest {
         assertFalse(result);
     }
 
+    // ===========================================================
+    // ========== Tests for findAvailableForSaleByLibraryId ======
+    // ===========================================================
 
+    @Test
+    void findAvailableForSaleByLibraryId_shouldThrowNullPointerException_whenLibraryIdIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repo.findAvailableForSaleByLibraryId(null));
+    }
+
+    @Test
+    void findAvailableForSaleByLibraryId_shouldReturnEmptyList_whenNoPublicationsExistForLibrary() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
+
+        when(jpa.findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excluded)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = repo.findAvailableForSaleByLibraryId(libraryId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAvailableForSaleByLibraryId_shouldReturnList_whenPublicationsAreAvailableForSale() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
+
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
+
+        PublicationSample ps1 = mock(PublicationSample.class);
+        PublicationSample ps2 = mock(PublicationSample.class);
+
+        when(jpa.findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excluded)).thenReturn(List.of(dm1, dm2));
+        when(assembler.toDomain(dm1)).thenReturn(ps1);
+        when(assembler.toDomain(dm2)).thenReturn(ps2);
+
+        // Act
+        List<PublicationSample> result = repo.findAvailableForSaleByLibraryId(libraryId);
+
+        // Assert
+        assertEquals(2, result.size());
+    }
 }
