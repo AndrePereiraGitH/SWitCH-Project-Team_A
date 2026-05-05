@@ -79,36 +79,41 @@ activate UI
 UI -> Ctrl : findListOfItemsOnAuctionByPublisherId(publisherId)
 activate Ctrl
 
-Ctrl -> publisherRepo : findById(publisherId)
-activate publisherRepo
-publisherRepo -> publisherJpa : findById(publisherId)
-activate publisherJpa
-publisherJpa -> db : SELECT * FROM publisher\nWHERE publisher_id = ?
-activate db
-db --> publisherJpa : data
-deactivate db
-publisherJpa --> publisherRepo : Optional<PublisherDM>
-deactivate publisherJpa
-publisherRepo --> Ctrl : publisher
-deactivate publisherRepo
 
-Ctrl -> editionRepo : findEditionIdsByPublisherId(publisherId)
+Ctrl -> editionRepo : findByPublisherId(publisherId)
 activate editionRepo
-editionRepo -> editionJpa : findAllByPublisherId(publisherId)
+
+editionRepo -> editionJpa : findByPublisherId(publisherId)
 activate editionJpa
+
 editionJpa -> db : SELECT * FROM edition\nWHERE publisher_id = ?
 activate db
 db --> editionJpa : data
 deactivate db
-editionJpa --> editionRepo : List<EditionDM>
+
+editionJpa -->> editionDMList ** : <<create>>
+editionJpa --> editionRepo : editionDMList
 deactivate editionJpa
 
-editionRepo -->> listOfEditionIds ** : <<create>>
-loop for each editionDM in List<EditionDM>
-    editionRepo -> editionRepo : listOfEditionIds.add(editionDM.getEditionId())
+editionRepo -->> listOfEditions ** : <<create>>
+
+loop for each editionDM in editionDMList
+    editionRepo -> editionAssembler : toDomain(editionDM)
+    activate editionAssembler
+
+    editionAssembler -> editionFactory : create(editionDM.getEditionId(), + fields)
+    activate editionFactory
+    editionFactory -->> edition ** : <<create>>
+    editionFactory --> editionAssembler : edition
+    deactivate editionFactory
+
+    editionAssembler --> editionRepo : edition
+    deactivate editionAssembler
+
+    editionRepo -> editionRepo : listOfEditions.add(edition)
 end
 
-editionRepo --> Ctrl : listOfEditionIds
+editionRepo --> Ctrl : listOfEditions
 deactivate editionRepo
 
 Ctrl -> pubSampleRepo : findIdsByEditionIdIn(listOfEditionIds)

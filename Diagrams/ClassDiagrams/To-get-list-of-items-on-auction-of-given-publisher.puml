@@ -76,11 +76,11 @@ class US028PublisherDTO {
 ' EDITION
 ' ========================
 interface IEditionRepository {
-    + findIdsByPublisherId(publisherId : PublisherID) : List<EditionID>
+    + findByPublisherId(publisherId : PublisherID) : List<Edition>
 }
 
 class EditionRepositoryJpaImpl {
-    + findIdsByPublisherId(publisherId : PublisherID) : List<EditionID>
+    + findByPublisherId(publisherId : PublisherID) : List<Edition>
 }
 
 interface IEditionRepositoryJpa {
@@ -96,6 +96,19 @@ class EditionDM {
 
 class EditionID {
     - value : String
+}
+class EditionAssembler {
+    + toDomain(dm : EditionDM) : Edition
+}
+
+class EditionFactory {
+    + create(editionID : EditionID, editionNumber : String, code : Code, physicalAttributes : PhysicalAttributes, publicationTypeId : PublicationTypeId, publisherID : PublisherID, mediaFormat : String, editionLanguage : Locale, editionDate : LocalDate, typeOfBinding : TypeOfBinding) : Edition
+}
+
+class Edition {
+    - editionID : EditionID
+    - publisherID : PublisherID
+    + identity() : EditionID
 }
 
 ' ========================
@@ -114,9 +127,9 @@ interface IPublicationSampleRepositoryJpa {
 }
 
 class PublicationSampleDM {
-    - publicationSampleId : PublicationSampleId
+    - pubSampleId : PublicationSampleId
     - editionId : EditionID
-    + getPublicationSampleId() : PublicationSampleId
+    + getPubSampleId() : PublicationSampleId
     + getEditionId() : EditionID
 }
 
@@ -211,6 +224,11 @@ IEditionRepository <|.. EditionRepositoryJpaImpl
 EditionRepositoryJpaImpl "1" --> "1" IEditionRepositoryJpa : delegates to
 EditionDM "1" --> "1" EditionID : has
 EditionDM "1" --> "1" PublisherID : belongs to
+EditionRepositoryJpaImpl "1" --> "1" EditionAssembler : uses
+EditionAssembler "1" --> "1" EditionFactory : uses
+EditionFactory "1" ..> "0..*" Edition : creates
+Edition "1" --> "1" EditionID : has
+Edition "1" --> "1" PublisherID : belongs to
 
 ' ========================
 ' PUBLICATION SAMPLE FLOW
@@ -233,6 +251,5 @@ ListingDM "1" --> "1" PublicationSampleId : refers to
 Listing "1" --> "1" ListingId : has
 Listing "1" --> "1" PublicationSampleId : refers to
 US028ListingMapper ..> Listing : reads
-US028ListingMapper ..> US028ListingDTO : creates
-
+US028ListingMapper "1" ..> "0..*" US028ListingDTO : creates
 @enduml

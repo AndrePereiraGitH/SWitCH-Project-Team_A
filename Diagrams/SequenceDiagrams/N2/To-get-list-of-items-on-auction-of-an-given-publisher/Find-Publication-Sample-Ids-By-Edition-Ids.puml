@@ -34,7 +34,7 @@ deactivate pubSampleJpa
 pubSampleRepo -->> listOfPubSampleIds ** : <<create>>
 
 loop for each dm in publicationSampleDMList
-    pubSampleRepo -> pubSampleRepo : listOfPubSampleIds.add(dm.getPublicationSampleId())
+    pubSampleRepo -> pubSampleRepo : listOfPubSampleIds.add(dm.getPubSampleId())
 end
 
 pubSampleRepo --> Ctrl : listOfPubSampleIds
