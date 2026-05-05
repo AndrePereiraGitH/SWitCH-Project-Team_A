@@ -1,14 +1,14 @@
 @startuml
 autonumber
 hide footbox
-title Sale a Publication in an auction
+title To put for Auction publication in user library
 
 box #whitesmoke
     actor User
     participant ":UI" as UI
 end box
 
-participant ":SalePublicationInAuction\nController" as ctrl
+participant ":ToPutForAuctionPublicationInUserLibrary\nController" as ctrl
 participant ":ListingService" as listingService
 
 participant "AuctionService" as auctionService

@@ -28,7 +28,7 @@ import java.util.*;
  * user's library and to create a new auction listing for the selected publications.
  */
 
-public class ToPutForSalePublicationInAuctionController {
+public class ToPutForAuctionPublicationInUserLibraryController {
 
     private final ListingService listingService;
     private final AuctionService auctionService;
@@ -43,7 +43,7 @@ public class ToPutForSalePublicationInAuctionController {
      * @param publicationSampleRepository repository used to retrieve publication samples
      * @param mapper mapper used to convert publication samples into DTOs
      */
-    public ToPutForSalePublicationInAuctionController(ListingService service, AuctionService auctionService, ILibraryRepository libraryRepo , IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
+    public ToPutForAuctionPublicationInUserLibraryController(ListingService service, AuctionService auctionService, ILibraryRepository libraryRepo , IPublicationSampleRepository publicationSampleRepository, US016PublicationSampleMapper mapper) {
 
         this.listingService = service;
         this.auctionService = auctionService;
