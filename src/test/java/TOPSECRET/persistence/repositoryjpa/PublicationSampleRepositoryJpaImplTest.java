@@ -188,7 +188,7 @@ class PublicationSampleRepositoryJpaImplTest {
     }
 
     @Test
-    void findAll_shouldReturnAllElements_whenMultiplePublicationsWereAdded()  {
+    void findAll_shouldReturnAllElements_whenMultiplePublicationsWereAdded() {
 
         // Arrange
         PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
@@ -203,7 +203,7 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSample pbSample_2 = mock(PublicationSample.class);
         when(pbSample_2.id()).thenReturn(pbId_2);
 
-        when(jpa.findAll()).thenReturn(List.of(dm_1,dm_2));
+        when(jpa.findAll()).thenReturn(List.of(dm_1, dm_2));
         when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
         when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
 
@@ -261,7 +261,7 @@ class PublicationSampleRepositoryJpaImplTest {
         Optional<PublicationSample> result = repo.findById(pbId_1);
 
         //assert
-        assertEquals(result,Optional.of(pbSample_1));
+        assertEquals(result, Optional.of(pbSample_1));
     }
 
     @Test
@@ -282,7 +282,7 @@ class PublicationSampleRepositoryJpaImplTest {
     // ===========================================================
 
     @Test
-    void findPubSampleIdsByBibliographicalDataId_shouldReturnListWithMultipleId_whenMultipleMatchesBdId()   {
+    void findPubSampleIdsByBibliographicalDataId_shouldReturnListWithMultipleId_whenMultipleMatchesBdId() {
 
         // Arrange
         PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
@@ -308,7 +308,7 @@ class PublicationSampleRepositoryJpaImplTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_2);
         when(pbSample_3.id()).thenReturn(pbId_3);
 
-        when(jpa.findAllByBdId(bdId_1)).thenReturn(List.of(dm_1,dm_2));
+        when(jpa.findAllByBdId(bdId_1)).thenReturn(List.of(dm_1, dm_2));
         when(jpa.findAllByBdId(bdId_2)).thenReturn(List.of(dm_3));
 
 
@@ -350,7 +350,7 @@ class PublicationSampleRepositoryJpaImplTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_2);
         when(pbSample_3.id()).thenReturn(pbId_3);
 
-        when(jpa.findAllByBdId(bdId_1)).thenReturn(List.of(dm_1,dm_2));
+        when(jpa.findAllByBdId(bdId_1)).thenReturn(List.of(dm_1, dm_2));
         when(jpa.findAllByBdId(bdId_2)).thenReturn(List.of(dm_3));
 
 
@@ -373,7 +373,7 @@ class PublicationSampleRepositoryJpaImplTest {
     }
 
     @Test
-    void findPubSampleIdsByBibliographicalDataId_shouldReturnEmptyList_whenNoMatchesBdId()  {
+    void findPubSampleIdsByBibliographicalDataId_shouldReturnEmptyList_whenNoMatchesBdId() {
 
         // Arrange
         PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
@@ -399,7 +399,7 @@ class PublicationSampleRepositoryJpaImplTest {
         when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_1);
         when(pbSample_3.id()).thenReturn(pbId_3);
 
-        when(jpa.findAllByBdId(bdId_1)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(jpa.findAllByBdId(bdId_1)).thenReturn(List.of(dm_1, dm_2, dm_3));
 
         when(dm_1.getPubSampleId()).thenReturn(pbId_1);
         when(dm_2.getPubSampleId()).thenReturn(pbId_2);
@@ -436,7 +436,7 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSample pbSample_3 = mock(PublicationSample.class);
         when(pbSample_3.getOwnerID()).thenReturn(id);
 
-        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1, dm_2, dm_3));
         when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
         when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
         when(assembler.toDomain(dm_3)).thenReturn(pbSample_3);
@@ -475,7 +475,7 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSample pbSample_3 = mock(PublicationSample.class);
         when(pbSample_3.getOwnerID()).thenReturn(id);
 
-        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1, dm_2, dm_3));
         when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
         when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
         when(assembler.toDomain(dm_3)).thenReturn(pbSample_3);
@@ -514,7 +514,7 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSample pbSample_3 = mock(PublicationSample.class);
         when(pbSample_3.getOwnerID()).thenReturn(id);
 
-        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1,dm_2,dm_3));
+        when(jpa.findAllByOwnerId(id)).thenReturn(List.of(dm_1, dm_2, dm_3));
         when(assembler.toDomain(dm_1)).thenReturn(pbSample_1);
         when(assembler.toDomain(dm_2)).thenReturn(pbSample_2);
         when(assembler.toDomain(dm_3)).thenReturn(pbSample_3);
@@ -543,15 +543,75 @@ class PublicationSampleRepositoryJpaImplTest {
     }
 
 
+    // ===========================================================
+    // ========== Tests for findIdsByEditionIdIn =================
+    // ===========================================================
+
+    @Test
+    void findIdsByEditionIdIn_shouldThrowException_whenListOfEditionIdsIsNull() {
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.findIdsByEditionIdIn(null)
+        );
+    }
+
+    @Test
+    void findIdsByEditionIdIn_shouldReturnEmptyList_whenListOfEditionIdsIsEmpty() {
+        // Arrange
+        List<EditionID> editionIds = List.of();
+
+        // Act
+        List<PublicationSampleId> result = repo.findIdsByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findIdsByEditionIdIn_shouldReturnPublicationSampleIds_whenMatchesExist() {
+        // Arrange
+        EditionID editionId = mock(EditionID.class);
+
+        PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_2 = mock(PublicationSampleDM.class);
+
+        PublicationSampleId pubSampleId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId pubSampleId_2 = mock(PublicationSampleId.class);
+
+        List<EditionID> editionIds = List.of(editionId);
+
+        when(jpa.findAllByEditionIdIn(editionIds)).thenReturn(List.of(dm_1, dm_2));
+        when(dm_1.getPubSampleId()).thenReturn(pubSampleId_1);
+        when(dm_2.getPubSampleId()).thenReturn(pubSampleId_2);
+
+        // Act
+        List<PublicationSampleId> result = repo.findIdsByEditionIdIn(editionIds);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(pubSampleId_1, result.get(0));
+        assertEquals(pubSampleId_2, result.get(1));
+    }
+
+    @Test
+    void findIdsByEditionIdIn_shouldReturnEmptyList_whenNoMatchesExist() {
+        // Arrange
+        EditionID editionId = mock(EditionID.class);
+        List<EditionID> editionIds = List.of(editionId);
+
+        when(jpa.findAllByEditionIdIn(editionIds)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSampleId> result = repo.findIdsByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
     // THIS TESTS WERE ONLY USED TO COVER THE MUTATION COVERAGE AND LINE COVERAGE!
     // THEY NEED TO BE UPDATED
 
-    @Test
-    void findIdsByEditionIdIn_shouldReturnEmptyList() {
-        List<EditionID> ids = List.of(mock(EditionID.class));
-        List<PublicationSampleId> result = repo.findIdsByEditionIdIn(ids);
-        assertTrue(result.isEmpty());
-    }
 
     @Test
     void findIdsByBibliographicalDataIdIn_shouldReturnEmptyList() {
