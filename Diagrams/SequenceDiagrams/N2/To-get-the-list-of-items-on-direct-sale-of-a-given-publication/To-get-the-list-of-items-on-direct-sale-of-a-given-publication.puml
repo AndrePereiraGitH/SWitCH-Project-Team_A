@@ -126,7 +126,7 @@ UI -> Ctrl : findListOfItemsOnDirectSale(bdId)
 activate Ctrl
 
 ' Section 3 - Get PublicationSample IDs for that BibliographicalData ID
-Ctrl -> PubSampleRepo : findPubSampleIdsByBibliographicalDataId(bdId)
+Ctrl -> PubSampleRepo : findIdsByBibliographicalDataId(bdId)
 activate PubSampleRepo
 PubSampleRepo -> PubSampleRepoJPA: findPubSampleIdsBy\nBibliographicalDataId(bdId)
 activate PubSampleRepoJPA
@@ -141,9 +141,9 @@ PubSampleRepo --> Ctrl: listOfPubSampleId
 deactivate PubSampleRepo
 
 ' Section 4 - Get Direct Sale Listings for those PublicationSample IDs
-Ctrl -> ListingRepo : findDirectSaleListingsContainingPublicationSampleId(listOfPubSampleId)
+Ctrl -> ListingRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleId)
 activate ListingRepo
-ListingRepo -> ListingRepoJPA: findDirectSaleListings\nContainingPublicationSampleId(listOfPubSampleId)
+ListingRepo -> ListingRepoJPA: findAllByItemsId(listOfPubSampleId)
 activate ListingRepoJPA
 ListingRepoJPA -> DB: QUERY listings by publicationSampleId and saleType
 activate DB

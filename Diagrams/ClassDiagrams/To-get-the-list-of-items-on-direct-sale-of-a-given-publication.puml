@@ -65,11 +65,11 @@ record US023BibliographicalDataDTO {
 ' -------------------------
 
 interface IPublicationSampleRepository {
-  + findPubSampleIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
 }
 
 interface IPublicationSampleRepositoryJPA {
-  + findPubSampleIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
 }
 
 class PublicationSampleId {
@@ -93,11 +93,11 @@ class PublicationSample {
 ' -------------------------
 
 interface IListingRepository {
-    + findDirectSaleListingsContainingPublicationSampleId\n(List<PublicationSampleId> listOfPubSampleId): List<Listing>
+    + findAllByDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds): List<Listing>
 }
 
 interface IListingRepositoryJPA {
-    + findDirectSaleListingsContainingPublicationSampleId\n(List<PublicationSampleId> listOfPubSampleId): List<ListingDM>
+   + findAllByItemsId(List<PublicationSampleId> itemsId): List<ListingDM>
 }
 
 class ListingAssembler {
