@@ -1,113 +1,103 @@
 @startuml
-title As an Administrator, I want to register an Appraisal Entity in the system
+title Class Diagram - Layered Architecture
 
-' ========================
-' UI + APPLICATION LAYER
-' ========================
+skinparam packageStyle rectangle
+left to right direction
 
-class US004ToRegisterAppraisalEntityController {
-  +getAllGenres(): List<US004GenreDTO>
-  +getAllPublicationTypes(): List<US004PublicationTypeDTO>
-  +registerAppraisalEntity(name, contact, genreId, publicationTypeIds): AppraisalEntity
+' =========================
+' APPLICATION LAYER
+' =========================
+package "Application" {
+
+class "ToRegisterAppraisalEntityController" as Controller
+class "AppraisalEntityService" as Service
+
+Controller ..> Service : uses >
 }
 
-
-' ========================
+' =========================
 ' DOMAIN LAYER
-' ========================
+' =========================
+package "Domain" as DomainPkg {
 
-' -------- Aggregate Root --------
 class AppraisalEntity {
-  -appraisalId: AppraisalEntityId
-  -name
-  -contact
-  -genreIds: List<GenreId>
-  -publicationTypeIds: List<PublicationTypeId>
+  -id: AppraisalEntityId
+  -name: String
+  -contact: Contact
 }
 
-class AppraisalEntityId {
-  -String: apEnId
-}
-
-AppraisalEntity "1" *-- "1" AppraisalEntityId : has
-
-
-' -------- Genre --------
 class Genre {
-  -String: title
+  -id: GenreId
+  -genreType: String
+}
+class PublicationType{
+  -id: PublicationTypeId
+  -mediaFormat: String
 }
 
-class GenreId {
-  -String: genreId
+class AppraisalEntityFactory
+class GenreFactory
+class PublicationTypeFactory
+
+interface IAppraisalEntityRepository
+interface IGenreRepository
+interface IPublicationTypeRepository
+
+AppraisalEntity "1" --> "0..*" Genre : has >
+AppraisalEntity "1" --> "0..*" PublicationType : has >
+
+Service ..> AppraisalEntityFactory : creates >
+Service ..> IAppraisalEntityRepository : saves >
+Service ..> IGenreRepository : retrieves >
+Service ..> IPublicationTypeRepository : retrieves >
+
+AppraisalEntityFactory ..> AppraisalEntity : creates >
+GenreFactory ..> Genre : creates >
+PublicationTypeFactory ..> PublicationType : creates >
+
+
 }
 
-Genre "   1 " *--- "        1 " GenreId : identifies
+' =========================
+' PERSISTENCE LAYER
+' =========================
+package "Persistence" as PersistPkg {
 
+class AppraisalEntityDM
+class GenreDM
+class PublicationTypeDM
 
-' -------- PublicationType --------
-class PublicationType {
-  -String: mediaFormat
+class AppraisalAssembler
+class GenreAssembler
+class PublicationTypeAssembler
+
+interface IAppraisalEntityRepositoryJPA
+interface IGenreRepositoryJPA
+interface IPublicationTypeRepositoryJPA
+
+AppraisalAssembler ..> AppraisalEntity : converts >
+AppraisalAssembler ..> AppraisalEntityDM : converts >
+
+GenreAssembler ....> Genre : converts >
+GenreAssembler ..> GenreDM : converts >
+
+PublicationTypeAssembler ..> PublicationType : converts >
+PublicationTypeAssembler ..> PublicationTypeDM : converts >
+
+IAppraisalEntityRepositoryJPA --> AppraisalEntityDM : persists >
+IGenreRepositoryJPA --> GenreDM : persists >
+IPublicationTypeRepositoryJPA --> PublicationTypeDM : persists >
 }
 
-class PublicationTypeId {
-  -String: pubTypeId
-}
+' =========================
+' CROSS LAYER
+' =========================
 
-PublicationType "1" *--- "1" PublicationTypeId : identifies
+Controller ..> IGenreRepository
+Controller ..> IPublicationTypeRepository
 
-
-' ========================
-' INTERACTIONS
-' ========================
-
-AppraisalEntity "    1       " --> "      1..*" GenreId : contains
-AppraisalEntity "1  " --> "  1..*        " PublicationTypeId : contains
-
-GenreId ..> Genre
-PublicationTypeId ..> PublicationType
-
-
-' ========================
-' REPOSITORIES
-' ========================
-
-interface IGenreRepository {
-  +getAllGenres(): List<Genre>
-  +findById(id: GenreId): Genre
-}
-
-interface IPublicationTypeRepository {
-  +getAllPublicationTypes(): List<PublicationType>
-  +findById(id: PublicationTypeId): PublicationType
-}
-
-interface IAppraisalEntityRepository {
-  +createAndAdd(...)
-}
-
-
-IGenreRepository ..> Genre
-IPublicationTypeRepository ..> PublicationType
-IAppraisalEntityRepository ..> AppraisalEntityFactory
-
-
-' ========================
-' FACTORY
-' ========================
-
-class AppraisalEntityFactory {
-  +create(name, contact, genreId, publicationTypeId): AppraisalEntity
-}
-
-AppraisalEntityFactory "   1 " --> "  * " AppraisalEntity : creates
-
-
-' ========================
-' DEPENDENCIES
-' ========================
-
-US004ToRegisterAppraisalEntityController ...> IGenreRepository : interacts with
-US004ToRegisterAppraisalEntityController ...> IPublicationTypeRepository : interacts with
-US004ToRegisterAppraisalEntityController ..> IAppraisalEntityRepository : interacts with
+IAppraisalEntityRepository <|.. IAppraisalEntityRepositoryJPA
+IGenreRepository <|.. IGenreRepositoryJPA
+IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA
 
 @enduml
