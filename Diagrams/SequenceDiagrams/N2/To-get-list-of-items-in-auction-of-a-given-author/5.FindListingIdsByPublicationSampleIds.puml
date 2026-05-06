@@ -1,7 +1,7 @@
 @startuml
 hide footbox
 autonumber
-title Ref - findIdsByPublicationSampleIdIn(pubIdList)
+title Find Listing Ids By PublicationSampleIds
 
 participant ":Controller" as Ctrl
 participant ":IListingRepository" as listingRepo
@@ -9,6 +9,18 @@ participant ":IListingRepositoryJPA" as listingRepoJPA
 participant "pubIdList\n:List<PublicationSampleId>" as pubIdList
 participant "listingIdList\n:List<ListingId>" as listingIdList
 database "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
 
 Ctrl -> listingRepo : findIdsByPublicationSampleIdIn(pubIdList)
 activate listingRepo

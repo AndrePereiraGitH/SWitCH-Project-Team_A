@@ -1,7 +1,7 @@
 @startuml
 hide footbox
 autonumber
-title Ref - findByListingIds(listingIdList)
+title Find A Auctions of author By ListingIds
 
 participant ":Controller" as Ctrl
 participant ":IAuctionRepository" as auctionRepository

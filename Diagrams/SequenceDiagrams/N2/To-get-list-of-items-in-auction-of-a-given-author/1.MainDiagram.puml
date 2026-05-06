@@ -1,7 +1,7 @@
 @startuml
 hide footbox
 autonumber
-title US026 - To get the list of items in auction of a given author
+title To get the list of items in auction of a given author
 
 actor Buyer
 
