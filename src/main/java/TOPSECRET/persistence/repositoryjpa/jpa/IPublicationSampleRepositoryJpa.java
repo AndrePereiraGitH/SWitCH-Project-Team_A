@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
@@ -32,4 +33,15 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      *         returns an empty list if no publications are found
      */
     List<PublicationSampleDM> findAllByOwnerId(UserId ownerId);
+
+
+    /**
+     * Finds all publication samples associated with the given library identifier.
+     *
+     * @param libraryId the identifier of the library whose publication samples are to be retrieved;
+     *                  must not be {@code null}
+     * @return a list of publication sample data models associated with the given library;
+     *         an empty list if no samples are found
+     */
+    List<PublicationSampleDM> findByLibraryId(LibraryId libraryId);
 }

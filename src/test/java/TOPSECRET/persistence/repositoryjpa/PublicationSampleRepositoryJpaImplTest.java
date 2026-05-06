@@ -6,6 +6,7 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.assembler.PublicationSampleAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IPublicationSampleRepositoryJpa;
+import org.apache.commons.lang3.ObjectUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -568,12 +569,69 @@ class PublicationSampleRepositoryJpaImplTest {
         assertTrue(result.isEmpty());
     }
 
+    // ====================================================
+    // ----------- FIND BY LIBRARY ID TESTS ---------------
+    // ====================================================
+
     @Test
     void findByLibraryId_shouldReturnEmptyList() {
         LibraryId libraryId = mock(LibraryId.class);
         List<PublicationSample> result = repo.findByLibraryId(libraryId);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findByLibraryId_shouldThrow_whenLibraryIdIsNull() {
+
+
+        // act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.findByLibraryId(null));
+
+        assertEquals("LibraryId cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void findByLibraryId_shouldReturnMappedPublicationSamples_whenLibraryHasSamples() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+
+        PublicationSampleDM dm_1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm_2 = mock(PublicationSampleDM.class);
+
+        PublicationSample sample_1 = mock(PublicationSample.class);
+        PublicationSample sample_2 = mock(PublicationSample.class);
+
+        when(jpa.findByLibraryId(libraryId)).thenReturn(List.of(dm_1, dm_2));
+        when(assembler.toDomain(dm_1)).thenReturn(sample_1);
+        when(assembler.toDomain(dm_2)).thenReturn(sample_2);
+
+        // Act
+        List<PublicationSample> result = repo.findByLibraryId(libraryId);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(sample_1, result.get(0));
+        assertEquals(sample_2, result.get(1));
+
+    }
+
+    @Test
+    void findByLibraryId_shouldReturnEmptyList_whenRepositoryReturnsEmptyList() {
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+
+        when(jpa.findByLibraryId(libraryId)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = repo.findByLibraryId(libraryId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+
+        verify(jpa).findByLibraryId(libraryId);
+        verifyNoInteractions(assembler);
+    }
+// -------------------------------------------------
 
     @Test
     void findByUserIdAndLibraryIdIsNull_shouldReturnEmptyList() {
