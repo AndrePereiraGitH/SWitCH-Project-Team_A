@@ -107,24 +107,7 @@ class ToGetListOfGenreControllerTest {
         assertSame(expected, result);
     }
 
-    @Test
-    void shouldReturnMappedGenreList() {
-        // Arrange
-        List<Genre> allGenreList = List.of();
-        List<US013GenreDTO> expectedDtoList = List.of();
 
-        when(genreRepository.findAll()).thenReturn(allGenreList);
-        when(mapper.toDTOList(allGenreList)).thenReturn(expectedDtoList);
-
-        ToGetListOfGenreController controller =
-                new ToGetListOfGenreController(genreRepository, mapper);
-
-        // Act
-        List<US013GenreDTO> result = controller.getGenresList();
-
-        // Assert
-        assertEquals(expectedDtoList, result);
-    }
 
     @Test
     void shouldReturnDtoListProducedByMapper() {
