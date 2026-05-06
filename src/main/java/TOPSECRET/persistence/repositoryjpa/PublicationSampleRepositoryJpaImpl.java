@@ -122,7 +122,14 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataID> bdIds) {
-        return List.of();
+
+        Objects.requireNonNull(bdIds, "BibliographicalData Ids cannot be null");
+
+        return publicationSampleRepositoryJpa
+                .findAllByBdIdIn(bdIds)
+                .stream()
+                .map(PublicationSampleDM::getPubSampleId)
+                .toList();
     }
 
     /**

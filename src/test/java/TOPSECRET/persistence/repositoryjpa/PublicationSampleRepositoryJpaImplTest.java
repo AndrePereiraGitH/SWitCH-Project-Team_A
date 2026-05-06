@@ -640,5 +640,52 @@ class PublicationSampleRepositoryJpaImplTest {
         assertFalse(result);
     }
 
+    @Test
+    void shouldReturnPublicationSampleIdsByBibliographicalDataIds() {
+
+        // Arrange
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        when(dm.getPubSampleId()).thenReturn(sampleId);
+        when(jpa.findAllByBdIdIn(List.of(bdId))).thenReturn(List.of(dm));
+
+        // Act
+        List<PublicationSampleId> result = repo.findIdsByBibliographicalDataIdIn(List.of(bdId));
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(sampleId, result.get(0));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoPublicationSamplesExist() {
+
+        // Arrange
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+
+        when(jpa.findAllByBdIdIn(List.of(bdId))).thenReturn(List.of());
+
+        // Act
+        List<PublicationSampleId> result = repo.findIdsByBibliographicalDataIdIn(List.of(bdId));
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBdIdsIsNull() {
+
+        // Act & Assert
+        Exception ex = assertThrows(
+                NullPointerException.class,
+                () -> repo.findIdsByBibliographicalDataIdIn(null));
+
+        assertEquals("BibliographicalData Ids cannot be null", ex.getMessage());
+    }
+
 
 }
