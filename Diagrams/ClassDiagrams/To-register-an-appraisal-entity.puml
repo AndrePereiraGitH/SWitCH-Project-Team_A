@@ -1,5 +1,5 @@
 @startuml
-title Class Diagram - Layered Architecture
+title Class Diagram - To register an Appraisal Entity
 
 skinparam packageStyle rectangle
 left to right direction
@@ -37,23 +37,38 @@ class Genre {
   -id: GenreId
   -genreType: String
 }
-class PublicationType{
+
+class PublicationType {
   -id: PublicationTypeId
   -mediaFormat: String
 }
 
-class AppraisalEntityFactory{
+class AppraisalEntityFactory {
   +create(name:String, contact:Contact, genresId:List<GenreId>, \npublicationTypesId:List<PublicationTypeId>)
 }
-class GenreFactory
-class PublicationTypeFactory
 
-interface IAppraisalEntityRepository
-interface IGenreRepository
-interface IPublicationTypeRepository
+class GenreFactory {
+  +create(id:GenreId, genreType:String)
+}
 
-AppraisalEntity "1" --> "0..*" Genre : has >
-AppraisalEntity "1" --> "0..*" PublicationType : has >
+class PublicationTypeFactory {
+  +create(id:PublicationTypeId, mediaFormat:String)
+}
+
+interface IAppraisalEntityRepository {
+  +save(appraisalEntity:AppraisalEntity)
+}
+
+interface IGenreRepository {
+  +findAll()
+}
+
+interface IPublicationTypeRepository {
+  +findAll()
+}
+
+AppraisalEntity "1" --> "*" Genre : has >
+AppraisalEntity "1" --> "*" PublicationType : has >
 
 Service ..> AppraisalEntityFactory : creates >
 Service ..> IAppraisalEntityRepository : saves >
@@ -63,8 +78,41 @@ Service ..> IPublicationTypeRepository : retrieves >
 AppraisalEntityFactory ..> AppraisalEntity : creates >
 GenreFactory ..> Genre : creates >
 PublicationTypeFactory ..> PublicationType : creates >
+}
 
+' =========================
+' DTO LAYER
+' =========================
+package "DTO" {
 
+class US004GenreDTO {
+  -id: GenreId
+  -title: String
+}
+
+class US004PublicationTypeDTO {
+  -id: PublicationTypeId
+  -mediaFormat: String
+}
+
+class US004GenreMapper {
+  +toDTO(genre:Genre)
+  +toDTOs(genres:List<Genre>)
+}
+
+class US004PublicationTypeMapper {
+  +toDTO(publicationType:PublicationType)
+  +toDTOs(publicationTypes:List<PublicationType>)
+}
+
+US004GenreMapper ..> Genre : converts >
+US004GenreMapper ..> US004GenreDTO : creates >
+
+US004PublicationTypeMapper ..> PublicationType : converts >
+US004PublicationTypeMapper ..> US004PublicationTypeDTO : creates >
+
+Controller ..> US004GenreMapper : maps >
+Controller ..> US004PublicationTypeMapper : maps >
 }
 
 ' =========================
@@ -76,22 +124,35 @@ class AppraisalEntityDM
 class GenreDM
 class PublicationTypeDM
 
-class AppraisalAssembler
-class GenreAssembler
-class PublicationTypeAssembler
+class AppraisalAssembler {
+  +toDM(appraisalEntity:AppraisalEntity)
+  +toDomain(dm:AppraisalEntityDM)
+}
+
+class GenreAssembler {
+  +toDM(genre:Genre)
+  +toDomain(dm:GenreDM)
+  +toDomainList(dmList:List<GenreDM>)
+}
+
+class PublicationTypeAssembler {
+  +toDM(publicationType:PublicationType)
+  +toDomain(dm:PublicationTypeDM)
+  +toDomainList(dmList:List<PublicationTypeDM>)
+}
 
 interface IAppraisalEntityRepositoryJPA
 interface IGenreRepositoryJPA
 interface IPublicationTypeRepositoryJPA
 
-AppraisalAssembler ..> AppraisalEntity : converts >
-AppraisalAssembler ..> AppraisalEntityDM : converts >
+AppraisalAssembler ...> AppraisalEntityFactory : ask creation to >
+AppraisalAssembler ...> AppraisalEntityDM : converts >
 
-GenreAssembler ....> Genre : converts >
-GenreAssembler ..> GenreDM : converts >
+GenreAssembler ...> GenreFactory : ask creation to >
+GenreAssembler ...> GenreDM : converts >
 
-PublicationTypeAssembler ..> PublicationType : converts >
-PublicationTypeAssembler ..> PublicationTypeDM : converts >
+PublicationTypeAssembler ...> PublicationType : converts >
+PublicationTypeAssembler ...> PublicationTypeDM : converts >
 
 IAppraisalEntityRepositoryJPA --> AppraisalEntityDM : persists >
 IGenreRepositoryJPA --> GenreDM : persists >
@@ -102,11 +163,11 @@ IPublicationTypeRepositoryJPA --> PublicationTypeDM : persists >
 ' CROSS LAYER
 ' =========================
 
-Controller ..> IGenreRepository
-Controller ..> IPublicationTypeRepository
+Controller ..> IGenreRepository : retrieves >
+Controller ..> IPublicationTypeRepository : retrieves >
 
-IAppraisalEntityRepository <|.. IAppraisalEntityRepositoryJPA
-IGenreRepository <|.. IGenreRepositoryJPA
-IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA
+IAppraisalEntityRepository <|.. IAppraisalEntityRepositoryJPA : implements <
+IGenreRepository <|.. IGenreRepositoryJPA : implements <
+IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA : implements <
 
 @enduml

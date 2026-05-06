@@ -78,7 +78,7 @@ deactivate GenreAssembler
 GenreRepo --> Controller : persistedGenreList
 deactivate GenreRepo
 
-Controller -> GenreMapper : toDTO(persistedGenreList)
+Controller -> GenreMapper : toDTOs(persistedGenreList)
 activate GenreMapper
 
 GenreMapper -->> GenreDTO ** : <<create>>

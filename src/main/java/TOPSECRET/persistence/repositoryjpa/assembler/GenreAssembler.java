@@ -69,9 +69,7 @@ public class GenreAssembler {
      */
     public List<Genre> toDomainList(List<GenreDM> genreDMList) {
 
-        if (genreDMList == null) {
-            throw new IllegalArgumentException("GenreDM list must not be null");
-        }
+        Objects.requireNonNull(genreDMList, "GenreDM list must not be null");
 
         List<Genre> result = new ArrayList<>();
 

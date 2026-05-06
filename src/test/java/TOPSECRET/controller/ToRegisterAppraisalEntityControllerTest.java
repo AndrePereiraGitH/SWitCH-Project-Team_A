@@ -64,7 +64,6 @@ class ToRegisterAppraisalEntityControllerTest {
                 () -> new ToRegisterAppraisalEntityController(
                         null,
                         publicationTypeRepository,
-                        appraisalEntityRepository,
                         appraisalService));
     }
 
@@ -76,18 +75,6 @@ class ToRegisterAppraisalEntityControllerTest {
                 () -> new ToRegisterAppraisalEntityController(
                         genreRepository,
                         null,
-                        appraisalEntityRepository,
-                        appraisalService));
-    }
-
-    @Test
-    void shouldThrowWhenAppraisalEntityRepositoryIsNull() {
-        // ACT & ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> new ToRegisterAppraisalEntityController(
-                        genreRepository,
-                        publicationTypeRepository,
-                        null,
                         appraisalService));
     }
 
@@ -98,7 +85,6 @@ class ToRegisterAppraisalEntityControllerTest {
                 () -> new ToRegisterAppraisalEntityController(
                         genreRepository,
                         publicationTypeRepository,
-                        appraisalEntityRepository,
                         null));
     }
 

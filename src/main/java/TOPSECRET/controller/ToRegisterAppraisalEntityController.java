@@ -19,7 +19,7 @@ import java.util.List;
 
 
 /**
- * Controller responsible for US004 - Register Appraisal Entity.
+ * Controller responsible for Register Appraisal Entity.
  *
  * Coordinates interaction between UI, domain repositories and mappers.
  */
@@ -34,12 +34,11 @@ public class ToRegisterAppraisalEntityController {
      *
      * @param genreRepository Genre repository
      * @param publicationTypeRepository PublicationType repository
-     * @param appraisalEntityRepository AppraisalEntity repository
+     * @param appraisalService AppraisalEntity service
      */
     public ToRegisterAppraisalEntityController(
             IGenreRepository genreRepository,
             IPublicationTypeRepository publicationTypeRepository,
-            IAppraisalEntityRepository appraisalEntityRepository,
             AppraisalEntityService appraisalService) {
 
         if (genreRepository == null) {
@@ -47,9 +46,6 @@ public class ToRegisterAppraisalEntityController {
         }
         if (publicationTypeRepository == null) {
             throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null.");
-        }
-        if (appraisalEntityRepository == null) {
-            throw new IllegalArgumentException("AppraisalEntityRepository cannot be null.");
         }
         if (appraisalService == null) {
             throw new IllegalArgumentException("AppraisalService cannot be null.");

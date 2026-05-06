@@ -246,7 +246,7 @@ class GenreAssemblerTest {
     void ensureToDomainListThrowsExceptionWhenInputIsNull() {
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> assembler.toDomainList(null));
     }
 }
