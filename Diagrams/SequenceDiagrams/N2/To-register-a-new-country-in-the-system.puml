@@ -1,0 +1,83 @@
+@startuml
+
+footbox off
+
+title Register a new country in the System
+
+
+actor Administrator
+participant ":UI" as UI
+
+autonumber
+
+
+participant ":CountryController" as CountryController
+participant ":CountryService" as CountryService
+participant ":ICountryRepository" as ICountryRepository
+participant ":CountryFactory" as CountryFactory
+participant ":ICountryRepositoryJPA" as JPA
+participant ":CountryAssembler" as Assembler
+participant ":Database" as DB
+
+
+Administrator -> UI : I want to register a new country
+activate UI
+UI --> Administrator : What is the name of the country?
+deactivate UI
+
+Administrator -> UI : The country is <countryName>
+activate UI
+
+UI -> CountryController : registerNewCountry\n (countryName)
+activate CountryController
+
+
+CountryController -> CountryService : createAndSave\n (countryName)
+
+activate CountryService
+CountryService -> CountryFactory : create(countryName)
+
+activate CountryFactory
+create participant "newCountry1: Country" as Country
+CountryFactory -->> Country : «create»
+CountryFactory --> CountryService : newCountry1
+deactivate CountryFactory
+
+CountryService -> ICountryRepository : save(newCountry1)
+activate ICountryRepository
+ICountryRepository -> Assembler : toDM(newCountry1)
+activate Assembler
+create participant "newCountry1DM: CountryDM" as CountryDM
+Assembler -->> CountryDM : «create»
+Assembler --> ICountryRepository : newCountry1DM
+
+deactivate Assembler
+ICountryRepository -> JPA : save(newCountry1DM)
+activate JPA
+
+JPA -> DB : insert
+activate DB
+DB --> JPA : data
+deactivate DB
+create participant "CountryDMPersisted: CountryDM" as CountryDMPersisted
+JPA --> CountryDMPersisted : «create»
+JPA --> ICountryRepository : CountryDMPersisted
+deactivate JPA
+ICountryRepository -> Assembler : toDomain(CountryDMPersisted)
+create participant "CountryReconstructed: Country" as CountryReconstructed
+activate Assembler
+Assembler --> CountryReconstructed : «create»
+Assembler --> ICountryRepository : CountryReconstructed
+deactivate Assembler
+ICountryRepository --> CountryService : CountryReconstructed
+deactivate ICountryRepository
+
+CountryService --> CountryController : CountryReconstructed
+deactivate CountryService
+
+CountryController --> UI : CountryReconstructed
+deactivate CountryController
+UI --> Administrator : "<countryName> has been\n successfully registered in the system!"
+deactivate UI
+
+@enduml

@@ -1,0 +1,60 @@
+@startuml
+
+title Class Diagram - Register a new country in the System
+hide circle
+
+
+class ICountryRepository {
+    +save (Country country): Country
+    }
+
+class CountryFactory {
+    +create(countryName): Country
+}
+
+class ToRegisterNewCountryController{
+  + registerNewCountry(countryName : String)
+}
+
+class CountryService {
++createAndSave(countryName: String)
+}
+
+class CountryAssembler{
++toDM(Country country): CountryDM
++toDomain(CountryDM countryDM): Country
+}
+
+class ICountryRepositoryJPA{
++save(CountryDM)
+}
+
+class CountryDM{
+-countryName: String
+-_countryID : CountryID
+}
+
+
+class Country {
+-countryName: String
+-_countryID : CountryID
+}
+
+class CountryRepositoryJPAImpl {
++save(Country country): Country
+}
+
+' Interactions
+ToRegisterNewCountryController "1" --> "1" CountryService : request registering country
+CountryService "1" --> "1" CountryFactory : asks for creation
+CountryService "1" --> "1" ICountryRepository : asks to save
+ICountryRepositoryJPA "1" --|> "1" ICountryRepository : implements
+ICountryRepository "                      1" <|-- "1" CountryRepositoryJPAImpl : implements
+CountryRepositoryJPAImpl "1" .--> "1" CountryAssembler : asks to convert
+CountryRepositoryJPAImpl "1" .--> "1" ICountryRepositoryJPA : requests saving
+ICountryRepository "1" .--> "1" CountryAssembler : provides instance to
+CountryAssembler "1" .--> "1" CountryDM : modifies into
+CountryAssembler "1" --> "1" CountryFactory : makes use of
+CountryAssembler "1" .--> "1" Country : reassembles
+CountryFactory "1" .--> "*" Country : creates
+@enduml
