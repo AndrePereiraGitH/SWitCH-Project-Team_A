@@ -1,11 +1,17 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.dto.US022AuctionDTO;
+import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.dto.US022GenreDTO;
 import TOPSECRET.dto.US022GenreMapper;
 import TOPSECRET.domain.Auction.IAuctionRepository;
@@ -73,31 +79,30 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
      * Retrieves the list of items currently on auction
      * filtered by a given genre.
      *
-     * @param selectedGenreDTO the genre used as filter
+     * @param genreDTO the genre used as filter
      * @return list of US022AuctionMapper matching the genre
      */
-    /*
-    public List<US022AuctionDTO> getListOfItemsOnAuctionGivenGenre(US022GenreDTO selectedGenreDTO) {
 
-        if (selectedGenreDTO == null) {
+    public List<US022AuctionDTO> findListOfItemsOnAuctionByGenreId(US022GenreDTO genreDTO) {
+
+        if (genreDTO == null) {
             throw new IllegalArgumentException("genre cannot be null");
         }
 
-        Genre genre = genreRepository.findGenreById(selectedGenreDTO.genreId())
-                .orElseThrow(() ->
-                    new IllegalArgumentException("Genre is not valid or not found"));;
+        if (genreDTO.genreId() == null) {
+            throw new IllegalArgumentException("genreId cannot be null");
+        }
 
-
-        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genre.id());
+        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genreDTO.genreId());
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 
         List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
 
-        List<Auction> auctions = auctionRepository.getListOfItemsOnAuctionGivenGenre(listingId);
+        List<Auction> auctions = auctionRepository.findByListingIdIn(listingId);
 
         return US022AuctionMapper.toDTOList(auctions);
     }
 
-     */
+
 }
