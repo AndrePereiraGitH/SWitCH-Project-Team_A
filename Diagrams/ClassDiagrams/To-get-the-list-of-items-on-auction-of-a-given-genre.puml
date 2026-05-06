@@ -1,6 +1,6 @@
 @startuml
 
-title Class Diagram – Get List Of Items On Auction By A Given Genre
+title Class Diagram – To Get a List Of Items On Auction By A Given Genre
 
 class UI
 
