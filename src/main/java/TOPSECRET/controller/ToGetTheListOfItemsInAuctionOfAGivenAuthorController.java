@@ -48,8 +48,27 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
      */
     public ToGetTheListOfItemsInAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
 
-        if (authorRepository == null || biblioRepository == null || pubRepo == null || listingRepo == null || auctionRepository == null || mapper == null) {
-            throw new IllegalArgumentException("Controller dependencies cannot be null");
+        if (authorRepository == null) {
+            throw new IllegalArgumentException("AuthorRepository cannot be null");
+        }
+        if (biblioRepository == null) {
+            throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
+        }
+
+        if (pubRepo == null) {
+            throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+        }
+
+        if (listingRepo == null) {
+            throw new IllegalArgumentException("ListingRepository cannot be null");
+        }
+
+        if (auctionRepository == null) {
+            throw new IllegalArgumentException("AuctionRepository cannot be null");
+        }
+
+        if (mapper == null) {
+            throw new IllegalArgumentException("AuctionMapper cannot be null");
         }
 
         this.authorRepository = authorRepository;

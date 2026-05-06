@@ -59,7 +59,8 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
             IPublicationSampleRepository pubRepo,
             IListingRepository listingRepo,
             IAuctionRepository auctionRepository,
-            US026AuctionMapper mapper
+            US026AuctionMapper mapper,
+            String expected
     ) {
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
@@ -74,7 +75,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         );
 
         // Assert
-        assertEquals("Controller dependencies cannot be null", exception.getMessage());
+        assertEquals(expected, exception.getMessage());
     }
 
     @Test
@@ -281,12 +282,12 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
     private static Stream<Arguments> invalidConstructorArguments() {
         return Stream.of(
-                of(null, mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), null, mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), null, mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), null, mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), null, mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), null)
+                of(null, mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "AuthorRepository cannot be null"),
+                of(mock(IAuthorRepository.class), null, mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "BibliographicalDataRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), null, mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "PublicationSampleRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), null, mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "ListingRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), null, mock(US026AuctionMapper.class), "AuctionRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), null, "AuctionMapper cannot be null")
         );
     }
 }
