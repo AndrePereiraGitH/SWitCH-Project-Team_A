@@ -144,7 +144,7 @@ class PublicationSampleAssemblerTest {
         List<PublicationSampleDM> dmList = List.of(dmDouble);
 
         // Act
-        List<PublicationSample> result = assembler.toDomain(dmList);
+        List<PublicationSample> result = assembler.toDomainList(dmList);
 
         // Assert
         assertNotNull(result);
@@ -154,7 +154,7 @@ class PublicationSampleAssemblerTest {
     @Test
     void toDomain_withList_shouldThrowNullPointerException_whenListIsNull() {
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> assembler.toDomain((List<PublicationSampleDM>) null));
+        assertThrows(NullPointerException.class, () -> assembler.toDomainList(null));
     }
 
     @Test
@@ -163,7 +163,7 @@ class PublicationSampleAssemblerTest {
         List<PublicationSampleDM> dmList = List.of();
 
         // Act
-        List<PublicationSample> result = assembler.toDomain(dmList);
+        List<PublicationSample> result = assembler.toDomainList(dmList);
 
         // Assert
         assertNotNull(result);
