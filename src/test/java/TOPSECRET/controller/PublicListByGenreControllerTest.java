@@ -39,17 +39,23 @@ class PublicListByGenreControllerTest {
     void getAllGenresDelegatesToGenreRepoAndReturnsListOfGenres() {
         // Arrange
         controller = new PublicListByGenreController(genreRepo, collectionRepo, userRepo);
-        GenreId id1 = mock(GenreId.class);
-        GenreId id2 = mock(GenreId.class);
 
-        when(genreDouble1.id()).thenReturn(id1);
-        when(genreDouble2.id()).thenReturn(id2);
-        when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble1, genreDouble2));
+        GenreId genreId1 = mock(GenreId.class);
+        GenreId genreId2 = mock(GenreId.class);
+
+        when(genreDouble1.id()).thenReturn(genreId1);
+        when(genreDouble2.id()).thenReturn(genreId2);
+
+        when(genreDouble1.getGenreType()).thenReturn("Fantasy");
+        when(genreDouble2.getGenreType()).thenReturn("Sci-Fi");
+
+        when(genreRepo.findAll()).thenReturn(List.of(genreDouble1, genreDouble2));
 
         // Act
         List<US013GenreDTO> result = controller.getGenres();
 
         // Assert
+        assertNotNull(result);
         assertEquals(2, result.size());
     }
 

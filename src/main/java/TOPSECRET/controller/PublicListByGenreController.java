@@ -57,7 +57,7 @@ public class PublicListByGenreController {
      * @return a list containing all {@link Genre} instances
      */
     public List<US013GenreDTO> getGenres() {
-        List<Genre> genreList = _genreRepository.getAllGenres();
+        List<Genre> genreList = _genreRepository.findAll();
         US013GenreMapper genreMapper = new US013GenreMapper();
 
         return genreMapper.toDTOList(genreList);

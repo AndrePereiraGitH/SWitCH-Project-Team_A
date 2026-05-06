@@ -39,7 +39,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        when(genreRepositoryMock.getAllGenres()).thenReturn(new ArrayList<>());
+        when(genreRepositoryMock.findAll()).thenReturn(new ArrayList<>());
 
         // Act
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
@@ -171,7 +171,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
-        when(genreRepositoryMock.getAllGenres()).thenReturn(new ArrayList<>());
+        when(genreRepositoryMock.findAll()).thenReturn(new ArrayList<>());
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
@@ -204,7 +204,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         when(genre1.getGenreType()).thenReturn("Drama");
         when(genre2.id()).thenReturn(genreId2);
         when(genre2.getGenreType()).thenReturn("Fiction");
-        when(genreRepositoryMock.getAllGenres()).thenReturn(List.of(genre1, genre2));
+        when(genreRepositoryMock.findAll()).thenReturn(List.of(genre1, genre2));
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(

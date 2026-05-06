@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -30,12 +32,14 @@ class GenreServiceTest {
 
     @Test
     void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
+        // Act & Assert
         assertThrows(NullPointerException.class,
                 () -> new GenreService(null, genreFactory));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
+        // Act & Assert
         assertThrows(NullPointerException.class,
                 () -> new GenreService(genreRepository, null));
     }
@@ -46,27 +50,31 @@ class GenreServiceTest {
 
     @Test
     void createAndSave_shouldReturnSavedGenre() {
+        // Arrange
         String genreType = "Fiction";
         Genre genre = mock(Genre.class);
         Genre savedGenre = mock(Genre.class);
 
-        when(genreRepository.findByTitle(genreType))
-                .thenThrow(new IllegalArgumentException("Genre not found."));
+        when(genreRepository.findByTitle(genreType)).thenReturn(Optional.empty());
         when(genreFactory.create(genreType)).thenReturn(genre);
         when(genreRepository.save(genre)).thenReturn(savedGenre);
 
+        // Act
         Genre result = genreService.createAndSave(genreType);
 
+        // Assert
         assertSame(savedGenre, result);
     }
 
     @Test
     void createAndSave_shouldThrowException_whenGenreAlreadyExists() {
+        // Arrange
         String genreType = "Fiction";
         Genre existingGenre = mock(Genre.class);
 
-        when(genreRepository.findByTitle(genreType)).thenReturn(existingGenre);
+        when(genreRepository.findByTitle(genreType)).thenReturn(Optional.of(existingGenre));
 
+        // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> genreService.createAndSave(genreType)
@@ -77,15 +85,16 @@ class GenreServiceTest {
 
     @Test
     void createAndSave_shouldPropagateException_whenRepositoryThrowsException() {
+        // Arrange
         String genreType = "Fiction";
         Genre genre = mock(Genre.class);
 
-        when(genreRepository.findByTitle(genreType))
-                .thenThrow(new IllegalArgumentException("Genre not found."));
+        when(genreRepository.findByTitle(genreType)).thenReturn(Optional.empty());
         when(genreFactory.create(genreType)).thenReturn(genre);
         when(genreRepository.save(genre))
                 .thenThrow(new IllegalArgumentException("Genre already exists"));
 
+        // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> genreService.createAndSave(genreType)
