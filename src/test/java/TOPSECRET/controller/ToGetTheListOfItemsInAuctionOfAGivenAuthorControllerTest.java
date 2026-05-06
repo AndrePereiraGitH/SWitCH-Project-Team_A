@@ -170,7 +170,11 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         List<US026AuctionDTO> expected = List.of(dto1, dto2);
 
         when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
+        when(pubRepo.findIdsByBibliographicalDataId(bdId1))
+                .thenReturn(List.of(sampleId1));
+
+        when(pubRepo.findIdsByBibliographicalDataId(bdId2))
+                .thenReturn(List.of(sampleId2));
         when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
@@ -185,7 +189,9 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
     }
 
     @Test
-    void getAuctionsByAuthorId_shouldReturnEmptyList_whenAuthorHasNoBibliographicalData() throws InstanceNotFoundException {
+    void getAuctionsByAuthorId_shouldReturnEmptyList_whenAuthorHasNoBibliographicalData()
+            throws InstanceNotFoundException {
+
         // Arrange
         ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
@@ -197,11 +203,17 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         List<Auction> auctions = List.of();
         List<US026AuctionDTO> expected = List.of();
 
-        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
-        when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
-        when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
+        when(biblioRepository.findIdByAuthorId(authorId))
+                .thenReturn(bibliographicalDataIds);
+
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds))
+                .thenReturn(listingIds);
+
+        when(auctionRepository.findByListingIdIn(listingIds))
+                .thenReturn(auctions);
+
+        when(auctionMapper.fromDomainList(auctions))
+                .thenReturn(expected);
 
         // Act
         List<US026AuctionDTO> result = controller.getAuctionsByAuthorId(authorId);
@@ -210,29 +222,47 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         assertNotNull(result);
         assertEquals(expected, result);
         assertTrue(result.isEmpty());
+
     }
 
     @Test
-    void getAuctionsByAuthorId_shouldPropagateInstanceNotFoundException_whenMapperThrowsException() throws InstanceNotFoundException {
+    void getAuctionsByAuthorId_shouldPropagateInstanceNotFoundException_whenMapperThrowsException()
+            throws InstanceNotFoundException {
+
         // Arrange
         ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
-        List<BibliographicalDataID> bibliographicalDataIds = List.of(mock(BibliographicalDataID.class));
-        List<PublicationSampleId> publicationSampleIds = List.of(mock(PublicationSampleId.class));
-        List<ListingId> listingIds = List.of(mock(ListingId.class));
-        List<Auction> auctions = List.of(mock(Auction.class));
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        ListingId listingId = mock(ListingId.class);
+        Auction auction = mock(Auction.class);
 
-        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
-        when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
-        when(auctionMapper.fromDomainList(auctions)).thenThrow(new InstanceNotFoundException("Listing not found"));
+        List<BibliographicalDataID> bibliographicalDataIds = List.of(bdId);
+        List<PublicationSampleId> publicationSampleIds = List.of(sampleId);
+        List<ListingId> listingIds = List.of(listingId);
+        List<Auction> auctions = List.of(auction);
+
+        when(biblioRepository.findIdByAuthorId(authorId))
+                .thenReturn(bibliographicalDataIds);
+
+        when(pubRepo.findIdsByBibliographicalDataId(bdId))
+                .thenReturn(publicationSampleIds);
+
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds))
+                .thenReturn(listingIds);
+
+        when(auctionRepository.findByListingIdIn(listingIds))
+                .thenReturn(auctions);
+
+        when(auctionMapper.fromDomainList(auctions))
+                .thenThrow(new InstanceNotFoundException("Listing not found"));
 
         // Act + Assert
-        InstanceNotFoundException exception = assertThrows(InstanceNotFoundException.class, () ->
-                controller.getAuctionsByAuthorId(authorId)
+        InstanceNotFoundException exception = assertThrows(
+                InstanceNotFoundException.class,
+                () -> controller.getAuctionsByAuthorId(authorId)
         );
 
         assertEquals("Listing not found", exception.getMessage());

@@ -93,7 +93,9 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
 
        List<BibliographicalDataID> bdsOfAuthorID = biblioRepository.findIdByAuthorId(authorId);
 
-       List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesIdsByBiblioDataIds(bdsOfAuthorID);
+       List<PublicationSampleId> samplesOfAuthorID = bdsOfAuthorID.stream()
+               .flatMap(bdId -> pubRepo.findIdsByBibliographicalDataId(bdId).stream())
+               .toList();
 
        List<ListingId> authorListings = listingRepo.findIdsByPublicationSampleIdIn(samplesOfAuthorID);
 
