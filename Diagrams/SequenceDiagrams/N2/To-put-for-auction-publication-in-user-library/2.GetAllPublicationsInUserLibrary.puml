@@ -25,7 +25,7 @@ participant "samplesDMList\n:List<PublicationSampleDM>" as samplesListDM
 participant "pubSampleDM\n:PublicationSampleDM" as pubSampleDM
 database "DataBase" as db
 
-participant ":PublicationSamples\nAssembler" as pubAssembler
+participant ":PublicationSample\nAssembler" as pubAssembler
 
 participant ":PublicationSample\nFactory" as pubFactory
 participant "pubDomainList\n:List<PublicationSample>" as pubDomainList
@@ -129,14 +129,14 @@ end
 pubRepoJPA --> pubRepo : samplesDMList
 deactivate pubRepoJPA
 
+pubRepo -->> pubDomainList** : <<create>>
 
 
-pubRepo -> pubAssembler : toDomainList ( samplesDMList)
+loop for each pubDM in samplesDMList
+
+pubRepo -> pubAssembler : toDomain ( sampleDM)
 activate pubAssembler
-pubAssembler -->> pubDomainList** : <<create>>
 
-
-loop for each pubDM in samplesListDM
 
 ' ------ GET PUBLICATION DM DATA -----
 pubAssembler -> pubSampleDM : id()
@@ -175,11 +175,13 @@ pubFactory -->> pubSampleDomain** : <<create>>
 pubFactory --> pubAssembler : pubSampleDomain
 deactivate pubFactory
 
-pubAssembler -> pubAssembler : pubDomainList.add(pubSampleDomain)
-end
 
-pubAssembler --> pubRepo : pubDomainList
+
+pubAssembler --> pubRepo : pubSampleDomain
 deactivate pubAssembler
+pubRepo -> pubRepo : pubDomainList.add(pubSampleDomain)
+
+end
 
 pubRepo --> ctrl : pubDomainList
 deactivate pubRepo
@@ -187,7 +189,7 @@ deactivate pubRepo
 
 ' ======= CONVERT LIST OF PUBLICATION SAMPLES INTO DTO
 
-ctrl -> pubMapper : fromDomainList(pubDomainList, bibliographicalDataMap)
+ctrl -> pubMapper : fromDomainList ( pubDomainList)
 activate pubMapper
 
 ref over pubMapper

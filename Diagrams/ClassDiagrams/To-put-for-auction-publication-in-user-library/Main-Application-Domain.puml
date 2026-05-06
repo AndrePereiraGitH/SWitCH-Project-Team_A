@@ -67,49 +67,49 @@ skinparam class {
   MethodFontColor<<Mapper>> #1F2933
 }
 
-class SalePublicationInAuctionController <<Controller>>{
-  +getAllPublicationsInUserLibrary(userId: Long): List<PublicationSampleDTO>
-  +createAuctionListing(listingTitle: String, selectedPublicationsID: List<Long>,\n initialPrice: BigDecimal, shortDescription: String, sellerId: Long, pictures: List<String>,\n initialDate: LocalDateTime, finalDate: LocalDateTime, buyoutPrice: BigDecimal): boolean
+class ToPutForAuctionPublicationInUserLibraryController <<Controller>>{
+  +getAllPublicationsInUserLibrary(userId: UserId): List<PublicationSampleDTO>
+  +createAuctionListing(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>,\n initialPrice: BigDecimal, shortDescription: String, sellerId: UserId, pictures: List<String>,\n initialDate: LocalDateTime, finalDate: LocalDateTime, buyoutPrice: BigDecimal): boolean
 }
 
 class ListingService <<Service>> {
-  +createAndSave(listingTitle: String, selectedPublicationsID: List<Long>, saleType: SaleType,\n initialPrice: BigDecimal, shortDescription: String, sellerId: Long, pictures: List<String>): Listing
+  +createAndSave(listingTitle: String, selectedPublicationsID: List<PublicationSampleId>, saleType: SaleType,\n initialPrice: BigDecimal, shortDescription: String, sellerId: UserId, pictures: List<String>): Listing
 }
 
 class AuctionService <<Service>>{
-  +createAndSave(listingId: Long, initialDate: LocalDateTime, finalDate: LocalDateTime,\n initialPrice: BigDecimal, buyoutPrice: BigDecimal): Auction
+  +createAndSave(listingId: ListingId, initialDate: LocalDateTime, finalDate: LocalDateTime,\n initialPrice: BigDecimal, buyoutPrice: BigDecimal): Auction
 }
 
 class Library <<Aggregate Root>> {
-  -id: Long
+  -id: LibraryId
   -libraryName: String
-  -userId: Long
+  -userId: UserId
 }
 
 class PublicationSample <<Aggregate Root>> {
-  -id: Long
-  -bibliographicalDataId: Long
-  -ownerId: Long
+  -id: PublicationSampleId
+  -bibliographicalDataId:PublicationSampleId
+  -ownerId: UserId
   -publicationStatus: PublicationStatus
-  -editionId: Long
+  -editionId: EditionId
   -condition: String
   +changeStatusToForSale()
 }
 
 class Listing <<Aggregate Root>> {
-  -id: Long
+  -id: ListingId
   -listingTitle: String
-  -itemsId: List<Long>
+  -itemsId: List<PublicationSampleId>
   -saleType: SaleType
   -price: BigDecimal
   -shortDescription: String
-  -sellerId: Long
+  -sellerId: UserId
   -pictures: List<String>
 }
 
 class Auction <<Aggregate Root>> {
-  -id: Long
-  -listingId: Long
+  -id: AuctionId
+  -listingId: ListingId
   -auctionStartDateTime: LocalDateTime
   -auctionFinalDateTime: LocalDateTime
   -initialPrice: BigDecimal
@@ -117,11 +117,11 @@ class Auction <<Aggregate Root>> {
 }
 
 interface ILibraryRepository <<Repository>> {
-  +getByUserId(userId: Long): Library
+  +getByUserId(userId: LibraryId): Library
 }
 
 interface IPublicationSampleRepository <<Repository>>{
-  +getAllByLibraryID(libraryId: Long): List<PublicationSample>
+  +findByLibraryId(libraryId: LibraryId): List<PublicationSample>
 }
 
 interface IListingRepository <<Repository>>{
@@ -135,7 +135,7 @@ interface IAuctionRepository <<Repository>>{
 class PublicationSampleDTO <<DTO>>
 
 class US016_PublicationSampleMapper <<Mapper>> {
-  +fromDomainList(pubDomainList: List<PublicationSample>,\n bibliographicalDataMap: Map<Long, Object>): List<PublicationSampleDTO>
+  +fromDomainList(pubDomainList: List<PublicationSample>)
 }
 
 note as PersistenceLink
@@ -150,11 +150,11 @@ note right of IAuctionRepository
 [[Persistence.puml Auction persistence]]
 end note
 
-SalePublicationInAuctionController --> ILibraryRepository
-SalePublicationInAuctionController --> IPublicationSampleRepository
-SalePublicationInAuctionController --> US016_PublicationSampleMapper
-SalePublicationInAuctionController --> ListingService
-SalePublicationInAuctionController --> AuctionService
+ToPutForAuctionPublicationInUserLibraryController --> ILibraryRepository
+ToPutForAuctionPublicationInUserLibraryController --> IPublicationSampleRepository
+ToPutForAuctionPublicationInUserLibraryController --> US016_PublicationSampleMapper
+ToPutForAuctionPublicationInUserLibraryController --> ListingService
+ToPutForAuctionPublicationInUserLibraryController --> AuctionService
 
 ListingService --> IListingRepository
 AuctionService --> IAuctionRepository

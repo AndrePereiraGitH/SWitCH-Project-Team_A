@@ -22,7 +22,7 @@ note over ctrl #E3F2FD
 This diagram is a fragment of the GetAllPublicationsInUserLibrary sequence diagram.
 end note
 
-ctrl -> pubMapper : fromDomainList(pubDomainList, bibliographicalDataMap)
+ctrl -> pubMapper : fromDomainList(pubDomainList)
 activate pubMapper
 
 pubMapper -->> dtoList ** : <<create>>

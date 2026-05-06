@@ -34,34 +34,34 @@ endlegend
 ' =========================
 
 class Library <<Aggregate Root>> {
-  -id: Long
+  -id: LibraryId
   -libraryName: String
-  -userId: Long
+  -userId: UserId
 }
 
 class PublicationSample <<Aggregate Root>> {
-  -id: Long
-  -bibliographicalDataId: Long
-  -ownerId: Long
+  -id: PublicationSampleId
+  -bibliographicalDataId: BibliographicalDataId
+  -ownerId: UserId
   -publicationStatus: PublicationStatus
-  -editionId: Long
+  -editionId: EditionId
   -condition: String
 }
 
 class Listing <<Aggregate Root>> {
-  -id: Long
+  -id: ListingId
   -listingTitle: String
-  -itemsId: List<Long>
+  -itemsId: List<PublicationSampleId>
   -saleType: SaleType
   -price: BigDecimal
   -shortDescription: String
-  -sellerId: Long
+  -sellerId: UserId
   -pictures: List<String>
 }
 
 class Auction <<Aggregate Root>> {
-  -id: Long
-  -listingId: Long
+  -id: AuctionId
+  -listingId: ListingId
   -auctionStartDateTime: LocalDateTime
   -auctionFinalDateTime: LocalDateTime
   -initialPrice: BigDecimal
@@ -73,11 +73,11 @@ class Auction <<Aggregate Root>> {
 ' =========================
 
 interface ILibraryRepository <<Repository>> {
-  +getByUserId(userId: Long): Library
+  +getByUserId(userId: UserId): Library
 }
 
 interface IPublicationSampleRepository <<Repository>> {
-  +getAllByLibraryID(libraryId: Long): List<PublicationSample>
+  +findByLibraryId(libraryId: LibraryId): List<PublicationSample>
 }
 
 interface IListingRepository <<Repository>> {
@@ -93,11 +93,11 @@ interface IAuctionRepository <<Repository>> {
 ' =========================
 
 interface ILibraryRepositoryJPA <<JPA Repository>> {
-  +getByUserId(userId: Long): LibraryDM
+  +getByUserId(userId: UserId): LibraryDM
 }
 
 interface IPublicationSampleRepositoryJPA <<JPA Repository>> {
-  +getAllByLibraryId(libraryId: Long): List<PublicationSampleDM>
+  +findByLibraryId(libraryId: LibraryId): List<PublicationSampleDM>
 }
 
 interface IListingRepositoryJPA <<JPA Repository>> {
@@ -113,34 +113,34 @@ interface IAuctionRepositoryJPA <<JPA Repository>> {
 ' =========================
 
 class LibraryDM <<Data Model>> {
-  -id: Long
+  -id: LibraryId
   -libraryName: String
-  -userId: Long
+  -userId: UserId
 }
 
 class PublicationSampleDM <<Data Model>> {
-  -id: Long
-  -bibliographicalDataId: Long
-  -ownerId: Long
+  -id: PublicationSampleId
+  -bibliographicalDataId: BibliographicalDataId
+  -ownerId: UserId
   -publicationStatus: PublicationStatus
-  -editionId: Long
+  -editionId: EditionId
   -condition: String
 }
 
 class ListingDM <<Data Model>> {
-  -id: Long
+  -id: ListingId
   -listingTitle: String
-  -itemsId: List<Long>
+  -itemsId: List<PublicationSampleId>
   -saleType: SaleType
   -price: BigDecimal
   -shortDescription: String
-  -sellerId: Long
+  -sellerId: UserId
   -pictures: List<String>
 }
 
 class AuctionDM <<Data Model>> {
-  -id: Long
-  -listingId: Long
+  -id: AuctionId
+  -listingId: ListingId
   -auctionStartDateTime: LocalDateTime
   -auctionFinalDateTime: LocalDateTime
   -initialPrice: BigDecimal
@@ -155,8 +155,8 @@ class LibraryAssembler <<Assembler>> {
   +toDomain(libraryDM: LibraryDM): Library
 }
 
-class PublicationSamplesAssembler <<Assembler>> {
-  +toDomainList(samplesDMList: List<PublicationSampleDM>): List<PublicationSample>
+class PublicationSampleAssembler <<Assembler>> {
+  +toDomain(samplesDM: PublicationSampleDM): PublicationSample
 }
 
 class ListingAssembler <<Assembler>> {
@@ -174,19 +174,19 @@ class AuctionAssembler <<Assembler>> {
 ' =========================
 
 class LibraryFactory <<Factory>> {
-  +create(id: Long, libraryName: String, userId: Long): Library
+  +create(id: LibraryId, libraryName: String, userId: UserId): Library
 }
 
 class PublicationSampleFactory <<Factory>> {
-  +create(pubId: Long, bdId: Long, ownerId: Long, pubStatus: PublicationStatus,\n editionId: Long, condition: String): PublicationSample
+  +create(pubId: PublicationSampleId, bdId: BibliographhicalDataId, ownerId: UserId, pubStatus: PublicationStatus,\n editionId: EditionId, condition: String): PublicationSample
 }
 
 class ListingFactory <<Factory>> {
-  +create(id: Long, listingTitle: String, sampleIds: List<Long>, saleType: SaleType,\n price: BigDecimal, shortDescription: String, sellerId: Long, pictures: List<String>): Listing
+  +create(id: ListingId, listingTitle: String, sampleIds: List<PublicationSampleId>, saleType: SaleType,\n price: BigDecimal, shortDescription: String, sellerId: UserId, pictures: List<String>): Listing
 }
 
 class AuctionFactory <<Factory>> {
-  +create(id: Long, listingId: Long, startDate: LocalDateTime, finalDate: LocalDateTime,\n initialPrice: BigDecimal, buyoutPrice: BigDecimal): Auction
+  +create(id: AuctionId, listingId: ListingId, startDate: LocalDateTime, finalDate: LocalDateTime,\n initialPrice: BigDecimal, buyoutPrice: BigDecimal): Auction
 }
 
 ' =========================
