@@ -1,6 +1,12 @@
 @startuml
 title Get Official Genres List - Class Diagram
 top to bottom direction
+class ToGetListOfGenreController << controller >>
+interface IGenreRepository << repository >>
+class GenreRepositoryJPA << repository >>
+class GenreDM << entity >>
+class Genre << aggregate/entity >>
+class US013GenreDTO << DTO >>
 ' ── UI Layer ───────────────────────────────────────────────
 class UI {
 }
@@ -29,9 +35,9 @@ interface IGenreRepository {
 }
 
 class Genre {
-    - genreId: GenreId
+    - Id: GenreId
     - genreType: String
-    + getGenreId(): GenreId
+    + id(): GenreId
     + getGenreType(): String
 }
 
@@ -47,7 +53,7 @@ class GenreFactory {
 ' ── Infrastructure Layer ───────────────────────────────────
 class GenreRepositoryJPA {
     - genreRepositoryJPA: IGenreRepositoryJPA
-    - genreAssembler: GenreAssembler
+    - assembler: GenreAssembler
     + getAllGenres(): List<Genre>
 }
 
@@ -56,13 +62,13 @@ interface IGenreRepositoryJPA {
 }
 
 class GenreAssembler {
-    - genreFactory: GenreFactory
-    + toDomainList(genresPersisted: List<GenreDM>): List<Genre>
+    - factory: GenreFactory
+    + toDM(genre: Genre): GenreDM
     - toDomain(genreDM: GenreDM): Genre
 }
 
 class GenreDM {
-    - genreId: String
+    - id: GenreId
     - genreType: String
 }
 
@@ -78,7 +84,7 @@ ToGetListOfGenreController "1" ..> "1" US013GenreMapper : uses
 US013GenreMapper "1" ..> "0..*" Genre : reads
 US013GenreMapper "1" ..> "0..*" US013GenreDTO : creates
 
-GenreRepositoryJPA "1" ..|> "                                     1" IGenreRepository : implements
+GenreRepositoryJPA "1" ..|> "1" IGenreRepository : implements
 GenreRepositoryJPA "1" ..> "1" IGenreRepositoryJPA : uses
 GenreRepositoryJPA "1" ..> "1" GenreAssembler : uses
 
