@@ -7,6 +7,7 @@ participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":IPublicationSampleRepositoryJpa" as pubSampleJpa
 participant "listOfPubSampleIds:List<PublicationSampleId>" as listOfPubSampleIds
+participant "pbSampleDMList:List<PublicationSampleDM>" as pbSampleDMList
 participant "Database" as db
 
 note over Ctrl #E3F2FD

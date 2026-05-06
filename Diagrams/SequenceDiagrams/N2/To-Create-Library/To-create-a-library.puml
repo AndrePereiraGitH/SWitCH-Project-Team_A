@@ -12,11 +12,14 @@ participant ":IUserRepositoryJPA" as userJpa
 participant "userDM: Optional<UserDM>" as userDM
 participant ":ILibraryRepository" as LibraryRepo
 participant ":LibraryAssembler" as assembler
-participant "libraryDM:LibraryDM" as dm
 participant ":LibraryFactory" as factory
+participant "libraryDM:LibraryDM" as dm
+
 participant "savedLib:Library" as persistedLib
 participant "library:Library" as lib
+
 participant ":ILibraryRepositoryJPA" as libraryJpa
+participant "savedLibraryDM:LibraryDM" as savedLibraryDM
 participant "Database" as db
 
 
@@ -96,6 +99,7 @@ libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
 deactivate db
+libraryJpa -->> savedLibraryDM**: <<create>>
 libraryJpa --> LibraryRepo: savedLibraryDM
 deactivate libraryJpa
 
