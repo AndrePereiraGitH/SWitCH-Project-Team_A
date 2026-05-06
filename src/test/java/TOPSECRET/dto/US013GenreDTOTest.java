@@ -24,19 +24,19 @@ class US013GenreDTOTest {
     @Test
     void shouldSupportRecordEquality() {
         //Act
-        US013GenreDTO dto1 = new US013GenreDTO("123","Jazz");
-        US013GenreDTO dto2 = new US013GenreDTO("123","Jazz");
+        US013GenreDTO dtoDouble = new US013GenreDTO("123","Jazz");
+        US013GenreDTO dtoDouble2 = new US013GenreDTO("123","Jazz");
         //Assert
-        assertEquals(dto1, dto2);
+        assertEquals(dtoDouble, dtoDouble2);
     }
 
     @Test
     void shouldSupportRecordHashCode() {
         //Act
-        US013GenreDTO dto1 = new US013GenreDTO("123","Jazz");
-        US013GenreDTO dto2 = new US013GenreDTO("123","Jazz");
+        US013GenreDTO dtoDouble = new US013GenreDTO("123","Jazz");
+        US013GenreDTO dtoDouble2 = new US013GenreDTO("123","Jazz");
         //Assert
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+        assertEquals(dtoDouble.hashCode(), dtoDouble2.hashCode());
     }
 
 }
