@@ -5,9 +5,15 @@ import TOPSECRET.services.CountryService;
 
 /**
  * Controller responsible for handling the registration of new {@link Country} entities.
+ *
  * <p>
- * This class acts as an entry point between the application layer and the domain/service layer,
- * delegating the creation and persistence of a country to the {@link CountryService}.
+ * Acts as the entry point for the "Register Country" use case, delegating all business
+ * logic to the {@link CountryService}.
+ * </p>
+ *
+ * <p>
+ * This controller does not contain domain logic. It simply forwards requests to the
+ * service layer and returns the result.
  * </p>
  */
 public class ToRegisterCountryController {
@@ -17,34 +23,29 @@ public class ToRegisterCountryController {
     /**
      * Constructs a new {@code ToRegisterCountryController}.
      *
-     * @param countryService the {@link CountryService} used to create and persist countries;
+     * @param countryService the service responsible for country operations;
      *                       must not be {@code null}
+     * @throws IllegalArgumentException if {@code countryService} is {@code null}
      */
     public ToRegisterCountryController(CountryService countryService) {
-        if(countryService == null){
-            throw new IllegalArgumentException("CountryService cannot be null!");
+        if (countryService == null) {
+            throw new IllegalArgumentException("CountryService cannot be null");
         }
         this.countryService = countryService;
     }
 
     /**
-     * Registers a new {@link Country} with the given name.
+     * Registers a new {@link Country}.
+     *
      * <p>
-     * This method validates that the provided country name is not {@code null} or blank,
-     * and then delegates the creation and persistence process to the {@link CountryService}.
+     * Delegates the creation and persistence of the country to the
+     * {@link CountryService}.
      * </p>
      *
-     * @param countryName the name of the country to register;
-     *                    must not be {@code null} or blank
-     * @return the newly created and persisted {@link Country}
-     * @throws IllegalArgumentException if {@code countryName} is {@code null} or blank
+     * @param countryName the name of the country
+     * @return the created {@link Country}
      */
     public Country registerNewCountry(String countryName) {
-
-        if (countryName == null || countryName.isBlank()) {
-            throw new IllegalArgumentException("Country name cannot be null or blank");
-        }
-
         return countryService.createAndSave(countryName);
     }
 }
