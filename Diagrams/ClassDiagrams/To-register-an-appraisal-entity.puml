@@ -9,8 +9,15 @@ left to right direction
 ' =========================
 package "Application" {
 
-class "ToRegisterAppraisalEntityController" as Controller
-class "AppraisalEntityService" as Service
+class "ToRegisterAppraisalEntityController" as Controller {
+  +getAllGenre()
+  +getPublicationTypes()
+  +registerAppraisalEntity(name:String, contact:Contact, \ngenresId:List<GenreId>, publicationTypesId:List<PublicationTypeId>)
+}
+
+class "AppraisalEntityService" as Service {
+  +createAndSave(name:String, contact:Contact, \ngenresId:List<GenreId>, publicationTypesId:List<PublicationTypeId>)
+}
 
 Controller ..> Service : uses >
 }
@@ -35,7 +42,9 @@ class PublicationType{
   -mediaFormat: String
 }
 
-class AppraisalEntityFactory
+class AppraisalEntityFactory{
+  +create(name:String, contact:Contact, genresId:List<GenreId>, \npublicationTypesId:List<PublicationTypeId>)
+}
 class GenreFactory
 class PublicationTypeFactory
 
