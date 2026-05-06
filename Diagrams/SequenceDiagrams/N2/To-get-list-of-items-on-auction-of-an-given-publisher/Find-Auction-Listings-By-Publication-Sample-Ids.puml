@@ -7,7 +7,7 @@ participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as C
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJpa" as listingJpa
 participant "listingDMList:List<ListingDM>" as listingDMList
-participant "listOfAuctionListings:List<Listing>" as listOfAuctionListings
+participant "auctionListings:List<Listing>" as auctionListings
 participant ":ListingAssembler" as listingAssembler
 participant ":ListingFactory" as listingFactory
 participant "listing:Listing" as listing
@@ -34,7 +34,7 @@ listingJpa -->> listingDMList ** : <<create>>
 listingJpa --> listingRepo : listingDMList
 deactivate listingJpa
 
-listingRepo -->> listOfAuctionListings ** : <<create>>
+listingRepo -->> auctionListings ** : <<create>>
 
 loop for each dm in listingDMList
     listingRepo -> listingAssembler : toDomain(dm)
@@ -51,11 +51,11 @@ loop for each dm in listingDMList
     deactivate listingAssembler
 
     opt listing.isListingLinkedToAnAuction()
-        listingRepo -> listingRepo : listOfAuctionListings.add(listing)
+        listingRepo -> listingRepo : auctionListings.add(listing)
     end
 end
 
-listingRepo --> Ctrl : listOfAuctionListings
+listingRepo --> Ctrl : auctionListings
 deactivate listingRepo
 
 @enduml

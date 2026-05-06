@@ -6,7 +6,7 @@ title To Get The List Of Items On Auction Of A Given Publisher
 actor Buyer
 
 participant ":UI" as UI
-participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
 
 participant ":IPublisherRepository" as publisherRepo
 participant ":IPublisherRepositoryJpa" as publisherJpa
@@ -24,14 +24,14 @@ participant "listOfPubSampleIds:List<PublicationSampleId>" as listOfPubSampleIds
 
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJpa" as listingJpa
-participant "listOfAuctionListings:List<Listing>" as listOfAuctionListings
+participant "auctionListings:List<Listing>" as auctionListings
 
 participant ":ListingAssembler" as listingAssembler
 participant ":ListingFactory" as listingFactory
 participant "listing:Listing" as listing
 
 participant ":US028ListingMapper" as listingMapper
-participant "listOfAuctionListingsDTO:List<US028ListingDTO>" as listOfAuctionListingsDTO
+participant "auctionListingsDTO:List<US028ListingDTO>" as auctionListingsDTO
 participant "auctionListingDTO:US028ListingDTO" as auctionListingDTO
 
 participant "Database" as db
@@ -113,7 +113,7 @@ loop for each editionDM in editionDMList
     editionRepo -> editionRepo : listOfEditions.add(edition)
 end
 
-editionRepo --> Ctrl : listOfEditions
+editionRepo --> Ctrl : listOfEditionsIds
 deactivate editionRepo
 
 Ctrl -> pubSampleRepo : findIdsByEditionIdIn(listOfEditionIds)
@@ -146,7 +146,7 @@ deactivate db
 listingJpa --> listingRepo : List<ListingDM>
 deactivate listingJpa
 
-listingRepo -->> listOfAuctionListings ** : <<create>>
+listingRepo -->> auctionListings ** : <<create>>
 
 loop for each dm in List<ListingDM>
     listingRepo -> listingAssembler : toDomain(dm)
@@ -160,27 +160,27 @@ loop for each dm in List<ListingDM>
     deactivate listingAssembler
 
     opt listing.isListingLinkedToAnAuction()
-        listingRepo -> listingRepo : listOfAuctionListings.add(listing)
+        listingRepo -> listingRepo : auctionListings.add(listing)
     end
 end
 
-listingRepo --> Ctrl : listOfAuctionListings
+listingRepo --> Ctrl : auctionListings
 deactivate listingRepo
 
-Ctrl -> listingMapper : toDTOs(listOfAuctionListings)
+Ctrl -> listingMapper : toDTOs(auctionListings)
 activate listingMapper
 
-listingMapper -->> listOfAuctionListingsDTO ** : <<create>>
+listingMapper -->> auctionListingsDTO ** : <<create>>
 
-loop for each listing in listOfAuctionListings
+loop for each listing in auctionListings
     listingMapper -> auctionListingDTO ** : toDTO(listing)
-    listingMapper -> listingMapper : listOfAuctionListingsDTO.add(auctionListingDTO)
+    listingMapper -> listingMapper : auctionListingsDTO.add(auctionListingDTO)
 end
 
-listingMapper --> Ctrl : listOfAuctionListingsDTO
+listingMapper --> Ctrl : auctionListingsDTO
 deactivate listingMapper
 
-Ctrl --> UI : listOfAuctionListingsDTO
+Ctrl --> UI : auctionListingsDTO
 deactivate Ctrl
 
 UI --> Buyer : Here is the list of items on auction\nfor the selected publisher.

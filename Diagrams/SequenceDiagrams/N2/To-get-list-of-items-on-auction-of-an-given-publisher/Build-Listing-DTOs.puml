@@ -5,8 +5,8 @@ title Build Listing DTOs
 
 participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
 participant ":US028ListingMapper" as listingMapper
-participant "listOfAuctionListings:List<Listing>" as listOfAuctionListings
-participant "listOfAuctionListingsDTO:List<US028ListingDTO>" as listOfAuctionListingsDTO
+participant "auctionListings:List<Listing>" as auctionListings
+participant "auctionListingsDTO:List<US028ListingDTO>" as auctionListingsDTO
 participant "auctionListingDTO:US028ListingDTO" as auctionListingDTO
 
 note over Ctrl #E3F2FD
@@ -15,17 +15,17 @@ note over Ctrl #E3F2FD
 [[./main.puml Return to Main Diagram]]
 end note
 
-Ctrl -> listingMapper : toDTOs(listOfAuctionListings)
+Ctrl -> listingMapper : toDTO(auctionListings)
 activate listingMapper
 
-listingMapper -->> listOfAuctionListingsDTO ** : <<create>>
+listingMapper -->> auctionListingsDTO ** : <<create>>
 
-loop for each listing in listOfAuctionListings
+loop for each listing in auctionListings
     listingMapper -> auctionListingDTO ** : toDTO(listing)
-    listingMapper -> listingMapper : listOfAuctionListingsDTO.add(auctionListingDTO)
+    listingMapper -> listingMapper : auctionListingsDTO.add(auctionListingDTO)
 end
 
-listingMapper --> Ctrl : listOfAuctionListingsDTO
+listingMapper --> Ctrl : auctionListingsDTO
 deactivate listingMapper
 
 @enduml
