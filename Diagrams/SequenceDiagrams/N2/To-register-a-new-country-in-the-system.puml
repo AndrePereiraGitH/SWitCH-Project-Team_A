@@ -17,7 +17,7 @@ participant ":ICountryRepository" as ICountryRepository
 participant ":CountryFactory" as CountryFactory
 participant ":ICountryRepositoryJPA" as JPA
 participant ":CountryAssembler" as Assembler
-participant ":Database" as DB
+database "Database" as DB
 
 
 Administrator -> UI : I want to register a new country
@@ -59,23 +59,23 @@ JPA -> DB : insert
 activate DB
 DB --> JPA : data
 deactivate DB
-create participant "CountryDMPersisted: CountryDM" as CountryDMPersisted
+create participant "countryDMPersisted: CountryDM" as CountryDMPersisted
 JPA --> CountryDMPersisted : «create»
-JPA --> ICountryRepository : CountryDMPersisted
+JPA --> ICountryRepository : countryDMPersisted
 deactivate JPA
-ICountryRepository -> Assembler : toDomain(CountryDMPersisted)
-create participant "CountryReconstructed: Country" as CountryReconstructed
+ICountryRepository -> Assembler : toDomain(countryDMPersisted)
+create participant "countryReconstructed: Country" as CountryReconstructed
 activate Assembler
 Assembler --> CountryReconstructed : «create»
-Assembler --> ICountryRepository : CountryReconstructed
+Assembler --> ICountryRepository : countryReconstructed
 deactivate Assembler
-ICountryRepository --> CountryService : CountryReconstructed
+ICountryRepository --> CountryService : countryReconstructed
 deactivate ICountryRepository
 
-CountryService --> CountryController : CountryReconstructed
+CountryService --> CountryController : countryReconstructed
 deactivate CountryService
 
-CountryController --> UI : CountryReconstructed
+CountryController --> UI : countryReconstructed
 deactivate CountryController
 UI --> Administrator : "<countryName> has been\n successfully registered in the system!"
 deactivate UI
