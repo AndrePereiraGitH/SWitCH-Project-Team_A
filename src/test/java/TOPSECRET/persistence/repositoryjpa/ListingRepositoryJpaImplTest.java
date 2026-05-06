@@ -293,28 +293,76 @@ class ListingRepositoryJpaImplTest {
 
 
 // ===========================================================
-// findAllByDirectSaleAndPublicationSampleIdIn (TO BE IMPLEMENTED)
+// findAllByDirectSaleAndPublicationSampleIdIn
 // ===========================================================
 
     @Test
-    void findAllByDirectSaleAndPublicationSampleIdIn_shouldReturnEmptyList() {
+    void findAllByDirectSaleAndPublicationSampleIdIn_shouldThrowNullPointerException_whenIdsIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repo.findAllByDirectSaleAndPublicationSampleIdIn(null));
+    }
+
+    @Test
+    void findAllByDirectSaleAndPublicationSampleIdIn_shouldReturnEmptyList_whenNoListingsMatchIds() {
         // Arrange
         PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
-        PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1))).thenReturn(List.of());
 
         // Act
-        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pbId_1, pbId_2));
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pbId_1));
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findAllByDirectSaleAndPublicationSampleIdIn_shouldReturnEmptyList_whenInputIsEmpty() {
+    void findAllByDirectSaleAndPublicationSampleIdIn_shouldReturnOnlyDirectSaleListings_whenSomeAreNot() {
+        // Arrange
+        PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
+
+        Listing listing_1 = mock(Listing.class);
+        when(listing_1.isListingLinkedToADirectSale()).thenReturn(true);
+
+        Listing listing_2 = mock(Listing.class);
+        when(listing_2.isListingLinkedToADirectSale()).thenReturn(false);
+
+        ListingDM dm1 = mock(ListingDM.class);
+        ListingDM dm2 = mock(ListingDM.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1))).thenReturn(List.of(dm1, dm2));
+        when(assembler.toDomain(dm1)).thenReturn(listing_1);
+        when(assembler.toDomain(dm2)).thenReturn(listing_2);
+
         // Act
-        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of());
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pbId_1));
 
         // Assert
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void findAllByDirectSaleAndPublicationSampleIdIn_shouldReturnAllListings_whenAllAreDirectSale() {
+        // Arrange
+        PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
+
+        Listing listing_1 = mock(Listing.class);
+        when(listing_1.isListingLinkedToADirectSale()).thenReturn(true);
+
+        Listing listing_2 = mock(Listing.class);
+        when(listing_2.isListingLinkedToADirectSale()).thenReturn(true);
+
+        ListingDM dm1 = mock(ListingDM.class);
+        ListingDM dm2 = mock(ListingDM.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1))).thenReturn(List.of(dm1, dm2));
+        when(assembler.toDomain(dm1)).thenReturn(listing_1);
+        when(assembler.toDomain(dm2)).thenReturn(listing_2);
+
+        // Act
+        List<Listing> result = repo.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pbId_1));
+
+        // Assert
+        assertEquals(2, result.size());
     }
 }
