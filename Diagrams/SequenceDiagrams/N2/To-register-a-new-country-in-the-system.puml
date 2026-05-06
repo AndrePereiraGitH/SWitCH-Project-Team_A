@@ -60,13 +60,19 @@ activate DB
 DB --> JPA : data
 deactivate DB
 create participant "countryDMPersisted: CountryDM" as CountryDMPersisted
-JPA --> CountryDMPersisted : «create»
+JPA -->> CountryDMPersisted : «create»
 JPA --> ICountryRepository : countryDMPersisted
 deactivate JPA
 ICountryRepository -> Assembler : toDomain(countryDMPersisted)
-create participant "countryReconstructed: Country" as CountryReconstructed
 activate Assembler
-Assembler --> CountryReconstructed : «create»
+Assembler -> CountryFactory : create(countryId, countryName)
+deactivate Assembler
+create participant "countryReconstructed: Country" as CountryReconstructed
+activate CountryFactory
+CountryFactory -->> CountryReconstructed : «create»
+CountryFactory --> Assembler : countryReconstructed
+deactivate CountryFactory
+activate Assembler
 Assembler --> ICountryRepository : countryReconstructed
 deactivate Assembler
 ICountryRepository --> CountryService : countryReconstructed
