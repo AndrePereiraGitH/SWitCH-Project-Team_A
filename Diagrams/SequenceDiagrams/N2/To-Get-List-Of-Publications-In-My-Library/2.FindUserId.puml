@@ -3,9 +3,10 @@ hide footbox
 autonumber
 title Find User ID
 
-participant ":GetListOfPublicationsInLibraryController" as Ctrl
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
+participant "userDM: Optional<UserDM>" as userDM
 participant "Database" as db
 
 note over Ctrl #E3F2FD
@@ -25,12 +26,16 @@ activate db
 db --> userJpa: data
 deactivate db
 
-userJpa --> userRepo: userDM:Optional<UserDM>
+userJpa --> userDM**: <<create>>
+userJpa -> userDM: getId()
+activate userDM
+userDM --> userJpa: userId
+deactivate userDM
+
+userJpa --> userRepo: userId
 deactivate userJpa
 
-userRepo -> userRepo: userDM.map(UserDM::getId)
-
-userRepo --> Ctrl: userId:Optional<UserId>
+userRepo --> Ctrl: userId
 deactivate userRepo
 
 @enduml

@@ -5,7 +5,7 @@ title As a User, I want to get the list of publications in my library (Main)
 
 actor User
 participant ":UI" as UI
-participant ":GetListOfPublicationsInLibraryController" as Ctrl
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
 participant ":IUserRepository" as userRepo
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":US012PublicationSampleMapper" as Mapper
@@ -25,7 +25,7 @@ ref over Ctrl, userRepo
   [[2.FindUserId.puml Find User ID]]
 end ref
 
-Ctrl -> pubSampleRepo : getAllPublicationsInUserLibrary(userId)
+Ctrl -> pubSampleRepo : findByUserIdAndLibraryIdIsNotNull(userId)
 activate pubSampleRepo
 
 ref over pubSampleRepo

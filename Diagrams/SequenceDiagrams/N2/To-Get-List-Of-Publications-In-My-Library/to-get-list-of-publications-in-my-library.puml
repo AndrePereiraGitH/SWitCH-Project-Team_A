@@ -5,7 +5,7 @@ title As a User, I want to get the list (title, author, type and ISBN/SSN) of pu
 
 actor User
 participant ":UI" as UI
-participant ":GetListOfPublicationsInLibraryController" as Ctrl
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
 
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userJpa
@@ -36,7 +36,7 @@ activate UI
 UI -> Ctrl : getListOfPublicationsInLibrary(username)
 activate Ctrl
 
-Ctrl -> userRepo: findUserIdByUsername(username)
+Ctrl -> userRepo: findIdByUsername(username)
 activate userRepo
 
 userRepo -> userJpa: findByUserName(username)

@@ -3,13 +3,15 @@ hide footbox
 autonumber
 title Get Publications in Library
 
-participant ":GetListOfPublicationsInLibraryController" as Ctrl
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":IPublicationSampleRepositoryJpa" as pbJpa
+participant "pbSamplesDM\n:List<PublicationSampleDM>" as pbSamplesDM
 participant ":PublicationSampleAssembler" as pbAssembler
-participant "pbSample:PublicationSample" as pbDomain
 participant "listOfPublications:List<PublicationSample>" as ListPubs
 participant "Database" as db
+participant ":PublicationSampleFactory" as factory
+participant "pbSample:PublicationSample" as pbDomain
 
 note over Ctrl #E3F2FD
 <b>Navigation</b>
@@ -28,10 +30,14 @@ activate db
 db --> pbJpa: data
 deactivate db
 
-pbJpa --> pubSampleRepo: pbSamplesDM:List<PublicationSampleDM>
+pbJpa -->> pbSamplesDM **: <<create>>
+
+pbJpa --> pubSampleRepo: pbSamplesDM
+
 deactivate pbJpa
 
 pubSampleRepo -->> ListPubs **: <<create>>
+
 
 loop for each dm in pbSamplesDM
     pubSampleRepo -> pbAssembler: toDomain(dm)
@@ -43,7 +49,7 @@ loop for each dm in pbSamplesDM
     deactivate factory
     pbAssembler --> pubSampleRepo: pbSample
     deactivate pbAssembler
-    pubSampleRepo -> pubSampleRepo: filter(pbSample.isOwnedByUser(userId) && pbSample.isInUserLibrary())
+    pubSampleRepo -> pubSampleRepo: pbSample.isInUserLibrary()
     pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
 end
 

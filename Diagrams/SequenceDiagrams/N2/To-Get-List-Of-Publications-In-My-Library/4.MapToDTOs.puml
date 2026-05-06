@@ -3,7 +3,7 @@ hide footbox
 autonumber
 title Map to DTOs
 
-participant ":GetListOfPublicationsInLibraryController" as Ctrl
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
 participant ":US012PublicationSampleMapper" as Mapper
 participant "listOfPublicationsDTO\n:List<US012PublicationDetailsDTO>" as ListDTO
 participant "pubDTO\n:US012PublicationDetailsDTO" as pubDTO

@@ -10,7 +10,7 @@ class UI {
 ' ─────────────────────────────────────────
 '  Controller
 ' ─────────────────────────────────────────
-class GetListOfPublicationsInLibraryController {
+class ToGetListOfPublicationsInLibraryController {
     + getListOfPublicationsInLibrary(username: String): List<US012PublicationDetailsDTO>
 }
 
@@ -87,11 +87,11 @@ rectangle Database {
 '  Relationships
 ' ─────────────────────────────────────────
 
-UI "1" ..> "1" GetListOfPublicationsInLibraryController : uses
+UI "1" ..> "1" ToGetListOfPublicationsInLibraryController : uses
 
-GetListOfPublicationsInLibraryController "1" ..> "1" IUserRepository : uses
-GetListOfPublicationsInLibraryController "1" ..> "1" IPublicationSampleRepository : uses
-GetListOfPublicationsInLibraryController "1" ..> "1" US012PublicationSampleMapper : uses
+ToGetListOfPublicationsInLibraryController "1" ..> "1" IUserRepository : uses
+ToGetListOfPublicationsInLibraryController "1" ..> "1" IPublicationSampleRepository : uses
+ToGetListOfPublicationsInLibraryController "1" ..> "1" US012PublicationSampleMapper : uses
 
 IUserRepositoryJPA ..|> IUserRepository : implements
 IUserRepositoryJPA "1" ..> "0..1" UserDM : returns
