@@ -8,50 +8,72 @@ title To register a user in the system
 actor Administrator
 participant ":UI" as UI
 participant ":ToRegisterUserController" as Controller
-participant ":IUserRepository" as Repository
+participant ":UserService" as Service
 participant ":UserFactory" as Factory
-participant ":User" as User
+participant ":IUserRepository" as Repository
+participant ":UserRepositoryJPAImpl" as RepositoryJPA
+participant ":UserAssembler" as Assembler
+participant ":IUserRepositoryJPA" as RepositoryJPAInterface
+database "Database" as DB
 
 Administrator -> UI : I want to register a user in the system
 activate UI
 
-UI -> Controller : registerUser(username, contact, profile, role)
+UI -> Controller : registerUser(username, profile, userRole)
 activate Controller
 
-Controller -> Repository : exists(username)
-activate Repository
+Controller -> Service : createAndSave(username, profile, userRoles)
+activate Service
 
-loop for each user in _userList
-    Repository -> User : getUserName()
-    activate User
-    User --> Repository : userName
-    deactivate User
-    Repository -> Repository : userName.equals(username)
-end
-
-Repository --> Controller : false
-deactivate Repository
-
-Controller -> Repository : create(username, contact, profile, role)
-activate Repository
-
-Repository -> Factory : create(username, contact, profile, role)
+Service -> Factory : create(username, profile, userRoles)
 activate Factory
 
-Factory -->> User : create(username, contact, profile, role)
-activate User
-User --> Factory : user
-deactivate User
+Factory -> Factory : new User(username, profile, userRoles)
 
-Factory --> Repository : user
+Factory --> Service : user
 deactivate Factory
 
-Repository -> Repository : save(user)
+Service -> Repository : save(user)
+activate Repository
 
-Repository --> Controller : success
+Repository -> RepositoryJPA : save(user)
+activate RepositoryJPA
+
+RepositoryJPA -> Assembler : toDM(user)
+activate Assembler
+Assembler --> RepositoryJPA : userDM
+deactivate Assembler
+
+RepositoryJPA -> RepositoryJPAInterface : save(userDM)
+activate RepositoryJPAInterface
+
+RepositoryJPAInterface -> DB : INSERT
+activate DB
+DB --> RepositoryJPAInterface : savedUserDM
+deactivate DB
+
+RepositoryJPAInterface --> RepositoryJPA : savedUserDM
+deactivate RepositoryJPAInterface
+
+RepositoryJPA -> Assembler : toDomain(savedUserDM)
+activate Assembler
+Assembler -> Factory : create(userId, username, profile, userRoles)
+activate Factory
+Factory --> Assembler : user
+deactivate Factory
+Assembler --> RepositoryJPA : user
+deactivate Assembler
+
+RepositoryJPA --> Repository : user
+deactivate RepositoryJPA
+
+Repository --> Service : user
 deactivate Repository
 
-Controller --> UI : success
+Service --> Controller : user
+deactivate Service
+
+Controller --> UI : user
 deactivate Controller
 
 UI --> Administrator : New user has been registered in the system
