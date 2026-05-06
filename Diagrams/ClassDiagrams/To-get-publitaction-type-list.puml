@@ -6,24 +6,24 @@ class UI {
   +findAll()
 }
 
-class Controller {
+class ToGetPublicationTypeListController {
   +findAll(): List<US014PublicationTypeDTO>
 }
 
-UI "1" -.-> "1" Controller : uses
+UI "1" -.-> "1" ToGetPublicationTypeListController : uses
 
 ' ====== Repository Layer ======
 interface IPublicationTypeRepository {
   +findAll(): List<PublicationType>
 }
 
-class PublicationTypeRepositoryJPAImpl {
+interface IPublicationTypeRepositoryJPA {
   +findAll(): List<PublicationType>
 }
 
-IPublicationTypeRepository <|.. PublicationTypeRepositoryJPAImpl : implements
+IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA : implements
 
-Controller "1" -.-> "1" IPublicationTypeRepository : uses
+ToGetPublicationTypeListController "1" -.-> "1" IPublicationTypeRepository : uses
 
 
 ' ====== Domain ======
@@ -36,7 +36,7 @@ class PublicationType {
 
 ' ====== Assembler & Factory ======
 class PublicationTypeAssembler {
-  +toDomainList(pubTypesPersisted): List<PublicationType>
+  +toDomain(publicationTypeDms): List<PublicationType>
 }
 
 class PublicationTypeFactory {
@@ -58,7 +58,7 @@ class US014PublicationTypeMapper {
   +toDTOList(pubTypeList): List<US014PublicationTypeDTO>
 }
 
-Controller "1" -.-> "1" US014PublicationTypeMapper : uses
+ToGetPublicationTypeListController "1" -.-> "1" US014PublicationTypeMapper : uses
 US014PublicationTypeMapper "1" --> "*" PublicationType : reads
 US014PublicationTypeMapper "1" -.-> "1" US014PublicationTypeDTO : creates
 

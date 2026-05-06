@@ -6,7 +6,7 @@ title To Get All Publication Types List (with JPA)
 actor User
 
 participant ":UI" as UI
-participant ":Controller" as C
+participant ":ToGetPublication\nTypeListController" as C
 participant ":IPublicationType\nRepository" as PTR
 participant ":IPublicationType\nRepositoryJPA" as PTRJPA
 participant "DataBase" as EM
@@ -42,7 +42,7 @@ PTRJPA --> "publicationTypeDMs:\n List<PublicationTypeDM>" ** : <<create>>
 PTRJPA --> PTR : publicationTypeDms
 deactivate PTRJPA
 
-PTR -> Assembler : toDomainList(publicationTypeDms)
+PTR -> Assembler : toDomain(publicationTypeDms)
 activate Assembler
 
 Assembler --> "pubTypeList\nList<PublicationType>" ** : <<create>>
