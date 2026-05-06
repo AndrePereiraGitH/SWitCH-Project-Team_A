@@ -7,6 +7,7 @@ participant ":LibraryService" as service
 participant ":ILibraryRepository" as LibraryRepo
 participant ":ILibraryRepositoryJPA" as libraryJpa
 participant ":LibraryAssembler" as assembler
+participant "savedLibraryDM:LibraryDM" as savedLibraryDM
 participant "libraryDM:LibraryDM" as dm
 participant ":LibraryFactory" as factory
 participant "savedLib:Library" as persistedLib
@@ -47,6 +48,7 @@ activate libraryJpa
 libraryJpa -> db: INSERT INTO library (id, name, user_id) VALUES (?, ?, ?)
 activate db
 db --> libraryJpa: data
+libraryJpa -->> savedLibraryDM**: <<create>>
 deactivate db
 libraryJpa --> LibraryRepo: savedLibraryDM
 deactivate libraryJpa
@@ -59,6 +61,7 @@ factory -->> persistedLib **: <<create>>
 factory --> assembler: savedLib
 deactivate factory
 assembler --> LibraryRepo: savedLib
+
 deactivate assembler
 
 LibraryRepo --> service: savedLib

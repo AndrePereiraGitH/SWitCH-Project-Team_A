@@ -23,20 +23,19 @@ public interface IGenreRepository {
     Genre save(Genre genre);
 
     /**
-     * Returns the genre matching the given title.
+     * Returns the genre matching the given title, if it exists.
      *
      * @param title the title of the genre to search for
-     * @return the genre matching the given title; never {@code null}
-     * @throws IllegalArgumentException if {@code title} is {@code null}, blank, or not found
+     * @return an {@link Optional} containing the matching genre, or empty if not found
      */
-    Genre findByTitle(String title);
+    Optional<Genre> findByTitle(String title);
 
     /**
      * Returns the complete list of official genres available in the system.
      *
      * @return an unmodifiable list of all official genres; may be empty
      */
-    List<Genre> getAllGenres();
+    List<Genre> findAll();
 
     /**
      * Returns the genre matching the ID.
@@ -44,5 +43,5 @@ public interface IGenreRepository {
      * @param genreId the ID of the genre to search for
      * @return an {@link Optional} containing the matching genre, or empty if not found
      */
-    Optional<Genre> findGenreById(GenreId genreId);
+    Optional<Genre> findById(GenreId genreId);
 }

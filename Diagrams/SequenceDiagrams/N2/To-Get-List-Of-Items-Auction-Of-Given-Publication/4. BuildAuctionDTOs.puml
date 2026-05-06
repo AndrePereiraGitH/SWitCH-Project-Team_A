@@ -12,12 +12,12 @@ ref over Ctrl
   [[1.MainDiagram.puml Main Diagram]]
 end ref
 
-Ctrl -> mapper: toDTOs(listOfAuctionListingsOfGivenPublication)
+Ctrl -> mapper: toDTOs(listOfAuctionListings)
 activate mapper
 
 mapper -->> listOfAucListingDTO **: <<create>>
 
-loop for each listing in listOfAuctionListingsOfGivenPublication
+loop for each listing in listOfAuctionListings
     mapper -> auctionListingDTO **: toDTO(listing)
     mapper -> mapper: listOfAuctionListingsDTO.add(aucListingDTO)
 end

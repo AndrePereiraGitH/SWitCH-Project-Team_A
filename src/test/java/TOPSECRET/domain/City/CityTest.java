@@ -1,7 +1,7 @@
 package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.ValueObjects.CityID;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
  * </ul>
  * <p>
  * The {@code City} class represents a value defined by a combination of a
- * {@link CountryID} and a city name.
+ * {@link CountryId} and a city name.
  */
 class CityTest {
 
@@ -27,7 +27,7 @@ class CityTest {
     void shouldCreateCityWithValidData() {
 
         // Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         String cityName = "Porto";
 
         // Act
@@ -52,7 +52,7 @@ class CityTest {
     void shouldThrowExceptionWhenCityNameIsNull() {
 
         // Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
 
 
         // Act + Assert
@@ -64,7 +64,7 @@ class CityTest {
     void shouldThrowExceptionWhenCityNameIsEmpty() {
 
         // Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -75,7 +75,7 @@ class CityTest {
     void shouldReturnCityName() {
 
         // Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city = new City(countryID, "Florence");
 
         // Act
@@ -89,11 +89,11 @@ class CityTest {
     void shouldReturnCityCountry() {
 
         // Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city = new City(countryID, "Oslo");
 
         // Act
-        CountryID result = city.getCityCountryID();
+        CountryId result = city.getCityCountryID();
 
         // Assert
         assertEquals(countryID, result);
@@ -102,7 +102,7 @@ class CityTest {
     @Test
     void equals_shouldReturnTrueForEqualCities() {
 
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City cityA = new City(countryID, "Helsinki");
         City cityB = cityA;
 
@@ -112,7 +112,7 @@ class CityTest {
     @Test
     void equals_shouldReturnFalseWhenCityNamesDiffer() {
 
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City cityA = new City(countryID, "Lisbon");
         City cityB = new City(countryID, "Porto");
 
@@ -121,7 +121,7 @@ class CityTest {
 
     @Test
     void hashCode_shouldBeEqualForSameCity() {
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city = new City(countryID, "Portland");
 
         assertEquals(city.hashCode(), city.hashCode());
@@ -129,7 +129,7 @@ class CityTest {
 
     @Test
     void differentCitiesShouldHaveDifferentHashCodes() {
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city1 = new City(countryID, "Lisbon");
         City city2 = new City(countryID, "Porto");
 
@@ -140,7 +140,7 @@ class CityTest {
     void equalsShouldReturnFalseWhenComparingWithNull() {
 
         //Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city = new City(countryID, "Lisbon");
 
         //Assert
@@ -150,7 +150,7 @@ class CityTest {
     @Test
     void equalsShouldReturnFalseWhenComparingWithDifferentType() {
         //Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city = new City(countryID, "Lisbon");
 
         //Assert
@@ -160,7 +160,7 @@ class CityTest {
     @Test
     void shouldReturnValidToString() {
         //Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city = new City(countryID, "Porto");
         String result = city.toString();
 
@@ -174,7 +174,7 @@ class CityTest {
     void equals_shouldReturnTrueForDifferentInstancesWithSameID() {
         // Arrange
         CityID cityID = new CityID("C1");
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
         City city1 = new City(cityID, countryID, "Lisboa");
         City city2 = new City(cityID, countryID, "Porto");
 
@@ -185,7 +185,7 @@ class CityTest {
     @Test
     void sameAs_shouldReturnTrueWhenBusinessDataIsSame() {
         // Arrange
-        CountryID countryID = new CountryID("PT");
+        CountryId countryID = new CountryId("PT");
         City city1 = new City(countryID, "Porto");
         City city2 = new City(countryID, "Porto");
 
@@ -196,7 +196,7 @@ class CityTest {
     @Test
     void sameAs_shouldReturnFalseWhenBusinessDataDiffers() {
         // Arrange
-        CountryID countryID = new CountryID("PT");
+        CountryId countryID = new CountryId("PT");
         City city1 = new City(countryID, "Porto");
         City city2 = new City(countryID, "Lisboa");
 
@@ -207,7 +207,7 @@ class CityTest {
     @Test
     void sameAs_shouldReturnFalseForDifferentTypeOrNull() {
         // Arrange
-        CountryID countryID = new CountryID("PT");
+        CountryId countryID = new CountryId("PT");
         City city = new City(countryID, "Porto");
 
         // Assert
@@ -219,7 +219,7 @@ class CityTest {
     void shouldThrowExceptionWhenCityNameIsBlankInFullConstructor() {
         // Arrange
         CityID cityID = mock(CityID.class);
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
@@ -239,7 +239,7 @@ class CityTest {
     @Test
     void shouldThrowExceptionWhenCityIDIsNull() {
         // Arrange
-        CountryID countryID = mock(CountryID.class);
+        CountryId countryID = mock(CountryId.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,

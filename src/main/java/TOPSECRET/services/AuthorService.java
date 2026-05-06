@@ -3,7 +3,7 @@ package TOPSECRET.services;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +62,7 @@ public class AuthorService {
      * @throws IllegalArgumentException if any invalid argument is rejected by the domain factory or repository
      */
     @Transactional
-    public Author createAndSave(String name, CountryID countryID, LocalDate dateOfBirth, String biography) throws InstanceAlreadyExistsException {
+    public Author createAndSave(String name, CountryId countryID, LocalDate dateOfBirth, String biography) throws InstanceAlreadyExistsException {
 
          Author author= authorFactory.create(name, countryID, dateOfBirth, biography);
 

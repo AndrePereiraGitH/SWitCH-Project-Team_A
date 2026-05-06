@@ -4,7 +4,7 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryID;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 class AuthorRepositoryMemTest {
 
     private final AuthorFactory authorFactory = mock(AuthorFactory.class);
-    private final CountryID countryID = mock(CountryID.class);
+    private final CountryId countryID = mock(CountryId.class);
     private final String name = "João";
 
     // ========================================

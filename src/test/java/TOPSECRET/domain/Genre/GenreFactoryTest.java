@@ -84,16 +84,28 @@ class GenreFactoryTest {
 
     @Test
     void ensureReconstructThrowsExceptionWithNullGenreType() {
+        // Arrange
         GenreId genreId = mock(GenreId.class);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, null));
     }
 
     @Test
     void ensureReconstructThrowsExceptionWithBlankGenreType() {
+        // Arrange
         GenreId genreId = mock(GenreId.class);
-        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, null));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> genreFactory.create(genreId, "   "));
     }
 
+    @Test
+    void ensureReconstructThrowsExceptionWithNullGenreId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> genreFactory.create(null, "Ergodic literature"));
+    }
 
     @Test
     void ensureReconstructAndCreateReturnEqualGenres() {
