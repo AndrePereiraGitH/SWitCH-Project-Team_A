@@ -55,7 +55,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
 
 
     @Test
-    void getListOfPublicationsInLibraryDTO_shouldThrowExceptionWhenUserNameIsEmpty() {
+    void getListOfPublicationsInLibrary_shouldThrowExceptionWhenUserNameIsEmpty() {
         // Arrange
         String emptyUser = "";
 
@@ -64,11 +64,11 @@ class ToGetListOfPublicationsInLibraryControllerTest {
 
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibraryDTO(emptyUser));
+        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibrary(emptyUser));
     }
 
     @Test
-    void getListOfPublicationsInLibraryDTO_shouldThrowExceptionWhenUserNameIsNull() {
+    void getListOfPublicationsInLibrary_shouldThrowExceptionWhenUserNameIsNull() {
         // Arrange
         String emptyUser = "";
 
@@ -77,7 +77,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
 
 
         // Act & Assert
-        assertThrows(NullPointerException.class, () -> ctrl.getListOfPublicationsInLibraryDTO(null));
+        assertThrows(NullPointerException.class, () -> ctrl.getListOfPublicationsInLibrary(null));
     }
 
 
@@ -98,7 +98,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
                 new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
 
         // Act
-        List<US012PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<US012PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibrary(username);
 
         // Assert
         assertNotNull(result);
@@ -106,7 +106,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
     }
 
     @Test
-    void getListOfPublicationsInLibraryDTO_shouldThrownAnException_whenUserIsInvalidOrNotFound() {
+    void getListOfPublicationsInLibrary_shouldThrownAnException_whenUserIsInvalidOrNotFound() {
         // Arrange
         String username = "User1";
 
@@ -123,7 +123,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
 
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibraryDTO(username));
+        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibrary(username));
     }
 
 
@@ -150,7 +150,7 @@ class ToGetListOfPublicationsInLibraryControllerTest {
                 new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
 
         // Act
-        List<US012PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibraryDTO(username);
+        List<US012PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibrary(username);
 
         // Assert
         assertNotNull(result);
