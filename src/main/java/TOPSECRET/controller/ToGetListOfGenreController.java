@@ -37,7 +37,7 @@ public class ToGetListOfGenreController {
     }
 
     public List<US013GenreDTO> getGenresList() {
-        List<Genre> allGenreList = _genreRepository.getAllGenres();
+        List<Genre> allGenreList = _genreRepository.findAll();
         return _mapper.toDTO(allGenreList);
     }
 }

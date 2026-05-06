@@ -1,7 +1,6 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Genre.Genre;
-import TOPSECRET.domain.ValueObjects.GenreID;
 
 import java.util.ArrayList;
 import java.util.List;

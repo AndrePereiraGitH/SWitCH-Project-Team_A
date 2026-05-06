@@ -2,12 +2,11 @@ package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Factory responsible for creating AppraisalEntity instances.
@@ -32,7 +31,7 @@ public class AppraisalEntityFactory {
     public AppraisalEntity create(String name,
                                   Contact contact,
                                   List<PublicationTypeId> publicationTypes,
-                                  List<GenreID> genres)
+                                  List<GenreId> genres)
             {
 
             return new AppraisalEntity(
@@ -57,7 +56,7 @@ public class AppraisalEntityFactory {
                                   String name,
                                   Contact contact,
                                   List<PublicationTypeId> publicationTypes,
-                                  List<GenreID> genres)
+                                  List<GenreId> genres)
     {
 
         return new AppraisalEntity(

@@ -23,31 +23,41 @@ import static org.mockito.Mockito.*;
  *
  * <p>
  * This test class verifies the behavior of the JPA-based implementation
- * of {@link TOPSECRET.domain.Country.ICountryRepository}, ensuring correct
- * interaction between the repository, the JPA layer, and the assembler.
+ * of {@link TOPSECRET.domain.Country.ICountryRepository}, ensuring that
+ * persistence operations are correctly delegated to the underlying JPA repository
+ * and that proper transformations between domain objects and data models occur.
  * </p>
  *
  * <p>
- * The tests use Mockito to isolate the unit under test by mocking its dependencies:
+ * Mockito is used to isolate the System Under Test (SUT) by using doubles for all its
+ * dependencies, including:
  * <ul>
- *     <li>{@link TOPSECRET.persistence.repositoryjpa.jpa.ICountryRepositoryJPA} (JPA persistence layer)</li>
- *     <li>{@link TOPSECRET.persistence.repositoryjpa.assembler.CountryAssembler} (domain ↔ data model conversion)</li>
+ *     <li>{@link ICountryRepositoryJPA} — the persistence layer</li>
+ *     <li>{@link CountryAssembler} — responsible for converting between domain and data model</li>
+ *     <li>{@link CountryDM} — the JPA data model</li>
+ *     <li>{@link CountryId} — the domain identifier</li>
  * </ul>
  * </p>
  *
  * <p>
- * The {@code CountryRepositoryJPAImpl} is injected using {@link org.mockito.InjectMocks},
- * ensuring a clean and automatically wired System Under Test (SUT) per test execution.
+ * The {@link CountryRepositoryJPAImpl} instance is automatically created and
+ * injected with mocks using {@link org.mockito.InjectMocks}, ensuring a clean
+ * and consistent setup across all tests.
  * </p>
  *
  * <p>
  * The test suite covers:
  * <ul>
- *     <li>Saving a country and delegating persistence correctly</li>
- *     <li>Finding a country by ID and mapping it back to the domain</li>
- *     <li>Retrieving all countries with proper conversion</li>
- *     <li>Finding a country ID by country name using domain-level filtering</li>
+ *     <li>Saving a country and verifying correct delegation to the JPA repository</li>
+ *     <li>Finding a country by ID and mapping it back to the domain model</li>
+ *     <li>Retrieving all countries and converting them to domain objects</li>
+ *     <li>Finding a {@link CountryId} by country name using domain-level filtering logic</li>
  * </ul>
+ * </p>
+ *
+ * <p>
+ * Each test focuses on a single behavior and ensures that the repository
+ * correctly orchestrates interactions between layers while remaining fully isolated.
  * </p>
  */
 @ExtendWith(MockitoExtension.class)
@@ -59,19 +69,20 @@ class CountryRepositoryJPAImplTest {
     @Mock
     private CountryAssembler assembler;
 
+    @Mock
+    private CountryId countryId;
+
+    @Mock
+    private CountryDM countryDM;
+
     @InjectMocks
     private CountryRepositoryJPAImpl repository;
 
     private Country country;
-    private CountryDM countryDM;
-    private CountryId countryId;
 
     @BeforeEach
     void setup() {
-        countryId = new CountryId("PORTUGAL");
-
         country = mock(Country.class);
-        countryDM = new CountryDM(countryId, "Portugal");
     }
 
     // -------------------------------------------------------------------------
@@ -130,7 +141,7 @@ class CountryRepositoryJPAImplTest {
     }
 
     // -------------------------------------------------------------------------
-    // getAllCountries()
+    // findAll()
     // -------------------------------------------------------------------------
 
     @Test
@@ -168,7 +179,7 @@ class CountryRepositoryJPAImplTest {
     }
 
     // -------------------------------------------------------------------------
-    // findCountryIdByCountryName()
+    // findIdByName()
     // -------------------------------------------------------------------------
 
     @Test
@@ -218,8 +229,8 @@ class CountryRepositoryJPAImplTest {
         Country portugal = mock(Country.class);
         Country france = mock(Country.class);
 
-        CountryDM portugalDM = new CountryDM(countryId, "Portugal");
-        CountryDM franceDM = new CountryDM(new CountryId("FRANCE"), "France");
+        CountryDM portugalDM = mock(CountryDM.class);
+        CountryDM franceDM = mock(CountryDM.class);
 
         when(jpaRepository.findAll())
                 .thenReturn(List.of(portugalDM, franceDM));

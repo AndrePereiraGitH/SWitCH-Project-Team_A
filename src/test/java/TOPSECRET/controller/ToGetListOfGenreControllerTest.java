@@ -66,7 +66,7 @@ class ToGetListOfGenreControllerTest {
         List<Genre> allGenreList = List.of();
         List<US013GenreDTO> expected = List.of();
 
-        when(genreRepository.getAllGenres()).thenReturn(allGenreList);
+        when(genreRepository.findAll()).thenReturn(allGenreList);
 
         when(mapper.toDTO(allGenreList)).thenReturn(expected);
 
@@ -93,7 +93,7 @@ class ToGetListOfGenreControllerTest {
 
         List<US013GenreDTO> expected = List.of(dto1, dto2);
 
-        when(genreRepository.getAllGenres()).thenReturn(allGenreList);
+        when(genreRepository.findAll()).thenReturn(allGenreList);
         when(mapper.toDTO(allGenreList)).thenReturn(expected);
 
         ToGetListOfGenreController controller =
@@ -112,7 +112,7 @@ class ToGetListOfGenreControllerTest {
         // Arrange
         List<Genre> allGenreList = List.of();
 
-        when(genreRepository.getAllGenres()).thenReturn(allGenreList);
+        when(genreRepository.findAll()).thenReturn(allGenreList);
         when(mapper.toDTO(allGenreList)).thenReturn(List.of());
 
         ToGetListOfGenreController controller =
@@ -122,7 +122,7 @@ class ToGetListOfGenreControllerTest {
         controller.getGenresList();
 
         // Assert
-        verify(genreRepository, times(1)).getAllGenres();
+        verify(genreRepository, times(1)).findAll();
     }
 
     @Test
@@ -130,7 +130,7 @@ class ToGetListOfGenreControllerTest {
         // Arrange
         List<Genre> allGenreList = List.of();
 
-        when(genreRepository.getAllGenres()).thenReturn(allGenreList);
+        when(genreRepository.findAll()).thenReturn(allGenreList);
         when(mapper.toDTO(allGenreList)).thenReturn(List.of());
 
         ToGetListOfGenreController controller =

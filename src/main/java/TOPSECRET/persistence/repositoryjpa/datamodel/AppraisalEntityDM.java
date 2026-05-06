@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import jakarta.persistence.*;
 
@@ -67,7 +67,7 @@ public class AppraisalEntityDM {
     @CollectionTable(name = "appraisal_entity_genres", joinColumns = @JoinColumn(name = "appraisal_entity_id"))
     @AttributeOverride(name = "value", column = @Column(name = "genre_id"))
     @OrderColumn(name = "order_index")
-    private List<GenreID> genreIds;
+    private List<GenreId> genreIds;
 
     /**
      * Constructs an AppraisalEntityDM with all required fields.
@@ -82,7 +82,7 @@ public class AppraisalEntityDM {
                              String name,
                              Contact contact,
                              List<PublicationTypeId> publicationTypeIds,
-                             List<GenreID> genreIds
+                             List<GenreId> genreIds
 
     ) {
         if (id == null) {

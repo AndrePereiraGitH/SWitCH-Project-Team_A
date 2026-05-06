@@ -9,24 +9,18 @@ participant ":GetTheListOfItemsOnAuctionOfAGivenPublicationController" as Ctrl
 participant ":IBibliographicalDataRepository" as bdRepo
 participant ":IPublicationSampleRepository" as pubSampleRepo
 participant ":IListingRepository" as listingRepo
-participant "listOfAuctionListingsOfGivenPublication:List<Listing>" as aucListing
-participant ":Listing" as listing
 participant ":US024AucListingMapper" as mapper
-participant "listOfAuctionListingsDTO:List<US024AucListingDTO>" as listOfAucListingDTO
-participant "aucListingDTO:US024AucListingDTO" as auctionListingDTO
 
 ' --- Start ---
 Buyer -> UI : I want to get the list of items\n on auction of a given publication
 activate UI
 
-' =========================
-' Get All Publication Titles (reference)
-' =========================
 UI -> Ctrl : getAllPublicationTitles()
 activate Ctrl
 
-ref over Ctrl
-[[2.GetAllPublicationTitles.puml Get All Publication Titles]]
+ref over Ctrl, bdRepo
+  Get All Publication Titles
+  [[2.GetAllPublicationTitles.puml]]
 end ref
 
 Ctrl --> UI : listOfTitles
@@ -38,30 +32,30 @@ deactivate UI
 Buyer -> UI : title
 activate UI
 
-' =========================
-' Get Auction Listings By Title (reference)
-' =========================
 UI -> Ctrl : getAuctionListingsByTitle(title)
 activate Ctrl
 
-ref over Ctrl
-[[3.GetAuctionListingsByTitle.puml Get Auction Listings By Title]]
+ref over Ctrl, bdRepo
+  Find BibliographicalDataId By Title
+  [[3a.FindBibliographicalDataIdByTitle.puml]]
 end ref
 
-Ctrl --> UI : listOfAuctionOfGivenPublication
-deactivate Ctrl
-
-' =========================
-' Build Auction DTOs (reference)
-' =========================
-UI -> Ctrl : (internal mapping)
-activate Ctrl
-
-ref over Ctrl
-[[4.BuildAuctionDTOs.puml Build Auction DTOs]]
+ref over Ctrl, pubSampleRepo
+  Find PublicationSample Ids
+  [[3b.FindPublicationSampleIds.puml]]
 end ref
 
-Ctrl --> UI : listOfAuctionDTOs
+ref over Ctrl, listingRepo
+  Find Auction Listings
+  [[3c.FindAuctionListings.puml]]
+end ref
+
+ref over Ctrl, mapper
+  Build and return DTOs
+  [[4.BuildAuctionDTOs.puml]]
+end ref
+
+Ctrl --> UI : listOfAuctionListingsDTO
 deactivate Ctrl
 
 UI --> Buyer : Here is the list of auction listings\n for the selected publication.

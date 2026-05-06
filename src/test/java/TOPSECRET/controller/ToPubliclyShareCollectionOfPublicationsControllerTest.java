@@ -3,6 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import org.junit.jupiter.api.BeforeEach;

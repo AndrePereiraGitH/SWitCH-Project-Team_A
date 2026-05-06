@@ -5,7 +5,7 @@ import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.ValueObjects.AppraisalEntityId;
 import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +48,7 @@ public class AppraisalEntityService {
             String name,
             Contact contact,
             List<PublicationTypeId> publicationTypes,
-            List<GenreID> genres
+            List<GenreId> genres
     ) {
         AppraisalEntity entity = factory.create(
                 name,
@@ -68,7 +68,7 @@ public class AppraisalEntityService {
             String name,
             Contact contact,
             List<PublicationTypeId> publicationTypes,
-            List<GenreID> genres
+            List<GenreId> genres
 
     ) {
         if (id == null) {

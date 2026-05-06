@@ -4,7 +4,7 @@ package TOPSECRET.persistence.repositoryjpa;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CollectionOfPublicationsAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
@@ -100,7 +100,7 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      * {@inheritDoc}
      */
     @Override
-    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
         return List.of();
     }
 }
