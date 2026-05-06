@@ -3,7 +3,7 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ class CollectionOfPublicationsAssemblerTest {
     private CollectionOfPublicationsAssembler assembler;
 
     private CollectionOfPublicationsId collectionIdDouble;
-    private GenreID genreIdDouble;
+    private GenreId genreIdDouble;
     private UserId userIdDouble;
 
     @BeforeEach
@@ -44,7 +44,7 @@ class CollectionOfPublicationsAssemblerTest {
         assembler = new CollectionOfPublicationsAssembler(factoryDouble);
 
         collectionIdDouble = mock(CollectionOfPublicationsId.class);
-        genreIdDouble = mock(GenreID.class);
+        genreIdDouble = mock(GenreId.class);
         userIdDouble = mock(UserId.class);
     }
 

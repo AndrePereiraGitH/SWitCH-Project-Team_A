@@ -4,8 +4,8 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
@@ -170,7 +170,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
-        GenreID desiredGenres = mock(GenreID.class);
+        GenreId desiredGenres = mock(GenreId.class);
         sut = new CollectionOfPublicationsRepositoryMem();
 
         // Act
@@ -198,7 +198,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         // Arrange
         sut = new CollectionOfPublicationsRepositoryMem();
 
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
@@ -232,7 +232,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         // Arrange
         sut = new CollectionOfPublicationsRepositoryMem();
 
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsId existingId = mock(CollectionOfPublicationsId.class);
@@ -261,8 +261,8 @@ class CollectionOfPublicationsRepositoryMemTest {
         // Arrange
         sut = new CollectionOfPublicationsRepositoryMem();
 
-        GenreID genre = mock(GenreID.class);
-        GenreID otherGenre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
+        GenreId otherGenre = mock(GenreId.class);
 
         CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
         CollectionOfPublications privateCollection = mock(CollectionOfPublications.class);
@@ -378,7 +378,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         // Arrange
         sut = new CollectionOfPublicationsRepositoryMem();
 
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         UserId user = mock(UserId.class);
 
         CollectionOfPublications target =

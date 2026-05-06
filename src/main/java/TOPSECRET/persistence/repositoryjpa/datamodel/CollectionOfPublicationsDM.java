@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import jakarta.persistence.*;
 
@@ -52,7 +52,7 @@ public class CollectionOfPublicationsDM {
      */
     @Embedded
     @AttributeOverride(name = "genreID", column = @Column(name = "collection_genre_id"))
-    private GenreID genreID;
+    private GenreId genreId;
 
     /**
      * Identifier of the user who owns the collection.
@@ -84,7 +84,7 @@ public class CollectionOfPublicationsDM {
      * @throws NullPointerException if any mandatory argument is null
      */
     public CollectionOfPublicationsDM(CollectionOfPublicationsId collectionOfPub_id,
-                                      String collectionName, GenreID genreID,
+                                      String collectionName, GenreId genreID,
                                       UserId userId, boolean isPrivate) {
 
         this.id = Objects.requireNonNull(collectionOfPub_id,
@@ -93,7 +93,7 @@ public class CollectionOfPublicationsDM {
         this.collectionName = Objects.requireNonNull(collectionName,
                 "collectionName cannot be null");
 
-        this.genreID = Objects.requireNonNull(genreID,
+        this.genreId = Objects.requireNonNull(genreID,
                 "genreID cannot be null");
 
         this.userId = Objects.requireNonNull(userId,

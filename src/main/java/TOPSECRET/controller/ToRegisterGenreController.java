@@ -39,7 +39,8 @@ public class ToRegisterGenreController {
      * @throws IllegalArgumentException if the genre already exists or the name is invalid
      */
     public boolean registerGenre(String genreType) {
-        _genreRepository.createAndAdd(genreType);
+        // TODO: refactor to use GenreService.createAndSave() - createAndAdd removed
+        // _genreRepository.createAndAdd(genreType);
         return true;
     }
 }

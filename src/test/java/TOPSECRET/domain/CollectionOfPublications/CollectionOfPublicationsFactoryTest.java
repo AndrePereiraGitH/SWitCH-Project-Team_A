@@ -1,6 +1,6 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
@@ -30,14 +30,14 @@ class CollectionOfPublicationsFactoryTest {
 
     private CollectionOfPublicationsFactory factory;
 
-    private GenreID genreIdDouble;
+    private GenreId genreIdDouble;
     private UserId userIdDouble;
     private CollectionOfPublicationsId collectionIdDouble;
 
     @BeforeEach
     void setUp() {
 
-        genreIdDouble = mock(GenreID.class);
+        genreIdDouble = mock(GenreId.class);
         userIdDouble = mock(UserId.class);
         collectionIdDouble = mock(CollectionOfPublicationsId.class);
     }

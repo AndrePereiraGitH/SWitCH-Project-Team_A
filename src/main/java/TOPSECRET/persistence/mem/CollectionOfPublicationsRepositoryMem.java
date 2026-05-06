@@ -4,9 +4,8 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,7 +121,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * {@inheritDoc}
      */
     @Override
-    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId) {
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("Genre cannot be null");
         }

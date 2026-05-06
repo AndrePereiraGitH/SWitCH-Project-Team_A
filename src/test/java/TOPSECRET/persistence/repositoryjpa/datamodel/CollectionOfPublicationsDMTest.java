@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class CollectionOfPublicationsDMTest {
 
     private CollectionOfPublicationsId collectionId;
     private String collectionName;
-    private GenreID genreId;
+    private GenreId genreId;
     private UserId userId;
     private boolean isPrivate;
 
@@ -45,7 +45,7 @@ class CollectionOfPublicationsDMTest {
     void setup() {
         collectionId = mock(CollectionOfPublicationsId.class);
         collectionName = "Works by Tolkien";
-        genreId = mock(GenreID.class);
+        genreId = mock(GenreId.class);
         userId = mock(UserId.class);
         isPrivate = true;
     }
@@ -190,7 +190,7 @@ class CollectionOfPublicationsDMTest {
                 );
 
         // Act + Assert
-        assertEquals(genreId, result.getGenreID());
+        assertEquals(genreId, result.getGenreId());
     }
 
     @Test

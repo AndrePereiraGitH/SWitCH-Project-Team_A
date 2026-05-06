@@ -1,6 +1,6 @@
 package TOPSECRET.domain.Genre;
 
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,7 +123,7 @@ class GenreTest {
         Genre genre = new Genre("Fantasy");
 
         // Act
-        GenreID id = genre.id();
+        GenreId id = genre.id();
 
         // Assert
         assertNotNull(id);

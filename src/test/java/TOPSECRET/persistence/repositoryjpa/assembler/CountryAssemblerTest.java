@@ -36,19 +36,20 @@ class CountryAssemblerTest {
     @Mock
     private CountryFactory countryFactory;
 
+    @Mock
+    private CountryId countryId;
+
+    @Mock
+    private CountryDM countryDM;
+
     @InjectMocks
     private CountryAssembler assembler;
 
     private Country country;
-    private CountryDM countryDM;
-    private CountryId countryId;
 
     @BeforeEach
     void setup() {
-        countryId = new CountryId("PORTUGAL");
-
         country = mock(Country.class);
-        countryDM = new CountryDM(countryId, "Portugal");
     }
 
     // -------------------------------------------------------------------------
@@ -91,6 +92,9 @@ class CountryAssemblerTest {
     void dmToDomain_validCountry() {
 
         // Arrange
+        when(countryDM.getCountryID()).thenReturn(countryId);
+        when(countryDM.getCountryName()).thenReturn("Portugal");
+
         when(countryFactory.create(countryId, "Portugal"))
                 .thenReturn(country);
 

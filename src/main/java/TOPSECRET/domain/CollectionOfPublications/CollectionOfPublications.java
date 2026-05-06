@@ -3,7 +3,7 @@ package TOPSECRET.domain.CollectionOfPublications;
 import TOPSECRET.ddd.AggregateRoot;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
 
     private final CollectionOfPublicationsId _id;
     private String _collectionName;
-    private GenreID _collectionGenreId;
+    private GenreId _collectionGenreId;
     private final UserId _ownerId;
     private boolean _isPrivate;
 
@@ -39,7 +39,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      * @param userId            the userId who owns the collection
      * @throws IllegalArgumentException if name is null or blank, or if genre or userId is null
      */
-    protected CollectionOfPublications(String collectionName, GenreID collectionGenreId, UserId userId) {
+    protected CollectionOfPublications(String collectionName, GenreId collectionGenreId, UserId userId) {
 
         if (collectionName == null || collectionName.isBlank()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty.");
@@ -86,7 +86,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      */
     protected CollectionOfPublications(
             CollectionOfPublicationsId collectionOfPublicationsId, String collectionName,
-            GenreID collectionGenreId, UserId userId, boolean isPrivate) {
+            GenreId collectionGenreId, UserId userId, boolean isPrivate) {
 
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsId cannot be null.");
@@ -119,7 +119,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _collectionName;
     }
 
-    public GenreID getCollectionGenre() {
+    public GenreId getCollectionGenre() {
         return _collectionGenreId;
     }
 

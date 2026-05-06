@@ -2,8 +2,8 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
 import org.springframework.stereotype.Service;
+import TOPSECRET.domain.ValueObjects.GenreId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,7 +35,7 @@ public class BibliographicalDataFactory {
             List<AuthorId> authors,
             Locale originalLanguage,
             LocalDate publicationDate,
-            List<GenreID> genres, String chunksOfText){
+            List<GenreId> genres, String chunksOfText){
 
         return new BibliographicalData(
                 title,
@@ -67,7 +67,7 @@ public class BibliographicalDataFactory {
             List<AuthorId> authors,
             Locale originalLanguage,
             LocalDate publicationDate,
-            List<GenreID> genres,
+            List<GenreId> genres,
             String chunksOfText
     ) {
         return new BibliographicalData(

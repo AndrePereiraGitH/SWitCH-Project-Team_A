@@ -7,7 +7,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.US004GenreDTO;
 import TOPSECRET.dto.US004PublicationTypeDTO;

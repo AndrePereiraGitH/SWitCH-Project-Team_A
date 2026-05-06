@@ -3,11 +3,10 @@ package TOPSECRET.services;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 
 /**
  * Application service responsible for creating and persisting
@@ -78,7 +77,7 @@ public class CollectionOfPublicationsService {
      * @throws NullPointerException if any argument is null
      */
     public CollectionOfPublications createAndSave(
-            String collectionName, GenreID collectionGenreId, UserId userId) {
+            String collectionName, GenreId collectionGenreId, UserId userId) {
 
         CollectionOfPublications createdCollection = factory.create(
                 collectionName, collectionGenreId, userId);

@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,7 +58,7 @@ public class BibliographicalDataDM {
             joinColumns = @JoinColumn(name = "bibliographical_data_id")
     )
     @Column(name = "genre_id", nullable = false)
-    private List<GenreID> genreIds = new ArrayList<>();
+    private List<GenreId> genreIds = new ArrayList<>();
 
     
     /**
@@ -80,7 +80,7 @@ public class BibliographicalDataDM {
             LocalDate publicationDate,
             String chunksOfText,
             List<AuthorId> authorIds,
-            List<GenreID> genreIds
+            List<GenreId> genreIds
     ) {
         this.id = Objects.requireNonNull(id, "Id cannot be null");
         this.title = Objects.requireNonNull(title, "Title cannot be null");
