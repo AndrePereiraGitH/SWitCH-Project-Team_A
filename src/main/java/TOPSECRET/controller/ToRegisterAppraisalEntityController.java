@@ -28,7 +28,6 @@ public class ToRegisterAppraisalEntityController {
     private AppraisalEntityService _appraisalService;
     private IGenreRepository _genreRepository;
     private IPublicationTypeRepository _publicationTypeRepository;
-    private IAppraisalEntityRepository _appraisalEntityRepository;
 
     /**
      * Constructor.
@@ -58,7 +57,6 @@ public class ToRegisterAppraisalEntityController {
 
         this._genreRepository = genreRepository;
         this._publicationTypeRepository = publicationTypeRepository;
-        this._appraisalEntityRepository = appraisalEntityRepository;
         this._appraisalService = appraisalService;
     }
 
