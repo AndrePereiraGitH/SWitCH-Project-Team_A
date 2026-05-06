@@ -26,12 +26,12 @@ class US013GenreMapper {
 
 class US013GenreDTO {
     - genreId: String
-    - genreType: String
+    - genreName: String
 }
 
 ' ── Domain Layer ───────────────────────────────────────────
 interface IGenreRepository {
-    + getAllGenres(): List<Genre>
+    + findAll(): List<Genre>
 }
 
 class Genre {
@@ -54,17 +54,17 @@ class GenreFactory {
 class GenreRepositoryJPAImp {
     - genreRepositoryJPA: IGenreRepositoryJPA
     - assembler: GenreAssembler
-    + getAllGenres(): List<Genre>
+    + findAll(): List<Genre>
 }
 
 interface IGenreRepositoryJPA {
-    + getAllGenres(): List<GenreDM>
+    + findAll(): List<GenreDM>
 }
 
 class GenreAssembler {
     - factory: GenreFactory
     + toDM(genre: Genre): GenreDM
-    - toDomain(genreDM: GenreDM): Genre
+    + toDomain(genreDM: GenreDM): Genre
 }
 
 class GenreDM {
