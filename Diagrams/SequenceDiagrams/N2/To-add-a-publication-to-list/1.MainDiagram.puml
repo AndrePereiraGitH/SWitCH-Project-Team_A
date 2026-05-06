@@ -83,7 +83,7 @@ activate CollectionRepo
 
 loop for each publicationSampleId
 
-    CollectionRepo -> PublicationSampleRepo : findPublicationSampleById(publicationSampleId)
+    CollectionRepo -> PublicationSampleRepo : findById(publicationSampleId)
     activate PublicationSampleRepo
 
     PublicationSampleRepo -> PublicationSampleRepoJPA : findById(publicationSampleId)

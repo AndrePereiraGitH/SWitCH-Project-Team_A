@@ -10,9 +10,9 @@ left to right direction
 package "Application" {
 
 class "ToAddPublicationToA\nListOfMineController" as Controller {
-  +getUserCollections(userId:UserId)
-  +getPublicationsForCollection(userId:UserId, \ncollectionId:CollectionOfPublicationsId)
-  +addPublicationToCollection(collectionId:CollectionOfPublicationsId, \npublicationSampleIds:List<PublicationSampleId>)
+  +getUserCollections(userId:UserId) : List<US018CollectionOfPublicationsDTO>
+  +getPublicationsForCollection(userId:UserId, \ncollectionId:CollectionOfPublicationsId) : List<US018PublicationSampleDTO>
+  +addPublicationToCollection(collectionId:CollectionOfPublicationsId, \npublicationSampleIds:List<PublicationSampleId>) : boolean
 }
 
 }
@@ -38,7 +38,7 @@ class PublicationSample {
   -editionId: EditionID
   -condition: Condition
 
-  +addPublicationToCollection(collectionId:CollectionOfPublicationsId)
+  +addPublicationToCollection(collectionId:CollectionOfPublicationsId) : PublicationSample
 }
 
 class BibliographicalData {
@@ -52,30 +52,30 @@ class BibliographicalData {
 }
 
 class CollectionOfPublicationsFactory {
-  +create(collectionId:CollectionOfPublicationsId,\ncollectionName:String, genreId:GenreId,\nownerId:UserId, private:boolean)
+  +create(collectionId:CollectionOfPublicationsId,\ncollectionName:String, genreId:GenreId,\nownerId:UserId, private:boolean) : CollectionOfPublications
 }
 
 class PublicationSampleFactory {
-  +create(pubSampleId:PublicationSampleId,\nbibliographicalDataId:BibliographicalDataID,\nuserId:UserId, publicationStatus:PublicationStatus,\neditionId:EditionID, condition:Condition)
+  +create(pubSampleId:PublicationSampleId,\nbibliographicalDataId:BibliographicalDataID,\nuserId:UserId, publicationStatus:PublicationStatus,\neditionId:EditionID, condition:Condition) : PublicationSample
 }
 
 class BibliographicalDataFactory {
-  +create(id: BibliographicalDataID, title: String, authors: List<AuthorId>, originalLanguage Locale, \npublicationDate LocalDate, genres List<GenreId>, chunksOfText String)
+  +create(id: BibliographicalDataID, title: String, authors: List<AuthorId>, originalLanguage Locale, \npublicationDate LocalDate, genres List<GenreId>, chunksOfText String) : BibliographicalData
 }
 
 interface ICollectionOfPublicationsRepository {
-  +getUserCollections(userId:UserId)
-  +addPublicationToCollection(collectionId:CollectionOfPublicationsId,\npublicationSampleIds:List<PublicationSampleId>)
+  +getUserCollections(userId:UserId) : List<CollectionOfPublications>
 }
 
 interface IPublicationSampleRepository {
-  +findAvailableForCollection(userId:UserId,\ncollectionId:CollectionOfPublicationsId)
-  +findPublicationSampleById(publicationSampleId:PublicationSampleId)
-  +save(publicationSample:PublicationSample)
+  +assignPublicationToCollection(collectionId:CollectionOfPublicationsId,\npublicationSampleIds:List<PublicationSampleId>) : boolean
+  +findAvailableForCollection(userId:UserId,\ncollectionId:CollectionOfPublicationsId) : List<PublicationSample>
+  +findById(publicationSampleId:PublicationSampleId) : Optional<PublicationSample>
+  +update(publicationSample:PublicationSample) : PublicationSample
 }
 
 interface IBibliographicalDataRepository {
-  +findBibliographicalDataById(id:BibliographicalDataID)
+  +findById(id:BibliographicalDataID) : Optional<BibliographicalData>
 }
 
 CollectionOfPublications "1" --> "*" PublicationSample : contains >
@@ -107,13 +107,13 @@ class PublicationSampleDTO {
 }
 
 class US018CollectionOfPublicationsMapper {
-  +toDTO(collection:CollectionOfPublications)
-  +toDTOs(collections:List<CollectionOfPublications>)
+  +toDTO(collection:CollectionOfPublications) : US018CollectionOfPublicationsDTO
+  +toDTOs(collections:List<CollectionOfPublications>) : List<US018CollectionOfPublicationsDTO>
 }
 
 class PublicationSampleMapper {
-  +toDTO(publicationSample:PublicationSample)
-  +toDTOs(publicationSamples:List<PublicationSample>)
+  +toDTO(publicationSample:PublicationSample) : US018PublicationSampleDTO
+  +toDTOs(publicationSamples:List<PublicationSample>) : List<US018PublicationSampleDTO>
 }
 
 US018CollectionOfPublicationsMapper ..> CollectionOfPublications : converts >
@@ -136,18 +136,18 @@ class PublicationSampleDM
 class BibliographicalDataDM
 
 class CollectionOfPublicationsAssembler {
-  +toDomain(dm:CollectionOfPublicationsDM)
-  +toDomainList(dmList:List<CollectionOfPublicationsDM>)
+  +toDomain(dm:CollectionOfPublicationsDM) : CollectionOfPublications
+  +toDomainList(dmList:List<CollectionOfPublicationsDM>) : List<CollectionOfPublications>
 }
 
 class PublicationSampleAssembler {
-  +toDM(publicationSample:PublicationSample)
-  +toDomain(dm:PublicationSampleDM)
-  +toDomainList(dmList:List<PublicationSampleDM>)
+  +toDM(publicationSample:PublicationSample) : PublicationSampleDM
+  +toDomain(dm:PublicationSampleDM) : PublicationSample
+  +toDomainList(dmList:List<PublicationSampleDM>) : List<PublicationSample>
 }
 
 class BibliographicalDataAssembler {
-  +toDomain(dm:BibliographicalDataDM)
+  +toDomain(dm:BibliographicalDataDM) : BibliographicalData
 }
 
 interface ICollectionOfPublicationsRepositoryJPA
