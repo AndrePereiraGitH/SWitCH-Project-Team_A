@@ -125,6 +125,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
 
     @Test
     void constructor_ShouldThrowExceptionWhenListingServiceIsNull() {
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new ToPutForSaleAPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
                         null, mapperDouble));
@@ -132,6 +133,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
 
     @Test
     void constructor_ShouldThrowExceptionWhenMapperIsNull() {
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new ToPutForSaleAPublicationInDirectSaleController(libraryRepoDouble, pubSampleRepoDouble,
                         listingServiceDouble, null));

@@ -222,7 +222,6 @@ class PublicationSampleRepositoryJpaImplTest {
 
     @Test
     void findById_shouldThrowException_whenIdIsNull() {
-        // Arrange
 
         // Act + Assert
         assertThrows(NullPointerException.class, () -> repo.findById(null));
