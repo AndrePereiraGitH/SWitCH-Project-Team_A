@@ -46,14 +46,9 @@ public class US022AuctionMapper {
             throw new IllegalArgumentException("auctions list cannot be null");
         }
 
-        List<US022AuctionDTO> result = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-
-            result.add(toDTO(auction));
-        }
-
-        return result;
+        return auctions.stream()
+                .map(US022AuctionMapper::toDTO)
+                .toList();
     }
 }
 

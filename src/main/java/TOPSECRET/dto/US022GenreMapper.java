@@ -4,6 +4,8 @@ import TOPSECRET.domain.Genre.Genre;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Mapper responsible for converting {@link Genre} domain objects into {@link US022GenreDTO}.
  */
@@ -28,12 +30,10 @@ public class US022GenreMapper {
      */
     public static List<US022GenreDTO> toDTOList(List<Genre> genres) {
 
-        List<US022GenreDTO> result = new ArrayList<>();
+        Objects.requireNonNull(genres, "genres cannot be null");
 
-        for (Genre genre : genres) {
-            result.add(toDTO(genre));
-        }
-
-        return result;
+        return genres.stream()
+                .map(US022GenreMapper::toDTO)
+                .toList();
     }
 }
