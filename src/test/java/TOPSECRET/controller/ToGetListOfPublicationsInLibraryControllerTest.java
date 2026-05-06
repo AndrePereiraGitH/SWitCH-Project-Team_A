@@ -69,14 +69,12 @@ class ToGetListOfPublicationsInLibraryControllerTest {
 
     @Test
     void getListOfPublicationsInLibrary_shouldThrowExceptionWhenUserNameIsNull() {
-        // Arrange
-        String emptyUser = "";
-
+        // Act
         ToGetListOfPublicationsInLibraryController ctrl =
                 new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
 
 
-        // Act & Assert
+        // Assert
         assertThrows(NullPointerException.class, () -> ctrl.getListOfPublicationsInLibrary(null));
     }
 
