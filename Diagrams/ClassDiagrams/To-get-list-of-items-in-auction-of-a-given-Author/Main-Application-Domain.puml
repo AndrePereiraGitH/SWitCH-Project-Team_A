@@ -126,35 +126,37 @@ class US026AuctionDTO <<DTO>>
 class Author <<Aggregate Root>>
 class Auction <<Aggregate Root>>
 
-
-UI --> ToGetListOfItemsInAuctionOfAGivenAuthorController
-
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> IAuthorRepository
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> IBiblioDataRepository
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> IPublicationSampleRepository
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> IListingRepository
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> IAuctionRepository
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> US026AuthorMapper
-ToGetListOfItemsInAuctionOfAGivenAuthorController --> US026AuctionMapper
-
-IAuthorRepository --> AuthorAssembler
-IAuthorRepository --> Author
-
-IAuctionRepository --> AuctionAssembler
-IAuctionRepository --> Auction
-
-AuthorAssembler --> AuthorFactory
-AuthorFactory --> Author
-
-AuctionAssembler --> AuctionFactory
-AuctionFactory --> Auction
-
-US026AuthorMapper --> Author
-US026AuthorMapper --> US026AuthorDTO
-
-US026AuctionMapper --> Auction
-US026AuctionMapper --> US026AuctionDTO
+note as PersistenceLink
+[[Persistence.puml Open Persistence Diagram]]
+end note
 
 
+UI "1" --> "1" ToGetListOfItemsInAuctionOfAGivenAuthorController : requests
+
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" IAuthorRepository : uses
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" IBiblioDataRepository : uses
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" IPublicationSampleRepository : uses
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" IListingRepository : uses
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" IAuctionRepository : uses
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" US026AuthorMapper : uses
+ToGetListOfItemsInAuctionOfAGivenAuthorController "1" ..> "1" US026AuctionMapper : uses
+
+IAuthorRepository "1" --> "1" AuthorAssembler : delegates to
+IAuthorRepository "1" --> "*" Author : retrieves
+
+IAuctionRepository "1" --> "1" AuctionAssembler : delegates to
+IAuctionRepository "1" --> "*" Auction : retrieves
+
+AuthorAssembler "1" --> "1" AuthorFactory : uses
+AuthorFactory "1" --> "*" Author : creates
+
+AuctionAssembler "1" --> "1" AuctionFactory : uses
+AuctionFactory "1" --> "*" Auction : creates
+
+US026AuthorMapper "1" --> "*" Author : reads
+US026AuthorMapper "1" --> "*" US026AuthorDTO : produces
+
+US026AuctionMapper "1" --> "*" Auction : reads
+US026AuctionMapper "1" --> "*" US026AuctionDTO : produces
 
 @enduml
