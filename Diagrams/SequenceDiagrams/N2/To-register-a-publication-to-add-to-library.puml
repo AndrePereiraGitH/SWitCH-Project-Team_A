@@ -1,47 +1,88 @@
 @startuml
 hide footbox
 autonumber
-title US010 - Register a new publication in MiteLovers
+title Register a New Publication Sample
 
 actor User
 participant ":UI" as UI
-participant ":ToRegisterNewPublicationCtrl" as Ctrl
-participant ":PublicationSampleRepository" as SystemRepo
+participant ":ToRegisterNewPublicationCtrl" as Controller
+participant ":PublicationSampleService" as Service
 participant ":PublicationSampleFactory" as Factory
+participant ":IPublicationSampleRepository" as Repo
+participant ":PublicationSampleAssembler" as Assembler
+participant ":IPublicationSampleRepositoryJPA" as JPA
 
-User -> UI : I want to register a publication
+participant "pbSample: PublicationSample" as pbSample
+participant "pbSampleDM: PublicationSampleDM" as pbSampleDM
+
+database "DB" as DB
+
+User -> UI : Request to register a publication sample
 activate UI
 
-UI --> User : Provide publication details
-deactivate UI
+UI -> Controller : register(bibliographicalDataId, userId,\npublicationStatus, editionId, condition)
+activate Controller
 
-User -> UI : Here are the details \n(BibliographicalDataID, PublicationStatus, EditionID, Condition)
-activate UI
+Controller -> Service : createAndSave(bibliographicalDataId, userId,\npublicationStatus, editionId, condition)
+activate Service
 
-UI -> Ctrl : registerNewPublication(bdId, userId, status, editionId, condition)
-activate Ctrl
-
-Ctrl -> SystemRepo : createAndAdd(bdId, userId, status, editionId, condition)
-activate SystemRepo
-
-SystemRepo -> Factory : create(bdId, userId, status, editionId, condition)
+' =========================
+' Factory creation
+' =========================
+Service -> Factory : create(bibliographicalDataId, userId,\npublicationStatus, editionId, condition)
 activate Factory
-
-create "p1 : PublicationSample" as pub1
-Factory --> pub1 : «create»
-
-Factory --> SystemRepo : pub1
+Factory -->> pbSample** : <<create>>
+Factory --> Service : pbSample
 deactivate Factory
 
-SystemRepo -> SystemRepo : save(pub1)
+' =========================
+' Save flow
+' =========================
+Service -> Repo : save(pbSample)
+activate Repo
 
-SystemRepo --> Ctrl : pub1
-deactivate SystemRepo
+Repo -> Assembler : toDM(pbSample)
+activate Assembler
+Assembler -->> pbSampleDM** : <<create>>
+Assembler --> Repo : pbSampleDM
+deactivate Assembler
 
-Ctrl --> UI : true
-deactivate Ctrl
+Repo -> JPA : save(pbSampleDM)
+activate JPA
 
-UI --> User : Publication registered successfully
+JPA -> DB : INSERT
+activate DB
+DB --> JPA : data
+deactivate DB
+
+JPA --> pbSampleDM : persisted data
+deactivate JPA
+
+' ==============
+' Reconstruction
+' ==============
+Repo -> Assembler : toDomain(pbSampleDM)
+activate Assembler
+
+Assembler --> Factory : create(pubSampleId, bibliographicalDataId,\nuserId, publicationStatus, editionId, condition)
+activate Factory
+Factory -->> pbSample** : <<create>>
+Factory --> Assembler : pbSample
+deactivate Factory
+
+Assembler --> Repo : pbSample
+deactivate Assembler
+
+Repo --> Service : pbSample
+deactivate Repo
+
+Service --> Controller : pbSample
+deactivate Service
+
+Controller --> UI : success
+deactivate Controller
+
+UI --> User : Success
 deactivate UI
 
 @enduml
