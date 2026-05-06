@@ -48,13 +48,13 @@ class ToRegisterCountryControllerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void registerNewCountry_validInput_delegatesToServiceAndReturnsResult() {
+    void register_validInput_delegatesToServiceAndReturnsResult() {
 
         // Arrange
         when(countryService.createAndSave("Portugal")).thenReturn(country);
 
         // Act
-        Country result = controller.registerNewCountry("Portugal");
+        Country result = controller.register("Portugal");
 
         // Assert
         assertNotNull(result);
@@ -62,7 +62,7 @@ class ToRegisterCountryControllerTest {
     }
 
     @Test
-    void registerNewCountry_serviceThrowsInvalidCountry_propagatesException() {
+    void register_propagatesException() {
 
         // Arrange
         when(countryService.createAndSave("Mordor"))
@@ -71,14 +71,14 @@ class ToRegisterCountryControllerTest {
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> controller.registerNewCountry("Mordor")
+                () -> controller.register("Mordor")
         );
 
         assertEquals("Country name is not valid", exception.getMessage());
     }
 
     @Test
-    void registerNewCountry_serviceThrowsDuplicateCountry_propagatesException() {
+    void register_propagatesException() {
 
         // Arrange
         when(countryService.createAndSave("Portugal"))
@@ -87,14 +87,14 @@ class ToRegisterCountryControllerTest {
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> controller.registerNewCountry("Portugal")
+                () -> controller.register("Portugal")
         );
 
         assertEquals("Country is already registered", exception.getMessage());
     }
 
     @Test
-    void registerNewCountry_nullInput_delegatesToService() {
+    void register_nullInput_delegatesToService() {
 
         // Arrange
         when(countryService.createAndSave(null))
@@ -102,11 +102,11 @@ class ToRegisterCountryControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerNewCountry(null));
+                () -> controller.register(null));
     }
 
     @Test
-    void registerNewCountry_blankInput_delegatesToService() {
+    void register_blankInput_delegatesToService() {
 
         // Arrange
         String input = "   ";
@@ -116,6 +116,6 @@ class ToRegisterCountryControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerNewCountry(input));
+                () -> controller.register(input));
     }
 }

@@ -45,7 +45,7 @@ public class ToRegisterCountryController {
      * @param countryName the name of the country
      * @return the created {@link Country}
      */
-    public Country registerNewCountry(String countryName) {
+    public Country register(String countryName) {
         return countryService.createAndSave(countryName);
     }
 }
