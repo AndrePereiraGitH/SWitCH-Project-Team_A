@@ -107,7 +107,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._id = collectionOfPublicationsId;
         this._collectionName = collectionName;
         this._collectionGenreId = collectionGenreId;
-        this._isPrivate = true;
+        this._isPrivate = isPrivate;
         this._ownerId = userId;
     }
 
