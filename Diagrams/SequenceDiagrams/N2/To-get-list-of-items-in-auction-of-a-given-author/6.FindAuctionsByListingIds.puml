@@ -1,0 +1,81 @@
+@startuml
+hide footbox
+autonumber
+title Ref - findByListingIds(listingIdList)
+
+participant ":Controller" as Ctrl
+participant ":IAuctionRepository" as auctionRepository
+participant ":IAuctionRepositoryJPA" as auctionRepoJPA
+participant "listingIdList\n:List<ListingId>" as listingIdList
+participant "auctionsDMList\n:List<AuctionDM>" as auctionsDMList
+participant ":AuctionAssembler" as auctionAssembler
+participant ":AuctionFactory" as auctionFactory
+participant "authorAuctionsList\n:List<Auction>" as authorAuctionsList
+participant "auctionDM\n:AuctionDM" as auctionDM
+participant "authorAuction\n:Auction" as authorAuction
+database "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> auctionRepository : findByListingIds(listingIdList)
+activate auctionRepository
+
+auctionRepository -> auctionRepoJPA : findByListingIds(listingIdList)
+activate auctionRepoJPA
+
+auctionRepoJPA -> db : query auction by listingId
+activate db
+db --> auctionRepoJPA : auction data
+deactivate db
+
+auctionRepoJPA -->> auctionsDMList ** : <<create>>
+auctionRepoJPA --> auctionRepository : auctionsDMList
+deactivate auctionRepoJPA
+
+auctionRepository -->> authorAuctionsList ** : <<create>>
+
+loop for each auctionDM
+    auctionRepository -> auctionAssembler : toDomain(auctionDM)
+    activate auctionAssembler
+
+    auctionAssembler -> auctionDM : id()
+    auctionDM --> auctionAssembler : id
+
+    auctionAssembler -> auctionDM : getStartDate()
+    auctionDM --> auctionAssembler : startDate
+
+    auctionAssembler -> auctionDM : getFinalDate()
+    auctionDM --> auctionAssembler : finalDate
+
+    auctionAssembler -> auctionDM : getInitialPrice()
+    auctionDM --> auctionAssembler : initialPrice
+
+    auctionAssembler -> auctionDM : getBuyout()
+    auctionDM --> auctionAssembler : buyoutPrice
+
+    auctionAssembler -> auctionFactory : create(id, startDate, finalDate,\ninitialPrice, buyoutPrice)
+    activate auctionFactory
+    auctionFactory -->> authorAuction ** : <<create>>
+    auctionFactory --> auctionAssembler : authorAuction
+    deactivate auctionFactory
+
+    auctionAssembler --> auctionRepository : authorAuction
+    deactivate auctionAssembler
+
+    auctionRepository -> auctionRepository : authorAuctionsList.add(authorAuction)
+end
+
+auctionRepository --> Ctrl : authorAuctionsList
+deactivate auctionRepository
+
+@enduml

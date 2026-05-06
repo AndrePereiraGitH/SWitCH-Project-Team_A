@@ -1,0 +1,42 @@
+@startuml
+hide footbox
+autonumber
+title Find BibliographicalData IDs By AuthorId
+
+participant ":Controller" as Ctrl
+participant ":IBiblioDataRepository" as bdRepo
+participant ":IBiblioDataRepositoryJPA" as bdRepoJPA
+participant "bdIdList\n:List<BibliographicalDataId>" as bdIdList
+database "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> bdRepo : findIdsByAuthorId(selectedAuthorID)
+activate bdRepo
+
+bdRepo -> bdRepoJPA : findIdsByAuthorId(selectedAuthorID)
+activate bdRepoJPA
+
+bdRepoJPA -> db : query bibliographical_data_id by author_id
+activate db
+db --> bdRepoJPA : bibliographicalDataId values
+deactivate db
+
+bdRepoJPA -->> bdIdList ** : <<create>>
+bdRepoJPA --> bdRepo : bdIdList
+deactivate bdRepoJPA
+
+bdRepo --> Ctrl : bdIdList
+deactivate bdRepo
+
+@enduml
