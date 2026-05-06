@@ -44,7 +44,7 @@ public class CityRepositoryMem implements ICityRepository {
      */
     @Override
     public City save(City city) {
-        if (existsByCountryIDAndCityName(
+        if (existsByCountryIdAndCityName(
                 city.getCityCountryID(),
                 city.getCityName())) {
 
@@ -59,7 +59,7 @@ public class CityRepositoryMem implements ICityRepository {
      * {@inheritDoc}
      */
     @Override
-    public boolean existsByCountryIDAndCityName(CountryId countryId, String cityName) {
+    public boolean existsByCountryIdAndCityName(CountryId countryId, String cityName) {
         for (City existing : _cities) {
             if (existing.getCityCountryID().equals(countryId) &&
                     existing.getCityName().equals(cityName)) {

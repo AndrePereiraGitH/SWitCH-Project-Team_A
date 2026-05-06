@@ -42,7 +42,7 @@ public class CityRepositoryJPAImpl implements ICityRepository {
      * {@inheritDoc}
      */
     @Override
-    public boolean existsByCountryIDAndCityName(CountryId countryId, String cityName) {
+    public boolean existsByCountryIdAndCityName(CountryId countryId, String cityName) {
         return jpaRepository.existsByCountryIDAndCityName(countryId, cityName);
     }
 }

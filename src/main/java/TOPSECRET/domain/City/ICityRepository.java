@@ -20,5 +20,5 @@ public interface ICityRepository {
      * @param cityName  the name of the city
      * @return {@code true} if a matching city exists, {@code false} otherwise
      */
-    boolean existsByCountryIDAndCityName(CountryId countryID, String cityName);
+    boolean existsByCountryIdAndCityName(CountryId countryID, String cityName);
 }

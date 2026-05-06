@@ -72,7 +72,7 @@ class CityRepositoryJPAImplTest {
                 .thenReturn(true);
 
         //Act
-        boolean result = repository.existsByCountryIDAndCityName(countryId, "Lisbon");
+        boolean result = repository.existsByCountryIdAndCityName(countryId, "Lisbon");
 
         //Assert
         assertTrue(result);
@@ -87,7 +87,7 @@ class CityRepositoryJPAImplTest {
                 .thenReturn(false);
 
         //Act
-        boolean result = repository.existsByCountryIDAndCityName(countryId, "Lisbon");
+        boolean result = repository.existsByCountryIdAndCityName(countryId, "Lisbon");
 
         //Assert
         assertFalse(result);

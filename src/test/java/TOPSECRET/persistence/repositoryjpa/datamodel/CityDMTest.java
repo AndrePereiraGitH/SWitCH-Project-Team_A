@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
-import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class CityDMTest {
     @Test
     void shouldCreateCityDMWithValidData() {
         //Arrange
-        CityID cityID = new CityID("1");
+        CityId cityID = new CityId("1");
         CountryId countryID = new CountryId("PT");
 
         CityDM cityDM = new CityDM(cityID, countryID, "Lisbon");
@@ -49,7 +49,7 @@ class CityDMTest {
     @Test
     void shouldThrowWhenCountryIdIsNull() {
         //Arrange
-        CityID cityID = new CityID("1");
+        CityId cityID = new CityId("1");
 
         //Act + assert
         assertThrows(NullPointerException.class,
@@ -59,7 +59,7 @@ class CityDMTest {
     @Test
     void shouldThrowWhenCityNameIsNull() {
         //Arrange
-        CityID cityID = new CityID("1");
+        CityId cityID = new CityId("1");
         CountryId countryID = new CountryId("PT");
 
         //Act + assert

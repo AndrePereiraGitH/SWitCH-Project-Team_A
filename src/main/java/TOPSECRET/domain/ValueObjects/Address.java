@@ -22,7 +22,7 @@ public class Address implements ValueObject {
     private String street;
     private String number;
     private String zipCode;
-    private CityID cityID;
+    private CityId cityID;
 
     /**
      * Constructs a new {@code Address} with the given fields.
@@ -34,7 +34,7 @@ public class Address implements ValueObject {
      * @throws IllegalArgumentException if any field is {@code null}, or if street,
      *                                  number, or zip code are blank
      */
-    public Address(String street, String number, String zipCode, CityID cityID) {
+    public Address(String street, String number, String zipCode, CityId cityID) {
 
         if (street == null || street.isBlank() || number == null || number.isBlank() || zipCode == null
                 || zipCode.isBlank() || cityID == null) {

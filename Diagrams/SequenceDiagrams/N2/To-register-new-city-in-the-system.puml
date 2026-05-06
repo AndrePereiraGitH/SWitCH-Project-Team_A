@@ -10,48 +10,91 @@ participant ":ToRegisterNewCityController" as Controller
 participant ":CityService" as Service
 participant ":ICountryRepository" as CountryRepository
 participant ":ICityRepository" as CityRepository
-participant ":CityFactory" as Factory
 participant ":CityAssembler" as Assembler
+participant ":CityFactory" as Factory
 participant ":ICityRepositoryJPA" as JPA
+participant "city: City" as city
+participant "cityDM: CityDM" as cityDM
 database "Database" as DB
 
-Administrator -> UI : request
+Administrator -> UI : I want to register \n a new city
+activate UI
+UI --> Administrator : Please provide the country \n and the city name
+deactivate UI
+
+Administrator -> UI: Here's the country and city name
+activate UI
 UI -> Controller : register(countryName, cityName)
 
-Controller -> Service : createAndSave(countryName, cityName)
 
-Service -> CountryRepository : findCountryIdByCountryName(countryName)
+activate Controller
+Controller -> Service : createAndSave(countryName, cityName)
+activate Service
+
+Service -> CountryRepository : findIdByName(countryName)
+activate CountryRepository
 CountryRepository --> Service : countryId
 
+deactivate CountryRepository
+
+
 Service -> CityRepository : existsByCountryIDAndCityName(countryId, cityName)
+activate CityRepository
 CityRepository --> Service : false
+deactivate CityRepository
+
 
 Service -> Factory : create(countryId, cityName)
+activate Factory
 Factory -->> city** : <<create>>
 Factory --> Service : city
+deactivate Factory
 
 Service -> CityRepository : save(city)
 
+activate CityRepository
+
 CityRepository -> Assembler : toDM(city)
+activate Assembler
+
 Assembler -->> cityDM** : <<create>>
 Assembler --> CityRepository : cityDM
+deactivate Assembler
 
 CityRepository -> JPA : save(cityDM)
+activate JPA
+
 JPA -> DB : INSERT
-DB --> JPA : persisted
+activate DB
+DB --> JPA : data
+deactivate DB
+
+JPA -->> cityDM** : <<create>>
 JPA --> CityRepository : cityDM
+deactivate JPA
 
 CityRepository -> Assembler : toDomain(cityDM)
+activate Assembler
 
-Assembler -> Factory : create(cityID, countryID, cityName)
+Assembler -> Factory : create(cityId, countryId, cityName)
+activate Factory
 Factory -->> city** : <<create>>
 Factory --> Assembler : city
+deactivate Factory
 
 Assembler --> CityRepository : city
+deactivate Assembler
 
 CityRepository --> Service : city
+deactivate CityRepository
+
 Service --> Controller : city
-Controller --> UI : city
+deactivate Service
+
+Controller -> UI : success
+deactivate Controller
 UI --> Administrator : success
+deactivate UI
+deactivate Controller
 
 @enduml

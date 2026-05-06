@@ -17,36 +17,36 @@ class CityService {
 }
 
 class City {
-  -cityID: CityID
-  -countryID: CountryID
+  -cityId: CityId
+  -countryId: CountryId
   -cityName: String
 }
 
-class CountryID
-class CityID
+class CountryId
+class CityId
 
 class CityFactory {
-  +create(countryID: CountryID, cityName: String) : City
-  +create(cityID: CityID, countryID: CountryID, cityName: String) : City
+  +create(countryId: CountryId, cityName: String) : City
+  +create(cityId: CityId, countryId: CountryId, cityName: String) : City
 }
 
 interface ICityRepository {
   +save(city: City) : City
-  +existsByCountryIDAndCityName(countryID: CountryID, cityName: String) : boolean
+  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String) : boolean
 }
 
 interface ICountryRepository {
-  +findCountryIdByCountryName(countryName: String) : Optional<CountryID>
+  +findIdByName(countryName: String) : Optional<CountryId>
 }
 
 class CityRepositoryJPAImpl {
   +save(city: City) : City
-  +existsByCountryIDAndCityName(countryID: CountryID, cityName: String) : boolean
+  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String) : boolean
 }
 
 interface ICityRepositoryJPA {
   +save(cityDM: CityDM) : CityDM
-  +existsByCountryIDAndCityName(countryID: CountryID, cityName: String) : boolean
+  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String) : boolean
 }
 
 class CityAssembler {
@@ -55,8 +55,8 @@ class CityAssembler {
 }
 
 class CityDM {
-  -cityID: CityID
-  -countryID: CountryID
+  -cityId: CityId
+  -countryId: CountryId
   -cityName: String
 }
 
@@ -78,11 +78,15 @@ CityRepositoryJPAImpl "1" --> "1" CityAssembler : uses
 
 ICityRepositoryJPA "1" --> "0..*" CityDM : persists
 
-CityAssembler "1" --> "1" CityFactory : reconstructs via
-CityAssembler "1" --> "1" City : creates
-CityAssembler "1" --> "1" CityDM : maps
+' Dependency relationships
+CityAssembler ..> CityFactory : reconstructs via
+CityAssembler ..> City : creates
+CityAssembler ..> CityDM : maps
 
-City "1" --> "1" CountryID : belongs to
-City "1" --> "1" CityID : identified by
+' Missing relationship
+CityFactory ..> City : creates
+
+City "1" --> "1" CountryId : belongs to
+City "1" --> "1" CityId : identified by
 
 @enduml

@@ -53,7 +53,7 @@ public class CityService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Country not found: " + countryName));
 
-        if (cityRepository.existsByCountryIDAndCityName(countryId, cityName)) {
+        if (cityRepository.existsByCountryIdAndCityName(countryId, cityName)) {
             throw new IllegalArgumentException("City already exists in the system.");
         }
 

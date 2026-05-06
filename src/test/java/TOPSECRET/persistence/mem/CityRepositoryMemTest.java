@@ -43,7 +43,7 @@ class CityRepositoryMemTest {
         CityRepositoryMem repo = new CityRepositoryMem();
 
         //Act
-        boolean result = repo.existsByCountryIDAndCityName(
+        boolean result = repo.existsByCountryIdAndCityName(
                 new CountryId("PT"), "Lisbon");
 
         //Assert
@@ -61,7 +61,7 @@ class CityRepositoryMemTest {
         repo.save(city);
 
         //Act
-        boolean result = repo.existsByCountryIDAndCityName(country, "Lisbon");
+        boolean result = repo.existsByCountryIdAndCityName(country, "Lisbon");
 
         //Assert
         assertTrue(result);
@@ -76,7 +76,7 @@ class CityRepositoryMemTest {
         repo.save(factory.create(country, "Porto"));
 
         //Act
-        boolean result = repo.existsByCountryIDAndCityName(country, "Lisbon");
+        boolean result = repo.existsByCountryIdAndCityName(country, "Lisbon");
 
         //Assert
         assertFalse(result);
@@ -90,7 +90,7 @@ class CityRepositoryMemTest {
         repo.save(factory.create(new CountryId("PT"), "Lisbon"));
 
         //Act
-        boolean result = repo.existsByCountryIDAndCityName(
+        boolean result = repo.existsByCountryIdAndCityName(
                 new CountryId("ES"), "Lisbon");
 
         //Assert

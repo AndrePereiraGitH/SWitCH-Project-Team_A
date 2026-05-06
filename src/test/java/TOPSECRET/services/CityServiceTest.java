@@ -111,7 +111,7 @@ class CityServiceTest {
         when(doubleCountryRepository.findIdByName("Portugal"))
                 .thenReturn(Optional.of(countryID));
 
-        when(doubleCityRepository.existsByCountryIDAndCityName(countryID, "Braga"))
+        when(doubleCityRepository.existsByCountryIdAndCityName(countryID, "Braga"))
                 .thenReturn(true);
 
         // Act + Assert
