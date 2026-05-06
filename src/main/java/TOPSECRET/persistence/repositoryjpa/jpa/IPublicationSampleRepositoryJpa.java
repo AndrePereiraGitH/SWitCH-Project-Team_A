@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
@@ -22,7 +22,7 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      * @param bdId the bibliographical data ID to filter by; must not be {@code null}
      * @return a list of matching data models; never {@code null}, may be empty
      */
-    List<PublicationSampleDM> findAllByBdId(BibliographicalDataID bdId);
+    List<PublicationSampleDM> findAllByBdId(BibliographicalDataId bdId);
 
     /**
      * Retrieves all publication samples owned by the given user.

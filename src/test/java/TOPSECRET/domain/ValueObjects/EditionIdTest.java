@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EditionIDTest {
+class EditionIdTest {
 
     final String editionID1 = "1";
     final String editionID2 = "2";
 
     @Test
     void ShouldCreateAValidEditionID() {
-        EditionID editionID = new EditionID(editionID1);
+        EditionId editionID = new EditionId(editionID1);
 
     }
 
@@ -20,20 +20,20 @@ class EditionIDTest {
     void ShouldReturnInvalidEditionIDWhenIsNull(){
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new EditionID(null));
+                new EditionId(null));
     }
 
     @Test
     void ShouldReturnInvalidEditionIDWhenIsEmpty(){
         assertThrows(IllegalArgumentException.class, () ->
-                new EditionID(""));
+                new EditionId(""));
     }
 
    @Test
    void ShouldReturnFalseWhenTheIDsAreDifferent(){
         // Arrange
-       EditionID eID1 = new EditionID(editionID1);
-       EditionID eID2 = new EditionID(editionID2);
+       EditionId eID1 = new EditionId(editionID1);
+       EditionId eID2 = new EditionId(editionID2);
 
        // Act
        boolean result = eID1.equals(eID2);
@@ -45,8 +45,8 @@ class EditionIDTest {
    @Test
     void ShouldReturnTrueWhenTheIDsAreEqual(){
         // Arrange
-       EditionID eID1 = new EditionID(editionID1);
-       EditionID eID2 = new EditionID(editionID1);
+       EditionId eID1 = new EditionId(editionID1);
+       EditionId eID2 = new EditionId(editionID1);
 
        // Act
        boolean result = eID1.equals(eID2);
@@ -58,7 +58,7 @@ class EditionIDTest {
     @Test
     void ShouldReturnFalseWhenComparedWithNull(){
         // Arrange
-        EditionID eID = new EditionID(editionID1);
+        EditionId eID = new EditionId(editionID1);
 
         // Act
         boolean result = eID.equals(null);
@@ -70,7 +70,7 @@ class EditionIDTest {
     @Test
     void ShouldReturnFalseWhenComparedWithDifferentType(){
         // Arrange
-        EditionID eID = new EditionID(editionID1);
+        EditionId eID = new EditionId(editionID1);
 
         // Act
         boolean result = eID.equals("1");
@@ -82,7 +82,7 @@ class EditionIDTest {
     @Test
     void ShouldReturnTrueWhenComparedWithItself() {
         // Arrange
-        EditionID eID = new EditionID(editionID1);
+        EditionId eID = new EditionId(editionID1);
 
         // Act
         boolean result = eID.equals(eID);

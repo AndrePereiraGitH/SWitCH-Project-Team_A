@@ -26,7 +26,7 @@ class US016PublicationSampleMapperTest {
     private BibliographicalData bd;
 
     private PublicationSampleId publicationSampleId;
-    private BibliographicalDataID bibliographicalDataId;
+    private BibliographicalDataId bibliographicalDataId;
     private UserId ownerId;
 
     private AuthorId author;
@@ -48,7 +48,7 @@ class US016PublicationSampleMapperTest {
         bd = mock(BibliographicalData.class);
 
         publicationSampleId = mock(PublicationSampleId.class);
-        bibliographicalDataId = mock(BibliographicalDataID.class);
+        bibliographicalDataId = mock(BibliographicalDataId.class);
         ownerId = mock(UserId.class);
 
         author = mock(AuthorId.class);

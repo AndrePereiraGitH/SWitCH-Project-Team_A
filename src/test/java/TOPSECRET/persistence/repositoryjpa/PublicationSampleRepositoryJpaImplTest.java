@@ -293,8 +293,8 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_3 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
@@ -335,8 +335,8 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_3 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
@@ -384,8 +384,8 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_3 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
@@ -548,14 +548,14 @@ class PublicationSampleRepositoryJpaImplTest {
 
     @Test
     void findIdsByEditionIdIn_shouldReturnEmptyList() {
-        List<EditionID> ids = List.of(mock(EditionID.class));
+        List<EditionId> ids = List.of(mock(EditionId.class));
         List<PublicationSampleId> result = repo.findIdsByEditionIdIn(ids);
         assertTrue(result.isEmpty());
     }
 
     @Test
     void findIdsByBibliographicalDataIdIn_shouldReturnEmptyList() {
-        List<BibliographicalDataID> ids = List.of(mock(BibliographicalDataID.class));
+        List<BibliographicalDataId> ids = List.of(mock(BibliographicalDataId.class));
         List<PublicationSampleId> result = repo.findIdsByBibliographicalDataIdIn(ids);
         assertTrue(result.isEmpty());
     }
@@ -563,7 +563,7 @@ class PublicationSampleRepositoryJpaImplTest {
 
     @Test
     void findPublicationSamplesIdsByBiblioDataIds_shouldReturnEmptyList() {
-        List<BibliographicalDataID> ids = List.of(mock(BibliographicalDataID.class));
+        List<BibliographicalDataId> ids = List.of(mock(BibliographicalDataId.class));
         List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(ids);
         assertTrue(result.isEmpty());
     }

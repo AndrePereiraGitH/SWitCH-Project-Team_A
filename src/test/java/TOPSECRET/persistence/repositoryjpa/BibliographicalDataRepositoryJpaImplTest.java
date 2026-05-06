@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.BibliographicalDataAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
@@ -44,7 +44,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     private BibliographicalDataDM savedBdDM;
 
     @Mock
-    private BibliographicalDataID bdId;
+    private BibliographicalDataId bdId;
 
     @Mock
     private GenreId genreId;
@@ -150,7 +150,7 @@ class BibliographicalDataRepositoryJpaImplTest {
         when(bdDM.getId()).thenReturn(bdId);
 
         // Act
-        Optional<BibliographicalDataID> result =
+        Optional<BibliographicalDataId> result =
                 repository.findIdByTitle("  Clean Code  ");
 
         // Assert
@@ -164,7 +164,7 @@ class BibliographicalDataRepositoryJpaImplTest {
         when(jpaRepository.findByTitleIgnoreCase("Unknown")).thenReturn(Optional.empty());
 
         // Act
-        Optional<BibliographicalDataID> result =
+        Optional<BibliographicalDataId> result =
                 repository.findIdByTitle("Unknown");
 
         // Assert
@@ -183,7 +183,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findAllBibliographicalDataByGenreId_shouldReturnIds() {
         // Arrange
         BibliographicalDataDM bdDM2 = mock(BibliographicalDataDM.class);
-        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
 
         when(jpaRepository.findByGenreIdsContaining(genreId)).thenReturn(List.of(bdDM, bdDM2));
 
@@ -191,7 +191,7 @@ class BibliographicalDataRepositoryJpaImplTest {
         when(bdDM2.getId()).thenReturn(bdId2);
 
         // Act
-        List<BibliographicalDataID> result =
+        List<BibliographicalDataId> result =
                 repository.findAllByGenreId(genreId);
 
         // Assert
@@ -210,7 +210,7 @@ class BibliographicalDataRepositoryJpaImplTest {
     void findBibliographicalDataIdByAuthorId_shouldReturnIds() {
         // Arrange
         BibliographicalDataDM bdDM2 = mock(BibliographicalDataDM.class);
-        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
 
         when(jpaRepository.findByAuthorIdsContaining(authorId)).thenReturn(List.of(bdDM, bdDM2));
 
@@ -218,7 +218,7 @@ class BibliographicalDataRepositoryJpaImplTest {
         when(bdDM2.getId()).thenReturn(bdId2);
 
         // Act
-        List<BibliographicalDataID> result =
+        List<BibliographicalDataId> result =
                 repository.findIdByAuthorId(authorId);
 
         // Assert

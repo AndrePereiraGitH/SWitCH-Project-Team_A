@@ -6,7 +6,7 @@ import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US023BibliographicalDataDTO;
@@ -70,8 +70,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
     private IBibliographicalDataRepository bdRepoDouble;
     private BibliographicalData bd1Double;
     private BibliographicalData bd2Double;
-    private BibliographicalDataID bdId1Double;
-    private BibliographicalDataID bdId2Double;
+    private BibliographicalDataId bdId1Double;
+    private BibliographicalDataId bdId2Double;
 
     private US023BibliographicalDataMapper bdMapperDouble;
     private US023ListingMapper listingMapperDouble;
@@ -81,10 +81,10 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         // Bibliographical Data
         bd1Double = mock(BibliographicalData.class);
-        bdId1Double = mock(BibliographicalDataID.class);
+        bdId1Double = mock(BibliographicalDataId.class);
         when(bd1Double.id()).thenReturn(bdId1Double);
         bd2Double = mock(BibliographicalData.class);
-        bdId2Double = mock(BibliographicalDataID.class);
+        bdId2Double = mock(BibliographicalDataId.class);
         when(bd2Double.id()).thenReturn(bdId2Double);
 
         // Publication Sample

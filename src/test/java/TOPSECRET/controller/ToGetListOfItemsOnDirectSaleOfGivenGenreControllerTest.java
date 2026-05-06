@@ -6,7 +6,7 @@ import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US021DirSaleListingDTO;
@@ -316,12 +316,12 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
         GenreId selectedGenre = mock(GenreId.class);
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSampleId psId = new PublicationSampleId("ps-1");
         Listing listingMock = mock(Listing.class);
         US021DirSaleListingDTO expectedDTO = mock(US021DirSaleListingDTO.class);
 
-        List<BibliographicalDataID> bdIds = List.of(bdId);
+        List<BibliographicalDataId> bdIds = List.of(bdId);
         List<PublicationSampleId> pubSampleIds = List.of(psId);
         List<Listing> listings = List.of(listingMock);
 
@@ -357,8 +357,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
         GenreId selectedGenre = mock(GenreId.class);
-        BibliographicalDataID bdId1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
         PublicationSampleId psId1 = new PublicationSampleId("ps-1");
         PublicationSampleId psId2 = new PublicationSampleId("ps-2");
         Listing listing1 = mock(Listing.class);
@@ -366,7 +366,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         US021DirSaleListingDTO dto1 = mock(US021DirSaleListingDTO.class);
         US021DirSaleListingDTO dto2 = mock(US021DirSaleListingDTO.class);
 
-        List<BibliographicalDataID> bdIds = List.of(bdId1, bdId2);
+        List<BibliographicalDataId> bdIds = List.of(bdId1, bdId2);
         List<PublicationSampleId> pubSampleIds = List.of(psId1, psId2);
         List<Listing> listings = List.of(listing1, listing2);
 
@@ -401,8 +401,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
         GenreId selectedGenre = mock(GenreId.class);
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
-        List<BibliographicalDataID> bdIds = List.of(bdId);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        List<BibliographicalDataId> bdIds = List.of(bdId);
 
         when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
                 .thenReturn(bdIds);

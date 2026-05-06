@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -21,7 +20,7 @@ import java.util.Objects;
  * </p>
  *
  * <p>
- * Domain concepts such as {@link EditionID}, {@link PublicationTypeId}, and
+ * Domain concepts such as {@link EditionId}, {@link PublicationTypeId}, and
  * {@link PublisherID} are embedded to preserve identity and value object semantics
  * while enabling database storage.
  * </p>
@@ -50,7 +49,7 @@ public class EditionDM {
 
     @EmbeddedId
     @AttributeOverride(name = "editionID", column = @Column(name = "edition_id"))
-    private EditionID  editionID;
+    private EditionId editionID;
     @Column(name = "edition_number", nullable = false)
     private String editionNumber;
     @Embedded
@@ -94,7 +93,7 @@ public class EditionDM {
      * @throws IllegalArgumentException if {@code editionNumber} is blank
      */
     public EditionDM(
-            EditionID editionID,
+            EditionId editionID,
             String editionNumber,
             Code code,
             PhysicalAttributes physicalAttributes,

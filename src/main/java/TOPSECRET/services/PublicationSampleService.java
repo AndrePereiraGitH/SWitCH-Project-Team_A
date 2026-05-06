@@ -5,8 +5,8 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.stereotype.Service;
 
@@ -32,42 +32,41 @@ public class PublicationSampleService {
 
     public PublicationSampleService(IPublicationSampleRepository publicationSampleRepository, PublicationSampleFactory factory) {
 
-        Objects.requireNonNull(publicationSampleRepository);
-        Objects.requireNonNull(factory);
+        this.publicationSampleRepository =
+                Objects.requireNonNull(publicationSampleRepository, "Repository cannot be null");
 
-        this.publicationSampleRepository = publicationSampleRepository;
-        this.factory = factory;
+        this.factory =
+                Objects.requireNonNull(factory, "Factory cannot be null");
     }
 
     /**
-     * Creates a new {@link PublicationSample} and persists it to the repository.
+     * Creates a new {@link PublicationSample} and persists it.
      *
-     * <p>Delegates creation to {@link PublicationSampleFactory#create} and
-     * persistence to {@link IPublicationSampleRepository#save}.
+     * <p>Delegates object creation to {@link PublicationSampleFactory} and
+     * persistence to {@link IPublicationSampleRepository}.</p>
+     *
+     * <p>No duplicate validation is performed, as multiple publication samples
+     * with identical attributes are allowed. Identity uniqueness is ensured
+     * by the {@link PublicationSample} itself.</p>
      *
      * @param bibliographicalDataId the bibliographical data identifier; must not be {@code null}
      * @param userId                the identifier of the owning user; must not be {@code null}
      * @param publicationStatus     the initial publication status; must not be {@code null}
      * @param editionId             the edition identifier; must not be {@code null}
      * @param condition             the physical condition of the sample; must not be {@code null}
-     * @return the saved {@link PublicationSample} with its persisted identity
-     * @throws NullPointerException      if any parameter is {@code null}
-     * @throws IllegalArgumentException  if a publication with the same identity already exists
+     * @return the persisted {@link PublicationSample}
+     * @throws NullPointerException if any parameter is {@code null}
      */
-    public PublicationSample createAndSave(BibliographicalDataID bibliographicalDataId, UserId userId,
-                                           PublicationStatus publicationStatus, EditionID editionId, Condition condition){
+    public PublicationSample createAndSave(
+            BibliographicalDataId bibliographicalDataId,
+            UserId userId,
+            PublicationStatus publicationStatus,
+            EditionId editionId,
+            Condition condition) {
 
+        PublicationSample created = factory.create(
+                bibliographicalDataId, userId, publicationStatus, editionId, condition);
 
-        PublicationSample pbSampleCreated = factory.create(
-                bibliographicalDataId,
-                userId,
-                publicationStatus,
-                editionId,
-                condition);
-
-        PublicationSample pbSampleSaved = publicationSampleRepository.save(pbSampleCreated);
-
-        return pbSampleSaved;
+        return publicationSampleRepository.save(created);
     }
-
 }

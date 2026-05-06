@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,7 +30,7 @@ import java.util.Objects;
 public class BibliographicalDataDM {
 
     @EmbeddedId
-    private BibliographicalDataID id;
+    private BibliographicalDataId id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -74,7 +74,7 @@ public class BibliographicalDataDM {
      * @throws NullPointerException if id, title, or originalLanguage are null
      */
     public BibliographicalDataDM(
-            BibliographicalDataID id,
+            BibliographicalDataId id,
             String title,
             String originalLanguage,
             LocalDate publicationDate,

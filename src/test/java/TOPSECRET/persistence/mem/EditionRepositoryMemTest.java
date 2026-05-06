@@ -2,7 +2,7 @@ package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.IEditionRepository;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class EditionRepositoryMemTest {
 
         // Arrange
         Edition editionDouble = mock(Edition.class);
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         when(editionDouble.id()).thenReturn(editionIdDouble);
 
         IEditionRepository repo = new EditionRepositoryMem();
@@ -49,7 +49,7 @@ class EditionRepositoryMemTest {
 
         // Arrange
         Edition editionDouble = mock(Edition.class);
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         when(editionDouble.id()).thenReturn(editionIdDouble);
 
         IEditionRepository repo = new EditionRepositoryMem();
@@ -80,7 +80,7 @@ class EditionRepositoryMemTest {
 
         // Arrange
         Edition editionDouble = mock(Edition.class);
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         when(editionDouble.id()).thenReturn(editionIdDouble);
 
         IEditionRepository repo = new EditionRepositoryMem();
@@ -97,7 +97,7 @@ class EditionRepositoryMemTest {
     void existsById_shouldReturnFalse_whenEditionDoesNotExist() {
 
         // Arrange
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         IEditionRepository repo = new EditionRepositoryMem();
 
         // Act
@@ -126,7 +126,7 @@ class EditionRepositoryMemTest {
 
         // Arrange
         Edition editionDouble = mock(Edition.class);
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         when(editionDouble.id()).thenReturn(editionIdDouble);
 
         IEditionRepository repo = new EditionRepositoryMem();
@@ -144,7 +144,7 @@ class EditionRepositoryMemTest {
     void findById_shouldReturnEmpty_whenNotFound() {
 
         // Arrange
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         IEditionRepository repo = new EditionRepositoryMem();
 
         // Act
@@ -176,8 +176,8 @@ class EditionRepositoryMemTest {
         Edition editionDouble1 = mock(Edition.class);
         Edition editionDouble2 = mock(Edition.class);
 
-        when(editionDouble1.id()).thenReturn(mock(EditionID.class));
-        when(editionDouble2.id()).thenReturn(mock(EditionID.class));
+        when(editionDouble1.id()).thenReturn(mock(EditionId.class));
+        when(editionDouble2.id()).thenReturn(mock(EditionId.class));
 
         IEditionRepository repo = new EditionRepositoryMem();
         repo.save(editionDouble1);
@@ -197,7 +197,7 @@ class EditionRepositoryMemTest {
 
         // Arrange
         Edition editionDouble = mock(Edition.class);
-        when(editionDouble.id()).thenReturn(mock(EditionID.class));
+        when(editionDouble.id()).thenReturn(mock(EditionId.class));
 
         IEditionRepository repo = new EditionRepositoryMem();
         repo.save(editionDouble);
@@ -223,8 +223,8 @@ class EditionRepositoryMemTest {
         Edition editionDouble1 = mock(Edition.class);
         Edition editionDouble2 = mock(Edition.class);
 
-        EditionID editionIdDouble1 = mock(EditionID.class);
-        EditionID editionIdDouble2 = mock(EditionID.class);
+        EditionId editionIdDouble1 = mock(EditionId.class);
+        EditionId editionIdDouble2 = mock(EditionId.class);
 
         when(editionDouble1.id()).thenReturn(editionIdDouble1);
         when(editionDouble2.id()).thenReturn(editionIdDouble2);
@@ -237,7 +237,7 @@ class EditionRepositoryMemTest {
         repo.save(editionDouble2);
 
         // Act
-        List<EditionID> result = repo.findIdsByPublisherId(publisherIdDouble);
+        List<EditionId> result = repo.findIdsByPublisherId(publisherIdDouble);
 
         // Assert
         assertEquals(2, result.size());
@@ -253,7 +253,7 @@ class EditionRepositoryMemTest {
         IEditionRepository repo = new EditionRepositoryMem();
 
         // Act
-        List<EditionID> result = repo.findIdsByPublisherId(publisherIdDouble);
+        List<EditionId> result = repo.findIdsByPublisherId(publisherIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -279,8 +279,8 @@ class EditionRepositoryMemTest {
         Edition edition1Double = mock(Edition.class);
         Edition edition2Double = mock(Edition.class);
 
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
+        EditionId editionId1Double = mock(EditionId.class);
+        EditionId editionId2Double = mock(EditionId.class);
 
         when(edition1Double.id()).thenReturn(editionId1Double);
         when(edition2Double.id()).thenReturn(editionId2Double);
@@ -308,7 +308,7 @@ class EditionRepositoryMemTest {
         PublisherID publisherIdDouble = mock(PublisherID.class);
 
         Edition editionDouble = mock(Edition.class);
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         when(editionDouble.id()).thenReturn(editionIdDouble);
 
         PublisherID otherPublisherIdDouble = mock(PublisherID.class);
@@ -347,8 +347,8 @@ class EditionRepositoryMemTest {
         Edition edition1Double = mock(Edition.class);
         Edition edition2Double = mock(Edition.class);
 
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
+        EditionId editionId1Double = mock(EditionId.class);
+        EditionId editionId2Double = mock(EditionId.class);
 
         when(edition1Double.id()).thenReturn(editionId1Double);
         when(edition2Double.id()).thenReturn(editionId2Double);

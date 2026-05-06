@@ -7,7 +7,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US026AuctionDTO;
@@ -91,7 +91,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
             throw new IllegalArgumentException("authorId cannot be null.");
         }
 
-       List<BibliographicalDataID> bdsOfAuthorID = biblioRepository.findIdByAuthorId(authorId);
+       List<BibliographicalDataId> bdsOfAuthorID = biblioRepository.findIdByAuthorId(authorId);
 
        List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesIdsByBiblioDataIds(bdsOfAuthorID);
 

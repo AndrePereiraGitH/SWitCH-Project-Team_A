@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 class BibliographicalDataDMTest {
 
     @Mock
-    private BibliographicalDataID idDouble;
+    private BibliographicalDataId idDouble;
 
     @Mock
     private GenreId genreIdDouble;

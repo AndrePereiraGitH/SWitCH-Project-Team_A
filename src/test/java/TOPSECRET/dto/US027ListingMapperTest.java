@@ -69,14 +69,14 @@ class US027ListingMapperTest {
 
         // BibliographicalData
         BibliographicalData bdDouble1 = mock(BibliographicalData.class);
-        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId1Double = mock(BibliographicalDataId.class);
 
         when(bdDouble1.id()).thenReturn(bdId1Double);
         when(bdDouble1.getTitle()).thenReturn("bdTitle1");
         when(bdDouble1.getAuthors()).thenReturn(List.of(authorId1Double));
 
         BibliographicalData bdDouble2 = mock(BibliographicalData.class);
-        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId2Double = mock(BibliographicalDataId.class);
 
         when(bdDouble2.id()).thenReturn(bdId2Double);
         when(bdDouble2.getTitle()).thenReturn("bdTitle2");
@@ -162,7 +162,7 @@ class US027ListingMapperTest {
     @Test
     void toDTO_ShouldThrowExceptionWhenBibliographicalDataNotFound() {
         // Arrange
-        BibliographicalDataID wrongIdDouble =  mock(BibliographicalDataID.class);
+        BibliographicalDataId wrongIdDouble =  mock(BibliographicalDataId.class);
         PublicationSample pubSampleDouble = pubSampleRepoDouble.findById(
                 listingDouble.getItemsId().get(0)).get();
 

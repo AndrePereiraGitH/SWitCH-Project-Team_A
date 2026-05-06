@@ -34,9 +34,9 @@ import static org.mockito.Mockito.*;
 class PublicationSampleAssemblerTest {
 
     private PublicationSampleId pubSampleIdDouble;
-    private BibliographicalDataID bdIdDouble;
+    private BibliographicalDataId bdIdDouble;
     private UserId userIdDouble;
-    private EditionID editionIdDouble;
+    private EditionId editionIdDouble;
     private LibraryId libraryIdDouble;
     private CollectionOfPublicationsId collectionOfPublicationsIdDouble;
     private PublicationStatus status;
@@ -51,9 +51,9 @@ class PublicationSampleAssemblerTest {
     @BeforeEach
     void setup() {
         pubSampleIdDouble = mock(PublicationSampleId.class);
-        bdIdDouble = mock(BibliographicalDataID.class);
+        bdIdDouble = mock(BibliographicalDataId.class);
         userIdDouble = mock(UserId.class);
-        editionIdDouble = mock(EditionID.class);
+        editionIdDouble = mock(EditionId.class);
         libraryIdDouble = mock(LibraryId.class);
         collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
         status = PublicationStatus.READ;
