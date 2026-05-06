@@ -1,45 +1,94 @@
 @startuml
 autonumber
 hide footbox
-title US0014 - To Get All Publication Types List
+title To Get All Publication Types List (with JPA)
 
 actor User
 
-participant ":UI014" as UI
-participant ":US014GetPublicationType\nListController" as C
+participant ":UI" as UI
+participant ":ToGetPublication\nTypeListController" as C
 participant ":IPublicationType\nRepository" as PTR
+participant ":IPublicationType\nRepositoryJPA" as PTRJPA
+participant "DataBase" as EM
+participant ":PublicationType\nAssembler" as Assembler
+participant ":PublicationType\nFactory" as Factory
 participant ":US014Publication\nTypeMapper" as MAPPER
+participant ":PublicationType" as ENTITY
 
 User -> UI : I want to get a list\n of all publication types
 activate UI
 
-UI -> C : getAllPublicationTypes()
+UI -> C : findAll()
 activate C
 
-C -> PTR : getAllPublicationTypes()
+C -> PTR : findAll()
 activate PTR
 
-PTR --> C : listOfPublicationType
+PTR -> PTRJPA : findAll()
+activate PTRJPA
+
+PTRJPA -> EM : createQuery / execute
+activate EM
+
+note over EM
+Query database (SELECT * FROM publication_type)
+end note
+
+EM --> PTRJPA : data
+deactivate EM
+
+PTRJPA --> "publicationTypeDMs:\n List<PublicationTypeDM>" ** : <<create>>
+
+PTRJPA --> PTR : publicationTypeDms
+deactivate PTRJPA
+
+PTR -> Assembler : toDomain(publicationTypeDms)
+activate Assembler
+
+Assembler --> "pubTypeList\nList<PublicationType>" ** : <<create>>
+
+
+loop for each Publication Type
+Assembler -> Factory : create\n(pubType.id, mediaFormat)
+activate Factory
+
+create "pubTypeDomain\n:PublicationType" as pubTypeDomain
+Factory -->> pubTypeDomain : <<create>>
+
+Factory --> Assembler : pubTypeDomain
+deactivate Factory
+
+Assembler -> "pubTypeList\nList<PublicationType>" : add(pubTypeDomain)
+end
+
+Assembler --> PTR : pubTypeList
+deactivate Assembler
+
+
+PTR --> C : pubTypeList
 deactivate PTR
 
-C -> MAPPER : toDTOList(listOfPublicationType)
+C -> MAPPER : toDTOList(pubTypeList)
 activate MAPPER
 
 create "listOfPublicationTypeDTO:\nList<US014PublicationTypeDTO>" as listDTO
-MAPPER --> listDTO : <<create>>
+MAPPER -->> listDTO : <<create>>
 
 loop for each PublicationType
-    MAPPER -> "PublicationType" : getId()
-    activate PublicationType
-    PublicationType --> MAPPER : id
-    deactivate PublicationType
-    MAPPER -> "PublicationType" : getMediaFormat()
-    activate PublicationType
-    PublicationType --> MAPPER : mediaFormat
-    deactivate PublicationType
-    create "pubTypeDTO: \nUS014PublicationTypeDTO" as pubTypeDTO
-    MAPPER -> pubTypeDTO : toDTO()
-    MAPPER -> listDTO: listOfPublication\nTypeDTO.add(pubTypeDTO)
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : id
+    deactivate ENTITY
+
+    MAPPER -> ENTITY : getMediaFormat()
+    activate ENTITY
+    ENTITY --> MAPPER : mediaFormat
+    deactivate ENTITY
+
+    create "pubTypeDTO:\nUS014PublicationTypeDTO" as pubTypeDTO
+    MAPPER -->> pubTypeDTO : <<create>>
+
+    MAPPER -> listDTO : add(pubTypeDTO)
 end
 
 MAPPER --> C : listOfPublicationTypeDTO
