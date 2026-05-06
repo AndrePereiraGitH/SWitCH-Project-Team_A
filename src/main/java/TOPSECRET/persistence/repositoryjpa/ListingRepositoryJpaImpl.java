@@ -138,6 +138,11 @@ public class ListingRepositoryJpaImpl implements IListingRepository {
      */
     @Override
     public List<Listing> findAllByDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
-        return List.of();
+        Objects.requireNonNull(publicationSampleIds);
+        return listingRepositoryJpa.findAllByItemsId(publicationSampleIds)
+                .stream()
+                .map(assembler::toDomain)
+                .filter(Listing::isListingLinkedToADirectSale)
+                .toList();
     }
 }
