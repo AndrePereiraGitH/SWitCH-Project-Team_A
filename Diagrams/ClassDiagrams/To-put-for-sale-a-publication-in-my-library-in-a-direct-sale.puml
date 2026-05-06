@@ -6,10 +6,6 @@ title To put for a sale a publication in my library in a direct sale
 ' -------------------------
 
 class ToPutForSaleAPublicationInDirectSaleController {
-    - libraryRepository: ILibraryRepository
-    - publicationSampleRepository: IPublicationSampleRepository
-    - listingService: ListingService
-    - pubSampleMapper: US015PublicationSampleMapper
     + findLibraryPublicationsAvailableForSale(UserId userId): List<US015PublicationSampleDTO>
     + createDirectSaleListing(String title, List<PublicationSampleId> selectedPublicationIds,\n Price price, String shortDescription, UserId userId, List<Picture> pictures): Listing
 }
@@ -27,12 +23,17 @@ interface ILibraryRepositoryJPA {
 }
 
 class LibraryAssembler {
-    - libraryFactory: LibraryFactory
     +toDomain(LibraryDM libraryDM): Library
 }
 
 class LibraryFactory {
     + create(LibraryId libraryId, String libraryName, UserId userId): Library
+}
+
+class Library {
+    - id: LibraryId
+    - libraryName: String
+    - userId: UserId
 }
 
 ' -------------------------
@@ -48,7 +49,6 @@ interface IPublicationSampleRepositoryJPA {
 }
 
 class PublicationSampleAssembler {
-    - publicationSampleFactory: PublicationSampleFactory
     + toDomain(List<PublicationSampleDM> listOfAvailablePublicationDMs): List<PublicationSample>
 }
 
@@ -66,7 +66,12 @@ class PublicationSample {
     - libraryId: LibraryId
 }
 
-record US015PublicationSampleDTO {}
+record US015PublicationSampleDTO {
+    - pubTitle: String
+    - authorsName: List<String>
+    - code: String
+    - publicationType: String
+}
 
 class US015PublicationSampleMapper {
     - bdRepo: IBibliographicalDataRepository
@@ -81,8 +86,6 @@ class US015PublicationSampleMapper {
 ' -------------------------
 
 class ListingService {
-    - listingRepository: IListingRepository
-    - listingFactory: ListingFactory
     + createAndSave(String title, List<PublicationSampleId> selectedPublicationIds, SaleType saleType,\nPrice price, String shortDescription, UserId userId, List<Picture> pictures): Listing
 }
 
@@ -95,7 +98,6 @@ interface IListingRepositoryJPA {
 }
 
 class ListingAssembler {
-    - listingFactory: ListingFactory
     + toDM(Listing listing): ListingDM
     + toDomain(ListingDM listingDM): Listing
 }
@@ -127,7 +129,7 @@ ToPutForSaleAPublicationInDirectSaleController"1" --> "1" US015PublicationSample
 ToPutForSaleAPublicationInDirectSaleController "1" --> "1" ListingService : "uses"
 
 ' --- Library ---
-ILibraryRepository "1" <|-- "1" ILibraryRepositoryJPA: "implements"
+ILibraryRepositoryJPA "1" --|> "1"  ILibraryRepository: "implements"
 ILibraryRepository "1" ..> "1" LibraryAssembler: "uses"
 
 LibraryAssembler "1" --> "1" LibraryFactory: "uses"
@@ -136,7 +138,7 @@ LibraryAssembler "1" ..> "1" LibraryDM: "receives"
 LibraryFactory "1" --> "1" Library: "creates"
 
 ' --- PublicationSampleRepository ---
-IPublicationSampleRepository "1" <|-- "1" IPublicationSampleRepositoryJPA: "implements"
+IPublicationSampleRepositoryJPA "1" --|> "1"  IPublicationSampleRepository: "implements"
 IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler: "uses"
 
 PublicationSampleAssembler "1" --> "1" PublicationSampleFactory: "uses"
@@ -153,7 +155,7 @@ ListingService "1" --> "1" IListingRepository: "uses"
 ListingFactory "1" --> "1" Listing: "creates"
 
 IListingRepository "1" ..> "1" ListingAssembler: "uses"
-IListingRepository "1" <|-- "1" IListingRepositoryJPA: "implements"
+IListingRepositoryJPA "1" --|> "1" IListingRepository: "implements"
 
 ListingAssembler "1" ..> "1" ListingDM: "receives"
 ListingAssembler "1" --> "1" ListingFactory: "uses"

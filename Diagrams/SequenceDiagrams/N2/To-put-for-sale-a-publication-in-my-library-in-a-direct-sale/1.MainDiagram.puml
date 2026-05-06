@@ -19,6 +19,7 @@ participant ":IListingRepositoryJPA" as LRepoJPA
 participant "listingDM:\nListingDM" as LDM
 participant ":ListingFactory" as LFactory
 participant "listing:\nListing" as Listing
+participant "persistedListingDM:\nListingDM" as persListingDM
 participant "persistedListing:\nListing" as persListing
 
 ' Database
@@ -73,14 +74,47 @@ LAss --> LRepo : listingDM
 deactivate LAss
 LRepo -> LRepoJPA : save(listingDM)
 activate LRepoJPA
-LRepoJPA -> DB : INSERT persistedListing
+LRepoJPA -> DB : INSERT listingDM
 activate DB
-DB --> LRepoJPA : persistedListing
+DB --> LRepoJPA : data
 deactivate DB
-LRepoJPA --> LRepo : persistedListing
+LRepoJPA -->> persListingDM ** : «create»
+LRepoJPA --> LRepo : persistedListingDM
 deactivate LRepoJPA
-LRepo -> LAss : toDomain(persistedListing)
+LRepo -> LAss : toDomain(persistedListingDM)
 activate LAss
+LAss -> persListingDM: id()
+activate persListingDM
+persListingDM --> LAss: listingId
+deactivate persListingDM
+LAss -> persListingDM: getListingTitle()
+activate persListingDM
+persListingDM --> LAss: listingTitle
+deactivate persListingDM
+LAss -> persListingDM: getItemsId()
+activate persListingDM
+persListingDM --> LAss: itemsId
+deactivate persListingDM
+LAss -> persListingDM: getSaleType)
+activate persListingDM
+persListingDM --> LAss: saleType
+deactivate persListingDM
+LAss -> persListingDM: getPrice()
+activate persListingDM
+persListingDM --> LAss: price
+deactivate persListingDM
+LAss -> persListingDM: getShortDescription()
+activate persListingDM
+persListingDM --> LAss: shortDescription
+deactivate persListingDM
+LAss -> persListingDM: getSellerId()
+activate persListingDM
+persListingDM --> LAss: sellerId
+deactivate persListingDM
+LAss -> persListingDM: getPictures()
+activate persListingDM
+persListingDM --> LAss: pictures
+deactivate persListingDM
 LAss -> LFactory : create(listingId,listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures)
 activate LFactory
 LFactory -->> persListing ** : «create»
@@ -94,7 +128,7 @@ LServ --> Ctrl : persistedListing
 deactivate LServ
 
 
-Ctrl --> UI : persistedListing
+Ctrl --> UI : success
 deactivate Ctrl
 
 UI --> User : Publication(s) put for direct\n sale with success
