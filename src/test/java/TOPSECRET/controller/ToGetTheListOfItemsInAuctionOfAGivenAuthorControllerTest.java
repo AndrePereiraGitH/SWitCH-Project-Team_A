@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
+class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
     private IAuthorRepository authorRepository;
     private IBibliographicalDataRepository biblioRepository;
@@ -59,11 +59,12 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
             IPublicationSampleRepository pubRepo,
             IListingRepository listingRepo,
             IAuctionRepository auctionRepository,
-            US026AuctionMapper mapper
+            US026AuctionMapper mapper,
+            String expected
     ) {
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                new ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(
+                new ToGetTheListOfItemsInAuctionOfAGivenAuthorController(
                         authorRepository,
                         biblioRepository,
                         pubRepo,
@@ -74,13 +75,13 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         );
 
         // Assert
-        assertEquals("Controller dependencies cannot be null", exception.getMessage());
+        assertEquals(expected, exception.getMessage());
     }
 
     @Test
     void getAllAuthors_shouldReturnAuthorDTOList_whenRepositoryReturnsAuthors() {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         Author author1 = mock(Author.class);
         Author author2 = mock(Author.class);
@@ -108,7 +109,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAllAuthors_shouldReturnEmptyList_whenRepositoryReturnsEmptyList() {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         List<Author> authors = List.of();
         List<US026AuthorDTO> expected = List.of();
@@ -131,7 +132,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionsByAuthorId_shouldThrowIllegalArgumentException_whenAuthorIdIsNull() {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
@@ -145,7 +146,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionsByAuthorId_shouldReturnAuctionDTOList_whenAuthorHasAuctions() throws InstanceNotFoundException {
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
@@ -170,7 +171,11 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<US026AuctionDTO> expected = List.of(dto1, dto2);
 
         when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
+        when(pubRepo.findIdsByBibliographicalDataId(bdId1))
+                .thenReturn(List.of(sampleId1));
+
+        when(pubRepo.findIdsByBibliographicalDataId(bdId2))
+                .thenReturn(List.of(sampleId2));
         when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
@@ -185,9 +190,11 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
     }
 
     @Test
-    void getAuctionsByAuthorId_shouldReturnEmptyList_whenAuthorHasNoBibliographicalData() throws InstanceNotFoundException {
+    void getAuctionsByAuthorId_shouldReturnEmptyList_whenAuthorHasNoBibliographicalData()
+            throws InstanceNotFoundException {
+
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
@@ -197,11 +204,17 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         List<Auction> auctions = List.of();
         List<US026AuctionDTO> expected = List.of();
 
-        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
-        when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
-        when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
+        when(biblioRepository.findIdByAuthorId(authorId))
+                .thenReturn(bibliographicalDataIds);
+
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds))
+                .thenReturn(listingIds);
+
+        when(auctionRepository.findByListingIdIn(listingIds))
+                .thenReturn(auctions);
+
+        when(auctionMapper.fromDomainList(auctions))
+                .thenReturn(expected);
 
         // Act
         List<US026AuctionDTO> result = controller.getAuctionsByAuthorId(authorId);
@@ -210,36 +223,54 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
         assertNotNull(result);
         assertEquals(expected, result);
         assertTrue(result.isEmpty());
+
     }
 
     @Test
-    void getAuctionsByAuthorId_shouldPropagateInstanceNotFoundException_whenMapperThrowsException() throws InstanceNotFoundException {
+    void getAuctionsByAuthorId_shouldPropagateInstanceNotFoundException_whenMapperThrowsException()
+            throws InstanceNotFoundException {
+
         // Arrange
-        ToGetTheListOfItemsOnAuctionOfAGivenAuthorController controller = createController();
+        ToGetTheListOfItemsInAuctionOfAGivenAuthorController controller = createController();
 
         AuthorId authorId = mock(AuthorId.class);
 
-        List<BibliographicalDataID> bibliographicalDataIds = List.of(mock(BibliographicalDataID.class));
-        List<PublicationSampleId> publicationSampleIds = List.of(mock(PublicationSampleId.class));
-        List<ListingId> listingIds = List.of(mock(ListingId.class));
-        List<Auction> auctions = List.of(mock(Auction.class));
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        ListingId listingId = mock(ListingId.class);
+        Auction auction = mock(Auction.class);
 
-        when(biblioRepository.findIdByAuthorId(authorId)).thenReturn(bibliographicalDataIds);
-        when(pubRepo.findPublicationSamplesIdsByBiblioDataIds(bibliographicalDataIds)).thenReturn(publicationSampleIds);
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
-        when(auctionRepository.findByListingIdIn(listingIds)).thenReturn(auctions);
-        when(auctionMapper.fromDomainList(auctions)).thenThrow(new InstanceNotFoundException("Listing not found"));
+        List<BibliographicalDataID> bibliographicalDataIds = List.of(bdId);
+        List<PublicationSampleId> publicationSampleIds = List.of(sampleId);
+        List<ListingId> listingIds = List.of(listingId);
+        List<Auction> auctions = List.of(auction);
+
+        when(biblioRepository.findIdByAuthorId(authorId))
+                .thenReturn(bibliographicalDataIds);
+
+        when(pubRepo.findIdsByBibliographicalDataId(bdId))
+                .thenReturn(publicationSampleIds);
+
+        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds))
+                .thenReturn(listingIds);
+
+        when(auctionRepository.findByListingIdIn(listingIds))
+                .thenReturn(auctions);
+
+        when(auctionMapper.fromDomainList(auctions))
+                .thenThrow(new InstanceNotFoundException("Listing not found"));
 
         // Act + Assert
-        InstanceNotFoundException exception = assertThrows(InstanceNotFoundException.class, () ->
-                controller.getAuctionsByAuthorId(authorId)
+        InstanceNotFoundException exception = assertThrows(
+                InstanceNotFoundException.class,
+                () -> controller.getAuctionsByAuthorId(authorId)
         );
 
         assertEquals("Listing not found", exception.getMessage());
     }
 
-    private ToGetTheListOfItemsOnAuctionOfAGivenAuthorController createController() {
-        return new ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(
+    private ToGetTheListOfItemsInAuctionOfAGivenAuthorController createController() {
+        return new ToGetTheListOfItemsInAuctionOfAGivenAuthorController(
                 authorRepository,
                 biblioRepository,
                 pubRepo,
@@ -251,12 +282,12 @@ class ToGetTheListOfItemsOnAuctionOfAGivenAuthorControllerTest {
 
     private static Stream<Arguments> invalidConstructorArguments() {
         return Stream.of(
-                of(null, mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), null, mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), null, mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), null, mock(IAuctionRepository.class), mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), null, mock(US026AuctionMapper.class)),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), null)
+                of(null, mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "AuthorRepository cannot be null"),
+                of(mock(IAuthorRepository.class), null, mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "BibliographicalDataRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), null, mock(IListingRepository.class), mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "PublicationSampleRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), null, mock(IAuctionRepository.class), mock(US026AuctionMapper.class), "ListingRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), null, mock(US026AuctionMapper.class), "AuctionRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(IAuctionRepository.class), null, "AuctionMapper cannot be null")
         );
     }
 }

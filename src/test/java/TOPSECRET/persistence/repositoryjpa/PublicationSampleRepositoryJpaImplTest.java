@@ -6,7 +6,6 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.assembler.PublicationSampleAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IPublicationSampleRepositoryJpa;
-import org.apache.commons.lang3.ObjectUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -560,18 +559,6 @@ class PublicationSampleRepositoryJpaImplTest {
         List<PublicationSampleId> result = repo.findIdsByBibliographicalDataIdIn(ids);
         assertTrue(result.isEmpty());
     }
-
-
-    @Test
-    void findPublicationSamplesIdsByBiblioDataIds_shouldReturnEmptyList() {
-        List<BibliographicalDataID> ids = List.of(mock(BibliographicalDataID.class));
-        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(ids);
-        assertTrue(result.isEmpty());
-    }
-
-    // ====================================================
-    // ----------- FIND BY LIBRARY ID TESTS ---------------
-    // ====================================================
 
     @Test
     void findByLibraryId_shouldReturnEmptyList() {

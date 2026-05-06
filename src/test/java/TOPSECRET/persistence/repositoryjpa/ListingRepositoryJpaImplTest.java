@@ -270,17 +270,62 @@ class ListingRepositoryJpaImplTest {
     // ===========================================================
 
     @Test
-    void findIdsByPublicationSampleIdIn_shouldReturnEmptyList() {
+    void findIdsByPublicationSampleIdIn_shouldReturnEmptyList_whenNoListingsFound() {
         // Arrange
         PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1, pbId_2)))
+                .thenReturn(List.of());
 
         // Act
         List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pbId_1, pbId_2));
 
         // Assert
         assertTrue(result.isEmpty());
+
     }
+
+    @Test
+    void findIdsByPublicationSampleIdIn_shouldThrow_whenPublicationSamplesIdsIsNull() {
+
+        // act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.findIdsByPublicationSampleIdIn(null));
+
+        assertEquals("List of PublicationSampleIds cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void findIdsByPublicationSampleIdIn_shouldReturnListingIds_whenPublicationSamplesAreInListings() {
+        // Arrange
+        PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
+
+        ListingDM listingDM_1 = mock(ListingDM.class);
+        ListingDM listingDM_2 = mock(ListingDM.class);
+
+        ListingId listingId_1 = mock(ListingId.class);
+        ListingId listingId_2 = mock(ListingId.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1, pbId_2)))
+                .thenReturn(List.of(listingDM_1, listingDM_2));
+
+        when(listingDM_1.getListingId()).thenReturn(listingId_1);
+        when(listingDM_2.getListingId()).thenReturn(listingId_2);
+
+        // Act
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(pbId_1, pbId_2));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(listingId_1, result.get(0));
+        assertEquals(listingId_2, result.get(1));
+
+    }
+
+
+
+
 
     @Test
     void findIdsByPublicationSampleIdIn_shouldReturnEmptyList_whenInputIsEmpty() {
