@@ -62,7 +62,7 @@ class ToRegisterCountryControllerTest {
     }
 
     @Test
-    void register_propagatesException() {
+    void registerNewCountry_propagatesException() {
 
         // Arrange
         when(countryService.createAndSave("Mordor"))
