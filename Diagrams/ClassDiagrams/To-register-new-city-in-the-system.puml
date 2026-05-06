@@ -6,14 +6,14 @@ class UI
 
 class ToRegisterNewCityController {
   -cityService: CityService
-  +register(countryName: String, cityName: String) : City
+  +register(countryName: String, cityName: String)
 }
 
 class CityService {
   -cityFactory: CityFactory
   -cityRepository: ICityRepository
   -countryRepository: ICountryRepository
-  +createAndSave(countryName: String, cityName: String) : City
+  +createAndSave(countryName: String, cityName: String)
 }
 
 class City {
@@ -26,32 +26,32 @@ class CountryId
 class CityId
 
 class CityFactory {
-  +create(countryId: CountryId, cityName: String) : City
-  +create(cityId: CityId, countryId: CountryId, cityName: String) : City
+  +create(countryId: CountryId, cityName: String)
+  +create(cityId: CityId, countryId: CountryId, cityName: String)
 }
 
 interface ICityRepository {
-  +save(city: City) : City
-  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String) : boolean
+  +save(city: City)
+  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String)
 }
 
 interface ICountryRepository {
-  +findIdByName(countryName: String) : Optional<CountryId>
+  +findIdByName(countryName: String)
 }
 
 class CityRepositoryJPAImpl {
-  +save(city: City) : City
-  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String) : boolean
+  +save(city: City)
+  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String)
 }
 
 interface ICityRepositoryJPA {
-  +save(cityDM: CityDM) : CityDM
-  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String) : boolean
+  +save(cityDM: CityDM)
+  +existsByCountryIDAndCityName(countryId: CountryId, cityName: String)
 }
 
 class CityAssembler {
-  +toDM(city: City) : CityDM
-  +toDomain(cityDM: CityDM) : City
+  +toDM(city: City)
+  +toDomain(cityDM: CityDM)
 }
 
 class CityDM {
@@ -60,9 +60,9 @@ class CityDM {
   -cityName: String
 }
 
-' =====================
-' Relationships + Verbs
-' =====================
+' ==============
+' Relationships
+' ==============
 
 UI "1" --> "1" ToRegisterNewCityController : uses
 
@@ -76,17 +76,13 @@ CityRepositoryJPAImpl "1" ..|> "1" ICityRepository : implements
 CityRepositoryJPAImpl "1" --> "1" ICityRepositoryJPA : delegates to
 CityRepositoryJPAImpl "1" --> "1" CityAssembler : uses
 
-ICityRepositoryJPA "1" --> "0..*" CityDM : persists
+ICityRepositoryJPA "1" --> "*" CityDM : persists
 
 ' Dependency relationships
 CityAssembler ..> CityFactory : reconstructs via
 CityAssembler ..> City : creates
 CityAssembler ..> CityDM : maps
 
-' Missing relationship
 CityFactory ..> City : creates
-
-City "1" --> "1" CountryId : belongs to
-City "1" --> "1" CityId : identified by
 
 @enduml

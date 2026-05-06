@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 /**
- * JPA data model representing a {@link TOPSECRET.domain.City.City}.
+ * JPA data model representing a {@linkCity}.
  *
  * <p>This class is mapped to the {@code cities} table and is used exclusively
  * for persistence operations. It stores the city's identity, associated country,
  * and name using embedded value objects.</p>
  *
  * <p>Conversion between this data model and the domain object is handled by
- * {@link TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler}.</p>
+ * {@linkCityAssembler}.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
