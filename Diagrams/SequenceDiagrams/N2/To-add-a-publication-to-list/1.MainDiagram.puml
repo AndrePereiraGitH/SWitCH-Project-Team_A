@@ -1,29 +1,42 @@
 @startuml
-
 hide footbox
 autonumber
-title Add Publication to Collection Of Publication (Main)
+title Add Publication to Collection Of Publication - Main View
 
-actor User
+actor "User" as User
 participant ":UI" as UI
-participant ":ToAddPublicationToAListOfMineController" as Controller
-participant ":ICollectionOfPublicationsRepository" as CollectionRepo
-participant ":IPublicationSampleRepository" as PublicationSampleRepo
-participant ":PublicationSample" as PublicationSample
+participant ":ToAddPublicationToA\nListOfMineController" as Controller
 
-' --- Start ---
-User -> UI : I want to add one of my publications to one of my collections
+participant ":ICollectionOfPublicationsRepository" as CollectionRepo
+
+participant ":IPublicationSampleRepository" as PublicationSampleRepo
+participant ":PublicationSampleAssembler" as PublicationSampleAssembler
+participant ":IPublicationSample\nRepositoryJPA" as PublicationSampleRepoJPA
+participant "publicationSampleDM\n:PublicationSampleDM" as publicationSampleDM
+participant "publicationSample\n:PublicationSample" as PublicationSample
+participant "persistedPublicationSampleDM\n:PublicationSampleDM" as persistedPublicationSampleDM
+participant "persistedPublicationSample\n:PublicationSample" as persistedPublicationSample
+
+database "DB" as DB
+
+User -> UI : I want to add one of my publications \nto one of my collections
 activate UI
 
 ' =========================
-' Get Collection Of Publications (reference)
+' Get User Collections
 ' =========================
 UI -> Controller : getUserCollections(userId)
 activate Controller
 
-ref over Controller
-[[2.GetCollection.puml Get Collection Of Publications]]
+Controller -> CollectionRepo : getUserCollections(userId)
+activate CollectionRepo
+
+ref over CollectionRepo
+ [[2.GetUserCollections.puml Get User Collections]]
 end ref
+
+CollectionRepo --> Controller : userCollections
+deactivate CollectionRepo
 
 Controller --> UI : listOfCollectionsDTO
 deactivate Controller
@@ -35,14 +48,20 @@ User -> UI : Selected collection
 activate UI
 
 ' =========================
-' Get Publications Available (reference)
+' Get Available Publications
 ' =========================
-UI -> Controller : getPublicationsForCollection(collectionId)
+UI -> Controller : getPublicationsForCollection(userId, collectionId)
 activate Controller
 
-ref over Controller
-[[3.GetPublicationsAvailable.puml Get Publications Available]]
+Controller -> PublicationSampleRepo : findAvailableForCollection(userId, collectionId)
+activate PublicationSampleRepo
+
+ref over PublicationSampleRepo
+ [[3.GetAvailablePublications.puml Get Available Publications]]
 end ref
+
+PublicationSampleRepo --> Controller : publicationAvailable
+deactivate PublicationSampleRepo
 
 Controller --> UI : listOfAvailablePublicationDTO
 deactivate Controller
@@ -50,34 +69,90 @@ deactivate Controller
 UI --> User : Which publication? Select one or more publications!
 deactivate UI
 
-' =========================
-' Add Publication To Collection
-' =========================
 User -> UI : Selected publications
 activate UI
 
+' =========================
+' Add Publication To Collection
+' =========================
 UI -> Controller : addPublicationToCollection(collectionId, publicationSampleIds)
 activate Controller
 
-' =====================================================
-' CALL REPOSITORY WITH IDS
-' =====================================================
 Controller -> CollectionRepo : addPublicationToCollection(collectionId, publicationSampleIds)
 activate CollectionRepo
 
-' =====================================================
-' ASSIGN COLLECTION TO PUBLICATIONS
-' =====================================================
 loop for each publicationSampleId
+
     CollectionRepo -> PublicationSampleRepo : findPublicationSampleById(publicationSampleId)
     activate PublicationSampleRepo
+
+    PublicationSampleRepo -> PublicationSampleRepoJPA : findById(publicationSampleId)
+    activate PublicationSampleRepoJPA
+
+    PublicationSampleRepoJPA -> DB : select * from PublicationSample
+    activate DB
+
+    DB --> PublicationSampleRepoJPA : data
+    deactivate DB
+
+    PublicationSampleRepoJPA -->> publicationSampleDM ** : <<create>>
+
+    PublicationSampleRepoJPA --> PublicationSampleRepo : publicationSampleDM
+    deactivate PublicationSampleRepoJPA
+
+    PublicationSampleRepo -> PublicationSampleAssembler : toDomain(publicationSampleDM)
+    activate PublicationSampleAssembler
+
+    PublicationSampleAssembler -->> PublicationSample ** : <<create>>
+
+    PublicationSampleAssembler --> PublicationSampleRepo : publicationSample
+    deactivate PublicationSampleAssembler
+
     PublicationSampleRepo --> CollectionRepo : publicationSample
     deactivate PublicationSampleRepo
 
-    CollectionRepo -> PublicationSample : assignToCollection(collectionId)
+    CollectionRepo -> PublicationSample : addPublicationToCollection(collectionId)
     activate PublicationSample
+
     PublicationSample --> CollectionRepo : true
     deactivate PublicationSample
+
+    CollectionRepo -> PublicationSampleRepo : save(publicationSample)
+    activate PublicationSampleRepo
+
+    PublicationSampleRepo -> PublicationSampleAssembler : toDM(publicationSample)
+    activate PublicationSampleAssembler
+
+    PublicationSampleAssembler -->> publicationSampleDM ** : <<create>>
+
+    PublicationSampleAssembler --> PublicationSampleRepo : publicationSampleDM
+    deactivate PublicationSampleAssembler
+
+    PublicationSampleRepo -> PublicationSampleRepoJPA : save(publicationSampleDM)
+    activate PublicationSampleRepoJPA
+
+    PublicationSampleRepoJPA -> DB : update PublicationSample
+    activate DB
+
+    DB --> PublicationSampleRepoJPA : data
+    deactivate DB
+
+    PublicationSampleRepoJPA -->> persistedPublicationSampleDM ** : <<create>>
+
+    PublicationSampleRepoJPA --> PublicationSampleRepo : persistedPublicationSampleDM
+    deactivate PublicationSampleRepoJPA
+
+    PublicationSampleRepo -> PublicationSampleAssembler : toDomain(persistedPublicationSampleDM)
+    activate PublicationSampleAssembler
+
+    PublicationSampleAssembler -->> persistedPublicationSample ** : <<create>>
+
+    PublicationSampleAssembler --> PublicationSampleRepo : persistedPublicationSample
+    deactivate PublicationSampleAssembler
+
+    PublicationSampleRepo --> CollectionRepo : persistedPublicationSample
+    deactivate PublicationSampleRepo
+
 end
 
 CollectionRepo --> Controller : true

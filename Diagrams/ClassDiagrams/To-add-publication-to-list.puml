@@ -1,84 +1,179 @@
 @startuml
-title Add Publication to Collection Of Publication
+title Class Diagram - Add Publication to Collection Of Publication
 
-' ========================
+skinparam packageStyle rectangle
+left to right direction
+
+' =========================
 ' APPLICATION LAYER
-' ========================
+' =========================
+package "Application" {
 
-class US018ToAddPublicationToAListOfMineController {
-  +getUserCollections: List<US018CollectionOfPublicationsDTO>
-  +getPublicationsForCollection: List<US018PublicationSampleDTO>
-  +addPublicationToCollection: boolean
+class "ToAddPublicationToA\nListOfMineController" as Controller {
+  +getUserCollections(userId:UserId)
+  +getPublicationsForCollection(userId:UserId, \ncollectionId:CollectionOfPublicationsId)
+  +addPublicationToCollection(collectionId:CollectionOfPublicationsId, \npublicationSampleIds:List<PublicationSampleId>)
 }
 
-' ========================
+}
+
+' =========================
 ' DOMAIN LAYER
-' ========================
+' =========================
+package "Domain" {
 
 class CollectionOfPublications {
-  -mediaFormat: String
+  -id: CollectionOfPublicationsId
+  -collectionName: String
+  -genreId: GenreId
+  -ownerId: UserId
+  -private: boolean
 }
-
-class CollectionOfPublicationsID {
-  -collectionId: String
-}
-
-CollectionOfPublications "1 " ---> "1 " CollectionOfPublicationsID : identifies
-
 
 class PublicationSample {
-  -publicationSampleId: PublicationSampleId
+  -id: PublicationSampleId
   -bibliographicalDataId: BibliographicalDataID
-}
+  -ownerId: UserId
+  -publicationStatus: PublicationStatus
+  -editionId: EditionID
+  -condition: Condition
 
-class PublicationSampleId {
-  -id: String
+  +addPublicationToCollection(collectionId:CollectionOfPublicationsId)
 }
-
-class BibliographicalDataID {
-  -id: String
-}
-
-PublicationSample "1    " ---> "  1  " PublicationSampleId : identifies
-PublicationSample "1" ---> "  1   " BibliographicalDataID : contains
-PublicationSample "1" ---> "  1   " CollectionOfPublicationsID : is part of
 
 class BibliographicalData {
+  -id: BibliographicalDataID
   -title: String
+  -authors: List<AuthorId>
+  -originalLanguage Locale
+  -publicationDate LocalDate
+  -genres List<GenreId>
+  -chunksOfText String
 }
 
-' ========================
-' REPOSITORIES
-' ========================
+class CollectionOfPublicationsFactory {
+  +create(collectionId:CollectionOfPublicationsId,\ncollectionName:String, genreId:GenreId,\nownerId:UserId, private:boolean)
+}
+
+class PublicationSampleFactory {
+  +create(pubSampleId:PublicationSampleId,\nbibliographicalDataId:BibliographicalDataID,\nuserId:UserId, publicationStatus:PublicationStatus,\neditionId:EditionID, condition:Condition)
+}
+
+class BibliographicalDataFactory {
+  +create(id: BibliographicalDataID, title: String, authors: List<AuthorId>, originalLanguage Locale, \npublicationDate LocalDate, genres List<GenreId>, chunksOfText String)
+}
 
 interface ICollectionOfPublicationsRepository {
-  +getUserCollections: List<CollectionOfPublications>
-  +addPublicationToCollection: boolean
+  +getUserCollections(userId:UserId)
+  +addPublicationToCollection(collectionId:CollectionOfPublicationsId,\npublicationSampleIds:List<PublicationSampleId>)
 }
 
 interface IPublicationSampleRepository {
-  +getAllPublicationsInUserLibrary: List<PublicationSample>
-  +getPublicationsByCollectionID: List<PublicationSample>
-  +findPublicationSampleById: PublicationSample
+  +findAvailableForCollection(userId:UserId,\ncollectionId:CollectionOfPublicationsId)
+  +findPublicationSampleById(publicationSampleId:PublicationSampleId)
+  +save(publicationSample:PublicationSample)
 }
 
 interface IBibliographicalDataRepository {
-  +findBibliographicalDataById: BibliographicalData
+  +findBibliographicalDataById(id:BibliographicalDataID)
 }
 
-' ========================
-' DEPENDENCIES
-' ========================
+CollectionOfPublications "1" --> "*" PublicationSample : contains >
+PublicationSample "*" --> "1" BibliographicalData : references >
 
-US018ToAddPublicationToAListOfMineController ...> ICollectionOfPublicationsRepository : interacts with
-US018ToAddPublicationToAListOfMineController ...> IPublicationSampleRepository : interacts with
-US018ToAddPublicationToAListOfMineController ...> IBibliographicalDataRepository : interacts with
+CollectionOfPublicationsFactory ..> CollectionOfPublications : creates >
+PublicationSampleFactory ..> PublicationSample : creates >
+BibliographicalDataFactory ..> BibliographicalData : creates >
 
-ICollectionOfPublicationsRepository ..> CollectionOfPublications
-IPublicationSampleRepository ..> PublicationSample
-IBibliographicalDataRepository ..> BibliographicalData
+Controller ..> ICollectionOfPublicationsRepository : retrieves >
+Controller ..> IPublicationSampleRepository : retrieves >
+Controller ..> IBibliographicalDataRepository : retrieves >
 
-BibliographicalDataID *.. BibliographicalData
-BibliographicalData " 1 " ---> "  1" BibliographicalDataID : identifies
+}
+
+' =========================
+' DTO LAYER
+' =========================
+package "DTO" {
+
+class CollectionOfPublicationsDTO {
+  -id: CollectionOfPublicationsId
+  -collectionName: String
+}
+
+class PublicationSampleDTO {
+  -id: PublicationSampleId
+  -title: String
+}
+
+class US018CollectionOfPublicationsMapper {
+  +toDTO(collection:CollectionOfPublications)
+  +toDTOs(collections:List<CollectionOfPublications>)
+}
+
+class PublicationSampleMapper {
+  +toDTO(publicationSample:PublicationSample)
+  +toDTOs(publicationSamples:List<PublicationSample>)
+}
+
+US018CollectionOfPublicationsMapper ..> CollectionOfPublications : converts >
+US018CollectionOfPublicationsMapper ..> CollectionOfPublicationsDTO : creates >
+
+PublicationSampleMapper ..> PublicationSample : converts >
+PublicationSampleMapper ..> PublicationSampleDTO : creates >
+
+Controller ..> US018CollectionOfPublicationsMapper : maps >
+Controller ..> PublicationSampleMapper : maps >
+}
+
+' =========================
+' PERSISTENCE LAYER
+' =========================
+package "Persistence" {
+
+class CollectionOfPublicationsDM
+class PublicationSampleDM
+class BibliographicalDataDM
+
+class CollectionOfPublicationsAssembler {
+  +toDomain(dm:CollectionOfPublicationsDM)
+  +toDomainList(dmList:List<CollectionOfPublicationsDM>)
+}
+
+class PublicationSampleAssembler {
+  +toDM(publicationSample:PublicationSample)
+  +toDomain(dm:PublicationSampleDM)
+  +toDomainList(dmList:List<PublicationSampleDM>)
+}
+
+class BibliographicalDataAssembler {
+  +toDomain(dm:BibliographicalDataDM)
+}
+
+interface ICollectionOfPublicationsRepositoryJPA
+interface IPublicationSampleRepositoryJPA
+interface IBibliographicalDataRepositoryJPA
+
+CollectionOfPublicationsAssembler ...> CollectionOfPublicationsFactory : ask creation to >
+CollectionOfPublicationsAssembler ...> CollectionOfPublicationsDM : converts >
+
+PublicationSampleAssembler ...> PublicationSampleFactory : ask creation to >
+PublicationSampleAssembler ...> PublicationSampleDM : converts >
+
+BibliographicalDataAssembler ...> BibliographicalDataFactory : ask creation to >
+BibliographicalDataAssembler ...> BibliographicalDataDM : converts >
+
+ICollectionOfPublicationsRepositoryJPA --> CollectionOfPublicationsDM : persists >
+IPublicationSampleRepositoryJPA --> PublicationSampleDM : persists >
+IBibliographicalDataRepositoryJPA --> BibliographicalDataDM : persists >
+}
+
+' =========================
+' CROSS LAYER
+' =========================
+
+ICollectionOfPublicationsRepository <|.. ICollectionOfPublicationsRepositoryJPA : implements <
+IPublicationSampleRepository <|.. IPublicationSampleRepositoryJPA : implements <
+IBibliographicalDataRepository <|.. IBibliographicalDataRepositoryJPA : implements <
 
 @enduml
