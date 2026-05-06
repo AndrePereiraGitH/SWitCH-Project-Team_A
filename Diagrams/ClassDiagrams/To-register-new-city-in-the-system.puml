@@ -61,28 +61,28 @@ class CityDM {
 }
 
 ' =====================
-' Relationships
+' Relationships + Verbs
 ' =====================
 
-UI "1" --> "1" ToRegisterNewCityController
+UI "1" --> "1" ToRegisterNewCityController : uses
 
-ToRegisterNewCityController "1" --> "1" CityService
+ToRegisterNewCityController "1" --> "1" CityService : delegates to
 
-CityService "1" --> "1" ICityRepository
-CityService "1" --> "1" ICountryRepository
-CityService "1" --> "1" CityFactory
+CityService "1" --> "1" ICityRepository : uses
+CityService "1" --> "1" ICountryRepository : queries
+CityService "1" --> "1" CityFactory : creates via
 
-CityRepositoryJPAImpl "1" ..|> "1" ICityRepository
-CityRepositoryJPAImpl "1" --> "1" ICityRepositoryJPA
-CityRepositoryJPAImpl "1" --> "1" CityAssembler
+CityRepositoryJPAImpl "1" ..|> "1" ICityRepository : implements
+CityRepositoryJPAImpl "1" --> "1" ICityRepositoryJPA : delegates to
+CityRepositoryJPAImpl "1" --> "1" CityAssembler : uses
 
-ICityRepositoryJPA "1" --> "0..*" CityDM
+ICityRepositoryJPA "1" --> "0..*" CityDM : persists
 
-CityAssembler "1" --> "1" CityFactory
-CityAssembler "1" --> "1" City
-CityAssembler "1" --> "1" CityDM
+CityAssembler "1" --> "1" CityFactory : reconstructs via
+CityAssembler "1" --> "1" City : creates
+CityAssembler "1" --> "1" CityDM : maps
 
-City "1" --> "1" CountryID
-City "1" --> "1" CityID
+City "1" --> "1" CountryID : belongs to
+City "1" --> "1" CityID : identified by
 
 @enduml
