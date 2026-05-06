@@ -1,11 +1,14 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
+import TOPSECRET.dto.US018CollectionOfPublicationsMapper;
 import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018PublicationSampleMapper;
 
@@ -71,13 +74,13 @@ public class ToAddPublicationToAListOfMineController {
      *
      * @return list of collection DTOs
      */
-//    public List<US018CollectionOfPublicationsDTO> getUserCollections() {
-//
-//        List<CollectionOfPublications> userCollections =
-//                _collectionRepo.getUserCollections(_userId);
-//
-//        return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
-//    }
+    public List<US018CollectionOfPublicationsDTO> getUserCollections() {
+
+        List<CollectionOfPublications> userCollections =
+                _collectionRepo.getUserCollections(_userId);
+
+        return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
+    }
 
     /**
      * Retrieves the list of publications that can be added to a collection.

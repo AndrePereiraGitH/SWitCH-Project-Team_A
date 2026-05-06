@@ -118,4 +118,80 @@ class PublicationSampleAssemblerTest {
     void toDomain_shouldThrowNullPointerException_whenPublicationSampleDMIsNull() {
         assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
     }
+
+    @Test
+    void toDomainList_shouldReturnAListOfDomainObjects() {
+        // ARRANGE
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+
+        when(dm.getPubSampleId()).thenReturn(pubSampleIdDouble);
+        when(dm.getBdId()).thenReturn(bdIdDouble);
+        when(dm.getOwnerId()).thenReturn(userIdDouble);
+        when(dm.getEditionId()).thenReturn(editionIdDouble);
+        when(dm.getPublicationStatus()).thenReturn(status);
+        when(dm.getCondition()).thenReturn(condition);
+
+        PublicationSample publicationSample = mock(PublicationSample.class);
+
+        when(factoryDouble.create(
+                pubSampleIdDouble,
+                bdIdDouble,
+                userIdDouble,
+                status,
+                editionIdDouble,
+                condition)
+        ).thenReturn(publicationSample);
+
+        // ACT
+        var result = assembler.toDomainList(java.util.List.of(dm));
+
+        // ASSERT
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void toDomainList_shouldReturnCorrectDomainObject() {
+        // ARRANGE
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+
+        when(dm.getPubSampleId()).thenReturn(pubSampleIdDouble);
+        when(dm.getBdId()).thenReturn(bdIdDouble);
+        when(dm.getOwnerId()).thenReturn(userIdDouble);
+        when(dm.getEditionId()).thenReturn(editionIdDouble);
+        when(dm.getPublicationStatus()).thenReturn(status);
+        when(dm.getCondition()).thenReturn(condition);
+
+        PublicationSample publicationSample = mock(PublicationSample.class);
+
+        when(factoryDouble.create(
+                pubSampleIdDouble,
+                bdIdDouble,
+                userIdDouble,
+                status,
+                editionIdDouble,
+                condition)
+        ).thenReturn(publicationSample);
+
+        // ACT
+        var result = assembler.toDomainList(java.util.List.of(dm));
+
+        // ASSERT
+        assertSame(publicationSample, result.get(0));
+    }
+
+    @Test
+    void toDomainList_shouldReturnEmptyListWhenInputIsEmpty() {
+        // ACT
+        var result = assembler.toDomainList(java.util.List.of());
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void toDomainList_shouldThrowNullPointerExceptionWhenInputIsNull() {
+        // ACT & ASSERT
+        assertThrows(NullPointerException.class,
+                () -> assembler.toDomainList(null));
+    }
 }
