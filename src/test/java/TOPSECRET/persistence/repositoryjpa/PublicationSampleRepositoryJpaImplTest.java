@@ -154,6 +154,37 @@ class PublicationSampleRepositoryJpaImplTest {
         assertThrows(NullPointerException.class, () -> repo.existsById(null));
     }
 
+    // =========================================================================
+    // update()
+    // =========================================================================
+
+    @Test
+    void updateShouldReturnUpdatedPublicationSample() {
+
+        // ARRANGE
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+
+        when(assembler.toDM(publicationSample)).thenReturn(dm);
+        when(jpa.save(dm)).thenReturn(dm);
+        when(assembler.toDomain(dm)).thenReturn(publicationSample);
+
+        // ACT
+        PublicationSample result =
+                repo.update(publicationSample);
+
+        // ASSERT
+        assertEquals(publicationSample, result);
+    }
+
+    @Test
+    void updateShouldThrowExceptionWhenPublicationSampleIsNull() {
+
+        // ACT & ASSERT
+        assertThrows(NullPointerException.class,
+                () -> repo.update(null));
+    }
+
     // ===========================================================
     // ========== Tests for findAll ==============================
     // ===========================================================

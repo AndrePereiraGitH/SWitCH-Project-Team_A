@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Controller responsible for the use case:
- * <b>US018 - Add Publication to Collection</b>.
+ * <b>Add Publication to Collection</b>.
  *
  * <p>
  * This controller acts as an orchestrator between the UI and domain layers.

@@ -19,6 +19,35 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link ToAddPublicationToAListOfMineController}.
+ *
+ * <p>
+ * These tests validate the behavior of the controller responsible for
+ * the use case <b>US018 - Add Publication to Collection</b>.
+ * </p>
+ *
+ * <p>
+ * The test suite focuses on:
+ * <ul>
+ *     <li>Retrieving user collections</li>
+ *     <li>Retrieving publications available for a collection</li>
+ *     <li>Delegating publication assignment operations</li>
+ *     <li>Validation of invalid input arguments</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Dependencies are isolated using Mockito mocks in order to verify only
+ * the controller orchestration responsibilities.
+ * </p>
+ *
+ * <p>
+ * The controller itself contains no business logic and is expected only
+ * to coordinate repository access, mapper transformations, and delegation
+ * of domain operations.
+ * </p>
+ */
 class ToAddPublicationToAListOfMineControllerTest {
 
     @Test

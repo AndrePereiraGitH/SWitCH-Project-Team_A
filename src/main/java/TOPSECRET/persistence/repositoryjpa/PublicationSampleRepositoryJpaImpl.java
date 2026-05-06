@@ -98,6 +98,24 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return pbSample;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public PublicationSample update(PublicationSample publicationSample) {
+
+        Objects.requireNonNull(publicationSample,
+                "PublicationSample must not be null");
+
+        PublicationSampleDM dm = publicationSampleAssembler.toDM(publicationSample);
+
+        PublicationSampleDM updated =
+                publicationSampleRepositoryJpa.save(dm);
+
+        return publicationSampleAssembler.toDomain(updated);
+    }
+
     // =========================================================================
     // Lookup — by associated identifiers
     // =========================================================================

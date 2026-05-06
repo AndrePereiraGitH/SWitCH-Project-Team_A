@@ -40,6 +40,27 @@ public interface IPublicationSampleRepository {
      */
     boolean existsById(PublicationSampleId id);
 
+    /**
+     * Updates an existing {@link PublicationSample} in the persistence layer.
+     *
+     * <p>
+     * This operation is intended for aggregates that already exist and whose
+     * state has changed during the execution of a use case.
+     * </p>
+     *
+     * <p>
+     * The repository converts the domain object into its persistence
+     * representation, delegates the update operation to the JPA repository,
+     * and reconstructs the persisted aggregate before returning it.
+     * </p>
+     *
+     * @param publicationSample the publication sample to update
+     * @return the updated and persisted {@link PublicationSample}
+     *
+     * @throws NullPointerException if publicationSample is null
+     */
+    PublicationSample update(PublicationSample publicationSample);
+
     // =========================================================================
     // Lookup — by identity
     // =========================================================================

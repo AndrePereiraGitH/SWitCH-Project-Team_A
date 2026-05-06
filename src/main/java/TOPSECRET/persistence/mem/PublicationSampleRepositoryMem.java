@@ -10,6 +10,8 @@ import TOPSECRET.domain.ValueObjects.EditionID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
+import jakarta.transaction.Transactional;
 
 
 import java.util.ArrayList;
@@ -77,6 +79,32 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             }
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PublicationSample update(PublicationSample publicationSample) {
+
+        if (publicationSample == null) {
+            throw new IllegalArgumentException(
+                    "PublicationSample cannot be null");
+        }
+
+        PublicationSample existingPublication =
+                allPublicationsInSystem.stream()
+                        .filter(p -> p.id().equals(publicationSample.id()))
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "PublicationSample does not exist in repository"));
+
+        allPublicationsInSystem.remove(existingPublication);
+
+        allPublicationsInSystem.add(publicationSample);
+
+        return publicationSample;
     }
 
     // -------------------------------------------------------------------------
