@@ -11,6 +11,7 @@ import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US028ListingDTO;
 import TOPSECRET.dto.US028ListingMapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,39 +21,123 @@ import static org.mockito.Mockito.*;
 
 class ToGetListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
+    private IPublisherRepository publisherRepo;
+    private IEditionRepository editionRepo;
+    private IPublicationSampleRepository pubSampleRepo;
+    private IListingRepository listingRepo;
+    private US028ListingMapper listingMapper;
+
+    private ToGetListOfItemsOnAuctionOfAGivenPublisherController sut;
+
+    @BeforeEach
+    void setUp() {
+        publisherRepo = mock(IPublisherRepository.class);
+        editionRepo = mock(IEditionRepository.class);
+        pubSampleRepo = mock(IPublicationSampleRepository.class);
+        listingRepo = mock(IListingRepository.class);
+        listingMapper = mock(US028ListingMapper.class);
+
+        sut = new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
+                publisherRepo,
+                editionRepo,
+                pubSampleRepo,
+                listingRepo,
+                listingMapper
+        );
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenPublisherRepoIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
+                        null,
+                        editionRepo,
+                        pubSampleRepo,
+                        listingRepo,
+                        listingMapper
+                )
+        );
+
+        assertEquals("publisherRepo cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenEditionRepoIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepo,
+                        null,
+                        pubSampleRepo,
+                        listingRepo,
+                        listingMapper
+                )
+        );
+
+        assertEquals("editionRepo cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenPubSampleRepoIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepo,
+                        editionRepo,
+                        null,
+                        listingRepo,
+                        listingMapper
+                )
+        );
+
+        assertEquals("pubSampleRepo cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenListingRepoIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepo,
+                        editionRepo,
+                        pubSampleRepo,
+                        null,
+                        listingMapper
+                )
+        );
+
+        assertEquals("listingRepo cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void constructor_shouldThrowException_whenListingMapperIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
+                        publisherRepo,
+                        editionRepo,
+                        pubSampleRepo,
+                        listingRepo,
+                        null
+                )
+        );
+
+        assertEquals("listingMapper cannot be null", exception.getMessage());
+    }
+
     @Test
     void findListOfItemsOnAuctionByPublisherId_shouldThrowException_whenPublisherIdIsNull() {
-        // Arrange
-        IPublisherRepository publisherRepo = mock(IPublisherRepository.class);
-        IEditionRepository editionRepo = mock(IEditionRepository.class);
-        IPublicationSampleRepository pubSampleRepo = mock(IPublicationSampleRepository.class);
-        IListingRepository listingRepo = mock(IListingRepository.class);
-        US028ListingMapper listingMapper = mock(US028ListingMapper.class);
-
-        ToGetListOfItemsOnAuctionOfAGivenPublisherController sut =
-                new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
-                        publisherRepo, editionRepo, pubSampleRepo, listingRepo, listingMapper
-                );
-
-        // Act
-        Exception result = assertThrows(
+        IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.findListOfItemsOnAuctionByPublisherId(null)
         );
 
-        // Assert
-        assertEquals("publisherId cannot be null", result.getMessage());
+        assertEquals("publisherId cannot be null", exception.getMessage());
     }
 
     @Test
-    void findListOfItemsOnAuctionByPublisherId_shouldReturnListingDTOs() {
-        // Arrange
-        IPublisherRepository publisherRepo = mock(IPublisherRepository.class);
-        IEditionRepository editionRepo = mock(IEditionRepository.class);
-        IPublicationSampleRepository pubSampleRepo = mock(IPublicationSampleRepository.class);
-        IListingRepository listingRepo = mock(IListingRepository.class);
-        US028ListingMapper listingMapper = mock(US028ListingMapper.class);
-
+    void findListOfItemsOnAuctionByPublisherId_shouldReturnListingDTOs_whenPublisherIdIsValid() {
         PublisherID publisherId = mock(PublisherID.class);
         EditionID editionId = mock(EditionID.class);
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
@@ -69,16 +154,14 @@ class ToGetListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         when(listingRepo.findAllByAuctionAndPublicationSampleIdIn(publicationSampleIds)).thenReturn(listings);
         when(listingMapper.toDTO(listings)).thenReturn(expected);
 
-        ToGetListOfItemsOnAuctionOfAGivenPublisherController sut =
-                new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
-                        publisherRepo, editionRepo, pubSampleRepo, listingRepo, listingMapper
-                );
-
-        // Act
         List<US028ListingDTO> result =
                 sut.findListOfItemsOnAuctionByPublisherId(publisherId);
 
-        // Assert
         assertEquals(expected, result);
+
+        verify(editionRepo).findIdsByPublisherId(publisherId);
+        verify(pubSampleRepo).findIdsByEditionIdIn(editionIds);
+        verify(listingRepo).findAllByAuctionAndPublicationSampleIdIn(publicationSampleIds);
+        verify(listingMapper).toDTO(listings);
     }
 }

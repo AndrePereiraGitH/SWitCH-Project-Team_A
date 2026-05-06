@@ -32,6 +32,25 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
             IListingRepository listingRepo,
             US028ListingMapper listingMapper
     ) {
+        if (publisherRepo == null) {
+            throw new IllegalArgumentException("publisherRepo cannot be null");
+        }
+
+        if (editionRepo == null) {
+            throw new IllegalArgumentException("editionRepo cannot be null");
+        }
+
+        if (pubSampleRepo == null) {
+            throw new IllegalArgumentException("pubSampleRepo cannot be null");
+        }
+
+        if (listingRepo == null) {
+            throw new IllegalArgumentException("listingRepo cannot be null");
+        }
+
+        if (listingMapper == null) {
+            throw new IllegalArgumentException("listingMapper cannot be null");
+        }
         this.publisherRepo = publisherRepo;
         this.editionRepo = editionRepo;
         this.pubSampleRepo = pubSampleRepo;
@@ -69,9 +88,9 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
         List<PublicationSampleId> listOfPublicationSampleIds =
                 pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 
-        List<Listing> listOfAuctionListings =
+        List<Listing> auctionListings =
                 listingRepo.findAllByAuctionAndPublicationSampleIdIn(listOfPublicationSampleIds);
 
-        return listingMapper.toDTO(listOfAuctionListings);
+        return listingMapper.toDTO(auctionListings);
     }
 }
