@@ -1,32 +1,96 @@
 @startuml
-title Register a new publication in MiteLovers (Class Diagram)
 
-hide circle
+ hide circle
+ title To Register a New Publication
 
-class UI010 {
-}
+ class UI
 
-class US010ToRegisterNewPublicationCtrl {
-  +registerNewPublication(bdId, userId, status, editionId, condition) : boolean
-}
+ class ToRegisterNewPublicationCtrl {
+   -publicationSampleService: PublicationSampleService
+   +register(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+ }
 
-interface IPublicationSampleRepository {
-  +createAndAdd(bdId, userId, status, editionId, condition) : PublicationSample
-}
+ class PublicationSampleService {
+   -publicationSampleRepository: IPublicationSampleRepository
+   -factory: PublicationSampleFactory
+   +createAndSave(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+ }
 
-class PublicationSampleFactory {
-  +create(bdId, userId, status, editionId, condition) : PublicationSample
-}
+ class PublicationSample {
+   -publicationSampleId: PublicationSampleId
+   -bibliographicalDataId: BibliographicalDataId
+   -ownerId: UserId
+   -editionId: EditionId
+   -libraryId: LibraryId
+   -collectionOfPublicationsId: CollectionOfPublicationsId
+   -publicationStatus: PublicationStatus
+   -condition: Condition
+ }
 
-class PublicationSample {
-}
+ class PublicationSampleFactory {
+   +create(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+   +create(publicationSampleId: PublicationSampleId, bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+ }
 
-UI010 "1" ..> "1" US010ToRegisterNewPublicationCtrl : uses
+ interface IPublicationSampleRepository {
+   +save(publicationSample: PublicationSample)
+   +existsById(publicationSampleId: PublicationSampleId)
+   +findAll()
+   +findById(publicationSampleId: PublicationSampleId)
+ }
 
-US010ToRegisterNewPublicationCtrl "1" ..> "1" IPublicationSampleRepository : depends on
+ class PublicationSampleRepositoryJpaImpl {
+   +save(publicationSample: PublicationSample)
+   +existsById(publicationSampleId: PublicationSampleId)
+   +findAll()
+   +findById(publicationSampleId: PublicationSampleId)
+ }
 
-IPublicationSampleRepository "1" ..> "1" PublicationSampleFactory : uses
+ interface IPublicationSampleRepositoryJpa {
+   +save(publicationSampleDM: PublicationSampleDM)
+   +existsById(publicationSampleId: PublicationSampleId)
+   +findAll()
+   +findById(publicationSampleId: PublicationSampleId)
+ }
 
-IPublicationSampleRepository "1" --> "*" PublicationSample : manages
+ class PublicationSampleAssembler {
+   +toDM(publicationSample: PublicationSample)
+   +toDomain(publicationSampleDM: PublicationSampleDM)
+ }
 
-@enduml
+ class PublicationSampleDM {
+   -publicationSampleId: PublicationSampleId
+   -bibliographicalDataId: BibliographicalDataId
+   -ownerId: UserId
+   -editionId: EditionId
+   -libraryId: LibraryId
+   -collectionOfPublicationsId: CollectionOfPublicationsId
+   -publicationStatus: PublicationStatus
+   -condition: Condition
+ }
+
+ ' =============
+ ' Relationships
+ ' =============
+
+ UI "1" --> "1" ToRegisterNewPublicationCtrl : uses
+
+ ToRegisterNewPublicationCtrl "1" --> "1" PublicationSampleService : delegates to
+
+ PublicationSampleService "1" --> "1" IPublicationSampleRepository : uses
+ PublicationSampleService "1" --> "1" PublicationSampleFactory : creates via
+
+ PublicationSampleRepositoryJpaImpl "1" ..|> "1" IPublicationSampleRepository : implements
+ PublicationSampleRepositoryJpaImpl "1" --> "1" IPublicationSampleRepositoryJpa : delegates to
+ PublicationSampleRepositoryJpaImpl "1" --> "1" PublicationSampleAssembler : uses
+
+ IPublicationSampleRepositoryJpa "1" --> "*" PublicationSampleDM : persists
+
+ PublicationSampleAssembler ..> PublicationSampleFactory : reconstructs via
+ PublicationSampleAssembler ..> PublicationSample : creates
+ PublicationSampleAssembler ..> PublicationSampleDM : maps
+
+
+ PublicationSampleFactory "1" --> "*" PublicationSample : creates
+
+ @enduml
