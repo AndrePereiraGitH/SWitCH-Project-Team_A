@@ -151,7 +151,7 @@ AppraisalAssembler ...> AppraisalEntityDM : converts >
 GenreAssembler ...> GenreFactory : ask creation to >
 GenreAssembler ...> GenreDM : converts >
 
-PublicationTypeAssembler ...> PublicationType : converts >
+PublicationTypeAssembler ...> PublicationTypeFactory : converts >
 PublicationTypeAssembler ...> PublicationTypeDM : converts >
 
 IAppraisalEntityRepositoryJPA --> AppraisalEntityDM : persists >
