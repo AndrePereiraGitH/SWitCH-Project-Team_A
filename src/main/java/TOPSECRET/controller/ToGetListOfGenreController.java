@@ -23,12 +23,12 @@ public class ToGetListOfGenreController {
     private IGenreRepository _genreRepository;
     private US013GenreMapper _mapper;
 
-    public ToGetListOfGenreController(GenreRepositoryMem genreRepository, US013GenreMapper mapper) {
+    public ToGetListOfGenreController(IGenreRepository genreRepository, US013GenreMapper mapper) {
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre Repository can't be null");
         }
         if (mapper == null) {
-            throw new IllegalArgumentException("GenreMapper can't be null");
+            throw new IllegalArgumentException("Genre Mapper can't be null");
         }
 
 

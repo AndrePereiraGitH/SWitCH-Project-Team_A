@@ -6,7 +6,7 @@ title Get Official Genres List (with JPA)
 actor Administrator as User
 
 participant ":UI" as UI
-participant ":ToGetListOfGenres\nController" as C
+participant ":ToGetListOfGenre\nController" as C
 participant ":IGenre\nRepository" as GR
 participant ":IGenre\nRepositoryJPA" as GRJPA
 participant ":Genre\nAssembler" as Assembler
