@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
-import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.*;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
@@ -94,13 +94,11 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
      * bibliographical data
      * @throws InstanceNotFoundException if there is an issue retrieving the data
      */
-    public List<US023BibliographicalDataDTO> getAllPublicationBD() throws InstanceNotFoundException {
+    public List<US023BibliographicalDataDTO> findAllBibliographicalData() throws InstanceNotFoundException {
 
         List<BibliographicalData> listOfAllPublicationBD = _bdRepo.findAll();
 
-        List<US023BibliographicalDataDTO> listOfAllBibliographicalDataDTO = _bdMapper.toDTOs(listOfAllPublicationBD);
-
-        return listOfAllBibliographicalDataDTO;
+        return _bdMapper.toDTOs(listOfAllPublicationBD);
     }
 
     /**
@@ -109,7 +107,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
      *
      * @param bdId the bibliographical data identifier
      * @return a list of listing DTOs
-     * @throws InstanceNotFoundException if any ListingId does not correspond to an existing Listing
+     * @throws InstanceNotFoundException if any Listing does not correspond to an existing Listing
      */
     public List<US023ListingDTO> findListOfItemsOnDirectSale(BibliographicalDataId bdId) throws InstanceNotFoundException {
 
@@ -119,10 +117,8 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
         List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findIdsByBibliographicalDataId(bdId);
 
-        List<ListingId> listOfDSListingIds = _listingRepo.findIdsByPublicationSampleIdIn(listOfPubSample);
+        List<Listing> listOfDSListings = _listingRepo.findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSample);
 
-        List<US023ListingDTO> listOfListingDTO = _listingMapper.toDTOs(listOfDSListingIds);
-
-        return listOfListingDTO;
+        return _listingMapper.toDTOs(listOfDSListings);
     }
 }
