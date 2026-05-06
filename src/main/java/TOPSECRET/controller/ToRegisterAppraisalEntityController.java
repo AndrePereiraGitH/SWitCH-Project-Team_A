@@ -13,6 +13,7 @@ import TOPSECRET.dto.US004GenreDTO;
 import TOPSECRET.dto.US004PublicationTypeDTO;
 import TOPSECRET.dto.US004GenreMapper;
 import TOPSECRET.dto.US004PublicationTypeMapper;
+import TOPSECRET.services.AppraisalEntityService;
 
 import java.util.List;
 
@@ -24,92 +25,97 @@ import java.util.List;
  */
 public class ToRegisterAppraisalEntityController {
 
-//    private IGenreRepository _genreRepository;
-//    private IPublicationTypeRepository _publicationTypeRepository;
-//    private IAppraisalEntityRepository _appraisalEntityRepository;
-//
-//    /**
-//     * Constructor.
-//     *
-//     * @param genreRepository Genre repository
-//     * @param publicationTypeRepository PublicationType repository
-//     * @param appraisalEntityRepository AppraisalEntity repository
-//     */
-//    public ToRegisterAppraisalEntityController(
-//            IGenreRepository genreRepository,
-//            IPublicationTypeRepository publicationTypeRepository,
-//            IAppraisalEntityRepository appraisalEntityRepository) {
-//
-//        if (genreRepository == null) {
-//            throw new IllegalArgumentException("GenreRepository cannot be null.");
-//        }
-//        if (publicationTypeRepository == null) {
-//            throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null.");
-//        }
-//        if (appraisalEntityRepository == null) {
-//            throw new IllegalArgumentException("AppraisalEntityRepository cannot be null.");
-//        }
-//
-//        this._genreRepository = genreRepository;
-//        this._publicationTypeRepository = publicationTypeRepository;
-//        this._appraisalEntityRepository = appraisalEntityRepository;
-//    }
-//
-//
-//    /**
-//     * Retrieves all Genres and converts them into DTOs.
-//     *
-//     * @return list of Genre DTOs
-//     */
-//    public List<US004GenreDTO> getAllGenres() {
-//
-//        List<Genre> genres = _genreRepository.getAllGenres();
-//
-//        return US004GenreMapper.toDTOs(genres);
-//    }
-//
-//    /**
-//     * Retrieves all PublicationTypes and converts them into DTOs.
-//     *
-//     * @return list of PublicationType DTOs
-//     */
-//    public List<US004PublicationTypeDTO> getAllPublicationTypes() {
-//
-//        List<PublicationType> publicationTypes =
-//                _publicationTypeRepository.getAllPublicationTypes();
-//
-//        return US004PublicationTypeMapper.toDTOs(publicationTypes);
-//    }
-//
-//
-//    /**
-//     * Registers a new AppraisalEntity.
-//     *
-//     * @param name name of the entity
-//     * @param contact contact info
-//     * @param genresId selected genres
-//     * @param publicationTypesId selected publication types
-//     * @return created AppraisalEntity
-//     */
-//    public AppraisalEntity registerAppraisalEntity(
-//            String name,
-//            Contact contact,
-//            List<GenreID> genresId,
-//            List<PublicationTypeId> publicationTypesId) {
-//
-//        if (genresId == null || genresId.isEmpty()) {
-//            throw new IllegalArgumentException("At least one Genre must be selected.");
-//        }
-//
-//        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
-//            throw new IllegalArgumentException("At least one PublicationType must be selected.");
-//        }
-//
-//        return _appraisalEntityRepository.createAndAdd(
-//                name,
-//                contact,
-//                genresId,
-//                publicationTypesId
-//        );
-//    }
+    private AppraisalEntityService _appraisalService;
+    private IGenreRepository _genreRepository;
+    private IPublicationTypeRepository _publicationTypeRepository;
+    private IAppraisalEntityRepository _appraisalEntityRepository;
+
+    /**
+     * Constructor.
+     *
+     * @param genreRepository Genre repository
+     * @param publicationTypeRepository PublicationType repository
+     * @param appraisalEntityRepository AppraisalEntity repository
+     */
+    public ToRegisterAppraisalEntityController(
+            IGenreRepository genreRepository,
+            IPublicationTypeRepository publicationTypeRepository,
+            IAppraisalEntityRepository appraisalEntityRepository,
+            AppraisalEntityService appraisalService) {
+
+        if (genreRepository == null) {
+            throw new IllegalArgumentException("GenreRepository cannot be null.");
+        }
+        if (publicationTypeRepository == null) {
+            throw new IllegalArgumentException("PublicationTypeRepositoryMem cannot be null.");
+        }
+        if (appraisalEntityRepository == null) {
+            throw new IllegalArgumentException("AppraisalEntityRepository cannot be null.");
+        }
+        if (appraisalService == null) {
+            throw new IllegalArgumentException("AppraisalService cannot be null.");
+        }
+
+        this._genreRepository = genreRepository;
+        this._publicationTypeRepository = publicationTypeRepository;
+        this._appraisalEntityRepository = appraisalEntityRepository;
+        this._appraisalService = appraisalService;
+    }
+
+
+    /**
+     * Retrieves all Genres and converts them into DTOs.
+     *
+     * @return list of Genre DTOs
+     */
+    public List<US004GenreDTO> getAllGenres() {
+
+        List<Genre> genres = _genreRepository.findAll();
+
+        return US004GenreMapper.toDTOs(genres);
+    }
+
+    /**
+     * Retrieves all PublicationTypes and converts them into DTOs.
+     *
+     * @return list of PublicationType DTOs
+     */
+    public List<US004PublicationTypeDTO> getAllPublicationTypes() {
+
+        List<PublicationType> publicationTypes =
+                _publicationTypeRepository.findAll();
+
+        return US004PublicationTypeMapper.toDTOs(publicationTypes);
+    }
+
+    /**
+     * Registers a new AppraisalEntity.
+     *
+     * @param name name of the entity
+     * @param contact contact info
+     * @param genresId selected genres
+     * @param publicationTypesId selected publication types
+     * @return created AppraisalEntity
+     */
+    public AppraisalEntity registerAppraisalEntity(
+            String name,
+            Contact contact,
+            List<GenreId> genresId,
+            List<PublicationTypeId> publicationTypesId) {
+
+        if (genresId == null || genresId.isEmpty()) {
+            throw new IllegalArgumentException("At least one Genre must be selected.");
+        }
+
+        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
+            throw new IllegalArgumentException("At least one PublicationType must be selected.");
+        }
+
+        return _appraisalService.createAndSave(
+                name,
+                contact,
+                publicationTypesId,
+                genresId
+        );
+    }
 }

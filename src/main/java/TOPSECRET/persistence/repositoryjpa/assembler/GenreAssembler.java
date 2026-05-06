@@ -4,6 +4,9 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.GenreDM;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -56,5 +59,29 @@ public class GenreAssembler {
     public Genre toDomain(GenreDM dm) {
         Objects.requireNonNull(dm, "GenreDM cannot be null");
         return factory.create(dm.getId(), dm.getGenreType());
+    }
+
+    /**
+     * Converts a list of GenreDM objects into a list of Genre domain objects.
+     *
+     * @param genreDMList the list of GenreDM objects retrieved from persistence
+     * @return a list of Genre domain objects
+     */
+    public List<Genre> toDomainList(List<GenreDM> genreDMList) {
+
+        if (genreDMList == null) {
+            throw new IllegalArgumentException("GenreDM list must not be null");
+        }
+
+        List<Genre> result = new ArrayList<>();
+
+        for (GenreDM dm : genreDMList) {
+            Genre genre = factory.create(
+                    dm.getId(),
+                    dm.getGenreType()
+            );
+            result.add(genre);
+        }
+        return result;
     }
 }
