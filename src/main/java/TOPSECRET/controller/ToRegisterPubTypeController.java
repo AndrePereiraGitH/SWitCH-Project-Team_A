@@ -18,9 +18,12 @@ public class ToRegisterPubTypeController {
      * Constructs a ToRegisterPubTypeController with the specified service.
      *
      * @param service the PublicationTypeService used to create and persist publication types
+     * @throws IllegalArgumentException if the provided service is {@code null}
      */
-    public ToRegisterPubTypeController(PublicationTypeService service)
-    {
+    public ToRegisterPubTypeController(PublicationTypeService service) throws IllegalArgumentException{
+        if (service == null) {
+            throw new IllegalArgumentException("Service must not be null");
+        }
         this.service = service;
     }
 
