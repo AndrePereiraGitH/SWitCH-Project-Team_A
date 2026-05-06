@@ -18,12 +18,13 @@ class ToRegisterPubTypeControllerTest {
     @BeforeEach
     void setup(){
         service = mock(PublicationTypeService.class);
-        controller = new ToRegisterPubTypeController(service);
     }
 
     @Test
-    void registerPublicationTypeControllerDelegatesToRepository(){
+    void registerPublicationTypeControllerDelegatesToService(){
         // Arrange
+        controller = new ToRegisterPubTypeController(service);
+
         String mediaFormat = "Book";
 
         PublicationType expected = mock(PublicationType.class);
@@ -43,6 +44,8 @@ class ToRegisterPubTypeControllerTest {
     @Test
     void shouldThrowExceptionWhenMediaFormatIsInvalid(){
         // Arrange
+        controller = new ToRegisterPubTypeController(service);
+
         when(service.createAndSave(null)).thenThrow(new IllegalArgumentException());
 
         // Assert
@@ -50,17 +53,25 @@ class ToRegisterPubTypeControllerTest {
     }
 
     @Test
-    void registerDuplicatePublicationTypeShouldCreateThenThrowWhenAdding()
-    {
+    void registerDuplicatePublicationTypeShouldCreateThenThrowWhenAdding() {
         // Arrange
+        controller = new ToRegisterPubTypeController(service);
+
         String mediaFormat = "Book";
 
-        PublicationType expected = mock(PublicationType.class);
-
-        when(service.createAndSave(mediaFormat)).thenReturn(expected);
         doThrow(new IllegalArgumentException()).when(service).createAndSave(mediaFormat);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerPubType(mediaFormat));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenServiceIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToRegisterPubTypeController(null)
+        );
+
+        assertEquals("Service must not be null", exception.getMessage());
     }
 }
