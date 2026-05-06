@@ -75,7 +75,7 @@ Ctrl -> listingRepo : findIdsByPublicationID ( pubIdList )
 activate listingRepo
 
 ref over listingRepo
-[[5.FindListingIdsByPublicationSampleIds Find Lsiting Ids By Publication Sample Ids]]
+[[5.FindListingIdsByPublicationSampleIds.puml Find Lsiting Ids By Publication Sample Ids]]
 end ref
 
 listingRepo --> Ctrl : listingIdList
@@ -87,7 +87,7 @@ activate auctionRepository
 
 ref over auctionRepository
 
-[[6.FindAuctionsByListingIds Find Auctions By Listings Ids]]
+[[6.FindAuctionsByListingIds.puml Find Auctions By Listings Ids]]
 end ref
 
 

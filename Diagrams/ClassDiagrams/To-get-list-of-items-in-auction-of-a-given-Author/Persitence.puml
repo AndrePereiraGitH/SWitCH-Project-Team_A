@@ -1,0 +1,116 @@
+@startuml
+title US026 - Persistence Class Diagram
+
+left to right direction
+skinparam classAttributeIconSize 10
+hide empty members
+
+skinparam class {
+  BackgroundColor<<Repository>> #EFE3F3
+  BorderColor<<Repository>> #C5A7CF
+
+  BackgroundColor<<JPA Repository>> #F3E8D9
+  BorderColor<<JPA Repository>> #D2B48C
+
+  BackgroundColor<<Assembler>> #E5E7EB
+  BorderColor<<Assembler>> #B0B7C3
+
+  BackgroundColor<<Factory>> #F5EFCB
+  BorderColor<<Factory>> #D8C96A
+
+  BackgroundColor<<Data Model>> #E6E0F0
+  BorderColor<<Data Model>> #B8A8D1
+
+  BackgroundColor<<Aggregate Root>> #DDEFE8
+  BorderColor<<Aggregate Root>> #94BFAE
+}
+
+legend top left
+[[Main-Application-Domain.puml Back to main diagram]]
+endlegend
+
+interface IAuthorRepository <<Repository>> {
+  +getAll()
+}
+
+interface IBiblioDataRepository <<Repository>>{
+  +findIdsByAuthorId(selectedAuthorID)
+}
+
+interface IPublicationSampleRepository <<Repository>> {
+  +findIdsByBiblioDataIds(bdIdList)
+}
+
+interface IListingRepository <<Repository>>{
+  +findIdsByPublicationID(pubIdList)
+}
+
+interface IAuctionRepository <<Repository>>{
+  +findByListingIds(listingIdList)
+}
+
+class IAuthorRepositoryJPA <<JPA Repository>> {
+  +getAll()
+}
+
+class IBiblioDataRepositoryJPA <<JPA Repository>>{
+  +findIdsByAuthorId(selectedAuthorID)
+}
+
+class IPublicationSampleRepositoryJPA <<JPA Repository>>{
+  +findIdsByBiblioDataIds(bdIdList)
+}
+
+class IListingRepositoryJPA <<JPA Repository>>{
+  +findIdsByPublicationID(pubIdList)
+}
+
+class IAuctionRepositoryJPA <<JPA Repository>>{
+  +findByListingIds(listingIdList)
+}
+
+class AuthorDM <<Data Model>>  {
+  +id()
+  +getName()
+  +getCountryId()
+  +getDateOfBirth()
+  +getBiography()
+}
+
+class AuctionDM <<Data Model>> {
+  +id()
+  +getStartDate()
+  +getFinalDate()
+  +getInitialPrice()
+  +getBuyout()
+}
+
+class BibliographicalDataDM <<Data Model>>
+class PublicationSampleDM <<Data Model>>
+class ListingDM <<Data Model>>
+
+
+class DataBase <<database>>
+
+IAuthorRepository --> IAuthorRepositoryJPA
+IBiblioDataRepository --> IBiblioDataRepositoryJPA
+IPublicationSampleRepository --> IPublicationSampleRepositoryJPA
+IListingRepository --> IListingRepositoryJPA
+IAuctionRepository --> IAuctionRepositoryJPA
+
+IAuthorRepositoryJPA --> DataBase
+IBiblioDataRepositoryJPA --> DataBase
+IPublicationSampleRepositoryJPA --> DataBase
+IListingRepositoryJPA --> DataBase
+IAuctionRepositoryJPA --> DataBase
+
+IAuthorRepositoryJPA --> AuthorDM
+IAuctionRepositoryJPA --> AuctionDM
+
+
+AuthorDM --> BibliographicalDataDM
+BibliographicalDataDM --> PublicationSampleDM
+PublicationSampleDM --> ListingDM
+ListingDM "1" --> AuctionDM
+
+@enduml

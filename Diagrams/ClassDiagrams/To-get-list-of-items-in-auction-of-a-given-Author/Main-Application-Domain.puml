@@ -1,0 +1,160 @@
+@startuml
+title US026 - Domain / Application Class Diagram
+
+left to right direction
+skinparam classAttributeIconSize 10
+hide empty members
+
+skinparam class {
+  BackgroundColor<<Controller>> #D9EAF7
+  BorderColor<<Controller>> #8FB6D6
+  FontColor<<Controller>> #1F2933
+  AttributeFontColor<<Controller>> #1F2933
+  MethodFontColor<<Controller>> #1F2933
+
+  BackgroundColor<<Service>> #E3ECFA
+  BorderColor<<Service>> #9DB5DD
+  FontColor<<Service>> #1F2933
+  AttributeFontColor<<Service>> #1F2933
+  MethodFontColor<<Service>> #1F2933
+
+  BackgroundColor<<Aggregate Root>> #DDEFE8
+  BorderColor<<Aggregate Root>> #94BFAE
+  FontColor<<Aggregate Root>> #1F2933
+  AttributeFontColor<<Aggregate Root>> #1F2933
+  MethodFontColor<<Aggregate Root>> #1F2933
+
+  BackgroundColor<<Repository>> #EFE3F3
+  BorderColor<<Repository>> #C5A7CF
+  FontColor<<Repository>> #1F2933
+  AttributeFontColor<<Repository>> #1F2933
+  MethodFontColor<<Repository>> #1F2933
+
+  BackgroundColor<<JPA Repository>> #F3E8D9
+  BorderColor<<JPA Repository>> #D2B48C
+  FontColor<<JPA Repository>> #1F2933
+  AttributeFontColor<<JPA Repository>> #1F2933
+  MethodFontColor<<JPA Repository>> #1F2933
+
+  BackgroundColor<<Assembler>> #E5E7EB
+  BorderColor<<Assembler>> #B0B7C3
+  FontColor<<Assembler>> #1F2933
+  AttributeFontColor<<Assembler>> #1F2933
+  MethodFontColor<<Assembler>> #1F2933
+
+  BackgroundColor<<Factory>> #F5EFCB
+  BorderColor<<Factory>> #D8C96A
+  FontColor<<Factory>> #1F2933
+  AttributeFontColor<<Factory>> #1F2933
+  MethodFontColor<<Factory>> #1F2933
+
+  BackgroundColor<<Data Model>> #E6E0F0
+  BorderColor<<Data Model>> #B8A8D1
+  FontColor<<Data Model>> #1F2933
+  AttributeFontColor<<Data Model>> #1F2933
+  MethodFontColor<<Data Model>> #1F2933
+
+  BackgroundColor<<DTO>> #E1EFD8
+  BorderColor<<DTO>> #A7C98E
+  FontColor<<DTO>> #1F2933
+  AttributeFontColor<<DTO>> #1F2933
+  MethodFontColor<<DTO>> #1F2933
+
+  BackgroundColor<<Mapper>> #DDECF0
+  BorderColor<<Mapper>> #9FBFC8
+  FontColor<<Mapper>> #1F2933
+  AttributeFontColor<<Mapper>> #1F2933
+  MethodFontColor<<Mapper>> #1F2933
+}
+
+class UI
+
+class ToGetListOfItemsInAuctionOfAGivenAuthorController <<Controller>>{
+  +getAllAuthors()
+  +getAuctionsByAuthorId(selectedAuthorID)
+}
+
+interface IAuthorRepository <<Repository>>{
+  +getAll()
+}
+
+interface IBiblioDataRepository <<Repository>>{
+  +findIdsByAuthorId(selectedAuthorID)
+}
+
+interface IPublicationSampleRepository <<Repository>>{
+  +findIdsByBiblioDataIds(bdIdList)
+}
+
+interface IListingRepository <<Repository>>{
+  +findIdsByPublicationID(pubIdList)
+}
+
+interface IAuctionRepository <<Repository>>{
+  +findByListingIds(listingIdList)
+}
+
+class AuthorAssembler <<Assembler>> {
+  +toDomain(authorsDMList)
+}
+
+class AuctionAssembler <<Assembler>> {
+  +toDomain(auctionDM)
+}
+
+class AuthorFactory <<Factory>>{
+  +create(id, name, countryId, birthday, biography)
+}
+
+class AuctionFactory <<Factory>>{
+  +create(id, startDate, finalDate, initialPrice, buyoutPrice)
+}
+
+class US026AuthorMapper <<Mapper>>{
+  +fromDomainList(authorsList)
+  +fromDomain(author)
+}
+
+class US026AuctionMapper <<Mapper>>{
+  +fromDomainList(authorAuctionsList)
+  +fromDomain(auction)
+}
+
+class US026AuthorDTO <<DTO>>
+class US026AuctionDTO <<DTO>>
+
+class Author <<Aggregate Root>>
+class Auction <<Aggregate Root>>
+
+
+UI --> ToGetListOfItemsInAuctionOfAGivenAuthorController
+
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> IAuthorRepository
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> IBiblioDataRepository
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> IPublicationSampleRepository
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> IListingRepository
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> IAuctionRepository
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> US026AuthorMapper
+ToGetListOfItemsInAuctionOfAGivenAuthorController --> US026AuctionMapper
+
+IAuthorRepository --> AuthorAssembler
+IAuthorRepository --> Author
+
+IAuctionRepository --> AuctionAssembler
+IAuctionRepository --> Auction
+
+AuthorAssembler --> AuthorFactory
+AuthorFactory --> Author
+
+AuctionAssembler --> AuctionFactory
+AuctionFactory --> Auction
+
+US026AuthorMapper --> Author
+US026AuthorMapper --> US026AuthorDTO
+
+US026AuctionMapper --> Auction
+US026AuctionMapper --> US026AuctionDTO
+
+
+
+@enduml
