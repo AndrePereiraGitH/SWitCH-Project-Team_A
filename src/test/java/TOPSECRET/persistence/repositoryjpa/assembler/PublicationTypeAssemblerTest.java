@@ -7,6 +7,8 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -95,5 +97,74 @@ class PublicationTypeAssemblerTest {
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> new PublicationTypeAssembler(null));
+    }
+
+    // toDomainList
+    @Test
+    void shouldConvertListWithCorrectSize() {
+
+        // ARRANGE
+        PublicationTypeDM dm1 = new PublicationTypeDM(new PublicationTypeId("1"), "Book");
+        PublicationTypeDM dm2 = new PublicationTypeDM(new PublicationTypeId("2"), "Magazine");
+
+        List<PublicationTypeDM> dmList = List.of(dm1, dm2);
+
+        // ACT
+        List<PublicationType> result = assembler.toDomainList(dmList);
+
+        // ASSERT
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void shouldConvertFirstElementCorrectly() {
+
+        // ARRANGE
+        PublicationTypeId id = new PublicationTypeId("1");
+        PublicationTypeDM dm = new PublicationTypeDM(id, "Book");
+
+        List<PublicationTypeDM> dmList = List.of(dm);
+
+        // ACT
+        PublicationType result = assembler.toDomainList(dmList).get(0);
+
+        // ASSERT
+        assertEquals(id, result.id());
+    }
+
+    @Test
+    void shouldPreserveMediaFormatInConversion() {
+
+        // ARRANGE
+        PublicationTypeDM dm = new PublicationTypeDM(new PublicationTypeId("1"), "Book");
+
+        List<PublicationTypeDM> dmList = List.of(dm);
+
+        // ACT
+        PublicationType result = assembler.toDomainList(dmList).get(0);
+
+        // ASSERT
+        assertEquals("Book", result.getMediaFormat());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenInputListIsEmpty() {
+
+        // ARRANGE
+        List<PublicationTypeDM> dmList = List.of();
+
+        // ACT
+        List<PublicationType> result = assembler.toDomainList(dmList);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldThrowWhenToDomainListReceivesNull() {
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> assembler.toDomainList(null));
     }
 }

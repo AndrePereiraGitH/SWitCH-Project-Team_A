@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -145,5 +147,106 @@ class GenreAssemblerTest {
 
         // Assert
         assertEquals(reconstructed.id(), result.id());
+    }
+
+    // =========================================================================
+    // toDomainList()
+    // =========================================================================
+
+    @Test
+    void ensureToDomainListReturnsListWithCorrectSize() {
+
+        // Arrange
+        GenreDM dm1 = mock(GenreDM.class);
+        GenreDM dm2 = mock(GenreDM.class);
+
+        GenreId id1 = mock(GenreId.class);
+        GenreId id2 = mock(GenreId.class);
+
+        Genre genre1 = mock(Genre.class);
+        Genre genre2 = mock(Genre.class);
+
+        when(dm1.getId()).thenReturn(id1);
+        when(dm1.getGenreType()).thenReturn("Drama");
+
+        when(dm2.getId()).thenReturn(id2);
+        when(dm2.getGenreType()).thenReturn("Horror");
+
+        when(factory.create(id1, "Drama")).thenReturn(genre1);
+        when(factory.create(id2, "Horror")).thenReturn(genre2);
+
+        List<GenreDM> dmList = List.of(dm1, dm2);
+
+        // Act
+        List<Genre> result = assembler.toDomainList(dmList);
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void ensureToDomainListConvertsFirstElement() {
+
+        // Arrange
+        GenreDM dm = mock(GenreDM.class);
+        GenreId id = mock(GenreId.class);
+        Genre genre = mock(Genre.class);
+
+        when(dm.getId()).thenReturn(id);
+        when(dm.getGenreType()).thenReturn("Drama");
+
+        when(factory.create(id, "Drama")).thenReturn(genre);
+
+        List<GenreDM> dmList = List.of(dm);
+
+        // Act
+        Genre result = assembler.toDomainList(dmList).get(0);
+
+        // Assert
+        assertSame(genre, result);
+    }
+
+    @Test
+    void ensureToDomainListUsesCorrectGenreType() {
+
+        // Arrange
+        GenreDM dm = mock(GenreDM.class);
+        GenreId id = mock(GenreId.class);
+        Genre genre = mock(Genre.class);
+
+        when(dm.getId()).thenReturn(id);
+        when(dm.getGenreType()).thenReturn("Drama");
+
+        when(genre.getGenreType()).thenReturn("Drama");
+        when(factory.create(id, "Drama")).thenReturn(genre);
+
+        List<GenreDM> dmList = List.of(dm);
+
+        // Act
+        Genre result = assembler.toDomainList(dmList).get(0);
+
+        // Assert
+        assertEquals("Drama", result.getGenreType());
+    }
+
+    @Test
+    void ensureToDomainListReturnsEmptyListWhenInputIsEmpty() {
+
+        // Arrange
+        List<GenreDM> dmList = List.of();
+
+        // Act
+        List<Genre> result = assembler.toDomainList(dmList);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensureToDomainListThrowsExceptionWhenInputIsNull() {
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> assembler.toDomainList(null));
     }
 }

@@ -97,4 +97,15 @@ class US004PublicationTypeMapperTest {
         assertThrows(IllegalArgumentException.class,
                 () -> US004PublicationTypeMapper.toDTO(null));
     }
+
+    @Test
+    void shouldReturnEmptyListWhenInputIsNull() {
+
+        // ACT
+        List<US004PublicationTypeDTO> result =
+                US004PublicationTypeMapper.toDTOs(null);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
 }

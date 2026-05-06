@@ -40,6 +40,11 @@ class GenreRepositoryJpaImplTest {
         GenreDM dm = mock(GenreDM.class);
         Genre savedGenre = mock(Genre.class);
 
+        GenreId genreId = mock(GenreId.class);
+
+        when(genre.id()).thenReturn(genreId);
+        when(genreRepositoryJpa.existsById(genreId)).thenReturn(false);
+
         when(assembler.toDM(genre)).thenReturn(dm);
         when(genreRepositoryJpa.save(dm)).thenReturn(dm);
         when(assembler.toDomain(dm)).thenReturn(savedGenre);
@@ -56,6 +61,20 @@ class GenreRepositoryJpaImplTest {
         // Act & Assert
         assertThrows(NullPointerException.class,
                 () -> genreRepositoryJpaImpl.save(null));
+    }
+
+    @Test
+    void ensureSaveThrowsExceptionWhenGenreAlreadyExists() {
+        // Arrange
+        Genre genre = mock(Genre.class);
+        GenreId genreId = mock(GenreId.class);
+
+        when(genre.id()).thenReturn(genreId);
+        when(genreRepositoryJpa.existsById(genreId)).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> genreRepositoryJpaImpl.save(genre));
     }
 
     // =========================================================================
