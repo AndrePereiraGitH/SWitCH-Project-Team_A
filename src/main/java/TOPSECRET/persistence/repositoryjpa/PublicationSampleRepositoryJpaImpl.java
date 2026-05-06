@@ -107,7 +107,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
     @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataID bdId) {
 
-        Objects.requireNonNull(bdId, "PublicationSampleId cannot be null");
+        Objects.requireNonNull(bdId, "BibliographicalDataID cannot be null");
 
         List<PublicationSampleId> listOfPubSampleId = publicationSampleRepositoryJpa.findAllByBdId(bdId)
                 .stream()
@@ -125,13 +125,6 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return List.of();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds) {
-        return List.of();
-    }
 
     /**
      * {@inheritDoc}
@@ -159,8 +152,13 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSample> findByLibraryId(LibraryId libraryID) {
-        return List.of();
+    public List<PublicationSample> findByLibraryId(LibraryId libraryId) {
+
+        Objects.requireNonNull(libraryId, "LibraryId cannot be null");
+
+        List<PublicationSampleDM> samplesDMList = publicationSampleRepositoryJpa.findByLibraryId(libraryId);
+
+        return samplesDMList.stream().map(publicationSampleAssembler::toDomain).toList();
     }
 
     /**
@@ -168,6 +166,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
+
         return List.of();
     }
 
@@ -181,8 +180,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSample> listOfPublications = publicationSampleRepositoryJpa.findAllByOwnerId(userId)
                 .stream().map(publicationSampleAssembler::toDomain)
-                .filter(publicationSample -> publicationSample.isOwnedByUser(userId) &&
-                        publicationSample.isInUserLibrary()).toList();
+                .filter(PublicationSample::isInUserLibrary).toList();
 
         return listOfPublications;
     }

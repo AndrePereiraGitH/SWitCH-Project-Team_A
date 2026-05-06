@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
@@ -34,20 +34,14 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      */
     List<PublicationSampleDM> findAllByOwnerId(UserId ownerId);
 
+
     /**
-     * Retrieves all {@link PublicationSampleDM} entities whose edition identifier
-     * is contained in the given list of {@link EditionID}s.
+     * Finds all publication samples associated with the given library identifier.
      *
-     * <p>This method leverages Spring Data JPA query derivation to generate
-     * a query equivalent to:
-     * <pre>
-     * SELECT ps FROM PublicationSampleDM ps WHERE ps.editionId IN :editionIds
-     * </pre>
-     *
-     * @param editionIds the list of edition identifiers to filter publication samples;
-     *                   must not be {@code null}
-     * @return a list of {@link PublicationSampleDM} associated with the given edition IDs;
-     *         never {@code null}, but may be empty if no matches are found
+     * @param libraryId the identifier of the library whose publication samples are to be retrieved;
+     *                  must not be {@code null}
+     * @return a list of publication sample data models associated with the given library;
+     *         an empty list if no samples are found
      */
-    List<PublicationSampleDM> findAllByEditionIdIn(List<EditionID> editionIds);
+    List<PublicationSampleDM> findByLibraryId(LibraryId libraryId);
 }

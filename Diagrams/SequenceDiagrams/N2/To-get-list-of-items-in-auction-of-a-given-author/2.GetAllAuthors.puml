@@ -1,36 +1,116 @@
 @startuml
 hide footbox
 autonumber
-title Ref - getAllAuthors()
+title Get All Authors in System
 
-participant ":Controller" as Ctrl
-participant ":IAuthorRepository" as AuthorRepository
+
+
+participant ":Controller" as ctrl
+participant ":IAuthorRepository" as authorRepo
+participant ":IAuthorRepositoryJPA" as authorRepoJpa
+participant "authorsDMList\n:List<AuthorDM>" as authorsDMList
+
+participant ":AuthorAssembler" as authorAssembler
+
+participant ":AuthorFactory" as authorFactory
+
+participant "authorsList\n:List<Author>" as authorsList
+
+participant "author :Author" as author
+
 participant ":US026AuthorMapper" as AuthorMapper
-participant "authorDTO:US026AuthorDTO" as AuthorDTO
-participant "authorsDtoList<AuthorDTO>" as AuthorsListDto
 
-note over Controller #E3F2FD
+
+participant "authorDTO\n:US026AuthorDTO" as AuthorDTO
+participant "authorsDto\n:List<AuthorDTO>" as AuthorsListDto
+
+database "DataBase" as db
+
+note over ctrl #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over Controller #E3F2FD
+note over ctrl #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
 ' -------- Get All Authors in System --------
-Ctrl -> AuthorRepository : getAllAuthors()
-activate Ctrl
-activate AuthorRepository
-AuthorRepository --> Ctrl : listOfAllAuthors
-deactivate AuthorRepository
+ctrl -> authorRepo : getAll()
+activate ctrl
+activate authorRepo
+
+authorRepo -> authorRepoJpa : getAll()
+activate authorRepoJpa
+authorRepoJpa -> db
+activate db
+db --> authorRepoJpa : allAuthorsData
+deactivate db
+authorRepoJpa -->> authorsDMList** : <<create>>
+authorRepoJpa --> authorRepo : authorsDMList
+deactivate authorRepoJpa
+
+
+' ----- CONVERT DM TO DOMAIN ---------------
+
+authorRepo -> authorAssembler : toDomain ( authorsDMList)
+activate authorAssembler
+
+authorAssembler -->> authorsList ** : <<create>>
+
+loop for each AuthorDM in authorsDMList
+
+    authorAssembler -> authorsDMList : id()
+    activate authorsDMList
+    authorsDMList --> authorAssembler : id
+    deactivate authorsDMList
+
+    authorAssembler -> authorsDMList : getName()
+    activate authorsDMList
+    authorsDMList --> authorAssembler : name
+    deactivate authorsDMList
+
+    authorAssembler -> authorsDMList : getCountryId()
+    activate authorsDMList
+    authorsDMList --> authorAssembler : countryId
+    deactivate authorsDMList
+
+    authorAssembler -> authorsDMList : getDateOfBirth()
+    activate authorsDMList
+    authorsDMList --> authorAssembler : birthday
+    deactivate authorsDMList
+
+    authorAssembler -> authorsDMList : getBiography()
+    activate authorsDMList
+    authorsDMList --> authorAssembler : biography
+    deactivate authorsDMList
+
+    authorAssembler -> authorFactory : create (id, name, countryId,\n birthday, biography)
+    activate authorFactory
+
+    authorFactory -->> author ** : <<create>>
+    authorFactory -> authorAssembler : author
+    deactivate authorFactory
+
+    authorAssembler -> authorAssembler : authorsList.add(author)
+
+end loop
+
+
+deactivate authorFactory
+authorAssembler --> authorRepo : authorsList
+deactivate authorAssembler
+
+
+authorRepo --> ctrl : authorsList
+deactivate authorRepo
 
 
 '------ Convert List of Authors into DTO --------
-Ctrl -> AuthorMapper : fromDomainList(listOfAllAuthors)
+ctrl -> AuthorMapper : fromDomainList(authorsList)
 activate AuthorMapper
 AuthorMapper -->> AuthorsListDto ** : <<create>>
 
