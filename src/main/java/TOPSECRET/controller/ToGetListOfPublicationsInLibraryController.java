@@ -65,7 +65,7 @@ public class ToGetListOfPublicationsInLibraryController {
      * @throws IllegalArgumentException if {@code username} is empty or does not match any known user
      * @throws InstanceNotFoundException if the publications cannot be mapped
      */
-    public List<US012PublicationDetailsDTO> getListOfPublicationsInLibraryDTO(String username) throws InstanceNotFoundException {
+    public List<US012PublicationDetailsDTO> getListOfPublicationsInLibrary(String username) throws InstanceNotFoundException {
 
         if (username == null) {
             throw new NullPointerException("Username cannot be null");
