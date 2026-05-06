@@ -560,14 +560,6 @@ class PublicationSampleRepositoryJpaImplTest {
         assertTrue(result.isEmpty());
     }
 
-
-    @Test
-    void findPublicationSamplesIdsByBiblioDataIds_shouldReturnEmptyList() {
-        List<BibliographicalDataID> ids = List.of(mock(BibliographicalDataID.class));
-        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(ids);
-        assertTrue(result.isEmpty());
-    }
-
     @Test
     void findByLibraryId_shouldReturnEmptyList() {
         LibraryId libraryId = mock(LibraryId.class);

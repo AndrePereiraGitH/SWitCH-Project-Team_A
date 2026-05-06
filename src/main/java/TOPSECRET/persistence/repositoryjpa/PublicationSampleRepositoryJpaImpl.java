@@ -107,7 +107,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
     @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataID bdId) {
 
-        Objects.requireNonNull(bdId, "PublicationSampleId cannot be null");
+        Objects.requireNonNull(bdId, "BibliographicalDataID cannot be null");
 
         List<PublicationSampleId> listOfPubSampleId = publicationSampleRepositoryJpa.findAllByBdId(bdId)
                 .stream()
@@ -125,13 +125,6 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return List.of();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds) {
-        return List.of();
-    }
 
     /**
      * {@inheritDoc}
