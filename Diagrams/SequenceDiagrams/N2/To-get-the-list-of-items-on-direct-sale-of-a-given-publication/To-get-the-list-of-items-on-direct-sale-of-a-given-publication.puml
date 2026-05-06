@@ -1,0 +1,187 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given publication
+
+box #whitesmoke
+actor Buyer
+participant ":UI" as UI
+end box
+
+' Controller
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
+
+' Bibliographical Data
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IBibliographicalData\nRepositoryJPA" as BDRepoJPA
+participant "listOfBDDMs:\nList<Bibliographical\nDataDM>" as listBDDM
+participant ":BibliographicalData\nAssembler" as BDAss
+participant ":BibliographicalData\nFactory" as BDFact
+participant "bd:\nBibliographicalData" as BD
+participant "listOfAllBD:\nList<BibliographicalData>" as listAllBD
+participant ":US023Bibliographical\nDataMapper" as BDMapper
+participant "bdDTO:\nUS023BibliographicalDataDTO" as bdDTO
+participant "listOfAllBDDTO:\nList<US023BibliographicalDataDTO>" as listOfAllBDDTO
+
+' Publication Sample
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":IPublicationSample\nRepositoryJPA" as PubSampleRepoJPA
+participant "listOfPubSampleId:\nList<PublicationSampleId" as listPubSampleId
+
+' Listing
+participant ":IListing\nRepository" as ListingRepo
+participant ":IListing\nRepositoryJPA" as ListingRepoJPA
+participant "listOfDSListingDMs:\nList<ListingDM>" as listDSListingDMs
+participant ":Listing\nAssembler" as ListingAss
+participant "listOfDSListings:\nList<Listing>" as listDSListings
+participant ":Listing\nFactory" as ListingFact
+participant "listing:Listing" as Listing
+participant ":US023ListingMapper" as ListingMapper
+participant "listOfListingDTOs:\nList<US023ListingDTO>" as listOfListingDTO
+participant "listingDTO:\nUS023ListingDTO" as ListDTO
+
+' Database
+database "database" as DB
+
+' Section 1 - Get all publications
+Buyer -> UI : I want to get the list of items\n on direct sale of a given publication
+activate UI
+UI -> Ctrl : findAllBibliographicalData()
+activate Ctrl
+
+Ctrl -> BDRepo: findAll()
+activate BDRepo
+BDRepo -> BDRepoJPA: findAll()
+activate BDRepoJPA
+BDRepoJPA -> DB: QUERY all bibliographicalData
+activate DB
+DB --> BDRepoJPA: data
+deactivate DB
+BDRepoJPA -->> listBDDM ** : «create»
+BDRepoJPA --> BDRepo: listOfBDDMs
+deactivate BDRepoJPA
+
+BDRepo -> BDAss: toDomain(listOfBDDMs)
+activate BDAss
+BDAss -->> listAllBD **: «create»
+loop for each bdDM in listOfBDDMs
+    BDAss -> listBDDM: id()
+    activate listBDDM
+    listBDDM --> BDAss: bdId
+    deactivate listBDDM
+    BDAss -> listBDDM: getTitle()
+    activate listBDDM
+    listBDDM --> BDAss: title
+    deactivate listBDDM
+    BDAss -> listBDDM: getAuthors()
+    activate listBDDM
+    listBDDM --> BDAss: authorIds
+    deactivate listBDDM
+    BDAss -> listBDDM: getOriginalLanguage()
+    activate listBDDM
+    listBDDM --> BDAss: language
+    deactivate listBDDM
+    BDAss -> listBDDM: getPublicationDate()
+    activate listBDDM
+    listBDDM --> BDAss: publicationDate
+    deactivate listBDDM
+    BDAss -> listBDDM: getGenres()
+    activate listBDDM
+    listBDDM --> BDAss: genreIds
+    deactivate listBDDM
+    BDAss -> listBDDM: getChunksOfText()
+    activate listBDDM
+    listBDDM --> BDAss: chunksOfText
+    deactivate listBDDM
+    BDAss -> BDFact: create(bdId, title, authorIds, language,\npublicationDate, genreIds, chunksOfText)
+    activate BDFact
+    BDFact -->> BD ** : «create»
+    BDFact --> BDAss: bd
+    deactivate BDFact
+    BDAss -> listAllBD : add(db)
+end
+BDAss --> BDRepo: listOfAllBD
+deactivate BDAss
+BDRepo --> Ctrl: listOfAllBD
+deactivate BDRepo
+
+' Section 2 - Converts all publications list to DTO
+Ctrl -> BDMapper: toDTOs(listOfAllBD)
+activate BDMapper
+BDMapper -->> listOfAllBDDTO ** : «create»
+loop for each bd in listOfAllBD
+   BDMapper -->> bdDTO **: «create»
+   BDMapper -> listOfAllBDDTO : add(bibliographicalDataDTO)
+end
+BDMapper --> Ctrl : listOfAllBDDTO
+deactivate BDMapper
+Ctrl --> UI : listOfAllBDDTO
+deactivate Ctrl
+Buyer <-- UI : Which publication? Choose!
+deactivate UI
+
+Buyer -> UI : publication
+activate UI
+UI -> Ctrl : findListOfItemsOnDirectSale(bdId)
+activate Ctrl
+
+' Section 3 - Get PublicationSample IDs for that BibliographicalData ID
+Ctrl -> PubSampleRepo : findIdsByBibliographicalDataId(bdId)
+activate PubSampleRepo
+PubSampleRepo -> PubSampleRepoJPA: findPubSampleIdsBy\nBibliographicalDataId(bdId)
+activate PubSampleRepoJPA
+PubSampleRepoJPA -> DB: QUERY all publicationSample by bibliographicalDataId
+activate DB
+DB --> PubSampleRepoJPA: data
+deactivate DB
+PubSampleRepoJPA -->> listPubSampleId** : «create»
+PubSampleRepoJPA --> PubSampleRepo: listOfPubSampleId
+deactivate PubSampleRepoJPA
+PubSampleRepo --> Ctrl: listOfPubSampleId
+deactivate PubSampleRepo
+
+' Section 4 - Get Direct Sale Listings for those PublicationSample IDs
+Ctrl -> ListingRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleId)
+activate ListingRepo
+ListingRepo -> ListingRepoJPA: findAllByItemsId(listOfPubSampleId)
+activate ListingRepoJPA
+ListingRepoJPA -> DB: QUERY listings by publicationSampleId and saleType
+activate DB
+DB --> ListingRepoJPA: data
+deactivate DB
+ListingRepoJPA -->> listDSListingDMs** : «create»
+ListingRepoJPA --> ListingRepo: listOfDSListingDMs
+deactivate ListingRepoJPA
+ListingRepo -> ListingAss: toDomain(listOfDSListingDMs)
+activate ListingAss
+ListingAss -->> listDSListings **: «create»
+loop for each listingDM in listOfDSListingDMs
+    ListingAss -> ListingFact: create(listingId, listingTitle, itemsId, saleType,\n price, shortDescription, sellerId, pictures)
+    activate ListingFact
+    ListingFact -->> Listing** : «create»
+    ListingFact --> ListingAss: listing
+    ListingAss -> listDSListings: add(listing)
+    deactivate ListingFact
+end
+ListingAss --> ListingRepo: listOfDSListings
+deactivate ListingAss
+
+ListingRepo --> Ctrl : listOfDSListings
+deactivate ListingRepo
+
+' Section 5 - creates DTO
+Ctrl -> ListingMapper : toDTOs(listOfDSListings)
+activate ListingMapper
+ListingMapper  -->> listOfListingDTO ** : «create»
+loop for each listing in listOfDSListings
+    ListingMapper -->> ListDTO** : «create»
+    ListingMapper -> listOfListingDTO : add(listingDTO)
+end
+ListingMapper --> Ctrl : listOfListingDTOs
+deactivate ListingMapper
+Ctrl --> UI : listOfListingDTOs
+deactivate Ctrl
+UI --> Buyer : Shows the list of items on direct sale
+deactivate UI
+
+@enduml
