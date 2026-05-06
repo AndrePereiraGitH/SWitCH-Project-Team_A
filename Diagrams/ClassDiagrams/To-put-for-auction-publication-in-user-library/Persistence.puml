@@ -1,0 +1,238 @@
+@startuml
+title Persistence Class Diagram - Sale Publication in Auction
+
+left to right direction
+skinparam classAttributeIconSize 10
+hide empty members
+
+skinparam class {
+  BackgroundColor<<Repository>> #EFE3F3
+  BorderColor<<Repository>> #C5A7CF
+
+  BackgroundColor<<JPA Repository>> #F3E8D9
+  BorderColor<<JPA Repository>> #D2B48C
+
+  BackgroundColor<<Assembler>> #E5E7EB
+  BorderColor<<Assembler>> #B0B7C3
+
+  BackgroundColor<<Factory>> #F5EFCB
+  BorderColor<<Factory>> #D8C96A
+
+  BackgroundColor<<Data Model>> #E6E0F0
+  BorderColor<<Data Model>> #B8A8D1
+
+  BackgroundColor<<Aggregate Root>> #DDEFE8
+  BorderColor<<Aggregate Root>> #94BFAE
+}
+
+legend top left
+[[Main-Application-Domain.puml Back to main diagram]]
+endlegend
+
+' =========================
+' DOMAIN
+' =========================
+
+class Library <<Aggregate Root>> {
+  -id: LibraryId
+  -libraryName: String
+  -userId: UserId
+}
+
+class PublicationSample <<Aggregate Root>> {
+  -id: PublicationSampleId
+  -bibliographicalDataId: BibliographicalDataId
+  -ownerId: UserId
+  -publicationStatus: PublicationStatus
+  -editionId: EditionId
+  -condition: String
+}
+
+class Listing <<Aggregate Root>> {
+  -id: ListingId
+  -listingTitle: String
+  -itemsId: List<PublicationSampleId>
+  -saleType: SaleType
+  -price: BigDecimal
+  -shortDescription: String
+  -sellerId: UserId
+  -pictures: List<String>
+}
+
+class Auction <<Aggregate Root>> {
+  -id: AuctionId
+  -listingId: ListingId
+  -auctionStartDateTime: LocalDateTime
+  -auctionFinalDateTime: LocalDateTime
+  -initialPrice: BigDecimal
+  -buyoutPrice: BigDecimal
+}
+
+' =========================
+' DOMAIN REPOSITORIES
+' =========================
+
+interface ILibraryRepository <<Repository>> {
+  +getByUserId(userId: UserId): Library
+}
+
+interface IPublicationSampleRepository <<Repository>> {
+  +findByLibraryId(libraryId: LibraryId): List<PublicationSample>
+}
+
+interface IListingRepository <<Repository>> {
+  +save(listing: Listing): Listing
+}
+
+interface IAuctionRepository <<Repository>> {
+  +save(auction: Auction): Auction
+}
+
+' =========================
+' JPA REPOSITORIES
+' =========================
+
+interface ILibraryRepositoryJPA <<JPA Repository>> {
+  +getByUserId(userId: UserId): LibraryDM
+}
+
+interface IPublicationSampleRepositoryJPA <<JPA Repository>> {
+  +findByLibraryId(libraryId: LibraryId): List<PublicationSampleDM>
+}
+
+interface IListingRepositoryJPA <<JPA Repository>> {
+  +save(listingDM: ListingDM): ListingDM
+}
+
+interface IAuctionRepositoryJPA <<JPA Repository>> {
+  +save(auctionDM: AuctionDM): AuctionDM
+}
+
+' =========================
+' DATA MODELS
+' =========================
+
+class LibraryDM <<Data Model>> {
+  -id: LibraryId
+  -libraryName: String
+  -userId: UserId
+}
+
+class PublicationSampleDM <<Data Model>> {
+  -id: PublicationSampleId
+  -bibliographicalDataId: BibliographicalDataId
+  -ownerId: UserId
+  -publicationStatus: PublicationStatus
+  -editionId: EditionId
+  -condition: String
+}
+
+class ListingDM <<Data Model>> {
+  -id: ListingId
+  -listingTitle: String
+  -itemsId: List<PublicationSampleId>
+  -saleType: SaleType
+  -price: BigDecimal
+  -shortDescription: String
+  -sellerId: UserId
+  -pictures: List<String>
+}
+
+class AuctionDM <<Data Model>> {
+  -id: AuctionId
+  -listingId: ListingId
+  -auctionStartDateTime: LocalDateTime
+  -auctionFinalDateTime: LocalDateTime
+  -initialPrice: BigDecimal
+  -buyoutPrice: BigDecimal
+}
+
+' =========================
+' ASSEMBLERS
+' =========================
+
+class LibraryAssembler <<Assembler>> {
+  +toDomain(libraryDM: LibraryDM): Library
+}
+
+class PublicationSampleAssembler <<Assembler>> {
+  +toDomain(samplesDM: PublicationSampleDM): PublicationSample
+}
+
+class ListingAssembler <<Assembler>> {
+  +toDM(listing: Listing): ListingDM
+  +toDomain(listingDM: ListingDM): Listing
+}
+
+class AuctionAssembler <<Assembler>> {
+  +toDM(auction: Auction): AuctionDM
+  +toDomain(auctionDM: AuctionDM): Auction
+}
+
+' =========================
+' FACTORIES
+' =========================
+
+class LibraryFactory <<Factory>> {
+  +create(id: LibraryId, libraryName: String, userId: UserId): Library
+}
+
+class PublicationSampleFactory <<Factory>> {
+  +create(pubId: PublicationSampleId, bdId: BibliographhicalDataId, ownerId: UserId, pubStatus: PublicationStatus,\n editionId: EditionId, condition: String): PublicationSample
+}
+
+class ListingFactory <<Factory>> {
+  +create(id: ListingId, listingTitle: String, sampleIds: List<PublicationSampleId>, saleType: SaleType,\n price: BigDecimal, shortDescription: String, sellerId: UserId, pictures: List<String>): Listing
+}
+
+class AuctionFactory <<Factory>> {
+  +create(id: AuctionId, listingId: ListingId, startDate: LocalDateTime, finalDate: LocalDateTime,\n initialPrice: BigDecimal, buyoutPrice: BigDecimal): Auction
+}
+
+' =========================
+' LIBRARY PERSISTENCE FLOW
+' =========================
+
+ILibraryRepository --> ILibraryRepositoryJPA
+ILibraryRepository --> LibraryAssembler
+ILibraryRepositoryJPA ..> LibraryDM : returns
+LibraryAssembler ..> LibraryDM : reads
+LibraryAssembler --> LibraryFactory
+LibraryFactory ..> Library : creates
+
+' =========================
+' PUBLICATION SAMPLE PERSISTENCE FLOW
+' =========================
+
+IPublicationSampleRepository --> IPublicationSampleRepositoryJPA
+IPublicationSampleRepository --> PublicationSamplesAssembler
+IPublicationSampleRepositoryJPA ..> PublicationSampleDM : returns
+PublicationSamplesAssembler ..> PublicationSampleDM : reads
+PublicationSamplesAssembler --> PublicationSampleFactory
+PublicationSampleFactory ..> PublicationSample : creates
+
+' =========================
+' LISTING PERSISTENCE FLOW
+' =========================
+
+IListingRepository --> ListingAssembler
+IListingRepository --> IListingRepositoryJPA
+ListingAssembler ..> Listing : reads/creates
+ListingAssembler ..> ListingDM : creates/reads
+IListingRepositoryJPA ..> ListingDM : receives/returns
+ListingAssembler --> ListingFactory
+ListingFactory ..> Listing : creates
+
+' =========================
+' AUCTION PERSISTENCE FLOW
+' =========================
+
+IAuctionRepository --> AuctionAssembler
+IAuctionRepository --> IAuctionRepositoryJPA
+AuctionAssembler ..> Auction : reads/creates
+AuctionAssembler ..> AuctionDM : creates/reads
+IAuctionRepositoryJPA ..> AuctionDM : receives/returns
+AuctionAssembler --> AuctionFactory
+AuctionFactory ..> Auction : creates
+
+@enduml

@@ -119,8 +119,8 @@ loop for each author in list
     AuthorMapper -> AuthorMapper : authorsDtoList.add(authorDTO)
 end
 
-AuthorMapper --> ctrl : authorsDtoList
+AuthorMapper --> Ctrl : authorsDtoList
 deactivate AuthorMapper
 
-deactivate ctrl
+deactivate Ctrl
 @enduml

@@ -138,8 +138,13 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSample> findByLibraryId(LibraryId libraryID) {
-        return List.of();
+    public List<PublicationSample> findByLibraryId(LibraryId libraryId) {
+
+        Objects.requireNonNull(libraryId, "LibraryId cannot be null");
+
+        List<PublicationSampleDM> samplesDMList = publicationSampleRepositoryJpa.findByLibraryId(libraryId);
+
+        return samplesDMList.stream().map(publicationSampleAssembler::toDomain).toList();
     }
 
     /**
@@ -147,6 +152,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
+
         return List.of();
     }
 
