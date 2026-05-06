@@ -1,7 +1,7 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
@@ -35,13 +35,13 @@ public interface ICollectionOfPublicationsRepository {
     /**
      * Verifies whether a collection with the given identifier exists.
      *
-     * @param collectionOfPublicationsID the identifier of the collection
+     * @param collectionOfPublicationsId the identifier of the collection
      *                                   to search for; must not be null
      * @return {@code true} if a collection with the given identifier exists;
      * {@code false} otherwise
      * @throws NullPointerException if {@code collectionOfPublicationsID} is null
      */
-    boolean existsById(CollectionOfPublicationsId collectionOfPublicationsID);
+    boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId);
 
     /**
      * Returns all collections owned by a given user — US019.
@@ -68,5 +68,6 @@ public interface ICollectionOfPublicationsRepository {
      * @return list of collections of the given genre that are public
      * @throws IllegalArgumentException if genreId is null
      */
-    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreID genreId);
+    List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId);
+
 }

@@ -54,7 +54,7 @@ class AppraisalEntityServiceTest {
     // HELPERS
     private Contact contact() {return mock(Contact.class);}
     private List<PublicationTypeId> pubs() {return List.of(mock(PublicationTypeId.class));}
-    private List<GenreID> genres() {return List.of(mock(GenreID.class));}
+    private List<GenreId> genres() {return List.of(mock(GenreId.class));}
     private AppraisalEntity entity() {return mock(AppraisalEntity.class);}
     private AppraisalEntityId id() {return new AppraisalEntityId("1");}
 
@@ -65,7 +65,7 @@ class AppraisalEntityServiceTest {
         // ARRANGE
         Contact contact = mock(Contact.class);
         PublicationTypeId pub = mock(PublicationTypeId.class);
-        GenreID genre = mock(GenreID.class);
+        GenreId genre = mock(GenreId.class);
         AppraisalEntity entity = mock(AppraisalEntity.class);
 
         when(factory.create(anyString(), any(), anyList(), anyList()))

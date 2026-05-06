@@ -49,8 +49,7 @@ public class CityService {
      *                                  or if the city already exists
      */
     public City createAndSave(String countryName, String cityName) {
-
-        CountryId countryId = countryRepository.findCountryIdByCountryName(countryName)
+        CountryId countryId = countryRepository.findIdByName(countryName)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Country not found: " + countryName));
 

@@ -2,6 +2,9 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,18 +12,27 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for {@link CountryDM}, the JPA data model representing
  * a {@link TOPSECRET.domain.Country.Country} entity in the persistence layer.
  *
- * <p>This test suite validates:</p>
+ * <p>This test suite verifies the correct behavior of the data model,
+ * focusing on object construction and data retrieval through getters.</p>
+ *
+ * <p>The tests cover:</p>
  * <ul>
- *     <li>Correct construction of {@link CountryDM} with valid data</li>
- *     <li>Behavior when null values are provided to the constructor</li>
- *     <li>Correct retrieval of values through getters</li>
+ *     <li>Successful creation of {@link CountryDM} instances with valid data</li>
+ *     <li>Handling of {@code null} values for both {@link CountryId} and country name</li>
+ *     <li>Correct exposure of internal state via getter methods</li>
  * </ul>
  *
- * <p>The tests ensure that the data model correctly stores and exposes
- * {@link CountryId} and country name values without applying domain rules,
- * since validation is handled at the domain layer.</p>
+ * <p>Mockito is used to mock {@link CountryId} in order to isolate the unit under test
+ * and maintain consistency with the use of test doubles across the test suite.</p>
+ *
+ * <p>Note: No domain validation logic is tested here, as such rules belong to the
+ * domain layer and not to the persistence data model.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class CountryDMTest {
+
+    @Mock
+    private CountryId countryId;
 
     // -------------------------------------------------------------------------
     // Constructor tests
@@ -30,7 +42,6 @@ class CountryDMTest {
     void constructor_validData() {
 
         // Arrange
-        CountryId countryId = new CountryId("PORTUGAL");
         String countryName = "Portugal";
 
         // Act
@@ -60,9 +71,6 @@ class CountryDMTest {
     @Test
     void constructor_allowsNullCountryName() {
 
-        // Arrange
-        CountryId countryId = new CountryId("PORTUGAL");
-
         // Act
         CountryDM countryDM = new CountryDM(countryId, null);
 
@@ -80,7 +88,6 @@ class CountryDMTest {
     void getCountryID_returnsCorrectValue() {
 
         // Arrange
-        CountryId countryId = new CountryId("PORTUGAL");
         CountryDM countryDM = new CountryDM(countryId, "Portugal");
 
         // Act
@@ -94,10 +101,7 @@ class CountryDMTest {
     void getCountryName_returnsCorrectValue() {
 
         // Arrange
-        CountryDM countryDM = new CountryDM(
-                new CountryId("FRANCE"),
-                "France"
-        );
+        CountryDM countryDM = new CountryDM(countryId, "France");
 
         // Act
         String result = countryDM.getCountryName();

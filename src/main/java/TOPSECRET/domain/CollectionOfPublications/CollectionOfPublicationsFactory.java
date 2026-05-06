@@ -1,7 +1,7 @@
 package TOPSECRET.domain.CollectionOfPublications;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +46,7 @@ public class CollectionOfPublicationsFactory {
      */
     public CollectionOfPublications create
     (String name,
-     GenreID genreId,
+     GenreId genreId,
      UserId userId) {
 
         return new CollectionOfPublications(
@@ -76,7 +76,7 @@ public class CollectionOfPublicationsFactory {
     public CollectionOfPublications create
     (CollectionOfPublicationsId collectionOfPublicationsId,
      String name,
-     GenreID genreId,
+     GenreId genreId,
      UserId userId,
      boolean isPrivate) {
 

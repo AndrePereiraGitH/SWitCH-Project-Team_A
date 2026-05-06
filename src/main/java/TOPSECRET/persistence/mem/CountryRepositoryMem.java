@@ -44,17 +44,7 @@ public class CountryRepositoryMem implements ICountryRepository {
     }
 
     /**
-     * Saves a {@link Country} into the repository.
-     * <p>
-     * Ensures that the provided country is not {@code null} and that no other
-     * country with the same name (case-insensitive) already exists.
-     * </p>
-     *
-     * @param countryName the {@link Country} to save;
-     *                    must not be {@code null}
-     * @return the saved {@link Country} instance
-     * @throws IllegalArgumentException if {@code countryName} is {@code null}
-     *                                  or if a duplicate country exists
+     * {@inheritDoc}
      */
     @Override
     public Country save(Country countryName){
@@ -74,7 +64,7 @@ public class CountryRepositoryMem implements ICountryRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Country> getAllCountries() {
+    public List<Country> findAll() {
         return List.copyOf(registeredCountries);
     }
 
@@ -112,7 +102,7 @@ public class CountryRepositoryMem implements ICountryRepository {
     /**
      * {@inheritDoc}
      */
-    public Optional<CountryId> findCountryIdByCountryName(String countryName) {
+    public Optional<CountryId> findIdByName(String countryName) {
 
         if (countryName == null) {
             throw new NullPointerException("A country's name cannot be null");

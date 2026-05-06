@@ -2,7 +2,7 @@ package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CollectionOfPublicationsAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
@@ -216,7 +216,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void findPublicCollectionsByGenreIdShouldReturnEmptyList() {
 
         // Arrange
-        GenreID genreId = mock(GenreID.class);
+        GenreId genreId = mock(GenreId.class);
 
         // Act
         List<CollectionOfPublications> result =

@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +36,7 @@ class BibliographicalDataAssemblerTest {
         // Arrange
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         LocalDate publicationDate = LocalDate.of(2026, 4, 28);
 
         when(domain.id()).thenReturn(bdIdDouble);
@@ -65,7 +65,7 @@ class BibliographicalDataAssemblerTest {
         // Arrange
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
-        GenreID genreIdDouble = mock(GenreID.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         LocalDate publicationDate = LocalDate.of(2024, 1, 15);
 
         BibliographicalDataDM dm = new BibliographicalDataDM(

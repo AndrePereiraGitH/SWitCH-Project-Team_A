@@ -2,6 +2,8 @@ package TOPSECRET.persistence.repositoryjpa.datamodel;
 
 import TOPSECRET.domain.ValueObjects.CountryId;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Data model representing a {@link TOPSECRET.domain.Country.Country} for JPA persistence.
@@ -11,6 +13,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "countries")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CountryDM {
 
     @EmbeddedId
@@ -19,11 +22,6 @@ public class CountryDM {
 
     @Column(name = "country_name", nullable = false)
     private String countryName;
-
-    /**
-     * Required by JPA. Not for direct use.
-     */
-    protected CountryDM() {}
 
     /**
      * Constructs a new {@code CountryDM}.

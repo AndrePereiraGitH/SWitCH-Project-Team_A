@@ -11,9 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -21,20 +18,36 @@ import static org.mockito.Mockito.*;
  * Unit tests for {@link CountryService}.
  *
  * <p>
- * This test class verifies the behavior of the service layer responsible for
- * orchestrating country creation, persistence, and retrieval operations.
- * It uses Mockito to double dependencies such as {@link CountryFactory}
- * and {@link TOPSECRET.domain.Country.ICountryRepository}.
+ * This test class validates the behavior of the service layer responsible for
+ * orchestrating country creation and persistence operations.
  * </p>
  *
  * <p>
- * The tests cover:
+ * The {@link CountryService} is instantiated using {@link org.mockito.InjectMocks},
+ * allowing Mockito to automatically inject mocked dependencies into the System Under Test (SUT).
+ * </p>
+ *
+ * <p>
+ * The test suite isolates the service logic by using test doubles (mocks) for all collaborators:
  * <ul>
- *     <li>Creation and saving of countries</li>
- *     <li>Verification that factory and repository interactions occur</li>
- *     <li>Retrieval of countries by ID</li>
- *     <li>Retrieval of all countries</li>
+ *     <li>{@link CountryFactory} — responsible for creating {@link Country} domain objects</li>
+ *     <li>{@link ICountryRepository} — responsible for persisting and retrieving countries</li>
+ *     <li>{@link CountryId} — mocked to maintain consistency with the use of doubles across dependencies</li>
  * </ul>
+ * </p>
+ *
+ * <p>
+ * The tests focus on verifying:
+ * <ul>
+ *     <li>Correct delegation of country creation to the factory</li>
+ *     <li>Proper persistence of created countries via the repository</li>
+ *     <li>Correct return of the created and saved {@link Country} instance</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * By using doubles for all dependencies, the tests ensure that only the behavior of
+ * {@link CountryService} is evaluated, without involving external layers.
  * </p>
  */
 @ExtendWith(MockitoExtension.class)
@@ -46,12 +59,16 @@ class CountryServiceTest {
     @Mock
     private ICountryRepository countryRepository;
 
-    private Country country;
+    @Mock
     private CountryId countryId;
+
+    @InjectMocks
+    private CountryService countryService;
+
+    private Country country;
 
     @BeforeEach
     void setup() {
-        countryId = new CountryId("PORTUGAL");
         country = mock(Country.class);
     }
 
@@ -63,9 +80,6 @@ class CountryServiceTest {
     void createAndSaveCountry_valid() {
 
         // Arrange
-        CountryService countryService =
-                new CountryService(countryFactory, countryRepository);
-
         when(countryFactory.create("Portugal")).thenReturn(country);
         when(countryRepository.save(country)).thenReturn(country);
 
@@ -75,87 +89,5 @@ class CountryServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(country, result);
-    }
-
-    // -------------------------------------------------------------------------
-    // getCountryById
-    // -------------------------------------------------------------------------
-
-    @Test
-    void getCountryById_found() {
-
-        // Arrange
-        CountryService countryService =
-                new CountryService(countryFactory, countryRepository);
-
-        when(countryRepository.findByID(countryId))
-                .thenReturn(Optional.of(country));
-
-        // Act
-        Optional<Country> result = countryService.getCountryById(countryId);
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(country, result.get());
-    }
-
-    @Test
-    void getCountryById_notFound() {
-
-        // Arrange
-        CountryService countryService =
-                new CountryService(countryFactory, countryRepository);
-
-        when(countryRepository.findByID(countryId))
-                .thenReturn(Optional.empty());
-
-        // Act
-        Optional<Country> result = countryService.getCountryById(countryId);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    // -------------------------------------------------------------------------
-    // getAll
-    // -------------------------------------------------------------------------
-
-    @Test
-    void getAll_returnsList() {
-
-        // Arrange
-        CountryService countryService =
-                new CountryService(countryFactory, countryRepository);
-
-        List<Country> countries = List.of(country);
-
-        when(countryRepository.getAllCountries())
-                .thenReturn(countries);
-
-        // Act
-        List<Country> result = countryService.getAll();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(country, result.get(0));
-    }
-
-    @Test
-    void getAll_emptyList() {
-
-        // Arrange
-        CountryService countryService =
-                new CountryService(countryFactory, countryRepository);
-
-        when(countryRepository.getAllCountries())
-                .thenReturn(List.of());
-
-        // Act
-        List<Country> result = countryService.getAll();
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
     }
 }

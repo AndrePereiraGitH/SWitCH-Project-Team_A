@@ -6,7 +6,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.GenreID;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
@@ -46,7 +46,7 @@ class PublicListByGenreControllerTest {
         controller =new PublicListByGenreController(genreRepo, collectionRepo , userRepo);
 
         //Act
-        when(genreRepo.getAllGenres()).thenReturn(List.of(genreDouble1, genreDouble2));
+        when(genreRepo.findAll()).thenReturn(List.of(genreDouble1, genreDouble2));
         List<US013GenreDTO> result = controller.getGenres();
 
         //Assert

@@ -1,43 +1,96 @@
 @startuml
-title To create a library - Class Diagram
+title To create a library
 
-
-class UI009 {
+' ── UI Layer ───────────────────────────────────────────────
+class UI {
 }
 
-
-class US009ToCreateLibraryCtrl {
-    - libraryRepository: ILibraryRepository
-    - userRepository: IUserRepository
-    + createAndAddLibrary(libraryName, username): boolean
+' ── Application Layer ──────────────────────────────────────
+class ToCreateLibraryCtrl {
+    + createLibrary(libraryName: String, username: String): boolean
 }
 
+class LibraryService {
+    + createAndSave(libraryName: String, userId: UserId): Library
+}
+
+' ── Domain Layer ───────────────────────────────────────────
 interface IUserRepository {
-    + findIdByUsername(username): UserId
+    + findUserIdByUsername(username: String): UserId
 }
 
 interface ILibraryRepository {
-    - libraries: Map<UserId, Library>
-    + createAndAdd(libraryName, userId): Library
-    - verifyIfUserHasALibrary(userId): boolean
+    + save(library: Library): Library
+    + existsByUserId(userId: UserId): boolean
 }
-
 
 class LibraryFactory {
-    + create(libraryName, userId): Library
+    + create(libraryName: String, userId: UserId): Library
+    + create(id: LibraryId, name: String, userId: UserId): Library
 }
-
 
 class Library {
+    - id: LibraryId
+    - name: String
+    - userId: UserId
+    + getUserId(): UserId
 }
 
+' ── Infrastructure Layer ───────────────────────────────────
+interface IUserRepositoryJPA {
+    + findByUserName(username: String): Optional<UserDM>
+}
 
-' Relationships
-UI009 ..> US009ToCreateLibraryCtrl: uses
-US009ToCreateLibraryCtrl ..> IUserRepository: uses
-US009ToCreateLibraryCtrl ..> ILibraryRepository: uses
-ILibraryRepository "1" --> "1" LibraryFactory: uses
-ILibraryRepository "1" --> "*" Library: manages
-LibraryFactory ..> Library: creates
+interface ILibraryRepositoryJPA {
+    + existsByUserId(userId: UserId): boolean
+    + save(libraryDM: LibraryDM): LibraryDM
+}
+
+class LibraryAssembler {
+    + toDM(library: Library): LibraryDM
+    + toDomain(libraryDM: LibraryDM): Library
+}
+
+class UserDM {
+    - id: UserId
+    - username: String
+    + getId(): UserId
+}
+
+class LibraryDM {
+    - id: LibraryId
+    - name: String
+    - userId: UserId
+    + id(): LibraryId
+    + name(): String
+    + userId(): UserId
+}
+
+Rectangle Database {
+}
+
+' ── Relationships ──────────────────────────────────────────
+UI "1" ..> "1" ToCreateLibraryCtrl : uses
+ToCreateLibraryCtrl "1" ..> "1" IUserRepository : uses
+ToCreateLibraryCtrl "1" ..> "1" LibraryService : uses
+
+LibraryService "1" ..> "1" LibraryFactory : uses
+LibraryService "1" ..> "1" ILibraryRepository : uses
+
+IUserRepository <|.. IUserRepositoryJPA : implements
+ILibraryRepository <|.. ILibraryRepositoryJPA : implements
+
+ILibraryRepositoryJPA "1" ..> "1" LibraryAssembler : uses
+ILibraryRepositoryJPA "1" ..> "1" LibraryFactory : uses
+
+LibraryAssembler "1" ..> "1" LibraryDM : creates
+LibraryAssembler "1" ..> "1" Library : creates
+LibraryAssembler "1" ..> "1" LibraryFactory : uses
+
+LibraryFactory "1" ..> "1" Library : creates
+
+IUserRepositoryJPA "1" ..> "0..1" UserDM : creates
+IUserRepositoryJPA "1" ..> "1" Database : queries
+ILibraryRepositoryJPA "1" ..> "1" Database : queries
 
 @enduml
