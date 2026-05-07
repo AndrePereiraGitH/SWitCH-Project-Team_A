@@ -8,6 +8,8 @@ participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJPA" as listingRepoJPA
 participant "pubIdList\n:List<PublicationSampleId>" as pubIdList
 participant "listingIdList\n:List<ListingId>" as listingIdList
+participant "listingDMList\nList<ListingDM>" as listingDMList
+
 database "Database" as db
 
 note over Ctrl #E3F2FD
@@ -33,7 +35,16 @@ activate db
 db --> listingRepoJPA : listingId values
 deactivate db
 
+listingRepoJPA -->> listingDMList** : <<create>>
+
 listingRepoJPA -->> listingIdList ** : <<create>>
+
+loop for each listingDM in listingDMList
+listingRepoJPA -> listingRepoJPA : id = listingDM.getId()
+listingRepoJPA -> listingRepoJPA : listingIdList.add(id)
+
+end loop
+
 listingRepoJPA --> listingRepo : listingIdList
 deactivate listingRepoJPA
 
