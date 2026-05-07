@@ -28,7 +28,7 @@ deactivate UI
 Administrator -> UI : The country is <countryName>
 activate UI
 
-UI -> CountryController : registerNewCountry\n (countryName)
+UI -> CountryController : register\n (countryName)
 activate CountryController
 
 
