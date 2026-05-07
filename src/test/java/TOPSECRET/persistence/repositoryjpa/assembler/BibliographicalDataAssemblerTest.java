@@ -231,5 +231,4 @@ class BibliographicalDataAssemblerTest {
         // Assert
         assertSame(expectedDomain, result);
     }
-
 }
