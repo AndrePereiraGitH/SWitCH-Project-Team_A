@@ -1,0 +1,118 @@
+@startuml
+autonumber
+hide footbox
+title As a User, I want to get the list (title, author, type and ISBN/SSN) of publications in my library
+
+actor User
+participant ":UI" as UI
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
+
+participant ":IUserRepository" as userRepo
+participant ":IUserRepositoryJPA" as userJpa
+participant "userDM: Optional<UserDM>" as userDM
+participant ":IPublicationSampleRepository" as pubSampleRepo
+
+participant "listOfPublications\n:List<PublicationSample>" as ListPubs
+participant ":IPublicationSampleRepositoryJpa" as pbJpa
+participant "pbSamplesDM\n:List<PublicationSampleDM>" as pbSamplesDM
+
+
+participant ":PublicationSampleAssembler" as pbAssembler
+participant ":PublicationSampleFactory" as factory
+participant "pbSample:PublicationSample" as pbDomain
+
+participant "Database" as db
+participant ":US012PublicationSampleMapper" as Mapper
+participant "listOfPublicationsDTO:List<US012PublicationDetailsDTO>" as ListDTO
+participant "pubDTO:US012PublicationDetailsDTO" as pubDTO
+
+User -> UI : I want to see a list of the publications in my library
+activate UI
+UI -> User : Enter your username
+deactivate UI
+User -> UI : username
+
+activate UI
+UI -> Ctrl : getListOfPublicationsInLibrary(username)
+activate Ctrl
+
+Ctrl -> userRepo: findIdByUsername(username)
+activate userRepo
+
+userRepo -> userJpa: findByUserName(username)
+activate userJpa
+
+userJpa -> db: SELECT * FROM users WHERE username = ?
+activate db
+db --> userJpa: data
+deactivate db
+
+userJpa --> userDM**: <<create>>
+userJpa -> userDM: getId()
+activate userDM
+userDM --> userJpa: userId
+deactivate userDM
+
+userJpa --> userRepo: userId
+deactivate userJpa
+
+userRepo --> Ctrl: userId
+deactivate userRepo
+
+Ctrl -> pubSampleRepo: findByUserIdAndLibraryIdIsNotNull(userId)
+activate pubSampleRepo
+
+pubSampleRepo -> pbJpa: findAllByOwnerId(userId)
+activate pbJpa
+
+pbJpa -> db: SELECT * FROM publication_sample WHERE owner_id = ?
+activate db
+db --> pbJpa: data
+deactivate db
+
+pbJpa -->> pbSamplesDM **: <<create>>
+
+pbJpa --> pubSampleRepo: pbSamplesDM
+
+deactivate pbJpa
+
+pubSampleRepo -->> ListPubs **: <<create>>
+
+
+loop for each dm in pbSamplesDM
+    pubSampleRepo -> pbAssembler: toDomain(dm)
+    activate pbAssembler
+    pbAssembler -> factory: create(dm.id(), dm.getBibliographicalDataID(), dm.getOwnerID(), dm.getEditionID(), dm.getLibraryID(), dm.getCollecOfPubID(), dm.getPublicationStatus(), dm.getCondition())
+    activate factory
+    factory -->> pbDomain **: <<create>>
+    factory --> pbAssembler: pbSample
+    deactivate factory
+    pbAssembler --> pubSampleRepo: pbSample
+    deactivate pbAssembler
+    pubSampleRepo -> pubSampleRepo: pbSample.isInUserLibrary()
+    pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
+end
+
+pubSampleRepo --> Ctrl: listOfPublications
+deactivate pubSampleRepo
+
+Ctrl -> Mapper: toDTOs(listOfPublications)
+activate Mapper
+
+Mapper -->> ListDTO **: <<create>>
+
+loop for each publicationSample in listOfPublications
+    Mapper -> pubDTO **: toDTO(publicationSample)
+    Mapper -> Mapper: listOfPublicationsDTO.add(pubDTO)
+end
+
+Mapper --> Ctrl: listOfPublicationsDTO
+deactivate Mapper
+
+Ctrl --> UI: listOfPublicationsDTO
+deactivate Ctrl
+
+UI --> User: Display list of publications\n(title, author, type, ISBN/SSN)
+deactivate UI
+
+@enduml

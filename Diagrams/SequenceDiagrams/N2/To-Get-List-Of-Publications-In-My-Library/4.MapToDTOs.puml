@@ -1,0 +1,30 @@
+@startuml
+hide footbox
+autonumber
+title Map to DTOs
+
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
+participant ":US012PublicationSampleMapper" as Mapper
+participant "listOfPublicationsDTO\n:List<US012PublicationDetailsDTO>" as ListDTO
+participant "pubDTO\n:US012PublicationDetailsDTO" as pubDTO
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> Mapper: toDTOs(listOfPublications)
+activate Mapper
+
+Mapper -->> ListDTO **: <<create>>
+
+loop for each publicationSample in listOfPublications
+    Mapper -> pubDTO **: toDTO(publicationSample)
+    Mapper -> Mapper: listOfPublicationsDTO.add(pubDTO)
+end
+
+Mapper --> Ctrl: listOfPublicationsDTO
+deactivate Mapper
+
+@enduml
