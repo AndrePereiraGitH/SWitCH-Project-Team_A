@@ -24,9 +24,9 @@ note over Controller #E3F2FD
 end note
 
 
-Controller -> ListingRepo : findAllListingId(listOfItemsId)
+Controller -> ListingRepo : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
 activate ListingRepo
-ListingRepo -> LJPA : findAllByItemsId(listOfItemsId)
+ListingRepo -> LJPA : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
 activate LJPA
 LJPA -> DB : SELECT * FROM listing\nWHERE publication_sample_id IN
 activate DB

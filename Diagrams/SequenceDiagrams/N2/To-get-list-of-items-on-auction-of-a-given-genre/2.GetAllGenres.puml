@@ -5,7 +5,7 @@ title Get Official Genres List (with JPA)
 
 actor Buyer as User
 
-participant ":ToGetListOfGenres\nController" as C
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as C
 participant ":IGenre\nRepository" as GR
 participant ":IGenre\nRepositoryJPA" as GRJPA
 participant ":Genre\nAssembler" as Assembler
@@ -26,10 +26,10 @@ note over C #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-C -> GR : getAllGenres()
+C -> GR : findAll()
 activate GR
 
-GR -> GRJPA : getAllGenres()
+GR -> GRJPA : findAll()
 activate GRJPA
 
 GRJPA -> EM : Query
@@ -48,13 +48,14 @@ GRJPA -->> "genreDMs : List<genreDM>"** : <<create>>
 GRJPA --> GR : genreDMs
 deactivate GRJPA
 
-GR -> Assembler : toDomainList\n(genresPersisted)
-activate Assembler
-
-create "listOfGenre:\nList<Genre>" as listOfGenre
-Assembler -->> listOfGenre : <<create>>
-
 loop for each genreDMs
+    GR -> Assembler : toDomain\n(genreDms)
+    activate Assembler
+
+    create "listOfGenre:\nList<Genre>" as listOfGenre
+    Assembler -->> listOfGenre : <<create>>
+
+
     Assembler -> Factory : create(GenreId, String genreType)
 
     activate Factory
@@ -74,7 +75,7 @@ deactivate Assembler
 GR --> C : listOfGenre
 deactivate GR
 
-C -> MAPPER : toDTOList(listDomain)
+C -> MAPPER : toDTOList(listOfGenre)
 activate MAPPER
 
 create "listOfGenreDTO:\nList<US022GenreDTO>" as listDTO
@@ -84,7 +85,12 @@ loop for each Genre
     MAPPER -> ENTITY : getGenreType()
     activate ENTITY
     ENTITY --> MAPPER : genreType
+        deactivate ENTITY
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : genreId
     deactivate ENTITY
+
 
     create "genreDTO:\nUS022GenreDTO" as genreDTO
     MAPPER -> genreDTO : toDTO()

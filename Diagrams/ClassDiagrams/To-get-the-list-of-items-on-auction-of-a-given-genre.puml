@@ -4,15 +4,15 @@ title Class Diagram – To Get a List Of Items On Auction By A Given Genre
 
 class UI
 
-class ToGetListOfGenresController {
-    + getAllGenres() : List<Genre>
-    + findAllByGenreId(genreId) : GenreId
+class ToGetListOfItemsOnAuctionOfGivenGenreController {
+    + getAllGenres() : Genre
+    + findListOfItemsOnAuctionByGenreId(genreDTO) : (US022GenreDTO) : List
 }
 
-UI "1"-.> "1"ToGetListOfGenresController : uses
+UI "1"-.> "1"ToGetListOfItemsOnAuctionOfGivenGenreController : uses
 
 interface IGenreRepository {
-    + getAllGenres() : List<Genre>
+    + findAll() : List<Genre>
 }
 
 interface IGenreRepositoryJPA {
@@ -20,7 +20,7 @@ interface IGenreRepositoryJPA {
 }
 
 class GenreAssembler {
-    + toDomainList(genresPersisted : List<GenreDM>) : List<Genre>
+    + toDomain(GenreDM : dm)
 }
 
 class GenreFactory {
@@ -32,11 +32,13 @@ class Genre {
 }
 
 class US022GenreMapper {
-    + toDTOList(listDomain : List<Genre>) : List<US022GenreDTO>
+    + toDTO(listDomain : List<Genre>) : List<US022GenreDTO>
 }
 
 class US022GenreDTO {
-    + toDTO() : US022GenreDTO
+    + genreId: GenreId
+    + name: String
+    + US022GenreDTO
 }
 
 interface IBibliographicalDataRepository {
@@ -87,21 +89,23 @@ class US022AuctionMapper {
 }
 
 class US022AuctionDTO {
-    + toDTO() : US022AuctionDTO
+    + auctionId: String
+    + listingId: String
+    + US022AuctionDTO
 }
 
 ' --- Relações ---
 
-ToGetListOfGenresController "1" .-> "1" IGenreRepository : uses
-ToGetListOfGenresController "1" .-> "1" IBibliographicalDataRepository : uses
-ToGetListOfGenresController "1" .-> "1" IPublicationSampleRepository : uses
-ToGetListOfGenresController "1" .-> "1" IListingRepository : uses
-ToGetListOfGenresController "1" .-> "1" IAuctionRepository : uses
-ToGetListOfGenresController "1" .-> "1" US022GenreMapper : uses
-ToGetListOfGenresController "1" .-> "1" US022AuctionMapper : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IGenreRepository : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" IBibliographicalDataRepository : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IPublicationSampleRepository : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IListingRepository : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IAuctionRepository : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" US022GenreMapper : uses
+ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" US022AuctionMapper : uses
 
 IGenreRepository "1" <|-. "1" IGenreRepositoryJPA : implements
-IGenreRepository "1" -> "1" GenreAssembler : uses
+IGenreRepository "1" .-> "1" GenreAssembler : uses
 
 GenreAssembler "1" .-> "1" GenreFactory : uses
 GenreFactory "1" ..> "0..*" Genre : <<create>>
@@ -116,7 +120,7 @@ IPublicationSampleRepository "1" <|-. "1" IPublicationSampleRepositoryJPA : impl
 IListingRepository "1" <|-. "1" IListingRepositoryJPA : implements
 
 IAuctionRepository "1" <|-. "1" IAuctionRepositoryJPA : implements
-IAuctionRepository "1" --> "1" AuctionAssembler : uses
+IAuctionRepository "1" .-> "1" AuctionAssembler : uses
 
 AuctionAssembler "1" .-> "1" AuctionFactory : uses
 AuctionFactory "1" ..> "0..*" Auction : <<create>>

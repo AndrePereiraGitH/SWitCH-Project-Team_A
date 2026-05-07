@@ -17,8 +17,8 @@ participant ":Genre\nFactory" as GFactory
 participant "genreDomain\n:Genre"
 participant ":US022Genre\nMapper" as MAPPER
 participant "listOfGenreDTO:\nList<US022GenreDTO>"
-participant "genreDTO:\nUS022GenreDTO"
 participant ":Genre" as ENTITY
+participant "genreDTO:\nUS022GenreDTO"
 
 participant ":IBibliographicalData\nRepository" as BDRepo
 participant ":IBibliographicalData\nRepositoryJPA" as BDJPA
@@ -45,13 +45,13 @@ participant "DataBase" as DB
 User -> UI : I want to see all official\n genres in the system
 activate UI
 
-UI -> Controller : getAllGenres()
+UI -> Controller : findAll()
 activate Controller
 
-Controller -> GR : getAllGenres()
+Controller -> GR : findAll()
 activate GR
 
-GR -> GRJPA : getAllGenres()
+GR -> GRJPA : findAll()
 activate GRJPA
 
 GRJPA -> DB : Query
@@ -69,13 +69,12 @@ GRJPA -->> "genreDMs : List<genreDM>" ** : <<create>>
 
 GRJPA --> GR : genreDMs
 deactivate GRJPA
-
+loop for each genreDMs
 GR -> Assembler : toDomainList\n(genresPersisted)
 activate Assembler
 
 Assembler -->> "listOfGenre:\nList<Genre>" ** : <<create>>
 
-loop for each genreDMs
     Assembler -> GFactory : create(GenreId, String genreType)
 
     activate GFactory
@@ -94,7 +93,7 @@ deactivate Assembler
 GR --> Controller : listOfGenre
 deactivate GR
 
-Controller -> MAPPER : toDTOList(listDomain)
+Controller -> MAPPER : toDTOList(listOfGenre)
 activate MAPPER
 
 MAPPER -->> "listOfGenreDTO:\nList<US022GenreDTO>" ** : <<create>>
@@ -103,6 +102,10 @@ loop for each Genre
     MAPPER -> ENTITY : getGenreType()
     activate ENTITY
     ENTITY --> MAPPER : genreType
+    deactivate ENTITY
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : genreId
     deactivate ENTITY
 
     MAPPER -> "genreDTO:\nUS022GenreDTO" ** : toDTO()
@@ -127,9 +130,9 @@ UI -> Controller : findAllByGenreId(genreId)
 activate Controller
 
 
-Controller -> BDRepo : findAllByGenreID(genreId)
+Controller -> BDRepo : findAllByGenreId(genreId)
 activate BDRepo
-BDRepo -> BDJPA : findAllByGenreID(genreId)
+BDRepo -> BDJPA : findAllByGenreId(genreId)
 activate BDJPA
 BDJPA -> DB : SELECT * FROM bibliographical_data\nWHERE genre_Id IN
 activate DB
@@ -145,9 +148,9 @@ deactivate BDJPA
 BDRepo --> Controller : listOfBioDataId
 deactivate BDRepo
 
-Controller -> PubSampleRepo : findItemsIdBy\nBibliographicalDataId(listOfBioDataId)
+Controller -> PubSampleRepo : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
 activate PubSampleRepo
-PubSampleRepo -> PSJPA : findAllByBibliographicalDataId(listOfBioDataId)
+PubSampleRepo -> PSJPA : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
 activate PSJPA
 PSJPA -> DB : SELECT * FROM publication_sample\nWHERE bibliographical_data_id IN
 activate DB
@@ -165,9 +168,9 @@ deactivate PSJPA
 PubSampleRepo --> Controller : listOfItemsId
 deactivate PubSampleRepo
 
-Controller -> ListingRepo : findAllListingId(listOfItemsId)
+Controller -> ListingRepo : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
 activate ListingRepo
-ListingRepo -> LJPA : findAllByItemsId(listOfItemsId)
+ListingRepo -> LJPA : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
 activate LJPA
 LJPA -> DB : SELECT * FROM listing\nWHERE publication_sample_id IN
 activate DB
