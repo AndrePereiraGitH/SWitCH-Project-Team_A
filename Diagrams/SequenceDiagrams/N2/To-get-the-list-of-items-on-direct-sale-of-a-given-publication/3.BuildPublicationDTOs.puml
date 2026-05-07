@@ -1,0 +1,38 @@
+@startuml
+hide footbox
+autonumber 31
+title Build publication DTOs
+
+' Controller
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
+
+' Bibliographical Data
+participant ":US023Bibliographical\nDataMapper" as BDMapper
+participant "bdDTO:\nUS023BibliographicalDataDTO" as bdDTO
+participant "listOfAllBDDTO:\nList<US023BibliographicalDataDTO>" as listOfAllBDDTO
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+' Section 2 - Converts all publications list to DTO
+Ctrl -> BDMapper: toDTOs(listOfAllBD)
+activate Ctrl
+activate BDMapper
+BDMapper -->> listOfAllBDDTO ** : «create»
+loop for each bd in listOfAllBD
+   BDMapper -->> bdDTO **: «create»
+   BDMapper -> listOfAllBDDTO : add(bibliographicalDataDTO)
+end
+BDMapper --> Ctrl : listOfAllBDDTO
+deactivate BDMapper
+deactivate Ctrl
+
+
+@enduml

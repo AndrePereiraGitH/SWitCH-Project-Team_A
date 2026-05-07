@@ -1,0 +1,134 @@
+@startuml
+autonumber
+hide footbox
+title To put for sale a publication in my library in a direct sale
+
+' Controller
+participant ":ToPutForSaleAPublicationInDirectSaleController" as Ctrl
+
+' Library
+participant ":ILibraryRepository" as LibRepo
+participant ":ILibraryRepositoryJPA" as LibRepoJPA
+participant "libraryDM:\nLibraryDM" as LibDM
+participant ":LibraryAssembler" as LibAss
+participant ":LibraryFactory" as LibFact
+
+' Publication Sample
+participant ":IPublicationSampleRepository" as PSRepo
+participant ":IPublicationSampleRepositoryJPA" as PSRepoJPA
+participant "listOfAvailablePublicationDMs:\nList<PublicationSampleDM>" as listAvailablePSDM
+participant "pubSampleDM:\nPublicationSampleDM" as PSDM
+participant ":PublicationSampleAssembler" as PSAss
+participant ":PublicationSampleFactory" as PSFact
+participant "pubSample:\nPublicationSample" as PS
+participant "listOfAvailablePublications:\nList<PublicationSample>" as listAvailablePS
+' DTO
+participant ":US015PublicationSampleMapper" as Mapper
+participant "listOfAvailablePubSampleDTO:\nList<US015PublicationSampleDTO>" as listDTO
+participant "publicationSampleDTO:\nUS015PublicationSampleDTO" as DTO_O
+
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+
+' --- Step 1: User initiates the process ---
+ -> Ctrl : findLibraryPublicationsAvailableForSale()
+activate Ctrl
+
+' --- Step 2: find User's Library ---
+Ctrl -> LibRepo : getByUserId(userId)
+activate LibRepo
+LibRepo -> LibRepoJPA : getByUserId(userId)
+activate LibRepoJPA
+LibRepoJPA -> DB : query library by userId
+activate DB
+DB --> LibRepoJPA : data
+deactivate DB
+LibRepoJPA -->> LibDM ** : «create»
+LibRepoJPA -> LibDM: getId()
+activate LibDM
+LibDM --> LibRepoJPA: libraryId
+deactivate LibDM
+LibRepoJPA --> LibRepo: libraryId
+deactivate LibRepoJPA
+LibRepo --> Ctrl: libraryId
+deactivate LibRepo
+
+' --- Step 3: find Library's Publication Samples Available For Sale ---
+Ctrl -> PSRepo : findAvailableForSaleByLibraryId(libraryId)
+activate PSRepo
+PSRepo -> PSRepoJPA : findAvailableForSaleByLibraryId(libraryId)
+activate PSRepoJPA
+PSRepoJPA -> DB : query publicationSample by libraryId \nWHERE status NOT IN ('FOR_SALE', 'SOLD')
+activate DB
+DB --> PSRepoJPA : data
+deactivate DB
+PSRepoJPA -->> listAvailablePSDM ** : «create»
+loop for each pubSampleDM in listAvailablePSDM
+    PSRepoJPA -->> PSDM ** : «create»
+    PSRepoJPA -> listAvailablePSDM : add(pubSampleDM)
+end
+PSRepoJPA --> PSRepo : listOfAvailablePublicationDMs
+deactivate PSRepoJPA
+PSRepo -->> listAvailablePS ** : «create»
+loop for each pubSampleDM in listOfAvailablePublicationDMs
+        PSRepo -> PSAss : toDomain(pubSampleDM)
+        activate PSAss
+        PSAss -> PSDM : id()
+        activate PSDM
+        PSDM --> PSAss : pubSampleId
+        deactivate PSDM
+        PSAss -> PSDM : getBibliographicalDataId()
+        activate PSDM
+        PSDM --> PSAss : bdId
+        deactivate PSDM
+        PSAss -> PSDM : getUserId()
+        activate PSDM
+        PSDM --> PSAss : userId
+        deactivate PSDM
+        PSAss -> PSDM : getPublicationStatus()
+        activate PSDM
+        PSDM --> PSAss : pubStatus
+        deactivate PSDM
+        PSAss -> PSDM : getEditionId()
+        activate PSDM
+        PSDM --> PSAss : editionId
+        deactivate PSDM
+        PSAss -> PSDM : getCondition
+        activate PSDM
+        PSDM --> PSAss : condition
+        deactivate PSDM
+        PSAss -> PSFact : create(pubSampleId, bdId, userId,\n pubStatus, editionId, condition)
+        activate PSFact
+        PSFact --> PS ** : «create»
+        PSFact --> PSAss : pubSample
+        deactivate PSFact
+        PSAss --> PSRepo: pubSample
+        deactivate PSAss
+        PSRepo -> listAvailablePS : add(pubSample)
+end
+PSRepo --> Ctrl: listOfAvailablePublications
+deactivate PSRepo
+
+' --- Step 4: Converts the list of available publications to DTOs ---
+Ctrl -> Mapper : toDTOs(listOfAvailablePublications)
+activate Mapper
+Mapper -->> listDTO ** : «create»
+loop for each publicationSample in listOfAvailablePublications
+    Mapper -->> DTO_O **: «create»
+    Mapper -> listDTO: add(publicationSampleDTO)
+end
+Mapper --> Ctrl : listOfAvailablePubSampleDTO
+deactivate Mapper
+<-- Ctrl : listOfAvailablePubSampleDTO
+deactivate Ctrl
+
+@enduml
