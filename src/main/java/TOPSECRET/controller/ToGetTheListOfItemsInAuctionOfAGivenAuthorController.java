@@ -26,7 +26,7 @@ import java.util.List;
  * This controller coordinates the retrieval of bibliographical data, publication samples,
  * listings, and auctions in order to return the corresponding DTO representations.
  */
-public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
+public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
 
     private final IAuthorRepository authorRepository;
     private final IBibliographicalDataRepository biblioRepository;
@@ -46,10 +46,29 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
      * @param mapper the mapper used to convert auction domain objects into DTOs
      * @throws IllegalArgumentException if any dependency is null
      */
-    public ToGetTheListOfItemsOnAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
+    public ToGetTheListOfItemsInAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
 
-        if (authorRepository == null || biblioRepository == null || pubRepo == null || listingRepo == null || auctionRepository == null || mapper == null) {
-            throw new IllegalArgumentException("Controller dependencies cannot be null");
+        if (authorRepository == null) {
+            throw new IllegalArgumentException("AuthorRepository cannot be null");
+        }
+        if (biblioRepository == null) {
+            throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
+        }
+
+        if (pubRepo == null) {
+            throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+        }
+
+        if (listingRepo == null) {
+            throw new IllegalArgumentException("ListingRepository cannot be null");
+        }
+
+        if (auctionRepository == null) {
+            throw new IllegalArgumentException("AuctionRepository cannot be null");
+        }
+
+        if (mapper == null) {
+            throw new IllegalArgumentException("AuctionMapper cannot be null");
         }
 
         this.authorRepository = authorRepository;
@@ -93,7 +112,9 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
 
        List<BibliographicalDataID> bdsOfAuthorID = biblioRepository.findIdByAuthorId(authorId);
 
-       List<PublicationSampleId> samplesOfAuthorID = pubRepo.findPublicationSamplesIdsByBiblioDataIds(bdsOfAuthorID);
+       List<PublicationSampleId> samplesOfAuthorID = bdsOfAuthorID.stream()
+               .flatMap(bdId -> pubRepo.findIdsByBibliographicalDataId(bdId).stream())
+               .toList();
 
        List<ListingId> authorListings = listingRepo.findIdsByPublicationSampleIdIn(samplesOfAuthorID);
 

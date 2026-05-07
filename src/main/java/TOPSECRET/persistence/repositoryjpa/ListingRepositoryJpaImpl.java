@@ -113,13 +113,13 @@ public class ListingRepositoryJpaImpl implements IListingRepository {
     @Override
     public List<ListingId> findIdsByPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
 
-        Objects.requireNonNull(publicationSampleIds, "publicationSampleIds cannot be null");
+        Objects.requireNonNull(publicationSampleIds, "List of PublicationSampleIds cannot be null");
 
-        return listingRepositoryJpa
-                .findAllByItemsId(publicationSampleIds)
+        List<ListingId> listOfPublicationSampleIds = listingRepositoryJpa.findAllByItemsId(publicationSampleIds)
                 .stream()
                 .map(ListingDM::getListingId)
                 .toList();
+        return listOfPublicationSampleIds;
     }
 
 
