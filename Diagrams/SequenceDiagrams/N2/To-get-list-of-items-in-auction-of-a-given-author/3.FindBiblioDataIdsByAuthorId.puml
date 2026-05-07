@@ -7,6 +7,8 @@ participant ":Controller" as Ctrl
 participant ":IBiblioDataRepository" as bdRepo
 participant ":IBiblioDataRepositoryJPA" as bdRepoJPA
 participant "bdIdList\n:List<BibliographicalDataId>" as bdIdList
+participant "bdDMList:\nList<BibliographicalDataDM>" as bdDMList
+
 database "Database" as db
 
 note over Ctrl #E3F2FD
@@ -27,12 +29,23 @@ activate bdRepo
 bdRepo -> bdRepoJPA : findIdsByAuthorId(selectedAuthorID)
 activate bdRepoJPA
 
-bdRepoJPA -> db : query bibliographical_data_id by author_id
+bdRepoJPA -> db : query bibliographical_data by author_id
 activate db
-db --> bdRepoJPA : bibliographicalDataId values
+db --> bdRepoJPA : bibliographicalData data
 deactivate db
 
+bdRepoJPA -->> bdDMList** : <<create>>
+
 bdRepoJPA -->> bdIdList ** : <<create>>
+
+loop for each bdDM in bdDMList
+bdRepoJPA -> bdDMList : getId()
+activate bdDMList
+bdDMList --> bdRepoJPA : id
+deactivate bdDMList
+bdRepoJPA -> bdRepoJPA : bdIdList.add(id)
+end
+
 bdRepoJPA --> bdRepo : bdIdList
 deactivate bdRepoJPA
 

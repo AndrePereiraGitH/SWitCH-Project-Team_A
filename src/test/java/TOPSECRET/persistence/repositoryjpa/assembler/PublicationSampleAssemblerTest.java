@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -62,6 +64,7 @@ class PublicationSampleAssemblerTest {
 
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> new PublicationSampleAssembler(null));
     }
 
@@ -87,6 +90,7 @@ class PublicationSampleAssemblerTest {
 
     @Test
     void toDM_shouldThrowNullPointerException_whenPublicationSampleIsNull() {
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> assembler.toDM(null));
     }
 
@@ -116,6 +120,7 @@ class PublicationSampleAssemblerTest {
 
     @Test
     void toDomain_shouldThrowNullPointerException_whenPublicationSampleDMIsNull() {
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
     }
 }

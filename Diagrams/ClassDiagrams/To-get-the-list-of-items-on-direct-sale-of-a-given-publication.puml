@@ -2,56 +2,43 @@
 title To get the list of items on direct sale of a given publication
 
 ' -------------------------
-' APPLICATION LAYER
+' Controller
 ' -------------------------
 
-class UI023{
-}
-
-class US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
-  - bibliographicalDataRepository: IBibliographicalDataRepository
-  - listingRepository: IListingRepository
-  - publicationSampleRepository: IPublicationSampleRepository
-  + getAllPublicationsBD() : List<US023BibliographicalDataDTO>
-  + findListOfItemsOnDirectSale(bdID) : List<US023PublicationSampleDTO>
-}
-
-
-class US023BibliographicalDataMapper {
-    + toDTO(bibliographicalData) : US023BibliographicalDataDTO
-    + toDTOs(listOfAllPublicationsBD) : List<US023BibliographicalDataDTO>
-}
-
-record US023BibliographicalDataDTO {
-}
-
-class US023ListingMapper {
-    + toDTO(listing) : US023ListingDTO
-    + toDTOs(listOfDSListings) : List<US023ListingDTO>
-}
-
-record US023ListingDTO {
+class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
+  + findAllBibliographicalData() : List<US023BibliographicalDataDTO>
+  + findListOfItemsOnDirectSale(bibliographicalDataId bdId) : List<US023ListingDTO>
 }
 
 ' -------------------------
-' REPOSITORIES
+' Bibliographical Data
 ' -------------------------
 
 interface IBibliographicalDataRepository {
-  + getAllPublicationsBD() : List<BibliographicalData>
+  + findAll() : List<BibliographicalData>
 }
 
-interface IListingRepository {
-    + findDirectSaleListingsContaining(listOfPubSampleId)
+interface IBibliographicalDataRepositoryJPA {
+  + findAll() : List<BibliographicalDataDM>
 }
 
-interface IPublicationSampleRepository {
-  + findPubSampleIdsByBibliographicalDataId(bdId)
+class BibliographicalDataAssembler {
+    + toDomain(BibliographicalDataDM bdDM): BibliographicalData
 }
 
-' -------------------------
-' DOMAIN LAYER
-' -------------------------
+class BibliographicalDataDM {
+    - bdId: BibliographicalDataId
+    - title: String
+    - originalLanguage: Locale
+    - publicationDate: LocalDate
+    - genres: List<GenreId>
+    - chunksOfText: String
+}
+
+class BibliographicalDataFactory {
+    + create(BibliographicalDataId bdId, String title, List<AuthorId> authorIds, Locale language,
+     LocalDate publicationDate, List<GenreId> genreIds, String chunksOfText) : BibliographicalData
+}
 
 class BibliographicalData {
   - bdId : BibliographicalDataId
@@ -59,18 +46,99 @@ class BibliographicalData {
   - authorsId : List<AuthorId>
 }
 
+class US023BibliographicalDataMapper {
+    + toDTO(BibliographicalData bd) : US023BibliographicalDataDTO
+    + toDTOs(List<BibliographicalData> listOfAllBD) : List<US023BibliographicalDataDTO>
+}
+
+record US023BibliographicalDataDTO {
+    - bdId: String
+    - pubTitle: String
+    - authorsName: List<String>
+}
+
+' -------------------------
+' Publication Sample
+' -------------------------
+
+interface IPublicationSampleRepository {
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
+}
+
+interface IPublicationSampleRepositoryJPA {
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
+}
+
+class PublicationSampleId {
+}
+
+/'
+class PublicationSample {
+    - publicationSampleId: PublicationSampleId
+    - bibliographicalDataId: BibliographicalDataId
+    - ownerId: UserId
+    - publicationStatus: PublicationStatus
+    - editionId: EditionId
+    - condition: Condition
+    - libraryId: LibraryId
+    - collecOfPubId: CollectionOfPublicationsId
+}
+'/
+
+' -------------------------
+' Listing
+' -------------------------
+
+interface IListingRepository {
+    + findAllByDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds): List<Listing>
+}
+
+interface IListingRepositoryJPA {
+   + findAllByItemsId(List<PublicationSampleId> itemsId): List<ListingDM>
+}
+
+class ListingAssembler {
+    + toDomain(ListingDM listingDM): Listing
+}
+
+class ListingDM  {
+  - listingId : ListingId
+  - listingTitle : String
+  - publicationSampleIds : List<PublicationSampleId>
+  - saleType : SaleType
+  - sellerId: UserId
+  - price: String
+  - shortDescription: String
+  - pictures: List<String>
+}
+
+class ListingFactory {
+    + create(ListingId listingId, String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,
+     Price price, String shortDescription, UserId sellerId, List<Picture> pictures): Listing
+}
+
 class Listing {
   - listingId : ListingId
   - listingTitle : String
   - publicationSampleIds : List<PublicationSampleId>
   - saleType : SaleType
-  + getItemsIds(): List<PublicationSampleId>
+  - sellerId: UserId
+  - price: Price
+  - shortDescription: String
+  - pictures: List<Picture>
 }
 
-class PublicationSample {
-    - publicationSampleId: PublicationSampleId
-    - bibliographicalDataId: BibliographicalDataId
-    - ownerId: UserId
+class US023ListingMapper {
+    + toDTO(Listing listing) : US023ListingDTO
+    + toDTOs(List<Listing> listOfDSListings) : List<US023ListingDTO>
+}
+
+record US023ListingDTO {
+    - listingId: String
+    - listingTitle: String
+    - price: String
+    - pubTitles: List<String>
+    - authorsName: List<String>
 }
 
 ' Value Objects
@@ -83,33 +151,41 @@ enum SaleType {
 ' RELATIONSHIPS
 ' -------------------------
 
-' --- UI ---
-UI023 ..> US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController : invokes
-
 ' --- Controller ---
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IBibliographicalDataRepository : uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IListingRepository : uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IPublicationSampleRepository : uses
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023BibliographicalDataMapper : creates DTO
-US023ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController ..> US023ListingMapper : creates DTO
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IBibliographicalDataRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" US023BibliographicalDataMapper : maps to DTO
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IPublicationSampleRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IListingRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" US023ListingMapper : maps to DTO
 
-' --- BD Repository ---
-IBibliographicalDataRepository "1" --> "*" BibliographicalData : persists
+' --- Bibliographical Data ---
+IBibliographicalDataRepositoryJPA "1" --|> "1" IBibliographicalDataRepository: implements
+IBibliographicalDataRepository "1" --> "1" BibliographicalDataAssembler: converts DM to Domain
 
-' --- Listing Repository ---
-IListingRepository "1" --> "*" Listing : persists
+BibliographicalDataAssembler "1" --> "1" BibliographicalDataFactory: uses
+BibliographicalDataAssembler "1" ..> "1" BibliographicalDataDM: uses
 
-' --- PubSample Repository ---
-IPublicationSampleRepository "1" --> "*" PublicationSample : persists
+BibliographicalDataFactory "1" --> "1" BibliographicalData : creates
+
+US023BibliographicalDataMapper "1" ..> "1" US023BibliographicalDataDTO : maps to
+
+' --- Publication Sample ---
+IPublicationSampleRepositoryJPA "1" --|> "1" IPublicationSampleRepository: implements
+IPublicationSampleRepository "1" --> "1" PublicationSampleId: uses
+'IPublicationSampleRepository "1" --> "*" PublicationSample: persists
 
 ' --- Listing ---
+IListingRepositoryJPA "1" --|> "1" IListingRepository: implements
+IListingRepository "1" --> "1" ListingAssembler: converts DM to Domain
+
+ListingAssembler "1" --> "1" ListingFactory: uses
+ListingAssembler "1" ..> "1" ListingDM: uses
+
+ListingFactory "1" --> "1" Listing: creates
+
 Listing "*" --> "1" SaleType : for sale in
 
-' --- Listing Mapper and DTO ---
-US023ListingMapper ..> US023ListingDTO : create
-
-' --- BD Mapper and DTO ---
-US023BibliographicalDataMapper ..> US023BibliographicalDataDTO : creates
+US023ListingMapper "1" ..> "1" US023ListingDTO : maps to
 
 @enduml
 
