@@ -74,10 +74,6 @@ class CollectionOfPublicationsAssembler {
   +toDomain(collectionDM : CollectionOfPublicationsDM) : CollectionOfPublications
 }
 
-class CollectionOfPublicationsFactory {
-  +create(id : CollectionOfPublicationsId, collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
-}
-
 class CollectionOfPublications <<AggregateRoot>> {
   -_id : CollectionOfPublicationsId
   -_collectionName : String
@@ -113,6 +109,11 @@ class CollectionOfPublicationsDM <<Entity>> {
   -isPrivate : boolean
 }
 
+class CollectionOfPublicationsFactory {
+  +create(collectionOfPublicationsId : CollectionOfPublicationsId, collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
+  +create(collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
+}
+
 class GenreDM <<Entity>> {
   -id : GenreId
   -genreType : String
@@ -127,8 +128,18 @@ class GenreAssembler {
   + toDomain(GenreDM dm): Genre
 }
 
+class GenreFactory {
+  +create(genreType : String) : Genre
+  +create(genreId : Genre, genreType : String) : Genre
+}
+
 class UserAssembler {
   + toDomain(UserDM dm): User
+}
+
+class UserFactory {
+  +create(username : String, profile : Profile, userRoles : Set<UserRole>) : User
+  +create(userId : UserId, username : String, profile : Profile, userRoles : Set<UserRole>) : User
 }
 
 UI --> PublicListByGenreController
@@ -153,19 +164,26 @@ GenreRepositoryJpaImpl ..|> IGenreRepository
 GenreRepositoryJpaImpl --> IGenreRepositoryJpa : queries genres
 GenreRepositoryJpaImpl --> GenreAssembler : maps DM to domain
 
+GenreAssembler --> GenreFactory : uses
+GenreFactory --> GenreDM : creates
+
 UserRepositoryJPAImpl ..|> IUserRepository
 UserRepositoryJPAImpl --> IUserRepositoryJPA : queries users
 UserRepositoryJPAImpl --> UserAssembler : maps DM to domain
+
+UserAssembler --> UserFactory : uses
+UserFactory --> UserDM : creates
 
 ICollectionOfPublicationsRepositoryJpa --> CollectionOfPublicationsDM : retrieves
 IGenreRepositoryJpa --> GenreDM : retrieves
 IUserRepositoryJPA --> UserDM : retrieves
 
-CollectionOfPublicationsAssembler --> CollectionOfPublicationsFactory : reconstructs domain
+CollectionOfPublicationsAssembler --> CollectionOfPublicationsFactory : uses
 CollectionOfPublicationsAssembler ..> CollectionOfPublicationsDM : reads
 CollectionOfPublicationsAssembler ..> CollectionOfPublications : maps
 
 CollectionOfPublicationsFactory ..> CollectionOfPublications : creates
+CollectionOfPublicationsFactory ..> CollectionOfPublicationsDM : creates
 
 US013GenreDTO ..> Genre : created from
 US020CollectionOfPublicationsDTO ..> CollectionOfPublications : created from
