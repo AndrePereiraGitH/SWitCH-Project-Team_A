@@ -28,14 +28,19 @@ import static org.mockito.Mockito.when;
  */
 class US028PublisherMapperTest {
 
+    private final US028PublisherMapper sut = new US028PublisherMapper();
+
     // -------------------------
     // Constructor
     // -------------------------
 
     @Test
     void constructor_ShouldInstantiateSuccessfully() throws Exception {
+
         // Arrange
-        Constructor<US028PublisherMapper> constructor = US028PublisherMapper.class.getDeclaredConstructor();
+        Constructor<US028PublisherMapper> constructor =
+                US028PublisherMapper.class.getDeclaredConstructor();
+
         constructor.setAccessible(true);
 
         // Act
@@ -51,21 +56,25 @@ class US028PublisherMapperTest {
 
     @Test
     void toDTO_ShouldThrowIllegalArgumentException_WhenPublisherIsNull() {
+
         // Act + Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> US028PublisherMapper.toDTO(null));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.toDTO(null)
+        );
 
         assertEquals("Publisher cannot be null", ex.getMessage());
     }
 
     @Test
     void toDTO_ShouldReturnDTO_WhenPublisherIsValid() {
+
         // Arrange
         PublisherID publisherId = mock(PublisherID.class);
         Publisher publisherDouble = createPublisherDouble("Porto Editora", publisherId);
 
         // Act
-        US028PublisherDTO result = US028PublisherMapper.toDTO(publisherDouble);
+        US028PublisherDTO result = sut.toDTO(publisherDouble);
 
         // Assert
         assertNotNull(result);
@@ -79,20 +88,24 @@ class US028PublisherMapperTest {
 
     @Test
     void toDTOs_ShouldThrowIllegalArgumentException_WhenListIsNull() {
+
         // Act + Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> US028PublisherMapper.toDTOs(null));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.toDTOs(null)
+        );
 
         assertEquals("Publishers List cannot be null", ex.getMessage());
     }
 
     @Test
     void toDTOs_ShouldReturnEmptyList_WhenListIsEmpty() {
+
         // Arrange
         List<Publisher> publishers = List.of();
 
         // Act
-        List<US028PublisherDTO> result = US028PublisherMapper.toDTOs(publishers);
+        List<US028PublisherDTO> result = sut.toDTOs(publishers);
 
         // Assert
         assertNotNull(result);
@@ -101,13 +114,15 @@ class US028PublisherMapperTest {
 
     @Test
     void toDTOs_ShouldReturnListWithOneDTO_WhenListHasOnePublisher() {
+
         // Arrange
         PublisherID publisherId = mock(PublisherID.class);
         Publisher publisherDouble = createPublisherDouble("Porto Editora", publisherId);
+
         List<Publisher> publishers = List.of(publisherDouble);
 
         // Act
-        List<US028PublisherDTO> result = US028PublisherMapper.toDTOs(publishers);
+        List<US028PublisherDTO> result = sut.toDTOs(publishers);
 
         // Assert
         assertEquals(1, result.size());
@@ -117,6 +132,7 @@ class US028PublisherMapperTest {
 
     @Test
     void toDTOs_ShouldReturnListWithMultipleDTOs_WhenListHasMultiplePublishers() {
+
         // Arrange
         PublisherID publisherId1 = mock(PublisherID.class);
         PublisherID publisherId2 = mock(PublisherID.class);
@@ -126,10 +142,14 @@ class US028PublisherMapperTest {
         Publisher publisher2 = createPublisherDouble("Publisher 2", publisherId2);
         Publisher publisher3 = createPublisherDouble("Publisher 3", publisherId3);
 
-        List<Publisher> publishers = List.of(publisher1, publisher2, publisher3);
+        List<Publisher> publishers = List.of(
+                publisher1,
+                publisher2,
+                publisher3
+        );
 
         // Act
-        List<US028PublisherDTO> result = US028PublisherMapper.toDTOs(publishers);
+        List<US028PublisherDTO> result = sut.toDTOs(publishers);
 
         // Assert
         assertEquals(3, result.size());
@@ -146,13 +166,16 @@ class US028PublisherMapperTest {
 
     @Test
     void toDTOs_ShouldThrowIllegalArgumentException_WhenInputListContainsNullPublisher() {
+
         // Arrange
         List<Publisher> publishers = new ArrayList<>();
         publishers.add(null);
 
         // Act + Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> US028PublisherMapper.toDTOs(publishers));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.toDTOs(publishers)
+        );
 
         assertEquals("Publisher cannot be null", ex.getMessage());
     }
@@ -162,6 +185,7 @@ class US028PublisherMapperTest {
     // -------------------------
 
     private Publisher createPublisherDouble(String name, PublisherID publisherId) {
+
         Publisher publisherDouble = mock(Publisher.class);
 
         when(publisherDouble.getName()).thenReturn(name);

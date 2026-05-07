@@ -16,7 +16,6 @@ import TOPSECRET.dto.US028ListingMapper;
 import TOPSECRET.dto.US028PublisherDTO;
 import TOPSECRET.dto.US028PublisherMapper;
 
-
 public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
 
     private final IPublisherRepository publisherRepo;
@@ -24,13 +23,15 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
     private final IPublicationSampleRepository pubSampleRepo;
     private final IListingRepository listingRepo;
     private final US028ListingMapper listingMapper;
+    private final US028PublisherMapper publisherMapper;
 
     public ToGetListOfItemsOnAuctionOfAGivenPublisherController(
             IPublisherRepository publisherRepo,
             IEditionRepository editionRepo,
             IPublicationSampleRepository pubSampleRepo,
             IListingRepository listingRepo,
-            US028ListingMapper listingMapper
+            US028ListingMapper listingMapper,
+            US028PublisherMapper publisherMapper
     ) {
         if (publisherRepo == null) {
             throw new IllegalArgumentException("publisherRepo cannot be null");
@@ -51,11 +52,17 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
         if (listingMapper == null) {
             throw new IllegalArgumentException("listingMapper cannot be null");
         }
+
+        if (publisherMapper == null) {
+            throw new IllegalArgumentException("publisherMapper cannot be null");
+        }
+
         this.publisherRepo = publisherRepo;
         this.editionRepo = editionRepo;
         this.pubSampleRepo = pubSampleRepo;
         this.listingRepo = listingRepo;
         this.listingMapper = listingMapper;
+        this.publisherMapper = publisherMapper;
     }
 
     /**
@@ -66,7 +73,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
     public List<US028PublisherDTO> getAllPublishers() {
         List<Publisher> listOfPublishers = publisherRepo.findAll();
 
-        return US028PublisherMapper.toDTOs(listOfPublishers);
+        return publisherMapper.toDTOs(listOfPublishers);
     }
 
     /**
