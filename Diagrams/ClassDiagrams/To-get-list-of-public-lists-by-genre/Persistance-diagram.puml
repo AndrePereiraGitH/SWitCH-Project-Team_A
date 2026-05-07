@@ -45,16 +45,25 @@ interface IUserRepositoryJPA {
   +findById(userID : UserId) : Optional<UserDM>
 }
 
-class GenreAssembler
+class GenreAssembler {
+  -factory : GenreFactory
+  +toDM(genre : Genre) : GenreDM
+}
+
 class CollectionOfPublicationsAssembler {
   -_factory : CollectionOfPublicationsFactory
   +toDomain(collectionDM : CollectionOfPublicationsDM) : CollectionOfPublications
 }
 
-class UserAssembler
+class UserAssembler {
+  -userFactory : UserFactory
+  +toDM(user : User) : UserDM
+  +toDomain(dm : UserDM) : User
+}
 
 class CollectionOfPublicationsFactory {
-  +create(id : CollectionOfPublicationsId, collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
+  +create(collectionOfPublicationsId : CollectionOfPublicationsId, collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
+  +create(collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
 }
 
 class GenreDM {
@@ -75,9 +84,42 @@ class UserDM {
   -userName : String
 }
 
-class Genre
-class CollectionOfPublications
-class User
+class GenreFactory {
+  +create(genreType : String) : Genre
+  +create(genreId : Genre, genreType : String) : Genre
+}
+
+class Genre {
+  -_id : GenreId
+  -_genreType : String
+  +id() : GenreId
+  +getGenreType() : String
+}
+
+class CollectionOfPublications {
+  -_id : CollectionOfPublicationsId
+  -_collectionName : String
+  -_collectionGenreId : GenreId
+  -_ownerId : UserId
+  -_isPrivate : boolean
+  +isPrivate() : boolean
+  +getCollectionName() : String
+  +getCollectionGenre() : GenreId
+  +getOwnerId() : UserId
+  +id() : CollectionOfPublicationsId
+}
+
+class User {
+  -_id : UserId
+  -_userName : String
+  +id() : UserId
+  +getUserName() : String
+}
+
+class UserFactory {
+  +create(username : String, profile : Profile, userRoles : Set<UserRole>) : User
+  +create(userId : UserId, username : String, profile : Profile, userRoles : Set<UserRole>) : User
+}
 
 GenreRepositoryJpaImpl ..|> IGenreRepository
 CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsRepository
@@ -96,13 +138,15 @@ ICollectionOfPublicationsRepositoryJpa --> CollectionOfPublicationsDM : retrieve
 IUserRepositoryJPA --> UserDM : retrieves
 
 GenreAssembler ..> GenreDM
-GenreAssembler ..> Genre
+GenreAssembler --> GenreFactory
+GenreFactory ..> Genre
 
 CollectionOfPublicationsAssembler ..> CollectionOfPublicationsDM
 CollectionOfPublicationsAssembler --> CollectionOfPublicationsFactory
 CollectionOfPublicationsFactory ..> CollectionOfPublications
 
 UserAssembler ..> UserDM
-UserAssembler ..> User
+UserAssembler --> UserFactory
+UserFactory ..> User
 
 @enduml

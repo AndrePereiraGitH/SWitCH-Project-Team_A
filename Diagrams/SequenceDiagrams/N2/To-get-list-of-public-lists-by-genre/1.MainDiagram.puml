@@ -27,8 +27,6 @@ activate Ctrl
     [[2.GetGenres.puml Get Genres]]
     end ref
 
-    Ctrl -->> genresDTOList ** : <<create>>
-
 Ctrl --> UI : genresDTOList
 deactivate Ctrl
 

@@ -26,6 +26,7 @@ note over Ctrl #E3F2FD
 end note
 
 Ctrl -> collectionRepo : findPublicCollectionsByGenreId(selectedGenreId)
+activate collectionRepo
 
 collectionRepo -> collectionRepoJpa : findByGenreIdAndIsPrivateFalse(genreId)
 activate collectionRepoJpa
@@ -58,5 +59,6 @@ end
 collectionRepo --> collectionRepo : return publicCollectionsList
 
 collectionRepo --> Ctrl : publicCollectionsList
+deactivate collectionRepo
 
 @enduml

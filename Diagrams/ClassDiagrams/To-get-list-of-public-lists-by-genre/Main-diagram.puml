@@ -134,7 +134,7 @@ class UserAssembler {
 UI --> PublicListByGenreController
 PublicListByGenreController --> IGenreRepository : gets genres
 PublicListByGenreController --> ICollectionOfPublicationsRepository : gets public collections by genre
-PublicListByGenreController --> US013GenreMapper : maps genres
+PublicListByGenreController ..> US013GenreMapper : maps genres
 PublicListByGenreController --> US020CollectionOfPublicationsDTOMapper : maps collections
 
 US013GenreMapper ..> Genre : reads genre type
