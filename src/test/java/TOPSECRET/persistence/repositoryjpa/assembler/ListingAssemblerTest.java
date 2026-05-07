@@ -155,7 +155,7 @@ class ListingAssemblerTest {
     void toDomain_shouldThrowException_WhenListingDMIsNull() {
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
+        assertThrows(NullPointerException.class, () -> assembler.toDomain((ListingDM) null));
     }
 
     @Test

@@ -49,19 +49,29 @@ loop for each auctionDM
     activate auctionAssembler
 
     auctionAssembler -> auctionDM : id()
+    activate auctionDM
     auctionDM --> auctionAssembler : id
+    deactivate auctionDM
 
     auctionAssembler -> auctionDM : getStartDate()
+    activate auctionDM
     auctionDM --> auctionAssembler : startDate
+    deactivate auctionDM
 
     auctionAssembler -> auctionDM : getFinalDate()
+    activate auctionDM
     auctionDM --> auctionAssembler : finalDate
+    deactivate auctionDM
 
     auctionAssembler -> auctionDM : getInitialPrice()
+    activate auctionDM
     auctionDM --> auctionAssembler : initialPrice
+    deactivate auctionDM
 
     auctionAssembler -> auctionDM : getBuyout()
+    activate auctionDM
     auctionDM --> auctionAssembler : buyoutPrice
+    deactivate auctionDM
 
     auctionAssembler -> auctionFactory : create(id, startDate, finalDate,\ninitialPrice, buyoutPrice)
     activate auctionFactory

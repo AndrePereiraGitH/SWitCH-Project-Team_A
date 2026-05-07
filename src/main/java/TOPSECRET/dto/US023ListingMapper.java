@@ -78,20 +78,20 @@ public class US023ListingMapper {
     /**
      * Converts a list of {@link Listing} objects into a list of DTOs.
      *
-     * @param listingIds the list of identifiers of direct sale listings to convert; must not be {@code null}
+     * @param listings the list of direct sale listings to convert; must not be {@code null}
      * @return a list of {@link US023ListingDTO}; never {@code null}, may be empty
      * @throws InstanceNotFoundException if any referenced bibliographical data, edition, or author
      *                                   cannot be found in their respective repositories
      */
-    public List<US023ListingDTO> toDTOs(List<ListingId> listingIds) throws InstanceNotFoundException {
+    public List<US023ListingDTO> toDTOs(List<Listing> listings) throws InstanceNotFoundException {
         List<US023ListingDTO> listOfListingDTO = new ArrayList<>();
 
-        if  (listingIds == null) {
-            throw new IllegalArgumentException("List of listings Ids can not be null");
+        if  (listings == null) {
+            throw new IllegalArgumentException("List of listings cannot be null");
         }
 
-        for (ListingId listingId : listingIds) {
-            US023ListingDTO listingDTO = toDTO(listingId);
+        for (Listing listing : listings) {
+            US023ListingDTO listingDTO = toDTO(listing);
             listOfListingDTO.add(listingDTO);
         }
 
@@ -101,28 +101,23 @@ public class US023ListingMapper {
     /**
      * Converts a single {@link Listing} into a {@link US023ListingDTO}.
      *
-     * @param listingId the identifier of direct sale listing to convert; must not be {@code null}
+     * @param listing the direct sale listing to convert; must not be {@code null}
      * @return a fully populated {@link US023ListingDTO}
      * @throws InstanceNotFoundException if any referenced bibliographical data, edition, or author
      *                                   cannot be found in their respective repositories
      */
-    public US023ListingDTO toDTO(ListingId listingId) throws InstanceNotFoundException {
+    public US023ListingDTO toDTO(Listing listing) throws InstanceNotFoundException {
 
-        if  (listingId == null) {
-            throw new IllegalArgumentException("ListingId cannot be null");
+        if  (listing == null) {
+            throw new IllegalArgumentException("Listing cannot be null");
         }
 
-        Optional<Listing> listingOpt = _listingRepo.findById(listingId);
-        if (listingOpt.isEmpty()) {
-            throw new InstanceNotFoundException("Listing with id " + listingId + " not found");
-        }
+        String listingTitle = listing.getListingTitle();
+        String price = listing.getPrice().toString();
+        List<String> pubTitle = getTitle(listing);
+        List<String> authorsName = getAuthors(listing);
 
-        String listingTitle = listingOpt.get().getListingTitle();
-        String price = listingOpt.get().getPrice().toString();
-        List<String> pubTitle = getTitle(listingOpt.get());
-        List<String> authorsName = getAuthors(listingOpt.get());
-
-        US023ListingDTO listingDTO = new US023ListingDTO(listingId.toString(), listingTitle, price, pubTitle, authorsName);
+        US023ListingDTO listingDTO = new US023ListingDTO(listing.id().toString(), listingTitle, price, pubTitle, authorsName);
 
         return listingDTO;
     }
