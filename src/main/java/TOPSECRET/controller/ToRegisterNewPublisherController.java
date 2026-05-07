@@ -15,7 +15,7 @@ public class ToRegisterNewPublisherController {
     private final PublisherService _publisherService;
 
     /**
-     * Constructs a new {@code US006ToRegisterNewPublisherController} with the given service.
+     * Constructs a new {@code ToRegisterNewPublisherController} with the given service.
      *
      * @param publisherService the service used to create and persist publishers; must not be {@code null}
      * @throws IllegalArgumentException if {@code publisherService} is {@code null}

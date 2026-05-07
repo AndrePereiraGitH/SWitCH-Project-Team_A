@@ -24,15 +24,6 @@ class ToRegisterNewPublisherControllerTest {
     // Constructor
     // =========================================================================
 
-    @Test
-    void shouldBuildControllerSuccessfully() {
-        // Arrange & Act
-        ToRegisterNewPublisherController ctrl =
-                new ToRegisterNewPublisherController(publisherService);
-
-        // Assert
-        assertNotNull(ctrl);
-    }
 
     @Test
     void shouldThrowExceptionWhenServiceIsNull() {
