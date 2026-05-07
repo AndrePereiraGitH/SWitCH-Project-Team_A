@@ -42,6 +42,9 @@ public class GenreRepositoryJpaImpl implements IGenreRepository {
     @Transactional
     public Genre save(Genre genre) {
         Objects.requireNonNull(genre, "Genre must not be null");
+        if (genreRepositoryJpa.existsById(genre.id())) {
+            throw new IllegalArgumentException("Genre already exists");
+        }
         GenreDM saved = genreRepositoryJpa.save(assembler.toDM(genre));
         return assembler.toDomain(saved);
     }

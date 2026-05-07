@@ -43,10 +43,10 @@ BDRepoJPA -->> listBDDM ** : «create»
 BDRepoJPA --> BDRepo: listOfBDDMs
 deactivate BDRepoJPA
 
-BDRepo -> BDAss: toDomain(listOfBDDMs)
-activate BDAss
-BDAss -->> listAllBD **: «create»
+BDRepo -->> listAllBD **: «create»
 loop for each bdDM in listOfBDDMs
+    BDRepo -> BDAss: toDomain(bdDM)
+    activate BDAss
     BDAss -> listBDDM: id()
     activate listBDDM
     listBDDM --> BDAss: bdId
@@ -80,10 +80,12 @@ loop for each bdDM in listOfBDDMs
     BDFact -->> BD ** : «create»
     BDFact --> BDAss: bd
     deactivate BDFact
-    BDAss -> listAllBD : add(db)
+    BDAss --> BDRepo: bd
+    deactivate BDAss
+    BDRepo -> listAllBD : add(bd)
 end
-BDAss --> BDRepo: listOfAllDB
-deactivate BDAss
+
+
 BDRepo --> Ctrl: listOfAllBD
 deactivate BDRepo
 deactivate Ctrl

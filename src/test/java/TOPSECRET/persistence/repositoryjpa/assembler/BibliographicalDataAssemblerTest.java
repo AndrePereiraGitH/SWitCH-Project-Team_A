@@ -231,48 +231,4 @@ class BibliographicalDataAssemblerTest {
         // Assert
         assertSame(expectedDomain, result);
     }
-
-    @Test
-    void toDomain_withList_shouldThrowNullPointerException_whenListIsNull() {
-        // Act + Assert
-        assertThrows(NullPointerException.class, () -> assembler.toDomain((List<BibliographicalDataDM>) null));
-    }
-
-    @Test
-    void toDomain_withList_shouldReturnEmptyList_whenListIsEmpty() {
-        // Act
-        List<BibliographicalData> result = assembler.toDomain(List.of());
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void toDomain_withList_shouldReturnValidDomainList_whenListHasElements() {
-        // Arrange
-        BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
-
-        BibliographicalDataDM dm = new BibliographicalDataDM(
-                bdIdDouble,
-                "Title test",
-                "en",
-                LocalDate.of(2024, 1, 15),
-                "Some text",
-                List.of(),
-                List.of()
-        );
-
-        BibliographicalData expectedDomain = mock(BibliographicalData.class);
-
-        when(factory.create(bdIdDouble, "Title test", List.of(), Locale.ENGLISH,
-                LocalDate.of(2024, 1, 15),
-                List.of(), "Some text")).thenReturn(expectedDomain);
-
-        // Act
-        List<BibliographicalData> result = assembler.toDomain(List.of(dm));
-
-        // Assert
-        assertEquals(1, result.size());
-        assertSame(expectedDomain, result.get(0));
-    }
 }

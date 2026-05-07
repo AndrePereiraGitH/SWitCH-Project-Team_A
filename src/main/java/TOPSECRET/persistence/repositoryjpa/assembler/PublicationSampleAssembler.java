@@ -85,30 +85,4 @@ public class PublicationSampleAssembler {
 
         return pbSample;
     }
-
-    /**
-     * Reconstructs a list of {@link PublicationSample} domain objects from a list of
-     * {@link PublicationSampleDM} persistence entities.
-     *
-     * <p>Convenience overload of {@link #toDomain(PublicationSampleDM)} that processes
-     * an entire collection in a single call. Each element is converted individually,
-     * preserving its original identity and enforcing domain invariants.</p>
-     *
-     * @param pbSampleDMs the list of persistence entities to convert; must not be {@code null}
-     * @return an immutable {@link List} containing the reconstructed {@link PublicationSample}
-     *         domain objects, in the same order as the input list
-     * @throws NullPointerException if {@code pbSampleDMs} is {@code null}
-     */
-    public List<PublicationSample> toDomain(List<PublicationSampleDM> pbSampleDMs){
-
-        Objects.requireNonNull(pbSampleDMs, "PublicationSampleDMs cannot be null.");
-
-        List<PublicationSample> pbSamples = new ArrayList<>();
-
-        for (PublicationSampleDM pbSampleDM : pbSampleDMs) {
-            pbSamples.add(toDomain(pbSampleDM));
-        }
-
-        return List.copyOf(pbSamples);
-    }
 }

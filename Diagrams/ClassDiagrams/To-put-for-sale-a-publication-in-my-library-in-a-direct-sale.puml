@@ -49,7 +49,7 @@ interface IPublicationSampleRepositoryJPA {
 }
 
 class PublicationSampleAssembler {
-    + toDomain(List<PublicationSampleDM> listOfAvailablePublicationDMs): List<PublicationSample>
+    + toDomain(PublicationSampleDM pubSamplesDM): PublicationSample
 }
 
 class PublicationSampleFactory {
