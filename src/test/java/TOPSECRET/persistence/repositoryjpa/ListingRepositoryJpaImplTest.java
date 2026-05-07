@@ -410,7 +410,7 @@ class ListingRepositoryJpaImplTest {
                 () -> repo.findIdsByPublicationSampleIdIn(null));
 
         assertEquals(
-                "publicationSampleIds cannot be null",
+                "List of PublicationSampleIds cannot be null",
                 ex.getMessage());
     }
 }
