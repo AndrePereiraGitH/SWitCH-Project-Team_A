@@ -44,7 +44,7 @@ class PublicationTypeFactory {
 }
 
 PublicationTypeAssembler "1" -.-> "1" PublicationTypeFactory : uses
-PublicationTypeAssembler "1" --> "*" PublicationType : recreate
+PublicationTypeFactory "1" --> "*" PublicationType : creates
 
 IPublicationTypeRepository "1" -.-> "1" PublicationTypeAssembler : uses
 

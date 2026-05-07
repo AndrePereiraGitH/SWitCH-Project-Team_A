@@ -5,6 +5,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.stereotype.Service;
 
+
 import java.util.Objects;
 
 /**
@@ -83,5 +84,4 @@ public class PublicationSampleAssembler {
 
         return pbSample;
     }
-
 }

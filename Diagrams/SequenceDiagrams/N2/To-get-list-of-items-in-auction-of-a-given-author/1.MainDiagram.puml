@@ -12,6 +12,7 @@ participant ":IBiblioDataRepository" as bdRepo
 
 participant ":IPublicationSampleRepository" as pubRepo
 
+participant "pubIdList\n:List<PublicationSampleId>" as pubIdList
 
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJPA" as listingRepoJPA
@@ -59,7 +60,9 @@ bdRepo --> Ctrl : bdIdList
 deactivate bdRepo
 
 '----- GET PUBLICATION SAMPLES Ids BY BIBLIODATA ID ---------
-Ctrl -> pubRepo : findIdsByBiblioDataIds ( bdIdList)
+
+
+Ctrl -> pubRepo : findIdsByBibliographicalDataId (bdId)
 activate pubRepo
 
     ref over pubRepo
@@ -69,7 +72,6 @@ activate pubRepo
 deactivate pubRepoJPA
 pubRepo --> Ctrl : pubIdList
 deactivate pubRepo
-
 '----- GET AUCTION LISTING CONTAINING PUB SAMPLES ID --------
 Ctrl -> listingRepo : findIdsByPublicationID ( pubIdList )
 activate listingRepo

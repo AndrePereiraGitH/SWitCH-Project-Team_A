@@ -16,7 +16,7 @@ public class US028PublisherMapper {
      * @param publisher the publisher to convert
      * @return the corresponding DTO.
      */
-    public static US028PublisherDTO toDTO(Publisher publisher) {
+    public US028PublisherDTO toDTO(Publisher publisher) {
             if (publisher == null) {
                 throw new IllegalArgumentException ("Publisher cannot be null");
             }
@@ -33,13 +33,13 @@ public class US028PublisherMapper {
      * @param publishers the list of publishers to convert
      * @return a list of {@link US028PublisherDTO}.
      */
-    public static List<US028PublisherDTO> toDTOs(List<Publisher> publishers) {
+    public List<US028PublisherDTO> toDTOs(List<Publisher> publishers) {
         if (publishers == null) {
             throw new IllegalArgumentException ("Publishers List cannot be null");
         }
 
         return publishers.stream()
-                .map(US028PublisherMapper::toDTO)
+                .map(this::toDTO)
                 .toList();
     }
 }

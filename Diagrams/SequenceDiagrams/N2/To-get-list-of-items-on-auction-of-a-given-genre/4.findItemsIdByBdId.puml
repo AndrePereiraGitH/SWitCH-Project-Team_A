@@ -23,9 +23,9 @@ note over Controller #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Controller -> PubSampleRepo : findItemsIdBy\nBibliographicalDataId(listOfBioDataId)
+Controller -> PubSampleRepo : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
 activate PubSampleRepo
-PubSampleRepo -> PSJPA : findAllByBibliographicalDataId(listOfBioDataId)
+PubSampleRepo -> PSJPA : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
 activate PSJPA
 PSJPA -> DB : SELECT * FROM publication_sample\nWHERE bibliographical_data_id IN
 activate DB

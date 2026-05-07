@@ -39,13 +39,13 @@ note over ctrl #E3F2FD
 end note
 
 ' -------- Get All Authors in System --------
-ctrl -> authorRepo : getAll()
+ctrl -> authorRepo : findAll()
 activate ctrl
 activate authorRepo
 
-authorRepo -> authorRepoJpa : getAll()
+authorRepo -> authorRepoJpa : findAll()
 activate authorRepoJpa
-authorRepoJpa -> db
+authorRepoJpa -> db : query find all auhtors
 activate db
 db --> authorRepoJpa : allAuthorsData
 deactivate db
@@ -56,12 +56,14 @@ deactivate authorRepoJpa
 
 ' ----- CONVERT DM TO DOMAIN ---------------
 
-authorRepo -> authorAssembler : toDomain ( authorsDMList)
-activate authorAssembler
 
-authorAssembler -->> authorsList ** : <<create>>
+
+authorRepo -->> authorsList ** : <<create>>
 
 loop for each AuthorDM in authorsDMList
+
+    authorRepo -> authorAssembler : toDomain ( authorsDM)
+    activate authorAssembler
 
     authorAssembler -> authorsDMList : id()
     activate authorsDMList
@@ -92,17 +94,19 @@ loop for each AuthorDM in authorsDMList
     activate authorFactory
 
     authorFactory -->> author ** : <<create>>
-    authorFactory -> authorAssembler : author
+    authorFactory --> authorAssembler : author
     deactivate authorFactory
 
-    authorAssembler -> authorAssembler : authorsList.add(author)
+    authorAssembler --> authorRepo : author
+
+    authorRepo -> authorRepo : authorsList.add(author)
+
 
 end loop
 
 
 deactivate authorFactory
-authorAssembler --> authorRepo : authorsList
-deactivate authorAssembler
+
 
 
 authorRepo --> ctrl : authorsList
@@ -114,13 +118,13 @@ ctrl -> AuthorMapper : fromDomainList(authorsList)
 activate AuthorMapper
 AuthorMapper -->> AuthorsListDto ** : <<create>>
 
-loop for each author in list
+loop for each author in authorsList
     AuthorMapper -> AuthorDTO ** : fromDomain(author)
-    AuthorMapper -> AuthorMapper : authorsDtoList.add(authorDTO)
+    AuthorMapper -> AuthorMapper : authorsDto.add(authorDTO)
 end
 
-AuthorMapper --> Ctrl : authorsDtoList
+AuthorMapper --> ctrl : authorsDto
 deactivate AuthorMapper
 
-deactivate Ctrl
+deactivate ctrl
 @enduml

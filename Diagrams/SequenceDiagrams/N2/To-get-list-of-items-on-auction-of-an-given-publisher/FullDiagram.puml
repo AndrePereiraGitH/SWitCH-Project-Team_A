@@ -1,0 +1,189 @@
+@startuml
+hide footbox
+autonumber
+title To Get The List Of Items On Auction Of A Given Publisher
+
+actor Buyer
+
+participant ":UI" as UI
+participant ":ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+
+participant ":IPublisherRepository" as publisherRepo
+participant ":IPublisherRepositoryJpa" as publisherJpa
+participant "listOfPublishers:List<Publisher>" as listOfPublishers
+participant "listOfPublisherDTO:List<US028PublisherDTO>" as listOfPublisherDTO
+participant ":US028PublisherMapper" as publisherMapper
+
+participant ":IEditionRepository" as editionRepo
+participant ":IEditionRepositoryJpa" as editionJpa
+participant "listOfEditionIds:List<EditionID>" as listOfEditionIds
+
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IPublicationSampleRepositoryJpa" as pubSampleJpa
+participant "listOfPubSampleIds:List<PublicationSampleId>" as listOfPubSampleIds
+
+participant ":IListingRepository" as listingRepo
+participant ":IListingRepositoryJpa" as listingJpa
+participant "auctionListings:List<Listing>" as auctionListings
+
+participant ":ListingAssembler" as listingAssembler
+participant ":ListingFactory" as listingFactory
+participant "listing:Listing" as listing
+
+participant ":US028ListingMapper" as listingMapper
+participant "auctionListingsDTO:List<US028ListingDTO>" as auctionListingsDTO
+participant "auctionListingDTO:US028ListingDTO" as auctionListingDTO
+
+participant "Database" as db
+
+Buyer -> UI : I want to get the list of items\non auction of a given publisher
+activate UI
+
+UI -> Ctrl : getAllPublishers()
+activate Ctrl
+
+Ctrl -> publisherRepo : findAll()
+activate publisherRepo
+publisherRepo -> publisherJpa : findAll()
+activate publisherJpa
+publisherJpa -> db : SELECT * FROM publisher
+activate db
+db --> publisherJpa : data
+deactivate db
+publisherJpa --> publisherRepo : List<PublisherDM>
+deactivate publisherJpa
+
+publisherRepo -->> listOfPublishers ** : <<create>>
+loop for each publisherDM in List<PublisherDM>
+    publisherRepo -> publisherRepo : listOfPublishers.add(toDomain(publisherDM))
+end
+
+publisherRepo --> Ctrl : listOfPublishers
+deactivate publisherRepo
+
+Ctrl -> publisherMapper : toDTOs(listOfPublishers)
+activate publisherMapper
+publisherMapper -->> listOfPublisherDTO ** : <<create>>
+publisherMapper --> Ctrl : listOfPublisherDTO
+deactivate publisherMapper
+
+Ctrl --> UI : listOfPublisherDTO
+deactivate Ctrl
+
+UI --> Buyer : Here is the list of publishers.\nPick one.
+deactivate UI
+
+Buyer -> UI : publisher
+activate UI
+
+UI -> Ctrl : findListOfItemsOnAuctionByPublisherId(publisherId)
+activate Ctrl
+
+
+Ctrl -> editionRepo : findByPublisherId(publisherId)
+activate editionRepo
+
+editionRepo -> editionJpa : findByPublisherId(publisherId)
+activate editionJpa
+
+editionJpa -> db : SELECT * FROM edition\nWHERE publisher_id = ?
+activate db
+db --> editionJpa : data
+deactivate db
+
+editionJpa -->> editionDMList ** : <<create>>
+editionJpa --> editionRepo : editionDMList
+deactivate editionJpa
+
+editionRepo -->> listOfEditions ** : <<create>>
+
+loop for each editionDM in editionDMList
+    editionRepo -> editionAssembler : toDomain(editionDM)
+    activate editionAssembler
+
+    editionAssembler -> editionFactory : create(editionDM.getEditionId(), + fields)
+    activate editionFactory
+    editionFactory -->> edition ** : <<create>>
+    editionFactory --> editionAssembler : edition
+    deactivate editionFactory
+
+    editionAssembler --> editionRepo : edition
+    deactivate editionAssembler
+
+    editionRepo -> editionRepo : listOfEditions.add(edition)
+end
+
+editionRepo --> Ctrl : listOfEditionsIds
+deactivate editionRepo
+
+Ctrl -> pubSampleRepo : findIdsByEditionIdIn(listOfEditionIds)
+activate pubSampleRepo
+pubSampleRepo -> pubSampleJpa : findAllByEditionIdIn(listOfEditionIds)
+activate pubSampleJpa
+pubSampleJpa -> db : SELECT * FROM publication_sample\nWHERE edition_id IN (?)
+activate db
+db --> pubSampleJpa : data
+deactivate db
+pubSampleJpa --> pubSampleRepo : List<PublicationSampleDM>
+deactivate pubSampleJpa
+
+pubSampleRepo -->> listOfPubSampleIds ** : <<create>>
+loop for each dm in List<PublicationSampleDM>
+    pubSampleRepo -> pubSampleRepo : listOfPubSampleIds.add(dm.getPublicationSampleId())
+end
+
+pubSampleRepo --> Ctrl : listOfPubSampleIds
+deactivate pubSampleRepo
+
+Ctrl -> listingRepo : findAllByAuctionAndPublicationSampleIdIn(listOfPubSampleIds)
+activate listingRepo
+listingRepo -> listingJpa : findAllByItemsId(listOfPubSampleIds)
+activate listingJpa
+listingJpa -> db : SELECT * FROM listing\nWHERE publication_sample_id IN (?)
+activate db
+db --> listingJpa : data
+deactivate db
+listingJpa --> listingRepo : List<ListingDM>
+deactivate listingJpa
+
+listingRepo -->> auctionListings ** : <<create>>
+
+loop for each dm in List<ListingDM>
+    listingRepo -> listingAssembler : toDomain(dm)
+    activate listingAssembler
+    listingAssembler -> listingFactory : create(dm.getListingId(), dm.getListingTitle(), dm.getItemsId(), dm.getSaleType(), dm.getPrice(), dm.getShortDescription(), dm.getSellerId(), dm.getPictures())
+    activate listingFactory
+    listingFactory -->> listing ** : <<create>>
+    listingFactory --> listingAssembler : listing
+    deactivate listingFactory
+    listingAssembler --> listingRepo : listing
+    deactivate listingAssembler
+
+    opt listing.isListingLinkedToAnAuction()
+        listingRepo -> listingRepo : auctionListings.add(listing)
+    end
+end
+
+listingRepo --> Ctrl : auctionListings
+deactivate listingRepo
+
+Ctrl -> listingMapper : toDTOs(auctionListings)
+activate listingMapper
+
+listingMapper -->> auctionListingsDTO ** : <<create>>
+
+loop for each listing in auctionListings
+    listingMapper -> auctionListingDTO ** : toDTO(listing)
+    listingMapper -> listingMapper : auctionListingsDTO.add(auctionListingDTO)
+end
+
+listingMapper --> Ctrl : auctionListingsDTO
+deactivate listingMapper
+
+Ctrl --> UI : auctionListingsDTO
+deactivate Ctrl
+
+UI --> Buyer : Here is the list of items on auction\nfor the selected publisher.
+deactivate UI
+
+@enduml

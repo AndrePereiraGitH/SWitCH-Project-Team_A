@@ -1,0 +1,61 @@
+@startuml
+hide footbox
+autonumber
+title Find Auction Listings By Publication Sample Ids
+
+participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":IListingRepository" as listingRepo
+participant ":IListingRepositoryJpa" as listingJpa
+participant "listingDMList:List<ListingDM>" as listingDMList
+participant "auctionListings:List<Listing>" as auctionListings
+participant ":ListingAssembler" as listingAssembler
+participant ":ListingFactory" as listingFactory
+participant "listing:Listing" as listing
+participant "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[./main.puml Return to Main Diagram]]
+end note
+
+Ctrl -> listingRepo : findAllByAuctionAndPublicationSampleIdIn(listOfPubSampleIds)
+activate listingRepo
+
+listingRepo -> listingJpa : findAllByItemsId(listOfPubSampleIds)
+activate listingJpa
+
+listingJpa -> db : SELECT * FROM listing\nWHERE publication_sample_id IN (?)
+activate db
+db --> listingJpa : data
+deactivate db
+
+listingJpa -->> listingDMList ** : <<create>>
+listingJpa --> listingRepo : listingDMList
+deactivate listingJpa
+
+listingRepo -->> auctionListings ** : <<create>>
+
+loop for each dm in listingDMList
+    listingRepo -> listingAssembler : toDomain(dm)
+    activate listingAssembler
+
+    listingAssembler -> listingFactory : create(dm.getListingId(), dm.getListingTitle(), dm.getItemsId(), dm.getSaleType(), dm.getPrice(), dm.getShortDescription(), dm.getSellerId(), dm.getPictures())
+    activate listingFactory
+
+    listingFactory -->> listing ** : <<create>>
+    listingFactory --> listingAssembler : listing
+    deactivate listingFactory
+
+    listingAssembler --> listingRepo : listing
+    deactivate listingAssembler
+
+    opt listing.isListingLinkedToAnAuction()
+        listingRepo -> listingRepo : auctionListings.add(listing)
+    end
+end
+
+listingRepo --> Ctrl : auctionListings
+deactivate listingRepo
+
+@enduml
