@@ -45,7 +45,7 @@ deactivate GRJPA
 create "listOfGenre:\nList<Genre>" as listDomain
 GR -->> listDomain : <<create>>
 
-loop for each GenreDM in GenresPersistedDM
+loop for each GenreDM in genresPersistedDM
     GR -> Assembler : toDomain(genreDM)
     activate Assembler
 
@@ -73,11 +73,11 @@ activate MAPPER
 create "listOfGenreDTO:\nList<US013GenreDTO>" as listDTO
 MAPPER -->> listDTO : <<create>>
 
-loop for each Genre
-    MAPPER -> MAPPER : toDTO(genre)
+loop for each Genre in listOfGenre
     create "genreDTO:\nUS013GenreDTO" as genreDTO
-    MAPPER -->> genreDTO : <<create>>
-    MAPPER -> listDTO : add(genreDTO)
+    MAPPER -> genreDTO : toDTO(genre)
+
+    MAPPER -> MAPPER : listOfGenreDTO.add(genreDTO)
 end
 
 MAPPER --> C : listOfGenreDTO
