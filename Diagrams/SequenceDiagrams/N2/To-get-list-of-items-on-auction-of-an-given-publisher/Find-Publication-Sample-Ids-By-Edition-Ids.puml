@@ -1,0 +1,43 @@
+@startuml
+hide footbox
+autonumber
+title Find Publication Sample Ids By Edition Ids
+
+participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IPublicationSampleRepositoryJpa" as pubSampleJpa
+participant "publicationSampleDMList:List<PublicationSampleDM>" as publicationSampleDMList
+participant "listOfPubSampleIds:List<PublicationSampleId>" as listOfPubSampleIds
+participant "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[./main.puml Return to Main Diagram]]
+end note
+
+Ctrl -> pubSampleRepo : findIdsByEditionIdIn(listOfEditionIds)
+activate pubSampleRepo
+
+pubSampleRepo -> pubSampleJpa : findAllByEditionIdIn(listOfEditionIds)
+activate pubSampleJpa
+
+pubSampleJpa -> db : SELECT * FROM publication_sample\nWHERE edition_id IN (?)
+activate db
+db --> pubSampleJpa : data
+deactivate db
+
+pubSampleJpa -->> publicationSampleDMList ** : <<create>>
+pubSampleJpa --> pubSampleRepo : publicationSampleDMList
+deactivate pubSampleJpa
+
+pubSampleRepo -->> listOfPubSampleIds ** : <<create>>
+
+loop for each dm in publicationSampleDMList
+    pubSampleRepo -> pubSampleRepo : listOfPubSampleIds.add(dm.getPubSampleId())
+end
+
+pubSampleRepo --> Ctrl : listOfPubSampleIds
+deactivate pubSampleRepo
+
+@enduml
