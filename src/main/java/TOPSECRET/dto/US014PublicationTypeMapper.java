@@ -1,8 +1,8 @@
 package TOPSECRET.dto;
 
-
 import TOPSECRET.domain.PublicationType.PublicationType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,10 +21,10 @@ public class US014PublicationTypeMapper {
      *
      * @param publicationType the domain object to convert
      */
-    public static US014PublicationTypeDTO toDTO(PublicationType publicationType) {
+    public US014PublicationTypeDTO toDTO(PublicationType publicationType) {
 
         if(publicationType==null){
-            throw new IllegalArgumentException("PublicationTypeDTO cannot be null");
+            throw new IllegalArgumentException("PublicationType cannot be null");
         }
 
         return new US014PublicationTypeDTO(publicationType.id().getId(),
@@ -38,14 +38,18 @@ public class US014PublicationTypeMapper {
      * @return list of DTO representations
      */
     // Creates a list of DTOs from a list of PublicationType domains
-    public static List<US014PublicationTypeDTO> toDTOList( List<PublicationType> publicationTypes) {
+    public List<US014PublicationTypeDTO> toDTOList( List<PublicationType> publicationTypes) {
 
         if(publicationTypes==null){
-            throw new IllegalArgumentException("PublicationTypeDTO list cannot be null");
+            throw new IllegalArgumentException("PublicationType list cannot be null");
         }
 
-        return publicationTypes.stream()
-                .map(US014PublicationTypeMapper::toDTO)
-                .toList();
+        List<US014PublicationTypeDTO> dtoList = new ArrayList<>();
+
+        for(PublicationType publicationType:publicationTypes){
+            dtoList.add(toDTO(publicationType));
+        }
+
+        return dtoList;
     }
 }

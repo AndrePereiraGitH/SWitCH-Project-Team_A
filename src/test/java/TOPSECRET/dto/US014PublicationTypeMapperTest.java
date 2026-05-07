@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 class US014PublicationTypeMapperTest {
 
+
+
     @Test
     void toDTOValidPublicationType() {
         // Arrange
@@ -21,9 +23,11 @@ class US014PublicationTypeMapperTest {
         when(publicationTypeId.getId()).thenReturn("1");
         when(pt.id()).thenReturn(publicationTypeId);
 
+        US014PublicationTypeMapper mapper = new US014PublicationTypeMapper();
+
         // Act
         US014PublicationTypeDTO dto =
-                US014PublicationTypeMapper.toDTO(pt);
+                mapper.toDTO(pt);
 
         // Assert
         assertEquals("Book", dto.mediaFormat());
@@ -33,17 +37,35 @@ class US014PublicationTypeMapperTest {
     @Test
     void toDTOThrowsWhenNull() {
 
+        // Arrange
+        US014PublicationTypeMapper mapper = new US014PublicationTypeMapper();
+
+
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                US014PublicationTypeMapper.toDTO(null));
+                mapper.toDTO(null));
+    }
+
+    @Test
+    void toDTOListThrowsWhenNullList() {
+
+        // Arrange
+        US014PublicationTypeMapper mapper = new US014PublicationTypeMapper();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                mapper.toDTOList(null));
     }
 
     @Test
     void toDTOListEmptyListReturnsEmptyList() {
 
+        // Arrange
+        US014PublicationTypeMapper mapper = new US014PublicationTypeMapper();
+
         // Act
         List<US014PublicationTypeDTO> result =
-                US014PublicationTypeMapper.toDTOList(List.of());
+                mapper.toDTOList(List.of());
 
         // Assert
         assertTrue(result.isEmpty());
@@ -58,9 +80,12 @@ class US014PublicationTypeMapperTest {
         when(publicationTypeId.getId()).thenReturn("1");
         when(pt.id()).thenReturn(publicationTypeId);
 
+        US014PublicationTypeMapper mapper = new US014PublicationTypeMapper();
+
+
         // Act
         List<US014PublicationTypeDTO> result =
-                US014PublicationTypeMapper.toDTOList(List.of(pt));
+                mapper.toDTOList(List.of(pt));
 
         // Assert
         assertEquals(1, result.size());
@@ -86,19 +111,17 @@ class US014PublicationTypeMapperTest {
         when(publicationTypeId2.getId()).thenReturn("2");
         when(pt2.id()).thenReturn(publicationTypeId2);
 
+        US014PublicationTypeMapper mapper = new US014PublicationTypeMapper();
+
         // Act
         List<US014PublicationTypeDTO> result =
-                US014PublicationTypeMapper.toDTOList(List.of(pt1, pt2));
+                mapper.toDTOList(List.of(pt1, pt2));
 
         // Assert
         assertEquals(2, result.size());
-    }
-
-    @Test
-    void toDTOListThrowsWhenNullList() {
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                US014PublicationTypeMapper.toDTOList(null));
+        assertEquals("Book", result.get(0).mediaFormat());
+        assertEquals("1", result.get(0).id());
+        assertEquals("Magazine", result.get(1).mediaFormat());
+        assertEquals("2", result.get(1).id());
     }
 }

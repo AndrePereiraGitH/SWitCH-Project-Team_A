@@ -25,6 +25,7 @@ public class ToGetPublicationTypeListController {
      * access to PublicationType domain objects.
      */
     private final IPublicationTypeRepository publicationTypeRepository;
+    private final US014PublicationTypeMapper publicationTypeMapper;
 
     /**
      * Creates a new controller instance.
@@ -32,27 +33,31 @@ public class ToGetPublicationTypeListController {
      * @param publicationTypeRepository the repository that provides
      *                                  publication type data
      */
-    public ToGetPublicationTypeListController(IPublicationTypeRepository publicationTypeRepository) {
+    public ToGetPublicationTypeListController(IPublicationTypeRepository publicationTypeRepository, US014PublicationTypeMapper publicationTypeMapper) {
 
         if(publicationTypeRepository==null){
             throw new IllegalArgumentException("IPublicationTypeRepository cannot be null");
         }
+        if(publicationTypeMapper==null){
+            throw new IllegalArgumentException("PublicationTypeMapper cannot be null");
+        }
 
         this.publicationTypeRepository = publicationTypeRepository;
+        this.publicationTypeMapper = publicationTypeMapper;
     }
 
     /**
      * Retrieves all publication types from the repository
      * and converts them into DTO representations.
      *
-     * @return a list of US014PublicationTypeMapper objects
+     * @return a List<US014PublicationTypeDTO> objects
      */
     public List<US014PublicationTypeDTO> findAll() {
 
         List<PublicationType> publicationTypes =
                 publicationTypeRepository.findAll();
 
-        return US014PublicationTypeMapper.toDTOList(publicationTypes);
+        return publicationTypeMapper.toDTOList(publicationTypes);
     }
 
 }
