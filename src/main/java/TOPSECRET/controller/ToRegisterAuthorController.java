@@ -56,7 +56,6 @@ public class ToRegisterAuthorController {
      * @param dateOfBirth the author's date of birth
      * @param biography a short biography of the author
      * @return the created and persisted {@link Author}
-     * @throws InstanceAlreadyExistsException if an author with the same identity already exists
      */
     public Author register(String name, CountryId countryId, LocalDate dateOfBirth, String biography) throws InstanceAlreadyExistsException {
         return _authorService.createAndSave(name, countryId, dateOfBirth, biography);
