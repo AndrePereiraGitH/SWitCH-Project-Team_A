@@ -14,6 +14,7 @@ participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as
 ' Publication Sample
 participant ":IPublicationSample\nRepository" as PubSampleRepo
 participant ":IPublicationSample\nRepositoryJPA" as PubSampleRepoJPA
+participant ":listOfPubSampleDM:\nList<PublicationSampleDM" as listPubSampleDM
 participant "listOfPubSampleId:\nList<PublicationSampleId" as listPubSampleId
 
 ' Listing
@@ -63,7 +64,15 @@ PubSampleRepoJPA -> DB: QUERY all publicationSample by bibliographicalDataId
 activate DB
 DB --> PubSampleRepoJPA: data
 deactivate DB
+PubSampleRepoJPA -->> listPubSampleDM** : «create»
 PubSampleRepoJPA -->> listPubSampleId** : «create»
+loop for each pubSampleDM in listOfPubSampleDM
+    PubSampleRepoJPA -> listPubSampleDM: getId()
+    activate listPubSampleDM
+    listPubSampleDM --> PubSampleRepoJPA: pubSampleId
+    deactivate listPubSampleDM
+    PubSampleRepoJPA -> listPubSampleId: add(pubSampleId)
+end
 PubSampleRepoJPA --> PubSampleRepo: listOfPubSampleId
 deactivate PubSampleRepoJPA
 PubSampleRepo --> Ctrl: listOfPubSampleId
@@ -81,19 +90,52 @@ deactivate DB
 ListingRepoJPA -->> listDSListingDMs** : «create»
 ListingRepoJPA --> ListingRepo: listOfDSListingDMs
 deactivate ListingRepoJPA
-ListingRepo -> ListingAss: toDomain(listOfDSListingDMs)
-activate ListingAss
-ListingAss -->> listDSListings **: «create»
+
+ListingRepo -->> listDSListings **: «create»
 loop for each listingDM in listOfDSListingDMs
+    ListingRepo -> ListingAss: toDomain(listingDM)
+    activate ListingAss
+    ListingAss -> listDSListingDMs: getId()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: listingId
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getListingTitle()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: listingTitle
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getItemsId()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: itemsId
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getSaleType()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: saleType
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getPrice()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: price
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getShortDescription()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: shortDescription
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getSellerId()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: sellerId
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getPictures()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: pictures
+    deactivate listDSListingDMs
     ListingAss -> ListingFact: create(listingId, listingTitle, itemsId, saleType,\n price, shortDescription, sellerId, pictures)
     activate ListingFact
     ListingFact -->> Listing** : «create»
     ListingFact --> ListingAss: listing
-    ListingAss -> listDSListings: add(listing)
     deactivate ListingFact
+    ListingAss --> ListingRepo: listing
+    deactivate ListingAss
+    ListingRepo -> listDSListings: add(listing)
 end
-ListingAss --> ListingRepo: listOfDSListings
-deactivate ListingAss
 
 ListingRepo --> Ctrl : listOfDSListings
 deactivate ListingRepo
