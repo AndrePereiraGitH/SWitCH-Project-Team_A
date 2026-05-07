@@ -17,48 +17,84 @@ end note
 
 participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
-participant "selectedGenre: Genre" as SelectedGenre
-participant "user: User" as UserObj
-participant ":ICollectionOfPublicationsRepository" as CollectionRepo
 participant ":CollectionOfPublicationsFactory" as Factory
+participant ":ICollectionOfPublicationsRepository" as Repo
+participant ":ICollectionOfPublicationsRepositoryJpa" as JpaRepo
+participant "DataBase" as DB
+participant ":CollectionOfPublicationsAssembler" as Assembler
 
-UI -> Controller : createCollection(name, selectedGenre, user)
+UI -> Controller : createCollection(name, genreId, userId)
 activate Controller
 
-Controller -> SelectedGenre : id()
-activate SelectedGenre
-SelectedGenre --> Controller : genreId : GenreID
-deactivate SelectedGenre
-
-Controller -> UserObj : id()
-activate UserObj
-UserObj --> Controller : userId : UserId
-deactivate UserObj
-
-Controller -> CollectionRepo : createAndAdd(userId, name, genreId)
-activate CollectionRepo
-
-loop for each existing collection
-    CollectionRepo -> CollectionRepo : compare(userId, name, genreId)
-    alt [duplicate found]
-        CollectionRepo --> Controller : error: "Collection already exists"
-    end
-end
-
-CollectionRepo -> Factory : create(name, genreId, userId)
+Controller -> Factory : create(name, genreId, userId)
 activate Factory
 
-create "cp: CollectionOfPublications"
-Factory -> "cp: CollectionOfPublications" : <<create>>
+create "cp:CollectionOfPublications" as CP
+Factory -->> CP : <<create>>
 note right : _isPrivate = true\n(enforced by constructor)
-Factory --> CollectionRepo : cp
+
+Factory --> Controller : cp
 deactivate Factory
 
-CollectionRepo -> CollectionRepo : _collectionOfPublicationsList.add(cp)
-CollectionRepo --> Controller : cp
-deactivate CollectionRepo
+Controller -> Repo : save(cp)
+activate Repo
 
-Controller --> UI : cp
-deactivate Controller
+Repo -> JpaRepo : existsById(cp.id())
+activate JpaRepo
+JpaRepo -> DB : SELECT * FROM collections WHERE id = ?
+activate DB
+DB --> JpaRepo : result
+deactivate DB
+JpaRepo --> Repo : false
+deactivate JpaRepo
+
+alt [collection already exists]
+    Repo --> Controller : error: "Collection already exists"
+    Controller --> UI : error: "Collection already exists"
+
+else [collection does NOT exist]
+
+    Repo -> Assembler : toDM(cp)
+    activate Assembler
+
+    create "cpDM:CollectionOfPublicationsDM" as CPDM
+    Assembler -->> CPDM : <<create>>
+
+    Assembler --> Repo : cpDM
+    deactivate Assembler
+
+    Repo -> JpaRepo : save(cpDM)
+    activate JpaRepo
+
+    JpaRepo -> DB : INSERT INTO collections ...
+    activate DB
+    DB --> JpaRepo : savedDM
+    deactivate DB
+
+    JpaRepo --> Repo : savedDM
+    deactivate JpaRepo
+
+    Repo -> Assembler : toDomain(savedDM)
+    activate Assembler
+
+    Assembler -> Factory : create(id, name, genreId, userId, isPrivate)
+    activate Factory
+
+    create "savedCP:CollectionOfPublications" as SavedCP
+    Factory -->> SavedCP : <<create>>
+
+    Factory --> Assembler : savedCP
+    deactivate Factory
+
+    Assembler --> Repo : savedCP
+    deactivate Assembler
+
+    Repo --> Controller : savedCP
+    deactivate Repo
+
+    Controller --> UI : savedCP
+    deactivate Controller
+
+end
 
 @enduml

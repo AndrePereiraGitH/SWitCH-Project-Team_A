@@ -17,7 +17,11 @@ end note
 
 participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
-participant ":IGenreRepository" as GenreRepo
+participant ":IGenreRepository" as Repo
+participant ":IGenreRepositoryJpa" as JpaRepo
+participant "DataBase" as DB
+participant ":GenreAssembler" as Assembler
+participant ":GenreFactory" as Factory
 participant "allGenreList: List<Genre>" as allGenreList
 participant ":US017GenreMapper" as GenreMapper
 participant "listOfGenreDTO: List<US017GenreDTO>" as listOfGenreDTO
@@ -27,13 +31,42 @@ participant "genreDTO: US017GenreDTO" as GDTO
 UI -> Controller : getAllGenres()
 activate Controller
 
-Controller -> GenreRepo : getAllGenres()
-activate GenreRepo
-GenreRepo -->> allGenreList ** : <<create>>
-GenreRepo --> Controller : allGenreList
-deactivate GenreRepo
+Controller -> Repo : findAll()
+activate Repo
 
-Controller -> GenreMapper : toDTO(allGenreList)
+Repo -> JpaRepo : findAll()
+activate JpaRepo
+
+JpaRepo -> DB : SELECT * FROM genres
+activate DB
+DB --> JpaRepo : data
+deactivate DB
+
+JpaRepo --> Repo : List<GenreDM>
+deactivate JpaRepo
+
+Repo -> Assembler : toDomain(genreDM)
+activate Assembler
+
+Repo -->> allGenreList ** : <<create>>
+
+loop for each GenreDM
+    Assembler -> Factory : create(genreId, genreType)
+    activate Factory
+    create ":Genre" as GenreObj
+    Factory -->> GenreObj : <<create>>
+    Factory --> Assembler : genre
+    deactivate Factory
+    Assembler -> allGenreList : add(genre)
+end
+
+Assembler --> Repo : allGenreList
+deactivate Assembler
+
+Repo --> Controller : allGenreList
+deactivate Repo
+
+Controller -> GenreMapper : toDTOList(allGenreList)
 activate GenreMapper
 GenreMapper -->> listOfGenreDTO ** : <<create>>
 
@@ -44,7 +77,7 @@ loop for each genre in allGenreList
     deactivate Genre
 
     GenreMapper -->> GDTO ** : <<create>>
-    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+    GenreMapper -> listOfGenreDTO : add(genreDTO)
 end
 
 GenreMapper --> Controller : listOfGenreDTO

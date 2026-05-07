@@ -41,7 +41,7 @@ deactivate UI
 User -> UI : selectedGenre("Fiction")
 activate UI
 
-UI -> Controller : createCollection(name, selectedGenre, user)
+UI -> Controller : createCollection(name, genreId, userId)
 activate Controller
 
 ref over Controller, CollectionRepo, Factory
