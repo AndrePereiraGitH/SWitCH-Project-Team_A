@@ -1,0 +1,102 @@
+@startuml
+
+hide footbox
+autonumber
+
+title "Make Collection Public"
+
+participant ":Controller" as Controller
+participant ":ICollectionOfPublication\nRepository" as CollectionRepository
+participant ":ICollectionOfPublication\nJPARepository" as collectionRepositoryJPA
+participant ":CollectionOfPublications\nAssembler" as collectionAssembler
+participant "selectedCollectionDomain\n:CollectionOfPublications" as selectedCollectionDomain
+
+participant ":CollectionOfPublications\nFactory" as collectionsFactory
+
+participant "publicCollectionDM\n:CollectionOfPublicationsDM" as publicCollectionDM
+participant "updatedCollectionDM\n:CollectionOfPublicationsDM" as updatedCollectionDM
+
+database DataBase as db
+
+participant "updatedCollection\n:CollectionOfPublications" as updatedCollection
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
+end note
+
+Controller -> CollectionRepository : makeCollectionPublic(selectedCollectionDomain)
+activate CollectionRepository
+
+CollectionRepository -> selectedCollectionDomain : makeCollectionPublic()
+activate selectedCollectionDomain
+selectedCollectionDomain -> selectedCollectionDomain : isPrivate = false
+selectedCollectionDomain --> CollectionRepository : selectedCollectionDomainPublic
+deactivate selectedCollectionDomain
+
+CollectionRepository -> collectionAssembler : toDM(selectedCollectionDomainPublic)
+activate collectionAssembler
+collectionAssembler -->> publicCollectionDM** : <<create>>
+collectionAssembler --> CollectionRepository : publicCollectionDM
+deactivate collectionAssembler
+
+CollectionRepository -> collectionRepositoryJPA : update(publicCollectionDM)
+activate collectionRepositoryJPA
+
+collectionRepositoryJPA -> db : query update collectionOfPublications
+activate db
+db --> collectionRepositoryJPA : data
+deactivate db
+
+collectionRepositoryJPA -->> updatedCollectionDM** : <<create>>
+collectionRepositoryJPA --> CollectionRepository : updatedCollectionDM
+deactivate collectionRepositoryJPA
+
+CollectionRepository -> collectionAssembler : toDomain(updatedCollectionDM)
+activate collectionAssembler
+
+collectionAssembler -> updatedCollectionDM : getId()
+activate updatedCollectionDM
+updatedCollectionDM --> collectionAssembler : id
+deactivate updatedCollectionDM
+
+collectionAssembler -> updatedCollectionDM : getCollectionName()
+activate updatedCollectionDM
+updatedCollectionDM --> collectionAssembler : collectionName
+deactivate updatedCollectionDM
+
+collectionAssembler -> updatedCollectionDM : getGenreId()
+activate updatedCollectionDM
+updatedCollectionDM --> collectionAssembler : genreId
+deactivate updatedCollectionDM
+
+collectionAssembler -> updatedCollectionDM : getUserId()
+activate updatedCollectionDM
+updatedCollectionDM --> collectionAssembler : userId
+deactivate updatedCollectionDM
+
+collectionAssembler -> updatedCollectionDM : get_isPrivate()
+activate updatedCollectionDM
+updatedCollectionDM --> collectionAssembler : isPrivate
+deactivate updatedCollectionDM
+
+collectionAssembler -> collectionsFactory : create(id, collectionName, genreId, userId, isPrivate)
+activate collectionsFactory
+collectionsFactory -->> updatedCollection** : <<create>>
+collectionsFactory --> collectionAssembler : updatedCollection
+deactivate collectionsFactory
+
+collectionAssembler --> CollectionRepository : updatedCollection
+deactivate collectionAssembler
+
+CollectionRepository --> Controller : updatedCollection
+deactivate CollectionRepository
+
+@enduml

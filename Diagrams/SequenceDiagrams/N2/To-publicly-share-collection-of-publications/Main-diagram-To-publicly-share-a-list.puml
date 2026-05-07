@@ -1,0 +1,83 @@
+@startuml
+
+hide footbox
+autonumber
+
+title To publicly share a list of mine
+
+box #WhiteSmoke
+actor User
+participant ":UI" as UI
+end box
+
+participant ":ToPubliclyShareCollectionOfPublications\nController" as Controller
+participant ":ICollectionOfPublication\nRepository" as CollectionRepository
+
+
+
+
+
+
+
+
+
+' == Section 1 - get user colllections ==
+
+User -> UI : I want to publicly share a \n CollectionOfPublications of mine
+activate UI
+UI --> Controller: getUserCollections(userId)
+
+activate Controller
+
+Controller -> CollectionRepository: getAllByUserId(userId)
+activate CollectionRepository
+
+ref over CollectionRepository
+
+[[2.Get-user-collections.puml Get user's Collections of Publications]]
+
+end ref
+
+CollectionRepository --> Controller: listOfUserCollections
+deactivate CollectionRepository
+
+ref over Controller
+[[3.Convert-to-dto.puml Convert to CollectionOfPublicationsDTO]]
+end ref
+
+
+
+Controller --> UI : listCollectionsDTO
+deactivate Controller
+
+
+
+
+
+UI -->> User : Select the list you want to share:\n collectionDTO_A, collectionDTO_B, ...
+deactivate UI
+
+' == Section 2 - Make collection public ==
+User -> UI : Selected collection (collectionDTO_A)
+activate UI
+UI -> Controller : makeCollectionPublic(collectionDTO_A)
+
+activate Controller
+
+Controller -> Controller : collectionId = collectionDTO_A.getId()
+
+ref over Controller, CollectionRepository
+[[4.Find-collection-by-id.puml Find collection by id]]
+end ref
+
+ref over Controller, CollectionRepository
+[[5.Make-collection-public.puml Make collection public]]
+end ref
+
+Controller --> UI : true
+deactivate Controller
+
+UI --> User: Your collection is public now!
+deactivate UI
+
+@enduml

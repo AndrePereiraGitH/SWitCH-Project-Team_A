@@ -1,0 +1,75 @@
+@startuml
+
+hide footbox
+autonumber
+
+title "Find Collection Of Publications by ID"
+
+participant ":Controller" as Controller
+participant ":ICollectionOfPublication\nRepository" as CollectionRepository
+participant ":ICollectionOfPublication\nJPARepository" as collectionRepositoryJPA
+participant ":CollectionOfPublications\nAssembler" as collectionAssembler
+participant ":CollectionOfPublications\nFactory" as collectionsFactory
+participant "selectedCollectionDM\n:CollectionOfPublicationsDM" as selectedCollectionDM
+database DataBase as db
+participant "selectedCollectionDomain\n:CollectionOfPublications" as selectedCollectionDomain
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
+end note
+
+Controller -> CollectionRepository : findById(collectionId)
+activate CollectionRepository
+
+CollectionRepository -> collectionRepositoryJPA : findById(collectionId)
+activate collectionRepositoryJPA
+
+collectionRepositoryJPA -> db : query find collection by id
+activate db
+db --> collectionRepositoryJPA : data
+deactivate db
+
+collectionRepositoryJPA -->> selectedCollectionDM** : <<create>>
+collectionRepositoryJPA --> CollectionRepository : selectedCollectionDM
+deactivate collectionRepositoryJPA
+
+CollectionRepository -> collectionAssembler : toDomain(selectedCollectionDM)
+activate collectionAssembler
+
+collectionAssembler -> selectedCollectionDM : getId()
+activate selectedCollectionDM
+selectedCollectionDM --> collectionAssembler : id
+
+collectionAssembler -> selectedCollectionDM : getName()
+selectedCollectionDM --> collectionAssembler : name
+
+collectionAssembler -> selectedCollectionDM : getGenreId()
+selectedCollectionDM --> collectionAssembler : genreId
+
+collectionAssembler -> selectedCollectionDM : getUserId()
+selectedCollectionDM --> collectionAssembler : userId
+
+collectionAssembler -> selectedCollectionDM : get_isPrivate()
+selectedCollectionDM --> collectionAssembler : isPrivate
+
+collectionAssembler -> collectionsFactory : create(id, name, genreId, userId, isPrivate)
+activate collectionsFactory
+collectionsFactory -->> selectedCollectionDomain** : <<create>>
+collectionsFactory --> collectionAssembler : selectedCollectionDomain
+deactivate collectionsFactory
+
+collectionAssembler --> CollectionRepository : selectedCollectionDomain
+deactivate collectionAssembler
+
+CollectionRepository --> Controller : selectedCollectionDomain
+deactivate CollectionRepository
+
+@enduml
