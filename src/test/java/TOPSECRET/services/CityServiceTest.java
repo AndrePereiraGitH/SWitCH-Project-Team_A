@@ -42,6 +42,7 @@ class CityServiceTest {
     void shouldCreateAndSaveCity() {
 
         // Arrange
+        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
@@ -58,6 +59,7 @@ class CityServiceTest {
     @Test
     void shouldThrowWhenCountryNotFound() {
         // Arrange
+        cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         when(doubleCountryRepository.findIdByName("Unknown")).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -70,6 +72,7 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenFactoryThrows() {
 
         // Arrange
+        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
         when(doubleCityFactory.create(countryID, ""))
@@ -85,6 +88,7 @@ class CityServiceTest {
     void shouldPropagateExceptionWhenRepositoryThrows() {
 
         // Arrange
+        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
         CountryId countryID = mock(CountryId.class);
         City doubleCity = mock(City.class);
         when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(countryID));
@@ -96,5 +100,26 @@ class CityServiceTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> cityService.createAndSave("Portugal", "Braga"));
         assertEquals("This city already exists in the system.", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenCityAlreadyExists() {
+        // Arrange
+        CityService cityService = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository);
+        CountryId countryID = mock(CountryId.class);
+
+        when(doubleCountryRepository.findIdByName("Portugal"))
+                .thenReturn(Optional.of(countryID));
+
+        when(doubleCityRepository.existsByCountryIdAndCityName(countryID, "Braga"))
+                .thenReturn(true);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> cityService.createAndSave("Portugal", "Braga")
+        );
+
+        assertEquals("City already exists in the system.", ex.getMessage());
     }
 }

@@ -1,6 +1,6 @@
 package TOPSECRET.domain.City;
 
-import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +66,7 @@ class CityFactoryTest {
     void shouldCreateValidCityWithExistingID() {
 
         // Arrange
-        CityID cityID = new CityID("existing-uuid");
+        CityId cityID = new CityId("existing-uuid");
 
         // Act
         City city = anyFactory.create(cityID, anyCountryId, anyCityName);

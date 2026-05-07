@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CityID implements DomainID {
+public class CityId implements DomainID {
 
     private String cityID;
 
@@ -29,7 +29,7 @@ public class CityID implements DomainID {
      * @param cityID the string value for this ID; must not be {@code null} or blank
      * @throws IllegalArgumentException if {@code cityID} is {@code null} or blank
      */
-    public CityID(String cityID) {
+    public CityId(String cityID) {
         if (cityID == null || cityID.isBlank()) {
             throw new IllegalArgumentException("ID value can't be null or empty.");
         }
@@ -49,7 +49,7 @@ public class CityID implements DomainID {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        CityID that = (CityID) o;
+        CityId that = (CityId) o;
         return Objects.equals(cityID, that.cityID);
     }
 

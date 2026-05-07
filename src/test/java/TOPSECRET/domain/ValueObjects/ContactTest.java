@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 class ContactTest {
 
     //Double for City class
-    private final CityID anyCity = mock(CityID.class);
+    private final CityId anyCity = mock(CityId.class);
 
     private Contact createContact(
             String phone,
