@@ -1,0 +1,154 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given publication
+
+box #whitesmoke
+actor Buyer
+participant ":UI" as UI
+end box
+
+' Controller
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublicationController" as Ctrl
+
+' Publication Sample
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":IPublicationSample\nRepositoryJPA" as PubSampleRepoJPA
+participant ":listOfPubSampleDM:\nList<PublicationSampleDM" as listPubSampleDM
+participant "listOfPubSampleId:\nList<PublicationSampleId" as listPubSampleId
+
+' Listing
+participant ":IListing\nRepository" as ListingRepo
+participant ":IListing\nRepositoryJPA" as ListingRepoJPA
+participant "listOfDSListingDMs:\nList<ListingDM>" as listDSListingDMs
+participant ":Listing\nAssembler" as ListingAss
+participant "listOfDSListings:\nList<Listing>" as listDSListings
+participant ":Listing\nFactory" as ListingFact
+participant "listing:Listing" as Listing
+
+
+' Database
+database "database" as DB
+
+' Section 1 - Get all publications and converts to DTO
+Buyer -> UI : I want to get the list of items\n on direct sale of a given publication
+activate UI
+UI -> Ctrl : findAllBibliographicalData()
+activate Ctrl
+
+ref over Ctrl
+[[2.GetAllPublications.puml Get all the publications in the system]]
+end ref
+
+ref over Ctrl
+[[3.BuildPublicationDTOs.puml Build publications DTOs]]
+end ref
+
+autonumber 36
+Ctrl --> UI : listOfAllBDDTO
+deactivate Ctrl
+Buyer <-- UI : Which publication? Choose!
+deactivate UI
+
+Buyer -> UI : publication
+activate UI
+UI -> Ctrl : findListOfItemsOnDirectSale(bdId)
+activate Ctrl
+
+' Section 2 - Get PublicationSample IDs for that BibliographicalData ID
+Ctrl -> PubSampleRepo : findIdsBy\nBibliographicalDataId(bdId)
+activate PubSampleRepo
+PubSampleRepo -> PubSampleRepoJPA: findIdsBy\nBibliographicalDataId(bdId)
+activate PubSampleRepoJPA
+PubSampleRepoJPA -> DB: QUERY all publicationSample by bibliographicalDataId
+activate DB
+DB --> PubSampleRepoJPA: data
+deactivate DB
+PubSampleRepoJPA -->> listPubSampleDM** : «create»
+PubSampleRepoJPA -->> listPubSampleId** : «create»
+loop for each pubSampleDM in listOfPubSampleDM
+    PubSampleRepoJPA -> listPubSampleDM: getId()
+    activate listPubSampleDM
+    listPubSampleDM --> PubSampleRepoJPA: pubSampleId
+    deactivate listPubSampleDM
+    PubSampleRepoJPA -> listPubSampleId: add(pubSampleId)
+end
+PubSampleRepoJPA --> PubSampleRepo: listOfPubSampleId
+deactivate PubSampleRepoJPA
+PubSampleRepo --> Ctrl: listOfPubSampleId
+deactivate PubSampleRepo
+
+' Section 3 - Get Direct Sale Listings for those PublicationSample IDs
+Ctrl -> ListingRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleId)
+activate ListingRepo
+ListingRepo -> ListingRepoJPA: findAllByItemsId(listOfPubSampleId)
+activate ListingRepoJPA
+ListingRepoJPA -> DB: QUERY listings by publicationSampleId and saleType
+activate DB
+DB --> ListingRepoJPA: data
+deactivate DB
+ListingRepoJPA -->> listDSListingDMs** : «create»
+ListingRepoJPA --> ListingRepo: listOfDSListingDMs
+deactivate ListingRepoJPA
+
+ListingRepo -->> listDSListings **: «create»
+loop for each listingDM in listOfDSListingDMs
+    ListingRepo -> ListingAss: toDomain(listingDM)
+    activate ListingAss
+    ListingAss -> listDSListingDMs: getId()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: listingId
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getListingTitle()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: listingTitle
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getItemsId()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: itemsId
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getSaleType()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: saleType
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getPrice()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: price
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getShortDescription()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: shortDescription
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getSellerId()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: sellerId
+    deactivate listDSListingDMs
+    ListingAss -> listDSListingDMs: getPictures()
+    activate listDSListingDMs
+    listDSListingDMs --> ListingAss: pictures
+    deactivate listDSListingDMs
+    ListingAss -> ListingFact: create(listingId, listingTitle, itemsId, saleType,\n price, shortDescription, sellerId, pictures)
+    activate ListingFact
+    ListingFact -->> Listing** : «create»
+    ListingFact --> ListingAss: listing
+    deactivate ListingFact
+    ListingAss --> ListingRepo: listing
+    deactivate ListingAss
+    ListingRepo -> listDSListings: add(listing)
+end
+
+ListingRepo --> Ctrl : listOfDSListings
+deactivate ListingRepo
+
+' Section 4 - creates DTO
+ref over Ctrl
+[[4.BuildListingDTOs.puml Build Listing DTOs]]
+end ref
+
+autonumber 66
+Ctrl --> UI : listOfListingDTOs
+deactivate Ctrl
+UI --> Buyer : Shows the list of items on direct sale
+deactivate UI
+
+@enduml
