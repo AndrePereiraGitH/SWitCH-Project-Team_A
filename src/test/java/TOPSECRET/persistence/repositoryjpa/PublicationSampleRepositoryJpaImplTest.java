@@ -651,17 +651,108 @@ class PublicationSampleRepositoryJpaImplTest {
     // ===========================================================
 
     @Test
-    void assignPublicationsToCollection_shouldReturnFalse() {
+    void assignPublicationsToCollectionShouldReturnTrueWhenAllPublicationsAreAssigned() {
 
-        // Arrange
+        // ARRANGE
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        List<PublicationSampleId> ids = List.of(mock(PublicationSampleId.class));
+        PublicationSampleId sampleId1 = mock(PublicationSampleId.class);
+        PublicationSampleId sampleId2 = mock(PublicationSampleId.class);
+        PublicationSample publication1 = mock(PublicationSample.class);
+        PublicationSample publication2 = mock(PublicationSample.class);
 
-        // Act
-        boolean result = repo.assignPublicationsToCollection(collectionId, ids);
+        when(jpa.existsById(sampleId1)).thenReturn(true);
+        when(jpa.existsById(sampleId2)).thenReturn(true);
 
-        // Assert
-        assertFalse(result);
+        when(jpa.findById(sampleId1)).thenReturn(Optional.of(mock(PublicationSampleDM.class)));
+
+        when(jpa.findById(sampleId2)).thenReturn(Optional.of(mock(PublicationSampleDM.class)));
+
+        when(assembler.toDomain(any(PublicationSampleDM.class))).thenReturn(publication1, publication2);
+
+        when(publication1.id()).thenReturn(sampleId1);
+        when(publication2.id()).thenReturn(sampleId2);
+
+        when(assembler.toDM(publication1)).thenReturn(mock(PublicationSampleDM.class));
+
+        when(assembler.toDM(publication2)).thenReturn(mock(PublicationSampleDM.class));
+
+        when(jpa.save(any(PublicationSampleDM.class))).thenReturn(mock(PublicationSampleDM.class));
+
+        when(assembler.toDomain(any(PublicationSampleDM.class))).thenReturn(publication1);
+
+        // ACT
+        boolean result =
+                repo.assignPublicationsToCollection(
+                        collectionId,
+                        List.of(sampleId1, sampleId2)
+                );
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void assignPublicationsToCollectionShouldThrowWhenCollectionIdIsNull() {
+
+        // ARRANGE
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.assignPublicationsToCollection(
+                        null,
+                        List.of(sampleId)
+                ));
+    }
+
+    @Test
+    void assignPublicationsToCollectionShouldThrowWhenPublicationIdsAreNull() {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.assignPublicationsToCollection(
+                        collectionId,
+                        null
+                ));
+    }
+
+    @Test
+    void assignPublicationsToCollectionShouldThrowWhenPublicationIdsAreEmpty() {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.assignPublicationsToCollection(
+                        collectionId,
+                        List.of()
+                ));
+    }
+
+    @Test
+    void assignPublicationsToCollectionShouldThrowWhenPublicationDoesNotExist() {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        PublicationSampleId sampleId =
+                mock(PublicationSampleId.class);
+
+        when(jpa.findById(sampleId))
+                .thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.assignPublicationsToCollection(
+                        collectionId,
+                        List.of(sampleId)
+                ));
     }
 
     // ===========================================================
@@ -711,4 +802,132 @@ class PublicationSampleRepositoryJpaImplTest {
         // Assert
         assertEquals(2, result.size());
     }
+
+    // ===========================================================
+    // ========== Tests for findByCollectionOfPublicationsId =====
+    // ===========================================================
+
+    @Test
+    void findByCollectionOfPublicationsIdShouldReturnConvertedList() {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
+
+        PublicationSample publication1 = mock(PublicationSample.class);
+        PublicationSample publication2 = mock(PublicationSample.class);
+
+        when(jpa.findAllByCollectionOfPublicationsId(collectionId))
+                .thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(publication1);
+        when(assembler.toDomain(dm2)).thenReturn(publication2);
+
+        // ACT
+        List<PublicationSample> result =
+                repo.findByCollectionOfPublicationsId(collectionId);
+
+        // ASSERT
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void findByCollectionOfPublicationsIdShouldThrowWhenCollectionIdIsNull() {
+
+        // ACT & ASSERT
+        assertThrows(NullPointerException.class,
+                () -> repo.findByCollectionOfPublicationsId(null));
+    }
+
+    // ===========================================================
+    // ========== Tests for findAvailableForCollection ======
+    // ===========================================================
+
+    @Test
+    void findAvailableForCollectionShouldReturnOnlyAvailablePublications() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        PublicationSample publication1 = mock(PublicationSample.class);
+        PublicationSample publication2 = mock(PublicationSample.class);
+
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
+
+        when(jpa.findAllByOwnerId(userId)).thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(publication1);
+        when(assembler.toDomain(dm2)).thenReturn(publication2);
+
+        when(publication1.isOwnedByUser(userId)).thenReturn(true);
+        when(publication1.isInUserLibrary()).thenReturn(true);
+
+        when(publication2.isOwnedByUser(userId)).thenReturn(true);
+        when(publication2.isInUserLibrary()).thenReturn(true);
+
+        when(jpa.findAllByCollectionOfPublicationsId(collectionId)).thenReturn(List.of(dm2));
+
+        // ACT
+        List<PublicationSample> result = repo.findAvailableForCollection(userId, collectionId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void findAvailableForCollectionShouldReturnEmptyListWhenAllPublicationsAreAlreadyAssigned() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        PublicationSample publication = mock(PublicationSample.class);
+
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+
+        when(jpa.findAllByOwnerId(userId))
+                .thenReturn(List.of(dm));
+
+        when(assembler.toDomain(dm)).thenReturn(publication);
+
+        when(publication.isOwnedByUser(userId)).thenReturn(true);
+        when(publication.isInUserLibrary()).thenReturn(true);
+
+        when(jpa.findAllByCollectionOfPublicationsId(collectionId)).thenReturn(List.of(dm));
+
+        // ACT
+        List<PublicationSample> result =
+                repo.findAvailableForCollection(userId, collectionId);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAvailableForCollectionShouldThrowWhenUserIdIsNull() {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findAvailableForCollection(null, collectionId));
+    }
+
+    @Test
+    void findAvailableForCollectionShouldThrowWhenCollectionIdIsNull() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findAvailableForCollection(userId, null));
+    }
+
 }

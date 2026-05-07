@@ -1,9 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.LibraryId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -43,4 +40,18 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      * @return a list of matching {@link PublicationSampleDM} entities; never {@code null}, may be empty
      */
     List<PublicationSampleDM> findAllByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId, List<PublicationStatus> statuses);
+
+    /**
+     * Retrieves all publication samples assigned to the given collection.
+     *
+     * <p>
+     * Returns every {@link PublicationSampleDM} whose collection identifier
+     * matches the provided {@link CollectionOfPublicationsId}.
+     * </p>
+     *
+     * @param collectionId the identifier of the collection; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleDM}; never {@code null},
+     * may be empty if no publications are assigned to the collection
+     */
+    List<PublicationSampleDM> findAllByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId);
 }
