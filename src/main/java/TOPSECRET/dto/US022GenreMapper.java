@@ -16,7 +16,7 @@ public class US022GenreMapper {
      * @param genre the genre to convert
      * @return the corresponding DTO
      */
-    public static US022GenreDTO toDTO(Genre genre) {
+    public US022GenreDTO toDTO(Genre genre) {
         return new US022GenreDTO(
                 genre.id(),
                 genre.getGenreType()
@@ -28,12 +28,15 @@ public class US022GenreMapper {
      * @param genres the list of genres to convert
      * @return list of DTOs
      */
-    public static List<US022GenreDTO> toDTOList(List<Genre> genres) {
+    public List<US022GenreDTO> toDTOList(List<Genre> genres) {
 
         Objects.requireNonNull(genres, "genres cannot be null");
 
-        return genres.stream()
-                .map(US022GenreMapper::toDTO)
-                .toList();
+        List<US022GenreDTO> dtoList = new ArrayList<>();
+        for (Genre genre : genres) {
+            dtoList.add(toDTO(genre));
+        }
+
+        return dtoList;
     }
 }

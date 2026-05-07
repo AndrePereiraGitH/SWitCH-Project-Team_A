@@ -34,6 +34,8 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
     private final IListingRepository listingRepository;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
+    private final US022GenreMapper genreMapper;
+    private final US022AuctionMapper auctionMapper;
 
     /**
      * Constructor injection of dependencies.
@@ -43,7 +45,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
     public ToGetListOfItemsOnAuctionOfGivenGenreController(
             IAuctionRepository auctionRepository, IGenreRepository genreRepository,
             IListingRepository listingRepository, IBibliographicalDataRepository bibliographicalDataRepository,
-            IPublicationSampleRepository publicationSampleRepository) {
+            IPublicationSampleRepository publicationSampleRepository, US022GenreMapper genreMapper, US022AuctionMapper auctionMapper) {
 
         if (auctionRepository == null) {
             throw new IllegalArgumentException("AuctionRepository cannot be null");
@@ -60,12 +62,20 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
         if (publicationSampleRepository == null) {
             throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         }
+        if (genreMapper == null) {
+            throw new IllegalArgumentException("GenreMapper cannot be null");
+        }
+        if (auctionMapper == null) {
+            throw new IllegalArgumentException("AuctionMapper cannot be null");
+        }
 
         this.auctionRepository = auctionRepository;
         this.genreRepository = genreRepository;
         this.listingRepository = listingRepository;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.publicationSampleRepository = publicationSampleRepository;
+        this.genreMapper = genreMapper;
+        this.auctionMapper = auctionMapper;
 
     }
 
@@ -73,7 +83,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<Genre> genres = genreRepository.findAll();
 
-        return US022GenreMapper.toDTOList(genres);
+        return genreMapper.toDTOList(genres);
     }
     /**
      * Retrieves the list of items currently on auction
@@ -101,7 +111,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<Auction> auctions = auctionRepository.findByListingIdIn(listingId);
 
-        return US022AuctionMapper.toDTOList(auctions);
+        return auctionMapper.toDTOList(auctions);
     }
 
 

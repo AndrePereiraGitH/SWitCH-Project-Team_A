@@ -9,9 +9,10 @@ import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.US022AuctionDTO;
+import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.dto.US022GenreDTO;
 
-import org.junit.jupiter.api.BeforeEach;
+import TOPSECRET.dto.US022GenreMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -27,23 +28,16 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     private IBibliographicalDataRepository bibliographicalDataRepository = mock(IBibliographicalDataRepository.class);
     private IPublicationSampleRepository publicationSampleRepository = mock(IPublicationSampleRepository.class);
     private IListingRepository listingRepository = mock(IListingRepository.class);
+    private US022GenreMapper genreMapper = mock(US022GenreMapper.class);
+    private US022AuctionMapper auctionMapper = mock(US022AuctionMapper.class);
 
-    private ToGetListOfItemsOnAuctionOfGivenGenreController controller;
+    private ToGetListOfItemsOnAuctionOfGivenGenreController sut;
 
-    @BeforeEach
-    void setUp() {
-        controller = new ToGetListOfItemsOnAuctionOfGivenGenreController(
-                auctionRepository,
-                genreRepository,
-                listingRepository,
-                bibliographicalDataRepository,
-                publicationSampleRepository
-        );
-    }
 
     @Test
     void shouldThrowExceptionWhenAuctionRepositoryIsNull() {
 
+        //Act
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -51,10 +45,13 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         genreRepository,
                         listingRepository,
                         bibliographicalDataRepository,
-                        publicationSampleRepository
+                        publicationSampleRepository,
+                        genreMapper,
+                        auctionMapper
                 )
         );
 
+        // Assert
         assertEquals(
                 "AuctionRepository cannot be null", ex.getMessage());
     }
@@ -62,6 +59,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenGenreRepositoryIsNull() {
 
+        // Act
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -69,10 +67,13 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         null,
                         listingRepository,
                         bibliographicalDataRepository,
-                        publicationSampleRepository
+                        publicationSampleRepository,
+                        genreMapper,
+                        auctionMapper
                 )
         );
 
+        // Assert
         assertEquals(
                 "GenreRepository cannot be null", ex.getMessage());
     }
@@ -80,6 +81,8 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenListingRepositoryIsNull() {
 
+
+        // Act
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -87,10 +90,13 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         genreRepository,
                         null,
                         bibliographicalDataRepository,
-                        publicationSampleRepository
+                        publicationSampleRepository,
+                        genreMapper,
+                        auctionMapper
                 )
         );
 
+        // Assert
         assertEquals(
                 "ListingRepository cannot be null", ex.getMessage());
     }
@@ -98,6 +104,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenBDRepositoryIsNull() {
 
+        // Act
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -105,10 +112,13 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         genreRepository,
                         listingRepository,
                         null,
-                        publicationSampleRepository
+                        publicationSampleRepository,
+                        genreMapper,
+                        auctionMapper
                 )
         );
 
+        // Assert
         assertEquals(
                 "BibliographicalDataRepository cannot be null", ex.getMessage());
     }
@@ -116,6 +126,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenPubSampleRepositoryIsNull() {
 
+        // Act
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
@@ -123,12 +134,59 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                         genreRepository,
                         listingRepository,
                         bibliographicalDataRepository,
+                        null,
+                        genreMapper,
+                        auctionMapper
+                )
+        );
+
+        // Arrange
+        assertEquals(
+                "PublicationSampleRepository cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenGenreMapperIsNull() {
+
+        // Act
+        Exception ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepository,
+                        genreRepository,
+                        listingRepository,
+                        bibliographicalDataRepository,
+                        publicationSampleRepository,
+                        null,
+                        auctionMapper
+                )
+        );
+
+        // Arrange
+        assertEquals(
+                "GenreMapper cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAuctionMapperIsNull() {
+
+        // Act
+        Exception ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                        auctionRepository,
+                        genreRepository,
+                        listingRepository,
+                        bibliographicalDataRepository,
+                        publicationSampleRepository,
+                        genreMapper,
                         null
                 )
         );
 
+        // Arrange
         assertEquals(
-                "PublicationSampleRepository cannot be null", ex.getMessage());
+                "AuctionMapper cannot be null", ex.getMessage());
     }
 
     @Test
@@ -137,6 +195,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         // Arrange
         GenreId genreId = mock(GenreId.class);
         Genre genre = mock(Genre.class);
+
         when(genre.id()).thenReturn(genreId);
 
         US022GenreDTO genreDto = mock(US022GenreDTO.class);
@@ -150,7 +209,6 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         List<BibliographicalDataID> bdIds = List.of(bdId);
         List<PublicationSampleId> itemIds = List.of(itemId);
         List<ListingId> listingIds = List.of(listingId);
-
 
         Auction auction = mock(Auction.class);
         List<Auction> auctions = List.of(auction);
@@ -167,15 +225,31 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(listingRepository.findIdsByPublicationSampleIdIn(anyList())).thenReturn(listingIds);
         when(auctionRepository.findByListingIdIn(anyList())).thenReturn(auctions);
 
+        US022AuctionDTO dtoDouble = mock(US022AuctionDTO.class);
+
+        when(auctionMapper.toDTOList(auctions)).thenReturn(List.of(dtoDouble));
+        when(dtoDouble.auctionId()).thenReturn("auction-1");
+        when(dtoDouble.listingId()).thenReturn("listing-1");
+
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act
         List<US022AuctionDTO> result =
-                controller.findListOfItemsOnAuctionByGenreId(genreDto);
+                sut.findListOfItemsOnAuctionByGenreId(genreDto);
+
+        US022AuctionDTO dto = result.get(0);
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-
-        US022AuctionDTO dto = result.get(0);
         assertEquals("auction-1", dto.auctionId());
         assertEquals("listing-1", dto.listingId());
     }
@@ -199,9 +273,19 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(listingRepository.findIdsByPublicationSampleIdIn(List.of())).thenReturn(List.of());
         when(auctionRepository.findByListingIdIn(List.of())).thenReturn(List.of());
 
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act
         List<US022AuctionDTO> result =
-                controller.findListOfItemsOnAuctionByGenreId(genreDtoDouble);
+                sut.findListOfItemsOnAuctionByGenreId(genreDtoDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -210,19 +294,42 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     @Test
     void shouldThrowExceptionWhenDTOisNull() {
 
+        // Arrange
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.findListOfItemsOnAuctionByGenreId(null));
+                () -> sut.findListOfItemsOnAuctionByGenreId(null));
     }
 
     @Test
     void shouldThrowExceptionWithCorrectMessage() {
 
+        // Arrange
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+         // Act
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> controller.findListOfItemsOnAuctionByGenreId(null)
+                () -> sut.findListOfItemsOnAuctionByGenreId(null)
         );
 
+        // Assert
         assertEquals("genre cannot be null", ex.getMessage());
     }
 
@@ -233,9 +340,19 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         US022GenreDTO genreDtoDouble = mock(US022GenreDTO.class);
         when(genreDtoDouble.genreId()).thenReturn(null);
 
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.findListOfItemsOnAuctionByGenreId(genreDtoDouble));
+                () -> sut.findListOfItemsOnAuctionByGenreId(genreDtoDouble));
     }
 
     @Test
@@ -245,26 +362,35 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         Genre genreDouble1 = mock(Genre.class);
         Genre genreDouble2 = mock(Genre.class);
 
-        GenreId idDouble1 = mock(GenreId.class);
-        GenreId idDouble2 = mock(GenreId.class);
+        US022GenreDTO dto1Double = mock(US022GenreDTO.class);
+        US022GenreDTO dto2Double = mock(US022GenreDTO.class);
 
-        when(genreDouble1.getGenreType()).thenReturn("Fantasy");
-        when(genreDouble2.getGenreType()).thenReturn("Drama");
-
-        when(genreDouble1.id()).thenReturn(idDouble1);
-        when(genreDouble2.id()).thenReturn(idDouble2);
+        when(dto1Double.genreType()).thenReturn("Fantasy");
+        when(dto2Double.genreType()).thenReturn("Drama");
 
         List<Genre> genres = List.of(genreDouble1, genreDouble2);
 
-        when(genreRepository.findAll()).thenReturn(genres);
+        List<US022GenreDTO> genreDtoList = List.of(dto1Double, dto2Double);
 
+        when(genreRepository.findAll()).thenReturn(genres);
+        when(genreMapper.toDTOList(genres)).thenReturn(genreDtoList);
+
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
         // Act
-        List<US022GenreDTO> result = controller.getAllGenres();
+        List<US022GenreDTO> result = sut.getAllGenres();
 
         // Assert
         assertEquals(2, result.size());
-        assertEquals("Fantasy", result.get(0).name());
-        assertEquals("Drama", result.get(1).name());
+        assertEquals("Fantasy", result.get(0).genreType());
+        assertEquals("Drama", result.get(1).genreType());
     }
 
     @Test
@@ -274,10 +400,20 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         US022GenreDTO genreDto = mock(US022GenreDTO.class);
         when(genreDto.genreId()).thenReturn(null);
 
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act & Assert
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> controller.findListOfItemsOnAuctionByGenreId(genreDto)
+                () -> sut.findListOfItemsOnAuctionByGenreId(genreDto)
         );
         assertEquals("genreId cannot be null", ex.getMessage());
     }
@@ -292,8 +428,18 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(genreDTO.genreId()).thenReturn(genreId);
         when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(List.of());
 
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act
-        List<US022AuctionDTO> result = controller.findListOfItemsOnAuctionByGenreId(genreDTO);
+        List<US022AuctionDTO> result = sut.findListOfItemsOnAuctionByGenreId(genreDTO);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -311,9 +457,19 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(List.of(bdId));
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(anyList())).thenReturn(List.of());
 
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act
         List<US022AuctionDTO> result =
-                controller.findListOfItemsOnAuctionByGenreId(genreDTO);
+                sut.findListOfItemsOnAuctionByGenreId(genreDTO);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -334,9 +490,19 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(anyList())).thenReturn(List.of(sampleId));
         when(listingRepository.findIdsByPublicationSampleIdIn(anyList())).thenReturn(List.of());
 
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
         // Act
         List<US022AuctionDTO> result =
-                controller.findListOfItemsOnAuctionByGenreId(genreDTO);
+                sut.findListOfItemsOnAuctionByGenreId(genreDTO);
 
         // Assert
         assertTrue(result.isEmpty());

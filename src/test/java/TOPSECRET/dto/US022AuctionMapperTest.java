@@ -14,12 +14,12 @@ import static org.mockito.Mockito.when;
 
 class US022AuctionMapperTest {
 
-    private final US022AuctionMapper mapper = new US022AuctionMapper();
-
     @Test
     void shouldReturnEmptyListWhenInputIsEmpty() {
 
         // Arrange
+        US022AuctionMapper mapper = new US022AuctionMapper();
+
         List<Auction> auctions = List.of();
 
         // Act
@@ -35,6 +35,8 @@ class US022AuctionMapperTest {
     void shouldConvertSingleAuction() {
 
         // Arrange
+        US022AuctionMapper mapper = new US022AuctionMapper();
+
         Auction auction = mock(Auction.class);
 
         when(auction.id()).thenReturn(new AuctionId("A1"));
@@ -56,6 +58,8 @@ class US022AuctionMapperTest {
     void shouldConvertMultipleAuctions() {
 
         // Arrange
+        US022AuctionMapper mapper = new US022AuctionMapper();
+
         Auction auction1 = mock(Auction.class);
         Auction auction2 = mock(Auction.class);
 
@@ -83,6 +87,8 @@ class US022AuctionMapperTest {
     void shouldPreserveOrder() {
 
         // Arrange
+        US022AuctionMapper mapper = new US022AuctionMapper();
+
         Auction auction1 = mock(Auction.class);
         Auction auction2 = mock(Auction.class);
 
@@ -105,6 +111,8 @@ class US022AuctionMapperTest {
 
     @Test
     void shouldThrowExceptionWhenInputIsNull() {
+        // Arrange
+        US022AuctionMapper mapper = new US022AuctionMapper();
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
