@@ -1,0 +1,54 @@
+@startuml
+hide footbox
+autonumber
+title To Register Author
+
+box #WhiteSmoke
+actor Administrator
+participant ":UI" as UI
+end box
+participant ":ToRegisterAuthorController" as Controller
+participant ":AuthorService" as Service
+participant ":AuthorFactory" as Factory
+participant "author:Author" as Author
+participant ":IAuthorRepository" as Repository
+
+Administrator -> UI : I want to register an author in MiteLovers
+activate UI
+UI -->> Administrator : Please provide author information
+deactivate UI
+
+Administrator -> UI : name, countryId, dateOfBirth, biography
+activate UI
+UI -> Controller : register(name, countryId, dateOfBirth, biography)
+activate Controller
+
+Controller -> Service : createAndSave(name, countryId, dateOfBirth, biography)
+activate Service
+
+Service -> Factory : create(name, countryId, dateOfBirth, biography)
+activate Factory
+Factory -->> Author ** : <<create>>\nAuthor(name, countryId, dateOfBirth, biography)
+Factory --> Service : author
+deactivate Factory
+
+Service -> Repository : save(author)
+activate Repository
+
+alt author already exists
+    Repository -->> Service : throws InstanceAlreadyExistsException
+    Service -->> Controller : throws InstanceAlreadyExistsException
+    Controller -->> UI : throws InstanceAlreadyExistsException
+    UI -->> Administrator : Author already exists
+else author does NOT exist
+    Repository --> Service : author
+    deactivate Repository
+    Service --> Controller : author
+    deactivate Service
+    Controller --> UI : author
+    deactivate Controller
+    UI --> Administrator : success
+    deactivate UI
+end
+
+@enduml
