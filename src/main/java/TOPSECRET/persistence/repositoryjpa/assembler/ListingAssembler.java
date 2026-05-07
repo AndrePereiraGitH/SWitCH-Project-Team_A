@@ -93,28 +93,6 @@ public class ListingAssembler {
         return listing;
     }
 
-    /**
-     * Reconstructs a list of {@link Listing} domain objects from a list of
-     * {@link ListingDM} persistence entities.
-     *
-     * <p>Convenience overload of {@link #toDomain(ListingDM)} that processes
-     * an entire collection in a single call. Each element is converted individually,
-     * preserving its original identity.</p>
-     *
-     * @param dms the list of persistence entities to convert; must not be {@code null}
-     * @return an unmodifiable {@link List} containing the reconstructed {@link Listing}
-     *         domain objects, in the same order as the input list
-     * @throws NullPointerException if {@code dms} is {@code null}
-     */
-    public List<Listing> toDomain(List<ListingDM> dms) {
-
-        Objects.requireNonNull(dms, "ListingDMs cannot be null.");
-
-        return dms.stream()
-                .map(this::toDomain)
-                .toList();
-    }
-
     // =========================================================================
     // HELPERS
     // =========================================================================

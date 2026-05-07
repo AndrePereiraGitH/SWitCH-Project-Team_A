@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICityRepositoryJPA;
@@ -59,5 +60,36 @@ class CityRepositoryJPAImplTest {
 
         // Act + Assert
         assertThrows(RuntimeException.class, () -> repository.save(doubleCity));
+    }
+
+    @Test
+    void shouldReturnTrueWhenCityExists() {
+
+        //Arrange
+        CountryId countryId = mock(CountryId.class);
+
+        when(doubleJpaRepository.existsByCountryIDAndCityName(countryId, "Lisbon"))
+                .thenReturn(true);
+
+        //Act
+        boolean result = repository.existsByCountryIdAndCityName(countryId, "Lisbon");
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCityDoesNotExist() {
+        //Arrange
+        CountryId countryId = mock(CountryId.class);
+
+        when(doubleJpaRepository.existsByCountryIDAndCityName(countryId, "Lisbon"))
+                .thenReturn(false);
+
+        //Act
+        boolean result = repository.existsByCountryIdAndCityName(countryId, "Lisbon");
+
+        //Assert
+        assertFalse(result);
     }
 }

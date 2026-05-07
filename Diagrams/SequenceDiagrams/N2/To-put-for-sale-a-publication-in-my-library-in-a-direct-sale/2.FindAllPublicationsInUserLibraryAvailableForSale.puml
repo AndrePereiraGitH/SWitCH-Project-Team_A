@@ -12,7 +12,6 @@ participant ":ILibraryRepositoryJPA" as LibRepoJPA
 participant "libraryDM:\nLibraryDM" as LibDM
 participant ":LibraryAssembler" as LibAss
 participant ":LibraryFactory" as LibFact
-participant "library:\nLibrary" as Lib
 
 ' Publication Sample
 participant ":IPublicationSampleRepository" as PSRepo
@@ -54,30 +53,13 @@ activate DB
 DB --> LibRepoJPA : data
 deactivate DB
 LibRepoJPA -->> LibDM ** : «create»
-LibRepoJPA --> LibRepo : libraryDM
+LibRepoJPA -> LibDM: getId()
+activate LibDM
+LibDM --> LibRepoJPA: libraryId
+deactivate LibDM
+LibRepoJPA --> LibRepo: libraryId
 deactivate LibRepoJPA
-LibRepo -> LibAss : toDomain(libraryDM)
-activate LibAss
-LibAss -> LibDM : id()
-activate LibDM
-LibDM --> LibAss : libraryId
-deactivate LibDM
-LibAss -> LibDM : getLibraryName()
-activate LibDM
-LibDM --> LibAss : libraryName
-deactivate LibDM
-LibAss -> LibDM : getUserId()
-activate LibDM
-LibDM --> LibAss : userId
-deactivate LibDM
-LibAss -> LibFact : create(libraryId,\nlibraryName, userId)
-activate LibFact
-LibFact -->> Lib ** : «create»
-LibFact --> LibAss : library
-deactivate LibFact
-LibAss --> LibRepo : library
-deactivate LibAss
-LibRepo --> Ctrl : library
+LibRepo --> Ctrl: libraryId
 deactivate LibRepo
 
 ' --- Step 3: find Library's Publication Samples Available For Sale ---
@@ -96,44 +78,44 @@ loop for each pubSampleDM in listAvailablePSDM
 end
 PSRepoJPA --> PSRepo : listOfAvailablePublicationDMs
 deactivate PSRepoJPA
- PSRepo -> PSAss : toDomain(listOfAvailablePublicationDMs)
-activate PSAss
-PSAss -->> listAvailablePS ** : «create»
+PSRepo -->> listAvailablePS ** : «create»
 loop for each pubSampleDM in listOfAvailablePublicationDMs
-    PSAss -> PSDM : id()
-    activate PSDM
-    PSDM --> PSAss : pubSampleId
-    deactivate PSDM
-    PSAss -> PSDM : getBibliographicalDataId()
-    activate PSDM
-    PSDM --> PSAss : bdId
-    deactivate PSDM
-    PSAss -> PSDM : getUserId()
-    activate PSDM
-    PSDM --> PSAss : userId
-    deactivate PSDM
-    PSAss -> PSDM : getPublicationStatus()
-    activate PSDM
-    PSDM --> PSAss : pubStatus
-    deactivate PSDM
-    PSAss -> PSDM : getEditionId()
-    activate PSDM
-    PSDM --> PSAss : editionId
-    deactivate PSDM
-    PSAss -> PSDM : getCondition
-    activate PSDM
-    PSDM --> PSAss : condition
-    deactivate PSDM
-    PSAss -> PSFact : create(pubSampleId, bdId, userId,\n pubStatus, editionId, condition)
-    activate PSFact
-    PSFact --> PS ** : «create»
-    PSFact --> PSAss : pubSample
-    deactivate PSFact
-    PSAss -> listAvailablePS : add(pubSample)
+        PSRepo -> PSAss : toDomain(pubSampleDM)
+        activate PSAss
+        PSAss -> PSDM : id()
+        activate PSDM
+        PSDM --> PSAss : pubSampleId
+        deactivate PSDM
+        PSAss -> PSDM : getBibliographicalDataId()
+        activate PSDM
+        PSDM --> PSAss : bdId
+        deactivate PSDM
+        PSAss -> PSDM : getUserId()
+        activate PSDM
+        PSDM --> PSAss : userId
+        deactivate PSDM
+        PSAss -> PSDM : getPublicationStatus()
+        activate PSDM
+        PSDM --> PSAss : pubStatus
+        deactivate PSDM
+        PSAss -> PSDM : getEditionId()
+        activate PSDM
+        PSDM --> PSAss : editionId
+        deactivate PSDM
+        PSAss -> PSDM : getCondition
+        activate PSDM
+        PSDM --> PSAss : condition
+        deactivate PSDM
+        PSAss -> PSFact : create(pubSampleId, bdId, userId,\n pubStatus, editionId, condition)
+        activate PSFact
+        PSFact --> PS ** : «create»
+        PSFact --> PSAss : pubSample
+        deactivate PSFact
+        PSAss --> PSRepo: pubSample
+        deactivate PSAss
+        PSRepo -> listAvailablePS : add(pubSample)
 end
-PSAss --> PSRepo : listOfAvailablePublications
-deactivate PSAss
-PSRepo --> Ctrl : listOfAvailablePublications
+PSRepo --> Ctrl: listOfAvailablePublications
 deactivate PSRepo
 
 ' --- Step 4: Converts the list of available publications to DTOs ---

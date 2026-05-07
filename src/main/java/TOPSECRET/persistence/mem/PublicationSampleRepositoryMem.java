@@ -245,24 +245,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    @Override
-    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataID> bds) {
-
-        if (bds == null) {
-            throw new IllegalArgumentException("List of BibliographicalDataId cannot be null.");
-        }
-
-        List<PublicationSampleId> samplesOfAuthor = allPublicationsInSystem.stream()
-                .filter(pub -> bds.contains(pub.getBibliographicalDataID()))
-                .map(PublicationSample::id)
-                .toList();
-
-        return samplesOfAuthor;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public List<PublicationSample> findByLibraryId(LibraryId libraryID) {
 
         List<PublicationSample> allPublications = allPublicationsInSystem.stream()

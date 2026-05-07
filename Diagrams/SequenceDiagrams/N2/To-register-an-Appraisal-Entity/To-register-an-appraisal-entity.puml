@@ -1,0 +1,342 @@
+@startuml
+
+hide footbox
+autonumber
+title Register Appraisal Entity
+
+actor Administrator
+participant ":UI" as UI
+participant ":ToRegisterAppraisal\nEntityController" as Controller
+
+participant ":AppraisalEntityService" as ApEnService
+' participant ":GenreService" as GenreService
+
+participant ":IGenreRepository" as GenreRepo
+
+participant ":IGenreRepositoryJPA" as RepoJPA
+participant ":GenreAssembler" as GenreAssembler
+participant "listGenreDM\n:List<GenreDM>" as GenreDMs
+participant ":GenreFactory" as GenreFactory
+participant "persistedGenreList\n:List<Genre>" as persistedGenreList
+participant "persistedGenre\n:Genre" as persistedGenre
+
+participant ":US004GenreMapper" as GenreMapper
+participant "listOfGenreDTO\n:List<US004GenreDTO>" as GenreDTO
+participant ":Genre" as Genre
+participant "genreDTO\n:US004GenreDTO" as GDTO
+' participant "genreId: GenreId" as GenreId
+
+' participant ":PublicationSampleService" as PubService
+
+participant ":IPublicationTypeRepository" as PublicationTypeRepo
+participant ":IPublicationTypeRepositoryJPA" as PubRepoJPA
+participant "pubTypeListDM\n:List<PublicationTypeDM>" as pubTypeDM
+participant ":PublicationTypeAssembler" as PubAssembler
+participant "persistedPublicationTypeList\n:List<PublicationType>" as allPublicationTypeList
+participant ":PublicationTypeFactory" as PubFactory
+participant "persistedPublicationType\n:PublicationType" as allPublicationType
+
+
+participant ":US004PublicationTypeMapper" as PublicationTypeMapper
+participant "listOfPublicationTypeDTO\n:List<US004PublicationTypeDTO>" as PublicationTypeDTO
+participant ":PublicationType" as PublicationType
+participant "publicationTypeDTO\n:US004PublicationTypeDTO" as PDTO
+' participant "publicationTypeId: PublicationTypeId" as PublicationTypeId
+
+participant ":IAppraisalEntityRepository" as AppraisalRepo
+participant ":AppraisalAssembler" as AppraisalAssembler
+participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
+participant "apEnDM\n:AppraisalEntityDM" as ApEnDM
+participant ":IAppraisalEntityRepositoryJPA" as ApRepoJPA
+participant "apEn\n:AppraisalEntity" as AppraisalEntity
+participant "apEnPersisted\n:AppraisalEntity" as AppraisalEntityPersisted
+participant "persistedApEnDM\n:AppraisalEntityDM" as persistedApEn
+' participant "appraisalId: AppraisalEntityId" as AppraisalId
+
+database "DB" as DB
+
+' --- Start ---
+Administrator -> UI : I want to register an Appraisal Entity
+activate UI
+
+UI --> Administrator : Please provide name and contact for the new AppraisalEntity
+deactivate UI
+
+Administrator -> UI : Here's the name and contact
+activate UI
+
+' =========================
+' Get Genres (DM)
+' =========================
+
+UI -> Controller : getAllGenres()
+activate Controller
+
+'Controller -> GenreService : getAllGenres()
+'activate GenreService
+
+Controller -> GenreRepo : findAll()
+activate GenreRepo
+
+GenreRepo -> RepoJPA : findAll()
+activate RepoJPA
+
+RepoJPA -> DB : select * from Genre (DM)
+activate DB
+
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> GenreDMs ** : <<create>>
+
+RepoJPA --> GenreRepo : listGenreDM
+deactivate RepoJPA
+
+GenreRepo -> GenreAssembler : toDomainList(listGenreDM)
+activate GenreAssembler
+
+GenreAssembler -->> persistedGenreList ** : <<create>>
+
+loop for each genre DM in the list
+
+    GenreAssembler -> GenreDMs : getId()
+    activate GenreDMs
+    GenreDMs -->> GenreAssembler : genreId
+    deactivate GenreDMs
+
+    GenreAssembler -> GenreDMs : getGenreType()
+    activate GenreDMs
+    GenreDMs -->> GenreAssembler : genreType
+    deactivate GenreDMs
+
+    GenreAssembler -> GenreFactory : create(genreId, genreType)
+    activate GenreFactory
+
+    GenreFactory -->> persistedGenre ** : <<create>>
+
+    GenreFactory -->> GenreAssembler : persistedGenre
+    deactivate GenreFactory
+
+    GenreAssembler -> GenreAssembler : persistedGenrelist.add(persistedGenre)
+end loop
+
+GenreAssembler --> GenreRepo : persistedGenreList
+deactivate GenreAssembler
+
+'GenreRepo -->> GenreService : persistedGenreList
+'deactivate GenreRepo
+
+GenreRepo --> Controller : persistedGenreList
+deactivate GenreRepo
+
+' =========================
+' Get Genres (DTO)
+' =========================
+
+Controller -> GenreMapper : toDTO(persistedGenreList)
+activate GenreMapper
+
+GenreMapper -->> GenreDTO ** : <<create>>
+
+loop for each genre in the list
+    GenreMapper -> Genre : getId()
+    activate Genre
+    Genre --> GenreMapper : id
+    deactivate Genre
+
+    GenreMapper -> Genre : getTitle()
+    activate Genre
+    Genre --> GenreMapper : title
+    deactivate Genre
+
+    GenreMapper -->> GDTO ** : <<create>>
+    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+end
+
+GenreMapper --> Controller : listOfGenreDTO
+deactivate GenreMapper
+
+Controller --> UI : listOfGenreDTO
+deactivate Controller
+
+UI --> Administrator : Display available Genres
+deactivate UI
+
+Administrator -> UI : Selected one or more Genres
+activate UI
+
+' =========================
+' Get Publication Types (DTO)
+' =========================
+UI -> Controller : getAllPublicationTypes()
+activate Controller
+
+Controller -> PublicationTypeRepo : findAll()
+activate PublicationTypeRepo
+
+PublicationTypeRepo -> PubRepoJPA : findAll()
+activate PubRepoJPA
+
+PubRepoJPA -> DB : select * from Publication Type (DM)
+activate DB
+
+DB -->> PubRepoJPA : data
+deactivate DB
+
+PubRepoJPA -->> pubTypeDM ** : <<create>>
+
+PubRepoJPA -->> PublicationTypeRepo : pubTypeListDM
+deactivate PubRepoJPA
+
+PublicationTypeRepo -> PubAssembler : toDomainList(pubTypeListDM)
+activate PubAssembler
+
+PubAssembler -->> allPublicationTypeList ** : <<create>>
+
+loop for each publication type in the list
+
+    PubAssembler -> pubTypeDM : getId()
+    activate pubTypeDM
+    pubTypeDM -->> PubAssembler : pubTypeId
+    deactivate pubTypeDM
+
+    PubAssembler -> pubTypeDM : getMediaFormat()
+    activate pubTypeDM
+    pubTypeDM -->> PubAssembler : mediaFormat
+    deactivate pubTypeDM
+
+    PubAssembler -> PubFactory : create (pubTypeId, mediaFormat)
+    activate PubFactory
+
+    PubFactory -->> allPublicationType ** : <<create>>
+
+    PubFactory -->> PubAssembler : persistedPublicationType
+    deactivate PubFactory
+
+    PubAssembler -> PubAssembler : persistedPublicationTypeList.add(persistedPublicationType)
+
+end loop
+
+PubAssembler -->> PublicationTypeRepo : persistedPublicationTypeList
+deactivate PubAssembler
+
+PublicationTypeRepo --> Controller : persistedPublicationTypeList
+deactivate PublicationTypeRepo
+
+Controller -> PublicationTypeMapper : toDTOs(persistedPublicationTypeList)
+activate PublicationTypeMapper
+
+PublicationTypeMapper -->> PublicationTypeDTO ** : <<create>>
+
+loop for each publicationType in the list
+    PublicationTypeMapper -> PublicationType : getId()
+    activate PublicationType
+    PublicationType --> PublicationTypeMapper : id
+    deactivate PublicationType
+
+    PublicationTypeMapper -> PublicationType : getMediaFormat()
+    activate PublicationType
+    PublicationType --> PublicationTypeMapper : mediaFormat
+    deactivate PublicationType
+
+    PublicationTypeMapper -->> PDTO ** : <<create>>
+    PublicationTypeMapper -> PublicationTypeMapper : listOfPublicationTypeDTO.add(publicationTypeDTO)
+end
+
+PublicationTypeMapper --> Controller : listOfPublicationTypeDTO
+deactivate PublicationTypeMapper
+
+Controller --> UI : listOfPublicationTypeDTO
+deactivate Controller
+
+UI --> Administrator : Display available Publication Types
+deactivate UI
+
+Administrator -> UI : Selected one or more Publication Types
+activate UI
+' =========================
+' Register Appraisal Entity
+' =========================
+UI -> Controller : registerAppraisalEntity(name, contact, genresId, publicationTypesId)
+activate Controller
+
+Controller -> ApEnService : createAndSave(name, contact, genresId, publicationTypesId)
+activate ApEnService
+
+ApEnService -> FactoryAppraisalEntity : create(name, contact, genresId, publicationTypesId)
+activate FactoryAppraisalEntity
+
+FactoryAppraisalEntity -->> AppraisalEntity **: <<create>>
+
+FactoryAppraisalEntity --> ApEnService : apEn
+deactivate FactoryAppraisalEntity
+
+ApEnService -> AppraisalRepo : save (apEn)
+activate AppraisalRepo
+
+AppraisalRepo -> AppraisalAssembler : toDM(apEn)
+activate AppraisalAssembler
+
+AppraisalAssembler -->> ApEnDM ** : <<create>>
+AppraisalAssembler -->> AppraisalRepo : apEnDM
+deactivate AppraisalAssembler
+
+AppraisalRepo -> ApRepoJPA : save(apEnDM)
+activate ApRepoJPA
+
+ApRepoJPA -> DB : insert apEnDM
+activate DB
+
+DB -->> ApRepoJPA : data
+deactivate DB
+
+ApRepoJPA -->> persistedApEn **: <<create>>
+
+ApRepoJPA --> AppraisalRepo : persistedApEnDM
+deactivate ApRepoJPA
+
+AppraisalRepo -> AppraisalAssembler : toDomain(persistedApEnDM)
+activate AppraisalAssembler
+
+AppraisalAssembler -> ApEnDM : getId()
+activate ApEnDM
+ApEnDM -->> AppraisalAssembler : id
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getName()
+activate ApEnDM
+ApEnDM -->> AppraisalAssembler : name
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getGenres()
+activate ApEnDM
+ApEnDM -->> AppraisalAssembler : genreIds
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getPublicationTypes()
+activate ApEnDM
+ApEnDM -->> AppraisalAssembler : pubTypeIds
+deactivate ApEnDM
+
+AppraisalAssembler -> FactoryAppraisalEntity : create(id, name, contact, genreIds, pubTypeIds)
+activate FactoryAppraisalEntity
+
+FactoryAppraisalEntity -->> AppraisalEntityPersisted ** : <<create>>
+
+FactoryAppraisalEntity -->> AppraisalAssembler : apEnPersisted
+deactivate FactoryAppraisalEntity
+
+AppraisalAssembler -->> AppraisalRepo : apEnPersisted
+deactivate AppraisalAssembler
+
+AppraisalRepo -->> ApEnService : apEnPersisted
+deactivate AppraisalRepo
+
+ApEnService --> Controller : apEnPersisted
+deactivate ApEnService
+
+Controller --> UI : Success
+deactivate Controller
+UI ---> Administrator : Success
+deactivate UI
+@enduml

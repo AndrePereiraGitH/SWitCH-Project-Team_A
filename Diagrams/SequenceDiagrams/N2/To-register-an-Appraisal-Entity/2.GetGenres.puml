@@ -1,62 +1,105 @@
 @startuml
 hide footbox
 autonumber
-
 title Get Genres
 
-note over UI, Controller #E3F2FD
+participant ":ToRegisterAppraisal\nEntityController" as Controller
+
+participant ":IGenreRepository" as GenreRepo
+participant ":IGenreRepositoryJPA" as RepoJPA
+participant ":GenreAssembler" as GenreAssembler
+participant "listGenreDM\n:List<GenreDM>" as GenreDMs
+participant ":GenreFactory" as GenreFactory
+participant "persistedGenreList\n:List<Genre>" as persistedGenreList
+participant "persistedGenre\n:Genre" as persistedGenre
+
+participant ":US004GenreMapper" as GenreMapper
+participant "listOfGenreDTO\n:List<US004GenreDTO>" as GenreDTO
+participant ":Genre" as Genre
+participant "genreDTO\n:US004GenreDTO" as GDTO
+
+database "DB" as DB
+
+note over Controller #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over UI, Controller #E3F2FD
+note over Controller #E3F2FD
 <b>Navigation</b>
 ---
-[[1.MainDiagram.puml Return to Main Diagram]]
+[[1.MainDiagram.puml Back to Main]]
 end note
 
-participant ":UI" as UI
-participant ":ToRegisterAppraisalEntityController" as Controller
-participant ":GenreRepository" as GenreRepo
-participant "allGenreList: List<Genre>" as allGenreList
-participant ":US004GenreMapper" as GenreMapper
-participant "listOfGenreDTO: List<US004GenreDTO>" as listOfGenreDTO
-participant ":Genre" as Genre
-participant "genreDTO: US004GenreDTO" as genreDTO
-
-UI -> Controller : getAllGenres()
-activate Controller
-
-Controller -> GenreRepo : getAllGenres()
+Controller -> GenreRepo : findAll()
 activate GenreRepo
-GenreRepo -->> allGenreList ** : <<create>>
-GenreRepo --> Controller : allGenreList
+
+GenreRepo -> RepoJPA : findAll()
+activate RepoJPA
+
+RepoJPA -> DB : select * from Genre (DM)
+activate DB
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> GenreDMs ** : <<create>>
+RepoJPA --> GenreRepo : listGenreDM
+deactivate RepoJPA
+
+GenreRepo -> GenreAssembler : toDomainList(listGenreDM)
+activate GenreAssembler
+
+GenreAssembler -->> persistedGenreList ** : <<create>>
+
+loop for each genre DM
+    GenreAssembler -> GenreDMs : getId()
+    activate GenreDMs
+    GenreDMs --> GenreAssembler : genreId
+    deactivate GenreDMs
+
+    GenreAssembler -> GenreDMs : getGenreType()
+    activate GenreDMs
+    GenreDMs --> GenreAssembler : genreType
+    deactivate GenreDMs
+
+    GenreAssembler -> GenreFactory : create(genreId, genreType)
+    activate GenreFactory
+    GenreFactory -->> persistedGenre ** : <<create>>
+    GenreFactory --> GenreAssembler : persistedGenre
+    deactivate GenreFactory
+
+    GenreAssembler -> GenreAssembler : persistedGenrelist.add(persistedGenre)
+end
+
+GenreAssembler --> GenreRepo : persistedGenreList
+deactivate GenreAssembler
+
+GenreRepo --> Controller : persistedGenreList
 deactivate GenreRepo
 
-Controller -> GenreMapper : toDTO(allGenreList)
+Controller -> GenreMapper : toDTOs(persistedGenreList)
 activate GenreMapper
-GenreMapper -->> listOfGenreDTO ** : <<create>>
 
-loop for each genre in allGenreList
+GenreMapper -->> GenreDTO ** : <<create>>
+
+loop for each genre
     GenreMapper -> Genre : getId()
     activate Genre
     Genre --> GenreMapper : id
     deactivate Genre
 
-    GenreMapper -> Genre : findByTitle()
+    GenreMapper -> Genre : getTitle()
     activate Genre
     Genre --> GenreMapper : title
     deactivate Genre
 
-    GenreMapper -->> genreDTO ** : <<create>>
+    GenreMapper -->> GDTO ** : <<create>>
     GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
 end
 
 GenreMapper --> Controller : listOfGenreDTO
 deactivate GenreMapper
 
-Controller --> UI : listOfGenreDTO
-deactivate Controller
 
 @enduml

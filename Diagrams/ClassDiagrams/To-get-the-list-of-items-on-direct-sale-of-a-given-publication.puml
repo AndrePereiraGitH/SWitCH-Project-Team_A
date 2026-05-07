@@ -23,7 +23,7 @@ interface IBibliographicalDataRepositoryJPA {
 }
 
 class BibliographicalDataAssembler {
-    + toDomain(List<BibliographicalDataDM> listOfBDDMs): List<BibliographicalData>
+    + toDomain(BibliographicalDataDM bdDM): BibliographicalData
 }
 
 class BibliographicalDataDM {
@@ -98,7 +98,7 @@ interface IListingRepositoryJPA {
 }
 
 class ListingAssembler {
-    + toDomain(List<ListingDM> listOfDSListingDMs): List<Listing>
+    + toDomain(ListingDM listingDM): Listing
 }
 
 class ListingDM  {

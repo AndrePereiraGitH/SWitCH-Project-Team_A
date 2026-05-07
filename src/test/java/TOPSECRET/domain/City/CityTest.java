@@ -1,6 +1,6 @@
 package TOPSECRET.domain.City;
 
-import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
@@ -173,7 +173,7 @@ class CityTest {
     @Test
     void equals_shouldReturnTrueForDifferentInstancesWithSameID() {
         // Arrange
-        CityID cityID = new CityID("C1");
+        CityId cityID = new CityId("C1");
         CountryId countryID = mock(CountryId.class);
         City city1 = new City(cityID, countryID, "Lisboa");
         City city2 = new City(cityID, countryID, "Porto");
@@ -218,7 +218,7 @@ class CityTest {
     @Test
     void shouldThrowExceptionWhenCityNameIsBlankInFullConstructor() {
         // Arrange
-        CityID cityID = mock(CityID.class);
+        CityId cityID = mock(CityId.class);
         CountryId countryID = mock(CountryId.class);
 
         // Act + Assert
@@ -229,7 +229,7 @@ class CityTest {
     @Test
     void shouldThrowExceptionWhenCountryIsNullInFullConstructor() {
         // Arrange
-        CityID cityID = mock(CityID.class);
+        CityId cityID = mock(CityId.class);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
