@@ -13,6 +13,7 @@ participant ":IPublicationSampleRepository" as PublicationSampleRepo
 participant ":PublicationSampleAssembler" as PublicationSampleAssembler
 participant ":IPublicationSample\nRepositoryJPA" as PublicationSampleRepoJPA
 participant "publicationSampleDM\n:PublicationSampleDM" as publicationSampleDM
+participant ":PublicationSampleFactory" as PubFactory
 participant "publicationSample\n:PublicationSample" as PublicationSample
 participant "persistedPublicationSampleDM\n:PublicationSampleDM" as persistedPublicationSampleDM
 participant "persistedPublicationSample\n:PublicationSample" as persistedPublicationSample
@@ -136,7 +137,13 @@ loop for each publicationSampleId
     publicationSampleDM --> PublicationSampleAssembler : condition
     deactivate publicationSampleDM
 
-    PublicationSampleAssembler -->> PublicationSample ** : <<create>>
+    PublicationSampleAssembler -> PubFactory : create (PubSampleId, bibliographicalDataId, userId,\npublicationStatus, editionId, condition)
+    activate PubFactory
+
+    PubFactory -->> PublicationSample ** : <<create>>
+
+    PubFactory -->> PublicationSampleAssembler : publicationSample
+    deactivate PubFactory
 
     PublicationSampleAssembler --> PublicationSampleRepo : publicationSample
     deactivate PublicationSampleAssembler
@@ -180,7 +187,7 @@ loop for each publicationSampleId
 
 end
 
-PublicationSampleRepo --> Controller : true
+PublicationSampleRepo --> Controller : persistedPublicationSample
 deactivate PublicationSampleRepo
 
 Controller --> UI : Success
