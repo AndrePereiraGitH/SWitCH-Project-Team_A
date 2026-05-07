@@ -17,15 +17,21 @@ import TOPSECRET.dto.US022GenreMapper;
 import TOPSECRET.domain.Auction.IAuctionRepository;
 
 import java.util.List;
+
 /**
- * Controller responsible for coordinating the use case:
- * "Get the list of items on auction of a given genre" (US022).
+ * Retrieves all auctions associated with the given genre.
  * <p>
- * Responsibilities:
- * - Receives the genre selected by the user.
- * - Requests matching auctions from the repository.
- * - Converts domain objects into DTOs.
- * - Returns a list of US022AuctionMapper to the UI.
+ * The process consists of:
+ * <ul>
+ *     <li>Finding bibliographical data associated with the genre</li>
+ *     <li>Finding publication samples associated with those bibliographical records</li>
+ *     <li>Finding listings associated with those publication samples</li>
+ *     <li>Finding auctions associated with those listings</li>
+ * </ul>
+ *
+ * @return list of auction DTOs associated with the given genre
+ * @throws IllegalArgumentException if genreDTO is null
+ * @throws IllegalArgumentException if genreDTO.genreId() is null
  */
 public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
@@ -38,9 +44,15 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
     private final US022AuctionMapper auctionMapper;
 
     /**
-     * Constructor injection of dependencies.
+     * Constructs the controller with all required dependencies.
      *
-     * @param auctionRepository repository that stores auctions
+     * @param auctionRepository repository of auctions
+     * @param genreRepository repository of genres
+     * @param listingRepository repository of listings
+     * @param bibliographicalDataRepository repository of bibliographical data
+     * @param publicationSampleRepository repository of publication samples
+     * @param genreMapper mapper for genre DTO conversion
+     * @param auctionMapper mapper for auction DTO conversion
      */
     public ToGetListOfItemsOnAuctionOfGivenGenreController(
             IAuctionRepository auctionRepository, IGenreRepository genreRepository,
@@ -79,20 +91,25 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
     }
 
+    /**
+     * Retrieves all available genres.
+     *
+     * @return list of genre DTOs
+     */
     public List<US022GenreDTO> getAllGenres() {
 
         List<Genre> genres = genreRepository.findAll();
 
         return genreMapper.toDTOList(genres);
     }
+
     /**
      * Retrieves the list of items currently on auction
      * filtered by a given genre.
      *
      * @param genreDTO the genre used as filter
-     * @return list of US022AuctionMapper matching the genre
+     * @return list of US022AuctionDTO matching the genre
      */
-
     public List<US022AuctionDTO> findListOfItemsOnAuctionByGenreId(US022GenreDTO genreDTO) {
 
         if (genreDTO == null) {
@@ -113,6 +130,5 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         return auctionMapper.toDTOList(auctions);
     }
-
 
 }
