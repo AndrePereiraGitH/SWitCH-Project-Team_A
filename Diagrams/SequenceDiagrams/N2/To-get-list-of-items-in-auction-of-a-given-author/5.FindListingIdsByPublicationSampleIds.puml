@@ -30,7 +30,7 @@ activate listingRepo
 listingRepo -> listingRepoJPA : findAllByItemsId(pubIdList)
 activate listingRepoJPA
 
-listingRepoJPA -> db : query listingId by publicationSampleId
+listingRepoJPA -> db : query listing by publicationSampleId
 activate db
 db --> listingRepoJPA : listingId values
 deactivate db

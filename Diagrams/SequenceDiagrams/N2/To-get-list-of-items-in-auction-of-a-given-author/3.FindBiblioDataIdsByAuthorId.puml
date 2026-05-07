@@ -29,7 +29,7 @@ activate bdRepo
 bdRepo -> bdRepoJPA : findIdsByAuthorId(selectedAuthorID)
 activate bdRepoJPA
 
-bdRepoJPA -> db : query bibliographical_data_id by author_id
+bdRepoJPA -> db : query bibliographical_data by author_id
 activate db
 db --> bdRepoJPA : bibliographicalDataId values
 deactivate db
