@@ -78,13 +78,10 @@ activate UI
 UI -> Controller : addPublicationToCollection(collectionId, publicationSampleIds)
 activate Controller
 
-Controller -> CollectionRepo : addPublicationToCollection(collectionId, publicationSampleIds)
-activate CollectionRepo
+Controller -> PublicationSampleRepo : addPublicationToCollection(collectionId, publicationSampleIds)
+activate PublicationSampleRepo
 
 loop for each publicationSampleId
-
-    CollectionRepo -> PublicationSampleRepo : findById(publicationSampleId)
-    activate PublicationSampleRepo
 
     PublicationSampleRepo -> PublicationSampleRepoJPA : findById(publicationSampleId)
     activate PublicationSampleRepoJPA
@@ -108,17 +105,13 @@ loop for each publicationSampleId
     PublicationSampleAssembler --> PublicationSampleRepo : publicationSample
     deactivate PublicationSampleAssembler
 
-    PublicationSampleRepo --> CollectionRepo : publicationSample
-    deactivate PublicationSampleRepo
-
-    CollectionRepo -> PublicationSample : addPublicationToCollection(collectionId)
+    PublicationSampleRepo -> PublicationSample : addPublicationToCollection(collectionId)
     activate PublicationSample
 
-    PublicationSample --> CollectionRepo : true
+    PublicationSample --> PublicationSampleRepo : true
     deactivate PublicationSample
 
-    CollectionRepo -> PublicationSampleRepo : save(publicationSample)
-    activate PublicationSampleRepo
+    PublicationSampleRepo -> PublicationSampleRepo : save(publicationSample)
 
     PublicationSampleRepo -> PublicationSampleAssembler : toDM(publicationSample)
     activate PublicationSampleAssembler
@@ -150,13 +143,11 @@ loop for each publicationSampleId
     PublicationSampleAssembler --> PublicationSampleRepo : persistedPublicationSample
     deactivate PublicationSampleAssembler
 
-    PublicationSampleRepo --> CollectionRepo : persistedPublicationSample
-    deactivate PublicationSampleRepo
 
 end
 
-CollectionRepo --> Controller : true
-deactivate CollectionRepo
+PublicationSampleRepo --> Controller : true
+deactivate PublicationSampleRepo
 
 Controller --> UI : Success
 deactivate Controller
