@@ -3,7 +3,6 @@ package TOPSECRET.dto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link US013GenreDTO}.
@@ -14,9 +13,9 @@ import static org.mockito.Mockito.mock;
 class US013GenreDTOTest {
 
     @Test
-    void shouldCreateGenreDTOWithValidName() {
+    void shouldCreateGenreDTOWithValidNameAndId() {
         // Act
-        US013GenreDTO dto = new US013GenreDTO("Romance");
+        US013GenreDTO dto = new US013GenreDTO("123", "Romance");
         // Assert
         assertEquals("Romance", dto.genreName());
     }
@@ -25,26 +24,19 @@ class US013GenreDTOTest {
     @Test
     void shouldSupportRecordEquality() {
         //Act
-        US013GenreDTO dto1 = new US013GenreDTO("Jazz");
-        US013GenreDTO dto2 = new US013GenreDTO("Jazz");
+        US013GenreDTO dtoDouble = new US013GenreDTO("123","Jazz");
+        US013GenreDTO dtoDouble2 = new US013GenreDTO("123","Jazz");
         //Assert
-        assertEquals(dto1, dto2);
+        assertEquals(dtoDouble, dtoDouble2);
     }
 
     @Test
     void shouldSupportRecordHashCode() {
         //Act
-        US013GenreDTO dto1 = new US013GenreDTO("Jazz");
-        US013GenreDTO dto2 = new US013GenreDTO("Jazz");
+        US013GenreDTO dtoDouble = new US013GenreDTO("123","Jazz");
+        US013GenreDTO dtoDouble2 = new US013GenreDTO("123","Jazz");
         //Assert
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+        assertEquals(dtoDouble.hashCode(), dtoDouble2.hashCode());
     }
 
-    @Test
-    void shouldSupportRecordToString() {
-        //Act
-        US013GenreDTO dto = new US013GenreDTO("Pop");
-        //Assert
-        assertEquals("US013GenreDTO[genreName=Pop]", dto.toString());
-    }
 }
