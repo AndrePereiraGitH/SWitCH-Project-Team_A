@@ -36,7 +36,6 @@ interface IPublisherRepositoryJpa {
 
 class PublisherAssembler {
     + toDomain(dm : PublisherDM) : Publisher
-    + toDomainList(dms : List<PublisherDM>) : List<Publisher>
 }
 
 class PublisherFactory {
@@ -197,20 +196,20 @@ class US028ListingDTO {
 ' ========================
 ' CONTROLLER RELATIONS
 ' ========================
-ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IPublisherRepository : uses
-ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IEditionRepository : uses
-ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IPublicationSampleRepository : uses
-ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" IListingRepository : uses
-ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" --> "1" US028ListingMapper : uses
-ToGetListOfItemsOnAuctionOfAGivenPublisherController ..> US028PublisherMapper : uses static
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IPublisherRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IEditionRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IPublicationSampleRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IListingRepository : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" US028ListingMapper : uses
+ToGetListOfItemsOnAuctionOfAGivenPublisherController ..> US028PublisherMapper : uses
 
 ' ========================
 ' PUBLISHER FLOW
 ' ========================
 IPublisherRepository <|.. PublisherRepositoryJpaImpl
 PublisherRepositoryJpaImpl "1" --> "1" IPublisherRepositoryJpa : delegates to
-PublisherRepositoryJpaImpl "1" --> "1" PublisherAssembler : uses
-PublisherAssembler "1" --> "1" PublisherFactory : uses
+PublisherRepositoryJpaImpl "1" ..> "1" PublisherAssembler : uses
+PublisherAssembler "1" ..> "1" PublisherFactory : uses
 PublisherFactory "1" ..> "0..*"Publisher : creates
 PublisherDM "1" --> "1" PublisherID : has
 Publisher "1" --> "1" PublisherID : has
@@ -225,7 +224,7 @@ EditionRepositoryJpaImpl "1" --> "1" IEditionRepositoryJpa : delegates to
 EditionDM "1" --> "1" EditionID : has
 EditionDM "1" --> "1" PublisherID : belongs to
 EditionRepositoryJpaImpl "1" --> "1" EditionAssembler : uses
-EditionAssembler "1" --> "1" EditionFactory : uses
+EditionAssembler "1" ..> "1" EditionFactory : uses
 EditionFactory "1" ..> "0..*" Edition : creates
 Edition "1" --> "1" EditionID : has
 Edition "1" --> "1" PublisherID : belongs to

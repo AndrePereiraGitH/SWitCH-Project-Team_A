@@ -6,7 +6,7 @@ title To Get The List Of Items On Auction Of A Given Publisher
 actor Buyer
 
 participant ":UI" as UI
-participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
 
 Buyer -> UI : I want to get the list of items\non auction of a given publisher
 activate UI
