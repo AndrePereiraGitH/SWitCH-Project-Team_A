@@ -1,0 +1,173 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+title US020 - Find Public Lists By Genre
+
+class PublicListByGenreController {
+  -_genreRepository : IGenreRepository
+  -_collectionRepo : ICollectionOfPublicationsRepository
+  -_mapper : US020CollectionOfPublicationsDTOMapper
+  +getGenres() : List<US013GenreDTO>
+  +getPublicListsByGenre(genreId : GenreId) : List<US020CollectionOfPublicationsDTO>
+}
+
+interface IGenreRepository {
+  +findAll() : List<Genre>
+}
+
+interface ICollectionOfPublicationsRepository {
+  +findPublicCollectionsByGenreId(genreId : GenreId) : List<CollectionOfPublications>
+}
+
+interface IUserRepository {
+  +findByID(userID : UserId) : Optional<User>
+}
+
+class CollectionOfPublicationsRepositoryJpaImpl {
+  +findPublicCollectionsByGenreId(genreId : GenreId) : List<CollectionOfPublications>
+}
+
+interface ICollectionOfPublicationsRepositoryJpa {
+  +findByGenreIdAndIsPrivateFalse(genreId : GenreId) : List<CollectionOfPublicationsDM>
+}
+
+class GenreRepositoryJpaImpl {
+  -genreRepositoryJpa : IGenreRepositoryJpa
+  -assembler : GenreAssembler
+  +findAll() : List<Genre>
+}
+
+interface IGenreRepositoryJpa {
+  +findAll() : List<GenreDM>
+}
+
+class UserRepositoryJPAImpl {
+  -userRepositoryJpa : IUserRepositoryJPA
+  -assembler : UserAssembler
+  +findByID(userID : UserId) : Optional<User>
+}
+
+interface IUserRepositoryJPA {
+  +findById(userID : UserId) : Optional<UserDM>
+}
+
+class US013GenreMapper {
+  +toDTO(genres : List<Genre>) : List<US013GenreDTO>
+}
+
+class US013GenreDTO {
+  -genreName : String
+}
+
+class US020CollectionOfPublicationsDTOMapper {
+  -userRepo : IUserRepository
+  +toDTO(collections : List<CollectionOfPublications>) : List<US020CollectionOfPublicationsDTO>
+}
+
+class US020CollectionOfPublicationsDTO {
+  -collectionName : String
+  -userName : String
+}
+
+class CollectionOfPublicationsAssembler {
+  -_factory : CollectionOfPublicationsFactory
+  +toDomain(collectionDM : CollectionOfPublicationsDM) : CollectionOfPublications
+}
+
+class CollectionOfPublicationsFactory {
+  +create(id : CollectionOfPublicationsId, collectionName : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
+}
+
+class CollectionOfPublications <<AggregateRoot>> {
+  -_id : CollectionOfPublicationsId
+  -_collectionName : String
+  -_collectionGenreId : GenreId
+  -_ownerId : UserId
+  -_isPrivate : boolean
+  +getCollectionName() : String
+  +getCollectionGenre() : GenreId
+  +getOwnerId() : UserId
+  +isPrivate() : boolean
+  +id() : CollectionOfPublicationsId
+}
+
+class Genre <<AggregateRoot>> {
+  -_id : GenreId
+  -_genreType : String
+  +id() : GenreId
+  +getGenreType() : String
+}
+
+class User <<AggregateRoot>> {
+  -_id : UserId
+  -_userName : String
+  +id() : UserId
+  +getUserName() : String
+}
+
+class CollectionOfPublicationsDM <<Entity>> {
+  -id : CollectionOfPublicationsId
+  -collectionName : String
+  -genreId : GenreId
+  -userId : UserId
+  -isPrivate : boolean
+}
+
+class GenreDM <<Entity>> {
+  -id : GenreId
+  -genreType : String
+}
+
+class UserDM <<Entity>> {
+  -id : UserId
+  -userName : String
+}
+
+class GenreAssembler {
+  + toDomain(GenreDM dm): Genre
+}
+
+class UserAssembler {
+  + toDomain(UserDM dm): User
+}
+
+UI --> PublicListByGenreController
+PublicListByGenreController --> IGenreRepository : gets genres
+PublicListByGenreController --> ICollectionOfPublicationsRepository : gets public collections by genre
+PublicListByGenreController --> US013GenreMapper : maps genres
+PublicListByGenreController --> US020CollectionOfPublicationsDTOMapper : maps collections
+
+US013GenreMapper ..> Genre : reads genre type
+US013GenreMapper ..> US013GenreDTO : creates
+
+US020CollectionOfPublicationsDTOMapper --> IUserRepository : gets owner
+US020CollectionOfPublicationsDTOMapper ..> CollectionOfPublications : reads name and owner id
+US020CollectionOfPublicationsDTOMapper ..> User : reads username
+US020CollectionOfPublicationsDTOMapper ..> US020CollectionOfPublicationsDTO : creates
+
+CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsRepository
+CollectionOfPublicationsRepositoryJpaImpl --> ICollectionOfPublicationsRepositoryJpa : queries public collections
+CollectionOfPublicationsRepositoryJpaImpl --> CollectionOfPublicationsAssembler : maps DM to domain
+
+GenreRepositoryJpaImpl ..|> IGenreRepository
+GenreRepositoryJpaImpl --> IGenreRepositoryJpa : queries genres
+GenreRepositoryJpaImpl --> GenreAssembler : maps DM to domain
+
+UserRepositoryJPAImpl ..|> IUserRepository
+UserRepositoryJPAImpl --> IUserRepositoryJPA : queries users
+UserRepositoryJPAImpl --> UserAssembler : maps DM to domain
+
+ICollectionOfPublicationsRepositoryJpa --> CollectionOfPublicationsDM : retrieves
+IGenreRepositoryJpa --> GenreDM : retrieves
+IUserRepositoryJPA --> UserDM : retrieves
+
+CollectionOfPublicationsAssembler --> CollectionOfPublicationsFactory : reconstructs domain
+CollectionOfPublicationsAssembler ..> CollectionOfPublicationsDM : reads
+CollectionOfPublicationsAssembler ..> CollectionOfPublications : maps
+
+CollectionOfPublicationsFactory ..> CollectionOfPublications : creates
+
+US013GenreDTO ..> Genre : created from
+US020CollectionOfPublicationsDTO ..> CollectionOfPublications : created from
+
+@enduml
