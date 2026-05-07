@@ -5,8 +5,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Objects;
 
 /**
