@@ -1,57 +1,105 @@
 @startuml
-hide footbox
 autonumber
+hide footbox
+title Get Official Genres List (with JPA)
 
-title UGet All Genres
+actor Buyer as User
 
-participant ":Controller" as Controller
-participant ":US022GetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
-participant ":IGenreRepository" as GenreRepo
-participant "allGenreList: List<Genre>" as allGenreList
-participant ":US022GenreMapper" as GenreMapper
-participant "listOfGenreDTO: List<GenreDTO>" as listOfGenreDTO
-participant ":Genre" as Genre
-participant "genreDTO: GenreDTO" as genreDTO
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as C
+participant ":IGenre\nRepository" as GR
+participant ":IGenre\nRepositoryJPA" as GRJPA
+participant ":Genre\nAssembler" as Assembler
+participant ":Genre\nFactory" as Factory
+participant ":US022Genre\nMapper" as MAPPER
+participant ":Genre" as ENTITY
+participant "DataBase" as EM
 
-note over Controller #E3F2FD
+note over C #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over Controller #E3F2FD
+note over C #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Controller -> GenreRepo : getAllGenres()
+C -> GR : findAll()
+activate GR
 
-activate GenreRepo
-GenreRepo -->> allGenreList ** : <<create>>
-GenreRepo --> Controller : allGenreList
-deactivate GenreRepo
+GR -> GRJPA : findAll()
+activate GRJPA
 
-Controller -> GenreMapper : toDTO(allGenreList)
-activate GenreMapper
-GenreMapper -->> listOfGenreDTO ** : <<create>>
+GRJPA -> EM : Query
+activate EM
 
-loop for each genre in allGenreList
-    GenreMapper -> Genre : getId()
-    activate Genre
-    Genre --> GenreMapper : id
-    deactivate Genre
+note over EM
+Query database (SELECT * FROM genre)
+end note
 
-    GenreMapper -> Genre : getTitle()
-    activate Genre
-    Genre --> GenreMapper : title
-    deactivate Genre
+EM --> GRJPA : data
+deactivate EM
 
-    GenreMapper -> genreDTO ** : toDTO
-    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+GRJPA -->> "genreDMs : List<genreDM>"** : <<create>>
+
+
+GRJPA --> GR : genreDMs
+deactivate GRJPA
+
+loop for each genreDMs
+    GR -> Assembler : toDomain\n(genreDms)
+    activate Assembler
+
+    create "listOfGenre:\nList<Genre>" as listOfGenre
+    Assembler -->> listOfGenre : <<create>>
+
+
+    Assembler -> Factory : create(GenreId, String genreType)
+
+    activate Factory
+
+    create "genreDomain\n:Genre" as genreDomain
+    Factory -->> genreDomain : <<create>>
+
+    Factory --> Assembler : genreDomain
+    deactivate Factory
+
+    Assembler -> listOfGenre : listOfGenre.add(genreDomain)
 end
 
-GenreMapper --> Controller : listOfGenreDTO
-deactivate GenreMapper
+Assembler --> GR : listOfGenre
+deactivate Assembler
+
+GR --> C : listOfGenre
+deactivate GR
+
+C -> MAPPER : toDTOList(listOfGenre)
+activate MAPPER
+
+create "listOfGenreDTO:\nList<US022GenreDTO>" as listDTO
+MAPPER -->> listDTO : <<create>>
+
+loop for each Genre
+    MAPPER -> ENTITY : getGenreType()
+    activate ENTITY
+    ENTITY --> MAPPER : genreType
+        deactivate ENTITY
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : genreId
+    deactivate ENTITY
+
+
+    create "genreDTO:\nUS022GenreDTO" as genreDTO
+    MAPPER -> genreDTO : toDTO()
+
+    MAPPER -> listDTO : listOfGenreDTO.add(genreDTO)
+end
+
+MAPPER --> C : listOfGenreDTO
+deactivate MAPPER
+
 
 @enduml
