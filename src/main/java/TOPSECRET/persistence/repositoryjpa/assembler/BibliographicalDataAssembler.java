@@ -5,9 +5,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Assembler responsible for converting between the domain model
@@ -70,28 +68,6 @@ public class BibliographicalDataAssembler {
                 bdDM.getGenreIds(),
                 bdDM.getChunksOfText()
         );
-    }
-
-    /**
-     * Reconstructs a list of {@link BibliographicalData} domain objects from a list of
-     * {@link BibliographicalDataDM} persistence entities.
-     *
-     * <p>Convenience overload of {@link #toDomain(BibliographicalDataDM)} that processes
-     * an entire collection in a single call. Each element is converted individually,
-     * preserving its original identity.</p>
-     *
-     * @param bdDMs the list of persistence entities to convert; must not be {@code null}
-     * @return an unmodifiable {@link List} containing the reconstructed {@link BibliographicalData}
-     *         domain objects, in the same order as the input list
-     * @throws NullPointerException if {@code bdDMs} is {@code null}
-     */
-    public List<BibliographicalData> toDomain(List<BibliographicalDataDM> bdDMs) {
-
-        Objects.requireNonNull(bdDMs, "BibliographicalDataDMs cannot be null.");
-
-        return bdDMs.stream()
-                .map(this::toDomain)
-                .toList();
     }
 
     /**
