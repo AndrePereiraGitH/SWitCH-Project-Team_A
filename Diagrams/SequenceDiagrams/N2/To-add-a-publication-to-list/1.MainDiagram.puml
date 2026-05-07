@@ -100,6 +100,42 @@ loop for each publicationSampleId
     PublicationSampleRepo -> PublicationSampleAssembler : toDomain(publicationSampleDM)
     activate PublicationSampleAssembler
 
+    PublicationSampleAssembler -> publicationSampleDM : getPubSampleId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : pubSampleId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getBdId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : bibliographicalDataId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getOwnerId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : userId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getPublicationStatus()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : publicationStatus
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getEditionId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : editionId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getCondition()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : condition
+    deactivate publicationSampleDM
+
     PublicationSampleAssembler -->> PublicationSample ** : <<create>>
 
     PublicationSampleAssembler --> PublicationSampleRepo : publicationSample
@@ -111,8 +147,6 @@ loop for each publicationSampleId
     PublicationSample --> PublicationSampleRepo : true
     deactivate PublicationSample
 
-    PublicationSampleRepo -> PublicationSampleRepo : save(publicationSample)
-
     PublicationSampleRepo -> PublicationSampleAssembler : toDM(publicationSample)
     activate PublicationSampleAssembler
 
@@ -121,7 +155,7 @@ loop for each publicationSampleId
     PublicationSampleAssembler --> PublicationSampleRepo : publicationSampleDM
     deactivate PublicationSampleAssembler
 
-    PublicationSampleRepo -> PublicationSampleRepoJPA : save(publicationSampleDM)
+    PublicationSampleRepo -> PublicationSampleRepoJPA : update(publicationSampleDM)
     activate PublicationSampleRepoJPA
 
     PublicationSampleRepoJPA -> DB : update PublicationSample
