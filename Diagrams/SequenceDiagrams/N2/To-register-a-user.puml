@@ -9,11 +9,13 @@ actor Administrator
 participant ":UI" as UI
 participant ":ToRegisterUserController" as Controller
 participant ":UserService" as Service
-participant ":UserFactory" as Factory
 participant ":IUserRepository" as Repository
-participant ":UserAssembler" as Assembler
 participant ":IUserRepositoryJPA" as RepositoryJPAInterface
+participant ":UserFactory" as Factory
+participant "user:User" as user
+participant ":UserAssembler" as Assembler
 database "Database" as DB
+participant "savedUserDM:UserDM" as savedUserDM
 
 Administrator -> UI : I want to register a user in the system
 activate UI
@@ -36,7 +38,7 @@ deactivate Repository
 Service -> Factory : create(username, profile, userRoles)
 activate Factory
 
-Factory -->> Factory : create(username, profile, userRoles)
+Factory -->> user ** : <<create>>
 
 Factory --> Service : user
 deactivate Factory
@@ -54,9 +56,7 @@ activate RepositoryJPAInterface
 
 RepositoryJPAInterface -> DB : INSERT
 activate DB
-
-create participant ":UserDM" as SavedUserDM
-DB -->> SavedUserDM : create
+DB -->> savedUserDM ** : <<create>>
 deactivate DB
 
 RepositoryJPAInterface --> Repository : savedUserDM
