@@ -13,10 +13,6 @@ participant ":IGenreRepository" as genreRepo
 participant ":ICollectionOfPublicationsRepository" as collectionRepo
 participant ":US020CollectionOfPublicationsDTOMapper" as collectionMapper
 
-participant "genresDTOList:\nList<US013GenreDTO>" as genresDTOList
-participant "publicCollectionsList:\nList<CollectionOfPublications>" as publicCollectionsList
-participant "publicCollectionsDTO:\nList<US020CollectionOfPublicationsDTO>" as publicCollectionsDTO
-
 User -> UI : I want to find public lists by genre
 activate UI
 
@@ -47,8 +43,6 @@ loop selectedGenreId
         [[3.FindPublicCollectionsByGenreId.puml Find Public Collections By Genre Id]]
         end ref
 
-        collectionRepo -->> publicCollectionsList ** : <<create>>
-
     collectionRepo --> Ctrl : publicCollectionsList
     deactivate collectionRepo
 
@@ -60,8 +54,6 @@ loop selectedGenreId
         ref over collectionMapper
         [[4.MapCollectionsToDTO.puml Map Collections To DTO]]
         end ref
-
-        collectionMapper -->> publicCollectionsDTO ** : <<create>>
 
     collectionMapper --> Ctrl : publicCollectionsDTO
     deactivate collectionMapper

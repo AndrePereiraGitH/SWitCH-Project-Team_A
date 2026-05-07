@@ -10,6 +10,8 @@ participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userRepoJpa
 database ":Database" as DB
 participant ":UserAssembler" as userAssembler
+participant ":UserFactory" as userFactory
+participant "user:\nUser" as user
 participant "collectionDTO:\nUS020CollectionOfPublicationsDTO" as collectionDTO
 participant "publicCollectionsDTO:\nList<US020CollectionOfPublicationsDTO>" as publicCollectionsDTO
 
@@ -44,7 +46,7 @@ loop for each collection in publicCollectionsList
 
     userRepoJpa -> DB : select user where user_id = ownerId
     activate DB
-    DB --> userRepoJpa : Optional<UserDM>
+    DB --> userRepoJpa : data
     deactivate DB
 
     userRepoJpa --> userRepo : Optional<UserDM>
@@ -53,6 +55,11 @@ loop for each collection in publicCollectionsList
     alt user found
         userRepo -> userAssembler : toDomain(userDM)
         activate userAssembler
+        userAssembler --> userFactory : create(dm.getId(), dm.getUserName(), dm.getProfile(), dm.getUserRoles())
+        activate userFactory
+        userFactory --> user ** : <<create>>
+        userFactory --> userAssembler : user
+        deactivate userFactory
         userAssembler --> userRepo : user
         deactivate userAssembler
 
