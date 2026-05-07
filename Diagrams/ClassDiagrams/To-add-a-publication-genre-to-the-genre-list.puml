@@ -6,58 +6,90 @@ title To add a publication genre to the genre list
 ' _____________________
 
 interface IGenreRepository {
-  + createAndAdd(genreType : String) : Genre
-  + findByTitle(title : String) : Genre
-  + getAllGenres() : List<Genre>
+  + save(genre : Genre) : Genre
+  + findByTitle(title : String) : Optional<Genre>
+  + findAll() : List<Genre>
+  + findById(genreId : GenreId) : Optional<Genre>
 }
 
 class Genre {
-  - _id : GenreID
+  - _id : GenreId
   - _genreType : String
-  + id() : GenreID
+  + id() : GenreId
   + getGenreType() : String
   + sameAs(object : Object) : boolean
 }
 
-class GenreID {
+class GenreId {
   - genreID : String
   + getID() : String
 }
 
 class GenreFactory {
   + create(genreType : String) : Genre
+  + create(genreId : GenreId, genreType : String) : Genre
 }
 
-Genre "1" --> "1" GenreID : identified by
-GenreFactory ..> Genre : <<creates>>
+Genre "1" --> "1" GenreId : identified by
+GenreFactory "1" ..> "*" Genre : <<creates>>
 
 ' ______________________
 ' APPLICATION
 ' ______________________
 
-class US003ToRegisterGenreController {
-  - _genreRepository : IGenreRepository
+class ToRegisterGenreController {
+  - genreService : GenreService
   + registerGenre(genreType : String) : boolean
+}
+
+class GenreService {
+  + createAndSave(genreType : String) : Genre
 }
 
 ' ___________________
 ' PERSISTENCE
 ' ___________________
 
-class GenreRepositoryMem {
-  - _genres : List<Genre>
-  - _genreFactory : GenreFactory
-  - exists(genre : Genre) : boolean
+class GenreRepositoryJpaImpl {
+  + save(genre : Genre) : Genre
+  + findByTitle(title : String) : Optional<Genre>
+  + findAll() : List<Genre>
+  + findById(genreId : GenreId) : Optional<Genre>
 }
 
-GenreRepositoryMem ..|> IGenreRepository : <<implements>>
-GenreRepositoryMem "1" --> "*" Genre : stores
-GenreRepositoryMem --> GenreFactory : has
+interface IGenreRepositoryJpa {
+  + findByGenreType(genreType : String) : Optional<GenreDM>
+}
+
+class GenreAssembler {
+  + toDM(genre : Genre) : GenreDM
+  + toDomain(dm : GenreDM) : Genre
+}
+
+class GenreDM {
+  - id : GenreId
+  - genreType : String
+  + getId() : GenreId
+  + getGenreType() : String
+}
+
+rectangle Database {
+}
+
+GenreRepositoryJpaImpl ..|> IGenreRepository : <<implements>>
+GenreRepositoryJpaImpl "1" ..> "1" IGenreRepositoryJpa : uses
+GenreRepositoryJpaImpl "1" ..> "1" GenreAssembler : uses
+IGenreRepositoryJpa --|> JpaRepository : extends
+GenreAssembler "1" ..> "1" GenreFactory : uses
+IGenreRepositoryJpa "1" ..> "0..*" GenreDM : returns
+IGenreRepositoryJpa "1" ..> "1" Database : queries
 
 ' _____________________
 ' DEPENDENCIES
 ' _____________________
 
-US003ToRegisterGenreController --> IGenreRepository : uses
+ToRegisterGenreController "1" ..> "1" GenreService : uses
+GenreService "1" ..> "1" IGenreRepository : uses
+GenreService "1" ..> "1" GenreFactory : uses
 
 @enduml

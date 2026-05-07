@@ -10,7 +10,7 @@ Administrator -> UI : I want to add a new genre to the official list
 activate UI
 UI --> Administrator : What is the genre name?
 deactivate UI
-Administrator -> UI : name("romance")
+Administrator -> UI : genreType("Drama")
 activate UI
 UI --> Administrator : Genre successfully added!
 deactivate UI

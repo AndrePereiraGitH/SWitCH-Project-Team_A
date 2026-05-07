@@ -5,49 +5,100 @@ title To add a publication genre to the genre list
 
 actor Administrator
 participant ":UI" as UI
-participant ":ToRegisterGenreCtrl" as Ctrl
-participant ":IGenreRepository" as genreRepo
-participant ":GenreFactory" as factory
+participant ":ToRegisterGenreController" as Ctrl
+participant ":GenreService" as Service
+participant ":IGenreRepository" as Repo
+participant ":IGenreRepositoryJpa" as JpaRepo
+participant "DataBase" as DB
+participant ":GenreAssembler" as Assembler
+participant ":GenreFactory" as Factory
 
 Administrator -> UI : I want to add a new genre to the official list
 activate UI
 UI --> Administrator : What is the genre name?
 deactivate UI
-Administrator -> UI : genreType("romance")
-
+Administrator -> UI : genreType("Drama")
 activate UI
 
 UI -> Ctrl : registerGenre(genreType)
 activate Ctrl
 
-Ctrl -> genreRepo : createAndAdd(genreType)
-activate genreRepo
+Ctrl -> Service : createAndSave(genreType)
+activate Service
 
-genreRepo -> factory : create(genreType)
-activate factory
-create "romance:Genre" as Genre
-factory -->> Genre : <<create>>
-factory --> genreRepo : romance
-deactivate factory
+Service -> Repo : findByTitle(genreType)
+activate Repo
 
-genreRepo -> genreRepo : exists(romance)
+Repo -> JpaRepo : findByGenreType(genreType)
+activate JpaRepo
+
+JpaRepo -> DB : SELECT * FROM genres WHERE genre_type = ?
+activate DB
+DB --> JpaRepo : (empty result)
+deactivate DB
+
+JpaRepo --> Repo : Optional.empty()
+deactivate JpaRepo
+
+Repo --> Service : Optional.empty()
+deactivate Repo
 
 alt [genre already exists]
-    genreRepo --> Ctrl : error: "Genre already exists"
+    Service --> Ctrl : error: "Genre already exists"
     Ctrl --> UI : error: "Genre already exists"
     UI --> Administrator : Genre already exists
 
 else [genre does NOT exist]
-    genreRepo -> genreRepo : _genres.add(romance)
-    genreRepo --> Ctrl : romance
+
+    Service -> Factory : create(genreType)
+    activate Factory
+    create "drama:Genre" as Genre
+    Factory -->> Genre : <<create>>
+    Factory --> Service : drama
+    deactivate Factory
+
+    Service -> Repo : save(drama)
+    activate Repo
+
+    Repo -> Assembler : toDM(drama)
+    activate Assembler
+    create "genreDM:GenreDM" as GenreDM
+    Assembler -->> GenreDM : <<create>>
+    Assembler --> Repo : genreDM
+    deactivate Assembler
+
+    Repo -> JpaRepo : save(genreDM)
+    activate JpaRepo
+    JpaRepo -> DB : INSERT INTO genres ...
+    activate DB
+    DB --> JpaRepo : savedDM
+    deactivate DB
+    JpaRepo --> Repo : savedDM
+    deactivate JpaRepo
+
+    Repo -> Assembler : toDomain(savedDM)
+    activate Assembler
+    Assembler -> Factory : create(genreId, genreType)
+    activate Factory
+    create "savedGenre:Genre" as SavedGenre
+    Factory -->> SavedGenre : <<create>>
+    Factory --> Assembler : savedGenre
+    deactivate Factory
+    Assembler --> Repo : savedGenre
+    deactivate Assembler
+
+    Repo --> Service : savedGenre
+    deactivate Repo
+
+    Service --> Ctrl : savedGenre
+    deactivate Service
+
+    Ctrl --> UI : true
+    deactivate Ctrl
+
+    UI --> Administrator : Genre successfully added!
+    deactivate UI
+
 end
-
-deactivate genreRepo
-
-Ctrl --> UI : true
-deactivate Ctrl
-
-UI --> Administrator : success
-deactivate UI
 
 @enduml
