@@ -133,7 +133,7 @@ loop for each collection in userCollections
     CP --> CollectionMapper : collectionName
     deactivate CP
 
-    CollectionMapper -->> collectionDTO ** : <<create>>
+    CollectionMapper -->> collectionDTO ** : toDTO()
 
     CollectionMapper -> CollectionMapper : listOfCollectionsDTO.add(collectionDTO)
 end
@@ -218,7 +218,7 @@ loop for each publicationSample
     PublicationSample --> PublicationSampleMapper : title
     deactivate PublicationSample
 
-    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+    PublicationSampleMapper -->> publicationSampleDTO ** : toDTO()
 
     PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
 end
@@ -344,7 +344,50 @@ loop for each publicationSampleId
     PublicationSampleRepo -> PublicationSampleAssembler : toDomain(persistedPublicationSampleDM)
     activate PublicationSampleAssembler
 
-    PublicationSampleAssembler -->> persistedPublicationSample ** : <<create>>
+
+    PublicationSampleAssembler -> publicationSampleDM : getPubSampleId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : pubSampleId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getBdId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : bibliographicalDataId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getOwnerId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : userId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getPublicationStatus()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : publicationStatus
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getEditionId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : editionId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getCondition()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : condition
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> PublicationSampleFactory : create(pubSampleId, bibliographicalDataId, \nuserId, publicationStatus, editionId, condition)
+    activate PublicationSampleFactory
+
+    PublicationSampleFactory -->> persistedPublicationSample ** : <<create>>
+
+    PublicationSampleFactory -->> PublicationSampleAssembler : persistedPublicatonSample
+    deactivate PublicationSampleFactory
 
     PublicationSampleAssembler --> PublicationSampleRepo : persistedPublicationSample
     deactivate PublicationSampleAssembler
