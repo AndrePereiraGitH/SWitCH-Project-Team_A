@@ -1,0 +1,91 @@
+@startuml
+title To add a publication type in the system
+
+class UI
+
+class ToRegisterPubTypeController {
+  - service: PublicationTypeService
+  + registerPubType(mediaFormat: String): PublicationType
+}
+
+class PublicationTypeService {
+  - repository: IPublicationTypeRepository
+  - factory: PublicationTypeFactory
+  + createAndSave(mediaFormat: String): PublicationType
+}
+
+interface IPublicationTypeRepository {
+  + save(pubType: PublicationType): PublicationType
+  + findAll(): List<PublicationType>
+  + findById(id: PublicationTypeId): Optional<PublicationType>
+  + findByMediaFormat(mediaFormat: String): Optional<PublicationType>
+}
+
+class PublicationTypeRepositoryJPAImpl {
+  - jpaRepository: IPublicationTypeRepositoryJPA
+  - assembler: PublicationTypeAssembler
+  + save(pubType: PublicationType): PublicationType
+  + findAll(): List<PublicationType>
+  + findById(id: PublicationTypeId): Optional<PublicationType>
+  + findByMediaFormat(mediaFormat: String): Optional<PublicationType>
+}
+
+interface IPublicationTypeRepositoryJPA {
+  + save(dm: PublicationTypeDM): PublicationTypeDM
+  + findAll(): List<PublicationTypeDM>
+  + findById(id: PublicationTypeId): Optional<PublicationTypeDM>
+}
+
+class PublicationTypeAssembler {
+  - factory: PublicationTypeFactory
+  + toDomain(dm: PublicationTypeDM): PublicationType
+  + toDM(domain: PublicationType): PublicationTypeDM
+}
+
+class PublicationTypeFactory {
+  + create(mediaFormat: String): PublicationType
+  + create(id: PublicationTypeId, mediaFormat: String): PublicationType
+}
+
+class PublicationType <<Aggregate Root>> {
+  - pub_id: PublicationTypeId
+  - _mediaFormat: String
+  # PublicationType(mediaFormat: String)
+  # PublicationType(id: PublicationTypeId, mediaFormat: String)
+  + id(): PublicationTypeId
+  + getMediaFormat(): String
+}
+
+class PublicationTypeDM {
+  - id: PublicationTypeId
+  - mediaFormat: String
+  + PublicationTypeDM(id: PublicationTypeId, mediaFormat: String)
+  + getId(): PublicationTypeId
+  + getMediaFormat(): String
+}
+
+class PublicationTypeId {
+  -pbType_id : String
+  +getId() : String
+}
+
+UI --> ToRegisterPubTypeController
+
+ToRegisterPubTypeController --> PublicationTypeService : calls
+PublicationTypeService --> IPublicationTypeRepository : checks duplicate / saves
+PublicationTypeService --> PublicationTypeFactory : creates
+
+PublicationTypeRepositoryJPAImpl ..|> IPublicationTypeRepository
+PublicationTypeRepositoryJPAImpl --> IPublicationTypeRepositoryJPA : delegates persistence
+PublicationTypeRepositoryJPAImpl --> PublicationTypeAssembler : converts
+
+IPublicationTypeRepositoryJPA --> PublicationTypeDM : persists
+PublicationTypeAssembler --> PublicationTypeFactory : rehydrates
+PublicationTypeAssembler --> PublicationTypeDM : maps to / from
+PublicationTypeAssembler --> PublicationType : maps to / from
+
+PublicationTypeFactory ..> PublicationType : creates
+PublicationType --> PublicationTypeId : identifies
+PublicationTypeDM --> PublicationTypeId : embedded id
+
+@enduml
