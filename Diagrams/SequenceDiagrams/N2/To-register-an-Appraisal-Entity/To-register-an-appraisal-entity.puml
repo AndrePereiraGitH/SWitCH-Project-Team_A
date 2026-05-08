@@ -149,7 +149,7 @@ loop for each genre in the list
     Genre --> GenreMapper : title
     deactivate Genre
 
-    GenreMapper -->> GDTO ** : <<create>>
+    GenreMapper -->> GDTO ** : toDTO()
     GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
 end
 
@@ -239,7 +239,7 @@ loop for each publicationType in the list
     PublicationType --> PublicationTypeMapper : mediaFormat
     deactivate PublicationType
 
-    PublicationTypeMapper -->> PDTO ** : <<create>>
+    PublicationTypeMapper -->> PDTO ** : toDTO()
     PublicationTypeMapper -> PublicationTypeMapper : listOfPublicationTypeDTO.add(publicationTypeDTO)
 end
 
