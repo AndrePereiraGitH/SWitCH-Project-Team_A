@@ -1,76 +1,33 @@
 @startuml
-title Register a Publishing Company
+title To register a publishing company in the system
 
-class ToRegisterNewPublisherController {
-  -_publisherService: PublisherService
+class US006ToRegisterNewPublisherController {
+  -publisherRepository: PublisherRepository
   +registerPublisher(name: String, vatNumber: String, contact: Contact): boolean
 }
 
-class PublisherService {
-  -_factory: PublisherFactory
-  -_repository: IPublisherRepository
-  +createAndSave(name: String, vatNumber: String, contact: Contact): Publisher
-}
-
-interface IPublisherRepository {
-  +save(publisher: Publisher): Publisher
-  +existsById(id: PublisherID): boolean
-  +findById(id: PublisherID): Optional<Publisher>
-  +findAll(): List<Publisher>
-}
-
-class PublisherRepositoryJpaImpl {
-  -publisherRepositoryJpa: IPublisherRepositoryJpa
-  -assembler: PublisherAssembler
-  +save(publisher: Publisher): Publisher
-  +existsById(id: PublisherID): boolean
-  +findById(id: PublisherID): Optional<Publisher>
-  +findAll(): List<Publisher>
+class PublisherRepository {
+  -publishers: List<Publisher>
+  +create(name: String, vatNumber: String, contact: Contact)
+  -isExistent()
+  -publishers.add(publisher:Publisher)
 }
 
 class PublisherFactory {
-  +create(name: String, vatNumber: String, contact: Contact): Publisher
-  +create(id: PublisherID, name: String, vatNumber: String, contact: Contact): Publisher
+  +create(name: String, vatNumber: String, contact: Contact)
 }
+
 
 class Publisher {
-  -_publisherID: PublisherID
-  -_name: String
-  -_vatNumber: String
-  -_contact: Contact
-  +id(): PublisherID
-  +getName(): String
-  +getVatNumber(): String
-  +getContact(): Contact
-}
-
-class PublisherAssembler {
-  +toDM(publisher: Publisher): PublisherDM
-  +toDomain(dm: PublisherDM): Publisher
-}
-
-class PublisherDM {
-  -id: PublisherID
   -name: String
   -vatNumber: String
   -contact: Contact
 }
 
-interface JpaRepository<PublisherDM, PublisherID> {
-}
+US006ToRegisterNewPublisherController "1" ..> "1" PublisherRepository : requests registration to >
+PublisherRepository "1" --> "1" PublisherFactory : uses >
+PublisherFactory "1" ..> "*" Publisher : creates >
+PublisherRepository "1" --> "*" Publisher : stores >
 
-interface IPublisherRepositoryJpa {
-}
-
-ToRegisterNewPublisherController "1" ..> "1" PublisherService : uses
-PublisherService "1" ..> "1" PublisherFactory : creates with
-PublisherService "1" ..> "1" IPublisherRepository : persists with
-IPublisherRepository <|.. PublisherRepositoryJpaImpl : implements
-PublisherRepositoryJpaImpl "1" ..> "1" PublisherAssembler : converts with
-PublisherRepositoryJpaImpl "1" ..> "1" IPublisherRepositoryJpa : delegates to
-PublisherAssembler "1" ..> "1" PublisherFactory : reconstructs with
-PublisherAssembler "1" ..> "1" PublisherDM : converts
-PublisherFactory "1" ..> "*" Publisher : creates
-JpaRepository <|-- IPublisherRepositoryJpa : extends
 
 @enduml
