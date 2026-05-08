@@ -28,21 +28,31 @@ activate Service
 
 Service -> Factory : create(name, vatNumber, contact)
 activate Factory
-Factory -->> Publisher ** : <<create>>\nPublisher(name, vatNumber, contact)
+Factory -->> Publisher ** : <<create>>
 Factory --> Service : publisher
 deactivate Factory
 
 Service -> Repository : save(publisher)
 activate Repository
-Repository --> Service : publisher
-deactivate Repository
 
-Service --> Controller : publisher
-deactivate Service
-
-Controller --> UI : true
-deactivate Controller
-UI --> Administrator : success
-deactivate UI
+alt publisher already exists
+    Repository -->> Service : throws IllegalArgumentException
+    deactivate Repository
+    Service -->> Controller : throws IllegalArgumentException
+    deactivate Service
+    Controller -->> UI : throws IllegalArgumentException
+    deactivate Controller
+    UI -->> Administrator : Publisher already exists
+    deactivate UI
+else publisher does NOT exist
+    Repository --> Service : publisher
+    deactivate Repository
+    Service --> Controller : publisher
+    deactivate Service
+    Controller --> UI : true
+    deactivate Controller
+    UI --> Administrator : success
+    deactivate UI
+end
 
 @enduml
