@@ -7,7 +7,7 @@ participant ":Controller" as Ctrl
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJPA" as listingRepoJPA
 participant "pubIdList\n:List<PublicationSampleId>" as pubIdList
-participant "listingIdList\n:List<ListingId>" as listingIdList
+participant "listingIdList\n:List<ListingId>" as pubIdList
 participant "listingDMList\nList<ListingDM>" as listingDMList
 
 database "Database" as db
@@ -37,7 +37,7 @@ deactivate db
 
 listingRepoJPA -->> listingDMList** : <<create>>
 
-listingRepoJPA -->> listingIdList ** : <<create>>
+listingRepoJPA -->> pubIdList ** : <<create>>
 
 loop for each listingDM in listingDMList
 listingRepoJPA -> listingRepoJPA : id = listingDM.getId()
@@ -45,10 +45,10 @@ listingRepoJPA -> listingRepoJPA : listingIdList.add(id)
 
 end loop
 
-listingRepoJPA --> listingRepo : listingIdList
+listingRepoJPA --> listingRepo : pubIdList
 deactivate listingRepoJPA
 
-listingRepo --> Ctrl : listingIdList
+listingRepo --> Ctrl : pubIdList
 deactivate listingRepo
 
 @enduml

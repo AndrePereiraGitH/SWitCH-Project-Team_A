@@ -1,5 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
@@ -34,6 +36,22 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      */
     List<PublicationSampleDM> findAllByOwnerId(UserId ownerId);
 
+    /**
+     * Retrieves all {@link PublicationSampleDM} entities whose edition identifier
+     * is contained in the given list of {@link EditionID}s.
+     *
+     * <p>This method leverages Spring Data JPA query derivation to generate
+     * a query equivalent to:
+     * <pre>
+     * SELECT ps FROM PublicationSampleDM ps WHERE ps.editionId IN :editionIds
+     * </pre>
+     *
+     * @param editionIds the list of edition identifiers to filter publication samples;
+     *                   must not be {@code null}
+     * @return a list of {@link PublicationSampleDM} associated with the given edition IDs;
+     *         never {@code null}, but may be empty if no matches are found
+     */
+    List<PublicationSampleDM> findAllByEditionIdIn(List<EditionID> editionIds);
 
     /**
      * Finds all publication samples associated with the given library identifier.
@@ -44,4 +62,14 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      *         an empty list if no samples are found
      */
     List<PublicationSampleDM> findByLibraryId(LibraryId libraryId);
+
+    /**
+     * Retrieves all {@link PublicationSampleDM} entities associated with the given library
+     * whose publication status is not in the provided exclusion list.
+     *
+     * @param libraryId the library identifier to filter by; must not be {@code null}
+     * @param statuses  the list of {@link PublicationStatus} values to exclude; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleDM} entities; never {@code null}, may be empty
+     */
+    List<PublicationSampleDM> findAllByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId, List<PublicationStatus> statuses);
 }

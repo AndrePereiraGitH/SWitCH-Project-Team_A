@@ -8,5 +8,4 @@ package TOPSECRET.dto;
  * </p>
  */
 
-public record US013GenreDTO(String genreName) {
-}
+public record US013GenreDTO(String genreId, String genreName) {}

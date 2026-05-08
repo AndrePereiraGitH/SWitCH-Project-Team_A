@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa;
 
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
@@ -131,7 +132,21 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionID> listOfEditionIds) {
-        return List.of();
+
+        if (listOfEditionIds == null) {
+            throw new IllegalArgumentException("listOfEditionIds cannot be null");
+        }
+
+        if (listOfEditionIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<PublicationSampleDM> publicationSamples =
+                publicationSampleRepositoryJpa.findAllByEditionIdIn(listOfEditionIds);
+
+        return publicationSamples.stream()
+                .map(PublicationSampleDM::getPubSampleId)
+                .toList();
     }
 
     /**
@@ -197,7 +212,16 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSample> findAvailableForSaleByLibraryId(LibraryId libraryId) {
-        return List.of();
+
+        Objects.requireNonNull(libraryId, "LibraryId cannot be null");
+
+        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
+
+        return publicationSampleRepositoryJpa
+                .findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excluded)
+                .stream()
+                .map(publicationSampleAssembler::toDomain)
+                .toList();
     }
 
     /**
