@@ -64,6 +64,7 @@ class ToRegisterAuthorControllerTest {
         Author result = controller.register(name, countryDouble, dateOfBirth, biography);
 
         // Assert
+        assertNotNull(result);
         assertSame(authorDouble, result);
         verify(authorService).createAndSave(name, countryDouble, dateOfBirth, biography);
     }
