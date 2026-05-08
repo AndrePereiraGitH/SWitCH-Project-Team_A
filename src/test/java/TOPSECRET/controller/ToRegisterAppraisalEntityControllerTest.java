@@ -156,6 +156,48 @@ class ToRegisterAppraisalEntityControllerTest {
 
     // registerAppraisalEntity tests
     @Test
+    void shouldThrowWhenNameIsNull() {
+
+        // ARRANGE
+        Contact contact = mock(Contact.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerAppraisalEntity(
+                        null,
+                        contact,
+                        List.of(mock(GenreId.class)),
+                        List.of(mock(PublicationTypeId.class))));
+    }
+
+    @Test
+    void shouldThrowWhenNameIsEmpty() {
+
+        // ARRANGE
+        Contact contact = mock(Contact.class);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerAppraisalEntity(
+                        "",
+                        contact,
+                        List.of(mock(GenreId.class)),
+                        List.of(mock(PublicationTypeId.class))));
+    }
+
+    @Test
+    void shouldThrowWhenContactIsNull() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerAppraisalEntity(
+                        "Name",
+                        null,
+                        List.of(mock(GenreId.class)),
+                        List.of(mock(PublicationTypeId.class))));
+    }
+
+    @Test
     void shouldThrowWhenGenresListIsNull() {
         // ARRANGE
         Contact contact = mock(Contact.class);
