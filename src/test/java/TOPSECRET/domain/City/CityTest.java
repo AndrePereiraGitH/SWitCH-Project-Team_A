@@ -173,10 +173,12 @@ class CityTest {
     @Test
     void equals_shouldReturnTrueForDifferentInstancesWithSameID() {
         // Arrange
-        CityId cityID = new CityId("C1");
-        CountryId countryID = mock(CountryId.class);
-        City city1 = new City(cityID, countryID, "Lisboa");
-        City city2 = new City(cityID, countryID, "Porto");
+        CityId cityId = mock(CityId.class);
+        CountryId countryId = mock(CountryId.class);
+
+
+        City city1 = new City(cityId, countryId, "Lisboa");
+        City city2 = new City(cityId, countryId, "Porto");
 
         // Assert
         assertEquals(city1, city2);
