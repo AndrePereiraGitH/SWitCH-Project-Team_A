@@ -80,9 +80,24 @@ public class PublicationSampleAssembler {
 
         Objects.requireNonNull(pbSampleDM, "PublicationSampleDM cannot be null.");
 
-        PublicationSample pbSample = _factory.create(pbSampleDM.getPubSampleId(),pbSampleDM.getBdId(),
-                pbSampleDM.getOwnerId(),pbSampleDM.getPublicationStatus(),pbSampleDM.getEditionId(),pbSampleDM.getCondition());
-
+        PublicationSample pbSample = _factory.create(
+                pbSampleDM.getPubSampleId(),
+                pbSampleDM.getBdId(),
+                pbSampleDM.getOwnerId(),
+                pbSampleDM.getPublicationStatus(),
+                pbSampleDM.getEditionId(),
+                pbSampleDM.getCondition(),
+                pbSampleDM.getLibraryId(),
+                pbSampleDM.getCollectionOfPublicationsId());
         return pbSample;
+    }
+
+    public List<PublicationSample> toDomain(List<PublicationSampleDM> pbSampleDMs) {
+
+        Objects.requireNonNull(pbSampleDMs, "PublicationSampleDM list cannot be null.");
+
+        return pbSampleDMs.stream()
+                .map(this::toDomain)
+                .toList();
     }
 }

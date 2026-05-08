@@ -100,7 +100,9 @@ public class ToAddPublicationToLibraryController {
                 .findById(publicationSampleId)
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
 
-        _publicationSampleRepository.addPublicationToLibrary(publicationSample, libraryId);
+        publicationSample.assignLibrary(libraryId);
+
+        _publicationSampleRepository.save(publicationSample);
 
         return true;
     }

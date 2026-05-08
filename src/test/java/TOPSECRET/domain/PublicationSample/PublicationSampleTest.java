@@ -2,6 +2,7 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +51,8 @@ class PublicationSampleTest {
     private final Condition anyCondition = mock(Condition.class);
     private final PublicationSampleFactory factory = new PublicationSampleFactory();
     private final PublicationSampleId pbSampleId = mock(PublicationSampleId.class);
-
+    private final LibraryId libraryId = mock(LibraryId.class);
+    private final CollectionOfPublicationsId collectionOfPubsId = mock(CollectionOfPublicationsId.class);
 
     // =========================================================================
     // Constructor without PubSampleId
@@ -114,7 +116,7 @@ class PublicationSampleTest {
     void constructorWithPubSampleId_shouldCreateAValidPubSample(){
 
         //Act
-        PublicationSample pbSample = factory.create(pbSampleId,bdID,ownerID,anyPublicationStatus,editionID,anyCondition);
+        PublicationSample pbSample = factory.create(pbSampleId,bdID,ownerID,anyPublicationStatus,editionID,anyCondition, libraryId, collectionOfPubsId);
 
         //Assert
         assertNotNull(pbSample);
@@ -125,7 +127,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(NullPointerException.class, () ->
-                new PublicationSample(null,bdID, ownerID, anyPublicationStatus, editionID, anyCondition));
+                new PublicationSample(null,bdID, ownerID, anyPublicationStatus, editionID, anyCondition, libraryId, collectionOfPubsId));
     }
 
     @Test
@@ -133,7 +135,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(NullPointerException.class, () ->
-                new PublicationSample(pbSampleId,null, ownerID, anyPublicationStatus, editionID, anyCondition));
+                new PublicationSample(pbSampleId,null, ownerID, anyPublicationStatus, editionID, anyCondition, libraryId, collectionOfPubsId));
     }
 
     @Test
@@ -141,7 +143,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(NullPointerException.class, () ->
-                new PublicationSample(pbSampleId, bdID, null, anyPublicationStatus, editionID, anyCondition));
+                new PublicationSample(pbSampleId, bdID, null, anyPublicationStatus, editionID, anyCondition, libraryId, collectionOfPubsId));
     }
 
     @Test
@@ -149,7 +151,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(NullPointerException.class, () ->
-                new PublicationSample(pbSampleId, bdID, ownerID, null, editionID, anyCondition));
+                new PublicationSample(pbSampleId, bdID, ownerID, null, editionID, anyCondition, libraryId, collectionOfPubsId));
     }
 
     @Test
@@ -157,7 +159,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(NullPointerException.class, () ->
-                new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, null, anyCondition));
+                new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, null, anyCondition, libraryId, collectionOfPubsId));
     }
 
     @Test
@@ -165,7 +167,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(NullPointerException.class, () ->
-                new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, editionID, null));
+                new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, editionID, null, libraryId, collectionOfPubsId));
     }
 
 
@@ -697,5 +699,71 @@ class PublicationSampleTest {
 
         //Assert
         assertFalse(sample.equals(nullSample));
+    }
+    // =========================================================================
+    // assignLibrary
+    // =========================================================================
+
+    @Test
+    void assignLibrary_shouldAssignLibraryCorrectly() {
+
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID,
+                ownerID,
+                anyPublicationStatus,
+                editionID,
+                anyCondition
+        );
+
+        LibraryId newLibraryId = mock(LibraryId.class);
+
+        // Act
+        PublicationSample result = sample.assignLibrary(newLibraryId);
+
+        // Assert
+        assertEquals(newLibraryId, sample.getLibraryID());
+        assertEquals(sample, result);
+    }
+
+    @Test
+    void assignLibrary_shouldThrowExceptionWhenLibraryIdIsNull() {
+
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID,
+                ownerID,
+                anyPublicationStatus,
+                editionID,
+                anyCondition
+        );
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> sample.assignLibrary(null));
+    }
+
+    @Test
+    void assignLibrary_shouldReplaceExistingLibraryAssignment() {
+
+        // Arrange
+        PublicationSample sample = new PublicationSample(
+                bdID,
+                ownerID,
+                anyPublicationStatus,
+                editionID,
+                anyCondition
+        );
+
+        LibraryId oldLibraryId = mock(LibraryId.class);
+        LibraryId newLibraryId = mock(LibraryId.class);
+
+        sample.assignLibrary(oldLibraryId);
+
+        // Act
+        sample.assignLibrary(newLibraryId);
+
+        // Assert
+        assertEquals(newLibraryId, sample.getLibraryID());
     }
 }

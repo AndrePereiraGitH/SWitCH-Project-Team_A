@@ -163,4 +163,5 @@ public interface IPublicationSampleRepository {
      */
     List<PublicationSample> findAvailableForCollection(UserId userId,
                                                        CollectionOfPublicationsId collectionId);
+
 }

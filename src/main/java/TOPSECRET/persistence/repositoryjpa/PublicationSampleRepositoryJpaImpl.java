@@ -177,9 +177,17 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
-        return List.of();
-    }
 
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<PublicationSampleDM> publicationSampleDMs =
+                publicationSampleRepositoryJpa
+                        .findAllByOwnerIdAndLibraryIdIsNull(userId);
+
+        return publicationSampleDMs.stream()
+                .map(publicationSampleAssembler::toDomain)
+                .toList();
+    }
 
     // =========================================================================
     // Domain Operations

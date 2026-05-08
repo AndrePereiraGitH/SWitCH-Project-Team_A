@@ -2,10 +2,7 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import org.springframework.stereotype.Service;
 
 /**
@@ -61,12 +58,17 @@ public class PublicationSampleFactory {
      * @return a {@code PublicationSample} restored from persisted state
      * @throws IllegalArgumentException if any of the provided arguments are {@code null}
      */
-    public PublicationSample create(PublicationSampleId pubSampleId,
-                                    BibliographicalDataID bibliographicalDataId, UserId userId,
-                                    PublicationStatus publicationStatus, EditionID editionId,
-                                    Condition condition) {
+    public PublicationSample create(
+            PublicationSampleId pubSampleId,
+            BibliographicalDataID bibliographicalDataId,
+            UserId userId,
+            PublicationStatus publicationStatus,
+            EditionID editionId,
+            Condition condition,
+            LibraryId libraryId,
+            CollectionOfPublicationsId collectionOfPublicationsId) {
 
-        return new PublicationSample(pubSampleId, bibliographicalDataId, userId, publicationStatus, editionId, condition);
+        return new PublicationSample(pubSampleId, bibliographicalDataId, userId, publicationStatus, editionId, condition, libraryId, collectionOfPublicationsId);
     }
 
 }

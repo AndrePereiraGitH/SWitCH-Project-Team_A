@@ -76,16 +76,35 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
      * @throws IllegalArgumentException if any argument is {@code null}
      */
     protected PublicationSample(PublicationSampleId pubSampleId,
-                      BibliographicalDataID bibliographicalDataId, UserId userId,
-                      PublicationStatus publicationStatus, EditionID editionId,
-                      Condition condition) {
+                                BibliographicalDataID bibliographicalDataId,
+                                UserId userId,
+                                PublicationStatus publicationStatus,
+                                EditionID editionId,
+                                Condition condition,
+                                LibraryId libraryId,
+                                CollectionOfPublicationsId collectionOfPublicationsId) {
 
-        _pubSampleID = Objects.requireNonNull(pubSampleId,"PublicationSampleId cannot be null");
-        _bdID = Objects.requireNonNull(bibliographicalDataId,"BibliographicalDataId cannot be null");
-        _ownerID = Objects.requireNonNull(userId,"UserId cannot be null");
-        _publicationStatus = Objects.requireNonNull(publicationStatus, "PublicationStatus cannot be null");
-        _editionID = Objects.requireNonNull(editionId,"EditionId cannot be null");
-        _condition = Objects.requireNonNull(condition,"Condition cannot be null");
+        _pubSampleID = Objects.requireNonNull(pubSampleId,
+                "PublicationSampleId cannot be null");
+
+        _bdID = Objects.requireNonNull(bibliographicalDataId,
+                "BibliographicalDataId cannot be null");
+
+        _ownerID = Objects.requireNonNull(userId,
+                "UserId cannot be null");
+
+        _publicationStatus = Objects.requireNonNull(publicationStatus,
+                "PublicationStatus cannot be null");
+
+        _editionID = Objects.requireNonNull(editionId,
+                "EditionId cannot be null");
+
+        _condition = Objects.requireNonNull(condition,
+                "Condition cannot be null");
+
+        _libraryId = libraryId;
+        _collecOfPubID = collectionOfPublicationsId;
+
     }
 
     // -------------------------------------------------------------------------
@@ -262,6 +281,14 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         return _publicationStatus.isAvailableForSale();
     }
 
+    public PublicationSample assignLibrary(LibraryId libraryId) {
+        if (libraryId == null) {
+            throw new IllegalArgumentException("LibraryId cannot be null");
+        }
+
+        this._libraryId = libraryId;
+        return this;
+    }
 
     // -------------------------------------------------------------------------
     // Identity (AggregateRoot)
