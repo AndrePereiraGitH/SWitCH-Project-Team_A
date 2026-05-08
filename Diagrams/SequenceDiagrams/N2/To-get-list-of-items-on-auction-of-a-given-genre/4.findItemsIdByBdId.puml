@@ -1,6 +1,7 @@
 @startuml
 autonumber
 hide footbox
+title Find PublicationSamples(Items) By BibliographicalDataId
 
 actor Buyer as User
 

@@ -53,7 +53,7 @@ Find ListingId By ItemsId
 end ref
 
 
-Controller -> AuctionRepo : findByListingIdIn(listOfListing)
+Controller -> AuctionRepo : findByListingIdIn(listOfListingId)
 activate AuctionRepo
 AuctionRepo -> AJPA : findByListingIdIn(listOfListingId)
 activate AJPA
