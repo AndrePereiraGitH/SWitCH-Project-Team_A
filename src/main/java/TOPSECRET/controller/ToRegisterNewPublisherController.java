@@ -36,8 +36,7 @@ public class ToRegisterNewPublisherController {
      * @return {@code true} if the publisher was successfully created and registered
      * @throws IllegalArgumentException if a publisher with the same identity already exists
      */
-    public boolean registerPublisher(String name, String vatNumber, Contact contact) {
+    public void registerPublisher(String name, String vatNumber, Contact contact) {
         _publisherService.createAndSave(name, vatNumber, contact);
-        return true;
     }
 }

@@ -49,7 +49,7 @@ else publisher does NOT exist
     deactivate Repository
     Service --> Controller : publisher
     deactivate Service
-    Controller --> UI : true
+    Controller --> UI : void
     deactivate Controller
     UI --> Administrator : success
     deactivate UI

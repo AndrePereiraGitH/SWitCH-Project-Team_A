@@ -37,15 +37,14 @@ class ToRegisterNewPublisherControllerTest {
     // =========================================================================
 
     @Test
-    void shouldReturnTrueWhenPublisherIsRegistered() {
+    void shouldRegisterPublisherSuccessfully() {
         // Arrange
         String name = "Publisher1";
         String vatNumber = "123456789";
         Contact contactDouble = mock(Contact.class);
 
-
         // Act & Assert
-        assertTrue(controller.registerPublisher(name, vatNumber, contactDouble));
+        assertDoesNotThrow(() -> controller.registerPublisher(name, vatNumber, contactDouble));
         verify(publisherService).createAndSave(name, vatNumber, contactDouble);
     }
 
