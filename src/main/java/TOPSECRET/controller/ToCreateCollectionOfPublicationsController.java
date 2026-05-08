@@ -73,6 +73,10 @@ public class ToCreateCollectionOfPublicationsController {
             GenreId genreId,
             UserId userId
     ) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Invalid arguments");
+        }
+
         if (userId == null || genreId == null) {
             throw new IllegalArgumentException("Invalid arguments");
         }
