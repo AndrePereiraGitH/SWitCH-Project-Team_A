@@ -54,7 +54,7 @@ loop for each genreDM in genreDMs
     GR -> Assembler : toDomain\n(genreDM)
     activate Assembler
 
-    Assembler -> Factory : create(GenreId, String genreType)
+    Assembler -> Factory : create(genreDM.getId(), genreDM.getGenreType())
 
     activate Factory
 
@@ -68,9 +68,6 @@ loop for each genreDM in genreDMs
     deactivate Assembler
     GR -> GR : listOfGenre.add(genreDomain)
 end
-
-GR --> C : listOfGenre
-deactivate GR
 
 GR --> C : listOfGenre
 deactivate GR
