@@ -6,7 +6,7 @@ title Find Editions By Publisher Id
 participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
 participant ":IEditionRepository" as editionRepo
 participant ":IEditionRepositoryJpa" as editionJpa
-participant "editionDM:List<EditionDM>" as editionDMList
+participant "editionsDM:List<EditionDM>" as editionsDMList
 participant ":EditionAssembler" as editionAssembler
 participant ":EditionFactory" as editionFactory
 participant "edition:Edition" as edition
@@ -30,13 +30,13 @@ activate db
 db --> editionJpa : data
 deactivate db
 
-editionJpa -->> editionDMList ** : <<create>>
-editionJpa --> editionRepo : editionDM
+editionJpa -->> editionsDMList ** : <<create>>
+editionJpa --> editionRepo : editionsDM
 deactivate editionJpa
 
 editionRepo -->> listOfEditions ** : <<create>>
 
-loop for each dm in editionDM
+loop for each dm in editionsDM
     editionRepo -> editionAssembler : toDomain(dm)
     activate editionAssembler
 
