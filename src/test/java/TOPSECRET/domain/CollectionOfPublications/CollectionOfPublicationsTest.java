@@ -345,22 +345,80 @@ class CollectionOfPublicationsTest {
     }
 
     @Test
-    void isPrivateShouldReturnFalseAfterMakingCollectionPublic() {
+    void makePublic_ShouldReturnTrue_AfterMakingCollectionPublic() {
 
         // Arrange
         String name = "Works by Arthur C. Clarke";
         GenreId genreId = mock(GenreId.class);
         UserId userId = mock(UserId.class);
 
-        CollectionOfPublications result =
+        CollectionOfPublications collection =
                 new CollectionOfPublications(name, genreId, userId);
 
         // Act
-        result.set_isPrivate();
+        boolean result = collection.makePublic();
 
         // Assert
-        assertFalse(result.isPrivate());
+        assertTrue(result);
     }
+
+    @Test
+    void makePublicShouldReturnFalse_ifCollectionIsAlreadyPublic() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+        collection.makePublic();
+
+        // Act
+        boolean result = collection.makePublic();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void makePrivate_ShouldReturnFalse_ifCollectionIsAlreadyPrivate() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+
+        // Act
+        boolean result = collection.makePrivate();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void makePrivateShouldReturnTrue_afterMakeCollectionPrivate() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+        collection.makePublic();
+
+        // Act
+        boolean result = collection.makePrivate();
+
+        // Assert
+        assertTrue(result);
+    }
+
+
 
     @Test
     void sameAsShouldReturnFalseWhenObjectIsNotACollectionOfPublications() {
@@ -382,4 +440,6 @@ class CollectionOfPublicationsTest {
         // Assert
         assertFalse(result);
     }
+
+
 }

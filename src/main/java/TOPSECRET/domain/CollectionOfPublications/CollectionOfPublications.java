@@ -5,6 +5,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import lombok.Setter;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -131,19 +132,27 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _id;
     }
 
-    // ============================== US019 ==============================
+    public boolean makePublic() {
 
-    /**
-     * Changes the privacy state of the collection — US019.
-     *
-     * <p>Pass {@code false} to make the collection public, {@code true} to make it private again.
-     *
-     */
-    public void set_isPrivate() {
+        if (!_isPrivate) {
+            return false;
+        }
+
         this._isPrivate = false;
+        return true;
     }
 
-    // ============================== end US019 ==============================
+    public boolean makePrivate() {
+
+        if (_isPrivate) {
+            return false;
+        }
+
+        this._isPrivate = true;
+        return true;
+    }
+
+
 
     @Override
     public boolean equals(Object obj) {
