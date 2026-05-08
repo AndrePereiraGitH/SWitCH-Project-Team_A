@@ -5,11 +5,14 @@ import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link PublicationTypeAssembler}.
@@ -39,16 +42,30 @@ import static org.junit.jupiter.api.Assertions.*;
 class PublicationTypeAssemblerTest {
 
     // HELPER
-    private final PublicationTypeFactory factory = new PublicationTypeFactory();
-    private final PublicationTypeAssembler assembler = new PublicationTypeAssembler(factory);
+    private PublicationTypeFactory factoryDouble;
+    private PublicationTypeAssembler assembler;
 
+    @BeforeEach
+    void setup() {
+        factoryDouble = mock(PublicationTypeFactory.class);
+        assembler = new PublicationTypeAssembler(factoryDouble);
+
+    }
     // toDomain
     @Test
     void shouldConvertToDomainCorrectly() {
 
         // ARRANGE
         PublicationTypeId id = new PublicationTypeId("1");
+
         PublicationTypeDM dm = new PublicationTypeDM(id, "Book");
+
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        when(publicationTypeDouble.id()).thenReturn(id);
+        when(publicationTypeDouble.getMediaFormat()).thenReturn("Book");
+
+        when(factoryDouble.create(id, "Book")).thenReturn(publicationTypeDouble);
 
         // ACT
         PublicationType result = assembler.toDomain(dm);
@@ -71,7 +88,11 @@ class PublicationTypeAssemblerTest {
     void shouldConvertToDataModelCorrectly() {
 
         // ARRANGE
-        PublicationType entity = factory.create("Book");
+        PublicationTypeId id = mock(PublicationTypeId.class);
+        PublicationType entity = mock(PublicationType.class);
+
+        when(entity.id()).thenReturn(id);
+        when(entity.getMediaFormat()).thenReturn("Book");
 
         // ACT
         PublicationTypeDM dm = assembler.toDM(entity);
@@ -106,6 +127,11 @@ class PublicationTypeAssemblerTest {
         // ARRANGE
         PublicationTypeDM dm1 = new PublicationTypeDM(new PublicationTypeId("1"), "Book");
         PublicationTypeDM dm2 = new PublicationTypeDM(new PublicationTypeId("2"), "Magazine");
+        PublicationType publicationType1 = mock(PublicationType.class);
+        PublicationType publicationType2 = mock(PublicationType.class);
+
+        when(factoryDouble.create(dm1.getId(), dm1.getMediaFormat())).thenReturn(publicationType1);
+        when(factoryDouble.create(dm2.getId(), dm2.getMediaFormat())).thenReturn(publicationType2);
 
         List<PublicationTypeDM> dmList = List.of(dm1, dm2);
 
@@ -123,6 +149,11 @@ class PublicationTypeAssemblerTest {
         PublicationTypeId id = new PublicationTypeId("1");
         PublicationTypeDM dm = new PublicationTypeDM(id, "Book");
 
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        when(publicationTypeDouble.id()).thenReturn(id);
+        when(factoryDouble.create(id, "Book")).thenReturn(publicationTypeDouble);
+
         List<PublicationTypeDM> dmList = List.of(dm);
 
         // ACT
@@ -136,7 +167,12 @@ class PublicationTypeAssemblerTest {
     void shouldPreserveMediaFormatInConversion() {
 
         // ARRANGE
+        PublicationTypeId id = new PublicationTypeId("1");
         PublicationTypeDM dm = new PublicationTypeDM(new PublicationTypeId("1"), "Book");
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        when(publicationTypeDouble.getMediaFormat()).thenReturn("Book");
+        when(factoryDouble.create(id, "Book")).thenReturn(publicationTypeDouble);
 
         List<PublicationTypeDM> dmList = List.of(dm);
 

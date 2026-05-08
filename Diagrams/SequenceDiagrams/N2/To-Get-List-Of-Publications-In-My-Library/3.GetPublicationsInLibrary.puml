@@ -1,0 +1,59 @@
+@startuml
+hide footbox
+autonumber
+title Get Publications in Library
+
+participant ":ToGetListOfPublicationsInLibraryController" as Ctrl
+participant ":IPublicationSampleRepository" as pubSampleRepo
+participant ":IPublicationSampleRepositoryJpa" as pbJpa
+participant "pbSamplesDM\n:List<PublicationSampleDM>" as pbSamplesDM
+participant ":PublicationSampleAssembler" as pbAssembler
+participant "listOfPublications:List<PublicationSample>" as ListPubs
+participant "Database" as db
+participant ":PublicationSampleFactory" as factory
+participant "pbSample:PublicationSample" as pbDomain
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> pubSampleRepo: findByUserIdAndLibraryIdIsNotNull(userId)
+activate pubSampleRepo
+
+pubSampleRepo -> pbJpa: findAllByOwnerId(userId)
+activate pbJpa
+
+pbJpa -> db: SELECT * FROM publication_sample WHERE owner_id = ?
+activate db
+db --> pbJpa: data
+deactivate db
+
+pbJpa -->> pbSamplesDM **: <<create>>
+
+pbJpa --> pubSampleRepo: pbSamplesDM
+
+deactivate pbJpa
+
+pubSampleRepo -->> ListPubs **: <<create>>
+
+
+loop for each dm in pbSamplesDM
+    pubSampleRepo -> pbAssembler: toDomain(dm)
+    activate pbAssembler
+    pbAssembler -> factory: create(dm.id(), dm.getBibliographicalDataID(), dm.getOwnerID(), dm.getEditionID(), dm.getLibraryID(), dm.getCollecOfPubID(), dm.getPublicationStatus(), dm.getCondition())
+    activate factory
+    factory -->> pbDomain **: <<create>>
+    factory --> pbAssembler: pbSample
+    deactivate factory
+    pbAssembler --> pubSampleRepo: pbSample
+    deactivate pbAssembler
+    pubSampleRepo -> pubSampleRepo: pbSample.isInUserLibrary()
+    pubSampleRepo -> pubSampleRepo: listOfPublications.add(pbSample)
+end
+
+pubSampleRepo --> Ctrl: listOfPublications
+deactivate pubSampleRepo
+
+@enduml

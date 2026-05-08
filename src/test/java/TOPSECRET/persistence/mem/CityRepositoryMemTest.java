@@ -23,7 +23,8 @@ import static org.mockito.Mockito.*;
 class CityRepositoryMemTest {
 
     private final City anyCity = mock(City.class);
-    private final CityFactory factory = new CityFactory();
+    private final CityFactory factory = mock(CityFactory.class);
+    private final CountryId anyCountryId = mock(CountryId.class);
 
     @Test
     void shouldSaveCity() {
@@ -44,7 +45,7 @@ class CityRepositoryMemTest {
 
         //Act
         boolean result = repo.existsByCountryIdAndCityName(
-                new CountryId("PT"), "Lisbon");
+                anyCountryId, "Lisbon");
 
         //Assert
         assertFalse(result);
@@ -52,48 +53,72 @@ class CityRepositoryMemTest {
 
     @Test
     void shouldReturnTrueWhenCityExists() {
-        //Arrange
+
+        // Arrange
         CityRepositoryMem repo = new CityRepositoryMem();
 
-        CountryId country = new CountryId("PT");
-        City city = factory.create(country, "Lisbon");
+        CountryId country = mock(CountryId.class);
+        City city = mock(City.class);
+
+        when(factory.create(country, "Lisbon")).thenReturn(city);
+        when(city.getCityCountryID()).thenReturn(country);
+        when(city.getCityName()).thenReturn("Lisbon");
 
         repo.save(city);
 
-        //Act
+        // Act
         boolean result = repo.existsByCountryIdAndCityName(country, "Lisbon");
 
-        //Assert
+        // Assert
         assertTrue(result);
     }
 
     @Test
     void shouldReturnFalseWhenCityNameDiffers() {
-        //Arrange
+
+        // Arrange
         CityRepositoryMem repo = new CityRepositoryMem();
 
-        CountryId country = new CountryId("PT");
-        repo.save(factory.create(country, "Porto"));
+        CountryId country = mock(CountryId.class);
 
-        //Act
+        City city = mock(City.class);
+
+        when(factory.create(country, "Porto")).thenReturn(city);
+        when(city.getCityCountryID()).thenReturn(country);
+        when(city.getCityName()).thenReturn("Porto");
+
+        repo.save(city);
+
+        // Act
         boolean result = repo.existsByCountryIdAndCityName(country, "Lisbon");
 
-        //Assert
+        // Assert
         assertFalse(result);
     }
 
     @Test
     void shouldReturnFalseWhenCountryDiffers() {
-        //Arrange
+
+        // Arrange
         CityRepositoryMem repo = new CityRepositoryMem();
 
-        repo.save(factory.create(new CountryId("PT"), "Lisbon"));
+        CountryId otherCountry = mock(CountryId.class);
 
-        //Act
+        City city = mock(City.class);
+
+        when(factory.create(anyCountryId, "Lisbon")).thenReturn(city);
+        when(city.getCityCountryID()).thenReturn(anyCountryId);
+        when(city.getCityName()).thenReturn("Lisbon");
+
+        repo.save(city);
+
+        // Act
         boolean result = repo.existsByCountryIdAndCityName(
-                new CountryId("ES"), "Lisbon");
+                otherCountry,
+                "Lisbon"
+        );
 
-        //Assert
+        // Assert
         assertFalse(result);
     }
 
@@ -102,12 +127,16 @@ class CityRepositoryMemTest {
         //Arrange
         CityRepositoryMem repo = new CityRepositoryMem();
 
-        CountryId country = new CountryId("PT");
-        repo.save(factory.create(country, "Lisbon"));
+        when(factory.create(anyCountryId, "Lisbon")).thenReturn(anyCity);
+
+        when(anyCity.getCityCountryID()).thenReturn(anyCountryId);
+        when(anyCity.getCityName()).thenReturn("Lisbon");
+
+        repo.save(anyCity);
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                repo.save(factory.create(country, "Lisbon"))
+                repo.save(factory.create(anyCountryId, "Lisbon"))
         );
     }
 }

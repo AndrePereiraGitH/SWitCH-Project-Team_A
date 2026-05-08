@@ -93,7 +93,7 @@ loop for each publicationType
     PublicationType --> PublicationTypeMapper : mediaFormat
     deactivate PublicationType
 
-    PublicationTypeMapper -->> PDTO ** : <<create>>
+    PublicationTypeMapper -->> PDTO ** : toDTO()
     PublicationTypeMapper -> PublicationTypeMapper : listOfPublicationTypeDTO.add(publicationTypeDTO)
 end
 

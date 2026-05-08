@@ -1,0 +1,204 @@
+@startuml
+autonumber
+hide footbox
+title To Get All Publications In User's Library
+
+
+
+participant ":Ctrl" as ctrl
+
+participant ":ILibraryRepository" as libRepo
+participant ":ILibraryRepositoryJPA" as libRepoJPA
+participant "libraryDM:LibraryDM" as libraryDM
+participant "libAssembler\n:LibraryAssembler" as libAssembler
+participant ":LibraryFactory" as libFactory
+
+participant "library : Library" as library
+
+participant ":IPublicationSample\nRepository" as pubRepo
+
+
+participant ":IPublicationSample\nRepositoryJPA" as pubRepoJPA
+participant "samplesDMList\n:List<PublicationSampleDM>" as samplesListDM
+
+
+participant "pubSampleDM\n:PublicationSampleDM" as pubSampleDM
+database "DataBase" as db
+
+participant ":PublicationSample\nAssembler" as pubAssembler
+
+participant ":PublicationSample\nFactory" as pubFactory
+participant "pubDomainList\n:List<PublicationSample>" as pubDomainList
+
+participant "pubSampleDomain\n:PublicationSample" as pubSampleDomain
+
+participant "samplesList \n:List<PublicationSample>" as samplesList
+
+participant ":US016_PublicationSample\nMapper" as pubMapper
+
+
+ref over ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+note over ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+
+' =========== GET USER'S LIBRARY ========================
+
+ctrl -> libRepo : getByUserId(userId)
+activate ctrl
+activate libRepo
+libRepo -> libRepoJPA : getByUserId (userId)
+activate libRepoJPA
+libRepoJPA -> db : query library by userId
+activate db
+db --> libRepoJPA : data
+deactivate db
+
+libRepoJPA -->> libraryDM ** : <<create>>
+libRepoJPA --> libRepo : libraryDM
+deactivate libRepoJPA
+
+
+' ---- CONVERT DM TO DOMAIN ------
+libRepo -> libAssembler : toDomain(libraryDM)
+activate libAssembler
+
+' ---- GET LIBRARY DM DATA -----
+
+libAssembler -> libraryDM : id()
+activate libraryDM
+libraryDM --> libAssembler : id
+deactivate libraryDM
+
+libAssembler -> libraryDM : getLibraryName()
+activate libraryDM
+libraryDM --> libAssembler : libraryName
+deactivate libraryDM
+
+libAssembler -> libraryDM : getUserID()
+activate libraryDM
+libraryDM --> libAssembler : userId
+deactivate libraryDM
+
+
+libAssembler -> libFactory : create ( id, libraryName,\n userId)
+
+activate libFactory
+libFactory -->> library ** : <<create>>
+libFactory --> libAssembler : library
+deactivate libFactory
+libAssembler --> libRepo : library
+deactivate libAssembler
+libRepo --> ctrl : library
+deactivate libRepo
+
+
+' ======== GET ALL PUBLICATIONS IN USER'S LIBRARY ============
+
+ctrl -> library : id()
+activate library
+library --> ctrl : libraryId
+deactivate library
+
+ctrl -> pubRepo : findByLibraryId ( libraryId)
+activate pubRepo
+pubRepo -> pubRepoJPA : findByLibraryId ( libraryId)
+
+
+activate pubRepoJPA
+pubRepoJPA -> db : query publication samples by libraryId
+activate db
+db --> pubRepoJPA : publicationSamples data
+deactivate db
+
+
+pubRepoJPA -> samplesListDM** : <<create>>
+
+loop for each publicationSample data
+
+pubRepoJPA --> pubSampleDM ** : <<create>>
+pubRepoJPA -> pubRepoJPA : samplesDMList.add( pubSampleDM)
+end
+
+pubRepoJPA --> pubRepo : samplesDMList
+deactivate pubRepoJPA
+
+pubRepo -->> pubDomainList** : <<create>>
+
+
+loop for each pubDM in samplesDMList
+
+pubRepo -> pubAssembler : toDomain ( sampleDM)
+activate pubAssembler
+
+
+' ------ GET PUBLICATION DM DATA -----
+pubAssembler -> pubSampleDM : id()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : pubId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getBibliographicalDataID()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : bdId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getOwnerID()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : ownerId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getPublicationStatus()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : pubStatus
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getEditionID()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : editionId
+deactivate pubSampleDM
+
+pubAssembler -> pubSampleDM : getCondition()
+activate pubSampleDM
+pubSampleDM --> pubAssembler : condition
+deactivate pubSampleDM
+
+pubAssembler -> pubFactory : create (pubId, bdId, ownerId,\n pubStatus,editionId, condition)
+activate pubFactory
+pubFactory -->> pubSampleDomain** : <<create>>
+pubFactory --> pubAssembler : pubSampleDomain
+deactivate pubFactory
+
+
+
+pubAssembler --> pubRepo : pubSampleDomain
+deactivate pubAssembler
+pubRepo -> pubRepo : pubDomainList.add(pubSampleDomain)
+
+end
+
+pubRepo --> ctrl : pubDomainList
+deactivate pubRepo
+
+
+' ======= CONVERT LIST OF PUBLICATION SAMPLES INTO DTO
+
+ctrl -> pubMapper : fromDomainList ( pubDomainList)
+activate pubMapper
+
+ref over pubMapper
+[[5.ConvertToDTOList.puml Convert to a list of DTO]]
+end ref
+
+pubMapper --> ctrl : listOfPublicationsDTO
+
+deactivate pubMapper
+deactivate ctrl
+
+@enduml
