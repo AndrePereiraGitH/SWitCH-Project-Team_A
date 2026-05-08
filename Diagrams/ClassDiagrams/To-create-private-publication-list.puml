@@ -2,6 +2,13 @@
 title To create a private collection of publications
 
 ' _____________________
+' UI
+' _____________________
+
+class UI {
+}
+
+' _____________________
 ' DOMAIN
 ' _____________________
 
@@ -54,11 +61,16 @@ class CollectionOfPublicationsFactory {
   + create(id : CollectionOfPublicationsId, name : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
 }
 
+class GenreFactory {
+  + create(id : GenreId, genreType : String) : Genre
+}
+
 Genre "1" --> "1" GenreId : identified by
 CollectionOfPublications "1" --> "1" CollectionOfPublicationsId : identified by
 CollectionOfPublications "1" --> "1" GenreId : has genre
 CollectionOfPublications "1" --> "1" UserId : owned by
 CollectionOfPublicationsFactory "1" ..> "*" CollectionOfPublications : <<creates>>
+GenreFactory "1" ..> "*" Genre : <<creates>>
 
 ' ______________________
 ' APPLICATION
@@ -123,10 +135,14 @@ CollectionOfPublicationsRepositoryJpaImpl "1" ..> "1" CollectionOfPublicationsAs
 ICollectionOfPublicationsRepositoryJpa --|> JpaRepository : extends
 ICollectionOfPublicationsRepositoryJpa "1" ..> "1" Database : queries
 
+GenreAssembler "1" ..> "1" GenreFactory : uses
+CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsFactory : uses
+
 ' _____________________
 ' DEPENDENCIES
 ' _____________________
 
+UI "1" ..> "1" ToCreateCollectionOfPublicationsController : uses
 ToCreateCollectionOfPublicationsController "1" ..> "1" IGenreRepository : uses
 ToCreateCollectionOfPublicationsController "1" ..> "1" ICollectionOfPublicationsRepository : uses
 ToCreateCollectionOfPublicationsController "1" ..> "1" CollectionOfPublicationsFactory : uses

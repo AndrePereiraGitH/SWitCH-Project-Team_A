@@ -45,23 +45,24 @@ deactivate DB
 JpaRepo --> Repo : List<GenreDM>
 deactivate JpaRepo
 
-Repo -> Assembler : toDomain(genreDM)
-activate Assembler
-
 Repo -->> allGenreList ** : <<create>>
 
 loop for each GenreDM
+    Repo -> Assembler : toDomain(genreDM)
+    activate Assembler
+
     Assembler -> Factory : create(genreId, genreType)
     activate Factory
     create ":Genre" as GenreObj
     Factory -->> GenreObj : <<create>>
     Factory --> Assembler : genre
     deactivate Factory
-    Assembler -> allGenreList : add(genre)
-end
 
-Assembler --> Repo : allGenreList
-deactivate Assembler
+    Assembler --> Repo : genre
+    deactivate Assembler
+
+    Repo -> allGenreList : add(genre)
+end
 
 Repo --> Controller : allGenreList
 deactivate Repo
