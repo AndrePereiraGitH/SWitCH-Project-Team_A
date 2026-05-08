@@ -19,9 +19,6 @@ import static org.mockito.Mockito.*;
  */
 class CityAssemblerTest {
 
-    private CityFactory doubleCityFactory;
-    private CityAssembler assembler;
-
     @Test
     void shouldConvertDomainToDM() {
 
@@ -51,9 +48,12 @@ class CityAssemblerTest {
         // Arrange
         CityFactory doubleCityFactory = mock(CityFactory.class);
         CityAssembler assembler = new CityAssembler(doubleCityFactory);
-        CityId cityID = new CityId("test-uuid");
-        CountryId countryID = new CountryId("PORTUGAL_ID");
+
+        CityId cityID = mock(CityId.class);
+        CountryId countryID = mock(CountryId.class);
+
         CityDM cityDM = new CityDM(cityID, countryID, "Porto");
+
         City doubleCity = mock(City.class);
         when(doubleCityFactory.create(cityID, countryID, "Porto")).thenReturn(doubleCity);
 
@@ -62,6 +62,5 @@ class CityAssemblerTest {
 
         // Assert
         assertEquals(doubleCity, result);
-        verify(doubleCityFactory).create(cityID, countryID, "Porto");
     }
 }

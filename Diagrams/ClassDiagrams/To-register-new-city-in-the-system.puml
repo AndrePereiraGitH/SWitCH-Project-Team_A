@@ -22,9 +22,6 @@ class City {
   -cityName: String
 }
 
-class CountryId
-class CityId
-
 class CityFactory {
   +create(countryId: CountryId, cityName: String)
   +create(cityId: CityId, countryId: CountryId, cityName: String)
