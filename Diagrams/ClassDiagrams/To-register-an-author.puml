@@ -1,10 +1,25 @@
 @startuml
-title To Register Author
+title To Register an Author
+
+' -------------------------
+' UI
+' -------------------------
+
+class UI {
+}
+
+' -------------------------
+' Controller
+' -------------------------
 
 class ToRegisterAuthorController {
   -_authorService: AuthorService
   +register(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
+
+' -------------------------
+' Service
+' -------------------------
 
 class AuthorService {
   -authorFactory: AuthorFactory
@@ -12,16 +27,11 @@ class AuthorService {
   +createAndSave(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
-interface IAuthorRepository {
-  +save(author: Author): Author
-  +existsById(authorId: AuthorId): boolean
-  +findById(id: AuthorId): Optional<Author>
-  +findAll(): List<Author>
-}
+' -------------------------
+' Domain
+' -------------------------
 
-class AuthorRepositoryJPAImpl {
-  -authorRepositoryJpa: IAuthorRepositoryJPA
-  -authorAssembler: AuthorAssembler
+interface IAuthorRepository {
   +save(author: Author): Author
   +existsById(authorId: AuthorId): boolean
   +findById(id: AuthorId): Optional<Author>
@@ -46,6 +56,19 @@ class Author {
   +getBiography(): String
 }
 
+' -------------------------
+' Infrastructure
+' -------------------------
+
+class AuthorRepositoryJPAImpl {
+  -authorRepositoryJpa: IAuthorRepositoryJPA
+  -authorAssembler: AuthorAssembler
+  +save(author: Author): Author
+  +existsById(authorId: AuthorId): boolean
+  +findById(id: AuthorId): Optional<Author>
+  +findAll(): List<Author>
+}
+
 class AuthorAssembler {
   +toDM(author: Author): AuthorDM
   +toDomain(authorDM: AuthorDM): Author
@@ -60,20 +83,30 @@ class AuthorDM {
 }
 
 interface IAuthorRepositoryJPA {
+  +existsById(authorId: AuthorId): boolean
 }
 
 interface JpaRepository<AuthorDM, AuthorId> {
 }
 
-ToRegisterAuthorController "1" ..> "1" AuthorService : uses
-AuthorService "1" ..> "1" AuthorFactory : creates with
-AuthorService "1" ..> "1" IAuthorRepository : persists with
+database "Database" as DB {
+}
+
+' -------------------------
+' Relationships
+' -------------------------
+
+UI "1" --> "1" ToRegisterAuthorController : uses
+ToRegisterAuthorController "1" --> "1" AuthorService : uses
+AuthorService "1" --> "1" AuthorFactory : creates with
+AuthorService "1" --> "1" IAuthorRepository : persists with
 IAuthorRepository <|.. AuthorRepositoryJPAImpl : implements
-AuthorRepositoryJPAImpl "1" ..> "1" AuthorAssembler : converts with
-AuthorRepositoryJPAImpl "1" ..> "1" IAuthorRepositoryJPA : delegates to
-AuthorAssembler "1" ..> "1" AuthorFactory : reconstructs with
-AuthorAssembler "1" ..> "1" AuthorDM : converts
-AuthorFactory "1" ..> "*" Author : creates
+AuthorRepositoryJPAImpl "1" --> "1" AuthorAssembler : converts with
+AuthorRepositoryJPAImpl "1" --> "1" IAuthorRepositoryJPA : delegates to
+AuthorAssembler "1" --> "1" AuthorFactory : reconstructs with
+AuthorAssembler "1" ..> "1" AuthorDM : receives
+AuthorFactory "1" --> "*" Author : creates
 JpaRepository <|-- IAuthorRepositoryJPA : extends
+IAuthorRepositoryJPA "1" --> "1" DB : queries
 
 @enduml

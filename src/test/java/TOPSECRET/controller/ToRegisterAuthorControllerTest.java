@@ -84,4 +84,75 @@ class ToRegisterAuthorControllerTest {
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> controller.register(name, countryDouble, dateOfBirth, biography));
     }
+    // -------------------------------------------------------------------------
+    // register() - null checks
+    // -------------------------------------------------------------------------
+
+    @Test
+    void givenNullName_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register(null, countryDouble, dateOfBirth, biography));
+    }
+
+    @Test
+    void givenBlankName_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("   ", countryDouble, dateOfBirth, biography));
+    }
+
+    @Test
+    void givenNullCountryId_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", null, dateOfBirth, biography));
+    }
+
+    @Test
+    void givenNullDateOfBirth_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", countryDouble, null, biography));
+    }
+
+    @Test
+    void givenNullBiography_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", countryDouble, dateOfBirth, null));
+    }
+
+    @Test
+    void givenBlankBiography_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", countryDouble, dateOfBirth, "   "));
+    }
 }

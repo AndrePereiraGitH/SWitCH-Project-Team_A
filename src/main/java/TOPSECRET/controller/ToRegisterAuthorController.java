@@ -1,8 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.AuthorFactory;
-import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.services.AuthorService;
 
@@ -23,10 +21,6 @@ import java.time.LocalDate;
  * service layer, preserving a clear separation of concerns.
  * </p>
  *
- * <p>
- * The {@link AuthorService} encapsulates the creation and persistence of {@link Author}
- * entities, including interaction with the {@link IAuthorRepository} and {@link AuthorFactory}.
- * </p>
  */
 public class ToRegisterAuthorController {
     private final AuthorService _authorService;
@@ -58,6 +52,18 @@ public class ToRegisterAuthorController {
      * @return the created and persisted {@link Author}
      */
     public Author register(String name, CountryId countryId, LocalDate dateOfBirth, String biography) throws InstanceAlreadyExistsException {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or blank");
+        }
+        if (countryId == null) {
+            throw new IllegalArgumentException("CountryId cannot be null");
+        }
+        if (dateOfBirth == null) {
+            throw new IllegalArgumentException("DateOfBirth cannot be null");
+        }
+        if (biography == null || biography.isBlank()) {
+            throw new IllegalArgumentException("Biography cannot be null or blank");
+        }
         return _authorService.createAndSave(name, countryId, dateOfBirth, biography);
     }
 }
