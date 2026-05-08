@@ -25,11 +25,13 @@ class CityAssemblerTest {
         // Arrange
         CityFactory doubleCityFactory = mock(CityFactory.class);
         CityAssembler assembler = new CityAssembler(doubleCityFactory);
-        CityId cityID = new CityId("test-uuid");
-        CountryId countryID = new CountryId("PORTUGAL_ID");
+
+        CityId cityId = mock(CityId.class);
+        CountryId countryId = mock(CountryId.class);
+
         City doubleCity = mock(City.class);
-        when(doubleCity.id()).thenReturn(cityID);
-        when(doubleCity.getCityCountryID()).thenReturn(countryID);
+        when(doubleCity.id()).thenReturn(cityId);
+        when(doubleCity.getCityCountryID()).thenReturn(countryId);
         when(doubleCity.getCityName()).thenReturn("Porto");
 
         // Act
@@ -37,8 +39,8 @@ class CityAssemblerTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(cityID, result.getCityID());
-        assertEquals(countryID, result.getCountryID());
+        assertEquals(cityId, result.getCityID());
+        assertEquals(countryId, result.getCountryID());
         assertEquals("Porto", result.getCityName());
     }
 
