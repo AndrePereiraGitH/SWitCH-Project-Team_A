@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Unit tests for {@link US017GenreMapper} — US017.
  *
@@ -70,5 +73,18 @@ class US017GenreMapperTest {
         assertEquals(2, result.size());
         assertEquals("Fiction", result.get(0).name());
         assertEquals("History", result.get(1).name());
+    }
+    // ============================== Constructor ==============================
+
+    @Test
+    void constructor_shouldThrowUnsupportedOperationException() throws Exception {
+        Constructor<US017GenreMapper> constructor =
+                US017GenreMapper.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        InvocationTargetException exception =
+                assertThrows(InvocationTargetException.class, constructor::newInstance);
+
+        assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
     }
 }
