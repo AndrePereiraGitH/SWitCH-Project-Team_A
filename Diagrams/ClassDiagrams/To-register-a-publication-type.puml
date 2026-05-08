@@ -50,8 +50,6 @@ class PublicationTypeFactory {
 class PublicationType <<Aggregate Root>> {
   - pub_id: PublicationTypeId
   - _mediaFormat: String
-  # PublicationType(mediaFormat: String)
-  # PublicationType(id: PublicationTypeId, mediaFormat: String)
   + id(): PublicationTypeId
   + getMediaFormat(): String
 }
@@ -69,7 +67,10 @@ class PublicationTypeId {
   +getId() : String
 }
 
-UI --> ToRegisterPubTypeController
+Rectangle JpaRepository {
+}
+
+UI "1" ..> "1" ToRegisterPubTypeController : uses
 
 ToRegisterPubTypeController --> PublicationTypeService : calls
 PublicationTypeService --> IPublicationTypeRepository : checks duplicate / saves
@@ -87,5 +88,8 @@ PublicationTypeAssembler --> PublicationType : maps to / from
 PublicationTypeFactory ..> PublicationType : creates
 PublicationType --> PublicationTypeId : identifies
 PublicationTypeDM --> PublicationTypeId : embedded id
+
+IPublicationTypeRepositoryJPA --> JpaRepository : extends
+PublicationTypeDM --> JpaRepository : stored in
 
 @enduml

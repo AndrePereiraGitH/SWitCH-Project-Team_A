@@ -5,17 +5,21 @@ autonumber
 
 actor User
 
-participant "ToRegisterPubTypeController" as Controller
-participant "PublicationTypeService" as Service
-participant "IPublicationTypeRepository" as Repo
-participant "PublicationTypeAssembler" as Assembler
-participant "PublicationTypeFactory" as Factory
-participant "IPublicationTypeRepositoryJPA" as JpaRepo
-participant "pubType:\nPublicationType" as pubType
+participant ":UI" as UI
+participant ":ToRegisterPubTypeController" as Controller
+participant ":PublicationTypeService" as Service
+participant ":IPublicationTypeRepository" as Repo
+participant ":PublicationTypeAssembler" as Assembler
+participant ":PublicationTypeFactory" as Factory
+participant ":IPublicationTypeRepositoryJPA" as JpaRepo
+participant ":pubType:\nPublicationType" as pubType
 
 database "database" as DB
 
-User -> Controller : registerPubType(mediaFormat)
+User --> UI : I want to register a \nnew publication type
+activate UI
+
+UI -> Controller : registerPubType(mediaFormat)
 activate Controller
 
 Controller -> Service : createAndSave(mediaFormat)
@@ -53,14 +57,17 @@ end
 
 alt PublicationType already exists
     Repo --> Service : Optional<PublicationType>
+    deactivate Repo
 
     Service --> Controller : throws IllegalArgumentException
-
-    Controller --> User : error: PublicationType already exists
+    Controller --> UI : throws IllegalArgumentException
+    UI --> User : error: PublicationType already exists
 
 else PublicationType does not exist
+
     Repo --> Service : Optional.empty
-    deactivate Repo
+    activate Repo
+
     Service -> Factory : create(mediaFormat)
     activate Factory
 
@@ -71,7 +78,6 @@ else PublicationType does not exist
     deactivate Factory
 
     Service -> Repo : save(entity)
-    activate Repo
 
     Repo -> Assembler : toDM(entity)
     activate Assembler
@@ -123,8 +129,11 @@ else PublicationType does not exist
     Service --> Controller : PublicationType
     deactivate Service
 
-    Controller --> User : Done!
+    Controller --> UI : PublicationType
     deactivate Controller
+
+    UI --> User : Done!
+    deactivate UI
 end
 
 @enduml
