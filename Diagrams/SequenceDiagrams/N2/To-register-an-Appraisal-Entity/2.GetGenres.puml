@@ -94,7 +94,7 @@ loop for each genre
     Genre --> GenreMapper : title
     deactivate Genre
 
-    GenreMapper -->> GDTO ** : <<create>>
+    GenreMapper -->> GDTO ** : toDTO()
     GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
 end
 

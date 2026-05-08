@@ -97,6 +97,14 @@ public class ToRegisterAppraisalEntityController {
             List<GenreId> genresId,
             List<PublicationTypeId> publicationTypesId) {
 
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null.");
+        }
+
+        if (contact == null) {
+            throw new IllegalArgumentException("Contact cannot be null.");
+        }
+
         if (genresId == null || genresId.isEmpty()) {
             throw new IllegalArgumentException("At least one Genre must be selected.");
         }
