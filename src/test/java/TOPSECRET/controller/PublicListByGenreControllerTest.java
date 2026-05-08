@@ -1,20 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.User.IUserRepository;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.GenreId;
-import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US013GenreDTO;
-import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,14 +37,25 @@ class PublicListByGenreControllerTest {
 
     @Test
     void getAllGenresDelegatesToGenreRepoAndReturnsListOfGenres() {
-        //Arrange
-        controller =new PublicListByGenreController(genreRepo, collectionRepo , userRepo);
+        // Arrange
+        controller = new PublicListByGenreController(genreRepo, collectionRepo, userRepo);
 
-        //Act
+        GenreId genreId1 = mock(GenreId.class);
+        GenreId genreId2 = mock(GenreId.class);
+
+        when(genreDouble1.id()).thenReturn(genreId1);
+        when(genreDouble2.id()).thenReturn(genreId2);
+
+        when(genreDouble1.getGenreType()).thenReturn("Fantasy");
+        when(genreDouble2.getGenreType()).thenReturn("Sci-Fi");
+
         when(genreRepo.findAll()).thenReturn(List.of(genreDouble1, genreDouble2));
+
+        // Act
         List<US013GenreDTO> result = controller.getGenres();
 
-        //Assert
+        // Assert
+        assertNotNull(result);
         assertEquals(2, result.size());
     }
 

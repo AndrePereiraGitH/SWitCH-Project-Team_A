@@ -1,32 +1,101 @@
 @startuml
-hide circle
-
-title To get official genres list
-
-class ToGetListOfGenreController {
-  +getGenresList() : List<US013GenreDTO>
+title Get Official Genres List - Class Diagram
+top to bottom direction
+class ToGetListOfGenreController << controller >>
+interface IGenreRepository << repository >>
+class GenreRepositoryJPAImp << repository >>
+class GenreDM << entity >>
+class Genre << aggregate/entity >>
+class US013GenreDTO << DTO >>
+' ── UI Layer ───────────────────────────────────────────────
+class UI {
 }
-class US013GenreMapper{
-  +toDTO : List<allGenresList>
+
+' ── Application Layer ──────────────────────────────────────
+class ToGetListOfGenreController {
+    - genreRepository: IGenreRepository
+    - mapper: US013GenreMapper
+    + ToGetListOfGenreController(genreRepository: IGenreRepository, mapper: US013GenreMapper)
+    + getGenresList(): List<US013GenreDTO>
+}
+
+class US013GenreMapper {
+    + toDTOList(genres: List<Genre>): List<US013GenreDTO>
+    - toDTO(genre: Genre): US013GenreDTO
 }
 
 class US013GenreDTO {
-toDTO(Genre) : US013GenreDTO
+    - genreId: String
+    - genreName: String
 }
 
-class IGenreRepository {
-  +getAllGenres() : List<Genre>
+' ── Domain Layer ───────────────────────────────────────────
+interface IGenreRepository {
+    + findAll(): List<Genre>
 }
 
 class Genre {
-    +getGenreType() : String
+    - Id: GenreId
+    - genreType: String
+    + id(): GenreId
+    + getGenreType(): String
 }
 
-' Interactions
-ToGetListOfGenreController "1"..> "1" US013GenreMapper : Invokes to convert into DTO
-US013GenreMapper "1" ..> "1" US013GenreDTO
-US013GenreMapper "1" -> "1" Genre : request GenreType
-ToGetListOfGenreController "1"--> "1" IGenreRepository : requests list to
-IGenreRepository "1"-----> "   * _genres" Genre : stores
+class GenreId {
+    - id: String
+    + getId(): String
+}
+
+class GenreFactory {
+    + create(genreId: GenreId, genreType: String): Genre
+}
+
+' ── Infrastructure Layer ───────────────────────────────────
+class GenreRepositoryJPAImp {
+    - genreRepositoryJPA: IGenreRepositoryJPA
+    - assembler: GenreAssembler
+    + findAll(): List<Genre>
+}
+
+interface IGenreRepositoryJPA {
+    + findAll(): List<GenreDM>
+}
+
+class GenreAssembler {
+    - factory: GenreFactory
+    + toDM(genre: Genre): GenreDM
+    + toDomain(genreDM: GenreDM): Genre
+}
+
+class GenreDM {
+    - id: GenreId
+    - genreType: String
+}
+
+Rectangle DataBase {
+}
+
+' ── Relationships ──────────────────────────────────────────
+UI "1" ..> "1" ToGetListOfGenreController : uses
+
+ToGetListOfGenreController "1" ..> "1" IGenreRepository : uses
+ToGetListOfGenreController "1" ..> "1" US013GenreMapper : uses
+
+US013GenreMapper "1" ..> "0..*" Genre : reads
+US013GenreMapper "1" ..> "0..*" US013GenreDTO : creates
+
+GenreRepositoryJPAImp "1" ..|> "1" IGenreRepository : implements
+GenreRepositoryJPAImp "1" ..> "1" IGenreRepositoryJPA : uses
+GenreRepositoryJPAImp "1" ..> "1" GenreAssembler : uses
+
+IGenreRepositoryJPA "1" ..> "1" DataBase : queries
+
+GenreAssembler "1" ..> "0..*" GenreDM : reads
+GenreAssembler "1" ..> "1" GenreFactory : uses
+
+GenreFactory "1" ..> "0..*" Genre : creates
+
+Genre "1" --> "1" GenreId : has
+GenreDM "1" --> "1" GenreId : has
 
 @enduml
