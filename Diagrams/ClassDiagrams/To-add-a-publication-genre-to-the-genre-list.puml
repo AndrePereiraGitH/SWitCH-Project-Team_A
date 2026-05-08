@@ -2,6 +2,13 @@
 title To add a publication genre to the genre list
 
 ' _____________________
+' UI
+' _____________________
+
+class UI {
+}
+
+' _____________________
 ' DOMAIN
 ' _____________________
 
@@ -43,6 +50,8 @@ class ToRegisterGenreController {
 }
 
 class GenreService {
+  - genreRepository : IGenreRepository
+  - genreFactory : GenreFactory
   + createAndSave(genreType : String) : Genre
 }
 
@@ -62,6 +71,7 @@ interface IGenreRepositoryJpa {
 }
 
 class GenreAssembler {
+  - factory : GenreFactory
   + toDM(genre : Genre) : GenreDM
   + toDomain(dm : GenreDM) : Genre
 }
@@ -88,6 +98,7 @@ IGenreRepositoryJpa "1" ..> "1" Database : queries
 ' DEPENDENCIES
 ' _____________________
 
+UI "1" ..> "1" ToRegisterGenreController : uses
 ToRegisterGenreController "1" ..> "1" GenreService : uses
 GenreService "1" ..> "1" IGenreRepository : uses
 GenreService "1" ..> "1" GenreFactory : uses

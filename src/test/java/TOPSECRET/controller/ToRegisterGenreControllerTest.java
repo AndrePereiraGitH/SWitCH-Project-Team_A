@@ -19,33 +19,33 @@ class ToRegisterGenreControllerTest {
                 () -> new ToRegisterGenreController(null));
     }
 
-        @Test
-        void shouldReturnTrueWhenGenreIsRegisteredSuccessfully() {
+    @Test
+    void shouldReturnTrueWhenGenreIsRegisteredSuccessfully() {
 
-            // Arrange
-            GenreService serviceDouble = mock(GenreService.class);
-            ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
+        // Arrange
+        GenreService serviceDouble = mock(GenreService.class);
+        ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
 
-            // Act
-            boolean result = controller.registerGenre("Drama");
+        // Act
+        boolean result = controller.registerGenre("Drama");
 
-            // Assert
-            assertTrue(result);
-            verify(serviceDouble).createAndSave("Drama");
-        }
+        // Assert
+        assertTrue(result);
+        verify(serviceDouble).createAndSave("Drama");
+    }
 
     @Test
-        void shouldPropagateExceptionWhenGenreAlreadyExists() {
+    void shouldPropagateExceptionWhenGenreAlreadyExists() {
 
-            // Arrange
-            GenreService serviceDouble = mock(GenreService.class);
-            doThrow(new IllegalArgumentException("Genre already exists"))
-                    .when(serviceDouble).createAndSave("Drama");
+        // Arrange
+        GenreService serviceDouble = mock(GenreService.class);
+        doThrow(new IllegalArgumentException("Genre already exists"))
+                .when(serviceDouble).createAndSave("Drama");
 
-            ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
+        ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
 
-            // Act & Assert
-            assertThrows(IllegalArgumentException.class,
-                    () -> controller.registerGenre("Drama"));
-        }
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerGenre("Drama"));
     }
+}

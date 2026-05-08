@@ -9,16 +9,15 @@ participant ":ToRegisterGenreController" as Ctrl
 participant ":GenreService" as Service
 participant ":IGenreRepository" as Repo
 participant ":IGenreRepositoryJpa" as JpaRepo
-participant "DataBase" as DB
+DataBase "DataBase" as DB
 participant ":GenreAssembler" as Assembler
 participant ":GenreFactory" as Factory
 
 Administrator -> UI : I want to add a new genre to the official list
 activate UI
 UI --> Administrator : What is the genre name?
-deactivate UI
+
 Administrator -> UI : genreType("Drama")
-activate UI
 
 UI -> Ctrl : registerGenre(genreType)
 activate Ctrl
@@ -34,21 +33,21 @@ activate JpaRepo
 
 JpaRepo -> DB : SELECT * FROM genres WHERE genre_type = ?
 activate DB
-DB --> JpaRepo : (empty result)
+DB --> JpaRepo : result
 deactivate DB
 
-JpaRepo --> Repo : Optional.empty()
+JpaRepo --> Repo : Optional<GenreDM>
 deactivate JpaRepo
 
-Repo --> Service : Optional.empty()
+Repo --> Service : Optional<Genre>
 deactivate Repo
 
-alt [genre already exists]
-    Service --> Ctrl : error: "Genre already exists"
+alt [genre already exists - Optional.isPresent()]
+    Service --> Ctrl : throws IllegalArgumentException
     Ctrl --> UI : error: "Genre already exists"
     UI --> Administrator : Genre already exists
 
-else [genre does NOT exist]
+else [genre does NOT exist - Optional.empty()]
 
     Service -> Factory : create(genreType)
     activate Factory
