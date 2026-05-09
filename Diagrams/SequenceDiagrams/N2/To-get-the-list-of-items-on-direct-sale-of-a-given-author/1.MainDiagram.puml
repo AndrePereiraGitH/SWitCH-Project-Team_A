@@ -1,0 +1,95 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items in direct sale of a given author
+
+actor Buyer
+
+participant ":UI" as UI
+participant ":ToGetListOfItemsInDirectSale\nOfAGivenAuthorController" as Ctrl
+
+participant ":IBibliographicalDataRepository" as bdRepo
+participant ":IPublicationSampleRepository" as pubRepo
+participant ":IListingRepository" as listingRepo
+
+participant ":US025DirectSaleMapper" as directSaleMapper
+participant "dsDTO\n:US025DirectSaleDTO" as dsDTO
+participant "listOfDirectSaleDTO\n:List<US025DirectSaleDTO>" as ListDTO
+
+Buyer -> UI : I want to get the list of items\non direct sale of a given author
+activate UI
+
+UI -> Ctrl : getAllAuthors()
+activate Ctrl
+
+    ref over Ctrl
+    [[2.GetAllAuthors.puml Get All Authors]]
+    end ref
+
+Ctrl --> UI : authorsDtoList
+deactivate Ctrl
+
+Buyer <-- UI : Which author? Choose!
+deactivate UI
+
+Buyer -> UI : selectedAuthor
+activate UI
+
+UI -> Ctrl : getDirectSalesByAuthorId(selectedAuthorID)
+activate Ctrl
+
+Ctrl -> bdRepo : findIdsByAuthorId(selectedAuthorID)
+activate bdRepo
+
+    ref over bdRepo
+    [[3.FindBiblioDataIdsByAuthorId.puml Get All BibliographicalDataId by AuthorId]]
+    end ref
+
+bdRepo --> Ctrl : bdIdList
+deactivate bdRepo
+
+Ctrl -> pubRepo : findIdsByBibliographicalDataId(bdIdList)
+activate pubRepo
+
+    ref over pubRepo
+    [[4.FindPublicationSampleIdsByBiblioDataIds.puml Find publication sample Ids by BibliographicalData Ids]]
+    end ref
+
+pubRepo --> Ctrl : pubIdList
+deactivate pubRepo
+
+Ctrl -> listingRepo : findDirectSaleIdsByPublicationSampleIdIn(pubIdList)
+activate listingRepo
+
+ref over listingRepo
+[[5.FindListingIdsByPublicationSampleIds.puml Find Listing Ids By Publication Sample Ids]]
+end ref
+
+listingRepo --> Ctrl : directSalesList
+deactivate listingRepo
+
+Ctrl -> directSaleMapper : fromDomainList(directSalesList)
+activate directSaleMapper
+
+directSaleMapper -->> ListDTO ** : <<create>>
+
+loop for each directSale in directSalesList
+    directSaleMapper -->> dsDTO ** : <<create>>
+    directSaleMapper -> dsDTO : fromDomain(directSale)
+    activate dsDTO
+    dsDTO --> directSaleMapper : directSaleDTO
+    deactivate dsDTO
+    directSaleMapper -> ListDTO : add(directSaleDTO)
+end
+
+deactivate ListDTO
+
+directSaleMapper --> Ctrl : listOfDirectSaleDTO
+deactivate directSaleMapper
+
+Ctrl --> UI : listOfDirectSalesDTO
+deactivate Ctrl
+
+UI --> Buyer : Shows the list of items on direct sale
+deactivate UI
+@enduml

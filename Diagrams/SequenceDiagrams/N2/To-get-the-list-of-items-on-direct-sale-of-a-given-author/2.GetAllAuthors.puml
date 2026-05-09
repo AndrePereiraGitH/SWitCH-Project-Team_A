@@ -1,0 +1,108 @@
+@startuml
+hide footbox
+autonumber
+title Get All Authors in System
+
+participant ":Controller" as ctrl
+participant ":IAuthorRepository" as authorRepo
+participant ":IAuthorRepositoryJPA" as authorRepoJpa
+participant "authorDMList\n:List<AuthorDM>" as authorDMList
+participant "authorDM\n:AuthorDM" as authorDM
+participant ":AuthorAssembler" as authorAssembler
+participant ":AuthorFactory" as authorFactory
+participant "authorsList\n:List<Author>" as authorsList
+participant "author\n:Author" as author
+participant ":US025AuthorMapper" as AuthorMapper
+participant "authorDTO\n:US025AuthorDTO" as AuthorDTO
+participant "authorsDto\n:List<AuthorDTO>" as AuthorsListDto
+database "DataBase" as db
+
+note over ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+ctrl -> authorRepo : findAll()
+activate ctrl
+activate authorRepo
+
+authorRepo -> authorRepoJpa : findAll()
+activate authorRepoJpa
+authorRepoJpa -> db : query find all authors
+activate db
+db --> authorRepoJpa : allAuthorsData
+deactivate db
+authorRepoJpa -->> authorDMList ** : <<create>>
+authorRepoJpa --> authorRepo : authorDMList
+deactivate authorRepoJpa
+
+authorRepo -->> authorsList ** : <<create>>
+
+loop for each authorDM in authorDMList
+
+    authorRepo -> authorAssembler : toDomain(authorDM)
+    activate authorAssembler
+
+    authorAssembler -> authorDM : id()
+    activate authorDM
+    authorDM --> authorAssembler : id
+    deactivate authorDM
+
+    authorAssembler -> authorDM : getName()
+    activate authorDM
+    authorDM --> authorAssembler : name
+    deactivate authorDM
+
+    authorAssembler -> authorDM : getCountryId()
+    activate authorDM
+    authorDM --> authorAssembler : countryId
+    deactivate authorDM
+
+    authorAssembler -> authorDM : getDateOfBirth()
+    activate authorDM
+    authorDM --> authorAssembler : birthday
+    deactivate authorDM
+
+    authorAssembler -> authorDM : getBiography()
+    activate authorDM
+    authorDM --> authorAssembler : biography
+    deactivate authorDM
+
+    authorAssembler -> authorFactory : create(id, name, countryId,\n birthday, biography)
+    activate authorFactory
+
+    authorFactory -->> author ** : <<create>>
+    authorFactory --> authorAssembler : author
+    deactivate authorFactory
+
+    authorAssembler --> authorRepo : author
+
+    authorRepo -> authorsList : add(author)
+
+end loop
+
+authorRepo --> ctrl : authorsList
+deactivate authorRepo
+
+ctrl -> AuthorMapper : fromDomainList(authorsList)
+activate AuthorMapper
+AuthorMapper -->> AuthorsListDto ** : <<create>>
+
+loop for each author in authorsList
+    AuthorMapper -->> AuthorDTO ** : <<create>>
+    AuthorMapper -> AuthorDTO : fromDomain(author)
+    AuthorMapper -> AuthorsListDto : add(authorDTO)
+end
+
+AuthorMapper --> ctrl : authorsDto
+deactivate AuthorMapper
+
+deactivate ctrl
+@enduml

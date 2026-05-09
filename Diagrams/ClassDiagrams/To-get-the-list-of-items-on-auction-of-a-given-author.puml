@@ -1,112 +1,175 @@
 @startuml
-top to bottom direction
-title To get the list of items on auction of a given author (DDD)
+title To get the list of items on direct sale of a given author
 
-class US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController {
-  -authorRepository : IAuthorRepository
-  -biblioRepository : IBibliographicalDataRepository
-  -pubRepo : IPublicationSampleRepository
-  -listingRepo : IListingRepository
-  -auctionRepository : IAuctionRepository
-  -mapper : US026AuctionMapper
-  +getAllAuthors() : List<US026AuthorDTO>
-  +getAuctionsByAuthorId(authorId : AuthorId) : List<US026AuctionDTO>
+class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
+  + getAllAuthors() : List<US025AuthorDTO>
+  + getDirectSalesByAuthorId(AuthorId selectedAuthorID) : List<US025DirectSaleDTO>
 }
 
-
+'-- Author --
 interface IAuthorRepository {
-  +getAllAuthors() : List<Author>
+  + findAll() : List<Author>
 }
 
-interface IBibliographicalDataRepository {
-  +findBibliographicalDataIdByAuthorId(authorId : AuthorId) : List<BibliographicalDataID>
+interface IAuthorRepositoryJPA {
+  + findAll() : List<AuthorDM>
 }
 
-interface IPublicationSampleRepository {
-  +findPublicationSamplesByBiblioDataIds(biblioDataIds : List<BibliographicalDataID>) : List<PublicationSampleId>
+class AuthorAssembler {
+  + toDomain(AuthorDM authorDM) : Author
 }
 
-interface IListingRepository {
-  +findListingIdsByPublicationSampleIds(publicationSamplesIds : List<PublicationSampleId>) : List<ListingId>
-  +findListingById(listingId : ListingId) : Optional<Listing>
+class AuthorDM {
+  - authorId : AuthorId
+  - name : String
+  - countryId : CountryId
+  - dateOfBirth : LocalDate
+  - biography : String
 }
 
-interface IAuctionRepository {
-  +findAuctionsByListingIds(listingIds : List<ListingId>) : List<Auction>
+class AuthorFactory {
+  + create(AuthorId id, String name, CountryId countryId,\n LocalDate birthday, String biography) : Author
 }
 
 class Author {
-  -authorId : AuthorId
-  -name : String
-  +id() : AuthorId
-  +getName() : String
+  - authorId : AuthorId
+  - name : String
+  - countryId : CountryId
+  - dateOfBirth : LocalDate
+  - biography : String
+}
+
+class US025AuthorMapper {
+  + fromDomain(Author author) : US025AuthorDTO
+  + fromDomainList(List<Author> authors) : List<US025AuthorDTO>
+}
+
+record US025AuthorDTO {
+  - authorId : String
+  - name : String
+}
+
+' --- Bibliographical Data ---
+interface IBibliographicalDataRepository {
+  + findIdsByAuthorId(AuthorId authorId) : List<BibliographicalDataId>
+}
+
+interface IBibliographicalDataRepositoryJPA {
+  + findIdsByAuthorId(AuthorId authorId) : List<BibliographicalDataDM>
+}
+
+class BibliographicalDataDM {
+  - bdId : BibliographicalDataId
+  - title : String
+  - originalLanguage : Locale
+  - publicationDate : LocalDate
+  - genres : List<GenreId>
+  - chunksOfText : String
+}
+
+class BibliographicalDataId {
+}
+
+' --- Publication Sample ---
+interface IPublicationSampleRepository {
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId) : List<PublicationSampleId>
+}
+
+interface IPublicationSampleRepositoryJPA {
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId) : List<PublicationSampleId>
+}
+
+class PublicationSampleId {
+}
+
+' --- Listing ---
+interface IListingRepository {
+  + findDirectSaleIdsByPublicationSampleIdIn(List<PublicationSampleId> pubIdList) : List<ListingId>
+}
+
+interface IListingRepositoryJPA {
+  + findAllByItemsIdAndSaleType(List<PublicationSampleId> itemsId, SaleType saleType) : List<ListingDM>
+}
+
+class ListingAssembler {
+  + toDomain(ListingDM listingDM) : Listing
+}
+
+class ListingDM {
+  - listingId : ListingId
+  - listingTitle : String
+  - publicationSampleIds : List<PublicationSampleId>
+  - saleType : SaleType
+  - sellerId : UserId
+  - price : String
+  - shortDescription : String
+  - pictures : List<String>
+}
+
+class ListingFactory {
+  + create(ListingId listingId, String listingTitle, List<PublicationSampleId> itemsId,\n SaleType saleType, Price price, String shortDescription,\n UserId sellerId, List<Picture> pictures) : Listing
 }
 
 class Listing {
-  -listingId : ListingId
-  -listingTitle : String
-  -itemsId : List<PublicationSampleId>
-  +id() : ListingId
-  +getListingTitle() : String
+  - listingId : ListingId
+  - listingTitle : String
+  - publicationSampleIds : List<PublicationSampleId>
+  - saleType : SaleType
+  - sellerId : UserId
+  - price : Price
+  - shortDescription : String
+  - pictures : List<Picture>
 }
 
-class Auction {
-  -auc_id : AuctionId
-  -listingId : ListingId
-  -auctionStatus : AuctionStatus
-  +id() : AuctionId
-  +getListingId() : ListingId
-  +getAuctionStatus() : AuctionStatus
+class US025DirectSaleMapper {
+  + fromDomain(Listing listing) : US025DirectSaleDTO
+  + fromDomainList(List<Listing> listings) : List<US025DirectSaleDTO>
 }
 
-
-class US026AuthorDTO {
-  +authorID() : String
-  +name() : String
+record US025DirectSaleDTO {
+  - publicationTitle : String
+  - authors : List<String>
+  - price : BigDecimal
+  - listingTitle : String
+  - seller : String
 }
 
-class US026AuctionDTO {
-  +id() : String
-  +listingTitle() : String
-  +auctionStatus() : String
+enum SaleType {
+  DIRECT_SALE
+  AUCTION
 }
 
-class US026AuthorMapper {
-  {static} +fromDomain(author : Author) : US026AuthorDTO
-  {static} +fromDomainList(authors : List<Author>) : List<US026AuthorDTO>
-}
+' --- Controller ---
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1" --> "1" IAuthorRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1" --> "1" US025AuthorMapper : maps to DTO
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1" --> "1" IBibliographicalDataRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1" --> "1" IPublicationSampleRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1" --> "1" IListingRepository : retrieves data
+ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController "1" --> "1" US025DirectSaleMapper : maps to DTO
 
-class US026AuctionMapper {
-  -listingRepo : IListingRepository
-  +US026AuctionMapper(listingRepo : IListingRepository)
-  +fromDomain(auction : Auction) : US026AuctionDTO
-  +fromDomainList(auctions : List<Auction>) : List<US026AuctionDTO>
-}
+' --- Author ---
+IAuthorRepositoryJPA "1" --|> "1" IAuthorRepository : implements
+IAuthorRepository "1" --> "1" AuthorAssembler : converts DM to Domain
+AuthorAssembler "1" --> "1" AuthorFactory : uses
+AuthorAssembler "1" ..> "1" AuthorDM : uses
+AuthorFactory "1" --> "1" Author : creates
+US025AuthorMapper "1" ..> "1" US025AuthorDTO : maps to
 
+' --- Bibliographical Data ---
+IBibliographicalDataRepositoryJPA "1" --|> "1" IBibliographicalDataRepository : implements
+IBibliographicalDataRepository "1" ..> "1" BibliographicalDataDM : uses
+IBibliographicalDataRepository "1" ..> "1" BibliographicalDataId : returns
 
-' --- Controller to repositories / mappers ---
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ....> IAuthorRepository : interacts with
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController .....> IBibliographicalDataRepository : interacts with
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ......> IPublicationSampleRepository : interacts with
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController .> IListingRepository : interacts with
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ...> IAuctionRepository : interacts with
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ..> US026AuthorMapper
-US026ToGetTheListOfItemsOnAuctionOfAGivenAuthorController ....> US026AuctionMapper
+' --- Publication Sample ---
+IPublicationSampleRepositoryJPA "1" --|> "1" IPublicationSampleRepository : implements
+IPublicationSampleRepository "1" ..> "1" PublicationSampleId : returns
 
-' --- Mapper dependencies ---
-US026AuthorMapper ...> Author
-US026AuthorMapper ...> US026AuthorDTO
-
-US026AuctionMapper ...> Auction
-US026AuctionMapper ...> IListingRepository
-US026AuctionMapper ..> US026AuctionDTO
-
-
-' --- Repository contracts and ID flow ---
-IAuthorRepository ..> Author
-
-IListingRepository ..> Listing : manages
-
-IAuctionRepository .....> Auction : manages
-
+' --- Listing ---
+IListingRepositoryJPA "1" --|> "1" IListingRepository : implements
+IListingRepository "1" --> "1" ListingAssembler : converts DM to Domain
+ListingAssembler "1" --> "1" ListingFactory : uses
+ListingAssembler "1" ..> "1" ListingDM : uses
+ListingFactory "1" --> "1" Listing : creates
+Listing "*" --> "1" SaleType : for sale in
+US025DirectSaleMapper "1" ..> "1" US025DirectSaleDTO : maps to
 @enduml
