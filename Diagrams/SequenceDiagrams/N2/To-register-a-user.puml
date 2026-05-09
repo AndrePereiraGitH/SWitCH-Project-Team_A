@@ -55,19 +55,22 @@ Repository -> RepositoryJPAInterface : save(userDM)
 activate RepositoryJPAInterface
 
 RepositoryJPAInterface -> DB : INSERT
-activate DB
-DB -->> savedUserDM ** : <<create>>
-deactivate DB
+RepositoryJPAInterface -->> savedUserDM ** : <<create>>
 
 RepositoryJPAInterface --> Repository : savedUserDM
 deactivate RepositoryJPAInterface
 
 Repository -> Assembler : toDomain(savedUserDM)
 activate Assembler
+
 Assembler -> Factory : create(userId, username, profile, userRoles)
+deactivate Assembler
+
 activate Factory
 Factory --> Assembler : user
 deactivate Factory
+
+activate Assembler
 Assembler --> Repository : user
 deactivate Assembler
 
