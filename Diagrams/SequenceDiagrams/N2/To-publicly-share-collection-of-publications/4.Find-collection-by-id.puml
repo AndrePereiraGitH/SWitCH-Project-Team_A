@@ -5,28 +5,29 @@ autonumber
 
 title "Find Collection Of Publications by ID"
 
-participant ":Controller" as Controller
+participant ":CollectionOfPublications\nService" as service
 participant ":ICollectionOfPublication\nRepository" as CollectionRepository
 participant ":ICollectionOfPublication\nJPARepository" as collectionRepositoryJPA
 participant ":CollectionOfPublications\nAssembler" as collectionAssembler
-participant ":CollectionOfPublications\nFactory" as collectionsFactory
 participant "selectedCollectionDM\n:CollectionOfPublicationsDM" as selectedCollectionDM
+
+participant ":CollectionOfPublications\nFactory" as collectionsFactory
 database DataBase as db
 participant "selectedCollectionDomain\n:CollectionOfPublications" as selectedCollectionDomain
 
-note over Controller #E3F2FD
+note over service #E3F2FD
 <b>Fragment</b>
 ---
-This diagram is a fragment of the main sequence diagram.
+This diagram is a fragment of Make Collection Public sequence diagram.
 end note
 
-note over Controller #E3F2FD
+note over service #E3F2FD
 <b>Navigation</b>
 ---
-[[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
+[[5.Make-collection-public.puml Return to Main Diagram]]
 end note
 
-Controller -> CollectionRepository : findById(collectionId)
+service -> CollectionRepository : findById(collectionId)
 activate CollectionRepository
 
 CollectionRepository -> collectionRepositoryJPA : findById(collectionId)
@@ -34,7 +35,7 @@ activate collectionRepositoryJPA
 
 collectionRepositoryJPA -> db : query find collection by id
 activate db
-db --> collectionRepositoryJPA : data
+db --> collectionRepositoryJPA : collection data
 deactivate db
 
 collectionRepositoryJPA -->> selectedCollectionDM** : <<create>>
@@ -47,18 +48,27 @@ activate collectionAssembler
 collectionAssembler -> selectedCollectionDM : getId()
 activate selectedCollectionDM
 selectedCollectionDM --> collectionAssembler : id
+deactivate selectedCollectionDM
 
 collectionAssembler -> selectedCollectionDM : getName()
+activate selectedCollectionDM
 selectedCollectionDM --> collectionAssembler : name
+deactivate selectedCollectionDM
 
 collectionAssembler -> selectedCollectionDM : getGenreId()
+activate selectedCollectionDM
 selectedCollectionDM --> collectionAssembler : genreId
+deactivate selectedCollectionDM
 
 collectionAssembler -> selectedCollectionDM : getUserId()
+activate selectedCollectionDM
 selectedCollectionDM --> collectionAssembler : userId
+deactivate selectedCollectionDM
 
 collectionAssembler -> selectedCollectionDM : get_isPrivate()
+activate selectedCollectionDM
 selectedCollectionDM --> collectionAssembler : isPrivate
+deactivate selectedCollectionDM
 
 collectionAssembler -> collectionsFactory : create(id, name, genreId, userId, isPrivate)
 activate collectionsFactory
@@ -69,7 +79,7 @@ deactivate collectionsFactory
 collectionAssembler --> CollectionRepository : selectedCollectionDomain
 deactivate collectionAssembler
 
-CollectionRepository --> Controller : selectedCollectionDomain
+CollectionRepository --> service : selectedCollectionDomain
 deactivate CollectionRepository
 
 @enduml

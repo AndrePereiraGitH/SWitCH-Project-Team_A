@@ -11,6 +11,9 @@ participant ":UI" as UI
 end box
 
 participant ":ToPubliclyShareCollectionOfPublications\nController" as Controller
+
+participant ":CollectionOfPublications\nService" as service
+
 participant ":ICollectionOfPublication\nRepository" as CollectionRepository
 
 
@@ -66,11 +69,11 @@ activate Controller
 
 Controller -> Controller : collectionId = collectionDTO_A.getId()
 
-ref over Controller, CollectionRepository
-[[4.Find-collection-by-id.puml Find collection by id]]
-end ref
+'ref over Controller, service
+'[[4.Find-collection-by-id.puml Find collection by id]]
+'end ref
 
-ref over Controller, CollectionRepository
+ref over Controller, service
 [[5.Make-collection-public.puml Make collection public]]
 end ref
 
