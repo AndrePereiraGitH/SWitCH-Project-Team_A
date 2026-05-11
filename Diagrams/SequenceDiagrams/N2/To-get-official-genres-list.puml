@@ -20,7 +20,7 @@ activate UI
 UI -> C : getAllGenres()
 activate C
 
-C -> GR : getAllGenres()
+C -> GR : findAll()
 activate GR
 
 GR -> GRJPA : findAll()
