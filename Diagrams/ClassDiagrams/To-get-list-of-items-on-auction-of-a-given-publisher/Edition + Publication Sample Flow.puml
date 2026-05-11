@@ -1,0 +1,110 @@
+@startuml
+title US028 - Edition + Publication Sample Flow
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 150
+skinparam ranksep 100
+top to bottom direction
+
+rectangle DataBase {
+}
+
+interface IEditionRepository {
+    + findByPublisherId(publisherId : PublisherID) : List<Edition>
+}
+
+class EditionRepositoryJpaImpl {
+    - editionRepositoryJpa : IEditionRepositoryJpa
+    - assembler : EditionAssembler
+    + findByPublisherId(publisherId : PublisherID) : List<Edition>
+}
+
+interface IEditionRepositoryJpa {
+    + findAllByPublisherId(publisherId : PublisherID) : List<EditionDM>
+}
+
+class AutomaticGeneratedEditionRepoJPAImpl {
+}
+
+class EditionDM {
+    - editionId : EditionID
+    - publisherId : PublisherID
+    + getEditionId() : EditionID
+    + getPublisherId() : PublisherID
+}
+
+class EditionID {
+    - value : String
+}
+
+class EditionAssembler {
+    + toDomain(dm : EditionDM) : Edition
+}
+
+class EditionFactory {
+    + create(editionID : EditionID, editionNumber : String, code : Code, physicalAttributes : PhysicalAttributes, publicationTypeId : PublicationTypeId, publisherID : PublisherID, mediaFormat : String, editionLanguage : Locale, editionDate : LocalDate, typeOfBinding : TypeOfBinding) : Edition
+}
+
+class Edition {
+    - editionID : EditionID
+    - publisherID : PublisherID
+    + identity() : EditionID
+}
+
+interface IPublicationSampleRepository {
+    + findIdsByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleId>
+}
+
+class PublicationSampleRepositoryJpaImpl {
+    - publicationSampleRepositoryJpa : IPublicationSampleRepositoryJpa
+    + findIdsByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleId>
+}
+
+interface IPublicationSampleRepositoryJpa {
+    + findAllByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleDM>
+}
+
+class AutomaticGeneratedPublicationSampleRepoJPAImpl {
+}
+
+class PublicationSampleDM {
+    - pubSampleId : PublicationSampleId
+    - editionId : EditionID
+    + getPubSampleId() : PublicationSampleId
+    + getEditionId() : EditionID
+}
+
+class PublicationSampleId {
+    - value : String
+}
+
+class PublisherID {
+    - value : String
+}
+
+EditionRepositoryJpaImpl "1" ..|> "1" IEditionRepository
+EditionRepositoryJpaImpl "1" ..> "1" IEditionRepositoryJpa : uses
+EditionRepositoryJpaImpl "1" ..> "1" EditionAssembler : uses
+
+AutomaticGeneratedEditionRepoJPAImpl "1" ..|> "1" IEditionRepositoryJpa
+AutomaticGeneratedEditionRepoJPAImpl "1" ..> "1" DataBase : queries
+
+EditionAssembler "1" ..> "1" EditionFactory : uses
+EditionFactory "1" ..> "0..*" Edition : creates
+
+EditionDM "1" --> "1" EditionID : has
+EditionDM "1" --> "1" PublisherID : belongs to
+
+Edition "1" --> "1" EditionID : has
+Edition "1" --> "1" PublisherID : belongs to
+
+PublicationSampleRepositoryJpaImpl "1" ..|> "1" IPublicationSampleRepository
+PublicationSampleRepositoryJpaImpl "1" ..> "1" IPublicationSampleRepositoryJpa : uses
+
+AutomaticGeneratedPublicationSampleRepoJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJpa
+AutomaticGeneratedPublicationSampleRepoJPAImpl "1" ..> "1" DataBase : queries
+
+PublicationSampleDM "1" --> "1" PublicationSampleId : has
+PublicationSampleDM "1" --> "1" EditionID : refers to
+
+@enduml
