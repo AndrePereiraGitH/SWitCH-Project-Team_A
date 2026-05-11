@@ -1,0 +1,59 @@
+@startuml
+hide footbox
+autonumber
+title Find Editions By Publisher Id
+
+participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":IEditionRepository" as editionRepo
+participant ":IEditionRepositoryJpa" as editionJpa
+participant "editionsDM:List<EditionDM>" as editionsDMList
+participant ":EditionAssembler" as editionAssembler
+participant ":EditionFactory" as editionFactory
+participant "edition:Edition" as edition
+participant "listOfEditions:List<Edition>" as listOfEditions
+participant "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[./main.puml Return to Main Diagram]]
+end note
+
+Ctrl -> editionRepo : findByPublisherId(publisherId)
+activate editionRepo
+
+editionRepo -> editionJpa : findByPublisherId(publisherId)
+activate editionJpa
+
+editionJpa -> db : SELECT * FROM edition\nWHERE publisher_id = ?
+activate db
+db --> editionJpa : data
+deactivate db
+
+editionJpa -->> editionsDMList ** : <<create>>
+editionJpa --> editionRepo : editionsDM
+deactivate editionJpa
+
+editionRepo -->> listOfEditions ** : <<create>>
+
+loop for each dm in editionsDM
+    editionRepo -> editionAssembler : toDomain(dm)
+    activate editionAssembler
+
+    editionAssembler -> editionFactory : create(dm.editionId, dm.editionNumber,\ndm.code, dm.physicalAttributes, dm.publicationTypeId,\ndm.publisherId, dm.mediaFormat, dm.editionLanguage,\ndm.editionDate, dm.typeOfBinding)
+    activate editionFactory
+
+    editionFactory -->> edition ** : <<create>>
+    editionFactory --> editionAssembler : edition
+    deactivate editionFactory
+
+    editionAssembler --> editionRepo : edition
+    deactivate editionAssembler
+
+    editionRepo -> editionRepo : listOfEditions.add(edition)
+end
+
+editionRepo --> Ctrl : listOfEditions
+deactivate editionRepo
+
+@enduml

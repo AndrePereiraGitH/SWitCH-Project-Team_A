@@ -4,107 +4,223 @@ hide footbox
 autonumber
 title To Get a List Of Items On Auction By A Given Genre
 
-actor Buyer
+actor Buyer as User
 
 participant ":UI" as UI
-participant ":GetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
-participant ":IGenre\nRepository" as GenreRepo
-participant ":US022GenreMapper" as GenreMapper
-participant "allGenreList: List<Genre>" as allGenreList
-participant "listOfGenreDTO: List<GenreDTO>" as listOfGenreDTO
-participant ":Genre" as Genre
-participant "genreDTO: GenreDTO" as genreDTO
+participant ":ToGetListOfGenres\nController" as Controller
+participant ":IGenre\nRepository" as GR
+participant ":IGenre\nRepositoryJPA" as GRJPA
+participant ":Genre\nAssembler" as Assembler
+participant "genreDMs : List<genreDM>"
+participant "listOfGenre:\nList<Genre>"
+participant ":Genre\nFactory" as GFactory
+participant "genreDomain\n:Genre"
+participant ":US022Genre\nMapper" as MAPPER
+participant "listOfGenreDTO:\nList<US022GenreDTO>"
+participant ":Genre" as ENTITY
+participant "genreDTO:\nUS022GenreDTO"
 
 participant ":IBibliographicalData\nRepository" as BDRepo
-participant "listOfBioDataId:\nList<BibliographicalData>"
+participant ":IBibliographicalData\nRepositoryJPA" as BDJPA
+participant "bdDMList:\nList<BibliographicalDataDM>"
+participant "listOfBioDataId:\nList<BibliographicalDataId>"
 participant ":IPublicationSample\nRepository" as PubSampleRepo
-participant "listOfItemsId:\nList<PublicationSample>"
+participant ":IPublicationSample\nRepositoryJPA" as PSJPA
+participant "pbSampleDMList:\nList<PublicationSampleDM>"
+participant "listOfItemsId:\nList<PublicationSampleId>"
 participant ":IListing\nRepository" as ListingRepo
-participant "listOfListingId:\nList<Listing>"
+participant ":IListing\nRepositoryJPA" as LJPA
+participant "listingDMList:\nList<ListingDM>"
+participant "listOfListingId:\nList<ListingId>"
 participant ":IAuction\nRepository" as AuctionRepo
-participant "listOfAuctionOfGivenGenre:\nList<Auction>"
+participant ":IAuction\nRepositoryJPA" as AJPA
+participant ":Auction\nAssembler" as AuctionAssembler
+participant ":Auction\nFactory" as Factory
+participant "auctionDMList:\nList<AuctionDM>"
+participant "listOfAuctionOnGivenGenre:\nList<Auction>"
 participant ":US022Auction\nMapper" as AuctionMapper
+participant "DataBase" as DB
 
-' --- Start ---
-Buyer -> UI : I want to get a list of items\n on auction of a given genre
+
+User -> UI : I want to see all official\n genres in the system
 activate UI
 
-' =========================
-' Get All Genres
-' =========================
-UI -> Controller : getAllGenres()
+UI -> Controller : findAll()
 activate Controller
 
-Controller -> GenreRepo : getAllGenres()
-activate GenreRepo
-GenreRepo -->> allGenreList ** : <<create>>
-GenreRepo --> Controller : allGenreList
-deactivate GenreRepo
+Controller -> GR : findAll()
+activate GR
 
-Controller -> GenreMapper : toDTO(allGenreList)
-activate GenreMapper
-GenreMapper -->> listOfGenreDTO ** : <<create>>
+GR -> GRJPA : findAll()
+activate GRJPA
 
-loop for each genre in allGenreList
-    GenreMapper -> Genre : getId()
-    activate Genre
-    Genre --> GenreMapper : id
-    deactivate Genre
+GRJPA -> DB : Query
+activate DB
 
-    GenreMapper -> Genre : getTitle()
-    activate Genre
-    Genre --> GenreMapper : title
-    deactivate Genre
+note over DB
+Query database (SELECT * FROM genre)
+end note
 
-    GenreMapper -> genreDTO ** : toDTO
-    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+DB --> GRJPA : data
+deactivate DB
+
+GRJPA -->> "genreDMs : List<genreDM>" ** : <<create>>
+
+
+GRJPA --> GR : genreDMs
+deactivate GRJPA
+loop for each genreDMs
+GR -> Assembler : toDomainList\n(genresPersisted)
+activate Assembler
+
+Assembler -->> "listOfGenre:\nList<Genre>" ** : <<create>>
+
+    Assembler -> GFactory : create(genreDM.getId(), genreDM.getGenreType())
+
+    activate GFactory
+
+    GFactory -->> "genreDomain\n:Genre" ** : <<create>>
+
+    GFactory --> Assembler : genreDomain
+    deactivate GFactory
+
+    Assembler -> Assembler : add(genreDomain)
 end
 
-GenreMapper --> Controller : listOfGenreDTO
-deactivate GenreMapper
+Assembler --> GR : listOfGenre
+deactivate Assembler
 
-Controller --> UI : List<GenreDTO>
+GR --> Controller : listOfGenre
+deactivate GR
+
+Controller -> MAPPER : toDTOList(listOfGenre)
+activate MAPPER
+
+MAPPER -->> "listOfGenreDTO:\nList<US022GenreDTO>" ** : <<create>>
+
+loop for each Genre
+    MAPPER -> ENTITY : getGenreType()
+    activate ENTITY
+    ENTITY --> MAPPER : genreType
+    deactivate ENTITY
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : genreId
+    deactivate ENTITY
+
+    MAPPER -> "genreDTO:\nUS022GenreDTO" ** : toDTO()
+
+    MAPPER -> MAPPER : genreDTO.add(genreDTO)
+end
+
+MAPPER --> Controller : listOfGenreDTO
+deactivate MAPPER
+
+Controller --> UI : listOfGenreDTO
 deactivate Controller
 
-UI --> Buyer : Show genres! Choose
+
+UI --> User : Show genres! Choose
 deactivate UI
 
-' =========================
-' Get Items By Genre
-' =========================
-Buyer -> UI : Select genre
+User -> UI : Select genre
 activate UI
 
-UI -> Controller : getListOfItems\nOnAuction(selectedGenreDTO)
+UI -> Controller : findAllByGenreId(genreId)
 activate Controller
 
-Controller -> GenreRepo : findById(selectedGenreDTO.id)
-activate GenreRepo
-GenreRepo --> Controller : genreId
-deactivate GenreRepo
 
-Controller -> BDRepo : findAllBibliographicalDataID(genreId)
+Controller -> BDRepo : findAllByGenreId(genreId)
 activate BDRepo
-BDRepo -->> "listOfBioDataId:\nList<BibliographicalData>" ** : <<create>>
+BDRepo -> BDJPA : findAllByGenreId(genreId)
+activate BDJPA
+BDJPA -> DB : SELECT * FROM bibliographical_data\nWHERE genre_Id IN
+activate DB
+DB --> BDJPA : data
+deactivate DB
+BDJPA -->> "bdDMList:\nList<BibliographicalDataDM>" ** : <<create>>
+BDJPA -->> "listOfBioDataId:\nList<BibliographicalDataId>" ** : <<create>>
+loop for each dm in bdDMList
+BDJPA -> BDJPA : listOfBioDataId.add(dm.bdId())
+end
+BDJPA --> BDRepo : listOfBioDataId
+deactivate BDJPA
 BDRepo --> Controller : listOfBioDataId
 deactivate BDRepo
 
-Controller -> PubSampleRepo : findItemsIdBy\nBibliographicalDataId(listOfBioDataId)
+Controller -> PubSampleRepo : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
 activate PubSampleRepo
-PubSampleRepo -->> "listOfItemsId:\nList<PublicationSample>" ** : <<create>>
+PubSampleRepo -> PSJPA : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
+activate PSJPA
+PSJPA -> DB : SELECT * FROM publication_sample\nWHERE bibliographical_data_id IN
+activate DB
+DB --> PSJPA : data
+deactivate DB
+PSJPA -->> "pbSampleDMList:\nList<PublicationSampleDM>" ** : <<create>>
+PSJPA -->> "listOfItemsId:\nList<PublicationSampleId>" ** : <<create>>
+
+loop for each dm in pbSampleDMList
+PSJPA -> PSJPA : listOfItemsId.add(dm.getPubSampleId())
+end
+
+PSJPA --> PubSampleRepo : listOfItemsId
+deactivate PSJPA
 PubSampleRepo --> Controller : listOfItemsId
 deactivate PubSampleRepo
 
-Controller -> ListingRepo : findAllListingId(listOfItemsId)
+Controller -> ListingRepo : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
 activate ListingRepo
-ListingRepo -->> "listOfListingId:\nList<Listing>" ** : <<create>>
+ListingRepo -> LJPA : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
+activate LJPA
+LJPA -> DB : SELECT * FROM listing\nWHERE publication_sample_id IN
+activate DB
+DB --> LJPA : data
+deactivate DB
+
+LJPA -->> "listingDMList:\nList<ListingDM>" ** : <<create>>
+LJPA -->> "listOfListingId:\nList<ListingId>" ** : <<create>>
+
+loop for each dm in listingDMList
+LJPA -> LJPA : listOfListingId.add(dm.getListingId())
+end
+
+LJPA --> ListingRepo : listOfListingId
+deactivate LJPA
 ListingRepo --> Controller : listOfListingId
 deactivate ListingRepo
 
-Controller -> AuctionRepo : getAllAuctionsIdOnListing(listOfListing)
+Controller -> AuctionRepo : findAllByListingId(listOfListingId)
 activate AuctionRepo
-AuctionRepo -->> "listOfAuctionOfGivenGenre:\nList<Auction>" ** : <<create>>
-AuctionRepo --> Controller : listOfAuctionOfGivenGenre
+AuctionRepo -> AJPA : findAllByListingId(listOfListingId)
+activate AJPA
+AJPA -> DB : SELECT * FROM auction\nWHERE listing_id IN
+activate DB
+DB --> AJPA : data
+deactivate DB
+AJPA -->> "auctionDMList:\nList<AuctionDM>" ** : <<create>>
+AJPA --> AuctionRepo : auctionDMList
+deactivate AJPA
+
+AuctionRepo -->> "listOfAuctionOnGivenGenre:\nList<Auction>" ** : <<create>>
+
+loop for each dm in auctionDMList
+    AuctionRepo -> AuctionAssembler : toDomain(dm)
+    activate AuctionAssembler
+    AuctionAssembler -> Factory : create(dm.getAuctionId(), .... )
+    activate Factory
+    Factory -->> "auction:Auction" ** : <<create>>
+    Factory --> AuctionAssembler : auction
+    deactivate Factory
+    AuctionAssembler --> AuctionRepo : auction
+    deactivate AuctionAssembler
+
+    opt
+    AuctionRepo -> AuctionRepo : listOfAuctionOnGivenGenre.add(auction)
+    end
+end
+
+deactivate AJPA
+AuctionRepo --> Controller : listOfAuctionOnGivenGenre
 deactivate AuctionRepo
 
 Controller -> AuctionMapper : toDTOList(listOfAuctionOfGivenGenre)
@@ -112,17 +228,17 @@ activate AuctionMapper
 AuctionMapper -->> "listOfAuctionDTO:\nList<US022AuctionDTO>" ** : <<create>>
 
 loop for each Auction in listOfAuctionOfGivenGenre
+
     AuctionMapper -> "AuctionDTO:\nUS022AuctionDTO" ** : toDTO
     AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
 end
-
 AuctionMapper --> Controller : listOfAuctionDTO
 deactivate AuctionMapper
 
 Controller --> UI : listOfAuctionDTO
 deactivate Controller
 
-UI --> Buyer : Display items
+UI --> User : Display items
 deactivate UI
 
 @enduml
