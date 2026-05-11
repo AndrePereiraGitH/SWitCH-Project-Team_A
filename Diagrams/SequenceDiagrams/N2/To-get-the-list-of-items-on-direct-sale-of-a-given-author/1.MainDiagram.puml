@@ -58,24 +58,24 @@ activate pubRepo
 pubRepo --> Ctrl : pubIdList
 deactivate pubRepo
 
-Ctrl -> listingRepo : findDirectSaleIdsByPublicationSampleIdIn(pubIdList)
+Ctrl -> listingRepo : findIdsByPublicationSampleIdIn(pubIdList)
 activate listingRepo
 
 ref over listingRepo
-[[5.FindListingIdsByPublicationSampleIds.puml Find Listing Ids By Publication Sample Ids]]
+[[5.FindListingsByPublicationSampleIds.puml Find listings By PublicationSampleIds]]
 end ref
 
-listingRepo --> Ctrl : directSalesList
+listingRepo --> Ctrl : listingDMList
 deactivate listingRepo
 
-Ctrl -> directSaleMapper : fromDomainList(directSalesList)
+Ctrl -> directSaleMapper : fromDomainList(listingDMList)
 activate directSaleMapper
 
 directSaleMapper -->> ListDTO ** : <<create>>
 
-loop for each directSale in directSalesList
+loop for each listing in listingDMList
     directSaleMapper -->> dsDTO ** : <<create>>
-    directSaleMapper -> dsDTO : fromDomain(directSale)
+    directSaleMapper -> dsDTO : fromDomain(listingDM)
     activate dsDTO
     dsDTO --> directSaleMapper : directSaleDTO
     deactivate dsDTO

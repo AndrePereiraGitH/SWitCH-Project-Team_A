@@ -1,14 +1,12 @@
 @startuml
 hide footbox
 autonumber
-title Find Listing Ids By PublicationSampleIds
+title Find Listings By PublicationSampleIds
 
 participant ":Controller" as Ctrl
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJPA" as listingRepoJPA
 participant "listingDMList\n:List<ListingDM>" as listingDMList
-participant "listingDM\n:ListingDM" as listingDM
-participant "listingIdList\n:List<ListingId>" as listingIdList
 
 database "Database" as db
 
@@ -24,7 +22,7 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> listingRepo : findIdsByPublicationSampleIdIn(pubIdList)
+Ctrl -> listingRepo : findByPublicationSampleIdIn(pubIdList)
 activate listingRepo
 
 listingRepo -> listingRepoJPA : findAllByItemsIdAndSaleType(pubIdList, DIRECT_SALE)
@@ -32,24 +30,15 @@ activate listingRepoJPA
 
 listingRepoJPA -> db : query listing by publicationSampleId\nwhere saleType = DIRECT_SALE
 activate db
-db --> listingRepoJPA : listingId values
+db --> listingRepoJPA : listing records
 deactivate db
 
 listingRepoJPA -->> listingDMList ** : <<create>>
 listingRepoJPA --> listingRepo : listingDMList
 deactivate listingRepoJPA
 
-listingRepo -->> listingIdList ** : <<create>>
+listingRepo --> Ctrl : listingDMList
 
-loop for each listingDM in listingDMList
-    listingRepo -> listingDM : getId()
-    activate listingDM
-    listingDM --> listingRepo : id
-    deactivate listingDM
-    listingRepo -> listingIdList : add(id)
-end loop
-
-listingRepo --> Ctrl : listingIdList
 deactivate listingRepo
 
 @enduml

@@ -6,9 +6,8 @@ title Get All Authors in System
 participant ":Controller" as ctrl
 participant ":IAuthorRepository" as authorRepo
 participant ":IAuthorRepositoryJPA" as authorRepoJpa
-participant "authorDMList\n:List<AuthorDM>" as authorDMList
-participant "authorDM\n:AuthorDM" as authorDM
 participant ":AuthorAssembler" as authorAssembler
+participant "authorDMList\n:List<AuthorDM>" as authorDMList
 participant ":AuthorFactory" as authorFactory
 participant "authorsList\n:List<Author>" as authorsList
 participant "author\n:Author" as author
@@ -50,30 +49,30 @@ loop for each authorDM in authorDMList
     authorRepo -> authorAssembler : toDomain(authorDM)
     activate authorAssembler
 
-    authorAssembler -> authorDM : id()
-    activate authorDM
-    authorDM --> authorAssembler : id
-    deactivate authorDM
+    authorAssembler -> authorDMList : id()
+    activate authorDMList
+    authorDMList --> authorAssembler : id
+    deactivate authorDMList
 
-    authorAssembler -> authorDM : getName()
-    activate authorDM
-    authorDM --> authorAssembler : name
-    deactivate authorDM
+    authorAssembler -> authorDMList : getName()
+    activate authorDMList
+    authorDMList --> authorAssembler : name
+    deactivate authorDMList
 
-    authorAssembler -> authorDM : getCountryId()
-    activate authorDM
-    authorDM --> authorAssembler : countryId
-    deactivate authorDM
+    authorAssembler -> authorDMList : getCountryId()
+    activate authorDMList
+    authorDMList --> authorAssembler : countryId
+    deactivate authorDMList
 
-    authorAssembler -> authorDM : getDateOfBirth()
-    activate authorDM
-    authorDM --> authorAssembler : birthday
-    deactivate authorDM
+    authorAssembler -> authorDMList : getDateOfBirth()
+    activate authorDMList
+    authorDMList --> authorAssembler : birthday
+    deactivate authorDMList
 
-    authorAssembler -> authorDM : getBiography()
-    activate authorDM
-    authorDM --> authorAssembler : biography
-    deactivate authorDM
+    authorAssembler -> authorDMList : getBiography()
+    activate authorDMList
+    authorDMList --> authorAssembler : biography
+    deactivate authorDMList
 
     authorAssembler -> authorFactory : create(id, name, countryId,\n birthday, biography)
     activate authorFactory
@@ -83,6 +82,7 @@ loop for each authorDM in authorDMList
     deactivate authorFactory
 
     authorAssembler --> authorRepo : author
+    deactivate authorAssembler
 
     authorRepo -> authorsList : add(author)
 
