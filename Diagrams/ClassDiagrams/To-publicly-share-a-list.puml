@@ -1,18 +1,21 @@
 @startuml
-hide circle
+
+'left to right direction
+skinparam classAttributeIconSize 10
+hide empty members
+
 title To publicly share a list of mine
 
-class "UI019" as UI019 {
+class "UI" as UI {
 
 }
 
 'Controller
-class "US019ToPubliclyShareCollectionOfPublicationsController" as US019Controller {
+class "ToPubliclyShareCollectionOfPublicationsController" as Controller {
   -collectionRepository: ICollectionOfPublicationsRepository
-  -genreRepository: IGenreRepository
-  -userRepository: IUserRepository
+  -collectionService: CollectionOfPublicationsService
   +getUserCollections(userId: UserId): List<CollectionOfPublicationsDTO>
-  +makeCollectionPublic(collectionId: CollectionID): boolean
+  +makeCollectionPublic(collectionDTO: CollectionDTO): boolean
 }
 
 'Repository Interfaces
@@ -21,8 +24,30 @@ interface "ICollectionOfPublicationRepository" as ICollectionOfPublicationsRepos
  + makeCollectionPublic(id : CollectionOfPublicationsID) : boolean
 }
 
+interface "ICollectionOfPublicationsJPA" as ICollectionsJPA {
++findAllByUserId(ownerId : UserId) : CollectionOfPublications
+ +update(collection : CollectionOfPublications) : CollectionOfPublications
+}
+
+class "CollectionOfPublicationsJpaImpl" as collectionRepoJpaImpl {
+ -collectionsRepositoryJPA : ICollectionOfPublicationsRepositoryJpa
+ -collectionsAssembler : CollectionOfPublicationsAssembler
+ +findAllByUserId(ownerId : UserId) : CollectionOfPublications
+ +update(collection : CollectionOfPublications) : CollectionOfPublications
+}
+
+class "AutomaticGeneratedCollectionOfPublicationsJPAImpl" as jpaAutomatic {
+}
+
+class "CollectionOfPublicationsService" as service {
+-collectionRepository : ICollectionOfPublicationsRepository
+
++makeCollectionPublic(collectionId : CollectionOfPublicationsId) : boolean
+}
+
+
 'Domain
-class CollectionOfPublications {
+class "CollectionOfPublications" as collection{
   - id : CollectionOfPublicationsID
   - collectionName : String
   - collectionGenreId : GenreID
@@ -40,21 +65,34 @@ class US019CollectionOfPublicationsMapper {
 }
 
 class "US019CollectionOfPublicationsDTO" as DTO{
-        + name : String
-        + genreName : String
-        + ownerName : String
+        - id : CollectionOfPublicationsId
+        - name : String
+        - genreName : String
+        - ownerName : String
+}
+
+rectangle DataBase as db{
 }
 
 ' Interactions
-UI019 ..> US019Controller : uses
+UI ..> Controller : uses
 
-US019Controller ..> ICollectionOfPublicationsRepository : uses
-US019Controller ..> US019CollectionOfPublicationsMapper : uses
+Controller ..> ICollectionOfPublicationsRepository : uses
+Controller ..> US019CollectionOfPublicationsMapper : uses
 
-ICollectionOfPublicationsRepository "1" --> "*" CollectionOfPublications : manages
+Controller ..> service
 
-US019CollectionOfPublicationsMapper ..> CollectionOfPublications : maps from
+
+ICollectionOfPublicationsRepository "1" --> "*" collection : manages
+
+collectionRepoJpaImpl ..|> ICollectionOfPublicationsRepository : implements
+collectionRepoJpaImpl ..> ICollectionsJPA : uses
+
+US019CollectionOfPublicationsMapper ..> collection : maps from
 US019CollectionOfPublicationsMapper ..> DTO : creates
+jpaAutomatic ..|> ICollectionsJPA : implements
+jpaAutomatic ..> db : queries
 
+service --> collection : changes
 
 @enduml
