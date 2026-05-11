@@ -1,5 +1,5 @@
 @startuml
-title US028 - Listing Flow
+title Listing Flow
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 skinparam nodesep 80
