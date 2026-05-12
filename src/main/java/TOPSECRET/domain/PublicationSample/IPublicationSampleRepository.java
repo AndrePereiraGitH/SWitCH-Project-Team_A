@@ -1,6 +1,5 @@
 package TOPSECRET.domain.PublicationSample;
 
-
 import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.List;

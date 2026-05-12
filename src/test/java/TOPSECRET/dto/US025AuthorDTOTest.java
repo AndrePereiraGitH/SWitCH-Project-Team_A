@@ -1,100 +1,119 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Author.Author;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for AuthorDTO_US025 using mocks.
+ * Unit tests for {@link US025AuthorDTO}.
+ *
+ * <p>Covers:
+ * <ul>
+ *   <li>Constructor - valid creation</li>
+ *   <li>Getter - correct field retrieval after construction</li>
+ *   <li>Immutability - field is final</li>
+ *   <li>Equality - Lombok {@code @Value} generated {@code equals} and {@code hashCode}</li>
+ * </ul>
  */
-class AuthorDTO_US025Test {
+class US025AuthorDTOTest {
 
+    // =========================================================================
+    // Constructor
+    // =========================================================================
 
-    // ===============================
-    // Tests for fromAuthor()
-    // ===============================
-
+    /**
+     * Ensures a valid {@link US025AuthorDTO} is created with the given name.
+     */
     @Test
-    void fromAuthor_whenValidAuthor_shouldMapNameFromProfile() {
+    void constructorShouldCreateDTOWithGivenName() {
 
-        // Arrange
-        Author authorDouble = mock(Author.class);
-        when(authorDouble.getName()).thenReturn("Ken Follett");
+        // ACT
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
 
-        // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(authorDouble);
-
-        // Assert
-        assertNotNull(dto);
-        assertEquals("Ken Follett", dto.getName());
+        // ASSERT
+        assertNotNull(sut);
     }
 
+    // =========================================================================
+    // Getter
+    // =========================================================================
+
+    /**
+     * Ensures {@code getName()} returns the name provided at construction.
+     */
     @Test
-    void fromAuthor_whenAuthorHasDifferentName_shouldMapThatExactName() {
+    void getNameShouldReturnName() {
 
-        // Arrange
-        Author authorDouble = mock(Author.class);
-        when(authorDouble.getName()).thenReturn("Dan Brown");
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
 
-        // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(authorDouble);
+        // ACT
+        String result = sut.getName();
 
-        // Assert
-        assertNotNull(dto);
-        assertEquals("Dan Brown", dto.getName());
+        // ASSERT
+        assertEquals("John Doe", result);
     }
 
+    // =========================================================================
+    // Immutability
+    // =========================================================================
+
+    /**
+     * Ensures the {@code name} field is declared as {@code final}.
+     */
     @Test
-    void fromAuthor_whenAuthorIsNull_shouldReturnNull() {
+    void nameShouldBeFinal() throws NoSuchFieldException {
 
-        // Act
-        AuthorDTO_US025 dto = AuthorDTO_US025.fromAuthor(null);
+        // ACT
+        var field = US025AuthorDTO.class.getDeclaredField("name");
 
-        // Assert
-        assertNull(dto);
+        // ASSERT
+        assertTrue(java.lang.reflect.Modifier.isFinal(field.getModifiers()));
     }
 
-    // ===============================
-    // Tests for fromAuthors()
-    // ===============================
+    // =========================================================================
+    // Equality
+    // =========================================================================
 
+    /**
+     * Ensures two {@link US025AuthorDTO} instances with the same name are equal.
+     */
     @Test
-    void fromAuthors_listOfAuthors_shouldMapAllNames() {
+    void equalsShouldReturnTrueForSameName() {
 
-        // Arrange
-        Author authorDouble1 = mock(Author.class);
-        Author authorDouble2 = mock(Author.class);
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
+        US025AuthorDTO other = new US025AuthorDTO("John Doe");
 
-        when(authorDouble1.getName()).thenReturn("Author One");
-        when(authorDouble2.getName()).thenReturn("Author Two");
-
-        List<Author> authors = List.of(authorDouble1, authorDouble2);
-
-        // Act
-        List<AuthorDTO_US025> dtos = AuthorDTO_US025.fromAuthors(authors);
-
-        // Assert
-        assertEquals(2, dtos.size());
-        assertEquals("Author One", dtos.get(0).getName());
-        assertEquals("Author Two", dtos.get(1).getName());
+        // ASSERT
+        assertEquals(sut, other);
     }
 
+    /**
+     * Ensures two {@link US025AuthorDTO} instances with different names are not equal.
+     */
     @Test
-    void fromAuthors_nullList_shouldReturnMutableList() {
+    void equalsShouldReturnFalseForDifferentName() {
 
-        // Act
-        List<AuthorDTO_US025> dtos = AuthorDTO_US025.fromAuthors(null);
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
+        US025AuthorDTO other = new US025AuthorDTO("Jane Doe");
 
-        // Assert
-        assertNotNull(dtos);
-        assertTrue(dtos.isEmpty());
+        // ASSERT
+        assertNotEquals(sut, other);
+    }
 
-        // Verify list is mutable
-        dtos.add(new AuthorDTO_US025("Teste"));
-        assertEquals(1, dtos.size());
+    /**
+     * Ensures two {@link US025AuthorDTO} instances with the same name have the same hash code.
+     */
+    @Test
+    void hashCodeShouldBeEqualForSameName() {
+
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
+        US025AuthorDTO other = new US025AuthorDTO("John Doe");
+
+        // ASSERT
+        assertEquals(sut.hashCode(), other.hashCode());
     }
 }

@@ -1,58 +1,15 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.Author.Author;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Value;
 
 /**
- * Data Transfer Object (DTO) representing an author with just the name.
+ * Data Transfer Object representing an author for use in US025.
  */
-public class AuthorDTO_US025 {
-
-    private String name;
-
-    /**
-     * Private constructor to enforce use of factory methods.
-     *
-     * @param name The author's name.
-     */
-    AuthorDTO_US025(String name) {
-        this.name = name;
-    }
+@Value
+public class US025AuthorDTO {
 
     /**
-     * Creates a DTO from a given Author entity.
-     *
-     * @param author The Author entity to map.
-     * @return A new AuthorDTO_US025 instance, or null if author is null.
+     * The author's name.
      */
-    public static AuthorDTO_US025 fromAuthor(Author author) {
-        if (author == null) return null;
-        return new AuthorDTO_US025(author.getName());
-    }
-
-    /**
-     * Converts a list of Author entities to a list of DTOs using a traditional loop.
-     *
-     * @param authors List of Author entities.
-     * @return List of AuthorDTO_US025. Returns an empty list if input is null.
-     */
-    public static List<AuthorDTO_US025> fromAuthors(List<Author> authors) {
-        List<AuthorDTO_US025> dtos = new ArrayList<>();
-        if (authors == null) return dtos;
-
-        for (Author author : authors) {
-            AuthorDTO_US025 dto = fromAuthor(author);
-            if (dto != null) {
-                dtos.add(dto);
-            }
-        }
-        return dtos;
-    }
-
-    // ----- GETTER -----
-    public String getName() {
-        return name;
-    }
+    String name;
 }
