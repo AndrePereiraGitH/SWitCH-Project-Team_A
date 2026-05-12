@@ -5,6 +5,7 @@ import TOPSECRET.domain.ValueObjects.CountryId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link CityDM}.
@@ -20,26 +21,26 @@ class CityDMTest {
     @Test
     void shouldCreateCityDMWithValidData() {
         //Arrange
-        CityId cityID = new CityId("1");
-        CountryId countryID = new CountryId("PT");
+        CityId cityId = mock(CityId.class);
+        CountryId countryId = mock(CountryId.class);
 
-        CityDM cityDM = new CityDM(cityID, countryID, "Lisbon");
+        CityDM cityDM = new CityDM(cityId, countryId, "Lisbon");
 
         //Act + assert
-        assertEquals(cityID, cityDM.getCityID());
-        assertEquals(countryID, cityDM.getCountryID());
+        assertEquals(cityId, cityDM.getCityID());
+        assertEquals(countryId, cityDM.getCountryID());
         assertEquals("Lisbon", cityDM.getCityName());
     }
 
     @Test
     void shouldThrowWhenCityIdIsNull() {
         //Arrange
-        CountryId countryID = new CountryId("PT");
+        CountryId countryId = mock(CountryId.class);
 
         //Act
         NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> new CityDM(null, countryID, "Lisbon")
+                () -> new CityDM(null, countryId, "Lisbon")
         );
 
         //Assert
@@ -49,21 +50,21 @@ class CityDMTest {
     @Test
     void shouldThrowWhenCountryIdIsNull() {
         //Arrange
-        CityId cityID = new CityId("1");
+        CityId cityId = mock(CityId.class);
 
         //Act + assert
         assertThrows(NullPointerException.class,
-                () -> new CityDM(cityID, null, "Lisbon"));
+                () -> new CityDM(cityId, null, "Lisbon"));
     }
 
     @Test
     void shouldThrowWhenCityNameIsNull() {
         //Arrange
-        CityId cityID = new CityId("1");
-        CountryId countryID = new CountryId("PT");
+        CityId cityId = mock(CityId.class);
+        CountryId countryId = mock(CountryId.class);
 
         //Act + assert
         assertThrows(NullPointerException.class,
-                () -> new CityDM(cityID, countryID, null));
+                () -> new CityDM(cityId, countryId, null));
     }
 }

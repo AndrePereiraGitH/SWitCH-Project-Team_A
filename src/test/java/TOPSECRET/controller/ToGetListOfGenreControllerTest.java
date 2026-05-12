@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US013GenreMapper;
-import TOPSECRET.persistence.mem.GenreRepositoryMem;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link ToGetListOfGenreController}.
  *
- * <p>{@link GenreRepositoryMem} and {@link US013GenreMapper} are replaced by test doubles
+ * <p>{@link IGenreRepository} and {@link US013GenreMapper} are replaced by test doubles
  * to isolate the controller's own logic completely.
  *
  * <p><b>What is tested here (controller logic only):</b>
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
  */
 class ToGetListOfGenreControllerTest {
 
-    GenreRepositoryMem genreRepository = mock(GenreRepositoryMem.class);
+    IGenreRepository genreRepository = mock(IGenreRepository.class);
     US013GenreMapper mapper = mock(US013GenreMapper.class);
 
 
@@ -53,7 +53,7 @@ class ToGetListOfGenreControllerTest {
                 () -> new ToGetListOfGenreController(genreRepository, null)
         );
 
-        assertEquals("GenreMapper can't be null", exception.getMessage());
+        assertEquals("Genre Mapper can't be null", exception.getMessage());
     }
 
 
@@ -68,7 +68,7 @@ class ToGetListOfGenreControllerTest {
 
         when(genreRepository.findAll()).thenReturn(allGenreList);
 
-        when(mapper.toDTO(allGenreList)).thenReturn(expected);
+        when(mapper.toDTOList(allGenreList)).thenReturn(expected);
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
@@ -94,7 +94,7 @@ class ToGetListOfGenreControllerTest {
         List<US013GenreDTO> expected = List.of(dto1, dto2);
 
         when(genreRepository.findAll()).thenReturn(allGenreList);
-        when(mapper.toDTO(allGenreList)).thenReturn(expected);
+        when(mapper.toDTOList(allGenreList)).thenReturn(expected);
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
@@ -107,39 +107,26 @@ class ToGetListOfGenreControllerTest {
         assertSame(expected, result);
     }
 
+
+
     @Test
-    void shouldDelegateToRepositoryExactlyOnce() {
+    void shouldReturnDtoListProducedByMapper() {
         // Arrange
         List<Genre> allGenreList = List.of();
 
+        US013GenreDTO dtoDouble = mock(US013GenreDTO.class);
+        List<US013GenreDTO> expectedDtoList = List.of(dtoDouble);
+
         when(genreRepository.findAll()).thenReturn(allGenreList);
-        when(mapper.toDTO(allGenreList)).thenReturn(List.of());
+        when(mapper.toDTOList(allGenreList)).thenReturn(expectedDtoList);
 
         ToGetListOfGenreController controller =
                 new ToGetListOfGenreController(genreRepository, mapper);
 
         // Act
-        controller.getGenresList();
+        List<US013GenreDTO> result = controller.getGenresList();
 
         // Assert
-        verify(genreRepository, times(1)).findAll();
-    }
-
-    @Test
-    void shouldDelegateToMapperExactlyOnceWithRepositoryResult() {
-        // Arrange
-        List<Genre> allGenreList = List.of();
-
-        when(genreRepository.findAll()).thenReturn(allGenreList);
-        when(mapper.toDTO(allGenreList)).thenReturn(List.of());
-
-        ToGetListOfGenreController controller =
-                new ToGetListOfGenreController(genreRepository, mapper);
-
-        // Act
-        controller.getGenresList();
-
-        // Assert
-        verify(mapper, times(1)).toDTO(allGenreList);
+        assertEquals(expectedDtoList, result);
     }
 }

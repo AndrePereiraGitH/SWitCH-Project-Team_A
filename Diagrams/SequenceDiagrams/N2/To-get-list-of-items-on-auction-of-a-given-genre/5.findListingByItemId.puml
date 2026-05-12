@@ -1,0 +1,51 @@
+@startuml
+autonumber
+hide footbox
+title Find Listings By ItemId
+
+actor Buyer as User
+
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+participant ":IListing\nRepository" as ListingRepo
+participant ":IListing\nRepositoryJPA" as LJPA
+participant "listingDMList:\nList<ListingDM>"
+participant "listOfListingId:\nList<ListingId>"
+participant "DataBase" as DB
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+
+Controller -> ListingRepo : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
+activate ListingRepo
+ListingRepo -> LJPA : findIdsBy\nPublicationSampleIdIn(listOfItemsId)
+activate LJPA
+LJPA -> DB : SELECT * FROM listing\nWHERE publication_sample_id IN
+activate DB
+DB --> LJPA : data
+deactivate DB
+
+LJPA -->> "listingDMList:\nList<ListingDM>" ** : <<create>>
+LJPA -->> "listOfListingId:\nList<ListingId>" ** : <<create>>
+
+loop for each dm in listingDMList
+LJPA -> LJPA : listOfListingId.add(dm.getListingId())
+end
+
+LJPA --> ListingRepo : listOfListingId
+deactivate LJPA
+ListingRepo --> Controller : listOfListingId
+deactivate ListingRepo
+
+
+
+@enduml

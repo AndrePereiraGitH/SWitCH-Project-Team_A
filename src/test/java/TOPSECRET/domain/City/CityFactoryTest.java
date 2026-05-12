@@ -66,7 +66,7 @@ class CityFactoryTest {
     void shouldCreateValidCityWithExistingID() {
 
         // Arrange
-        CityId cityID = new CityId("existing-uuid");
+        CityId cityID = mock(CityId.class);
 
         // Act
         City city = anyFactory.create(cityID, anyCountryId, anyCityName);
