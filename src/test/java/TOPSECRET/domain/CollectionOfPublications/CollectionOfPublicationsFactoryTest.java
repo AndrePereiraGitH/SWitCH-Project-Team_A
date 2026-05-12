@@ -62,7 +62,7 @@ class CollectionOfPublicationsFactoryTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreIdDouble, result.getCollectionGenre());
         assertEquals(userIdDouble, result.getOwnerId());
-        assertTrue(result.isPrivate());
+        assertTrue(result.getIsPrivate());
     }
 
     @Test
@@ -132,7 +132,7 @@ class CollectionOfPublicationsFactoryTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreIdDouble, result.getCollectionGenre());
         assertEquals(userIdDouble, result.getOwnerId());
-        assertEquals(isPrivate, result.isPrivate());
+        assertEquals(isPrivate, result.getIsPrivate());
     }
 
     @Test

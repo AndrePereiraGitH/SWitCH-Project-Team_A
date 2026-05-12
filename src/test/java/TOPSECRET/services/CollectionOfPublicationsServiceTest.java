@@ -3,6 +3,7 @@ package TOPSECRET.services;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import javax.management.InstanceNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,6 +54,10 @@ class CollectionOfPublicationsServiceTest {
         genreIdDouble = mock(GenreId.class);
         userIdDouble = mock(UserId.class);
     }
+
+    // ===============================================================
+    // ------------------------- CONSTRUCTOR -------------------------
+    // ===============================================================
 
     @Test
     void constructorShouldThrowExceptionWhenRepositoryIsNull() {
@@ -95,6 +102,10 @@ class CollectionOfPublicationsServiceTest {
         assertNotNull(service);
     }
 
+    // ===============================================================
+    // --------------------- CREATE AND SAVE -------------------------
+    // ===============================================================
+
     @Test
     void createAndSaveShouldReturnACollectionOfPublications() {
 
@@ -124,4 +135,59 @@ class CollectionOfPublicationsServiceTest {
         // Assert
         assertEquals(collectionDouble, result);
     }
+
+    // ===========================================================================
+    // ------------------------- MAKE COLLECTION PUBLIC -------------------------
+    // ============================================================================
+
+    @Test
+    void makeCollectionPublic_shouldReturnTrueAndUpdate_whenCollectionWasPrivate()
+            throws InstanceNotFoundException {
+        // arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+
+        when(collection.makePublic()).thenReturn(true);
+
+        // act
+        boolean result = service.makeCollectionPublic(collectionId);
+
+        // assert
+        assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPublic_shouldReturnFalseAndNotUpdate_whenCollectionWasAlreadyPublic()
+            throws InstanceNotFoundException {
+
+        // arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenReturn(collection);
+
+        when(collection.makePublic())
+                .thenReturn(false);
+
+        // act
+        boolean result = service.makeCollectionPublic(collectionId);
+
+        // assert
+        assertFalse(result);
+    }
+
+    @Test
+    void makeCollectionPublic_shouldThrow_whenCollectionIdIsNull() {
+
+        // act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> service.makeCollectionPublic(null));
+
+        assertEquals("CollectionOfPublications Id cannot be null", ex.getMessage());
+    }
+
+
+
 }

@@ -3,9 +3,15 @@ package TOPSECRET.services;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.stereotype.Service;
+
+import javax.management.InstanceNotFoundException;
+import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -86,5 +92,29 @@ public class CollectionOfPublicationsService {
                 collectionOfPublicationsRepository.save(createdCollection);
 
         return savedCollection;
+    }
+
+    /**
+     * Makes the collection of publications with the given identifier public.
+     *
+     * @param collectionId the identifier of the collection to make public; must not be null
+     * @return {@code true} if the collection was changed to public,
+     *         {@code false} if it was already public
+     * @throws NullPointerException if {@code collectionId} is null
+     * @throws IllegalArgumentException if no collection is found with the given identifier
+     */
+    public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+
+        boolean changed = collection.makePublic();
+
+        if (changed) {
+            collectionOfPublicationsRepository.update(collection);
+        }
+
+        return changed;
     }
 }
