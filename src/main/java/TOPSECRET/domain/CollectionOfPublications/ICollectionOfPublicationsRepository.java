@@ -4,6 +4,7 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 /**
@@ -31,7 +32,14 @@ public interface ICollectionOfPublicationsRepository {
      * @throws IllegalArgumentException if the collection already exists
      */
     CollectionOfPublications save(CollectionOfPublications collectionOfPublications);
-
+    /**
+     * Updates an existing collection of publications.
+     *
+     * @param collection the collection of publications to update; must not be null
+     * @return the updated collection of publications
+     * @throws NullPointerException if {@code collection} is null
+     */
+    CollectionOfPublications update(CollectionOfPublications collection);
     /**
      * Verifies whether a collection with the given identifier exists.
      *
@@ -41,25 +49,26 @@ public interface ICollectionOfPublicationsRepository {
      * {@code false} otherwise
      * @throws NullPointerException if {@code collectionOfPublicationsID} is null
      */
+
     boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId);
 
     /**
-     * Returns all collections owned by a given user — US019.
+     * Finds a collection of publications by its unique identifier.
+     *
+     * @param collectionId the unique identifier of the collection to find; must not be null
+     * @return the collection of publications with the given identifier
+     * @throws NullPointerException if {@code collectionId} is null
+     */
+    CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException;
+
+    /**
+     * Returns all collections owned by a given user.
      *
      * @param ownerId the user to search for
      * @return list of collections owned by the user
      * @throws IllegalArgumentException if ownerId is null
      */
-    List<CollectionOfPublications> getUserCollections(UserId ownerId);
-
-    /**
-     * Makes a collection of publications public — US019.
-     *
-     * @param id the ID of the collection to search for; must not be null
-     * @return an {boolean} false, to confirm collection is now public
-     * @throws NullPointerException if {@code id} is null
-     */
-    boolean makeCollectionPublic(CollectionOfPublicationsId id);
+    List<CollectionOfPublications> findAllByOwnerId(UserId ownerId);
 
     /**
      * Returns all public collections that belong to a given genre — US020.
