@@ -7,6 +7,8 @@ participant ":Controller" as Ctrl
 participant ":IListingRepository" as listingRepo
 participant ":IListingRepositoryJPA" as listingRepoJPA
 participant "listingDMList\n:List<ListingDM>" as listingDMList
+participant ":ListingAssembler" as assembler
+participant "listingList\n:List<Listing>" as listingList
 
 database "Database" as db
 
@@ -37,8 +39,17 @@ listingRepoJPA -->> listingDMList ** : <<create>>
 listingRepoJPA --> listingRepo : listingDMList
 deactivate listingRepoJPA
 
-listingRepo --> Ctrl : listingDMList
+listingRepo -->> listingList ** : <<create>>
 
+loop for each listingDM in listingDMList
+    listingRepo -> assembler : toDomain(listingDM)
+    activate assembler
+    assembler --> listingRepo : listing
+    deactivate assembler
+    listingRepo -> listingList : add(listing)
+end
+
+listingRepo --> Ctrl : listingList
 deactivate listingRepo
 
 @enduml
