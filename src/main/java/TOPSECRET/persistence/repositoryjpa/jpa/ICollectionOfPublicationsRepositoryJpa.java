@@ -1,8 +1,11 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 /**
  * Spring Data JPA repository for {@link CollectionOfPublicationsDM}.
@@ -22,4 +25,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ICollectionOfPublicationsRepositoryJpa
         extends JpaRepository<CollectionOfPublicationsDM, CollectionOfPublicationsId> {
+    CollectionOfPublicationsDM update(CollectionOfPublicationsDM collectionDMtOUpdate);
+    List<CollectionOfPublicationsDM> findAllByOwnerId(UserId ownerId);
 }
