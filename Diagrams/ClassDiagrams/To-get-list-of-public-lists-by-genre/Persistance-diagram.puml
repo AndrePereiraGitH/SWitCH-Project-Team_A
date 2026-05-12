@@ -121,6 +121,10 @@ class UserFactory {
   +create(userId : UserId, username : String, profile : Profile, userRoles : Set<UserRole>) : User
 }
 
+
+rectangle Database{
+}
+
 GenreRepositoryJpaImpl ..|> IGenreRepository
 CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsRepository
 UserRepositoryJPAImpl ..|> IUserRepository
@@ -148,5 +152,14 @@ CollectionOfPublicationsFactory ..> CollectionOfPublications
 UserAssembler ..> UserDM
 UserAssembler --> UserFactory
 UserFactory ..> User
+
+IUserRepositoryJPA --> Database : queries
+UserDM --> Database : stored in
+
+ICollectionOfPublicationsRepositoryJpa --> Database : queries
+CollectionOfPublicationsDM --> Database : stored in
+
+IGenreRepositoryJpa --> Database : queries
+GenreDM --> Database : stored in
 
 @enduml

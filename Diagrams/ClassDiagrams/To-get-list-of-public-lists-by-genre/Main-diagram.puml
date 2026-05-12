@@ -160,15 +160,15 @@ CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsReposito
 CollectionOfPublicationsRepositoryJpaImpl --> ICollectionOfPublicationsRepositoryJpa : queries public collections
 CollectionOfPublicationsRepositoryJpaImpl --> CollectionOfPublicationsAssembler : maps DM to domain
 
-GenreRepositoryJpaImpl ..|> IGenreRepository
-GenreRepositoryJpaImpl --> IGenreRepositoryJpa : queries genres
+GenreRepositoryJpaImpl ..|> IGenreRepository : implements
+GenreRepositoryJpaImpl ..> IGenreRepositoryJpa : uses
 GenreRepositoryJpaImpl --> GenreAssembler : maps DM to domain
 
 GenreAssembler --> GenreFactory : uses
 GenreFactory --> GenreDM : creates
 
-UserRepositoryJPAImpl ..|> IUserRepository
-UserRepositoryJPAImpl --> IUserRepositoryJPA : queries users
+UserRepositoryJPAImpl ..|> IUserRepository : implements
+UserRepositoryJPAImpl ..> IUserRepositoryJPA : uses
 UserRepositoryJPAImpl --> UserAssembler : maps DM to domain
 
 UserAssembler --> UserFactory : uses
