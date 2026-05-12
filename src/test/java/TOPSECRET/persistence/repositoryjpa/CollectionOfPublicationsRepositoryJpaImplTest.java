@@ -225,4 +225,76 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    // =========================================================================
+    // getUserCollections()
+    // =========================================================================
+
+    @Test
+    void ensureGetUserCollectionsReturnsList() {
+
+        // ARRANGE
+        UserId ownerId = mock(UserId.class);
+        CollectionOfPublicationsDM dm = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        List<CollectionOfPublicationsDM> dmList = List.of(dm);
+        List<CollectionOfPublications> collections = List.of(collection);
+
+        when(jpa.findByOwnerId(ownerId)).thenReturn(dmList);
+        when(assembler.toDomainList(dmList)).thenReturn(collections);
+
+        // ACT
+        List<CollectionOfPublications> result = repo.getUserCollections(ownerId);
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    @Test
+    void ensureGetUserCollectionsReturnsCorrectSize() {
+
+        // ARRANGE
+        UserId ownerId = mock(UserId.class);
+        CollectionOfPublicationsDM dm = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        List<CollectionOfPublicationsDM> dmList = List.of(dm);
+        List<CollectionOfPublications> collections = List.of(collection);
+
+        when(jpa.findByOwnerId(ownerId)).thenReturn(dmList);
+        when(assembler.toDomainList(dmList)).thenReturn(collections);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repo.getUserCollections(ownerId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void ensureGetUserCollectionsThrowsExceptionWhenOwnerIdIsNull() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.getUserCollections(null));
+    }
+
+    @Test
+    void ensureGetUserCollectionsReturnsEmptyList() {
+
+        // ARRANGE
+        UserId ownerId = mock(UserId.class);
+
+        when(jpa.findByOwnerId(ownerId)).thenReturn(List.of());
+        when(assembler.toDomainList(List.of())).thenReturn(List.of());
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repo.getUserCollections(ownerId);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
 }
