@@ -49,7 +49,7 @@ interface IBibliographicalDataRepositoryJPA {
     + findAllByGenreID(genreId : GenreId) : List<BibliographicalDataDM>
 }
 
-class BibligraphicalDataRepositoryJPAImpl{}
+class BibliographicalDataRepositoryJPAImpl{}
 
 interface IPublicationSampleRepository {
     + findItemsIdByBibliographicalDataId(listOfBioDataId : List<BibliographicalDataId>) : List<PublicationSampleId>
@@ -102,6 +102,9 @@ class US022AuctionDTO {
     + US022AuctionDTO
 }
 
+rectangle DataBase{
+}
+
 ' --- Relações ---
 
 ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IGenreRepository : uses
@@ -112,9 +115,9 @@ ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IAuctionRepository :
 ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" US022GenreMapper : uses
 ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" US022AuctionMapper : uses
 
-IGenreRepository "1" <-. "1" IGenreRepositoryJPA : uses
 IGenreRepositoryJPA "1" <.. "1" GenreRepositoryJPAImpl : uses
 IGenreRepository "1" <|.. "1" GenreRepositoryJPAImpl : implements
+IGenreRepositoryJPA "1" ...> "1" DataBase : queries
 GenreRepositoryJPAImpl "1" .-> "1" GenreAssembler : uses
 
 GenreAssembler "1" .-> "1" GenreFactory : uses
@@ -123,21 +126,22 @@ GenreFactory "1" ..> "0..*" Genre : <<create>>
 US022GenreMapper "1" --> "0..*" Genre : reads
 US022GenreMapper "1" ..> "0..*" US022GenreDTO : <<create>>
 
-IBibliographicalDataRepository "1" <-. "1" IBibliographicalDataRepositoryJPA : uses
 IBibliographicalDataRepositoryJPA "1" <.. "1" BibliographicalDataRepositoryJPAImpl : uses
 IBibliographicalDataRepository "1" <|.. "1" BibliographicalDataRepositoryJPAImpl : implements
+IBibliographicalDataRepositoryJPA "1" ...> "1" DataBase : queries
 
-IPublicationSampleRepository "1" <-. "1" IPublicationSampleRepositoryJPA : uses
 IPublicationSampleRepositoryJPA "1" <.. PublicationSampleRepositoryJPAImpl : uses
 IPublicationSampleRepository "1" <|.. "1" PublicationSampleRepositoryJPAImpl : implements
+IPublicationSampleRepositoryJPA "1" ...> "1" DataBase : queries
 
-IListingRepository "1" <-. "1" IListingRepositoryJPA : uses
 IListingRepositoryJPA "1" <.. "1" ListingRepositoryJPAImpl : uses
 IListingRepository "1" <|.. "1" ListingRepositoryJPAImpl : implements
+IListingRepositoryJPA "1" ...> "1" DataBase : queries
 
-IAuctionRepository "1" <-. "1" IAuctionRepositoryJPA : uses
+
 IAuctionRepositoryJPA "1" <.. "1" AuctionRepositoryJPAImpl : uses
 IAuctionRepository "1" <|.. "1" AuctionRepositoryJPAImpl : implements
+IAuctionRepository "1" ...> "1" DataBase : queries
 
 AuctionRepositoryJPAImpl "1" .-> "1" AuctionAssembler : uses
 
