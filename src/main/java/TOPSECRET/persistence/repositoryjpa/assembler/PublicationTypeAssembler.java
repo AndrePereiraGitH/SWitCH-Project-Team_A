@@ -5,6 +5,9 @@ import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationTypeDM;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Assembler responsible for converting between
  * {@link PublicationType} (domain) and {@link PublicationTypeDM} (data model).
@@ -59,6 +62,33 @@ public class PublicationTypeAssembler {
                 dm.getId(),
                 dm.getMediaFormat()
         );
+    }
+
+    /**
+     * Converts a list of PublicationTypeDM objects into a list of PublicationType domain objects.
+     *
+     * @param dmList the list of PublicationTypeDM objects retrieved from persistence
+     * @return a list of PublicationType domain objects
+     */
+    public List<PublicationType> toDomainList(List<PublicationTypeDM> dmList) {
+
+        if (dmList == null) {
+            throw new IllegalArgumentException("PublicationTypeDM list must not be null");
+        }
+
+        List<PublicationType> result = new ArrayList<>();
+
+        for (PublicationTypeDM dm : dmList) {
+
+            PublicationType pt = factory.create(
+                    dm.getId(),
+                    dm.getMediaFormat()
+            );
+
+            result.add(pt);
+
+        }
+        return result;
     }
 
     /**
