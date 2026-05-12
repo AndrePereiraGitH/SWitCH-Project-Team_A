@@ -49,6 +49,8 @@ interface IBibliographicalDataRepositoryJPA {
     + findAllByGenreID(genreId : GenreId) : List<BibliographicalDataDM>
 }
 
+class BibligraphicalDataRepositoryJPAImpl{}
+
 interface IPublicationSampleRepository {
     + findItemsIdByBibliographicalDataId(listOfBioDataId : List<BibliographicalDataId>) : List<PublicationSampleId>
 }
@@ -56,6 +58,8 @@ interface IPublicationSampleRepository {
 interface IPublicationSampleRepositoryJPA {
     + findAllByBibliographicalDataId(listOfBioDataId : List<BibliographicalDataId>) : List<PublicationSampleDM>
 }
+
+class PublicationSampleRepositoryJPAImpl{}
 
 interface IListingRepository {
     + findAllListingId(listOfItemsId : List<PublicationSampleId>) : List<ListingId>
@@ -65,6 +69,8 @@ interface IListingRepositoryJPA {
     + findAllByItemsId(listOfItemsId : List<PublicationSampleId>) : List<ListingDM>
 }
 
+class ListingRepositoryJPAImpl{}
+
 interface IAuctionRepository {
     + findAllByListingId(listOfListing : List<ListingId>) : List<Auction>
 }
@@ -72,6 +78,8 @@ interface IAuctionRepository {
 interface IAuctionRepositoryJPA {
     + findAllByListingId(listOfListingId : List<ListingId>) : List<AuctionDM>
 }
+
+class AuctionRepositoryJPAImpl{}
 
 class AuctionAssembler {
     + toDomain(dm : AuctionDM) : Auction
@@ -104,8 +112,10 @@ ToGetListOfItemsOnAuctionOfGivenGenreController "1" ..> "1" IAuctionRepository :
 ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" US022GenreMapper : uses
 ToGetListOfItemsOnAuctionOfGivenGenreController "1" .-> "1" US022AuctionMapper : uses
 
-IGenreRepository "1" <|-. "1" IGenreRepositoryJPA : implements
-IGenreRepository "1" .-> "1" GenreAssembler : uses
+IGenreRepository "1" <-. "1" IGenreRepositoryJPA : uses
+IGenreRepositoryJPA "1" <.. "1" GenreRepositoryJPAImpl : uses
+IGenreRepository "1" <|.. "1" GenreRepositoryJPAImpl : implements
+GenreRepositoryJPAImpl "1" .-> "1" GenreAssembler : uses
 
 GenreAssembler "1" .-> "1" GenreFactory : uses
 GenreFactory "1" ..> "0..*" Genre : <<create>>
@@ -113,14 +123,23 @@ GenreFactory "1" ..> "0..*" Genre : <<create>>
 US022GenreMapper "1" --> "0..*" Genre : reads
 US022GenreMapper "1" ..> "0..*" US022GenreDTO : <<create>>
 
-IBibliographicalDataRepository "1" <|-. "1" IBibliographicalDataRepositoryJPA : implements
+IBibliographicalDataRepository "1" <-. "1" IBibliographicalDataRepositoryJPA : uses
+IBibliographicalDataRepositoryJPA "1" <.. "1" BibliographicalDataRepositoryJPAImpl : uses
+IBibliographicalDataRepository "1" <|.. "1" BibliographicalDataRepositoryJPAImpl : implements
 
-IPublicationSampleRepository "1" <|-. "1" IPublicationSampleRepositoryJPA : implements
+IPublicationSampleRepository "1" <-. "1" IPublicationSampleRepositoryJPA : uses
+IPublicationSampleRepositoryJPA "1" <.. PublicationSampleRepositoryJPAImpl : uses
+IPublicationSampleRepository "1" <|.. "1" PublicationSampleRepositoryJPAImpl : implements
 
-IListingRepository "1" <|-. "1" IListingRepositoryJPA : implements
+IListingRepository "1" <-. "1" IListingRepositoryJPA : uses
+IListingRepositoryJPA "1" <.. "1" ListingRepositoryJPAImpl : uses
+IListingRepository "1" <|.. "1" ListingRepositoryJPAImpl : implements
 
-IAuctionRepository "1" <|-. "1" IAuctionRepositoryJPA : implements
-IAuctionRepository "1" .-> "1" AuctionAssembler : uses
+IAuctionRepository "1" <-. "1" IAuctionRepositoryJPA : uses
+IAuctionRepositoryJPA "1" <.. "1" AuctionRepositoryJPAImpl : uses
+IAuctionRepository "1" <|.. "1" AuctionRepositoryJPAImpl : implements
+
+AuctionRepositoryJPAImpl "1" .-> "1" AuctionAssembler : uses
 
 AuctionAssembler "1" .-> "1" AuctionFactory : uses
 AuctionFactory "1" ..> "0..*" Auction : <<create>>

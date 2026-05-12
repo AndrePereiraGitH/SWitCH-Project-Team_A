@@ -17,11 +17,16 @@ interface IPublicationTypeRepository {
   +findAll(): List<PublicationType>
 }
 
+class PublicationTypeRepositoryJPAImpl {
+}
+
 interface IPublicationTypeRepositoryJPA {
   +findAll(): List<PublicationType>
 }
 
-IPublicationTypeRepository <|.. IPublicationTypeRepositoryJPA : implements
+' IPublicationTypeRepository "1" ..> "1" IPublicationTypeRepositoryJPA : uses
+IPublicationTypeRepository "1" <|.. "1" PublicationTypeRepositoryJPAImpl : implements
+IPublicationTypeRepositoryJPA "1" <.. "1" PublicationTypeRepositoryJPAImpl : uses
 
 ToGetPublicationTypeListController "1" -.-> "1" IPublicationTypeRepository : uses
 
@@ -46,7 +51,7 @@ class PublicationTypeFactory {
 PublicationTypeAssembler "1" -.-> "1" PublicationTypeFactory : uses
 PublicationTypeFactory "1" --> "*" PublicationType : creates
 
-IPublicationTypeRepository "1" -.-> "1" PublicationTypeAssembler : uses
+PublicationTypeRepositoryJPAImpl "1" -.-> "1" PublicationTypeAssembler : uses
 
 ' ====== DTO & Mapper ======
 class US014PublicationTypeDTO {
