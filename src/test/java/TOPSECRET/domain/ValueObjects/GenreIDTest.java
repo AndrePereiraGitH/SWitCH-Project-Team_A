@@ -68,6 +68,25 @@ class GenreIDTest {
         assertThrows(IllegalArgumentException.class, () -> new GenreId(id));
     }
 
+    @Test
+    void shouldNotBeEqualToNull() {
+        // ARRANGE
+        GenreId genreId = new GenreId("1");
+
+        // ACT & ASSERT
+        assertNotEquals(null, genreId);
+    }
+
+    @Test
+    void shouldNotBeEqualToDifferentObjectType() {
+
+        // ARRANGE
+        GenreId genreId = new GenreId("1");
+
+        // ACT & ASSERT
+        assertNotEquals("1", genreId);
+    }
+
     // Two GenreIDs with the same value must be equal
     @Test
     void shouldBeEqualWhenSameValue() {

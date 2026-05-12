@@ -1,7 +1,7 @@
 package TOPSECRET.domain.City;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 
 import java.util.Objects;
@@ -10,8 +10,8 @@ import java.util.UUID;
 /**
  * Domain aggregate representing a City within a specific country.
  *
- * <p>A City is identified by a {@link CityID} and belongs to a country
- * referenced by {@link CountryId}. Identity is based solely on {@link CityID}.</p>
+ * <p>A City is identified by a {@link CityId} and belongs to a country
+ * referenced by {@link CountryId}. Identity is based solely on {@link CityId}.</p>
  *
  * <p>Validation rules:</p>
  * <ul>
@@ -19,14 +19,14 @@ import java.util.UUID;
  *     <li>CountryID must not be null</li>
  * </ul>
  */
-public class City implements AggregateRoot<CityID> {
+public class City implements AggregateRoot<CityId> {
 
-    private CityID cityID;
+    private CityId cityID;
     private CountryId _countryId;
     private String _cityName;
 
     /**
-     * Constructs a new City, generating a random {@link CityID}.
+     * Constructs a new City, generating a random {@link CityId}.
      *
      * @param countryID the country this city belongs to; must not be {@code null}
      * @param cityName  the name of the city; must not be {@code null} or blank
@@ -43,18 +43,18 @@ public class City implements AggregateRoot<CityID> {
 
         _countryId = countryID;
         _cityName = cityName;
-        this.cityID = new CityID(UUID.randomUUID().toString());
+        this.cityID = new CityId(UUID.randomUUID().toString());
     }
 
     /**
-     * Reconstitutes an existing City from persistence with a known {@link CityID}.
+     * Reconstitutes an existing City from persistence with a known {@link CityId}.
      *
      * @param cityID    the existing domain identifier; must not be {@code null}
      * @param countryID the country this city belongs to; must not be {@code null}
      * @param cityName  the name of the city; must not be {@code null} or blank
      * @throws IllegalArgumentException if any constraint is violated
      */
-    protected City(CityID cityID, CountryId countryID, String cityName) {
+    protected City(CityId cityID, CountryId countryID, String cityName) {
         if (cityName == null || cityName.isBlank())
             throw new IllegalArgumentException("A city name cannot be left blank");
         if (countryID == null)
@@ -76,7 +76,7 @@ public class City implements AggregateRoot<CityID> {
     }
 
     @Override
-    public CityID id() { return cityID; }
+    public CityId id() { return cityID; }
 
     @Override
     public String toString() {

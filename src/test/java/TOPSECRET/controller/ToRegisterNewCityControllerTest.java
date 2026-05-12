@@ -27,7 +27,7 @@ class ToRegisterNewCityControllerTest {
     }
 
     @Test
-    void shouldCreateAndPersistCity() {
+    void shouldRegister() {
 
         // Arrange
         ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
@@ -36,7 +36,7 @@ class ToRegisterNewCityControllerTest {
                 .thenReturn(doubleCity);
 
         // Act
-        City result = controller.createAndPersistCity("PORTUGAL_ID", "Porto");
+        City result = controller.register("PORTUGAL_ID", "Porto");
 
         // Assert
         assertEquals(doubleCity, result);
@@ -51,7 +51,7 @@ class ToRegisterNewCityControllerTest {
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> controller.createAndPersistCity("PORTUGAL_ID", "Porto"));
+                () -> controller.register("PORTUGAL_ID", "Porto"));
         assertEquals("City already exists", ex.getMessage());
     }
 
@@ -62,7 +62,7 @@ class ToRegisterNewCityControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.createAndPersistCity("", "Porto"));
+                () -> controller.register("", "Porto"));
     }
 
     @Test
@@ -72,6 +72,6 @@ class ToRegisterNewCityControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.createAndPersistCity(null, "Porto"));
+                () -> controller.register(null, "Porto"));
     }
 }

@@ -2,10 +2,9 @@ package TOPSECRET.persistence.repositoryjpa.assembler;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
-import TOPSECRET.domain.ValueObjects.CityID;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,20 +19,19 @@ import static org.mockito.Mockito.*;
  */
 class CityAssemblerTest {
 
-    private CityFactory doubleCityFactory;
-    private CityAssembler assembler;
-
     @Test
     void shouldConvertDomainToDM() {
 
         // Arrange
         CityFactory doubleCityFactory = mock(CityFactory.class);
         CityAssembler assembler = new CityAssembler(doubleCityFactory);
-        CityID cityID = new CityID("test-uuid");
-        CountryId countryID = new CountryId("PORTUGAL_ID");
+
+        CityId cityId = mock(CityId.class);
+        CountryId countryId = mock(CountryId.class);
+
         City doubleCity = mock(City.class);
-        when(doubleCity.id()).thenReturn(cityID);
-        when(doubleCity.getCityCountryID()).thenReturn(countryID);
+        when(doubleCity.id()).thenReturn(cityId);
+        when(doubleCity.getCityCountryID()).thenReturn(countryId);
         when(doubleCity.getCityName()).thenReturn("Porto");
 
         // Act
@@ -41,8 +39,8 @@ class CityAssemblerTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(cityID, result.getCityID());
-        assertEquals(countryID, result.getCountryID());
+        assertEquals(cityId, result.getCityID());
+        assertEquals(countryId, result.getCountryID());
         assertEquals("Porto", result.getCityName());
     }
 
@@ -52,9 +50,12 @@ class CityAssemblerTest {
         // Arrange
         CityFactory doubleCityFactory = mock(CityFactory.class);
         CityAssembler assembler = new CityAssembler(doubleCityFactory);
-        CityID cityID = new CityID("test-uuid");
-        CountryId countryID = new CountryId("PORTUGAL_ID");
+
+        CityId cityID = mock(CityId.class);
+        CountryId countryID = mock(CountryId.class);
+
         CityDM cityDM = new CityDM(cityID, countryID, "Porto");
+
         City doubleCity = mock(City.class);
         when(doubleCityFactory.create(cityID, countryID, "Porto")).thenReturn(doubleCity);
 
@@ -63,6 +64,5 @@ class CityAssemblerTest {
 
         // Assert
         assertEquals(doubleCity, result);
-        verify(doubleCityFactory).create(cityID, countryID, "Porto");
     }
 }
