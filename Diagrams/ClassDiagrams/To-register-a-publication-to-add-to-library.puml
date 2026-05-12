@@ -6,14 +6,13 @@
  class UI
 
  class ToRegisterNewPublicationCtrl {
-   -publicationSampleService: PublicationSampleService
-   +register(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+   +register(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus,
+   editionId: EditionId, condition: Condition): PublicationSample
  }
 
  class PublicationSampleService {
-   -publicationSampleRepository: IPublicationSampleRepository
-   -factory: PublicationSampleFactory
-   +createAndSave(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+   +createAndSave(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus,
+   editionId: EditionId, condition: Condition): PublicationSample
  }
 
  class PublicationSample {
@@ -28,15 +27,17 @@
  }
 
  class PublicationSampleFactory {
-   +create(bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
-   +create(publicationSampleId: PublicationSampleId, bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition)
+   +create(bibliographicalDataId: BibliographicalDataId, userId: UserId,
+   publicationStatus: PublicationStatus, editionId: EditionId, condition: Condition): PublicationSample
+   +create(publicationSampleId: PublicationSampleId, bibliographicalDataId: BibliographicalDataId, userId: UserId, publicationStatus: PublicationStatus,
+   editionId: EditionId, condition: Condition): PublicationSample
  }
 
  interface IPublicationSampleRepository {
-   +save(publicationSample: PublicationSample)
-   +existsById(publicationSampleId: PublicationSampleId)
-   +findAll()
-   +findById(publicationSampleId: PublicationSampleId)
+   +save(publicationSample: PublicationSample): PublicationSample
+   +existsById(publicationSampleId: PublicationSampleId): boolean
+   +findAll(): List<PublicationSample>
+   +findById(publicationSampleId: PublicationSampleId): Optional<PublicationSample>
  }
 
  class PublicationSampleRepositoryJpaImpl {
@@ -54,8 +55,8 @@
  }
 
  class PublicationSampleAssembler {
-   +toDM(publicationSample: PublicationSample)
-   +toDomain(publicationSampleDM: PublicationSampleDM)
+   +toDM(publicationSample: PublicationSample): PublicationSampleDM
+   +toDomain(publicationSampleDM: PublicationSampleDM): PublicationSample
  }
 
  class PublicationSampleDM {

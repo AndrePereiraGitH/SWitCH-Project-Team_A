@@ -16,14 +16,13 @@ import TOPSECRET.services.PublicationSampleService;
  *
  * <p>This controller follows an orchestration approach, delegating
  * the creation and persistence of publication samples to the
- * {@link IPublicationSampleRepository}.</p>
+ * {@link PublicationSampleService}.</p>
  *
  * <p>It does not contain domain logic or invariant enforcement beyond basic
  * dependency validation.</p>
  *
- * <p><b>Note:</b> This implementation assumes that all required identifiers
- * (e.g., {@link UserId}, {@link BibliographicalDataId}, {@link EditionId})
- * are already validated and provided by the caller.</p>
+ * <p><b>Note:</b> Validation, creation, and persistence responsibilities are
+ * delegated to the service layer.</p>
  */
 
 public class ToRegisterNewPublicationCtrl {

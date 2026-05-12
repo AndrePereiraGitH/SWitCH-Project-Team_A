@@ -1,15 +1,15 @@
 @startuml
 hide footbox
 autonumber
-title Register a New Publication Sample
+title To Register a New Publication Sample
 
 actor User
 participant ":UI" as UI
 participant ":ToRegisterNewPublicationCtrl" as Controller
 participant ":PublicationSampleService" as Service
-participant ":PublicationSampleFactory" as Factory
 participant ":IPublicationSampleRepository" as Repo
 participant ":PublicationSampleAssembler" as Assembler
+participant ":PublicationSampleFactory" as Factory
 participant ":IPublicationSampleRepositoryJPA" as JPA
 
 participant "pbSample: PublicationSample" as pbSample
@@ -17,7 +17,13 @@ participant "pbSampleDM: PublicationSampleDM" as pbSampleDM
 
 database "DB" as DB
 
-User -> UI : Request to register a publication sample
+User -> UI : I want to register a  publication
+activate UI
+
+UI --> User : Please enter the publication that \nyou want to add on MiteLovers
+deactivate UI
+
+User -> UI : Here are the details
 activate UI
 
 UI -> Controller : register(bibliographicalDataId, userId,\npublicationStatus, editionId, condition)
@@ -55,7 +61,7 @@ activate DB
 DB --> JPA : data
 deactivate DB
 
-JPA --> pbSampleDM : persisted data
+JPA --> Repo : persisted pbSampleDM
 deactivate JPA
 
 ' ==============
@@ -64,7 +70,8 @@ deactivate JPA
 Repo -> Assembler : toDomain(pbSampleDM)
 activate Assembler
 
-Assembler --> Factory : create(pubSampleId, bibliographicalDataId,\nuserId, publicationStatus, editionId, condition)
+Assembler -> Factory : create(pubSampleId, bibliographicalDataId,\nuserId, publicationStatus, editionId, condition)
+
 activate Factory
 Factory -->> pbSample** : <<create>>
 Factory --> Assembler : pbSample
