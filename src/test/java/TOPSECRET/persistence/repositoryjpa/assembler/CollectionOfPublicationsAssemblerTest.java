@@ -61,7 +61,7 @@ class CollectionOfPublicationsAssemblerTest {
         when(collectionDouble.getCollectionName()).thenReturn(collectionName);
         when(collectionDouble.getCollectionGenre()).thenReturn(genreIdDouble);
         when(collectionDouble.getOwnerId()).thenReturn(userIdDouble);
-        when(collectionDouble.isPrivate()).thenReturn(isPrivate);
+        when(collectionDouble.getIsPrivate()).thenReturn(isPrivate);
 
         // Act
         CollectionOfPublicationsDM result =

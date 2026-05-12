@@ -211,7 +211,7 @@ class CollectionOfPublicationsDMTest {
     }
 
     @Test
-    void isPrivateShouldReturnCorrectValue() {
+    void getIsPrivateShouldReturnCorrectValue() {
 
         // Arrange
         CollectionOfPublicationsDM result =
@@ -228,7 +228,7 @@ class CollectionOfPublicationsDMTest {
     }
 
     @Test
-    void isPrivateShouldReturnFalseWhenCollectionIsPublic() {
+    void isPrivateShouldReturnFalseWhenCollectionGetIsPublic() {
 
         // Arrange
         boolean isPrivate = false;

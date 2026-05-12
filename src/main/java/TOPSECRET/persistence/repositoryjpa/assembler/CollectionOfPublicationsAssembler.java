@@ -51,7 +51,7 @@ public class CollectionOfPublicationsAssembler {
                 new CollectionOfPublicationsDM(
                         collection.id(), collection.getCollectionName(),
                         collection.getCollectionGenre(), collection.getOwnerId(),
-                        collection.isPrivate()
+                        collection.getIsPrivate()
                 );
 
         return collectionDM;
