@@ -58,16 +58,17 @@ activate JPA
 
 JPA -> DB : INSERT
 activate DB
-DB --> JPA : data
+DB --> JPA : persisted data
 deactivate DB
 
+JPA -->> pbSampleDM** : <<create>>
 JPA --> Repo : persisted pbSampleDM
 deactivate JPA
 
 ' ==============
 ' Reconstruction
 ' ==============
-Repo -> Assembler : toDomain(pbSampleDM)
+Repo -> Assembler : toDomain(persisted pbSampleDM)
 activate Assembler
 
 Assembler -> Factory : create(pubSampleId, bibliographicalDataId,\nuserId, publicationStatus, editionId, condition)
