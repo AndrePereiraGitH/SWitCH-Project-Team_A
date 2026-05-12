@@ -23,12 +23,12 @@ public class ToGetListOfGenreController {
     private IGenreRepository _genreRepository;
     private US013GenreMapper _mapper;
 
-    public ToGetListOfGenreController(GenreRepositoryMem genreRepository, US013GenreMapper mapper) {
+    public ToGetListOfGenreController(IGenreRepository genreRepository, US013GenreMapper mapper) {
         if (genreRepository == null) {
             throw new IllegalArgumentException("Genre Repository can't be null");
         }
         if (mapper == null) {
-            throw new IllegalArgumentException("GenreMapper can't be null");
+            throw new IllegalArgumentException("Genre Mapper can't be null");
         }
 
 
@@ -36,8 +36,17 @@ public class ToGetListOfGenreController {
         this._mapper = mapper;
     }
 
+    /**
+     * Retrieves all available genres and converts them into DTOs.
+     *
+     * <p>This method delegates the retrieval of genres to the repository,
+     * which returns a list of domain objects. The result is then transformed
+     * into a list of {@link US013GenreDTO} objects for use in the presentation layer.</p>
+     *
+     * @return a list of genre DTOs representing all official genres
+     */
     public List<US013GenreDTO> getGenresList() {
         List<Genre> allGenreList = _genreRepository.findAll();
-        return _mapper.toDTO(allGenreList);
+        return _mapper.toDTOList(allGenreList);
     }
 }

@@ -78,7 +78,7 @@ public class US023ListingMapper {
     /**
      * Converts a list of {@link Listing} objects into a list of DTOs.
      *
-     * @param listing the list of direct sale listings to convert; must not be {@code null}
+     * @param listings the list of direct sale listings to convert; must not be {@code null}
      * @return a list of {@link US023ListingDTO}; never {@code null}, may be empty
      * @throws InstanceNotFoundException if any referenced bibliographical data, edition, or author
      *                                   cannot be found in their respective repositories

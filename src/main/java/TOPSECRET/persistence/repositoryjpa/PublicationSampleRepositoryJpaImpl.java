@@ -126,9 +126,6 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return List.of();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataId> bds) {
         return List.of();
@@ -139,7 +136,21 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
-        return List.of();
+
+        if (listOfEditionIds == null) {
+            throw new IllegalArgumentException("listOfEditionIds cannot be null");
+        }
+
+        if (listOfEditionIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<PublicationSampleDM> publicationSamples =
+                publicationSampleRepositoryJpa.findAllByEditionIdIn(listOfEditionIds);
+
+        return publicationSamples.stream()
+                .map(PublicationSampleDM::getPubSampleId)
+                .toList();
     }
 
     /**

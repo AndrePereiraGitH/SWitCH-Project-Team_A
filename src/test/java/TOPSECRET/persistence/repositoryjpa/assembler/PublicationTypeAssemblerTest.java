@@ -56,9 +56,12 @@ class PublicationTypeAssemblerTest {
     void shouldConvertToDomainCorrectly() {
 
         // ARRANGE
-        PublicationTypeId id = new PublicationTypeId("1");
+        PublicationTypeId id = mock(PublicationTypeId.class);
 
-        PublicationTypeDM dm = new PublicationTypeDM(id, "Book");
+        PublicationTypeDM dm = mock(PublicationTypeDM.class);
+
+        when(dm.getId()).thenReturn(id);
+        when(dm.getMediaFormat()).thenReturn("Book");
 
         PublicationType publicationTypeDouble = mock(PublicationType.class);
 
@@ -125,13 +128,23 @@ class PublicationTypeAssemblerTest {
     void shouldConvertListWithCorrectSize() {
 
         // ARRANGE
-        PublicationTypeDM dm1 = new PublicationTypeDM(new PublicationTypeId("1"), "Book");
-        PublicationTypeDM dm2 = new PublicationTypeDM(new PublicationTypeId("2"), "Magazine");
+        PublicationTypeId id1 = mock(PublicationTypeId.class);
+        PublicationTypeId id2 = mock(PublicationTypeId.class);
+        PublicationTypeDM dm1 = mock(PublicationTypeDM.class);
+        PublicationTypeDM dm2 = mock(PublicationTypeDM.class);
+
+        when(dm1.getId()).thenReturn(id1);
+        when(dm1.getMediaFormat()).thenReturn("Book");
+
+        when(dm2.getId()).thenReturn(id2);
+        when(dm2.getMediaFormat()).thenReturn("Magazine");
+
         PublicationType publicationType1 = mock(PublicationType.class);
+
         PublicationType publicationType2 = mock(PublicationType.class);
 
-        when(factoryDouble.create(dm1.getId(), dm1.getMediaFormat())).thenReturn(publicationType1);
-        when(factoryDouble.create(dm2.getId(), dm2.getMediaFormat())).thenReturn(publicationType2);
+        when(factoryDouble.create(id1, "Book")).thenReturn(publicationType1);
+        when(factoryDouble.create(id2, "Magazine")).thenReturn(publicationType2);
 
         List<PublicationTypeDM> dmList = List.of(dm1, dm2);
 
@@ -146,8 +159,11 @@ class PublicationTypeAssemblerTest {
     void shouldConvertFirstElementCorrectly() {
 
         // ARRANGE
-        PublicationTypeId id = new PublicationTypeId("1");
-        PublicationTypeDM dm = new PublicationTypeDM(id, "Book");
+        PublicationTypeId id = mock(PublicationTypeId.class);
+        PublicationTypeDM dm = mock(PublicationTypeDM.class);
+
+        when(dm.getId()).thenReturn(id);
+        when(dm.getMediaFormat()).thenReturn("Book");
 
         PublicationType publicationTypeDouble = mock(PublicationType.class);
 
@@ -167,8 +183,12 @@ class PublicationTypeAssemblerTest {
     void shouldPreserveMediaFormatInConversion() {
 
         // ARRANGE
-        PublicationTypeId id = new PublicationTypeId("1");
-        PublicationTypeDM dm = new PublicationTypeDM(new PublicationTypeId("1"), "Book");
+        PublicationTypeId id = mock(PublicationTypeId.class);
+        PublicationTypeDM dm = mock(PublicationTypeDM.class);
+
+        when(dm.getId()).thenReturn(id);
+        when(dm.getMediaFormat()).thenReturn("Book");
+
         PublicationType publicationTypeDouble = mock(PublicationType.class);
 
         when(publicationTypeDouble.getMediaFormat()).thenReturn("Book");
