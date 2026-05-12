@@ -1,0 +1,31 @@
+@startuml
+hide footbox
+autonumber
+title Build Listing DTOs
+
+participant ":US028ToGetTheListOfItemsOnAuctionOfAGivenPublisherController" as Ctrl
+participant ":US028ListingMapper" as listingMapper
+participant "auctionListings:List<Listing>" as auctionListings
+participant "auctionListingsDTO:List<US028ListingDTO>" as auctionListingsDTO
+participant "auctionListingDTO:US028ListingDTO" as auctionListingDTO
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[./main.puml Return to Main Diagram]]
+end note
+
+Ctrl -> listingMapper : toDTO(auctionListings)
+activate listingMapper
+
+listingMapper -->> auctionListingsDTO ** : <<create>>
+
+loop for each listing in auctionListings
+    listingMapper -> auctionListingDTO ** : toDTO(listing)
+    listingMapper -> listingMapper : auctionListingsDTO.add(auctionListingDTO)
+end
+
+listingMapper --> Ctrl : auctionListingsDTO
+deactivate listingMapper
+
+@enduml
