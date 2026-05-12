@@ -59,7 +59,7 @@ public class ListingAssembler {
                 listing.getSaleType(),
                 listing.getListingTitle(),
                 convertPicturesToDM(listing.getPictures()),
-                listing.getPrice().toString());
+                listing.getPrice().getPrice().toPlainString());
 
         return listingDM;
     }
