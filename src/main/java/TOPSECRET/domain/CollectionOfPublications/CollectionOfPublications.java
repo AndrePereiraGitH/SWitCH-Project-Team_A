@@ -5,7 +5,6 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import lombok.Setter;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -112,26 +111,6 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._ownerId = userId;
     }
 
-    public boolean isPrivate() {
-        return _isPrivate;
-    }
-
-    public String getCollectionName() {
-        return _collectionName;
-    }
-
-    public GenreId getCollectionGenre() {
-        return _collectionGenreId;
-    }
-
-    public UserId getOwnerId() {
-        return _ownerId;
-    }
-
-    public CollectionOfPublicationsId id() {
-        return _id;
-    }
-
     /**
      * Makes this CollectionOfPublications public.
      *
@@ -163,6 +142,28 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._isPrivate = true;
         return true;
     }
+
+    public boolean getIsPrivate() {
+        return _isPrivate;
+    }
+
+    public String getCollectionName() {
+        return _collectionName;
+    }
+
+    public GenreId getCollectionGenre() {
+        return _collectionGenreId;
+    }
+
+    public UserId getOwnerId() {
+        return _ownerId;
+    }
+
+    public CollectionOfPublicationsId id() {
+        return _id;
+    }
+
+
 
 
 
