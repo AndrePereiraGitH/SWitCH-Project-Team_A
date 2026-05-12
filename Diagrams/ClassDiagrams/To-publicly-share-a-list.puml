@@ -20,7 +20,7 @@ class "ToPubliclyShareCollectionOfPublicationsController" as Controller {
 
 'Repository Interfaces
 interface "ICollectionOfPublicationRepository" as ICollectionOfPublicationsRepository  {
- + getUserCollections(userId : UserId) : List<CollectionOfPublications>
+ + getByUserId(userId : UserId) : List<CollectionOfPublications>
  + makeCollectionPublic(id : CollectionOfPublicationsID) : boolean
 }
 
@@ -83,7 +83,7 @@ Controller ..> US019CollectionOfPublicationsMapper : uses
 Controller ..> service
 
 
-ICollectionOfPublicationsRepository "1" --> "*" collection : manages
+ICollectionOfPublicationsRepository "1" ..> "*" collection : manages
 
 collectionRepoJpaImpl ..|> ICollectionOfPublicationsRepository : implements
 collectionRepoJpaImpl ..> ICollectionsJPA : uses
@@ -93,6 +93,7 @@ US019CollectionOfPublicationsMapper ..> DTO : creates
 jpaAutomatic ..|> ICollectionsJPA : implements
 jpaAutomatic ..> db : queries
 
-service --> collection : changes
+service ..> collection : changes
+service ..> ICollectionOfPublicationsRepository : uses
 
 @enduml
