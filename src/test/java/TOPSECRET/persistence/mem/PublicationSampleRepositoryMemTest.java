@@ -236,6 +236,75 @@ class PublicationSampleRepositoryMemTest {
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(PublicationSample.class)));
     }
 
+    // =========================================================================
+// update()
+// =========================================================================
+
+    @Test
+    void updateShouldReturnUpdatedPublicationSample() {
+
+        // ARRANGE
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        PublicationSampleId id = mock(PublicationSampleId.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        when(publicationSample.id()).thenReturn(id);
+
+        repo.save(publicationSample);
+
+        // ACT
+        PublicationSample result =
+                repo.update(publicationSample);
+
+        // ASSERT
+        assertEquals(publicationSample, result);
+    }
+
+    @Test
+    void updateShouldKeepUpdatedPublicationSampleInRepository() {
+
+        // ARRANGE
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        PublicationSampleId id = mock(PublicationSampleId.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        when(publicationSample.id()).thenReturn(id);
+
+        repo.save(publicationSample);
+
+        // ACT
+        repo.update(publicationSample);
+
+        // ASSERT
+        assertTrue(repo.existsById(id));
+    }
+
+    @Test
+    void updateShouldThrowExceptionWhenPublicationSampleIsNull() {
+
+        //ARRANGE
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.update(null));
+    }
+
+    @Test
+    void updateShouldThrowExceptionWhenPublicationSampleDoesNotExist() {
+
+        // ARRANGE
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        PublicationSampleId id = mock(PublicationSampleId.class);
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        when(publicationSample.id()).thenReturn(id);
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.update(publicationSample));
+    }
+
     // ===========================================================
     // ========== Tests for findById =============================
     // ===========================================================

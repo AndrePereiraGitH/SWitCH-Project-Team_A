@@ -1,6 +1,8 @@
 @startuml
 title To put for a sale a publication in my library in a direct sale
 
+class UI {}
+
 ' -------------------------
 ' Controller
 ' -------------------------
@@ -21,6 +23,12 @@ interface ILibraryRepository {
 interface ILibraryRepositoryJPA {
     + getByUserId(UserId userId): LibraryDM
 }
+
+class LibraryRepositoryJPAImpl {
+    + getByUserId(UserId userId): LibraryDM
+}
+
+'class AutomaticGeneratedLibraryRepositoryJPAImpl {}
 
 class LibraryAssembler {
     +toDomain(LibraryDM libraryDM): Library
@@ -47,6 +55,12 @@ interface IPublicationSampleRepository {
 interface IPublicationSampleRepositoryJPA {
     + findAvailableForSaleByLibraryId(LibraryId libraryId): List<PublicationSampleDM>
 }
+
+class PublicationSampleRepositoryJPAImpl {
+    + findAvailableForSaleByLibraryId(LibraryId libraryId): List<PublicationSampleDM>
+}
+
+'class AutomaticGeneratedPublicationSampleRepositoryJPAImpl {}
 
 class PublicationSampleAssembler {
     + toDomain(PublicationSampleDM pubSamplesDM): PublicationSample
@@ -97,6 +111,12 @@ interface IListingRepositoryJPA {
     + save(ListingDM listingDM): ListingDM
 }
 
+class ListingRepositoryJPAImpl {
+    + save(ListingDM listingDM): ListingDM
+}
+
+'class AutomaticGeneratedListingRepositoryJPAImpl {}
+
 class ListingAssembler {
     + toDM(Listing listing): ListingDM
     + toDomain(ListingDM listingDM): Listing
@@ -122,6 +142,8 @@ class Listing {
 ' RELATIONSHIPS
 ' -------------------------
 
+UI "1" ..> "1" ToPutForSaleAPublicationInDirectSaleController: "uses"
+
 ' --- Controller ---
 ToPutForSaleAPublicationInDirectSaleController "1" --> "1" ILibraryRepository: "uses"
 ToPutForSaleAPublicationInDirectSaleController "1" --> "1" IPublicationSampleRepository : "uses"
@@ -129,7 +151,12 @@ ToPutForSaleAPublicationInDirectSaleController"1" --> "1" US015PublicationSample
 ToPutForSaleAPublicationInDirectSaleController "1" --> "1" ListingService : "uses"
 
 ' --- Library ---
-ILibraryRepositoryJPA "1" --|> "1"  ILibraryRepository: "implements"
+ILibraryRepository "1" ..> "1" ILibraryRepositoryJPA: uses
+LibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepository: implements
+LibraryRepositoryJPAImpl "1" ..> "1" ILibraryRepositoryJPA: uses
+'AutomaticGeneratedLibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepositoryJPA: implements
+'AutomaticGeneratedLibraryRepositoryJPAImpl "1" ..> "1" database: queries
+
 ILibraryRepository "1" ..> "1" LibraryAssembler: "uses"
 
 LibraryAssembler "1" --> "1" LibraryFactory: "uses"
@@ -138,7 +165,12 @@ LibraryAssembler "1" ..> "1" LibraryDM: "receives"
 LibraryFactory "1" --> "1" Library: "creates"
 
 ' --- PublicationSampleRepository ---
-IPublicationSampleRepositoryJPA "1" --|> "1"  IPublicationSampleRepository: "implements"
+IPublicationSampleRepository "1" ..> "1" IPublicationSampleRepositoryJPA: uses
+PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
+PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: uses
+'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
+'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..> "1" database: queries
+
 IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler: "uses"
 
 PublicationSampleAssembler "1" --> "1" PublicationSampleFactory: "uses"
@@ -155,7 +187,12 @@ ListingService "1" --> "1" IListingRepository: "uses"
 ListingFactory "1" --> "1" Listing: "creates"
 
 IListingRepository "1" ..> "1" ListingAssembler: "uses"
-IListingRepositoryJPA "1" --|> "1" IListingRepository: "implements"
+
+IListingRepository "1" ..> "1" IListingRepositoryJPA: uses
+ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
+ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
+'AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
+'AutomaticGeneratedListingRepositoryJPAImpl "1" ..> "1" database: queries
 
 ListingAssembler "1" ..> "1" ListingDM: "receives"
 ListingAssembler "1" --> "1" ListingFactory: "uses"
