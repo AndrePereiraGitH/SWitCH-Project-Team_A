@@ -85,7 +85,15 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      */
     @Override
     public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
-        return List.of();
+
+        if (ownerId == null) {
+            throw new IllegalArgumentException("OwnerId cannot be null");
+        }
+
+        List<CollectionOfPublicationsDM> collectionDMList =
+                collectionRepositoryJpa.findByOwnerId(ownerId);
+
+        return collectionOfPublicationsAssembler.toDomainList(collectionDMList);
     }
 
     /**
