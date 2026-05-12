@@ -132,6 +132,12 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _id;
     }
 
+    /**
+     * Makes this CollectionOfPublications public.
+     *
+     * @return {@code true} if the object was changed from private to public;
+     *         {@code false} if it was already public.
+     */
     public boolean makePublic() {
 
         if (!_isPrivate) {
@@ -142,6 +148,12 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return true;
     }
 
+    /**
+     * Makes this CollectionOfPublications private.
+     *
+     * @return {@code true} if the object was changed from public to private;
+     *         {@code false} if it was already private.
+     */
     public boolean makePrivate() {
 
         if (_isPrivate) {
