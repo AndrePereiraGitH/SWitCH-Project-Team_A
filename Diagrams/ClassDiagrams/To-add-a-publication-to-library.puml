@@ -32,10 +32,23 @@ class ILibraryRepositoryJPA{
 
 class PublicationSampleAssembler{
 +toDomain(PubSampleDM) : PublicationSample
++toDm(PubSample) : PublicationSampleDM
 }
 
 class PublicationSampleFactory{
 +create(pubSampleId, bibliographicalDataId, userId, publicationStatus, editionId, \ncondition, libraryId, collectionOfPublicationsId)
+}
+
+class PublicationSampleRepositoryJPAImpl{
+}
+
+class AutomatedGeneratedPublicationSampleRepositoryJPAImpl{
+}
+
+class LibraryRepositoryJPAImpl{
+}
+
+class AutomatedGeneratedLibraryRepositoryJPAImpl{
 }
 
 Rectangle Database{
@@ -43,15 +56,26 @@ Rectangle Database{
 ' ------ Interactions ------
 
 AddPublicationToLibraryController "1" ..> "1" IPublicationSampleRepository : uses
-IPublicationSampleRepository "1" ..> "1" IPublicationSampleRepositoryJPA : implements
 IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler : uses
 PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
 AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : asks
 ILibraryRepository "1" ..> ILibraryRepositoryJPA : implements
 AddPublicationToLibraryController "1" ..> "1" PublicationSample : asks to assign library
-IPublicationSampleRepositoryJPA ..> Database : queries
-ILibraryRepositoryJPA ..> Database : queries
 
+PublicationSampleAssembler ..> PublicationSampleDM : crafts
 
+' ===== PublicationSample Layer Communication =====
+IPublicationSampleRepository <|.. PublicationSampleRepositoryJPAImpl : implements
+PublicationSampleRepositoryJPAImpl ..> PublicationSampleDM : converts data into
+PublicationSampleRepositoryJPAImpl ..> IPublicationSampleRepositoryJPA : uses
+IPublicationSampleRepositoryJPA <|.. AutomatedGeneratedPublicationSampleRepositoryJPAImpl : implements
+AutomatedGeneratedPublicationSampleRepositoryJPAImpl ..> Database : queries
+
+' ===== Library Layer Communication =====
+ILibraryRepository <|.. LibraryRepositoryJPAImpl : implements
+LibraryRepositoryJPAImpl ..> LibraryDM : converts data into
+LibraryRepositoryJPAImpl ..> ILibraryRepositoryJPA : uses
+AutomatedGeneratedLibraryRepositoryJPAImpl <|.. ILibraryRepositoryJPA : implements
+AutomatedGeneratedLibraryRepositoryJPAImpl ..> Database : queries
 
 @enduml

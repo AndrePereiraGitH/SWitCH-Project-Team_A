@@ -6,36 +6,52 @@ title Add Publication to Collection Of Publication
 
 actor "User" as User
 participant ":UI" as UI
-
-participant ":ToAddPublicationToAListOfMineController" as Controller
+participant ":ToAddPublicationToA\nListOfMineController" as Controller
 
 participant ":ICollectionOfPublicationsRepository" as CollectionRepo
-participant "userCollections : List<CollectionOfPublications>" as userCollections
-participant ":US018CollectionOfPublicationsMapper" as CollectionMapper
-participant "listOfCollectionsDTO: List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
-participant ":CollectionOfPublications" as CP
-participant "collectionDTO: CollectionOfPublicationsDTO" as collectionDTO
+participant ":ICollectionOf\nPublicationsRepositoryJPA" as CollectionRepoJPA
+participant ":CollectionOf\nPublicationsAssembler" as CollectionAssembler
+participant "collectionDMList\n:List<CollectionOfPublicationsDM>" as collectionDMList
+participant ":CollectionOf\nPublicationsFactory" as CollectionFactory
+' participant "collectionDM\n:CollectionOfPublicationsDM" as collectionDM
+participant "userCollections\n:List<CollectionOfPublications>" as userCollections
+participant "collection\n:CollectionOfPublications" as Collection
 
-participant ":ILibraryRepository" as LibraryRepo
-participant ":Library" as Library
+participant ":US018CollectionOf\nPublicationsMapper" as CollectionMapper
+participant "listOfCollectionsDTO\n:List<CollectionOfPublicationsDTO>" as listOfCollectionsDTO
+participant ":CollectionOfPublications" as CP
+participant "collectionDTO\n:CollectionOfPublicationsDTO" as collectionDTO
 
 participant ":IPublicationSampleRepository" as PublicationSampleRepo
-participant ":PublicationSampleMapper" as PublicationSampleMapper
-participant "listOfAvailablePublicationDTO: List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
-participant ":PublicationSample" as PublicationSample
-participant "publicationSampleDTO: PublicationSampleDTO" as publicationSampleDTO
+participant ":IPublicationSample\nRepositoryJPA" as PublicationSampleRepoJPA
+participant ":PublicationSampleAssembler" as PublicationSampleAssembler
+participant ":PublicationSampleFactory" as PublicationSampleFactory
+participant "publicationSampleDMList\n:List<PublicationSampleDM>" as publicationSampleDMList
+participant "publicationSampleDM\n:PublicationSampleDM" as publicationSampleDM
+participant "publicationAvailable\n:List<PublicationSample>" as publicationAvailable
+participant "publicationSample\n:PublicationSample" as PublicationSample
+participant "persistedPublicationSampleDM\n:PublicationSampleDM" as persistedPublicationSampleDM
+participant "persistedPublicationSample\n:PublicationSample" as persistedPublicationSample
 
-participant ":IBibliographicalDataRepository" as BibliographicalDataRepo
+participant ":PublicationSampleMapper" as PublicationSampleMapper
+participant "listOfAvailablePublicationDTO\n:List<PublicationSampleDTO>" as listOfAvailablePublicationDTO
+participant "publicationSampleDTO\n:PublicationSampleDTO" as publicationSampleDTO
+
+participant ":IBibliographical\nDataRepository" as BibliographicalDataRepo
+participant ":IBibliographical\nDataRepositoryJPA" as BibliographicalDataRepoJPA
+participant ":BibliographicalDataAssembler" as BibliographicalDataAssembler
+participant ":BibliographicalDataFactory" as BibliographicalDataFactory
+participant "bibliographicalDataDM\n:BibliographicalDataDM" as BibliographicalDataDM
 participant ":BibliographicalData" as BibliographicalData
 
+database "DB" as DB
 
 ' --- Start ---
-User -> UI : I want to add one of my publications to one of my collections
+User -> UI : I want to add one of my publications \nto one of my collections
 activate UI
 
-
 ' =========================
-' Get CollectionOfPublication
+' Get CollectionOfPublication - DM
 ' =========================
 UI -> Controller : getUserCollections(userId)
 activate Controller
@@ -43,12 +59,65 @@ activate Controller
 Controller -> CollectionRepo : getUserCollections(userId)
 activate CollectionRepo
 
-CollectionRepo -> CollectionRepo : isFromUser(userId)
-CollectionRepo -->> userCollections ** : <<create>>
+CollectionRepo -> CollectionRepoJPA : findByUserId(userId)
+activate CollectionRepoJPA
+
+CollectionRepoJPA -> DB : select * from CollectionOfPublications
+activate DB
+DB --> CollectionRepoJPA : data
+deactivate DB
+
+CollectionRepoJPA -->> collectionDMList ** : <<create>>
+CollectionRepoJPA --> CollectionRepo : collectionDMList
+deactivate CollectionRepoJPA
+
+CollectionRepo -> CollectionAssembler : toDomainList(collectionDMList)
+activate CollectionAssembler
+
+CollectionAssembler -->> userCollections ** : <<create>>
+
+loop for each collection DM in the list
+    CollectionAssembler -> collectionDMList : id()
+    activate collectionDMList
+    collectionDMList --> CollectionAssembler : collectionId
+    deactivate collectionDMList
+
+    CollectionAssembler -> collectionDMList : getCollectionName()
+    activate collectionDMList
+    collectionDMList --> CollectionAssembler : collectionName
+    deactivate collectionDMList
+
+    CollectionAssembler -> collectionDMList : getCollectionGenreId()
+    activate collectionDMList
+    collectionDMList --> CollectionAssembler : genreId
+    deactivate collectionDMList
+
+    CollectionAssembler -> collectionDMList : isPrivate()
+    activate collectionDMList
+    collectionDMList --> CollectionAssembler : private
+    deactivate collectionDMList
+
+    CollectionAssembler -> CollectionFactory : create(collectionId, collectionName, genreId, ownerId, private)
+    activate CollectionFactory
+
+    CollectionFactory -->> Collection ** : <<create>>
+
+    CollectionFactory --> CollectionAssembler : collection
+    deactivate CollectionFactory
+
+    CollectionAssembler -> CollectionAssembler : userCollections.add(collection)
+end
+
+CollectionAssembler --> CollectionRepo : userCollections
+deactivate CollectionAssembler
+
 CollectionRepo --> Controller : userCollections
 deactivate CollectionRepo
 
-Controller -> CollectionMapper : toDTO(userCollections)
+' =========================
+' Get CollectionOfPublication - DTO
+' =========================
+Controller -> CollectionMapper : toDTOs(userCollections)
 activate CollectionMapper
 
 CollectionMapper -->> listOfCollectionsDTO ** : <<create>>
@@ -64,7 +133,7 @@ loop for each collection in userCollections
     CP --> CollectionMapper : collectionName
     deactivate CP
 
-    CollectionMapper -->> collectionDTO ** : <<create>>
+    CollectionMapper -->> collectionDTO ** : toDTO()
 
     CollectionMapper -> CollectionMapper : listOfCollectionsDTO.add(collectionDTO)
 end
@@ -81,46 +150,59 @@ deactivate UI
 User -> UI : Selected collection
 activate UI
 
-UI -> Controller : getPublicationsForCollection(collectionId)
+' =========================
+' Get Available Publications - DM
+' =========================
+UI -> Controller : getPublicationsForCollection(userId, collectionId)
 activate Controller
 
-' =====================================================
-' GET AVAILABLE PUBLICATIONS
-' =====================================================
-
-Controller -> PublicationSampleRepo : getAvailablePublicationsForCollection(userId, collectionId)
+Controller -> PublicationSampleRepo : findAvailableForCollection(userId, collectionId)
 activate PublicationSampleRepo
+
+PublicationSampleRepo -> PublicationSampleRepoJPA : findAvailableByUserIdAndNotInCollection(userId, collectionId)
+activate PublicationSampleRepoJPA
+
+PublicationSampleRepoJPA -> DB : select * from PublicationSample
+activate DB
+DB --> PublicationSampleRepoJPA : data
+deactivate DB
+
+PublicationSampleRepoJPA -->> publicationSampleDMList ** : <<create>>
+PublicationSampleRepoJPA --> PublicationSampleRepo : publicationSampleDMList
+deactivate PublicationSampleRepoJPA
+
+PublicationSampleRepo -> PublicationSampleAssembler : toDomainList(publicationSampleDMList)
+activate PublicationSampleAssembler
+
+PublicationSampleAssembler -->> publicationAvailable ** : <<create>>
+
+loop for each publication sample DM in the list
+    PublicationSampleAssembler -> publicationSampleDMList : getDetails()
+    activate publicationSampleDMList
+    publicationSampleDMList --> PublicationSampleAssembler : publicationSampleDetails
+    deactivate publicationSampleDMList
+
+    PublicationSampleAssembler -> PublicationSampleFactory : create(PublicationSampleDetails)
+    activate PublicationSampleFactory
+
+    PublicationSampleFactory -->> PublicationSample ** : <<create>>
+
+    PublicationSampleFactory --> PublicationSampleAssembler : publicationSample
+    deactivate PublicationSampleFactory
+
+    PublicationSampleAssembler -> PublicationSampleAssembler : publicationAvailable.add(publicationSample)
+end
+
+PublicationSampleAssembler --> PublicationSampleRepo : publicationAvailable
+deactivate PublicationSampleAssembler
+
 PublicationSampleRepo --> Controller : publicationAvailable
 deactivate PublicationSampleRepo
 
-' =====================================================
-' GET TITLES (Controller responsibility)
-' =====================================================
-
-loop for each publicationSample in publicationAvailable
-    Controller -> PublicationSample : getBibliographicalDataID()
-    activate PublicationSample
-    PublicationSample --> Controller : bibliographicalDataId
-    deactivate PublicationSample
-
-    Controller -> BibliographicalDataRepo : findBibliographicalDataById(bibliographicalDataId)
-    activate BibliographicalDataRepo
-    BibliographicalDataRepo --> Controller : bibliographicalData
-    deactivate BibliographicalDataRepo
-
-    Controller -> BibliographicalData : getTitle()
-    activate BibliographicalData
-    BibliographicalData --> Controller : title
-    deactivate BibliographicalData
-
-    Controller -> Controller : titles.add(title)
-end
-
-' =====================================================
-' CONVERT RESULT TO DTO
-' =====================================================
-
-Controller -> PublicationSampleMapper : toDTOs(publicationAvailable, titles)
+' =========================
+' Convert Available Publications to DTO
+' =========================
+Controller -> PublicationSampleMapper : toDTOs(publicationAvailable)
 activate PublicationSampleMapper
 
 PublicationSampleMapper -->> listOfAvailablePublicationDTO ** : <<create>>
@@ -131,7 +213,12 @@ loop for each publicationSample
     PublicationSample --> PublicationSampleMapper : id
     deactivate PublicationSample
 
-    PublicationSampleMapper -->> publicationSampleDTO ** : <<create>>
+    PublicationSampleMapper -> PublicationSample : getTitle()
+    activate PublicationSample
+    PublicationSample --> PublicationSampleMapper : title
+    deactivate PublicationSample
+
+    PublicationSampleMapper -->> publicationSampleDTO ** : toDTO()
 
     PublicationSampleMapper -> PublicationSampleMapper : listOfAvailablePublicationDTO.add(publicationSampleDTO)
 end
@@ -145,41 +232,170 @@ deactivate Controller
 UI --> User : Which publication? Select one or more publications!
 deactivate UI
 
-' =====================================================
-' USER SELECTS PUBLICATION(S)
-' =====================================================
-
+' =========================
+' User selects publication(s)
+' =========================
 User -> UI : Selected publications
 activate UI
 
 UI -> Controller : addPublicationToCollection(collectionId, publicationSampleIds)
 activate Controller
 
-' =====================================================
-' CALL REPOSITORY WITH IDS
-' =====================================================
-
-Controller -> CollectionRepo : addPublicationToCollection(collectionId, publicationSampleIds)
-activate CollectionRepo
-
-' =====================================================
-' ASSIGN COLLECTION TO PUBLICATIONS (NEW MODEL)
-' =====================================================
+' =========================
+' Add publication(s) to collection and save
+' =========================
+Controller -> PublicationSampleRepo : assignPublicationsToCollection(collectionId, publicationSampleIds)
+activate PublicationSampleRepo
 
 loop for each publicationSampleId
-    CollectionRepo -> PublicationSampleRepo : findPublicationSampleById(publicationSampleId)
-    activate PublicationSampleRepo
-    PublicationSampleRepo --> CollectionRepo : publicationSample
-    deactivate PublicationSampleRepo
 
-    CollectionRepo -> PublicationSample : assignToCollection(collectionId)
+    PublicationSampleRepo -> PublicationSampleRepoJPA : findById(publicationSampleId)
+    activate PublicationSampleRepoJPA
+
+    PublicationSampleRepoJPA -> DB : select * from PublicationSample
+    activate DB
+
+    DB --> PublicationSampleRepoJPA : data
+    deactivate DB
+
+    PublicationSampleRepoJPA -->> publicationSampleDM ** : <<create>>
+
+    PublicationSampleRepoJPA --> PublicationSampleRepo : publicationSampleDM
+    deactivate PublicationSampleRepoJPA
+
+    PublicationSampleRepo -> PublicationSampleAssembler : toDomain(publicationSampleDM)
+    activate PublicationSampleAssembler
+
+    PublicationSampleAssembler -> publicationSampleDM : getPubSampleId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : pubSampleId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getBdId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : bibliographicalDataId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getOwnerId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : userId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getPublicationStatus()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : publicationStatus
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getEditionId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : editionId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getCondition()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : condition
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> PublicationSampleFactory : create(pubSampleId, bibliographicalDataId, \nuserId, publicationStatus, editionId, condition)
+    activate PublicationSampleFactory
+
+    PublicationSampleFactory -->> PublicationSample ** : <<create>>
+
+    PublicationSampleFactory --> PublicationSampleAssembler : publicationSample
+    deactivate PublicationSampleFactory
+
+    PublicationSampleAssembler --> PublicationSampleRepo : publicationSample
+    deactivate PublicationSampleAssembler
+
+    PublicationSampleRepo -> PublicationSample : addPublicationToCollection(collectionId)
     activate PublicationSample
-    PublicationSample --> CollectionRepo : true
+
+    PublicationSample --> PublicationSampleRepo : true
     deactivate PublicationSample
+
+    PublicationSampleRepo -> PublicationSampleAssembler : toDM(publicationSample)
+    activate PublicationSampleAssembler
+
+    PublicationSampleAssembler -->> publicationSampleDM ** : <<create>>
+
+    PublicationSampleAssembler --> PublicationSampleRepo : publicationSampleDM
+    deactivate PublicationSampleAssembler
+
+    PublicationSampleRepo -> PublicationSampleRepoJPA : update(publicationSampleDM)
+    activate PublicationSampleRepoJPA
+
+    PublicationSampleRepoJPA -> DB : update PublicationSample
+    activate DB
+
+    DB --> PublicationSampleRepoJPA : data
+    deactivate DB
+
+    PublicationSampleRepoJPA -->> persistedPublicationSampleDM ** : <<create>>
+
+    PublicationSampleRepoJPA --> PublicationSampleRepo : persistedPublicationSampleDM
+    deactivate PublicationSampleRepoJPA
+
+    PublicationSampleRepo -> PublicationSampleAssembler : toDomain(persistedPublicationSampleDM)
+    activate PublicationSampleAssembler
+
+
+    PublicationSampleAssembler -> publicationSampleDM : getPubSampleId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : pubSampleId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getBdId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : bibliographicalDataId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getOwnerId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : userId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getPublicationStatus()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : publicationStatus
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getEditionId()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : editionId
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> publicationSampleDM : getCondition()
+    activate publicationSampleDM
+
+    publicationSampleDM --> PublicationSampleAssembler : condition
+    deactivate publicationSampleDM
+
+    PublicationSampleAssembler -> PublicationSampleFactory : create(pubSampleId, bibliographicalDataId, \nuserId, publicationStatus, editionId, condition)
+    activate PublicationSampleFactory
+
+    PublicationSampleFactory -->> persistedPublicationSample ** : <<create>>
+
+    PublicationSampleFactory -->> PublicationSampleAssembler : persistedPublicatonSample
+    deactivate PublicationSampleFactory
+
+    PublicationSampleAssembler --> PublicationSampleRepo : persistedPublicationSample
+    deactivate PublicationSampleAssembler
+
 end
 
-CollectionRepo --> Controller : true
-deactivate CollectionRepo
+PublicationSampleRepo --> Controller : persistedPublicationSample
+deactivate PublicationSampleRepo
 
 Controller --> UI : Success
 deactivate Controller

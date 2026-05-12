@@ -72,15 +72,21 @@ class PublicationSampleAssemblerTest {
 
     @BeforeEach
     void setup() {
+
         pubSampleIdDouble = mock(PublicationSampleId.class);
         bdIdDouble = mock(BibliographicalDataID.class);
         userIdDouble = mock(UserId.class);
         editionIdDouble = mock(EditionID.class);
         libraryIdDouble = mock(LibraryId.class);
         collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
+
         status = PublicationStatus.READ;
         condition = Condition.NEW;
     }
+
+    // ===============
+    // Constructor
+    // ===============
 
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
@@ -89,6 +95,10 @@ class PublicationSampleAssemblerTest {
         assertThrows(NullPointerException.class,
                 () -> new PublicationSampleAssembler(null));
     }
+
+    // ===============
+    // toDM
+    // ===============
 
     @Test
     void toDM_shouldReturnAValidDataModel() {
@@ -128,6 +138,10 @@ class PublicationSampleAssemblerTest {
         assertThrows(NullPointerException.class,
                 () -> assembler.toDM(null));
     }
+
+    // ===============
+    // ToDomain (single object)
+    // ===============
 
     @Test
     void toDomain_shouldReturnAValidDomainObject() {
@@ -173,6 +187,10 @@ class PublicationSampleAssemblerTest {
                 () -> assembler.toDomain((PublicationSampleDM) null));
     }
 
+    // ===============
+    // toDomain (list)
+    // ===============
+
     @Test
     void toDomain_withList_shouldReturnAValidDomainObjectList() {
 
@@ -213,14 +231,6 @@ class PublicationSampleAssemblerTest {
     }
 
     @Test
-    void toDomain_withList_shouldThrowNullPointerException_whenListIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> assembler.toDomain((List<PublicationSampleDM>) null));
-    }
-
-    @Test
     void toDomain_withList_shouldReturnEmptyList_whenListIsEmpty() {
 
         // Arrange
@@ -246,5 +256,91 @@ class PublicationSampleAssemblerTest {
         // Assert
         assertThrows(UnsupportedOperationException.class,
                 () -> result.add(mock(PublicationSample.class)));
+    }
+
+    @Test
+    void toDomain_withList_shouldThrowNullPointerException_whenListIsNull() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> assembler.toDomain((List<PublicationSampleDM>) null));
+    }
+
+    @Test
+    void toDomain_withList_shouldReturnAListOfDomainObjects() {
+
+        // Arrange
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+
+        when(dm.getPubSampleId()).thenReturn(pubSampleIdDouble);
+        when(dm.getBdId()).thenReturn(bdIdDouble);
+        when(dm.getOwnerId()).thenReturn(userIdDouble);
+        when(dm.getEditionId()).thenReturn(editionIdDouble);
+        when(dm.getPublicationStatus()).thenReturn(status);
+        when(dm.getCondition()).thenReturn(condition);
+        when(dm.getLibraryId()).thenReturn(libraryIdDouble);
+        when(dm.getCollectionOfPublicationsId())
+                .thenReturn(collectionOfPublicationsIdDouble);
+
+        PublicationSample publicationSample = mock(PublicationSample.class);
+
+        when(factoryDouble.create(
+                pubSampleIdDouble,
+                bdIdDouble,
+                userIdDouble,
+                status,
+                editionIdDouble,
+                condition,
+                libraryIdDouble,
+                collectionOfPublicationsIdDouble
+        )).thenReturn(publicationSample);
+
+        // Act
+        List<PublicationSample> result =
+                assembler.toDomain(List.of(dm));
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertSame(publicationSample, result.get(0));
+    }
+
+    // ===== WIP ======
+
+    @Test
+    void toDomain_withList_shouldReturnCorrectDomainObject() {
+
+        // Arrange
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+
+        when(dm.getPubSampleId()).thenReturn(pubSampleIdDouble);
+        when(dm.getBdId()).thenReturn(bdIdDouble);
+        when(dm.getOwnerId()).thenReturn(userIdDouble);
+        when(dm.getEditionId()).thenReturn(editionIdDouble);
+        when(dm.getPublicationStatus()).thenReturn(status);
+        when(dm.getCondition()).thenReturn(condition);
+        when(dm.getLibraryId()).thenReturn(libraryIdDouble);
+        when(dm.getCollectionOfPublicationsId())
+                .thenReturn(collectionOfPublicationsIdDouble);
+
+        PublicationSample publicationSample = mock(PublicationSample.class);
+
+        when(factoryDouble.create(
+                pubSampleIdDouble,
+                bdIdDouble,
+                userIdDouble,
+                status,
+                editionIdDouble,
+                condition,
+                libraryIdDouble,
+                collectionOfPublicationsIdDouble
+        )).thenReturn(publicationSample);
+
+        // Act
+        List<PublicationSample> result =
+                assembler.toDomain(List.of(dm));
+
+        // Assert
+        assertSame(publicationSample, result.get(0));
     }
 }

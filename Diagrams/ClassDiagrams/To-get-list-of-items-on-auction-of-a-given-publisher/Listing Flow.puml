@@ -1,0 +1,94 @@
+@startuml
+title Listing Flow
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 80
+top to bottom direction
+
+rectangle DataBase {
+}
+
+interface IListingRepository {
+    + findAllByAuctionAndPublicationSampleIdIn(ids : List<PublicationSampleId>) : List<Listing>
+}
+
+class ListingRepositoryJpaImpl {
+    - listingRepositoryJpa : IListingRepositoryJpa
+    - assembler : ListingAssembler
+    + findAllByAuctionAndPublicationSampleIdIn(ids : List<PublicationSampleId>) : List<Listing>
+}
+
+interface IListingRepositoryJpa {
+    + findAllByItemsId(ids : List<PublicationSampleId>) : List<ListingDM>
+}
+
+class AutomaticGeneratedListingRepoJPAImpl {
+}
+
+class ListingAssembler {
+    + toDomain(dm : ListingDM) : Listing
+}
+
+class ListingFactory {
+    + create(listingId : ListingId, title : String, itemsId : PublicationSampleId, saleType : String, price : double, shortDescription : String, sellerId : String, pictures : List<String>) : Listing
+}
+
+class Listing {
+    - listingId : ListingId
+    - itemsId : PublicationSampleId
+    - saleType : String
+    + getListingId() : ListingId
+    + getItemsId() : PublicationSampleId
+    + isListingLinkedToAnAuction() : boolean
+}
+
+class ListingDM {
+    - listingId : ListingId
+    - publicationSampleId : PublicationSampleId
+    - saleType : String
+    + getListingId() : ListingId
+    + getItemsId() : PublicationSampleId
+    + getSaleType() : String
+}
+
+class ListingId {
+    - value : String
+}
+
+class PublicationSampleId {
+    - value : String
+}
+
+class US028ListingMapper {
+    + toDTO(listings : List<Listing>) : List<US028ListingDTO>
+    + toDTO(listing : Listing) : US028ListingDTO
+}
+
+class US028ListingDTO {
+    - listingId : String
+    - title : String
+    - price : double
+    - shortDescription : String
+}
+
+ListingRepositoryJpaImpl "1" ..|> "1" IListingRepository
+ListingRepositoryJpaImpl "1" ..> "1" IListingRepositoryJpa : uses
+ListingRepositoryJpaImpl "1" ..> "1" ListingAssembler : uses
+
+AutomaticGeneratedListingRepoJPAImpl "1" ..|> "1" IListingRepositoryJpa
+AutomaticGeneratedListingRepoJPAImpl "1" ..> "1" DataBase : queries
+
+ListingAssembler "1" ..> "1" ListingFactory : uses
+ListingFactory "1" ..> "0..*" Listing : creates
+
+ListingDM "1" --> "1" ListingId : has
+ListingDM "1" --> "1" PublicationSampleId : refers to
+
+Listing "1" --> "1" ListingId : has
+Listing "1" --> "1" PublicationSampleId : refers to
+
+US028ListingMapper ..> Listing : reads
+US028ListingMapper "1" ..> "0..*" US028ListingDTO : creates
+
+@enduml
