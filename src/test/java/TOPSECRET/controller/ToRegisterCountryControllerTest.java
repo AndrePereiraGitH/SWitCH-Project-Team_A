@@ -10,110 +10,112 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ToRegisterCountryController}.
+ *
  * <p>
- * This test class verifies the behavior of the controller responsible for
- * registering new {@link Country} instances.
+ * This test suite validates the behavior of the controller as a thin layer
+ * responsible for delegating requests to the {@link CountryService}.
  * </p>
+ *
  * <p>
- * The controller is tested in isolation using a double of {@link CountryService},
- * ensuring that:
+ * The controller does not implement business logic or validation.
+ * Therefore, tests focus on:
  * <ul>
- *     <li>Valid inputs result in successful country registration</li>
- *     <li>Invalid inputs (null, blank, or invalid country names) throw appropriate exceptions</li>
- *     <li>Duplicate country scenarios are properly handled</li>
+ *     <li>Correct delegation of requests to the service layer</li>
+ *     <li>Proper propagation of results returned by the service</li>
+ *     <li>Proper propagation of exceptions thrown by the service</li>
  * </ul>
  * </p>
+ *
  * <p>
- * Mockito is used to simulate the behavior of the service layer and to
- * verify interactions where applicable.
+ * Mockito is used to simulate the behavior of the service layer.
  * </p>
  */
 class ToRegisterCountryControllerTest {
 
-    private CountryService countryServiceDouble;
-    private Country countryDouble;
+    private CountryService countryService;
+    private ToRegisterCountryController controller;
+    private Country country;
 
     @BeforeEach
-    void preparation() {
-        countryServiceDouble = mock(CountryService.class);
-        countryDouble = mock(Country.class);
+    void setup() {
+        countryService = mock(CountryService.class);
+        controller = new ToRegisterCountryController(countryService);
+        country = mock(Country.class);
     }
 
+    // -------------------------------------------------------------------------
+    // registerNewCountry()
+    // -------------------------------------------------------------------------
+
     @Test
-    void registerNewCountry_validCountry() {
+    void register_validInput_delegatesToServiceAndReturnsResult() {
+
         // Arrange
-        ToRegisterCountryController controller =
-                new ToRegisterCountryController(countryServiceDouble);
-
-        when(countryServiceDouble.createAndSave("Portugal"))
-                .thenReturn(countryDouble);
-
-        when(countryDouble.getCountryName()).thenReturn("Portugal");
+        when(countryService.createAndSave("Portugal")).thenReturn(country);
 
         // Act
-        Country result = controller.registerNewCountry("Portugal");
+        Country result = controller.register("Portugal");
 
         // Assert
         assertNotNull(result);
-        assertEquals("Portugal", result.getCountryName());
-
+        assertEquals(country, result);
     }
 
     @Test
-    void registerNewCountry_invalidCountry() {
-        // Arrange
-        ToRegisterCountryController controller =
-                new ToRegisterCountryController(countryServiceDouble);
+    void registerNewCountry_propagatesException() {
 
-        when(countryServiceDouble.createAndSave("Mordor"))
+        // Arrange
+        when(countryService.createAndSave("Mordor"))
                 .thenThrow(new IllegalArgumentException("Country name is not valid"));
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.registerNewCountry("Mordor"));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.register("Mordor")
+        );
+
+        assertEquals("Country name is not valid", exception.getMessage());
     }
 
     @Test
-    void registerNewCountry_nullCountry() {
+    void register_propagatesException() {
+
         // Arrange
-        ToRegisterCountryController controller =
-                new ToRegisterCountryController(countryServiceDouble);
-
-        // Act + Assert
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,
-                        () -> controller.registerNewCountry(null));
-
-        assertEquals("Country name cannot be null or blank", exception.getMessage());
-
-    }
-
-    @Test
-    void registerNewCountry_blankCountry() {
-        // Arrange
-        ToRegisterCountryController controller =
-                new ToRegisterCountryController(countryServiceDouble);
-
-        // Act + Assert
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,
-                        () -> controller.registerNewCountry("   "));
-
-        assertEquals("Country name cannot be null or blank", exception.getMessage());
-
-    }
-
-    @Test
-    void registerNewCountry_duplicateCountry() {
-        // Arrange
-        ToRegisterCountryController controller =
-                new ToRegisterCountryController(countryServiceDouble);
-
-        when(countryServiceDouble.createAndSave("Portugal"))
+        when(countryService.createAndSave("Portugal"))
                 .thenThrow(new IllegalArgumentException("Country is already registered"));
 
         // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.register("Portugal")
+        );
+
+        assertEquals("Country is already registered", exception.getMessage());
+    }
+
+    @Test
+    void register_nullInput_delegatesToService() {
+
+        // Arrange
+        when(countryService.createAndSave(null))
+                .thenThrow(new IllegalArgumentException("Country name cannot be null or blank"));
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerNewCountry("Portugal"));
+                () -> controller.register(null));
+    }
+
+    @Test
+    void register_blankInput_delegatesToService() {
+
+        // Arrange
+        String input = "   ";
+
+        when(countryService.createAndSave(input))
+                .thenThrow(new IllegalArgumentException("Country name cannot be null or blank"));
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register(input));
     }
 }
