@@ -67,7 +67,7 @@ class PublicationTypeId {
   +getId() : String
 }
 
-Rectangle JpaRepository {
+Rectangle Database {
 }
 
 UI "1" ..> "1" ToRegisterPubTypeController : uses
@@ -77,7 +77,7 @@ PublicationTypeService --> IPublicationTypeRepository : checks duplicate / saves
 PublicationTypeService --> PublicationTypeFactory : creates
 
 PublicationTypeRepositoryJPAImpl ..|> IPublicationTypeRepository
-PublicationTypeRepositoryJPAImpl --> IPublicationTypeRepositoryJPA : delegates persistence
+PublicationTypeRepositoryJPAImpl ..> IPublicationTypeRepositoryJPA : delegates persistence
 PublicationTypeRepositoryJPAImpl --> PublicationTypeAssembler : converts
 
 IPublicationTypeRepositoryJPA --> PublicationTypeDM : persists
@@ -89,7 +89,7 @@ PublicationTypeFactory ..> PublicationType : creates
 PublicationType --> PublicationTypeId : identifies
 PublicationTypeDM --> PublicationTypeId : embedded id
 
-IPublicationTypeRepositoryJPA --> JpaRepository : extends
-PublicationTypeDM --> JpaRepository : stored in
+IPublicationTypeRepositoryJPA --> Database : queries
+PublicationTypeDM --> Database : stored in
 
 @enduml
