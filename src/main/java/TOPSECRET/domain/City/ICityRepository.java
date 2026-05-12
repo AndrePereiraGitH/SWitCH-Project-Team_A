@@ -11,5 +11,14 @@ public interface ICityRepository {
      * @return the persisted {@link City}
      * @throws IllegalArgumentException if the city already exists or any constraint is violated
      */
-    City save (City city);
+    City save(City city);
+
+    /**
+     * Checks whether a city already exists for the given country and name.
+     *
+     * @param countryID the identifier of the country
+     * @param cityName  the name of the city
+     * @return {@code true} if a matching city exists, {@code false} otherwise
+     */
+    boolean existsByCountryIdAndCityName(CountryId countryID, String cityName);
 }

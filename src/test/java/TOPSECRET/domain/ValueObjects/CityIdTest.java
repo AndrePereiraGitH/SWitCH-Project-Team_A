@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for the {@link CityID} value object.
+ * Unit tests for the {@link CityId} value object.
  *
  * <p>This test class verifies the correct behavior of the CityID,
  * including object creation, validation rules, equality logic,
@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>The tests ensure that the value object follows the rules of a DDD Value Object:
  * immutability, equality based on value, and validation of construction parameters.</p>
  */
-class CityIDTest {
+class CityIdTest {
 
     @Test
     void shouldCreateValidID() {
         // Arrange
-        CityID id = new CityID("C1");
+        CityId id = new CityId("C1");
 
         // Assert
         assertEquals("C1", id.getCityID());
@@ -29,7 +29,7 @@ class CityIDTest {
     void shouldThrowExceptionWhenIDIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new CityID(null);
+            new CityId(null);
         });
     }
 
@@ -37,15 +37,15 @@ class CityIDTest {
     void shouldThrowExceptionWhenIDIsBlank() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new CityID("   ");
+            new CityId("   ");
         });
     }
 
     @Test
     void shouldBeEqualWhenIDsAreSame() {
         // Arrange
-        CityID id1 = new CityID("C1");
-        CityID id2 = new CityID("C1");
+        CityId id1 = new CityId("C1");
+        CityId id2 = new CityId("C1");
 
         // Assert
         assertEquals(id1, id2);
@@ -54,8 +54,8 @@ class CityIDTest {
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
         // Arrange
-        CityID id1 = new CityID("C1");
-        CityID id2 = new CityID("C2");
+        CityId id1 = new CityId("C1");
+        CityId id2 = new CityId("C2");
 
         // Assert
         assertNotEquals(id1, id2);
@@ -64,7 +64,7 @@ class CityIDTest {
     @Test
     void shouldNotBeEqualToNull() {
         // Arrange
-        CityID id = new CityID("C1");
+        CityId id = new CityId("C1");
 
         // Assert
         assertNotEquals(null, id);
@@ -73,7 +73,7 @@ class CityIDTest {
     @Test
     void shouldNotBeEqualToDifferentClass() {
         // Arrange
-        CityID id = new CityID("C1");
+        CityId id = new CityId("C1");
         String other = "C1";
 
         // Assert
@@ -84,7 +84,7 @@ class CityIDTest {
     @Test
     void getterShouldReturnCorrectID() {
         // Arrange
-        CityID id = new CityID("C1");
+        CityId id = new CityId("C1");
 
         // Assert
         assertEquals("C1", id.getCityID());
@@ -93,8 +93,8 @@ class CityIDTest {
     @Test
     void hashCodeShouldBeEqualForSameID() {
         // Arrange
-        CityID id1 = new CityID("C1");
-        CityID id2 = new CityID("C1");
+        CityId id1 = new CityId("C1");
+        CityId id2 = new CityId("C1");
 
         // Assert
         assertEquals(id1.hashCode(), id2.hashCode());
@@ -103,7 +103,7 @@ class CityIDTest {
     @Test
     void shouldBeEqualToItself() {
         // Arrange
-        CityID id = new CityID("C1");
+        CityId id = new CityId("C1");
 
         // Assert
         assertEquals(id, id);

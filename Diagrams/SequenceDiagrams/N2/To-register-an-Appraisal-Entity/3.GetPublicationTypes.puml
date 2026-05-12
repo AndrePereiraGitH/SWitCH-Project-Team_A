@@ -1,45 +1,88 @@
 @startuml
-
 hide footbox
 autonumber
+title Get Publication Types
 
-title US004 - Get Publication Types
+participant ":ToRegisterAppraisal\nEntityController" as Controller
 
-note over UI, Controller #E3F2FD
+participant ":IPublicationTypeRepository" as PublicationTypeRepo
+participant ":IPublicationTypeRepositoryJPA" as PubRepoJPA
+participant "pubTypeListDM\n:List<PublicationTypeDM>" as pubTypeDM
+participant ":PublicationTypeAssembler" as PubAssembler
+participant "persistedPublicationTypeList\n:List<PublicationType>" as allPublicationTypeList
+participant ":PublicationTypeFactory" as PubFactory
+participant "persistedPublicationType\n:PublicationType" as allPublicationType
+
+participant ":US004PublicationTypeMapper" as PublicationTypeMapper
+participant "listOfPublicationTypeDTO\n:List<US004PublicationTypeDTO>" as PublicationTypeDTO
+participant ":PublicationType" as PublicationType
+participant "publicationTypeDTO\n:US004PublicationTypeDTO" as PDTO
+
+database "DB" as DB
+
+note over Controller #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over UI, Controller #E3F2FD
-<b>Navigation</b>
----
-[[1.MainDiagram.puml Return to Main Diagram]]
+note over Controller #E3F2FD
+[[1.MainDiagram.puml Back to Main]]
 end note
 
-participant ":UI" as UI
-participant ":ToRegisterAppraisalEntityController" as Controller
-participant ":PublicationTypeRepository" as PublicationTypeRepo
-participant "allPublicationTypeList: List<PublicationType>" as allPublicationTypeList
-participant ":US004PublicationTypeMapper" as PublicationTypeMapper
-participant "listOfPublicationTypeDTO: List<US004PublicationTypeDTO>" as listOfPublicationTypeDTO
-participant ":PublicationType" as PublicationType
-participant "publicationTypeDTO: US004PublicationTypeDTO" as publicationTypeDTO
+Controller -> PublicationTypeRepo : findAll()
 
-UI -> Controller : getAllPublicationTypes()
-activate Controller
-
-Controller -> PublicationTypeRepo : getAllPublicationTypes()
 activate PublicationTypeRepo
-PublicationTypeRepo -->> allPublicationTypeList ** : <<create>>
-PublicationTypeRepo --> Controller : allPublicationTypeList
+
+PublicationTypeRepo -> PubRepoJPA : findAll()
+activate PubRepoJPA
+
+PubRepoJPA -> DB : select * from Publication Type (DM)
+activate DB
+DB --> PubRepoJPA : data
+deactivate DB
+
+PubRepoJPA -->> pubTypeDM ** : <<create>>
+PubRepoJPA --> PublicationTypeRepo : pubTypeListDM
+deactivate PubRepoJPA
+
+PublicationTypeRepo -> PubAssembler : toDomainList(pubTypeListDM)
+activate PubAssembler
+
+PubAssembler -->> allPublicationTypeList ** : <<create>>
+
+loop for each publication type
+    PubAssembler -> pubTypeDM : getId()
+    activate pubTypeDM
+    pubTypeDM --> PubAssembler : pubTypeId
+    deactivate pubTypeDM
+
+    PubAssembler -> pubTypeDM : getMediaFormat()
+    activate pubTypeDM
+    pubTypeDM --> PubAssembler : mediaFormat
+    deactivate pubTypeDM
+
+    PubAssembler -> PubFactory : create (pubTypeId, mediaFormat)
+    activate PubFactory
+    PubFactory -->> allPublicationType ** : <<create>>
+    PubFactory --> PubAssembler : persistedPublicationType
+    deactivate PubFactory
+
+    PubAssembler -> PubAssembler : persistedPublicationTypeList.add(persistedPublicationType)
+end
+
+PubAssembler --> PublicationTypeRepo : persistedPublicationTypeList
+deactivate PubAssembler
+
+PublicationTypeRepo --> Controller : persistedPublicationTypeList
 deactivate PublicationTypeRepo
 
-Controller -> PublicationTypeMapper : toDTO(allPublicationTypeList)
+Controller -> PublicationTypeMapper : toDTOs(persistedPublicationTypeList)
 activate PublicationTypeMapper
-PublicationTypeMapper -->> listOfPublicationTypeDTO ** : <<create>>
 
-loop for each publicationType in allPublicationTypeList
+PublicationTypeMapper -->> PublicationTypeDTO ** : <<create>>
+
+loop for each publicationType
     PublicationTypeMapper -> PublicationType : getId()
     activate PublicationType
     PublicationType --> PublicationTypeMapper : id
@@ -50,14 +93,11 @@ loop for each publicationType in allPublicationTypeList
     PublicationType --> PublicationTypeMapper : mediaFormat
     deactivate PublicationType
 
-    PublicationTypeMapper -->> publicationTypeDTO ** : <<create>>
+    PublicationTypeMapper -->> PDTO ** : toDTO()
     PublicationTypeMapper -> PublicationTypeMapper : listOfPublicationTypeDTO.add(publicationTypeDTO)
 end
 
 PublicationTypeMapper --> Controller : listOfPublicationTypeDTO
 deactivate PublicationTypeMapper
-
-Controller --> UI : listOfPublicationTypeDTO
-deactivate Controller
 
 @enduml

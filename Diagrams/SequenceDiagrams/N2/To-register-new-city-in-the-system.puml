@@ -1,67 +1,100 @@
 @startuml
 
-footbox off
-title Sequence Diagram - US008 Register a new city in the System
+autonumber
+hide footbox
+title Register a New City
 
 actor Administrator
 participant ":UI" as UI
-participant ":ToRegisterACityCtrl" as CityController
+participant ":ToRegisterNewCityController" as Controller
+participant ":CityService" as Service
 participant ":ICountryRepository" as CountryRepository
 participant ":ICityRepository" as CityRepository
-participant ":CityFactory" as CityFactory
+participant ":CityAssembler" as Assembler
+participant ":CityFactory" as Factory
+participant ":ICityRepositoryJPA" as JPA
+participant "city: City" as city
+participant "cityDM: CityDM" as cityDM
+database "Database" as DB
 
-Administrator -> UI : 1. Request to register a new city
+Administrator -> UI : I want to register \n a new city
 activate UI
-
-UI -> CityController : 2. registerNewCity(countryName, cityName)
-activate CityController
-
-CityController -> CountryRepository : 3. findCountryIdByCountryName(countryName)
-activate CountryRepository
-
-CountryRepository -> CountryRepository : 4. validate(countryName)
-CountryRepository -> CountryRepository : 5. normalize(countryName)
-
-alt Country found
-    CountryRepository --> CityController : 6. Optional<CountryID>
-
-    deactivate CountryRepository
-
-    CityController -> CityRepository : 7. createAndAdd(countryID, cityName)
-    activate CityRepository
-
-    CityRepository -> CityFactory : 8. create(countryID, cityName)
-    activate CityFactory
-
-    create "newCity : City" as City
-    CityFactory --> City : 9. «create»
-
-    CityFactory --> CityRepository : 10. newCity
-    deactivate CityFactory
-
-    CityRepository -> CityRepository : 11. existsByAttributes(newCity)
-
-    alt City already exists
-        CityRepository --> CityController : throws IllegalArgumentException
-        deactivate CityRepository
-    else City is new
-        CityRepository -> CityRepository : 12. add(newCity)
-        CityRepository --> CityController : 13. newCity
-        deactivate CityRepository
-
-        CityController --> UI : 14. true
-    end
-
-else Country not found
-    CountryRepository --> CityController : Optional.empty()
-    deactivate CountryRepository
-
-    CityController --> UI : throws IllegalArgumentException
-end
-
-deactivate CityController
-
-UI --> Administrator : 15. Operation result (success / error)
+UI --> Administrator : Please provide the country \n and the city name
 deactivate UI
+
+Administrator -> UI: Here's the country and city name
+activate UI
+UI -> Controller : register(countryName, cityName)
+
+
+activate Controller
+Controller -> Service : createAndSave(countryName, cityName)
+activate Service
+
+Service -> CountryRepository : findIdByName(countryName)
+activate CountryRepository
+CountryRepository --> Service : countryId
+
+deactivate CountryRepository
+
+
+Service -> CityRepository : existsByCountryIDAndCityName(countryId, cityName)
+activate CityRepository
+CityRepository --> Service : false
+deactivate CityRepository
+
+
+Service -> Factory : create(countryId, cityName)
+activate Factory
+Factory -->> city** : <<create>>
+Factory --> Service : city
+deactivate Factory
+
+Service -> CityRepository : save(city)
+
+activate CityRepository
+
+CityRepository -> Assembler : toDM(city)
+activate Assembler
+
+Assembler -->> cityDM** : <<create>>
+Assembler --> CityRepository : cityDM
+deactivate Assembler
+
+CityRepository -> JPA : save(cityDM)
+activate JPA
+
+JPA -> DB : INSERT
+activate DB
+DB --> JPA : data
+deactivate DB
+
+JPA -->> cityDM** : <<create>>
+JPA --> CityRepository : cityDM
+deactivate JPA
+
+CityRepository -> Assembler : toDomain(cityDM)
+activate Assembler
+
+Assembler -> Factory : create(cityId, countryId, cityName)
+activate Factory
+Factory -->> city** : <<create>>
+Factory --> Assembler : city
+deactivate Factory
+
+Assembler --> CityRepository : city
+deactivate Assembler
+
+CityRepository --> Service : city
+deactivate CityRepository
+
+Service --> Controller : city
+deactivate Service
+
+Controller -> UI : success
+deactivate Controller
+UI --> Administrator : success
+deactivate UI
+deactivate Controller
 
 @enduml
