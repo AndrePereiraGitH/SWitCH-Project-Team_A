@@ -21,9 +21,6 @@ participant "collectionDMtoUpdate\n:CollectionOfPublicationsDM" as collectionDMt
 
 participant ":CollectionOfPublications\nFactory" as collectionsFactory
 
-
-
-
 database DataBase as db
 
 participant "updatedCollection\n:CollectionOfPublications" as updatedCollection
@@ -40,7 +37,7 @@ note over Controller #E3F2FD
 [[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
 end note
 
-Controller -> service : makeCollectionPublic(collectionId)
+Controller -> service : makeCollectionPublicUntil(collectionId, publicUntil)
 activate service
 
 ' ------------------------------------------------------------
@@ -54,59 +51,6 @@ ref over service, CollectionRepository
 [[4.Find-collection-by-id.puml Find collection by id]]
 end ref
 
-
-
-/'
-CollectionRepository -> collectionRepositoryJPA : findById(collectionId)
-activate collectionRepositoryJPA
-collectionRepositoryJPA -> db : query find by id
-activate db
-db --> collectionRepositoryJPA : collection data
-deactivate db
-collectionRepositoryJPA --> collectionDM** : <<create>>
-collectionRepositoryJPA --> CollectionRepository : collectionDM
-deactivate collectionRepositoryJPA
-
-' -------------- CONVERT COLLECTION TO DOMAIN
-CollectionRepository -> collectionAssembler : toDomain(collectionDM)
-activate collectionAssembler
-
-
-collectionAssembler -> collectionDM : getId()
-activate collectionDM
-collectionDM --> collectionAssembler : id
-deactivate collectionDM
-
-collectionAssembler -> collectionDM : getCollectionName()
-activate collectionDM
-collectionDM --> collectionAssembler : collectionName
-deactivate collectionDM
-
-collectionAssembler -> collectionDM : getGenreId()
-activate collectionDM
-collectionDM --> collectionAssembler : genreId
-deactivate collectionDM
-
-collectionAssembler -> collectionDM : getUserId()
-activate collectionDM
-collectionDM --> collectionAssembler : userId
-deactivate collectionDM
-
-collectionAssembler -> collectionDM : get_isPrivate()
-activate collectionDM
-collectionDM --> collectionAssembler : isPrivate
-deactivate collectionDM
-
-collectionAssembler -> collectionsFactory : create(id, collectionNAme, genreId, userId, isPrivate)
-activate collectionsFactory
-collectionsFactory -->>  selectedCollectionDomain ** : <<create>>
-collectionsFactory --> collectionAssembler : selectedCollectionDomain
-deactivate collectionsFactory
-
-
-collectionAssembler --> CollectionRepository : selectedCollectionDomain
-deactivate collectionAssembler
-'/
 CollectionRepository --> service : selectedCollectionDomain
 deactivate CollectionRepository
 
@@ -114,9 +58,10 @@ deactivate CollectionRepository
 ' -----------  MAKE COLLECTION PUBLIC ------------------------
 ' ------------------------------------------------------------
 
-service -> selectedCollectionDomain : makePublic()
+service -> selectedCollectionDomain : makePublicUntil(publicUntil)
 activate selectedCollectionDomain
 selectedCollectionDomain -> selectedCollectionDomain : isPrivate = false
+selectedCollectionDomain -> selectedCollectionDomain : publicUntil = publicUntil
 selectedCollectionDomain --> service : true
 deactivate selectedCollectionDomain
 
@@ -155,6 +100,11 @@ deactivate selectedCollectionDomain
 collectionAssembler -> selectedCollectionDomain : get_isPrivate()
 activate selectedCollectionDomain
 selectedCollectionDomain --> collectionAssembler : isPrivate
+deactivate selectedCollectionDomain
+
+collectionAssembler -> selectedCollectionDomain : getPublicUntil()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : publicUntil
 deactivate selectedCollectionDomain
 
 collectionAssembler --> collectionDMtoUpdate** : <<create>>
@@ -205,7 +155,12 @@ activate updatedDBCollectionDM
 updatedDBCollectionDM --> collectionAssembler : isPrivate
 deactivate updatedDBCollectionDM
 
-collectionAssembler -> collectionsFactory : create(id, collectionName, genreId, userId, isPrivate)
+collectionAssembler -> updatedDBCollectionDM : getPublicUntil()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : publicUntil
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> collectionsFactory : create(id, collectionName, genreId, userId, isPrivate, publicUntil)
 activate collectionsFactory
 collectionsFactory -->> updatedCollection** : <<create>>
 collectionsFactory --> collectionAssembler : updatedCollection
