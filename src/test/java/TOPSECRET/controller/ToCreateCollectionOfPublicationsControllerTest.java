@@ -1,13 +1,12 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
-import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
-import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US017GenreDTO;
+import TOPSECRET.services.CollectionOfPublicationsService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,10 +32,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     IGenreRepository genreRepo;
 
     @Mock
-    ICollectionOfPublicationsRepository collectionRepo;
-
-    @Mock
-    CollectionOfPublicationsFactory factory;
+    CollectionOfPublicationsService collectionService;
 
     @InjectMocks
     ToCreateCollectionOfPublicationsController controller;
@@ -46,29 +42,18 @@ class ToCreateCollectionOfPublicationsControllerTest {
 
     @Test
     void shouldThrowWhenGenreRepositoryIsNull() {
-        ICollectionOfPublicationsRepository collectionRepoLocal = mock(ICollectionOfPublicationsRepository.class);
-        CollectionOfPublicationsFactory factoryLocal = mock(CollectionOfPublicationsFactory.class);
+        CollectionOfPublicationsService serviceLocal = mock(CollectionOfPublicationsService.class);
 
         assertThrows(IllegalArgumentException.class,
-                () -> new ToCreateCollectionOfPublicationsController(null, collectionRepoLocal, factoryLocal));
+                () -> new ToCreateCollectionOfPublicationsController(null, serviceLocal));
     }
 
     @Test
-    void shouldThrowWhenCollectionRepositoryIsNull() {
+    void shouldThrowWhenCollectionServiceIsNull() {
         IGenreRepository genreRepoLocal = mock(IGenreRepository.class);
-        CollectionOfPublicationsFactory factoryLocal = mock(CollectionOfPublicationsFactory.class);
 
         assertThrows(IllegalArgumentException.class,
-                () -> new ToCreateCollectionOfPublicationsController(genreRepoLocal, null, factoryLocal));
-    }
-
-    @Test
-    void shouldThrowWhenFactoryIsNull() {
-        IGenreRepository genreRepoLocal = mock(IGenreRepository.class);
-        ICollectionOfPublicationsRepository collectionRepoLocal = mock(ICollectionOfPublicationsRepository.class);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> new ToCreateCollectionOfPublicationsController(genreRepoLocal, collectionRepoLocal, null));
+                () -> new ToCreateCollectionOfPublicationsController(genreRepoLocal, null));
     }
 
 
@@ -133,16 +118,13 @@ class ToCreateCollectionOfPublicationsControllerTest {
         GenreId genreId = mock(GenreId.class);
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
 
-        when(factory.create("Favorites", genreId, userId)).thenReturn(collectionDouble);
-        when(collectionRepo.save(collectionDouble)).thenReturn(collectionDouble);
+        when(collectionService.createAndSave("Favorites", genreId, userId)).thenReturn(collectionDouble);
 
         // Act
         CollectionOfPublications result = controller.createCollection("Favorites", genreId, userId);
 
         // Assert
         assertEquals(collectionDouble, result);
-        verify(factory).create("Favorites", genreId, userId);
-        verify(collectionRepo).save(collectionDouble);
     }
 
     @Test
@@ -150,10 +132,8 @@ class ToCreateCollectionOfPublicationsControllerTest {
         // Arrange
         UserId userId = mock(UserId.class);
         GenreId genreId = mock(GenreId.class);
-        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
 
-        when(factory.create("Favorites", genreId, userId)).thenReturn(collectionDouble);
-        when(collectionRepo.save(collectionDouble))
+        when(collectionService.createAndSave("Favorites", genreId, userId))
                 .thenThrow(new IllegalArgumentException("Collection already exists"));
 
         // Act & Assert
