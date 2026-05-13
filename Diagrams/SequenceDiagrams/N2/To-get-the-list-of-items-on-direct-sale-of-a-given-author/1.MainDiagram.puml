@@ -68,21 +68,16 @@ end ref
 listingRepo --> Ctrl : listingList
 deactivate listingRepo
 
-Ctrl -> directSaleMapper : fromDomainList(listingList)
+Ctrl -> directSaleMapper : toDTOList(listingList, bdRepo, pubRepo, authorRepo)
 activate directSaleMapper
 
 directSaleMapper -->> ListDTO ** : <<create>>
 
 loop for each listing in listingList
+    directSaleMapper -> directSaleMapper : toDTO(listing, bd, authorNames)
     directSaleMapper -->> dsDTO ** : <<create>>
-    directSaleMapper -> dsDTO : fromDomain(listing)
-    activate dsDTO
-    dsDTO --> directSaleMapper : directSaleDTO
-    deactivate dsDTO
-    directSaleMapper -> ListDTO : add(directSaleDTO)
+    directSaleMapper -> ListDTO : add(dsDTO)
 end
-
-deactivate ListDTO
 
 directSaleMapper --> Ctrl : listOfDirectSaleDTO
 deactivate directSaleMapper
