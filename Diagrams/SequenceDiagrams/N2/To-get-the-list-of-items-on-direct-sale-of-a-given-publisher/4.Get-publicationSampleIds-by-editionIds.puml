@@ -1,0 +1,53 @@
+@startuml
+
+hide footbox
+autonumber
+title To get PublicationSampleIds by EditionIds
+
+'Controller
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
+
+'PublicationSample
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":IPublicationSample\nRepositoryJPA" as PubSampleRepoJPA
+participant "listOfPubSampleDMs:\nList<PublicationSampleDM" as listPubSampleDMs
+participant "listOfPubSampleIds:\nList<PublicationSampleId>" as listPubSampleIds
+
+'DB
+database "database" as DB
+
+
+ref over Ctrl
+[[1.Main-Diagram.puml Back to main diagram]]
+end ref
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+' Section 1 — Get PublicationSampleIds for those EditionIds
+Ctrl -> PubSampleRepo : findIdsByEditionIdIn(listOfEditionIds)
+activate PubSampleRepo
+PubSampleRepo -> PubSampleRepoJPA: findAllByEditionIdIn(listOfEditionIds)
+activate PubSampleRepoJPA
+PubSampleRepoJPA -> DB: query by editionIds
+activate DB
+DB --> PubSampleRepoJPA: data
+deactivate DB
+PubSampleRepoJPA -->> listPubSampleDMs** : «create»
+PubSampleRepoJPA --> PubSampleRepo: listOfPubSampleDMs
+deactivate PubSampleRepoJPA
+PubSampleRepo -->> listPubSampleIds ** : «create»
+loop for each pubSampleDM in listPubSampleDMs
+    PubSampleRepo -> listPubSampleDMs: getId()
+    activate listPubSampleDMs
+    listPubSampleDMs --> PubSampleRepo: id
+    deactivate listPubSampleDMs
+    PubSampleRepo -> listPubSampleIds: add(id)
+end
+PubSampleRepo --> Ctrl : listOfPubSampleIds
+deactivate PubSampleRepo
+
+@enduml

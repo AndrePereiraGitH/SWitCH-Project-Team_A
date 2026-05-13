@@ -1,0 +1,54 @@
+@startuml
+
+hide footbox
+autonumber
+title To Get EditionIds by PublisherId
+
+'Controller
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
+
+'Edition
+participant ":IEdition\nRepository" as EditionRepo
+participant ":IEdition\nRepositoryJPA" as EditionRepoJPA
+participant "listEditionDMs:\nList<EditionDM>" as listEditionDMs
+participant "listOfEditionIds:\nList<EditionId>" as listEditionIds
+
+'DB
+database "database" as DB
+
+
+ref over Ctrl
+[[1.Main-Diagram.puml Back to main diagram]]
+end ref
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+' Section 1 - Get EditionIds of that Publisher
+Ctrl -> EditionRepo : findIdsByPublisherId(publisherId)
+activate Ctrl
+activate EditionRepo
+EditionRepo -> EditionRepoJPA: findIdsByPublisherId(publisherId)
+activate EditionRepoJPA
+EditionRepoJPA -> DB: query by publisherId
+activate DB
+DB --> EditionRepoJPA: data
+deactivate DB
+EditionRepoJPA -->> listEditionDMs **: «create»
+EditionRepoJPA --> EditionRepo: listEditionDMs
+deactivate EditionRepoJPA
+EditionRepo -->> listEditionIds ** : «create»
+loop for each editionDM in listEditionDMs
+    EditionRepo -> listEditionDMs: getId()
+    activate listEditionDMs
+    listEditionDMs --> EditionRepo: id
+    deactivate listEditionDMs
+    EditionRepo -> listEditionIds: add (id)
+end
+EditionRepo --> Ctrl : listOfEditionIds
+deactivate EditionRepo
+
+@enduml
