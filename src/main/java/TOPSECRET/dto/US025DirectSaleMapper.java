@@ -12,6 +12,7 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 /**
  * Mapper responsible for converting {@link Listing} and {@link BibliographicalData}
@@ -63,6 +64,7 @@ public class US025DirectSaleMapper {
             }
             dtos.add(toDTO(listing, bd, authorNames));
         }
+        dtos.sort(Comparator.comparing(US025DirectSaleDTO::getPublicationTitle));
         return dtos;
     }
 }

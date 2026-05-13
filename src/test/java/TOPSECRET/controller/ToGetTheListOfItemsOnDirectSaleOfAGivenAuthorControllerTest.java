@@ -2,12 +2,10 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
@@ -18,7 +16,6 @@ import TOPSECRET.dto.US025DirectSaleMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -288,29 +285,22 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         AuthorId authorIdDouble = mock(AuthorId.class);
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
-        PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
 
         Listing listingDouble = mock(Listing.class);
-        PublicationSample pubDouble = mock(PublicationSample.class);
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
-
-        when(listingDouble.getItemsId()).thenReturn(List.of(pubIdDouble));
-        when(pubDouble.getBibliographicalDataID()).thenReturn(bdIdDouble);
-        when(bdDouble.getAuthors()).thenReturn(List.of());
 
         when(bdRepositoryDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of(bdIdDouble));
-        when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of(pubIdDouble));
-        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubIdDouble)))
+        when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of());
+        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(anyList()))
                 .thenReturn(List.of(listingDouble));
-        when(pubRepositoryDouble.findById(pubIdDouble)).thenReturn(Optional.of(pubDouble));
-        when(bdRepositoryDouble.findById(bdIdDouble)).thenReturn(Optional.of(bdDouble));
 
         US025DirectSaleDTO dtoB = mock(US025DirectSaleDTO.class);
-        US025DirectSaleDTO dtoA = mock(US025DirectSaleDTO.class);
         when(dtoB.getPublicationTitle()).thenReturn("B Title");
-        when(dtoA.getPublicationTitle()).thenReturn("A Title");
-        when(directSaleMapperDouble.toDTO(eq(listingDouble), eq(bdDouble), anyList()))
-                .thenReturn(dtoB);
+        when(directSaleMapperDouble.toDTOList(
+                List.of(listingDouble),
+                bdRepositoryDouble,
+                pubRepositoryDouble,
+                authorRepositoryDouble))
+                .thenReturn(List.of(dtoB));
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
@@ -344,29 +334,24 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         AuthorId authorIdDouble = mock(AuthorId.class);
         BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
-        PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
 
-        Listing listingDouble = mock(Listing.class);
-        PublicationSample pubDouble = mock(PublicationSample.class);
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
-        Author authorDouble = mock(Author.class);
         US025DirectSaleDTO dtoDouble = mock(US025DirectSaleDTO.class);
 
-        when(listingDouble.getItemsId()).thenReturn(List.of(pubIdDouble));
-        when(pubDouble.getBibliographicalDataID()).thenReturn(bdIdDouble);
-        when(bdDouble.getAuthors()).thenReturn(List.of(authorIdDouble));
-        when(authorDouble.getName()).thenReturn("Author Name");
         when(dtoDouble.getPublicationTitle()).thenReturn("Some Title");
 
         when(bdRepositoryDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of(bdIdDouble));
-        when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of(pubIdDouble));
-        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubIdDouble)))
-                .thenReturn(List.of(listingDouble));
-        when(pubRepositoryDouble.findById(pubIdDouble)).thenReturn(Optional.of(pubDouble));
-        when(bdRepositoryDouble.findById(bdIdDouble)).thenReturn(Optional.of(bdDouble));
-        when(authorRepositoryDouble.findById(authorIdDouble)).thenReturn(Optional.of(authorDouble));
-        when(directSaleMapperDouble.toDTO(eq(listingDouble), eq(bdDouble), eq(List.of("Author Name"))))
-                .thenReturn(dtoDouble);
+        when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble)))
+                .thenReturn(List.of());
+        List<Listing> listingsDouble = List.of(mock(Listing.class));
+        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(anyList()))
+                .thenReturn(listingsDouble);
+
+        when(directSaleMapperDouble.toDTOList(
+                eq(listingsDouble),
+                eq(bdRepositoryDouble),
+                eq(pubRepositoryDouble),
+                eq(authorRepositoryDouble)))
+                .thenReturn(List.of(dtoDouble));
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(

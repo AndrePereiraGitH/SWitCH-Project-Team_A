@@ -9,6 +9,8 @@ participant ":IListingRepositoryJPA" as listingRepoJPA
 participant "listingDMList\n:List<ListingDM>" as listingDMList
 participant ":ListingAssembler" as assembler
 participant "listingList\n:List<Listing>" as listingList
+participant ":ListingFactory" as factory
+participant "listing\n:Listing" as listingObj
 
 database "Database" as db
 
@@ -24,7 +26,7 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> listingRepo : findByPublicationSampleIdIn(pubIdList)
+Ctrl -> listingRepo : findAllByDirectSaleAndPublicationSampleIdIn(pubIdList)
 activate listingRepo
 
 listingRepo -> listingRepoJPA : findAllByItemsIdAndSaleType(pubIdList, DIRECT_SALE)
@@ -44,6 +46,11 @@ listingRepo -->> listingList ** : <<create>>
 loop for each listingDM in listingDMList
     listingRepo -> assembler : toDomain(listingDM)
     activate assembler
+    assembler -> factory : create(listingDM)
+        activate factory
+        factory -->> listingObj ** : <<create>>
+        factory --> assembler : listing
+        deactivate factory
     assembler --> listingRepo : listing
     deactivate assembler
     listingRepo -> listingList : add(listing)

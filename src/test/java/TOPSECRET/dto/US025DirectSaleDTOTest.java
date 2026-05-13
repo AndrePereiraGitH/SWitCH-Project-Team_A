@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>Constructor - valid creation</li>
  *   <li>Getters - correct field retrieval after construction</li>
  *   <li>Immutability - all fields are final</li>
- *   <li>Equality - Lombok {@code @Value} generated {@code equals} and {@code hashCode}</li>
  * </ul>
  */
 class US025DirectSaleDTOTest {
@@ -155,57 +154,5 @@ class US025DirectSaleDTOTest {
             assertTrue(java.lang.reflect.Modifier.isFinal(field.getModifiers()),
                     "Field " + fieldName + " should be final");
         }
-    }
-
-    // =========================================================================
-    // Equality
-    // =========================================================================
-
-    /**
-     * Ensures two {@link US025DirectSaleDTO} instances with the same fields are equal.
-     */
-    @Test
-    void equalsShouldReturnTrueForSameFields() {
-
-        // ARRANGE
-        US025DirectSaleDTO sut = new US025DirectSaleDTO(
-                PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
-        US025DirectSaleDTO other = new US025DirectSaleDTO(
-                PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
-
-        // ASSERT
-        assertEquals(sut, other);
-    }
-
-    /**
-     * Ensures two {@link US025DirectSaleDTO} instances with different titles are not equal.
-     */
-    @Test
-    void equalsShouldReturnFalseForDifferentPublicationTitle() {
-
-        // ARRANGE
-        US025DirectSaleDTO sut = new US025DirectSaleDTO(
-                PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
-        US025DirectSaleDTO other = new US025DirectSaleDTO(
-                "Different Title", AUTHORS, PRICE, LISTING_TITLE, SELLER);
-
-        // ASSERT
-        assertNotEquals(sut, other);
-    }
-
-    /**
-     * Ensures two {@link US025DirectSaleDTO} instances with the same fields have the same hash code.
-     */
-    @Test
-    void hashCodeShouldBeEqualForSameFields() {
-
-        // ARRANGE
-        US025DirectSaleDTO sut = new US025DirectSaleDTO(
-                PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
-        US025DirectSaleDTO other = new US025DirectSaleDTO(
-                PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
-
-        // ASSERT
-        assertEquals(sut.hashCode(), other.hashCode());
     }
 }

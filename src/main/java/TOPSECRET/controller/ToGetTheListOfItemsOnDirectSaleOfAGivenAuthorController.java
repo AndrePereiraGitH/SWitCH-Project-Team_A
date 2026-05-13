@@ -107,20 +107,10 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         List<Listing> listings =
                 listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubIds);
 
-        List<US025DirectSaleDTO> dtos = new ArrayList<>();
-        for (Listing listing : listings) {
-            PublicationSampleId firstPubId = listing.getItemsId().get(0);
-            PublicationSample pub = publicationSampleRepository.findById(firstPubId).orElseThrow();
-            BibliographicalData bd = bibliographicalDataRepository.findById(pub.getBibliographicalDataID()).orElseThrow();
-            List<String> authorNames = new ArrayList<>();
-            for (AuthorId aId : bd.getAuthors()) {
-                authorRepository.findById(aId).ifPresent(a -> authorNames.add(a.getName()));
-            }
-            dtos.add(directSaleMapper.toDTO(listing, bd, authorNames));
-        }
-
-        dtos.sort(Comparator.comparing(US025DirectSaleDTO::getPublicationTitle));
-
-        return dtos;
+        return directSaleMapper.toDTOList(
+                listings,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                authorRepository);
     }
 }
