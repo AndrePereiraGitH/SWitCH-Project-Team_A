@@ -5,7 +5,7 @@ title Class Diagram – To Get a List Of Items On Auction By A Given Genre
 class UI
 
 class ToGetListOfItemsOnAuctionOfGivenGenreController {
-    + getAllGenres() : Genre
+    + getAllGenres() : List<Genre>
     + findListOfItemsOnAuctionByGenreId(genreDTO) : (US022GenreDTO) : List
     + findListOfItemsOnAuctionByGenreIdSortedByDeadlineAsc(genreDTO) : (US022GenreDTO) : List
 }
