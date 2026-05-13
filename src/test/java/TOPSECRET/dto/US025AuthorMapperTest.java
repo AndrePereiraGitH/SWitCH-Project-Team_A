@@ -114,4 +114,20 @@ class US025AuthorMapperTest {
         // ASSERT
         assertTrue(result.isEmpty());
     }
+
+    /**
+     * Ensures {@code toDTOList()} returns a mutable list when input is {@code null}.
+     */
+    @Test
+    void toDTOListShouldReturnMutableListWhenInputIsNull() {
+
+        // ARRANGE
+        US025AuthorMapper sut = new US025AuthorMapper();
+
+        // ACT
+        List<US025AuthorDTO> result = sut.toDTOList(null);
+
+        // ASSERT
+        assertDoesNotThrow(() -> result.add(new US025AuthorDTO("John Doe")));
+    }
 }

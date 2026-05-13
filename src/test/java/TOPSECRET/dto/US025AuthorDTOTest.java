@@ -116,4 +116,43 @@ class US025AuthorDTOTest {
         // ASSERT
         assertEquals(sut.hashCode(), other.hashCode());
     }
+
+    /**
+     * Ensures {@code equals()} returns true when comparing an instance to itself.
+     */
+    @Test
+    void equalsShouldReturnTrueWhenComparingSameInstance() {
+
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
+
+        // ASSERT
+        assertEquals(sut, sut);
+    }
+
+    /**
+     * Ensures {@code equals()} returns false when comparing to null.
+     */
+    @Test
+    void equalsShouldReturnFalseWhenComparingToNull() {
+
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
+
+        // ASSERT
+        assertNotEquals(null, sut);
+    }
+
+    /**
+     * Ensures {@code hashCode()} returns a non-zero value for a non-empty name.
+     */
+    @Test
+    void hashCodeShouldReturnNonZeroForNonEmptyName() {
+
+        // ARRANGE
+        US025AuthorDTO sut = new US025AuthorDTO("John Doe");
+
+        // ASSERT
+        assertNotEquals(0, sut.hashCode());
+    }
 }

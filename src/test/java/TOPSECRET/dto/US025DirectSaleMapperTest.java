@@ -48,6 +48,9 @@ class US025DirectSaleMapperTest {
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         Price priceDouble = mock(Price.class);
         UserId sellerIdDouble = mock(UserId.class);
+        IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
+        IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
+        IAuthorRepository authorRepositoryDouble = mock(IAuthorRepository.class);
 
         when(bdDouble.getTitle()).thenReturn("Clean Code");
         when(priceDouble.getPrice()).thenReturn(new BigDecimal("29.99"));
@@ -58,7 +61,9 @@ class US025DirectSaleMapperTest {
 
         List<String> authorNames = List.of("Robert Martin");
 
-        US025DirectSaleMapper sut = new US025DirectSaleMapper();
+        US025DirectSaleMapper sut = new US025DirectSaleMapper(bdRepositoryDouble,
+                pubRepositoryDouble,
+                authorRepositoryDouble);
 
         // ACT
         US025DirectSaleDTO result = sut.toDTO(listingDouble, bdDouble, authorNames);
@@ -83,6 +88,9 @@ class US025DirectSaleMapperTest {
         BibliographicalData bdDouble = mock(BibliographicalData.class);
         Price priceDouble = mock(Price.class);
         UserId sellerIdDouble = mock(UserId.class);
+        IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
+        IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
+        IAuthorRepository authorRepositoryDouble = mock(IAuthorRepository.class);
 
         when(bdDouble.getTitle()).thenReturn("Clean Code");
         when(priceDouble.getPrice()).thenReturn(new BigDecimal("29.99"));
@@ -91,7 +99,9 @@ class US025DirectSaleMapperTest {
         when(sellerIdDouble.toString()).thenReturn("seller123");
         when(listingDouble.getSellerId()).thenReturn(sellerIdDouble);
 
-        US025DirectSaleMapper sut = new US025DirectSaleMapper();
+        US025DirectSaleMapper sut = new US025DirectSaleMapper(bdRepositoryDouble,
+                pubRepositoryDouble,
+                authorRepositoryDouble);
 
         // ACT
         US025DirectSaleDTO result = sut.toDTO(listingDouble, bdDouble, List.of());
@@ -140,11 +150,13 @@ class US025DirectSaleMapperTest {
         when(bdRepositoryDouble.findById(bdIdDouble)).thenReturn(Optional.of(bdDouble));
         when(authorRepositoryDouble.findById(authorIdDouble)).thenReturn(Optional.of(authorDouble));
 
-        US025DirectSaleMapper sut = new US025DirectSaleMapper();
+        US025DirectSaleMapper sut = new US025DirectSaleMapper(bdRepositoryDouble,
+                pubRepositoryDouble,
+                authorRepositoryDouble);
 
         // ACT
-        List<US025DirectSaleDTO> result = sut.toDTOList(
-                List.of(listingDouble), bdRepositoryDouble, pubRepositoryDouble, authorRepositoryDouble);
+        List<US025DirectSaleDTO> result = sut.toDTOList(List.of(listingDouble));
+
 
         // ASSERT
         assertEquals(1, result.size());
@@ -159,14 +171,16 @@ class US025DirectSaleMapperTest {
     void toDTOListShouldReturnEmptyListWhenNoListingsProvided() {
 
         // ARRANGE
-        US025DirectSaleMapper sut = new US025DirectSaleMapper();
+        IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
+        IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
+        IAuthorRepository authorRepositoryDouble = mock(IAuthorRepository.class);
+
+        US025DirectSaleMapper sut = new US025DirectSaleMapper(bdRepositoryDouble,
+                pubRepositoryDouble,
+                authorRepositoryDouble);
 
         // ACT
-        List<US025DirectSaleDTO> result = sut.toDTOList(
-                List.of(),
-                mock(IBibliographicalDataRepository.class),
-                mock(IPublicationSampleRepository.class),
-                mock(IAuthorRepository.class));
+        List<US025DirectSaleDTO> result = sut.toDTOList(List.of());
 
         // ASSERT
         assertTrue(result.isEmpty());

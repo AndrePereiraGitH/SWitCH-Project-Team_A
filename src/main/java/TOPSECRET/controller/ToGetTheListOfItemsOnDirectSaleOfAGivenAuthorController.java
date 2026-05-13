@@ -15,9 +15,8 @@ import TOPSECRET.dto.US025DirectSaleDTO;
 import TOPSECRET.dto.US025AuthorMapper;
 import TOPSECRET.dto.US025DirectSaleMapper;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Comparator;
 
 /**
  * Controller responsible for providing:
@@ -107,10 +106,8 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         List<Listing> listings =
                 listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubIds);
 
-        return directSaleMapper.toDTOList(
-                listings,
-                bibliographicalDataRepository,
-                publicationSampleRepository,
-                authorRepository);
+        List<US025DirectSaleDTO> dtos = directSaleMapper.toDTOList(listings);
+        dtos.sort(Comparator.comparing(US025DirectSaleDTO::getPublicationTitle));
+        return dtos;
     }
 }

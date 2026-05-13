@@ -20,6 +20,35 @@ import java.util.Comparator;
  */
 public class US025DirectSaleMapper {
 
+    private final IBibliographicalDataRepository bdRepository;
+    private final IPublicationSampleRepository pubSampleRepository;
+    private final IAuthorRepository authorRepository;
+
+    /**
+     * Constructs a new mapper with the required repositories.
+     *
+     * @param bdRepository        repository for retrieving {@link BibliographicalData}
+     * @param pubSampleRepository repository for retrieving {@link PublicationSample}
+     * @param authorRepository    repository for retrieving authors
+     * @throws IllegalArgumentException if any argument is {@code null}
+     */
+    public US025DirectSaleMapper(
+            IBibliographicalDataRepository bdRepository,
+            IPublicationSampleRepository pubSampleRepository,
+            IAuthorRepository authorRepository) {
+
+        if (bdRepository == null)
+            throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
+        if (pubSampleRepository == null)
+            throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
+        if (authorRepository == null)
+            throw new IllegalArgumentException("AuthorRepository cannot be null");
+
+        this.bdRepository = bdRepository;
+        this.pubSampleRepository = pubSampleRepository;
+        this.authorRepository = authorRepository;
+    }
+
     /**
      * Converts a {@link Listing}, its associated {@link BibliographicalData},
      * and a list of resolved author names into a {@link US025DirectSaleDTO}.
@@ -41,18 +70,10 @@ public class US025DirectSaleMapper {
      * Converts a list of {@link Listing} objects into a list of {@link US025DirectSaleDTO},
      * resolving bibliographical data and author names for each listing.
      *
-     * @param listings            the list of listings to convert; must not be {@code null}
-     * @param bdRepository        repository for retrieving {@link BibliographicalData}
-     * @param pubSampleRepository repository for retrieving {@link PublicationSample}
-     * @param authorRepository    repository for retrieving authors
-     * @return a list of {@link US025DirectSaleDTO}
+     * @param listings the list of listings to convert; must not be {@code null}
+     * @return a list of {@link US025DirectSaleDTO} sorted ascending by publication title
      */
-    public List<US025DirectSaleDTO> toDTOList(
-            List<Listing> listings,
-            IBibliographicalDataRepository bdRepository,
-            IPublicationSampleRepository pubSampleRepository,
-            IAuthorRepository authorRepository) {
-
+    public List<US025DirectSaleDTO> toDTOList(List<Listing> listings) {
         List<US025DirectSaleDTO> dtos = new ArrayList<>();
         for (Listing listing : listings) {
             PublicationSampleId firstPubId = listing.getItemsId().get(0);
@@ -64,7 +85,6 @@ public class US025DirectSaleMapper {
             }
             dtos.add(toDTO(listing, bd, authorNames));
         }
-        dtos.sort(Comparator.comparing(US025DirectSaleDTO::getPublicationTitle));
         return dtos;
     }
 }
