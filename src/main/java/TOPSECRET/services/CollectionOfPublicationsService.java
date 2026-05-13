@@ -10,6 +10,7 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -116,5 +117,27 @@ public class CollectionOfPublicationsService {
         }
 
         return changed;
+    }
+
+    public boolean makeCollectionPublicUntil(CollectionOfPublicationsId collectionId, LocalDateTime publicUntil) throws InstanceNotFoundException {
+
+        if (publicUntil == null) {
+            throw new IllegalArgumentException("Public until date time cannot be null");
+        }
+
+        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+        Objects.requireNonNull(publicUntil, "Public until date cannot be null");
+
+        CollectionOfPublications collection =
+                collectionOfPublicationsRepository.findById(collectionId);
+
+        boolean changed = collection.makePublicUntil(publicUntil);
+
+        if (changed) {
+            collectionOfPublicationsRepository.update(collection);
+        }
+
+        return changed;
+
     }
 }

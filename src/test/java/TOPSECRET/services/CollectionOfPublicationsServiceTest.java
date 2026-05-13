@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 
 import javax.management.InstanceNotFoundException;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -188,6 +190,86 @@ class CollectionOfPublicationsServiceTest {
         NullPointerException ex = assertThrows(NullPointerException.class, () -> service.makeCollectionPublic(null));
 
         assertEquals("CollectionOfPublications Id cannot be null", ex.getMessage());
+    }
+
+    // ===========================================================================
+    // ---------------------- MAKE COLLECTION PUBLIC UNTIL-------------------------
+    // ============================================================================
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnTrueAndUpdate_whenCollectionWasChanged()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenReturn(collection);
+
+        when(collection.makePublicUntil(publicUntil))
+                .thenReturn(true);
+
+        // Act
+        boolean result = service.makeCollectionPublicUntil(collectionId, publicUntil);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnFalseAndNotUpdate_whenCollectionWasNotChanged()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenReturn(collection);
+
+        when(collection.makePublicUntil(publicUntil))
+                .thenReturn(false);
+
+        // Act
+        boolean result = service.makeCollectionPublicUntil(collectionId, publicUntil);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldThrowException_whenPublicUntilIsNull() {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        LocalDateTime publicUntil = null;
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.makeCollectionPublicUntil(collectionId, publicUntil)
+        );
+
+        // Assert
+        assertEquals("Public until date time cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldThrowException_whenCollectionIdIsNull() {
+        // Arrange
+        CollectionOfPublicationsId collectionId = null;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> service.makeCollectionPublicUntil(collectionId, publicUntil)
+        );
+
+        // Assert
+        assertEquals("CollectionOfPublications Id cannot be null", exception.getMessage());
     }
 
 

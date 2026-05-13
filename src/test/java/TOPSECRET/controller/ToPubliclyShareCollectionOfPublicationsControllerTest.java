@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -243,6 +244,106 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
         assertEquals("Collection not found", exception.getMessage());
     }
 
+    // =============================================================================
+    // ---------------------- SHARE COLLECTION UNTIL -------------------------------
+    // =============================================================================
+
+    @Test
+    void shareCollectionUntil_ShouldReturnTrue_WhenServiceReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId selectedCollectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(
+                selectedCollectionId,
+                publicUntil
+        )).thenReturn(true);
+
+        // Act
+        boolean result = controller.shareCollectionUntil(
+                selectedCollectionId,
+                publicUntil
+        );
+
+        // Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldReturnFalse_WhenServiceReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId selectedCollectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(
+                selectedCollectionId,
+                publicUntil
+        )).thenReturn(false);
+
+        // Act
+        boolean result = controller.shareCollectionUntil(
+                selectedCollectionId,
+                publicUntil
+        );
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldThrowException_WhenSelectedCollectionIdIsNull()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId selectedCollectionId = null;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> controller.shareCollectionUntil(selectedCollectionId, publicUntil)
+        );
+
+        // Assert
+        assertEquals("selected collection Id cannot be null", exception.getMessage());
+
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldThrowInstanceNotFoundException_WhenServiceThrows()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId selectedCollectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(
+                selectedCollectionId,
+                publicUntil
+        )).thenThrow(new InstanceNotFoundException("Collection not found"));
+
+        // Act
+        InstanceNotFoundException exception = assertThrows(
+                InstanceNotFoundException.class,
+                () -> controller.shareCollectionUntil(selectedCollectionId, publicUntil)
+        );
+
+        // Assert
+        assertEquals("Collection not found", exception.getMessage());
+
+    }
 
 
 

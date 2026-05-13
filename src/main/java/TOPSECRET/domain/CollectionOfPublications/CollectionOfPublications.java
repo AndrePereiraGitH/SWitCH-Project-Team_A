@@ -60,6 +60,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._collectionGenreId = collectionGenreId;
         this._isPrivate = true;            // US017 rule: always private when created; US019 allows making it public
         this._ownerId = userId;
+        this.publicUntil = null;
     }
 
     /**
