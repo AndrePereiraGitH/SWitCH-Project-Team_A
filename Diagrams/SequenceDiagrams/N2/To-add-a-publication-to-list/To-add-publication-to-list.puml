@@ -174,16 +174,45 @@ deactivate PublicationSampleRepoJPA
 PublicationSampleRepo -> PublicationSampleAssembler : toDomainList(publicationSampleDMList)
 activate PublicationSampleAssembler
 
-PublicationSampleAssembler -->> publicationAvailable ** : <<create>>
-
 loop for each publication sample DM in the list
-    PublicationSampleAssembler -> publicationSampleDMList : getDetails()
-    activate publicationSampleDMList
-    publicationSampleDMList --> PublicationSampleAssembler : publicationSampleDetails
-    deactivate publicationSampleDMList
+        PublicationSampleAssembler -> publicationSampleDMList : getPubSampleId()
+        activate publicationSampleDMList
 
-    PublicationSampleAssembler -> PublicationSampleFactory : create(PublicationSampleDetails)
-    activate PublicationSampleFactory
+        publicationSampleDMList --> PublicationSampleAssembler : pubSampleId
+        deactivate publicationSampleDMList
+
+        PublicationSampleAssembler -> publicationSampleDMList : getBdId()
+        activate publicationSampleDMList
+
+        publicationSampleDMList --> PublicationSampleAssembler : bibliographicalDataId
+        deactivate publicationSampleDMList
+
+        PublicationSampleAssembler -> publicationSampleDMList : getOwnerId()
+        activate publicationSampleDMList
+
+        publicationSampleDMList --> PublicationSampleAssembler : userId
+        deactivate publicationSampleDMList
+
+        PublicationSampleAssembler -> publicationSampleDMList: getPublicationStatus()
+        activate publicationSampleDMList
+
+        publicationSampleDMList --> PublicationSampleAssembler : publicationStatus
+        deactivate publicationSampleDMList
+
+        PublicationSampleAssembler -> publicationSampleDMList : getEditionId()
+        activate publicationSampleDMList
+
+        publicationSampleDMList --> PublicationSampleAssembler : editionId
+        deactivate publicationSampleDMList
+
+        PublicationSampleAssembler -> publicationSampleDMList : getCondition()
+        activate publicationSampleDMList
+
+        publicationSampleDMList --> PublicationSampleAssembler : condition
+        deactivate publicationSampleDMList
+
+        PublicationSampleAssembler -> PublicationSampleFactory : create(pubSampleId, bibliographicalDataId, \nuserId, publicationStatus, editionId, condition)
+        activate PublicationSampleFactory
 
     PublicationSampleFactory -->> PublicationSample ** : <<create>>
 

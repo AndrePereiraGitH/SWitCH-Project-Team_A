@@ -17,12 +17,13 @@ import static org.mockito.Mockito.*;
  * </p>
  *
  * <p>
- * The controller does not implement business logic or validation.
+ * The controller does not implement business logic or validation (except for validating if the country name is null or blank.
  * Therefore, tests focus on:
  * <ul>
  *     <li>Correct delegation of requests to the service layer</li>
  *     <li>Proper propagation of results returned by the service</li>
  *     <li>Proper propagation of exceptions thrown by the service</li>
+ *     <li>Check if exception is thrown in case of null or blank country name</li>
  * </ul>
  * </p>
  *
@@ -117,5 +118,21 @@ class ToRegisterCountryControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.register(input));
+    }
+
+    @Test
+    void register_shouldThrowIllegalArgumentException_whenCountryNameIsNull() {
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register(null));
+    }
+
+    @Test
+    void register_shouldThrowIllegalArgumentException_whenCountryNameIsBlank() {
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("   "));
     }
 }
