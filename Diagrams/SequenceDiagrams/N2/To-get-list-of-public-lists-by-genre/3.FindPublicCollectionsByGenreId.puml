@@ -9,6 +9,7 @@ participant ":PublicListByGenreController" as Ctrl
 participant ":ICollectionOfPublicationRepository" as collectionRepo
 participant ":ICollectionOfPublicationsRepositoryJpa" as collectionRepoJpa
 database ":Database" as DB
+participant ":collectionDMList\nList<CollectionOfPublicationsDM>" as collectionDMList
 participant ":CollectionOfPublicationsAssembler" as assembler
 participant ":CollectionOfPublicationsFactory" as factory
 participant "collection:\nCollectionOfPublication" as collection
@@ -36,6 +37,7 @@ collectionRepoJpa -> DB : select collections\nwhere genre_id = genreId\nand is_p
 activate DB
 DB --> collectionRepoJpa : data
 deactivate DB
+collectionRepoJpa --> collectionDMList ** : <<create>>
 
 collectionRepoJpa --> collectionRepo : collectionDMList
 deactivate collectionRepoJpa
