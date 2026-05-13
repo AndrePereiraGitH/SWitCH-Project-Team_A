@@ -75,7 +75,7 @@ activate Assembler
 
 Assembler -->> "listOfGenre:\nList<Genre>" ** : <<create>>
 
-    Assembler -> GFactory : create(GenreId, String genreType)
+    Assembler -> GFactory : create(genreDM.getId(), genreDM.getGenreType())
 
     activate GFactory
 
@@ -189,7 +189,7 @@ deactivate LJPA
 ListingRepo --> Controller : listOfListingId
 deactivate ListingRepo
 
-Controller -> AuctionRepo : findAllByListingId(listOfListing)
+Controller -> AuctionRepo : findAllByListingId(listOfListingId)
 activate AuctionRepo
 AuctionRepo -> AJPA : findAllByListingId(listOfListingId)
 activate AJPA

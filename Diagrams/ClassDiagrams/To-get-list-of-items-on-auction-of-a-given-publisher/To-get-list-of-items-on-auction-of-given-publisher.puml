@@ -2,6 +2,9 @@
 title Class Diagram - US028 Get Items On Auction By Publisher
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
+top to bottom direction
+skinparam nodesep 100
+skinparam ranksep 100
 
 ' ========================
 ' CONTROLLER
@@ -16,6 +19,15 @@ class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
     + findListOfItemsOnAuctionByPublisherId(publisherId : PublisherID) : List<US028ListingDTO>
 }
 
+class UI {
+}
+
+' ========================
+' DATABASE
+' ========================
+rectangle DataBase {
+}
+
 ' ========================
 ' PUBLISHER
 ' ========================
@@ -25,6 +37,8 @@ interface IPublisherRepository {
 }
 
 class PublisherRepositoryJpaImpl {
+    - publisherRepositoryJpa : IPublisherRepositoryJpa
+    - assembler : PublisherAssembler
     + findAll() : List<Publisher>
     + findById(id : PublisherID) : Optional<Publisher>
 }
@@ -32,6 +46,9 @@ class PublisherRepositoryJpaImpl {
 interface IPublisherRepositoryJpa {
     + findAll() : List<PublisherDM>
     + findById(id : PublisherID) : Optional<PublisherDM>
+}
+
+class AutomaticGeneratedPublisherRepoJPAImpl {
 }
 
 class PublisherAssembler {
@@ -79,11 +96,16 @@ interface IEditionRepository {
 }
 
 class EditionRepositoryJpaImpl {
+    - editionRepositoryJpa : IEditionRepositoryJpa
+    - assembler : EditionAssembler
     + findByPublisherId(publisherId : PublisherID) : List<Edition>
 }
 
 interface IEditionRepositoryJpa {
     + findAllByPublisherId(publisherId : PublisherID) : List<EditionDM>
+}
+
+class AutomaticGeneratedEditionRepoJPAImpl {
 }
 
 class EditionDM {
@@ -96,6 +118,7 @@ class EditionDM {
 class EditionID {
     - value : String
 }
+
 class EditionAssembler {
     + toDomain(dm : EditionDM) : Edition
 }
@@ -118,11 +141,15 @@ interface IPublicationSampleRepository {
 }
 
 class PublicationSampleRepositoryJpaImpl {
+    - publicationSampleRepositoryJpa : IPublicationSampleRepositoryJpa
     + findIdsByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleId>
 }
 
 interface IPublicationSampleRepositoryJpa {
     + findAllByEditionIdIn(ids : List<EditionID>) : List<PublicationSampleDM>
+}
+
+class AutomaticGeneratedPublicationSampleRepoJPAImpl {
 }
 
 class PublicationSampleDM {
@@ -144,11 +171,16 @@ interface IListingRepository {
 }
 
 class ListingRepositoryJpaImpl {
+    - listingRepositoryJpa : IListingRepositoryJpa
+    - assembler : ListingAssembler
     + findAllByAuctionAndPublicationSampleIdIn(ids : List<PublicationSampleId>) : List<Listing>
 }
 
 interface IListingRepositoryJpa {
     + findAllByItemsId(ids : List<PublicationSampleId>) : List<ListingDM>
+}
+
+class AutomaticGeneratedListingRepoJPAImpl {
 }
 
 class ListingAssembler {
@@ -196,6 +228,8 @@ class US028ListingDTO {
 ' ========================
 ' CONTROLLER RELATIONS
 ' ========================
+UI "1" ..> "1" ToGetListOfItemsOnAuctionOfAGivenPublisherController : uses
+
 ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IPublisherRepository : uses
 ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IEditionRepository : uses
 ToGetListOfItemsOnAuctionOfAGivenPublisherController "1" ..> "1" IPublicationSampleRepository : uses
@@ -206,49 +240,73 @@ ToGetListOfItemsOnAuctionOfAGivenPublisherController ..> US028PublisherMapper : 
 ' ========================
 ' PUBLISHER FLOW
 ' ========================
-IPublisherRepository <|.. PublisherRepositoryJpaImpl
-PublisherRepositoryJpaImpl "1" --> "1" IPublisherRepositoryJpa : delegates to
+PublisherRepositoryJpaImpl "1" ..|> "1" IPublisherRepository
+PublisherRepositoryJpaImpl "1" ..> "1" IPublisherRepositoryJpa : uses
 PublisherRepositoryJpaImpl "1" ..> "1" PublisherAssembler : uses
+
+AutomaticGeneratedPublisherRepoJPAImpl "1" ..|> "1" IPublisherRepositoryJpa
+AutomaticGeneratedPublisherRepoJPAImpl "1" ..> "1" DataBase : queries
+
 PublisherAssembler "1" ..> "1" PublisherFactory : uses
-PublisherFactory "1" ..> "0..*"Publisher : creates
+PublisherFactory "1" ..> "0..*" Publisher : creates
+
 PublisherDM "1" --> "1" PublisherID : has
 Publisher "1" --> "1" PublisherID : has
+
 US028PublisherMapper "1" ..> "0..*" US028PublisherDTO : creates
 US028PublisherMapper ..> Publisher : reads
 
 ' ========================
 ' EDITION FLOW
 ' ========================
-IEditionRepository <|.. EditionRepositoryJpaImpl
-EditionRepositoryJpaImpl "1" --> "1" IEditionRepositoryJpa : delegates to
-EditionDM "1" --> "1" EditionID : has
-EditionDM "1" --> "1" PublisherID : belongs to
-EditionRepositoryJpaImpl "1" --> "1" EditionAssembler : uses
+EditionRepositoryJpaImpl "1" ..|> "1" IEditionRepository
+EditionRepositoryJpaImpl "1" ..> "1" IEditionRepositoryJpa : uses
+EditionRepositoryJpaImpl "1" ..> "1" EditionAssembler : uses
+
+AutomaticGeneratedEditionRepoJPAImpl "1" ..|> "1" IEditionRepositoryJpa
+AutomaticGeneratedEditionRepoJPAImpl "1" ..> "1" DataBase : queries
+
 EditionAssembler "1" ..> "1" EditionFactory : uses
 EditionFactory "1" ..> "0..*" Edition : creates
+
+EditionDM "1" --> "1" EditionID : has
+EditionDM "1" --> "1" PublisherID : belongs to
+
 Edition "1" --> "1" EditionID : has
 Edition "1" --> "1" PublisherID : belongs to
 
 ' ========================
 ' PUBLICATION SAMPLE FLOW
 ' ========================
-IPublicationSampleRepository <|.. PublicationSampleRepositoryJpaImpl
-PublicationSampleRepositoryJpaImpl "1" --> "1" IPublicationSampleRepositoryJpa : delegates to
+PublicationSampleRepositoryJpaImpl "1" ..|> "1" IPublicationSampleRepository
+PublicationSampleRepositoryJpaImpl "1" ..> "1" IPublicationSampleRepositoryJpa : uses
+
+AutomaticGeneratedPublicationSampleRepoJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJpa
+AutomaticGeneratedPublicationSampleRepoJPAImpl "1" ..> "1" DataBase : queries
+
 PublicationSampleDM "1" --> "1" PublicationSampleId : has
 PublicationSampleDM "1" --> "1" EditionID : refers to
 
 ' ========================
 ' LISTING FLOW
 ' ========================
-IListingRepository <|.. ListingRepositoryJpaImpl
-ListingRepositoryJpaImpl "1" --> "1" IListingRepositoryJpa : delegates to
-ListingRepositoryJpaImpl "1" --> "1" ListingAssembler : uses
-ListingAssembler "1" --> "1" ListingFactory : uses
+ListingRepositoryJpaImpl "1" ..|> "1" IListingRepository
+ListingRepositoryJpaImpl "1" ..> "1" IListingRepositoryJpa : uses
+ListingRepositoryJpaImpl "1" ..> "1" ListingAssembler : uses
+
+AutomaticGeneratedListingRepoJPAImpl "1" ..|> "1" IListingRepositoryJpa
+AutomaticGeneratedListingRepoJPAImpl "1" ..> "1" DataBase : queries
+
+ListingAssembler "1" ..> "1" ListingFactory : uses
 ListingFactory "1" ..> "0..*" Listing : creates
+
 ListingDM "1" --> "1" ListingId : has
 ListingDM "1" --> "1" PublicationSampleId : refers to
+
 Listing "1" --> "1" ListingId : has
 Listing "1" --> "1" PublicationSampleId : refers to
+
 US028ListingMapper ..> Listing : reads
 US028ListingMapper "1" ..> "0..*" US028ListingDTO : creates
+
 @enduml

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AddressTest {
 
     // Double for City class
-    private final CityID anyCity = mock(CityID.class);
+    private final CityId anyCity = mock(CityId.class);
 
     // --- Constructor validation ---
 
@@ -97,7 +97,7 @@ public class AddressTest {
         // Arrange
         City city = mock(City.class);
         when(city.getCityName()).thenReturn("Lisbon");
-        Address address = new Address("Rua X", "123", "4795-013", new CityID("Lisbon"));
+        Address address = new Address("Rua X", "123", "4795-013", new CityId("Lisbon"));
 
         // Act
         String result = address.toString();
@@ -206,7 +206,7 @@ public class AddressTest {
     void equals_shouldReturnFalse_whenCityDiffers() {
 
         // Arrange
-        CityID otherCity = mock(CityID.class);
+        CityId otherCity = mock(CityId.class);
         Address address1 = new Address("street", "number", "zip", anyCity);
         Address address2 = new Address("street", "number", "zip", otherCity);
 

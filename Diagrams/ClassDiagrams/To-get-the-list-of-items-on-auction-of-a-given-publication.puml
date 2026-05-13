@@ -60,6 +60,15 @@ interface IListingRepositoryJpa {
   +findAllByItemsId(listOfPubSampleIds: List<PublicationSampleId>): List<ListingDM>
 }
 
+class BibliographicalDataRepositoryJpaImpl {
+}
+
+class PublicationSampleRepositoryJpaImpl {
+}
+
+class ListingRepositoryJpaImpl {
+}
+
 class ListingAssembler {
   +toDomain(listingDM: ListingDM): Listing
 }
@@ -100,9 +109,14 @@ GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" IPublication
 GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" IListingRepository : uses
 GetTheListOfItemsOnAuctionOfAGivenPublicationController "1" ..> "1" US024AucListingMapper : uses
 
-IBibliographicalDataRepository <|.. IBibliographicalDataRepositoryJpa : implements
-IPublicationSampleRepository <|.. IPublicationSampleRepositoryJpa : implements
-IListingRepository <|.. IListingRepositoryJpa : implements
+IBibliographicalDataRepository <|.. BibliographicalDataRepositoryJpaImpl : implements
+IBibliographicalDataRepositoryJpa <.. BibliographicalDataRepositoryJpaImpl : uses
+
+IPublicationSampleRepository <|.. PublicationSampleRepositoryJpaImpl : implements
+IPublicationSampleRepositoryJpa <.. PublicationSampleRepositoryJpaImpl : uses
+
+IListingRepository <|.. ListingRepositoryJpaImpl : implements
+IListingRepositoryJpa <.. ListingRepositoryJpaImpl : uses
 
 IBibliographicalDataRepositoryJpa "1" ..> "0..*" BibliographicalDataDM : returns
 IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
@@ -112,9 +126,9 @@ IListingRepository "1" ..> "1" ListingAssembler : uses
 ListingAssembler "1" ..> "1" ListingFactory : uses
 ListingFactory "1" ..> "1" Listing : creates
 
-IBibliographicalDataRepositoryJpa "1" ..> "1" Database : queries
-IPublicationSampleRepositoryJpa "1" ..> "1" Database : queries
-IListingRepositoryJpa "1" ..> "1" Database : queries
+IBibliographicalDataRepositoryJpa "1" ...> "1" Database : queries
+IPublicationSampleRepositoryJpa "1" ...> "1" Database : queries
+IListingRepositoryJpa "1" ...> "1" Database : queries
 
 US024AucListingMapper "1" ..> "0..*" Listing : reads
 US024AucListingMapper "1" ..> "0..*" US024AucListingDTO : creates

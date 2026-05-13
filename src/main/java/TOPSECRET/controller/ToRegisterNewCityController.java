@@ -20,21 +20,31 @@ public class ToRegisterNewCityController {
      * @param cityService the service to delegate city creation; must not be {@code null}
      */
     public ToRegisterNewCityController(CityService cityService) {
+
+        if (cityService == null) {
+            throw new IllegalArgumentException("CityService cannot be null");
+        }
+
         this.cityService = cityService;
     }
 
+
     /**
-     * Creates and persists a new city for the given country and name.
+     * Registers a new city in the system.
      *
-     * @param countryName the name of the country; must not be {@code null} or blank
-     * @param cityName  the name of the city; must not be {@code null} or blank
-     * @return the newly created and persisted {@link City}
+     * @param countryName the name of the country; must not be null or blank
+     * @param cityName the name of the city; must not be null or blank
+     * @return the created and persisted {@link City}
      * @throws IllegalArgumentException if countryName or cityName are null or blank,
-     *                                  or if any domain constraint is violated
+     *                                  or if the city cannot be created or persisted
      */
-    public City createAndPersistCity(String countryName, String cityName) {
+    public City register(String countryName, String cityName) {
         if (countryName == null || countryName.isBlank())
             throw new IllegalArgumentException("Country name cannot be null or blank");
+
+        if (cityName == null || cityName.isBlank())
+            throw new IllegalArgumentException("City name cannot be null or blank");
+
         return cityService.createAndSave(countryName, cityName);
     }
 }

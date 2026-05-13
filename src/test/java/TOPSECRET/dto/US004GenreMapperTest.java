@@ -96,4 +96,14 @@ class US004GenreMapperTest {
         assertThrows(IllegalArgumentException.class,
                 () -> US004GenreMapper.toDTO(null));
     }
+
+    @Test
+    void shouldReturnEmptyListWhenInputIsNull() {
+
+        // ACT
+        List<US004GenreDTO> result = US004GenreMapper.toDTOs(null);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
 }
