@@ -1,112 +1,95 @@
 @startuml
 title To Register an Author
 
-' -------------------------
-' UI
-' -------------------------
-
-class UI {
+' ── UI Layer ───────────────────────────────────────────────
+class UI <<C>> {
 }
 
-' -------------------------
-' Controller
-' -------------------------
-
-class ToRegisterAuthorController {
-  -_authorService: AuthorService
-  +register(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+' ── Controller Layer ───────────────────────────────────────
+class ToRegisterAuthorCtrl <<C>> {
+  + register(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
-' -------------------------
-' Service
-' -------------------------
-
-class AuthorService {
-  -authorFactory: AuthorFactory
-  -authorRepo: IAuthorRepository
-  +createAndSave(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+' ── Application Layer ──────────────────────────────────────
+class AuthorService <<C>> {
+  + createAndSave(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
-' -------------------------
-' Domain
-' -------------------------
-
-interface IAuthorRepository {
-  +save(author: Author): Author
-  +existsById(authorId: AuthorId): boolean
-  +findById(id: AuthorId): Optional<Author>
-  +findAll(): List<Author>
+' ── Domain Layer ───────────────────────────────────────────
+interface IAuthorRepository <<I>> {
+  + save(author: Author): Author
+  + existsById(authorId: AuthorId): boolean
+  + findById(id: AuthorId): Optional<Author>
+  + findAll(): List<Author>
 }
 
-class AuthorFactory {
-  +create(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
-  +create(id: AuthorId, name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+class AuthorFactory <<C>> {
+  + create(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+  + create(id: AuthorId, name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
-class Author {
-  -_id: AuthorId
-  -_name: String
-  -_countryId: CountryId
-  -_dateOfBirth: LocalDate
-  -_biography: String
-  +id(): AuthorId
-  +getName(): String
-  +getCountryID(): CountryId
-  +getDateOfBirth(): LocalDate
-  +getBiography(): String
+class Author <<C>> {
+  - id: AuthorId
+  - name: String
+  - countryId: CountryId
+  - dateOfBirth: LocalDate
+  - biography: String
+  + id(): AuthorId
+  + getName(): String
+  + getCountryId(): CountryId
+  + getDateOfBirth(): LocalDate
+  + getBiography(): String
 }
 
-' -------------------------
-' Infrastructure
-' -------------------------
-
-class AuthorRepositoryJPAImpl {
-  -authorRepositoryJpa: IAuthorRepositoryJPA
-  -authorAssembler: AuthorAssembler
-  +save(author: Author): Author
-  +existsById(authorId: AuthorId): boolean
-  +findById(id: AuthorId): Optional<Author>
-  +findAll(): List<Author>
+' ── Infrastructure Layer ───────────────────────────────────
+class AuthorRepositoryJPAImpl <<C>> {
+  + save(author: Author): Author
+  + existsById(authorId: AuthorId): boolean
+  + findById(id: AuthorId): Optional<Author>
+  + findAll(): List<Author>
 }
 
-class AuthorAssembler {
-  +toDM(author: Author): AuthorDM
-  +toDomain(authorDM: AuthorDM): Author
+class AutomaticGeneratedAuthorJPAImpl <<C>> {
 }
 
-class AuthorDM {
-  -id: AuthorId
-  -name: String
-  -countryId: CountryId
-  -dateOfBirth: LocalDate
-  -biography: String
+interface IAuthorRepositoryJPA <<I>> {
+  + existsById(authorId: AuthorId): boolean
 }
 
-interface IAuthorRepositoryJPA {
-  +existsById(authorId: AuthorId): boolean
+class AuthorAssembler <<C>> {
+  + toDM(author: Author): AuthorDM
+  + toDomain(authorDM: AuthorDM): Author
 }
 
-interface JpaRepository<AuthorDM, AuthorId> {
+class AuthorDM <<C>> {
+  - id: AuthorId
+  - name: String
+  - countryId: CountryId
+  - dateOfBirth: LocalDate
+  - biography: String
 }
 
-database "Database" as DB {
+Rectangle Database {
 }
 
-' -------------------------
-' Relationships
-' -------------------------
+' ── Relationships ──────────────────────────────────────────
+UI "1" ..> "1" ToRegisterAuthorCtrl : uses
+ToRegisterAuthorCtrl "1" ..> "1" AuthorService : uses
 
-UI "1" --> "1" ToRegisterAuthorController : uses
-ToRegisterAuthorController "1" --> "1" AuthorService : uses
-AuthorService "1" --> "1" AuthorFactory : creates with
-AuthorService "1" --> "1" IAuthorRepository : persists with
+AuthorService "1" ..> "1" AuthorFactory : uses
+AuthorService "1" ..> "1" IAuthorRepository : uses
+
 IAuthorRepository <|.. AuthorRepositoryJPAImpl : implements
-AuthorRepositoryJPAImpl "1" --> "1" AuthorAssembler : converts with
-AuthorRepositoryJPAImpl "1" --> "1" IAuthorRepositoryJPA : delegates to
-AuthorAssembler "1" --> "1" AuthorFactory : reconstructs with
-AuthorAssembler "1" ..> "1" AuthorDM : receives
-AuthorFactory "1" --> "*" Author : creates
-JpaRepository <|-- IAuthorRepositoryJPA : extends
-IAuthorRepositoryJPA "1" --> "1" DB : queries
+AuthorRepositoryJPAImpl "1" ..> "1" IAuthorRepositoryJPA : uses
+AuthorRepositoryJPAImpl "1" ..> "1" AuthorAssembler : uses
+
+IAuthorRepositoryJPA <|.. AutomaticGeneratedAuthorJPAImpl : implements
+AutomaticGeneratedAuthorJPAImpl "1 1" ..> "1" Database : queries
+
+AuthorAssembler "1" ..> "1" AuthorDM : creates
+AuthorAssembler "1" ..> "1" Author : creates
+AuthorAssembler "1" ..> "1" AuthorFactory : uses
+
+AuthorFactory "1" ..> "*" Author : creates
 
 @enduml
