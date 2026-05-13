@@ -9,6 +9,7 @@ participant ":US020CollectionOfPublicationsDTOMapper" as mapper
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userRepoJpa
 database ":Database" as DB
+participant "userList\n:Optional<UserDM>" as userList
 participant ":UserAssembler" as userAssembler
 participant ":UserFactory" as userFactory
 participant "user:\nUser" as user
@@ -48,8 +49,9 @@ loop for each collection in publicCollectionsList
     activate DB
     DB --> userRepoJpa : data
     deactivate DB
+    userRepoJpa --> userList ** : <<create>>
 
-    userRepoJpa --> userRepo : Optional<UserDM>
+    userRepoJpa --> userRepo : userList
     deactivate userRepoJpa
 
     alt user found
