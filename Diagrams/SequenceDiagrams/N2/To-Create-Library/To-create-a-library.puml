@@ -34,7 +34,7 @@ activate UI
 UI -> Ctrl : createLibrary(libraryName, username)
 activate Ctrl
 
-Ctrl -> userRepo: findUserIdByUsername(username)
+Ctrl -> userRepo: findByUsername(username)
 activate userRepo
 
 userRepo -> userJpa: findByUserName(username)

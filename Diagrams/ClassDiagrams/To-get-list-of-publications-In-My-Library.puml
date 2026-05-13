@@ -108,8 +108,8 @@ IUserRepository "1" ..> "0..1" UserDM : reads
 IUserRepository "1" ..> "0..1" UserId : returns
 
 PublicationSampleRepositoryJpaImpl ..|> IPublicationSampleRepository : implements
-PublicationSampleRepositoryJpaImpl ...|> IPublicationSampleRepositoryJpa : implements
-IPublicationSampleRepository "1" ...> "1" PublicationSampleAssembler : uses
+PublicationSampleRepositoryJpaImpl ...> IPublicationSampleRepositoryJpa : uses
+PublicationSampleRepositoryJpaImpl "1" ..> "1" PublicationSampleAssembler : uses
 IPublicationSampleRepository "1" ..> "0..*" PublicationSample : filters
 
 IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns

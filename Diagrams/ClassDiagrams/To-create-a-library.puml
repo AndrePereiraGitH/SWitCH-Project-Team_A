@@ -16,7 +16,7 @@ class LibraryService {
 
 ' ── Domain Layer ───────────────────────────────────────────
 interface IUserRepository {
-    + findUserIdByUsername(username: String): UserId
+    + findByUsername(username: String): UserId
 }
 
 interface ILibraryRepository {
@@ -89,14 +89,14 @@ IUserRepositoryJPA <.. UserRepositoryJPAImpl : uses
 ILibraryRepository <|.. LibraryRepositoryJPAImpl : implements
 ILibraryRepositoryJPA <.. LibraryRepositoryJPAImpl : uses
 
-ILibraryRepositoryJPA "1" ..> "1" LibraryAssembler : uses
-ILibraryRepositoryJPA "1" ..> "1" LibraryFactory : uses
+LibraryRepositoryJPAImpl "1" ..> "1" LibraryAssembler : uses
+LibraryRepositoryJPAImpl "1" ..> "1" LibraryFactory : uses
 
 LibraryAssembler "1" ..> "1" LibraryDM : creates
 LibraryAssembler "1" ..> "1" Library : creates
 LibraryAssembler "1" ..> "1" LibraryFactory : uses
 
-LibraryFactory "1" ..> "1" Library : creates
+LibraryFactory "1" ..> "1" Library : recreates
 
 IUserRepositoryJPA "1" ..> "0..1" UserDM : retrieves
 IUserRepositoryJPA "1" ...> "1" Database : queries

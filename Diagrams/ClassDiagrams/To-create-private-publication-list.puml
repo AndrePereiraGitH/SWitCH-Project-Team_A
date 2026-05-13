@@ -2,117 +2,152 @@
 title To create a private collection of publications
 
 ' _____________________
+' UI
+' _____________________
+
+class UI {
+}
+
+' _____________________
 ' DOMAIN
 ' _____________________
 
 interface IGenreRepository {
-  + getAllGenres() : List<Genre>
+  + findAll() : List<Genre>
 }
 
 interface ICollectionOfPublicationsRepository {
-  + createAndAdd(userId : UserId, name : String, genreId : GenreID) : CollectionOfPublications
+  + save(collection : CollectionOfPublications) : CollectionOfPublications
+  + existsById(id : CollectionOfPublicationsId) : boolean
 }
 
 class Genre {
-  - _id : GenreID
+  - _id : GenreId
   - _genreType : String
-  + id() : GenreID
+  + id() : GenreId
   + getGenreType() : String
   + sameAs(object : Object) : boolean
 }
 
-class GenreID {
+class GenreId {
   - genreID : String
-}
-
-class User {
-  - _id : UserId
-  + id() : UserId
+  + getID() : String
 }
 
 class UserId {
-  - _id : String
+  - id : String
 }
 
 class CollectionOfPublications {
-  - _id : CollectionOfPublicationsID
+  - _id : CollectionOfPublicationsId
   - _collectionName : String
-  - _collectionGenreId : GenreID
+  - _collectionGenreId : GenreId
   - _ownerId : UserId
   - _isPrivate : boolean
-  + id() : CollectionOfPublicationsID
+  + id() : CollectionOfPublicationsId
   + getCollectionName() : String
-  + getCollectionGenre() : GenreID
+  + getCollectionGenre() : GenreId
   + getOwnerId() : UserId
   + getIsPrivate() : boolean
   + sameAs(obj : Object) : boolean
 }
 
-class CollectionOfPublicationsID {
-  - _id : String
+class CollectionOfPublicationsId {
+  - id : String
 }
 
 class CollectionOfPublicationsFactory {
-  + create(name : String, genreId : GenreID, userId : UserId) : CollectionOfPublications
+  + create(name : String, genreId : GenreId, userId : UserId) : CollectionOfPublications
+  + create(id : CollectionOfPublicationsId, name : String, genreId : GenreId, userId : UserId, isPrivate : boolean) : CollectionOfPublications
 }
 
-Genre "1" --> "1" GenreID : identified by
-User "1" --> "1" UserId : identified by
-CollectionOfPublications "1" --> "1" CollectionOfPublicationsID : identified by
-CollectionOfPublications "1" --> "1" GenreID : has genre
+class GenreFactory {
+  + create(id : GenreId, genreType : String) : Genre
+}
+
+Genre "1" --> "1" GenreId : identified by
+CollectionOfPublications "1" --> "1" CollectionOfPublicationsId : identified by
+CollectionOfPublications "1" --> "1" GenreId : has genre
 CollectionOfPublications "1" --> "1" UserId : owned by
-CollectionOfPublicationsFactory ..> CollectionOfPublications : <<creates>>
+CollectionOfPublicationsFactory "1" ..> "*" CollectionOfPublications : <<creates>>
+GenreFactory "1" ..> "*" Genre : <<creates>>
 
 ' ______________________
 ' APPLICATION
 ' ______________________
 
-class US017ToCreateCollectionOfPublicationsController {
-  - _genreRepository : IGenreRepository
-  - _collectionRepository : ICollectionOfPublicationsRepository
+class ToCreateCollectionOfPublicationsController {
   + getAllGenres() : List<US017GenreDTO>
-  + createCollection(name : String, selectedGenre : Genre, user : User) : CollectionOfPublications
+  + createCollection(name : String, genreId : GenreId, userId : UserId) : CollectionOfPublications
 }
 
 class US017GenreMapper {
-  + {static} toDTO(genres : List<Genre>) : List<US017GenreDTO>
+  + {static} toDTOList(genres : List<Genre>) : List<US017GenreDTO>
+  + {static} toDTO(genre : Genre) : US017GenreDTO
 }
 
 class US017GenreDTO {
   + name : String
-  + {static} toDTO(genre : Genre) : US017GenreDTO
 }
 
 ' ___________________
 ' PERSISTENCE
 ' ___________________
 
-class GenreRepositoryMem {
-  - _genres : List<Genre>
-  - _genreFactory : GenreFactory
-  - exists(genre : Genre) : boolean
+class GenreRepositoryJpaImpl {
+  + findAll() : List<Genre>
 }
 
-class CollectionOfPublicationsRepositoryMem {
-  - _collectionOfPublicationsList : List<CollectionOfPublications>
-  - _factory : CollectionOfPublicationsFactory
+interface IGenreRepositoryJpa {
+  + findByGenreType(genreType : String) : Optional<GenreDM>
 }
 
-GenreRepositoryMem ..|> IGenreRepository : <<implements>>
-GenreRepositoryMem "1" --> "*" Genre : stores
-CollectionOfPublicationsRepositoryMem ..|> ICollectionOfPublicationsRepository : <<implements>>
-CollectionOfPublicationsRepositoryMem "1" --> "*" CollectionOfPublications : stores
-CollectionOfPublicationsRepositoryMem --> CollectionOfPublicationsFactory : has
+class GenreAssembler {
+  + toDM(genre : Genre) : GenreDM
+  + toDomain(dm : GenreDM) : Genre
+}
+
+class CollectionOfPublicationsRepositoryJpaImpl {
+  + save(collection : CollectionOfPublications) : CollectionOfPublications
+  + existsById(id : CollectionOfPublicationsId) : boolean
+}
+
+interface ICollectionOfPublicationsRepositoryJpa {
+}
+
+class CollectionOfPublicationsAssembler {
+  + toDM(collection : CollectionOfPublications) : CollectionOfPublicationsDM
+  + toDomain(dm : CollectionOfPublicationsDM) : CollectionOfPublications
+}
+
+rectangle Database {
+}
+
+GenreRepositoryJpaImpl ..|> IGenreRepository : <<implements>>
+GenreRepositoryJpaImpl "1" ..> "1" IGenreRepositoryJpa : uses
+GenreRepositoryJpaImpl "1" ..> "1" GenreAssembler : uses
+IGenreRepositoryJpa --|> JpaRepository : extends
+IGenreRepositoryJpa "1" ..> "1" Database : queries
+
+CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsRepository : <<implements>>
+CollectionOfPublicationsRepositoryJpaImpl "1" ..> "1" ICollectionOfPublicationsRepositoryJpa : uses
+CollectionOfPublicationsRepositoryJpaImpl "1" ..> "1" CollectionOfPublicationsAssembler : uses
+ICollectionOfPublicationsRepositoryJpa --|> JpaRepository : extends
+ICollectionOfPublicationsRepositoryJpa "1" ..> "1" Database : queries
+
+GenreAssembler "1" ..> "1" GenreFactory : uses
+CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsFactory : uses
 
 ' _____________________
 ' DEPENDENCIES
 ' _____________________
 
-US017ToCreateCollectionOfPublicationsController --> IGenreRepository : uses
-US017ToCreateCollectionOfPublicationsController --> ICollectionOfPublicationsRepository : uses
-US017ToCreateCollectionOfPublicationsController ..> US017GenreMapper : uses
-
-US017GenreMapper ..> US017GenreDTO : uses
-US017GenreDTO ..> Genre : converts
+UI "1" ..> "1" ToCreateCollectionOfPublicationsController : uses
+ToCreateCollectionOfPublicationsController "1" ..> "1" IGenreRepository : uses
+ToCreateCollectionOfPublicationsController "1" ..> "1" ICollectionOfPublicationsRepository : uses
+ToCreateCollectionOfPublicationsController "1" ..> "1" CollectionOfPublicationsFactory : uses
+ToCreateCollectionOfPublicationsController "1" ..> "1" US017GenreMapper : uses
+US017GenreMapper "1" ..> "0..*" US017GenreDTO : <<creates>>
+US017GenreMapper "1" ..> "0..*" Genre : reads
 
 @enduml

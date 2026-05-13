@@ -122,7 +122,7 @@ IBibliographicalDataRepositoryJpa "1" ..> "0..*" BibliographicalDataDM : returns
 IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
 IListingRepositoryJpa "1" ..> "0..*" ListingDM : returns
 
-IListingRepository "1" ..> "1" ListingAssembler : uses
+ListingRepositoryJpaImpl "1" ..> "1" ListingAssembler : uses
 ListingAssembler "1" ..> "1" ListingFactory : uses
 ListingFactory "1" ..> "1" Listing : creates
 

@@ -15,7 +15,7 @@ note over Ctrl #E3F2FD
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-Ctrl -> userRepo: findUserIdByUsername(username)
+Ctrl -> userRepo: findByUsername(username)
 activate userRepo
 
 userRepo -> userJpa: findByUserName(username)
