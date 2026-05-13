@@ -13,8 +13,8 @@ participant ":PublicationTypeAssembler" as Assembler
 participant ":PublicationTypeFactory" as Factory
 participant ":IPublicationTypeRepositoryJPA" as JpaRepo
 participant ":pubType:\nPublicationType" as pubType
-
 database "database" as DB
+participant "pubTypeList:\nList<PublicationTypeDM>" as pubTypeList
 
 User --> UI : I want to register a \nnew publication type
 activate UI
@@ -35,8 +35,9 @@ JpaRepo -> DB : SELECT * FROM publication_types
 activate DB
 DB --> JpaRepo : data
 deactivate DB
+JpaRepo -> pubTypeList ** : <<create>>
 
-JpaRepo --> Repo : List<PublicationTypeDM>
+JpaRepo --> Repo : pubTypeList
 deactivate JpaRepo
 
 loop for each dm
@@ -104,8 +105,10 @@ else PublicationType does not exist
     activate DB
     DB --> JpaRepo : saved row
     deactivate DB
+    create participant "savedPubTypeDM:\nPublicationTypeDM" as databasePubType
+    JpaRepo -->> databasePubType : <<create>>
 
-    JpaRepo --> Repo : saved PublicationTypeDM
+    JpaRepo --> Repo : savedPubType
     deactivate JpaRepo
 
     Repo -> Assembler : toDomain(savedDm)
@@ -115,7 +118,7 @@ else PublicationType does not exist
     activate Factory
 
     create participant "pubType:\nPublicationType" as SavedPubType
-    Factory -> SavedPubType : <<create>>
+    Factory -->> SavedPubType : <<create>>
 
     Factory --> Assembler : PublicationType
     deactivate Factory
