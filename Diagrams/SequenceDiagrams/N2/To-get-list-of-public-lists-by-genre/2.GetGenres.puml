@@ -1,0 +1,75 @@
+@startuml
+hide footbox
+autonumber
+
+title Get Genres
+
+participant ":PublicListByGenreController" as Ctrl
+participant ":IGenreRepository" as genreRepo
+participant ":IGenreRepositoryJpa" as genreRepoJpa
+database ":Database" as DB
+participant "genreList:\nList<Genre>" as genreList
+participant ":GenreAssembler" as genreAssembler
+participant ":GenreFactory" as genreFactory
+participant "genre:\nGenre" as genre
+participant ":US013GenreMapper" as genreMapper
+participant "genreDTO:\nUS013GenreDTO" as genreDTO
+participant "genresDTOList:\nList<US013GenreDTO>" as genresDTOList
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> genreRepo : findAll()
+activate genreRepo
+genreRepo -> genreRepoJpa : findAll()
+activate genreRepoJpa
+
+genreRepoJpa -> DB : select all genres
+activate DB
+DB --> genreRepoJpa : data
+deactivate DB
+
+genreRepoJpa --> genreRepo : genreDMList
+deactivate genreRepoJpa
+
+genreRepo --> genreList ** : <<create>>
+
+loop for each genreDM
+    genreRepo -> genreAssembler : toDomain(genreDM)
+    activate genreAssembler
+    genreAssembler --> genreFactory : create(GenreId genreId, String genreType)
+    activate genreFactory
+    genreFactory --> genre ** : <<create>>
+    genreFactory --> genreAssembler : genre
+    deactivate genreFactory
+    genreAssembler --> genreRepo : genre
+    deactivate genreAssembler
+    genreRepo --> genreRepo : genreList.add(genre)
+end
+
+genreRepo --> Ctrl : genreList
+deactivate genreRepo
+
+Ctrl -> genreMapper : toDTO(genreList)
+activate genreMapper
+
+genreMapper -->> genresDTOList ** : <<create>>
+
+loop for each genre in genreList
+    genreMapper -> genreDTO ** : <<create>>
+    genreMapper -> genreMapper : genresDTOList.add(genreDTO)
+end
+
+genreMapper --> Ctrl : genresDTOList
+deactivate genreMapper
+
+@enduml
