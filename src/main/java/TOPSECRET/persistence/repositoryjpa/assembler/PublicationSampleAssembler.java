@@ -87,31 +87,4 @@ public class PublicationSampleAssembler {
         return pbSample;
     }
 
-    /**
-     * Converts a list of {@link PublicationSampleDM} persistence entities
-     * into a list of {@link PublicationSample} domain objects.
-     *
-     * <p>
-     * Each {@link PublicationSampleDM} is individually converted using
-     * {@link #toDomain(PublicationSampleDM)}.
-     * </p>
-     *
-     * @param dmList list of PublicationSampleDM objects to convert
-     * @return list of corresponding PublicationSample domain objects
-     * @throws NullPointerException if the provided list is null
-     */
-    public List<PublicationSample> toDomainList (List<PublicationSampleDM> dmList) {
-
-        Objects.requireNonNull(dmList,
-                "PublicationSampleDM list must not be null");
-
-        List<PublicationSample> result = new ArrayList<>();
-
-        for (PublicationSampleDM dm : dmList) {
-            result.add(toDomain(dm));
-        }
-
-        return result;
-    }
-
 }
