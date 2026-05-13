@@ -7,6 +7,8 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -104,10 +106,11 @@ class CollectionOfPublicationsTest {
         GenreId genreDouble = mock(GenreId.class);
         UserId userDouble = mock(UserId.class);
         boolean isPrivate = true;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         // Act
         CollectionOfPublications result =
-                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble, isPrivate);
+                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble, isPrivate, publicUntil);
 
         // Assert
         assertNotNull(result);
@@ -126,6 +129,110 @@ class CollectionOfPublicationsTest {
         //Act + assert
         assertNotNull(result.id());
     }
+
+    // ========================================================
+    // ------------- MakePublicUntil Tests --------------------
+    // ========================================================
+    @Test
+    void makePublicUntil_ShouldThrowException_WhenPublicUntilIsNull() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> collection.makePublicUntil(null)
+        );
+
+        // Assert
+        assertEquals("Public until date cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    void makePublicUntil_ShouldThrowException_WhenPublicUntilIsInThePast() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now().minusDays(1);
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> collection.makePublicUntil(publicUntil)
+        );
+
+        // Assert
+        assertEquals("Public until date must be in the future.", exception.getMessage());
+    }
+
+    @Test
+    void makePublicUntil_ShouldThrowException_WhenPublicUntilIsNow() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> collection.makePublicUntil(publicUntil)
+        );
+
+        // Assert
+        assertEquals("Public until date must be in the future.", exception.getMessage());
+    }
+
+    @Test
+    void makePublicUntil_ShouldMakeCollectionPublicAndReturnTrue_WhenDateIsValid() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(7);
+
+        // Act
+        boolean result = collection.makePublicUntil(publicUntil);
+
+        // Assert
+        assertTrue(result);
+        assertFalse(collection.getIsPrivate());
+        assertEquals(publicUntil, collection.getPublicUntil());
+    }
+
+    @Test
+    void makePublicUntil_ShouldReturnFalse_WhenCollectionIsAlreadyPublicUntilSameDate() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(7);
+
+        collection.makePublicUntil(publicUntil);
+
+        // Act
+        boolean result = collection.makePublicUntil(publicUntil);
+
+        // Assert
+        assertFalse(result);
+        assertFalse(collection.getIsPrivate());
+        assertEquals(publicUntil, collection.getPublicUntil());
+    }
+
+    @Test
+    void makePublicUntil_ShouldReturnTrue_WhenCollectionIsAlreadyPublicButUntilDifferentDate() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+
+        LocalDateTime firstPublicUntil = LocalDateTime.now().plusDays(7);
+        LocalDateTime secondPublicUntil = LocalDateTime.now().plusDays(14);
+
+        collection.makePublicUntil(firstPublicUntil);
+
+        // Act
+        boolean result = collection.makePublicUntil(secondPublicUntil);
+
+        // Assert
+        assertTrue(result);
+        assertFalse(collection.getIsPrivate());
+        assertEquals(secondPublicUntil, collection.getPublicUntil());
+    }
+
+
+
 
 
 
@@ -497,6 +604,14 @@ class CollectionOfPublicationsTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    private CollectionOfPublications createValidCollection() {
+        return new CollectionOfPublications(
+                "Collection name",
+                mock(GenreId.class),
+                mock(UserId.class)
+        );
     }
 
 

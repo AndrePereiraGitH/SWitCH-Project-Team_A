@@ -9,6 +9,8 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -80,6 +82,7 @@ class CollectionOfPublicationsAssemblerTest {
     @Test
     void toDomainShouldReturnAValidDomainObject() {
         // Arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
 
@@ -89,7 +92,8 @@ class CollectionOfPublicationsAssemblerTest {
                         collectionName,
                         genreIdDouble,
                         userIdDouble,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         CollectionOfPublications collectionDouble =
@@ -100,7 +104,8 @@ class CollectionOfPublicationsAssemblerTest {
                 collectionName,
                 genreIdDouble,
                 userIdDouble,
-                isPrivate
+                isPrivate,
+                publicUntil
         )).thenReturn(collectionDouble);
 
         // Act

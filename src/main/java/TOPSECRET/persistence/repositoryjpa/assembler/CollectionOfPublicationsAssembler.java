@@ -51,7 +51,8 @@ public class CollectionOfPublicationsAssembler {
                 new CollectionOfPublicationsDM(
                         collection.id(), collection.getCollectionName(),
                         collection.getCollectionGenre(), collection.getOwnerId(),
-                        collection.getIsPrivate()
+                        collection.getIsPrivate(),
+                        collection.getPublicUntil()
                 );
 
         return collectionDM;
@@ -77,7 +78,7 @@ public class CollectionOfPublicationsAssembler {
         CollectionOfPublications collection = _factory.create(
                 collectionDM.getId(), collectionDM.getCollectionName(),
                 collectionDM.getGenreId(), collectionDM.getUserId(),
-                collectionDM.isPrivate());
+                collectionDM.isPrivate(), collectionDM.getPublicUntil());
 
         return collection;
     }
