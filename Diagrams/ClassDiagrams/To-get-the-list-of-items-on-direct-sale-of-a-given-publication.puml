@@ -183,7 +183,6 @@ ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IListin
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" US023ListingMapper : maps to DTO
 
 ' --- Bibliographical Data ---
-IBibliographicalDataRepository "1" ..> "1" IBibliographicalDataRepositoryJPA: uses
 BibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepository: implements
 BibliographicalDataRepositoryJPAImpl "1" ..> "1" IBibliographicalDataRepositoryJPA: uses
 'AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepositoryJPA: implements
@@ -199,7 +198,6 @@ BibliographicalDataFactory "1" --> "1" BibliographicalData : creates
 US023BibliographicalDataMapper "1" ..> "1" US023BibliographicalDataDTO : maps to
 
 ' --- Publication Sample ---
-IPublicationSampleRepository "1" ..> "1" IPublicationSampleRepositoryJPA: uses
 PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
 PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: uses
 'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
@@ -209,7 +207,6 @@ IPublicationSampleRepository "1" --> "1" PublicationSampleId: uses
 'IPublicationSampleRepository "1" --> "*" PublicationSample: persists
 
 ' --- Listing ---
-IListingRepository "1" ..> "1" IListingRepositoryJPA: uses
 ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
 ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
 'AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
