@@ -163,15 +163,17 @@ class PublicationSampleRepositoryJpaImplTest {
 
         // ARRANGE
         PublicationSample publicationSample = mock(PublicationSample.class);
+        PublicationSampleId id = mock(PublicationSampleId.class);
         PublicationSampleDM dm = mock(PublicationSampleDM.class);
 
+        when(publicationSample.id()).thenReturn(id);
+        when(jpa.existsById(id)).thenReturn(true);
         when(assembler.toDM(publicationSample)).thenReturn(dm);
         when(jpa.save(dm)).thenReturn(dm);
         when(assembler.toDomain(dm)).thenReturn(publicationSample);
 
         // ACT
-        PublicationSample result =
-                repo.update(publicationSample);
+        PublicationSample result = repo.update(publicationSample);
 
         // ASSERT
         assertEquals(publicationSample, result);
