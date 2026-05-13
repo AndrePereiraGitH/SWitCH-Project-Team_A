@@ -38,14 +38,20 @@ public class ToRegisterCountryController {
      * Registers a new {@link Country}.
      *
      * <p>
-     * Delegates the creation and persistence of the country to the
-     * {@link CountryService}.
+     * Validates the provided country name and delegates the creation and
+     * persistence of the country to the {@link CountryService}.
      * </p>
      *
-     * @param countryName the name of the country
-     * @return the created {@link Country}
+     * @param countryName the name of the country to register;
+     *                    must not be {@code null} or blank
+     * @return the newly created and persisted {@link Country}
+     * @throws IllegalArgumentException if {@code countryName} is {@code null}
+     *                                  or blank
      */
     public Country register(String countryName) {
+        if( countryName == null || countryName.isBlank()) {
+            throw new IllegalArgumentException("Country name must not be null or blank");
+        }
         return countryService.createAndSave(countryName);
     }
 }

@@ -50,48 +50,8 @@ rectangle Database{
 class AutomatedGeneratedCountryJPAImpl{
 }
 
-/'
-' Interactions
-
-' === Implementations ===
-CountryRepositoryJPAImpl ..|> ICountryRepository : implements
-CountryRepositoryJPAImpl ..|> ICountryRepositoryJPA : implements
-
-' === Implementation Communication ===
-
-CountryRepositoryJPAImpl --> CountryAssembler : converts
-CountryRepositoryJPAImpl ..> AutomaticGeneratedCountryJPAImpl : requests
-
-' === Assembler Interactions ===
-
-CountryAssembler ..> CountryFactory : asks for creation
-CountryAssembler ..> CountryDM : converts
-
-' === JPA Relations ===
-
-ICountryRepositoryJPA --> CountryDM : persists
-
-ToRegisterNewCountryController "1" .--> "1" CountryService : request registering country
-CountryService "1" .--> "1" CountryFactory : asks for creation
-CountryService "1" .--> "1" ICountryRepository : asks to save
-ICountryRepositoryJPA "1" .--|> "1" ICountryRepository : implements
-ICountryRepositoryJPA "1" .--> "1" CountryAssembler : provides instance to
-ICountryRepositoryJPA .--> CountryFactory
-CountryRepositoryJPAImpl .--> Database : queries
-CountryRepositoryJPAImpl "1" .--|> "1" ICountryRepositoryJPA : implements
-CountryAssembler "1" .--> "1" CountryDM : modifies into
-CountryAssembler "1" .--> "1" CountryFactory : makes use of
-CountryAssembler "1" .--> "1" Country : reassembles
-CountryFactory "1" .--> "*" Country : creates
-AutomaticGeneratedCountryJPAImpl .--> Database : queries
-AutomaticGeneratedCountryJPAImpl .--|> ICountryRepositoryJPA : implements
-ToRegisterNewCountryController "1" .--> "1" CountryService : request registering country
-CountryFactory "1" .--> "*" Country : creates
-CountryService "1" .--> "1" CountryFactory : asks for creation
-CountryService "1" .--> "1" ICountryRepository : asks to save
-AutomaticGeneratedCountryJPAImpl .--> Database : queries
-CountryRepositoryJPAImpl .--> Database : queries
-'/
+class UI{
+}
 
 CountryService ..> CountryFactory : asks for creation
 CountryFactory ..> Country : creates
@@ -102,10 +62,14 @@ CountryAssembler ..> CountryFactory : makes use to recreate
 ToRegisterNewCountryController ..> CountryService : asks for service
 CountryService ..> ICountryRepository : asks to save
 CountryRepositoryJPAImpl .--|> ICountryRepository : implements
-CountryRepositoryJPAImpl ..> CountryDM : converts data into
+CountryRepositoryJPAImpl ..> CountryDM : receives
 CountryRepositoryJPAImpl ..> ICountryRepositoryJPA : uses
 AutomatedGeneratedCountryJPAImpl .--|> ICountryRepositoryJPA : implements
 AutomatedGeneratedCountryJPAImpl ..> Database : queries
+
+CountryRepositoryJPAImpl ..> CountryAssembler : uses
+
+UI ..> ToRegisterNewCountryController : requests functionality
 
 
 @enduml

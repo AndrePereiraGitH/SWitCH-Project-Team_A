@@ -14,9 +14,10 @@ autonumber
 participant ":CountryController" as CountryController
 participant ":CountryService" as CountryService
 participant ":ICountryRepository" as ICountryRepository
-participant ":CountryFactory" as CountryFactory
-participant ":ICountryRepositoryJPA" as JPA
 participant ":CountryAssembler" as Assembler
+participant ":ICountryRepositoryJPA" as JPA
+participant ":CountryFactory" as CountryFactory
+
 database "Database" as DB
 
 
@@ -66,13 +67,11 @@ deactivate JPA
 ICountryRepository -> Assembler : toDomain(countryDMPersisted)
 activate Assembler
 Assembler -> CountryFactory : create(countryId, countryName)
-deactivate Assembler
 create participant "countryReconstructed: Country" as CountryReconstructed
 activate CountryFactory
 CountryFactory -->> CountryReconstructed : «create»
 CountryFactory --> Assembler : countryReconstructed
 deactivate CountryFactory
-activate Assembler
 Assembler --> ICountryRepository : countryReconstructed
 deactivate Assembler
 ICountryRepository --> CountryService : countryReconstructed

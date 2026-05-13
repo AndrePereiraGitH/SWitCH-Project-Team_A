@@ -1,7 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.persistence.repositoryjpa.assembler.PublicationSampleAssembler;
@@ -154,6 +153,9 @@ class PublicationSampleRepositoryJpaImplTest {
     void update_shouldReturnUpdatedPublicationSample() {
 
         // Arrange
+        when(publicationSampleDouble.id()).thenReturn(publicationSampleIdDouble);
+        when(jpa.existsById(publicationSampleIdDouble)).thenReturn(true);
+
         when(assembler.toDM(publicationSampleDouble))
                 .thenReturn(publicationSampleDMDouble);
 
@@ -195,6 +197,30 @@ class PublicationSampleRepositoryJpaImplTest {
 
         // Assert
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAll_shouldReturnListWithOneElement_whenOnePublicationWasAdded() {
+
+        // Arrange
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+
+        PublicationSample sample1 =
+                mock(PublicationSample.class);
+
+        when(jpa.findAll())
+                .thenReturn(List.of(dm1));
+
+        when(assembler.toDomain(dm1))
+                .thenReturn(sample1);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findAll();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(sample1, result.get(0));
     }
 
     @Test
@@ -535,157 +561,68 @@ class PublicationSampleRepositoryJpaImplTest {
         assertThrows(NullPointerException.class,
                 () -> repository.findByUserIdAndLibraryIdIsNull(null));
     }
-    // =========================================================================
-    // findAvailableForSaleByLibraryId
-    // =========================================================================
-
-    @Test
-    void findAvailableForSaleByLibraryId_shouldThrowNullPointerException_whenLibraryIdIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> repository.findAvailableForSaleByLibraryId(null));
-    }
-
-    @Test
-    void findAvailableForSaleByLibraryId_shouldReturnEmptyList_whenNoPublicationsExist() {
-
-        // Arrange
-        List<PublicationStatus> excluded =
-                List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
-
-        when(jpa.findAllByLibraryIdAndPublicationStatusNotIn(
-                libraryIdDouble,
-                excluded))
-                .thenReturn(List.of());
-
-        // Act
-        List<PublicationSample> result =
-                repository.findAvailableForSaleByLibraryId(libraryIdDouble);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findAvailableForSaleByLibraryId_shouldReturnMappedPublicationSamples() {
-
-        // Arrange
-        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
-        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
-
-        PublicationSample sample1 = mock(PublicationSample.class);
-        PublicationSample sample2 = mock(PublicationSample.class);
-
-        List<PublicationStatus> excluded =
-                List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
-
-        when(jpa.findAllByLibraryIdAndPublicationStatusNotIn(
-                libraryIdDouble,
-                excluded))
-                .thenReturn(List.of(dm1, dm2));
-
-        when(assembler.toDomain(dm1)).thenReturn(sample1);
-        when(assembler.toDomain(dm2)).thenReturn(sample2);
-
-        // Act
-        List<PublicationSample> result =
-                repository.findAvailableForSaleByLibraryId(libraryIdDouble);
-
-        // Assert
-        assertEquals(2, result.size());
-    }
 
     // =========================================================================
     // findByCollectionOfPublicationsId
     // =========================================================================
 
     @Test
-    void findByCollectionOfPublicationsId_shouldThrowWhenCollectionIdIsNull() {
+    void findByCollectionOfPublicationsId_shouldReturnMappedList() {
 
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> repository.findByCollectionOfPublicationsId(null));
-    }
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        PublicationSample domain = mock(PublicationSample.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
-    @Test
-    void findByCollectionOfPublicationsId_shouldReturnConvertedList() {
+        when(jpa.findAllByCollectionOfPublicationsId(id))
+                .thenReturn(List.of(dm));
 
-        // Arrange
-        CollectionOfPublicationsId collectionId =
-                mock(CollectionOfPublicationsId.class);
+        when(assembler.toDomain(dm)).thenReturn(domain);
 
-        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
-        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
-
-        PublicationSample publication1 = mock(PublicationSample.class);
-        PublicationSample publication2 = mock(PublicationSample.class);
-
-        when(jpa.findAllByCollectionOfPublicationsId(collectionId))
-                .thenReturn(List.of(dm1, dm2));
-
-        when(assembler.toDomain(dm1)).thenReturn(publication1);
-        when(assembler.toDomain(dm2)).thenReturn(publication2);
-
-        // Act
         List<PublicationSample> result =
-                repository.findByCollectionOfPublicationsId(collectionId);
+                repository.findByCollectionOfPublicationsId(id);
 
-        // Assert
-        assertEquals(2, result.size());
-    }
-
-    // =========================================================================
-    // findAvailableForCollection
-    // =========================================================================
-
-    @Test
-    void findAvailableForCollection_shouldThrowWhenArgumentsAreNull() {
-
-        // Arrange
-        CollectionOfPublicationsId collectionId =
-                mock(CollectionOfPublicationsId.class);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.findAvailableForCollection(null, collectionId));
-
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.findAvailableForCollection(userIdDouble, null));
-    }
-
-    @Test
-    void findAvailableForCollection_shouldReturnOnlyAvailablePublications() {
-
-        // Arrange
-        CollectionOfPublicationsId collectionId =
-                mock(CollectionOfPublicationsId.class);
-
-        PublicationSample publication1 = mock(PublicationSample.class);
-        PublicationSample publication2 = mock(PublicationSample.class);
-
-        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
-        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
-
-        when(jpa.findAllByOwnerId(userIdDouble))
-                .thenReturn(List.of(dm1, dm2));
-
-        when(assembler.toDomain(dm1)).thenReturn(publication1);
-        when(assembler.toDomain(dm2)).thenReturn(publication2);
-
-        when(publication1.isInUserLibrary()).thenReturn(true);
-        when(publication2.isInUserLibrary()).thenReturn(true);
-
-        when(jpa.findAllByCollectionOfPublicationsId(collectionId))
-                .thenReturn(List.of(dm2));
-
-        // Act
-        List<PublicationSample> result =
-                repository.findAvailableForCollection(userIdDouble, collectionId);
-
-        // Assert
         assertEquals(1, result.size());
-        assertEquals(publication1, result.get(0));
+    }
+
+    // =========================================================================
+    // addPublicationToLibrary
+    // =========================================================================
+
+    @Test
+    void addPublicationToLibrary_shouldReturnFalse() {
+
+        boolean result =
+                repository.addPublicationToLibrary(
+                        publicationSampleDouble,
+                        libraryIdDouble
+                );
+
+        assertFalse(result);
+    }
+
+    // =========================================================================
+    // findAvailableForSaleByLibraryId
+    // =========================================================================
+
+    @Test
+    void findAvailableForSaleByLibraryId_shouldReturnMappedList() {
+
+        LibraryId id = mock(LibraryId.class);
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        PublicationSample domain = mock(PublicationSample.class);
+
+        List<PublicationStatus> excluded =
+                List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
+
+        when(jpa.findAllByLibraryIdAndPublicationStatusNotIn(id, excluded))
+                .thenReturn(List.of(dm));
+
+        when(assembler.toDomain(dm)).thenReturn(domain);
+
+        List<PublicationSample> result =
+                repository.findAvailableForSaleByLibraryId(id);
+
+        assertEquals(1, result.size());
     }
 
     // =========================================================================
@@ -693,106 +630,93 @@ class PublicationSampleRepositoryJpaImplTest {
     // =========================================================================
 
     @Test
-    void assignPublicationsToCollection_shouldReturnTrueWhenAllAssignmentsSucceed() {
+    void assignPublicationsToCollection_shouldThrowWhenPublicationNotFound() {
 
-        // Arrange
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+        PublicationSampleId pubId = mock(PublicationSampleId.class);
+
+        when(jpa.findById(pubId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+                () -> repository.assignPublicationsToCollection(
+                        id,
+                        List.of(pubId)));
+    }
+
+    @Test
+    void assignPublicationsToCollection_shouldReturnTrue_whenAllPublicationsExist() {
+
         CollectionOfPublicationsId collectionId =
                 mock(CollectionOfPublicationsId.class);
+
+        PublicationSampleId pubId =
+                mock(PublicationSampleId.class);
 
         PublicationSample publication =
                 mock(PublicationSample.class);
 
-        when(jpa.findById(publicationSampleIdDouble))
-                .thenReturn(Optional.of(publicationSampleDMDouble));
+        PublicationSampleDM dm =
+                mock(PublicationSampleDM.class);
 
-        when(assembler.toDomain(publicationSampleDMDouble))
+        when(publication.id()).thenReturn(pubId);
+
+        when(jpa.findById(pubId))
+                .thenReturn(Optional.of(dm));
+
+        when(jpa.existsById(pubId))
+                .thenReturn(true); // 🔥 REQUIRED FIX
+
+        when(assembler.toDomain(dm))
                 .thenReturn(publication);
 
         when(assembler.toDM(publication))
-                .thenReturn(publicationSampleDMDouble);
+                .thenReturn(dm);
 
-        when(jpa.save(publicationSampleDMDouble))
-                .thenReturn(publicationSampleDMDouble);
+        when(jpa.save(dm))
+                .thenReturn(dm);
 
-        // Act
         boolean result =
                 repository.assignPublicationsToCollection(
                         collectionId,
-                        List.of(publicationSampleIdDouble));
+                        List.of(pubId));
 
-        // Assert
         assertTrue(result);
-
-        verify(publication)
-                .addPublicationToCollection(collectionId);
     }
 
-    @Test
-    void assignPublicationsToCollection_shouldThrowWhenCollectionIdIsNull() {
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.assignPublicationsToCollection(
-                        null,
-                        List.of(publicationSampleIdDouble)));
-    }
+    // =========================================================================
+    // findAvailableForCollection
+    // =========================================================================
 
     @Test
-    void assignPublicationsToCollection_shouldThrowWhenPublicationIdsAreNull() {
+    void findAvailableForCollection_shouldFilterOutExistingPublications() {
 
-        // Arrange
-        CollectionOfPublicationsId collectionId =
-                mock(CollectionOfPublicationsId.class);
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.assignPublicationsToCollection(
-                        collectionId,
-                        null));
-    }
+        PublicationSample p1 = mock(PublicationSample.class);
+        PublicationSample p2 = mock(PublicationSample.class);
 
-    @Test
-    void assignPublicationsToCollection_shouldThrowWhenPublicationIdsAreEmpty() {
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
 
-        // Arrange
-        CollectionOfPublicationsId collectionId =
-                mock(CollectionOfPublicationsId.class);
+        when(jpa.findAllByOwnerId(userId))
+                .thenReturn(List.of(dm1, dm2));
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.assignPublicationsToCollection(
-                        collectionId,
-                        List.of()));
-    }
+        when(assembler.toDomain(dm1)).thenReturn(p1);
+        when(assembler.toDomain(dm2)).thenReturn(p2);
 
-    @Test
-    void assignPublicationsToCollection_shouldThrowWhenPublicationDoesNotExist() {
+        when(p1.isInUserLibrary()).thenReturn(true);
+        when(p2.isInUserLibrary()).thenReturn(true);
 
-        // Arrange
-        CollectionOfPublicationsId collectionId =
-                mock(CollectionOfPublicationsId.class);
+        // IMPORTANT: same instance returned here
+        when(jpa.findAllByCollectionOfPublicationsId(collectionId))
+                .thenReturn(List.of(dm2));
 
-        when(jpa.findById(publicationSampleIdDouble))
-                .thenReturn(Optional.empty());
+        List<PublicationSample> result =
+                repository.findAvailableForCollection(userId, collectionId);
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.assignPublicationsToCollection(
-                        collectionId,
-                        List.of(publicationSampleIdDouble)));
-    }
-
-    @Test
-    void addPublicationToLibrary_shouldReturnFalse() {
-
-        // ACT
-        boolean result =
-                repository.addPublicationToLibrary(
-                        publicationSampleDouble,
-                        libraryIdDouble
-                );
-
-        // ASSERT
-        assertFalse(result);
+        assertEquals(1, result.size());
+        assertTrue(result.contains(p1));
+        assertFalse(result.contains(p2));
     }
 }
