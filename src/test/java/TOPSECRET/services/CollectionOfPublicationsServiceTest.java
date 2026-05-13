@@ -156,6 +156,7 @@ class CollectionOfPublicationsServiceTest {
 
         // assert
         assertTrue(result);
+        verify(collectionOfPublicationsRepository).update(collection);
     }
 
     @Test
@@ -177,6 +178,7 @@ class CollectionOfPublicationsServiceTest {
 
         // assert
         assertFalse(result);
+        verify(collectionOfPublicationsRepository, never()).update(any(CollectionOfPublications.class));
     }
 
     @Test
@@ -187,6 +189,8 @@ class CollectionOfPublicationsServiceTest {
 
         assertEquals("CollectionOfPublications Id cannot be null", ex.getMessage());
     }
+
+
 
 
 
