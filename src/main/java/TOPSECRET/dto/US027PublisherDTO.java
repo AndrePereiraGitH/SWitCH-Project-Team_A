@@ -1,7 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.PublisherID;
-
 /**
  * Data Transfer Object (DTO) used in US027 to represent a Publisher
  * when listing items on direct sale for a given publisher.
