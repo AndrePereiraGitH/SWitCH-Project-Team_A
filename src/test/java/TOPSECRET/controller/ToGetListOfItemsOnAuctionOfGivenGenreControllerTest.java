@@ -13,6 +13,7 @@ import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.dto.US022GenreDTO;
 
 import TOPSECRET.dto.US022GenreMapper;
+import TOPSECRET.persistence.repositoryjpa.datamodel.AuctionDM;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -507,6 +508,125 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         // Assert
         assertTrue(result.isEmpty());
 
+    }
+
+    @Test
+    void shouldReturnAuctionsSortedByDeadline() {
+
+        // Arrange
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
+        US022GenreDTO genreDto = mock(US022GenreDTO.class);
+        GenreId genreId = mock(GenreId.class);
+
+        when(genreDto.genreId()).thenReturn(genreId);
+
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        PublicationSampleId itemId = mock(PublicationSampleId.class);
+        ListingId listingId = mock(ListingId.class);
+
+        List<Auction> auctions = List.of(mock(Auction.class));
+        when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(List.of(bdId));
+        when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(anyList())).thenReturn(List.of(itemId));
+        when(listingRepository.findIdsByPublicationSampleIdIn(anyList())).thenReturn(List.of(listingId));
+        when(auctionRepository.findByListingIdInOrderByAuctionDeadlineAsc(anyList())).thenReturn(auctions);
+
+        List<US022AuctionDTO> dtoList = List.of(mock(US022AuctionDTO.class));
+        when(auctionMapper.toDTOList(auctions)).thenReturn(dtoList);
+
+        // Act
+        List<US022AuctionDTO> result = sut.findListOfItemsOnAuctionByGenreIdSortedByDeadlineAsc(genreDto);
+
+        // Assert
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void shouldThrowExceptionGenreDTONull() {
+
+        // Arrange
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+        // Act
+        Exception ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.findListOfItemsOnAuctionByGenreIdSortedByDeadlineAsc(null)
+        );
+
+        // Assert
+        assertEquals("genre cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void shouldReturnAuctionsSortedByDeadlineAsc() {
+
+        // Arrange
+        sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
+                auctionRepository,
+                genreRepository,
+                listingRepository,
+                bibliographicalDataRepository,
+                publicationSampleRepository,
+                genreMapper,
+                auctionMapper
+        );
+
+        GenreId genreId = mock(GenreId.class);
+
+        US022GenreDTO genreDTO = mock(US022GenreDTO.class);
+
+        when(genreDTO.genreId()).thenReturn(genreId);
+
+        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        PublicationSampleId itemId = mock(PublicationSampleId.class);
+        ListingId listingId = mock(ListingId.class);
+
+        List<BibliographicalDataID> bdIds = List.of(bdId);
+        List<PublicationSampleId> itemIds = List.of(itemId);
+        List<ListingId> listingIds = List.of(listingId);
+
+        Auction auction1 = mock(Auction.class);
+        Auction auction2 = mock(Auction.class);
+
+        List<Auction> auctions = List.of(auction1, auction2);
+
+        US022AuctionDTO dto1 = mock(US022AuctionDTO.class);
+        US022AuctionDTO dto2 = mock(US022AuctionDTO.class);
+
+        List<US022AuctionDTO> dtoList = List.of(dto1, dto2);
+
+        when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(bdIds);
+        when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds)).thenReturn(itemIds);
+
+        when(listingRepository.findIdsByPublicationSampleIdIn(itemIds)).thenReturn(listingIds);
+        when(auctionRepository.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)).thenReturn(auctions);
+        when(auctionMapper.toDTOList(auctions)).thenReturn(dtoList);
+
+        // Act
+        List<US022AuctionDTO> result =
+                sut.findListOfItemsOnAuctionByGenreIdSortedByDeadlineAsc(genreDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        assertEquals(dto1, result.get(0));
+        assertEquals(dto2, result.get(1));
     }
 
 }

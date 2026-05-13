@@ -131,4 +131,34 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
         return auctionMapper.toDTOList(auctions);
     }
 
+    /**
+     * Retrieves the list of items currently on auction
+     * filtered by a given genre and sorted ascending
+     * by auction deadline.
+     *
+     * @param genreDTO the genre used as filter
+     * @return list of US022AuctionDTO sorted by auction deadline
+     */
+    public List<US022AuctionDTO> findListOfItemsOnAuctionByGenreIdSortedByDeadlineAsc(US022GenreDTO genreDTO) {
+
+        if (genreDTO == null) {
+            throw new IllegalArgumentException("genre cannot be null");
+
+        }
+        if (genreDTO.genreId() == null) {
+            throw new IllegalArgumentException("genreId cannot be null");
+        }
+
+        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genreDTO.genreId());
+
+        List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
+
+        List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
+
+        List<Auction> auctions = auctionRepository.findByListingIdInOrderByAuctionDeadlineAsc(listingId);
+
+        return auctionMapper.toDTOList(auctions);
+
+    }
+
 }
