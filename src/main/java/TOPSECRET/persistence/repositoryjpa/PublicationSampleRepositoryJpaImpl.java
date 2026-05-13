@@ -108,10 +108,13 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         Objects.requireNonNull(publicationSample,
                 "PublicationSample must not be null");
 
+        if (!publicationSampleRepositoryJpa.existsById(publicationSample.id())) {
+            throw new IllegalArgumentException("PublicationSample does not exist in repository");
+        }
+
         PublicationSampleDM dm = publicationSampleAssembler.toDM(publicationSample);
 
-        PublicationSampleDM updated =
-                publicationSampleRepositoryJpa.save(dm);
+        PublicationSampleDM updated = publicationSampleRepositoryJpa.save(dm);
 
         return publicationSampleAssembler.toDomain(updated);
     }
@@ -258,13 +261,9 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
             CollectionOfPublicationsId collectionId,
             List<PublicationSampleId> publicationSampleIds) {
 
-        if (collectionId == null) {
-            throw new IllegalArgumentException("Collection ID cannot be null.");
-        }
+        Objects.requireNonNull(collectionId, "Collection ID cannot be null.");
 
-        if (publicationSampleIds == null || publicationSampleIds.isEmpty()) {
-            throw new IllegalArgumentException("Publication IDs cannot be null or empty.");
-        }
+        Objects.requireNonNull(publicationSampleIds, "Publication IDs cannot be null or empty.");
 
         for (PublicationSampleId publicationSampleId : publicationSampleIds) {
 
@@ -294,9 +293,7 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
             UserId userId,
             CollectionOfPublicationsId collectionId) {
 
-        if (userId == null || collectionId == null) {
-            throw new IllegalArgumentException("Arguments cannot be null");
-        }
+        Objects.requireNonNull(userId ,"Arguments cannot be null");
 
         List<PublicationSample> allUserPublications =
                 findByUserIdAndLibraryIdIsNotNull(userId);
