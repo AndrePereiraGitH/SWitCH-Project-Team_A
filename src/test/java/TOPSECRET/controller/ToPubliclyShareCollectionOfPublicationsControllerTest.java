@@ -245,18 +245,23 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
     }
 
     // =============================================================================
-    // ---------------------- SHARE COLLECTION UNTIL -------------------------------
-    // =============================================================================
+// ---------------------- SHARE COLLECTION UNTIL -------------------------------
+// =============================================================================
 
     @Test
     void shareCollectionUntil_ShouldReturnTrue_WhenServiceReturnsTrue()
             throws InstanceNotFoundException {
 
         // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
         CollectionOfPublicationsId selectedCollectionId =
                 mock(CollectionOfPublicationsId.class);
 
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
 
         when(collectionService.makeCollectionPublicUntil(
                 selectedCollectionId,
@@ -265,13 +270,12 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
         // Act
         boolean result = controller.shareCollectionUntil(
-                selectedCollectionId,
+                selectedCollectionDto,
                 publicUntil
         );
 
         // Assert
         assertTrue(result);
-
     }
 
     @Test
@@ -279,10 +283,15 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
             throws InstanceNotFoundException {
 
         // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
         CollectionOfPublicationsId selectedCollectionId =
                 mock(CollectionOfPublicationsId.class);
 
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
 
         when(collectionService.makeCollectionPublicUntil(
                 selectedCollectionId,
@@ -291,32 +300,48 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
         // Act
         boolean result = controller.shareCollectionUntil(
-                selectedCollectionId,
+                selectedCollectionDto,
                 publicUntil
         );
 
         // Assert
         assertFalse(result);
-
     }
 
     @Test
-    void shareCollectionUntil_ShouldThrowException_WhenSelectedCollectionIdIsNull()
-            throws InstanceNotFoundException {
+    void shareCollectionUntil_ShouldThrowException_WhenSelectedCollectionDtoIsNull() {
 
         // Arrange
-        CollectionOfPublicationsId selectedCollectionId = null;
+        US019CollectionOfPublicationsDTO selectedCollectionDto = null;
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         // Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
-                () -> controller.shareCollectionUntil(selectedCollectionId, publicUntil)
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
         );
 
         // Assert
         assertEquals("selected collection Id cannot be null", exception.getMessage());
+    }
 
+    @Test
+    void shareCollectionUntil_ShouldThrowException_WhenPublicUntilIsNull() {
+
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        LocalDateTime publicUntil = null;
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
+        );
+
+        // Assert
+        assertEquals("public until date time cannot be null", exception.getMessage());
     }
 
     @Test
@@ -324,10 +349,15 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
             throws InstanceNotFoundException {
 
         // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
         CollectionOfPublicationsId selectedCollectionId =
                 mock(CollectionOfPublicationsId.class);
 
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
 
         when(collectionService.makeCollectionPublicUntil(
                 selectedCollectionId,
@@ -337,12 +367,11 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
         // Act
         InstanceNotFoundException exception = assertThrows(
                 InstanceNotFoundException.class,
-                () -> controller.shareCollectionUntil(selectedCollectionId, publicUntil)
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
         );
 
         // Assert
         assertEquals("Collection not found", exception.getMessage());
-
     }
 
 
