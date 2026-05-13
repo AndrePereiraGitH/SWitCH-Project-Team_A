@@ -219,13 +219,12 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         Objects.requireNonNull(userId, "UserId cannot be null");
 
-        List<PublicationSampleDM> publicationSampleDMs =
-                publicationSampleRepositoryJpa
-                        .findAllByOwnerIdAndLibraryIdIsNull(userId);
+        List<PublicationSample> publicationSampleDMs = publicationSampleRepositoryJpa.findAllByOwnerId(userId)
+                .stream().map(publicationSampleAssembler::toDomain)
+                .filter(publicationSample -> !publicationSample.isInUserLibrary()).toList();
 
-        return publicationSampleDMs.stream()
-                .map(publicationSampleAssembler::toDomain)
-                .toList();
+
+        return publicationSampleDMs;
     }
 
     // =========================================================================

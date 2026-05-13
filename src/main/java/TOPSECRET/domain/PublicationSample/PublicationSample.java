@@ -281,15 +281,6 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         return _publicationStatus.isAvailableForSale();
     }
 
-    public PublicationSample assignLibrary(LibraryId libraryId) {
-        if (libraryId == null) {
-            throw new IllegalArgumentException("LibraryId cannot be null");
-        }
-
-        this._libraryId = libraryId;
-        return this;
-    }
-
     // -------------------------------------------------------------------------
     // Identity (AggregateRoot)
     // -------------------------------------------------------------------------

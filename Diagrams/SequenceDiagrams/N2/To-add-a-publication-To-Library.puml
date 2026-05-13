@@ -80,23 +80,29 @@ ILibJPA -> "Database" : Query Library with userId
 activate "Database"
 Database --> ILibJPA : data
 deactivate "Database"
-ILibJPA --> LibDomain : library
+create participant "libraryDM : LibraryDM" as LibraryDM
+ILibJPA -->> LibraryDM : «create»
+ILibJPA -> LibraryDM : getId()
+activate LibraryDM
+LibraryDM --> ILibJPA : libraryId
+deactivate LibraryDM
+ILibJPA --> LibDomain : libraryId
 deactivate ILibJPA
-LibDomain --> Ctrl: library
+LibDomain --> Ctrl: libraryId
 deactivate LibDomain
-Ctrl -> PublicationSample : assignLibrary(libraryId)
+Ctrl -> PublicationSample : addPublicationToLibrary(libraryId)
 activate PublicationSample
-PublicationSample --> Ctrl : this
+PublicationSample --> Ctrl : libraryId
 deactivate PublicationSample
-Ctrl -> PubRepo: save(publicationSample)
+Ctrl -> PubRepo: update(publicationSample)
 activate PubRepo
-PubRepo -> IJPA: add\n(publicationSample)
+PubRepo -> IJPA: update\n(publicationSample)
 activate IJPA
 IJPA -> "Database" : save
 activate "Database"
 Database --> IJPA : saved
 deactivate Database
-IJPA --> PubRepo: true
+IJPA --> PubRepo: PublicationSample
 deactivate IJPA
 PubRepo --> Ctrl: PublicationSample
 deactivate PubRepo

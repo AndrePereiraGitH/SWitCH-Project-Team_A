@@ -222,7 +222,7 @@ class PublicationSampleAssemblerTest {
         List<PublicationSampleDM> dmList = List.of(dmDouble);
 
         // Act
-        List<PublicationSample> result = assembler.toDomain(dmList);
+        List<PublicationSample> result = assembler.toDomainList(dmList);
 
         // Assert
         assertNotNull(result);
@@ -237,34 +237,13 @@ class PublicationSampleAssemblerTest {
         List<PublicationSampleDM> dmList = List.of();
 
         // Act
-        List<PublicationSample> result = assembler.toDomain(dmList);
+        List<PublicationSample> result = assembler.toDomainList(dmList);
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void toDomain_withList_shouldReturnImmutableList() {
-
-        // Arrange
-        List<PublicationSampleDM> dmList = List.of();
-
-        // Act
-        List<PublicationSample> result = assembler.toDomain(dmList);
-
-        // Assert
-        assertThrows(UnsupportedOperationException.class,
-                () -> result.add(mock(PublicationSample.class)));
-    }
-
-    @Test
-    void toDomain_withList_shouldThrowNullPointerException_whenListIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> assembler.toDomain((List<PublicationSampleDM>) null));
-    }
 
     @Test
     void toDomain_withList_shouldReturnAListOfDomainObjects() {
@@ -297,7 +276,7 @@ class PublicationSampleAssemblerTest {
 
         // Act
         List<PublicationSample> result =
-                assembler.toDomain(List.of(dm));
+                assembler.toDomainList(List.of(dm));
 
         // Assert
         assertNotNull(result);
@@ -338,9 +317,17 @@ class PublicationSampleAssemblerTest {
 
         // Act
         List<PublicationSample> result =
-                assembler.toDomain(List.of(dm));
+                assembler.toDomainList(List.of(dm));
 
         // Assert
         assertSame(publicationSample, result.get(0));
+    }
+
+    @Test
+    void toDomainList_shouldThrowNullPointerException_whenListIsNull() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> assembler.toDomainList(null));
     }
 }

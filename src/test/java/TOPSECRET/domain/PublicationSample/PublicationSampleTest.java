@@ -719,11 +719,11 @@ class PublicationSampleTest {
         LibraryId newLibraryId = mock(LibraryId.class);
 
         // Act
-        PublicationSample result = sample.assignLibrary(newLibraryId);
+        LibraryId result = sample.addPublicationToLibrary(newLibraryId);
 
         // Assert
         assertEquals(newLibraryId, sample.getLibraryID());
-        assertEquals(sample, result);
+        assertEquals(newLibraryId, result);
     }
 
     @Test
@@ -739,8 +739,8 @@ class PublicationSampleTest {
         );
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> sample.assignLibrary(null));
+        assertThrows(NullPointerException.class,
+                () -> sample.addPublicationToLibrary(null));
     }
 
     @Test
@@ -758,12 +758,10 @@ class PublicationSampleTest {
         LibraryId oldLibraryId = mock(LibraryId.class);
         LibraryId newLibraryId = mock(LibraryId.class);
 
-        sample.assignLibrary(oldLibraryId);
+        // Act + Assert
+        sample.addPublicationToLibrary(oldLibraryId);
 
-        // Act
-        sample.assignLibrary(newLibraryId);
-
-        // Assert
-        assertEquals(newLibraryId, sample.getLibraryID());
+        assertThrows(IllegalArgumentException.class,
+                () -> sample.addPublicationToLibrary(newLibraryId));
     }
 }

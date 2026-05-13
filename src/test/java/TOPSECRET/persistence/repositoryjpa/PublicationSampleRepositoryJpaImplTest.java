@@ -478,7 +478,7 @@ class PublicationSampleRepositoryJpaImplTest {
     // =========================================================================
 
     @Test
-    void findByUserIdAndLibraryIdIsNull_shouldReturnMappedPublicationSamples() {
+    void findByUserIdAndLibraryIdIsNull_shouldReturnOnlyPublicationsWithoutLibrary() {
 
         // Arrange
         PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
@@ -487,20 +487,54 @@ class PublicationSampleRepositoryJpaImplTest {
         PublicationSample sample1 = mock(PublicationSample.class);
         PublicationSample sample2 = mock(PublicationSample.class);
 
-        when(jpa.findAllByOwnerIdAndLibraryIdIsNull(userIdDouble))
+        when(jpa.findAllByOwnerId(userIdDouble))
                 .thenReturn(List.of(dm1, dm2));
 
         when(assembler.toDomain(dm1)).thenReturn(sample1);
         when(assembler.toDomain(dm2)).thenReturn(sample2);
+
+        when(sample1.isInUserLibrary()).thenReturn(false);
+        when(sample2.isInUserLibrary()).thenReturn(true);
 
         // Act
         List<PublicationSample> result =
                 repository.findByUserIdAndLibraryIdIsNull(userIdDouble);
 
         // Assert
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
+        assertEquals(sample1, result.get(0));
     }
 
+    @Test
+    void findByUserIdAndLibraryIdIsNull_shouldReturnEmptyList_whenNoMatchesExist() {
+
+        // Arrange
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+
+        PublicationSample sample1 = mock(PublicationSample.class);
+
+        when(jpa.findAllByOwnerId(userIdDouble))
+                .thenReturn(List.of(dm1));
+
+        when(assembler.toDomain(dm1)).thenReturn(sample1);
+
+        when(sample1.isInUserLibrary()).thenReturn(true);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByUserIdAndLibraryIdIsNull(userIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByUserIdAndLibraryIdIsNull_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> repository.findByUserIdAndLibraryIdIsNull(null));
+    }
     // =========================================================================
     // findAvailableForSaleByLibraryId
     // =========================================================================

@@ -5,6 +5,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,31 +92,17 @@ public class PublicationSampleAssembler {
         return pbSample;
     }
 
-    /**
-     * Converts a list of {@link PublicationSampleDM} persistence entities
-     * into a list of {@link PublicationSample} domain objects.
-     *
-     * <p>
-     * Each {@link PublicationSampleDM} is individually reconstructed using
-     * {@link #toDomain(PublicationSampleDM)}.
-     * </p>
-     *
-     * <p>
-     * The resulting list preserves the order of the original persistence entities.
-     * </p>
-     *
-     * @param pbSampleDMs the list of persistence entities to convert;
-     *                    must not be {@code null}
-     * @return an immutable list containing the reconstructed
-     *         {@link PublicationSample} domain objects
-     * @throws NullPointerException if {@code pbSampleDMs} is {@code null}
-     */
-    public List<PublicationSample> toDomain(List<PublicationSampleDM> pbSampleDMs) {
+    public List<PublicationSample> toDomainList (List<PublicationSampleDM> dmList) {
 
-        Objects.requireNonNull(pbSampleDMs, "PublicationSampleDM list cannot be null.");
+        Objects.requireNonNull(dmList,
+                "PublicationSampleDM list must not be null");
 
-        return pbSampleDMs.stream()
-                .map(this::toDomain)
-                .toList();
+        List<PublicationSample> result = new ArrayList<>();
+
+        for (PublicationSampleDM dm : dmList) {
+            result.add(toDomain(dm));
+        }
+
+        return result;
     }
 }

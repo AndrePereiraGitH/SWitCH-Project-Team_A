@@ -60,8 +60,6 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      */
     List<PublicationSampleDM> findByLibraryId(LibraryId libraryId);
 
-    List<PublicationSampleDM> findAllByOwnerIdAndLibraryIdIsNull(UserId ownerId);
-
     /**
      * Retrieves all {@link PublicationSampleDM} entities associated with the given library
      * whose publication status is not in the provided exclusion list.
