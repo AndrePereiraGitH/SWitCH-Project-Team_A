@@ -32,7 +32,7 @@ UI --> Controller: getUserCollections(userId)
 
 activate Controller
 
-Controller -> CollectionRepository: getAllByUserId(userId)
+Controller -> CollectionRepository: findAllByOwnerId(userId)
 activate CollectionRepository
 
 ref over CollectionRepository

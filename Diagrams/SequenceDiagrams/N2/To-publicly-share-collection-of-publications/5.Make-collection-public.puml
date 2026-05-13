@@ -11,17 +11,18 @@ participant ":CollectionOfPublications\nService" as service
 participant ":ICollectionOfPublication\nRepository" as CollectionRepository
 participant ":ICollectionOfPublication\nJPARepository" as collectionRepositoryJPA
 
-participant "collectionDM\n:CollectionOfPublicationsDM" as collectionDM
-
 participant ":CollectionOfPublications\nAssembler" as collectionAssembler
 
 participant "updatedDBCollectionDM\n:CollectionOfPublicationsDM" as updatedDBCollectionDM
 
-participant ":CollectionOfPublications\nFactory" as collectionsFactory
 participant "selectedCollectionDomain\n:CollectionOfPublications" as selectedCollectionDomain
 
-
 participant "collectionDMtoUpdate\n:CollectionOfPublicationsDM" as collectionDMtoUpdate
+
+participant ":CollectionOfPublications\nFactory" as collectionsFactory
+
+
+
 
 database DataBase as db
 
@@ -46,12 +47,16 @@ activate service
 ' -----------  FIND COLLECTION BY ID -------------------------
 ' ------------------------------------------------------------
 
+service -> CollectionRepository : findById(collectionId)
+activate CollectionRepository
+
 ref over service, CollectionRepository
 [[4.Find-collection-by-id.puml Find collection by id]]
 end ref
 
-service -> CollectionRepository : findById(collectionId)
-activate CollectionRepository
+
+
+/'
 CollectionRepository -> collectionRepositoryJPA : findById(collectionId)
 activate collectionRepositoryJPA
 collectionRepositoryJPA -> db : query find by id
@@ -101,7 +106,7 @@ deactivate collectionsFactory
 
 collectionAssembler --> CollectionRepository : selectedCollectionDomain
 deactivate collectionAssembler
-
+'/
 CollectionRepository --> service : selectedCollectionDomain
 deactivate CollectionRepository
 
