@@ -1,0 +1,139 @@
+@startuml
+title To add a publication type in the system
+hide footbox
+autonumber
+
+actor User
+
+participant ":UI" as UI
+participant ":ToRegisterPubTypeController" as Controller
+participant ":PublicationTypeService" as Service
+participant ":IPublicationTypeRepository" as Repo
+participant ":PublicationTypeAssembler" as Assembler
+participant ":PublicationTypeFactory" as Factory
+participant ":IPublicationTypeRepositoryJPA" as JpaRepo
+participant ":pubType:\nPublicationType" as pubType
+
+database "database" as DB
+
+User --> UI : I want to register a \nnew publication type
+activate UI
+
+UI -> Controller : registerPubType(mediaFormat)
+activate Controller
+
+Controller -> Service : createAndSave(mediaFormat)
+activate Service
+
+Service -> Repo : findByMediaFormat(mediaFormat)
+activate Repo
+
+Repo -> JpaRepo : findAll()
+activate JpaRepo
+
+JpaRepo -> DB : SELECT * FROM publication_types
+activate DB
+DB --> JpaRepo : data
+deactivate DB
+
+JpaRepo --> Repo : List<PublicationTypeDM>
+deactivate JpaRepo
+
+loop for each dm
+    Repo -> Assembler : toDomain(dm)
+    activate Assembler
+
+    Assembler -> Factory : create(dm.id, dm.mediaFormat)
+    activate Factory
+
+    Factory -> pubType ** : <<create>>
+
+    Factory --> Assembler : PublicationType
+    deactivate Factory
+
+    Assembler --> Repo : PublicationType
+    deactivate Assembler
+end
+
+alt PublicationType already exists
+    Repo --> Service : Optional<PublicationType>
+    deactivate Repo
+
+    Service --> Controller : throws IllegalArgumentException
+    Controller --> UI : throws IllegalArgumentException
+    UI --> User : error: PublicationType already exists
+
+else PublicationType does not exist
+
+    Repo --> Service : Optional.empty
+    activate Repo
+
+    Service -> Factory : create(mediaFormat)
+    activate Factory
+
+    create participant "pubType:\nPublicationType" as NewPubType
+    Factory -> NewPubType : <<create>>
+
+    Factory --> Service : PublicationType
+    deactivate Factory
+
+    Service -> Repo : save(entity)
+
+    Repo -> Assembler : toDM(entity)
+    activate Assembler
+
+    Assembler -> NewPubType : id()
+    activate NewPubType
+    NewPubType --> Assembler : PublicationTypeId
+
+    Assembler -> NewPubType : getMediaFormat()
+
+    NewPubType --> Assembler : mediaFormat
+    deactivate NewPubType
+
+    create participant "pubTypeDM:\nPublicationTypeDM" as NewDM
+    Assembler -> NewDM : <<create>>
+
+    Assembler --> Repo : PublicationTypeDM
+    deactivate Assembler
+
+    Repo -> JpaRepo : save(dm)
+    activate JpaRepo
+
+    JpaRepo -> DB : INSERT INTO publication_types
+    activate DB
+    DB --> JpaRepo : saved row
+    deactivate DB
+
+    JpaRepo --> Repo : saved PublicationTypeDM
+    deactivate JpaRepo
+
+    Repo -> Assembler : toDomain(savedDm)
+    activate Assembler
+
+    Assembler -> Factory : create(savedDm.id, savedDm.mediaFormat)
+    activate Factory
+
+    create participant "pubType:\nPublicationType" as SavedPubType
+    Factory -> SavedPubType : <<create>>
+
+    Factory --> Assembler : PublicationType
+    deactivate Factory
+
+    Assembler --> Repo : PublicationType
+    deactivate Assembler
+
+    Repo --> Service : PublicationType
+    deactivate Repo
+
+    Service --> Controller : PublicationType
+    deactivate Service
+
+    Controller --> UI : PublicationType
+    deactivate Controller
+
+    UI --> User : Done!
+    deactivate UI
+end
+
+@enduml
