@@ -141,7 +141,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 )
         );
 
-        // Arrange
+        // Assert
         assertEquals(
                 "PublicationSampleRepository cannot be null", ex.getMessage());
     }
@@ -163,7 +163,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 )
         );
 
-        // Arrange
+        // Assert
         assertEquals(
                 "GenreMapper cannot be null", ex.getMessage());
     }
@@ -185,7 +185,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 )
         );
 
-        // Arrange
+        // Assert
         assertEquals(
                 "AuctionMapper cannot be null", ex.getMessage());
     }
