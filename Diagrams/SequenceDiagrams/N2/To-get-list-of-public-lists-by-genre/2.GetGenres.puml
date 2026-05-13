@@ -68,7 +68,7 @@ activate genreMapper
 genreMapper -->> genresDTOList ** : <<create>>
 
 loop for each genre in genreList
-    genreMapper -> genreDTO ** : <<create>>
+    genreMapper -->> genreDTO ** : <<create>>
     genreMapper -> genreMapper : genresDTOList.add(genreDTO)
 end
 
