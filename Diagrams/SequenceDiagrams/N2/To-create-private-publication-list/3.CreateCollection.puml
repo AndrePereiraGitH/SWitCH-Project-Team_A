@@ -17,11 +17,11 @@ end note
 
 participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
-participant ":CollectionOfPublicationsFactory" as Factory
 participant ":ICollectionOfPublicationsRepository" as Repo
 participant ":ICollectionOfPublicationsRepositoryJpa" as JpaRepo
 participant "DataBase" as DB
 participant ":CollectionOfPublicationsAssembler" as Assembler
+participant ":CollectionOfPublicationsFactory" as Factory
 
 UI -> Controller : createCollection(name, genreId, userId)
 activate Controller

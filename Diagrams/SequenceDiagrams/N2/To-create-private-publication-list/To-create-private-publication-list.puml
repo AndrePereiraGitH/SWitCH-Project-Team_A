@@ -8,6 +8,7 @@ participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
 participant ":IGenreRepository" as GenreRepo
 participant ":IGenreRepositoryJpa" as GenreJpaRepo
+participant "genreDMList: List<GenreDM>" as GenreDMList
 participant ":GenreAssembler" as GenreAssembler
 participant ":GenreFactory" as GenreFactory
 participant "allGenreList: List<Genre>" as allGenreList
@@ -16,10 +17,10 @@ participant "listOfGenreDTO: List<US017GenreDTO>" as listOfGenreDTO
 participant ":Genre" as Genre
 participant "genreDTO: US017GenreDTO" as GDTO
 participant ":ICollectionOfPublicationsRepository" as CollectionRepo
-participant ":CollectionOfPublicationsFactory" as Factory
 participant ":ICollectionOfPublicationsRepositoryJpa" as CollectionJpaRepo
-participant ":CollectionOfPublicationsAssembler" as CollectionAssembler
 participant "DataBase" as DB
+participant ":CollectionOfPublicationsAssembler" as CollectionAssembler
+participant ":CollectionOfPublicationsFactory" as Factory
 
 ' --- Start ---
 User -> UI : I want to create a new private collection of publications
@@ -45,7 +46,8 @@ GenreJpaRepo -> DB : SELECT * FROM genres
 activate DB
 DB --> GenreJpaRepo : data
 deactivate DB
-GenreJpaRepo --> GenreRepo : List<GenreDM>
+GenreJpaRepo -->> GenreDMList ** : <<create>>
+GenreJpaRepo --> GenreRepo : genreDMList
 deactivate GenreJpaRepo
 
 GenreRepo -->> allGenreList ** : <<create>>
