@@ -151,7 +151,6 @@ ToPutForSaleAPublicationInDirectSaleController"1" --> "1" US015PublicationSample
 ToPutForSaleAPublicationInDirectSaleController "1" --> "1" ListingService : "uses"
 
 ' --- Library ---
-ILibraryRepository "1" ..> "1" ILibraryRepositoryJPA: uses
 LibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepository: implements
 LibraryRepositoryJPAImpl "1" ..> "1" ILibraryRepositoryJPA: uses
 'AutomaticGeneratedLibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepositoryJPA: implements
@@ -165,7 +164,6 @@ LibraryAssembler "1" ..> "1" LibraryDM: "receives"
 LibraryFactory "1" --> "1" Library: "creates"
 
 ' --- PublicationSampleRepository ---
-IPublicationSampleRepository "1" ..> "1" IPublicationSampleRepositoryJPA: uses
 PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
 PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: uses
 'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
@@ -188,7 +186,6 @@ ListingFactory "1" --> "1" Listing: "creates"
 
 IListingRepository "1" ..> "1" ListingAssembler: "uses"
 
-IListingRepository "1" ..> "1" IListingRepositoryJPA: uses
 ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
 ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
 'AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
