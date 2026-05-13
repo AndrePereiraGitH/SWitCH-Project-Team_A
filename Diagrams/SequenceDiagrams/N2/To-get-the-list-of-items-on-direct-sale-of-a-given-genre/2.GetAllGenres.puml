@@ -1,32 +1,63 @@
 @startuml
 hide footbox
 autonumber
-title Get All Genres
+title Get All Genres and Build DTOs
 
-participant ":UI" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+
+' Genre
 participant ":IGenreRepository" as IGenreRepo
+participant ":IGenreRepositoryJPA" as IGenreRepoJPA
+participant "listOfAllGenreDMs:\nList<GenreDM>" as listGenreDMs
+participant "listOfAllGenres:\nList<Genre>" as listOfAllGenres
+participant ":GenreAssembler" as GenreAss
+participant ":GenreFactory" as GenreFact
+participant "genre:\nGenre" as Genre
 participant ":US021GenreMapper" as GenreMapper
 participant "listOfGenreDTO:\nList<US021GenreDTO>" as LGDTO
+participant "genreDTO:\nUS021GenreDTO" as GenreDTO
 
-note over UI, Ctrl #E3F2FD
+database "database" as DB
+
+note over Ctrl #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over UI, Ctrl #E3F2FD
+note over Ctrl #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
-UI -> Ctrl : getAllGenres()
+' Section 1 - Get all genres
+Ctrl -> IGenreRepo : findAll()
 activate Ctrl
-
-Ctrl -> IGenreRepo : getAllGenres()
 activate IGenreRepo
-IGenreRepo -->> "listOfAllGenres:\nList<Genre>" ** : «create»
+IGenreRepo -> IGenreRepoJPA: findAll()
+activate IGenreRepoJPA
+IGenreRepoJPA -> DB: query *
+activate DB
+DB --> IGenreRepoJPA: data
+deactivate DB
+IGenreRepoJPA -->> listGenreDMs **: «create»
+IGenreRepoJPA --> IGenreRepo: listOfAllGenreDMs
+deactivate IGenreRepoJPA
+IGenreRepo -->> listOfAllGenres ** : «create»
+loop for each genreDM in listOfAllGenreDMs
+    IGenreRepo -> GenreAss: toDomain(genreDM)
+    activate GenreAss
+    GenreAss -> GenreFact: create(genreType)
+    activate GenreFact
+    GenreFact -->> Genre **: «create»
+    GenreFact --> GenreAss: genre
+    deactivate GenreFact
+    GenreAss --> IGenreRepo: genre
+    deactivate GenreAss
+    IGenreRepo -> listOfAllGenres: add(genre)
+end
+
 IGenreRepo --> Ctrl : listOfAllGenres
 deactivate IGenreRepo
 
@@ -34,13 +65,11 @@ Ctrl -> GenreMapper : toDTOList(listOfAllGenres)
 activate GenreMapper
 GenreMapper -->> LGDTO ** : «create»
 loop for each genre in listOfAllGenres
-    GenreMapper -->> "genreDTO:\nUS021GenreDTO" ** : toDTO(genre)
+    GenreMapper -->> GenreDTO ** : toDTO(genre)
     GenreMapper -> LGDTO : add(genreDTO)
 end
 GenreMapper --> Ctrl : listOfGenreDTO
 deactivate GenreMapper
 
-Ctrl --> UI : listOfGenreDTO
-deactivate Ctrl
 
 @enduml
