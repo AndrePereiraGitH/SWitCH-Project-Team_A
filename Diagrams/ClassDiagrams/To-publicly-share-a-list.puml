@@ -1,6 +1,6 @@
 @startuml
 
-'left to right direction
+left to right direction
 skinparam classAttributeIconSize 10
 hide empty members
 
@@ -16,6 +16,7 @@ class "ToPubliclyShareCollectionOfPublicationsController" as Controller {
   -collectionService: CollectionOfPublicationsService
   +getUserCollections(userId: UserId): List<CollectionOfPublicationsDTO>
   +makeCollectionPublic(collectionDTO: CollectionDTO): boolean
+  +shareCollectionUntil(collectionDTO: CollectionDTO, publicUntil : LocalDateTime): boolean
 }
 
 'Repository Interfaces
@@ -53,10 +54,13 @@ class "CollectionOfPublications" as collection{
   - collectionGenreId : GenreID
   - ownerId : UserId
   - isPrivate : boolean
+  - publicUntil : LocalDateTime
   + getCollectionName() : String
   + getCollectionGenre() : GenreID
   + getOwnerId() : UserId
-  + set_isPrivate(value : boolean) : boolean
+  + makePublic() : boolean
+  + makePrivate() : boolean
+  + makePublicUntil(publicUntil : LocalDateTIme) : boolean
 }
 
 class US019CollectionOfPublicationsMapper {
@@ -69,6 +73,28 @@ class "US019CollectionOfPublicationsDTO" as DTO{
         - name : String
         - genreName : String
         - ownerName : String
+        - publicUntil : LocalDateTime
+}
+
+class "CollectionOfPublicationsAssembler" as assembler{
+    -factory : CollectionOfPublicationsFActory
+    +toDM(collection : CollectionOfPublications) : CollectionOfPublicationsDM
+    +toDomain(collectionDM : CollectionOfPublicationsDM) : CollectionOfPublications
+}
+
+class "CollectionOfPublicationsFactory" as factory {
+    +create(collectionName : String, genreId : GenreId, ownerId : UserId) : CollectionOfPublications
+    +create(collectionId : CollectionOfPublicationsId, collectionName : String, genreId : GenreId, ownerId : UserId, publicUntil : LocalDateTime) : CollectionOfPublications
+}
+
+class "CollectionOfPublicationsDM" as collectionDM {
+    - id : CollectionOfPublicationsId
+            - id : CollectionOfPublicationsId
+            - name : String
+            - genreId : GenreId
+            - ownerId : UserId
+            - isPrivate : boolean
+            - publicUntil : LocalDateTime
 }
 
 rectangle DataBase as db{
@@ -87,6 +113,13 @@ ICollectionOfPublicationsRepository "1" ..> "*" collection : manages
 
 collectionRepoJpaImpl ..|> ICollectionOfPublicationsRepository : implements
 collectionRepoJpaImpl ..> ICollectionsJPA : uses
+collectionRepoJpaImpl ..> assembler : uses
+
+assembler ..> factory : uses
+
+factory ..> collection : creates
+assembler ..> collectionDM : creates
+jpaAutomatic ..> collectionDM : creates
 
 US019CollectionOfPublicationsMapper ..> collection : maps from
 US019CollectionOfPublicationsMapper ..> DTO : creates
