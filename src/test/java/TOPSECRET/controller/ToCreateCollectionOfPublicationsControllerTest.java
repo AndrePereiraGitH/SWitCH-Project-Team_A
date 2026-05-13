@@ -42,20 +42,23 @@ class ToCreateCollectionOfPublicationsControllerTest {
 
     @Test
     void shouldThrowWhenGenreRepositoryIsNull() {
+        // Arrange
         CollectionOfPublicationsService serviceLocal = mock(CollectionOfPublicationsService.class);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new ToCreateCollectionOfPublicationsController(null, serviceLocal));
     }
 
     @Test
     void shouldThrowWhenCollectionServiceIsNull() {
+        // Arrange
         IGenreRepository genreRepoLocal = mock(IGenreRepository.class);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new ToCreateCollectionOfPublicationsController(genreRepoLocal, null));
     }
-
 
     // ============================== getAllGenres() ==============================
 
@@ -88,25 +91,31 @@ class ToCreateCollectionOfPublicationsControllerTest {
 
     @Test
     void shouldThrowWhenNameIsNull() {
+        // Arrange
         GenreId genreId = mock(GenreId.class);
         UserId userId = mock(UserId.class);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.createCollection(null, genreId, userId));
     }
 
     @Test
     void shouldThrowWhenUserIdIsNull() {
+        // Arrange
         GenreId genreId = mock(GenreId.class);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.createCollection("Favorites", genreId, null));
     }
 
     @Test
     void shouldThrowWhenGenreIdIsNull() {
+        // Arrange
         UserId userId = mock(UserId.class);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.createCollection("Favorites", null, userId));
     }
