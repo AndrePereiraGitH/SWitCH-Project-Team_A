@@ -1,0 +1,86 @@
+@startuml
+hide footbox
+autonumber
+
+title Map Collections To DTO
+
+participant ":PublicListByGenreController" as Ctrl
+participant ":US020CollectionOfPublicationsDTOMapper" as mapper
+participant ":IUserRepository" as userRepo
+participant ":IUserRepositoryJPA" as userRepoJpa
+database ":Database" as DB
+participant ":UserAssembler" as userAssembler
+participant ":UserFactory" as userFactory
+participant "user:\nUser" as user
+participant "collectionDTO:\nUS020CollectionOfPublicationsDTO" as collectionDTO
+participant "publicCollectionsDTO:\nList<US020CollectionOfPublicationsDTO>" as publicCollectionsDTO
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> mapper : toDTO(publicCollectionsList)
+
+activate mapper
+
+mapper -->> publicCollectionsDTO ** : <<create>>
+
+loop for each collection in publicCollectionsList
+
+    mapper -> mapper : collection.getCollectionName()
+    mapper -> mapper : collection.getOwnerId()
+
+    mapper -> userRepo : findByID(ownerId)
+    activate userRepo
+
+    userRepo -> userRepoJpa : findById(ownerId)
+    activate userRepoJpa
+
+    userRepoJpa -> DB : select user where user_id = ownerId
+    activate DB
+    DB --> userRepoJpa : data
+    deactivate DB
+
+    userRepoJpa --> userRepo : Optional<UserDM>
+    deactivate userRepoJpa
+
+    alt user found
+        userRepo -> userAssembler : toDomain(userDM)
+        activate userAssembler
+        userAssembler --> userFactory : create(dm.getId(), dm.getUserName(), dm.getProfile(), dm.getUserRoles())
+        activate userFactory
+        userFactory --> user ** : <<create>>
+        userFactory --> userAssembler : user
+        deactivate userFactory
+        userAssembler --> userRepo : user
+        deactivate userAssembler
+
+        userRepo --> mapper : Optional<User>
+    else user not found
+        userRepo --> mapper : Optional.empty()
+    end
+
+    deactivate userRepo
+
+    alt user found
+        mapper -> mapper : user.getUserName()
+        mapper -> collectionDTO ** : <<create>>
+        mapper -> mapper : publicCollectionsDTO.add(collectionDTO)
+    else user not found
+        mapper --> mapper : throws IllegalStateException
+    end
+end
+
+mapper --> Ctrl : publicCollectionsDTO
+
+deactivate mapper
+
+@enduml

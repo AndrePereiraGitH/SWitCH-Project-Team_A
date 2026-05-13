@@ -1,0 +1,70 @@
+@startuml
+hide footbox
+autonumber
+
+title 1.Main Diagram - Find Public Lists By Genre
+
+actor User
+
+participant ":UI" as UI
+participant ":PublicListByGenreController" as Ctrl
+
+participant ":IGenreRepository" as genreRepo
+participant ":ICollectionOfPublicationsRepository" as collectionRepo
+participant ":US020CollectionOfPublicationsDTOMapper" as collectionMapper
+
+User -> UI : I want to find public lists by genre
+activate UI
+
+UI -> Ctrl : getGenres()
+activate Ctrl
+
+    ref over Ctrl
+    [[2.GetGenres.puml Get Genres]]
+    end ref
+
+Ctrl --> UI : genresDTOList
+deactivate Ctrl
+
+User <-- UI : Which genre? Choose!
+
+User -> UI : selectedGenre
+UI -> Ctrl : getPublicListsByGenre(selectedGenreId)
+activate Ctrl
+
+loop selectedGenreId
+
+    '----- GET PUBLIC COLLECTIONS BY GENRE ---------
+
+    Ctrl -> collectionRepo : findPublicCollectionsByGenreId(selectedGenreId)
+    activate collectionRepo
+
+        ref over collectionRepo
+        [[3.FindPublicCollectionsByGenreId.puml Find Public Collections By Genre Id]]
+        end ref
+
+    collectionRepo --> Ctrl : publicCollectionsList
+    deactivate collectionRepo
+
+    '--------- CONVERT TO DTO -----------------
+
+    Ctrl -> collectionMapper : toDTO(publicCollectionsList)
+    activate collectionMapper
+
+        ref over collectionMapper
+        [[4.MapCollectionsToDTO.puml Map Collections To DTO]]
+        end ref
+
+    collectionMapper --> Ctrl : publicCollectionsDTO
+    deactivate collectionMapper
+
+end
+
+Ctrl --> UI : publicCollectionsDTO
+
+deactivate Ctrl
+
+UI --> User : Shows public lists of selected genre
+deactivate UI
+
+@enduml
