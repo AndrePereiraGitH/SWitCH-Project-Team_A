@@ -40,7 +40,7 @@ loop for each dm in publisherDMList
     publisherRepo -> publisherAssembler : toDomain(dm)
     activate publisherAssembler
 
-    publisherAssembler -> publisherFactory : create(dm.getId(), dm.getName(), ...)
+    publisherAssembler -> publisherFactory : create(dm.getId(), dm.getName(), \n dm.getVatNumber(), dm.getContact())
     activate publisherFactory
     publisherFactory -->> publisher ** : <<create>>
     publisherFactory --> publisherAssembler : publisher

@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +58,7 @@ class ListingAssemblerTest {
         Price priceDouble         = mock(Price.class);
         Picture pictureDouble     = mock(Picture.class);
         Listing listingDouble     = mock(Listing.class);
+        BigDecimal bigDecimalDouble = mock(BigDecimal.class);
 
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getShortDescription()).thenReturn(validDescription);
@@ -66,7 +68,8 @@ class ListingAssemblerTest {
         when(listingDouble.getListingTitle()).thenReturn(validTitle);
         when(listingDouble.getPictures()).thenReturn(List.of(pictureDouble));
         when(listingDouble.getPrice()).thenReturn(priceDouble);
-        when(priceDouble.toString()).thenReturn(validPriceString);
+        when(bigDecimalDouble.toPlainString()).thenReturn(validPriceString);
+        when(priceDouble.getPrice()).thenReturn(bigDecimalDouble);
         when(pictureDouble.getPicture()).thenReturn(validPictureUrl);
 
         // Act
@@ -92,6 +95,7 @@ class ListingAssemblerTest {
         Price priceDouble               = mock(Price.class);
         Picture pictureDouble           = mock(Picture.class);
         Listing listingDouble           = mock(Listing.class);
+        BigDecimal bigDecimalDouble     = mock(BigDecimal.class);
 
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getShortDescription()).thenReturn(validDescription);
@@ -101,7 +105,8 @@ class ListingAssemblerTest {
         when(listingDouble.getListingTitle()).thenReturn(validTitle);
         when(listingDouble.getPictures()).thenReturn(List.of(pictureDouble));
         when(listingDouble.getPrice()).thenReturn(priceDouble);
-        when(priceDouble.toString()).thenReturn(validPriceString);
+        when(bigDecimalDouble.toPlainString()).thenReturn(validPriceString);
+        when(priceDouble.getPrice()).thenReturn(bigDecimalDouble);
         when(pictureDouble.getPicture()).thenReturn(validPictureUrl);
 
         // Act

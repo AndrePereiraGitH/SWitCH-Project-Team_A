@@ -36,6 +36,12 @@ class Library {
     + getUserId(): UserId
 }
 
+class LibraryRepositoryJPAImpl{
+}
+
+class UserRepositoryJPAImpl{
+}
+
 ' ── Infrastructure Layer ───────────────────────────────────
 interface IUserRepositoryJPA {
     + findByUserName(username: String): Optional<UserDM>
@@ -77,8 +83,11 @@ ToCreateLibraryCtrl "1" ..> "1" LibraryService : uses
 LibraryService "1" ..> "1" LibraryFactory : uses
 LibraryService "1" ..> "1" ILibraryRepository : uses
 
-IUserRepository <|.. IUserRepositoryJPA : implements
-ILibraryRepository <|.. ILibraryRepositoryJPA : implements
+IUserRepository <|.. UserRepositoryJPAImpl : implements
+IUserRepositoryJPA <.. UserRepositoryJPAImpl : uses
+
+ILibraryRepository <|.. LibraryRepositoryJPAImpl : implements
+ILibraryRepositoryJPA <.. LibraryRepositoryJPAImpl : uses
 
 ILibraryRepositoryJPA "1" ..> "1" LibraryAssembler : uses
 ILibraryRepositoryJPA "1" ..> "1" LibraryFactory : uses
@@ -89,8 +98,8 @@ LibraryAssembler "1" ..> "1" LibraryFactory : uses
 
 LibraryFactory "1" ..> "1" Library : creates
 
-IUserRepositoryJPA "1" ..> "0..1" UserDM : creates
-IUserRepositoryJPA "1" ..> "1" Database : queries
-ILibraryRepositoryJPA "1" ..> "1" Database : queries
+IUserRepositoryJPA "1" ..> "0..1" UserDM : retrieves
+IUserRepositoryJPA "1" ...> "1" Database : queries
+ILibraryRepositoryJPA "1" ...> "1" Database : queries
 
 @enduml
