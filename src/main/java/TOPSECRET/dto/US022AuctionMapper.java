@@ -31,6 +31,7 @@ public class US022AuctionMapper {
                 auction.id().getId(),
                 auction.getListingId().getId()
         );
+
     }
 
     /**
@@ -53,5 +54,6 @@ public class US022AuctionMapper {
 
         return dtoList;
     }
+
 }
 

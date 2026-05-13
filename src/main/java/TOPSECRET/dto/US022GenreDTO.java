@@ -13,6 +13,7 @@ public record US022GenreDTO(
         GenreId genreId,
         String genreType
 ) {
+
     public US022GenreDTO {
 
         if (genreId == null) {
@@ -24,5 +25,6 @@ public record US022GenreDTO(
 
     }
 
+    
 
 }

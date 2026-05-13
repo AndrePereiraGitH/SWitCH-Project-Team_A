@@ -142,6 +142,7 @@ class US022GenreMapperTest {
         assertThrows(NullPointerException.class, () ->
                 mapper.toDTOList(genres)
         );
+
     }
 }
 

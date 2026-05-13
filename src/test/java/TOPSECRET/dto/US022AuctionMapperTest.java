@@ -119,4 +119,5 @@ class US022AuctionMapperTest {
                 mapper.toDTOList(null)
         );
     }
+
 }
