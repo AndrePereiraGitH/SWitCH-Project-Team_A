@@ -23,8 +23,8 @@ import java.util.Objects;
  */
 public class ToPubliclyShareCollectionOfPublicationsController {
 
-    ICollectionOfPublicationsRepository _collectionRepo;
-    CollectionOfPublicationsService collectionOfPublicationsService;
+    private final ICollectionOfPublicationsRepository _collectionRepo;
+    private final CollectionOfPublicationsService collectionOfPublicationsService;
 
     public ToPubliclyShareCollectionOfPublicationsController(ICollectionOfPublicationsRepository collectionRepo, CollectionOfPublicationsService collectionService) {
         if (collectionRepo == null) {

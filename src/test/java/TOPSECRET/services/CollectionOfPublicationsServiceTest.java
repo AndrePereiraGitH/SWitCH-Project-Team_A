@@ -247,13 +247,13 @@ class CollectionOfPublicationsServiceTest {
         LocalDateTime publicUntil = null;
 
         // Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
                 () -> service.makeCollectionPublicUntil(collectionId, publicUntil)
         );
 
         // Assert
-        assertEquals("Public until date time cannot be null", exception.getMessage());
+        assertEquals("Public until date cannot be null", exception.getMessage());
     }
 
     @Test

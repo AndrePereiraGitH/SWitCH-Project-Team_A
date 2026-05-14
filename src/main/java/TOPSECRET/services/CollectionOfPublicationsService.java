@@ -119,11 +119,16 @@ public class CollectionOfPublicationsService {
         return changed;
     }
 
+    /**
+     * Makes a collection of publications public until the specified date and time.
+     *
+     * @param collectionId the identifier of the collection of publications to make public
+     * @param publicUntil the date and time until which the collection should remain public
+     * @return {@code true} if the collection was changed and updated; {@code false} otherwise
+     * @throws InstanceNotFoundException if no collection of publications exists with the given identifier
+     * @throws NullPointerException if {@code collectionId} or {@code publicUntil} is {@code null}
+     */
     public boolean makeCollectionPublicUntil(CollectionOfPublicationsId collectionId, LocalDateTime publicUntil) throws InstanceNotFoundException {
-
-        if (publicUntil == null) {
-            throw new IllegalArgumentException("Public until date time cannot be null");
-        }
 
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
         Objects.requireNonNull(publicUntil, "Public until date cannot be null");
