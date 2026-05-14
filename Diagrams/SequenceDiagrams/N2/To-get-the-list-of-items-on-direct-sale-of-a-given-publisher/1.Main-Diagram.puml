@@ -12,6 +12,15 @@ end box
 'Controller
 participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
 
+'Publisher
+participant ":IPublisher\nRepository" as PublisherRepo
+
+'Edition
+participant ":IEdition\nRepository" as EditionRepo
+
+'PublicationSample
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+
 'Listing
 participant ":IListing\nRepository" as ListingRepo
 participant ":IListing\nRepositoryJPA" as ListingRepoJPA
@@ -20,6 +29,7 @@ participant ":ListingAssembler" as ListingAss
 participant ":ListingFactory" as ListingFact
 participant "listing:\nListing" as Listing
 participant "listOfListings:\nList<Listing>" as listListings
+participant ":US027Listing\nMapper" as ListingMapper
 
 'DB
 database "database" as DB
@@ -29,10 +39,15 @@ Buyer -> UI : I want to get the list of items\n on direct sale of a given publis
 activate UI
 UI -> Ctrl : findAllPublishers()
 activate Ctrl
+Ctrl -> PublisherRepo: findAll()
+activate PublisherRepo
 
-ref over Ctrl
+ref over PublisherRepo
 [[get-all-publishers.puml Get All Publishers and Build DTOs]]
 end ref
+
+PublisherRepo --> Ctrl: listOfAllPublishers
+deactivate PublisherRepo
 
 ' Section 2 - Returns PublisherDTO list to the user
 Ctrl --> UI : listOfAllPublishersDTO
@@ -47,14 +62,26 @@ UI -> Ctrl : findListOfItemsOnDirectSaleByPublisherId(publisherId)
 activate Ctrl
 
 ' Section 4 - Get EditionIds of that Publisher
-ref over Ctrl
+Ctrl -> EditionRepo : findIdsByPublisherId(publisherId)
+activate EditionRepo
+
+ref over EditionRepo
 [[get-editionIds-by-publisherId.puml Get EditionIds by PublisherId]]
 end ref
 
+EditionRepo --> Ctrl : listOfEditionIds
+deactivate EditionRepo
+
 ' Section 5 — Get PublicationSampleIds for those EditionIds
-ref over Ctrl
+Ctrl -> PubSampleRepo : findIdsByEditionIdIn(listOfEditionIds)
+activate PubSampleRepo
+
+ref over PubSampleRepo
 [[get-pubSampleIds-by-editionIds.puml Get PublicationSampleIds by EditionIds]]
 end ref
+
+PubSampleRepo --> Ctrl : listOfPubSampleIds
+deactivate PubSampleRepo
 
 ' Section 6 — Get Listings in direct sale containing those PublicationSamplesIds
 Ctrl -> ListingRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
@@ -85,10 +112,15 @@ ListingRepo --> Ctrl : listOfListings
 deactivate ListingRepo
 
 ' Section 7 - create DTO for listings
+Ctrl -> ListingMapper : toDTOs(listOfListings)
+activate ListingMapper
 
-ref over Ctrl
+ref over ListingMapper
 [[build-listing-dtos.puml Build Listing DTOs]]
 end ref
+
+ListingMapper --> Ctrl : listOfListingDTOs
+deactivate ListingMapper
 
 Ctrl --> UI : listOfListingDTOs
 deactivate Ctrl
