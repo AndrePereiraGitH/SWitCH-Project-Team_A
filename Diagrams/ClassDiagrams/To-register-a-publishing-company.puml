@@ -2,66 +2,57 @@
 title Register a Publishing Company
 
 ' ── UI Layer ───────────────────────────────────────────────
-class UI <<C>> {
+class UI {
 }
 
 ' ── Controller Layer ───────────────────────────────────────
-class ToRegisterNewPublisherController <<C>> {
+class ToRegisterNewPublisherController {
   + registerPublisher(name: String, vatNumber: String, contact: Contact): boolean
 }
 
 ' ── Application Layer ──────────────────────────────────────
-class PublisherService <<C>> {
+class PublisherService {
   + createAndSave(name: String, vatNumber: String, contact: Contact): Publisher
 }
 
 ' ── Domain Layer ───────────────────────────────────────────
-interface IPublisherRepository <<I>> {
+interface IPublisherRepository {
   + save(publisher: Publisher): Publisher
   + existsById(id: PublisherID): boolean
-  + findById(id: PublisherID): Optional<Publisher>
-  + findAll(): List<Publisher>
 }
 
-class PublisherFactory <<C>> {
+class PublisherFactory {
   + create(name: String, vatNumber: String, contact: Contact): Publisher
   + create(id: PublisherID, name: String, vatNumber: String, contact: Contact): Publisher
 }
 
-class Publisher <<C>> {
+class Publisher {
   - id: PublisherID
   - name: String
   - vatNumber: String
   - contact: Contact
-  + id(): PublisherID
-  + getName(): String
-  + getVatNumber(): String
-  + getContact(): Contact
 }
 
 ' ── Infrastructure Layer ───────────────────────────────────
-class PublisherRepositoryJpaImpl <<C>> {
+class PublisherRepositoryJpaImpl {
   + save(publisher: Publisher): Publisher
   + existsById(id: PublisherID): boolean
-  + findById(id: PublisherID): Optional<Publisher>
-  + findAll(): List<Publisher>
 }
 
-class AutomaticGeneratedPublisherJPAImpl <<C>> {
+class AutomaticGeneratedPublisherJPAImpl {
 }
 
-interface IPublisherRepositoryJpa <<I>> {
+interface IPublisherRepositoryJpa {
   + existsById(id: PublisherID): boolean
   + save(dm: PublisherDM): PublisherDM
-  + findById(id: PublisherID): Optional<PublisherDM>
 }
 
-class PublisherAssembler <<C>> {
+class PublisherAssembler {
   + toDM(publisher: Publisher): PublisherDM
   + toDomain(dm: PublisherDM): Publisher
 }
 
-class PublisherDM <<C>> {
+class PublisherDM {
   - id: PublisherID
   - name: String
   - vatNumber: String
@@ -86,7 +77,6 @@ IPublisherRepositoryJpa <|.. AutomaticGeneratedPublisherJPAImpl : implements
 AutomaticGeneratedPublisherJPAImpl "1" ..> "1" Database : queries
 
 PublisherAssembler "1" ..> "1" PublisherDM : creates
-PublisherAssembler "1" ..> "1" Publisher : creates
 PublisherAssembler "1" ..> "1" PublisherFactory : uses
 
 PublisherFactory "1" ..> "*" Publisher : creates

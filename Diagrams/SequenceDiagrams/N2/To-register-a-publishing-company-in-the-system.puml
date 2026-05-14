@@ -12,6 +12,12 @@ participant ":PublisherService" as Service
 participant ":PublisherFactory" as Factory
 participant "publisher:Publisher" as Publisher
 participant ":IPublisherRepository" as Repository
+participant ":IPublisherRepositoryJPA" as RepositoryJPA
+participant ":PublisherAssembler" as Assembler
+participant "publisherDM:PublisherDM" as PublisherDM
+participant "persistedPublisherDM:AuthorDM" as persPublisherDM
+participant "publisher:Publisher" as Publisher
+database "Database" as DB
 
 Administrator -> UI : I want to register a Publishing Company
 activate UI
@@ -35,7 +41,15 @@ deactivate Factory
 Service -> Repository : save(publisher)
 activate Repository
 
+Repository -> RepositoryJPA : existsById(publisher.id())
+activate RepositoryJPA
+RepositoryJPA -> DB : SELECT
+activate DB
+DB --> RepositoryJPA : data
+deactivate DB
 alt publisher already exists
+    RepositoryJPA --> Repository : true
+        deactivate RepositoryJPA
     Repository -->> Service : throws IllegalArgumentException
     deactivate Repository
     Service -->> Controller : throws IllegalArgumentException
@@ -43,13 +57,49 @@ alt publisher already exists
     Controller -->> UI : throws IllegalArgumentException
     deactivate Controller
     UI -->> Administrator : Publisher already exists
-    deactivate UI
+
+
 else publisher does NOT exist
+    activate Repository
+    activate RepositoryJPA
+    activate Service
+    activate Controller
+
+    RepositoryJPA --> Repository : false
+    deactivate RepositoryJPA
+    Repository -> Assembler : toDM(publisher)
+    activate Assembler
+    Assembler -->> PublisherDM ** : <<create>>
+    Assembler --> Repository : publisherDM
+    deactivate Assembler
+
+    Repository -> RepositoryJPA : save(publisherDM)
+    activate RepositoryJPA
+    RepositoryJPA -> DB : INSERT
+    activate DB
+    DB --> RepositoryJPA : data
+    deactivate DB
+    RepositoryJPA -->> persPublisherDM**: <<create>>
+    RepositoryJPA --> Repository : persistedPublisherDM
+    deactivate RepositoryJPA
+
+    Repository -> Assembler : toDomain(persistedPublisherDM)
+    activate Assembler
+    Assembler -> Factory : create(id, name, vatNumber, contact)
+    deactivate Assembler
+    activate Factory
+    Factory -->> Publisher**: <<create>>
+    Factory --> Assembler : publisher
+    deactivate Factory
+    activate Assembler
+    Assembler --> Repository : publisher
+    deactivate Assembler
+
     Repository --> Service : publisher
     deactivate Repository
     Service --> Controller : publisher
     deactivate Service
-    Controller --> UI : void
+    Controller --> UI : sucess
     deactivate Controller
     UI --> Administrator : success
     deactivate UI
