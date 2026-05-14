@@ -8,7 +8,7 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US028ListingDTO;
@@ -89,7 +89,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
             throw new IllegalArgumentException("publisherId cannot be null");
         }
 
-        List<EditionID> listOfEditionIds =
+        List<EditionId> listOfEditionIds =
                 editionRepo.findIdsByPublisherId(publisherId);
 
         List<PublicationSampleId> listOfPublicationSampleIds =

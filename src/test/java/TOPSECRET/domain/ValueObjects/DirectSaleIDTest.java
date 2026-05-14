@@ -39,7 +39,7 @@ class DirectSaleIDTest {
     void shouldThrowExceptionWhenIDIsBlank() {
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new BibliographicalDataID("   ");
+            new BibliographicalDataId("   ");
         });
     }
 

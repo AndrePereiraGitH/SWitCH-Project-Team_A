@@ -6,7 +6,7 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US028ListingDTO;
@@ -22,7 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ToGetListOfItemsOnAuctionOfAGivenPublisherControllerTest {
+class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
 
     private IPublisherRepository publisherRepoDouble;
     private IEditionRepository editionRepoDouble;
@@ -258,12 +258,12 @@ class ToGetListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         );
 
         PublisherID publisherIdDouble = mock(PublisherID.class);
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
         PublicationSampleId publicationSampleIdDouble = mock(PublicationSampleId.class);
         Listing listingDouble = mock(Listing.class);
         US028ListingDTO listingDTODouble = mock(US028ListingDTO.class);
 
-        List<EditionID> editionIds = List.of(editionIdDouble);
+        List<EditionId> editionIds = List.of(editionIdDouble);
         List<PublicationSampleId> publicationSampleIds = List.of(publicationSampleIdDouble);
         List<Listing> listings = List.of(listingDouble);
         List<US028ListingDTO> expected = List.of(listingDTODouble);

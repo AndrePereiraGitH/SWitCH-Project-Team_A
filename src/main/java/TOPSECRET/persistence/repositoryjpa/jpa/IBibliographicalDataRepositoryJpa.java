@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +20,7 @@ import java.util.Optional;
  * and is intended to be used internally by higher-level repository implementations
  * (e.g., domain repositories) that handle conversion between persistence and domain models.
  */
-public interface IBibliographicalDataRepositoryJpa extends JpaRepository<BibliographicalDataDM, BibliographicalDataID> {
+public interface IBibliographicalDataRepositoryJpa extends JpaRepository<BibliographicalDataDM, BibliographicalDataId> {
 
     /**
      * Finds a bibliographical data record by its title, ignoring case differences.

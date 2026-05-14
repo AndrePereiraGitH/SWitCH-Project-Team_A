@@ -1,7 +1,7 @@
 package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import org.springframework.stereotype.Service;
 import TOPSECRET.domain.ValueObjects.GenreId;
 
@@ -62,7 +62,7 @@ public class BibliographicalDataFactory {
      * @return a reconstructed {@link BibliographicalData} instance
      */
     public BibliographicalData create(
-            BibliographicalDataID bibliographicalDataID,
+            BibliographicalDataId bibliographicalDataID,
             String title,
             List<AuthorId> authors,
             Locale originalLanguage,

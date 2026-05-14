@@ -1,39 +1,101 @@
 @startuml
 title To register a user in the system
 
+class ToRegisterUserController {
+  -userService : UserService
+  +registerUser(username: String, profile: Profile, userRole: UserRole) : User
+}
+
+class UserService <<Service>>{
+    -userFactory : UserFactory
+    -userRepository : IUserRepository
+    +createAndSave(username: String, profile: Profile, userRole: UserRole) : User
+}
+
 interface IUserRepository {
-  +exists(username: String) : boolean
-  +save(user: User) : void
+  +save(user: User) : User
+  +existsByUsername(username: String) : boolean
+  +findByID(userID: UserId) : Optional<User>
+  +findIdByUsername(username: String) : Optional<UserId>
+}
+
+interface IUserRepositoryJPA {
+  +findByUserName(userName: String) : Optional<UserDM>
+}
+
+class UserFactory <<Component>> {
+  +create(username: String, profile: Profile, userRole: UserRole) : User
+  +create(userId: UserId, username: String, profile: Profile, userRole: UserRole) : User
+}
+
+class UserAssembler <<Component>> {
+  -userFactory : UserFactory
+  +toDM(user: User) : UserDM
+  +toDomain(dm: UserDM) : User
 }
 
 class UserRepositoryMem {
   -_userList : List<User>
-  -_userFactory : UserFactory
+    +getUserCount() : int
 }
 
-class UserFactory {
-  +create(username: String, contact: Contact, profile: Profile, userRole: UserRole) : User
+class UserRepositoryJPAImpl <<Repository>> {
+  -userRepositoryJpa : IUserRepositoryJPA
+  -assembler : UserAssembler
 }
 
-class US001ToRegisterUserController {
-  -userRepository : IUserRepository
-  -userFactory : UserFactory
-  +registerUser(username: String, contact: Contact, profile: Profile, userRole: UserRole) : void
+interface JpaRepository<UserDM, UserId> {
 }
 
 class User {
   -_id : UserId
   -_userName : String
-  -_contact : Contact
   -_profile : Profile
   -_userRole : UserRole
   +getUserName() : String
 }
 
-US001ToRegisterUserController "1" ..> "1" IUserRepository : uses
-US001ToRegisterUserController "1" ..> "1   " UserFactory : uses
-UserRepositoryMem "1" ..|> "1    " IUserRepository : implements
-UserRepositoryMem "1  " --> "                *" User : stores
+class UserDM <<Entity>> {
+  -id : UserId
+  -userName : String
+  -profile : Profile
+  -userRoles : Set<UserRole>
+  +getId() : UserId
+  +getUserName() : String
+  +getProfile() : Profile
+  +getUserRoles() : Set<UserRole>
+}
+
+class UserId <<ValueObject>> {
+  -userId : String
+  +getUsername() : String
+  +equals(Object) : boolean
+}
+
+' Controller
+ToRegisterUserController "1" ..> "1" UserService : uses
+
+' Service
+UserService "1" ..> "1" IUserRepository : uses
+UserService "1" ..> "1" UserFactory : uses
+
+' Repository implementations
+UserRepositoryMem "1" ..|> "1" IUserRepository : implements
+UserRepositoryJPAImpl "1" ..|> "1" IUserRepository : implements
+UserRepositoryJPAImpl "1" ..> "1" IUserRepositoryJPA : delegates
+UserRepositoryJPAImpl "1" ..> "1" UserAssembler : uses
+IUserRepositoryJPA "1" --|> "1" JpaRepository : extends
+
+' Assembler
+UserAssembler "1" ..> "1" UserFactory : uses
+UserAssembler "1" ..> "*" UserDM : creates
+UserAssembler "1" ..> "*" User : creates
+
+' Factory
 UserFactory "1" ..> "*" User : creates
+
+' Data model
+UserDM "1" --> "1" UserId : contains
+UserRepositoryMem "1" --> "*" User : stores
 
 @enduml

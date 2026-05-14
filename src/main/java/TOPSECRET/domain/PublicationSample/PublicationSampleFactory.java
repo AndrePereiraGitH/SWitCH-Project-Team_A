@@ -2,8 +2,8 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.stereotype.Service;
@@ -27,15 +27,15 @@ public class PublicationSampleFactory {
      * Creates a new {@link PublicationSample} instance.
      *
      * @param bibliographicalDataId the ID of the bibliographical data associated with the publication
-     * @param userId the ID of the owner of the publication sample
-     * @param publicationStatus the current status of the publication
-     * @param editionId the ID of the edition details of the publication
-     * @param condition the physical condition of the publication
+     * @param userId                the ID of the owner of the publication sample
+     * @param publicationStatus     the current status of the publication
+     * @param editionId             the ID of the edition details of the publication
+     * @param condition             the physical condition of the publication
      * @return a newly created {@code PublicationSample}
      * @throws IllegalArgumentException if any of the provided arguments are {@code null}
      */
-    public PublicationSample create(BibliographicalDataID bibliographicalDataId, UserId userId,
-                                    PublicationStatus publicationStatus, EditionID editionId, Condition condition){
+    public PublicationSample create(BibliographicalDataId bibliographicalDataId, UserId userId,
+                                    PublicationStatus publicationStatus, EditionId editionId, Condition condition) {
 
         return new PublicationSample(bibliographicalDataId, userId, publicationStatus, editionId, condition);
     }
@@ -62,11 +62,10 @@ public class PublicationSampleFactory {
      * @throws IllegalArgumentException if any of the provided arguments are {@code null}
      */
     public PublicationSample create(PublicationSampleId pubSampleId,
-                                    BibliographicalDataID bibliographicalDataId, UserId userId,
-                                    PublicationStatus publicationStatus, EditionID editionId,
+                                    BibliographicalDataId bibliographicalDataId, UserId userId,
+                                    PublicationStatus publicationStatus, EditionId editionId,
                                     Condition condition) {
 
         return new PublicationSample(pubSampleId, bibliographicalDataId, userId, publicationStatus, editionId, condition);
     }
-
 }
