@@ -2,66 +2,57 @@
 title To Register an Author
 
 ' ── UI Layer ───────────────────────────────────────────────
-class UI <<C>> {
+class UI {
 }
 
 ' ── Controller Layer ───────────────────────────────────────
-class ToRegisterAuthorCtrl <<C>> {
+class ToRegisterAuthorCtrl {
   + register(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
 ' ── Application Layer ──────────────────────────────────────
-class AuthorService <<C>> {
+class AuthorService {
   + createAndSave(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
 ' ── Domain Layer ───────────────────────────────────────────
-interface IAuthorRepository <<I>> {
+interface IAuthorRepository {
   + save(author: Author): Author
   + existsById(authorId: AuthorId): boolean
-  + findById(id: AuthorId): Optional<Author>
-  + findAll(): List<Author>
 }
 
-class AuthorFactory <<C>> {
+class AuthorFactory {
   + create(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
   + create(id: AuthorId, name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
 }
 
-class Author <<C>> {
+class Author {
   - id: AuthorId
   - name: String
   - countryId: CountryId
   - dateOfBirth: LocalDate
   - biography: String
-  + id(): AuthorId
-  + getName(): String
-  + getCountryId(): CountryId
-  + getDateOfBirth(): LocalDate
-  + getBiography(): String
 }
 
 ' ── Infrastructure Layer ───────────────────────────────────
-class AuthorRepositoryJPAImpl <<C>> {
+class AuthorRepositoryJPAImpl {
   + save(author: Author): Author
   + existsById(authorId: AuthorId): boolean
-  + findById(id: AuthorId): Optional<Author>
-  + findAll(): List<Author>
 }
 
-class AutomaticGeneratedAuthorJPAImpl <<C>> {
+class AutomaticGeneratedAuthorJPAImpl {
 }
 
-interface IAuthorRepositoryJPA <<I>> {
+interface IAuthorRepositoryJPA {
   + existsById(authorId: AuthorId): boolean
 }
 
-class AuthorAssembler <<C>> {
+class AuthorAssembler {
   + toDM(author: Author): AuthorDM
   + toDomain(authorDM: AuthorDM): Author
 }
 
-class AuthorDM <<C>> {
+class AuthorDM {
   - id: AuthorId
   - name: String
   - countryId: CountryId
@@ -87,7 +78,6 @@ IAuthorRepositoryJPA <|.. AutomaticGeneratedAuthorJPAImpl : implements
 AutomaticGeneratedAuthorJPAImpl "1 1" ..> "1" Database : queries
 
 AuthorAssembler "1" ..> "1" AuthorDM : creates
-AuthorAssembler "1" ..> "1" Author : creates
 AuthorAssembler "1" ..> "1" AuthorFactory : uses
 
 AuthorFactory "1" ..> "*" Author : creates
