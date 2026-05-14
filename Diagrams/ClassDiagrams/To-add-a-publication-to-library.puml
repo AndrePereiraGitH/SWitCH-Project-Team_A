@@ -71,7 +71,6 @@ AddPublicationToLibraryController "1" ..> "1" IPublicationSampleRepository : use
 PublicationSampleRepositoryJPAImpl "1" ..> "1" PublicationSampleAssembler : uses
 PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
 AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : asks
-ILibraryRepository "1" ..> ILibraryRepositoryJPA : uses
 AddPublicationToLibraryController "1" ..> "1" PublicationSample : asks to assign library
 PublicationSampleAssembler ..> PublicationSampleDM : crafts
 LibraryAssembler ..> LibraryDM : converts data into
