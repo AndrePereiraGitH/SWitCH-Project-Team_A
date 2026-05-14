@@ -17,6 +17,7 @@ end note
 
 participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
+participant ":CollectionOfPublicationsService" as Service
 participant ":ICollectionOfPublicationsRepository" as Repo
 participant ":ICollectionOfPublicationsRepositoryJpa" as JpaRepo
 participant "DataBase" as DB
@@ -26,17 +27,20 @@ participant ":CollectionOfPublicationsFactory" as Factory
 UI -> Controller : createCollection(name, genreId, userId)
 activate Controller
 
-Controller -> Factory : create(name, genreId, userId)
+Controller -> Service : createAndSave(name, genreId, userId)
+activate Service
+
+Service -> Factory : create(name, genreId, userId)
 activate Factory
 
 create "cp:CollectionOfPublications" as CP
 Factory -->> CP : <<create>>
 note right : _isPrivate = true\n(enforced by constructor)
 
-Factory --> Controller : cp
+Factory --> Service : cp
 deactivate Factory
 
-Controller -> Repo : save(cp)
+Service -> Repo : save(cp)
 activate Repo
 
 Repo -> JpaRepo : existsById(cp.id())
@@ -49,7 +53,8 @@ JpaRepo --> Repo : false
 deactivate JpaRepo
 
 alt [collection already exists]
-    Repo --> Controller : error: "Collection already exists"
+    Repo --> Service : error: "Collection already exists"
+    Service --> Controller : error: "Collection already exists"
     Controller --> UI : error: "Collection already exists"
 
 else [collection does NOT exist]
@@ -68,9 +73,11 @@ else [collection does NOT exist]
 
     JpaRepo -> DB : INSERT INTO collections ...
     activate DB
-    DB --> JpaRepo : savedDM
+    DB --> JpaRepo : data
     deactivate DB
 
+    create "savedDM:CollectionOfPublicationsDM" as SavedDM
+    JpaRepo -->> SavedDM : <<create>>
     JpaRepo --> Repo : savedDM
     deactivate JpaRepo
 
@@ -89,8 +96,11 @@ else [collection does NOT exist]
     Assembler --> Repo : savedCP
     deactivate Assembler
 
-    Repo --> Controller : savedCP
+    Repo --> Service : savedCP
     deactivate Repo
+
+    Service --> Controller : savedCP
+    deactivate Service
 
     Controller --> UI : savedCP
     deactivate Controller
