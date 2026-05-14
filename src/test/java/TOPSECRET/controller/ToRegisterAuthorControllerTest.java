@@ -1,29 +1,42 @@
 package TOPSECRET.controller;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDate;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.services.AuthorService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import javax.management.InstanceAlreadyExistsException;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ToRegisterAuthorController}.
  *
- * <p>Verifies constructor validation and delegation to {@link IAuthorRepository},
- * using doubles to isolate the controller from the persistence layer.
+ * <p>Verifies constructor validation and delegation to {@link AuthorService},
+ * using doubles to isolate the controller from the service layer.</p>
  */
-
+@ExtendWith(MockitoExtension.class)
 class ToRegisterAuthorControllerTest {
+
+    @Mock
+    private AuthorService authorService;
+
+    @InjectMocks
+    private ToRegisterAuthorController controller;
 
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 
     @Test
-    void givenNullRepository_whenConstructing_thenThrowsIllegalArgumentException() {
+    void givenNullService_whenConstructing_thenThrowsIllegalArgumentException() {
+        // Act & Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToRegisterAuthorController(null)
@@ -31,45 +44,115 @@ class ToRegisterAuthorControllerTest {
         assertEquals("AuthorService cannot be null", ex.getMessage());
     }
 
-//    @Test
-//    void givenValidRepository_whenConstructing_thenCreatesSuccessfully() {
-//        IAuthorRepository repositoryDouble = mock(IAuthorRepository.class);
-//        assertDoesNotThrow(() -> new ToRegisterAuthorController(repositoryDouble));
-//    }
-
     // -------------------------------------------------------------------------
     // register()
     // -------------------------------------------------------------------------
 
-//    @Test
-//    void givenValidArguments_whenRegister_thenReturnsAuthorId() {
-//        IAuthorRepository repositoryDouble = mock(IAuthorRepository.class);
-//        Author authorDouble = mock(Author.class);
-//        CountryID countryDouble = mock(CountryID.class);
-//
-//        when(repositoryDouble.createAndAddAuthor("John", countryDouble, LocalDate.of(1984, 12, 3), "bio"))
-//                .thenReturn(authorDouble);
-//
-//        US005ToRegisterAuthorController controller = new US005ToRegisterAuthorController(repositoryDouble);
-//        Author result = controller.register("John", countryDouble, LocalDate.of(1984, 12, 3), "bio");
-//
-//        assertSame(authorDouble, result);
-//    }
-//
-//    @Test
-//    void givenAuthorAlreadyExists_whenRegister_thenThrowsIllegalArgumentException() {
-//        IAuthorRepository repositoryDouble = mock(IAuthorRepository.class);
-//        CountryID countryDouble = mock(CountryID.class);
-//
-//        when(repositoryDouble.createAndAddAuthor("John", countryDouble, LocalDate.of(1984, 12, 3), "bio"))
-//                .thenThrow(new IllegalArgumentException("Author already exists"));
-//
-//        US005ToRegisterAuthorController controller = new US005ToRegisterAuthorController(repositoryDouble);
-//
-//        IllegalArgumentException ex = assertThrows(
-//                IllegalArgumentException.class,
-//                () -> controller.register("John", countryDouble, LocalDate.of(1984, 12, 3), "bio")
-//        );
-//        assertEquals("Author already exists", ex.getMessage());
-//    }
+    @Test
+    void givenValidArguments_whenRegister_thenReturnsAuthor() throws InstanceAlreadyExistsException {
+        // Arrange
+        String name = "John";
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+        Author authorDouble = mock(Author.class);
+
+        when(authorService.createAndSave(name, countryDouble, dateOfBirth, biography))
+                .thenReturn(authorDouble);
+
+        // Act
+        Author result = controller.register(name, countryDouble, dateOfBirth, biography);
+
+        // Assert
+        assertNotNull(result);
+        assertSame(authorDouble, result);
+        verify(authorService).createAndSave(name, countryDouble, dateOfBirth, biography);
+    }
+
+    @Test
+    void givenAuthorAlreadyExists_whenRegister_thenPropagatesException() throws InstanceAlreadyExistsException {
+        // Arrange
+        String name = "John";
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        doThrow(new InstanceAlreadyExistsException("Author already exists"))
+                .when(authorService).createAndSave(name, countryDouble, dateOfBirth, biography);
+
+        // Act & Assert
+        assertThrows(InstanceAlreadyExistsException.class,
+                () -> controller.register(name, countryDouble, dateOfBirth, biography));
+    }
+    // -------------------------------------------------------------------------
+    // register() - null checks
+    // -------------------------------------------------------------------------
+
+    @Test
+    void givenNullName_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register(null, countryDouble, dateOfBirth, biography));
+    }
+
+    @Test
+    void givenBlankName_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("   ", countryDouble, dateOfBirth, biography));
+    }
+
+    @Test
+    void givenNullCountryId_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", null, dateOfBirth, biography));
+    }
+
+    @Test
+    void givenNullDateOfBirth_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        String biography = "A great author";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", countryDouble, null, biography));
+    }
+
+    @Test
+    void givenNullBiography_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", countryDouble, dateOfBirth, null));
+    }
+
+    @Test
+    void givenBlankBiography_whenRegister_thenThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryDouble = mock(CountryId.class);
+        LocalDate dateOfBirth = LocalDate.of(1984, 12, 3);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.register("John", countryDouble, dateOfBirth, "   "));
+    }
 }

@@ -1,0 +1,48 @@
+@startuml
+autonumber
+hide footbox
+
+actor Buyer as User
+
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":IPublicationSample\nRepositoryJPA" as PSJPA
+participant "pbSampleDMList:\nList<PublicationSampleDM>"
+participant "listOfItemsId:\nList<PublicationSampleId>"
+participant "DataBase" as DB
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Controller -> PubSampleRepo : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
+activate PubSampleRepo
+PubSampleRepo -> PSJPA : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
+activate PSJPA
+PSJPA -> DB : SELECT * FROM publication_sample\nWHERE bibliographical_data_id IN
+activate DB
+DB --> PSJPA : data
+deactivate DB
+PSJPA -->> "pbSampleDMList:\nList<PublicationSampleDM>" ** : <<create>>
+PSJPA -->> "listOfItemsId:\nList<PublicationSampleId>" ** : <<create>>
+
+loop for each dm in pbSampleDMList
+PSJPA -> PSJPA : listOfItemsId.add(dm.getPubSampleId())
+end
+
+PSJPA --> PubSampleRepo : listOfItemsId
+deactivate PSJPA
+PubSampleRepo --> Controller : listOfItemsId
+deactivate PubSampleRepo
+
+
+
+@enduml

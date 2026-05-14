@@ -7,8 +7,7 @@ actor "User" as User
 participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
 participant ":IGenreRepository" as GenreRepo
-participant ":ICollectionOfPublicationsRepository" as CollectionRepo
-participant ":CollectionOfPublicationsFactory" as Factory
+participant ":CollectionOfPublicationsService" as Service
 
 ' --- Start ---
 User -> UI : I want to create a new private collection of publications
@@ -44,7 +43,7 @@ activate UI
 UI -> Controller : createCollection(name, genreId, userId)
 activate Controller
 
-ref over Controller, CollectionRepo, Factory
+ref over Controller, Service
 [[3.CreateCollection.puml Create Collection]]
 end ref
 

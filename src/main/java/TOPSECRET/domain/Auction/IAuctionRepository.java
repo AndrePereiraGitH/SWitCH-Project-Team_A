@@ -57,23 +57,6 @@ public interface IAuctionRepository {
     Optional<Auction> findById(AuctionId id);
 
     /**
-     * Retrieves all {@link Auction} instances associated with the given
-     * {@link ListingId}.
-     *
-     * <p>This method searches the repository for auctions whose listing identifier
-     * matches any of the provided listing identifiers.</p>
-     *
-     * @param listingId the list of listing identifiers used to filter auctions;
-     *                   must not be {@code null}
-     * @return a list of {@link Auction} associated with the given listings;
-     *         may be empty if no matches are found
-     *
-     * @throws IllegalArgumentException if {@code listingIds} is {@code null}
-     */
-//    List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId);
-    // This method seems similar to the following one, and the name isn't descriptive.
-
-    /**
      * Retrieves all {@link Auction} instances whose {@link ListingId}
      * matches any of the provided listing identifiers.
      * <p>
@@ -89,4 +72,13 @@ public interface IAuctionRepository {
      * @throws IllegalArgumentException if {@code listingIds} is {@code null}
      */
     List<Auction> findByListingIdIn(List<ListingId> listingIds);
+
+    /**
+     * Retrieves all auctions associated with the given listing identifiers,
+     * sorted in ascending order by auction deadline.
+     *
+     * @param listingIds the identifiers of the listings associated with the auctions
+     * @return a list of auctions sorted by auction deadline ascending
+     */
+    List<Auction> findByListingIdInOrderByAuctionDeadlineAsc(List<ListingId> listingIds);
 }
