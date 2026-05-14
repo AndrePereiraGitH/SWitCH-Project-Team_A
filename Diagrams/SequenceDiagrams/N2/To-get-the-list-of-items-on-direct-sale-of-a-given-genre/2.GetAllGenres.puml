@@ -48,7 +48,7 @@ IGenreRepo -->> listOfAllGenres ** : «create»
 loop for each genreDM in listOfAllGenreDMs
     IGenreRepo -> GenreAss: toDomain(genreDM)
     activate GenreAss
-    GenreAss -> GenreFact: create(genreType)
+    GenreAss -> GenreFact: create(genreId, genreType)
     activate GenreFact
     GenreFact -->> Genre **: «create»
     GenreFact --> GenreAss: genre

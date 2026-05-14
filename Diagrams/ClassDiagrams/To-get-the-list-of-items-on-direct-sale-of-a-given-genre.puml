@@ -16,7 +16,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
 together{
     together{
         interface IGenreRepository {
-          +getAllGenres() : List<Genre>
+          +findAll() : List<Genre>
         }
 
         interface IGenreRepositoryJPA {
@@ -74,7 +74,7 @@ together{
     }
 
     class BibliographicalDataRepositoryJPAImpl {
-      +findAllByGenreId(selectedGenreId: GenreId):\nList<BibliographicalData>
+      +findAllByGenreId(selectedGenreId: GenreId):\nList<BibliographicalDataId>
     }
 
     class AutomaticGeneratedBibliographicalDataRepositoryJPAImpl{}
@@ -98,11 +98,11 @@ together{
     }
 
     interface IPublicationSampleRepositoryJPA {
-      +findAllByBDId(listOfBDIds: List<BibliographicalDataId>):\nList<PublicationSampleDM>
+      +findAllByBdId(listOfBDIds: List<BibliographicalDataId>):\nList<PublicationSampleDM>
     }
 
     class PublicationSampleRepositoryJPAImpl {
-      +findIdsByBibliographicalDataIdIn(listOfBDIds:\nList<BibliographicalDataId>): List<PublicationSample>
+      +findIdsByBibliographicalDataIdIn(listOfBDIds:\nList<BibliographicalDataId>): List<PublicationSampleId>
     }
 
     class AutomaticGeneratedPublicationSampleRepositoryJPAImpl{}
@@ -142,7 +142,7 @@ together{
         }
 
         class ListingDM {
-          - id: ListingId
+          - listingId: ListingId
           - listingTitle: String
           - itemsId: List<PublicationSampleId>
           - saleType: SaleType
@@ -159,6 +159,7 @@ together{
         class Listing {
           -id: ListingId
           -listingTitle: String
+          - saleType: SaleType
           -price: Price
           -shortDescription: String
           -sellerId: UserId
@@ -203,7 +204,7 @@ GenreRepositoryJPAImpl "1" ..> "1" GenreAssembler: uses
 GenreAssembler "1" ..> "1" GenreFactory: requests creation to
 GenreAssembler "1" ..> "1" GenreDM: creates
 
-IGenreRepositoryJPA "1" ..> "1" GenreDM: creates
+IGenreRepositoryJPA "1" ..> "1" GenreDM: manages
 
 GenreFactory "1" --> "1" Genre : creates
 
